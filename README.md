@@ -2,7 +2,7 @@
 
 Browser testing utilities using Vision Language Models (VLLM) for multi-modal validation with Playwright.
 
-[![GitHub](https://img.shields.io/github/license/henrywallace/vllm-testing)](https://github.com/henrywallace/vllm-testing)
+[![GitHub](https://img.shields.io/github/license/arclabs561/vllm-testing)](https://github.com/arclabs561/vllm-testing)
 [![Node.js](https://img.shields.io/node/v/ai-browser-test)](https://nodejs.org/)
 
 **A standalone, general-purpose package for browser testing with AI-powered multi-modal validation.**
@@ -36,7 +36,7 @@ VLLM Testing provides a comprehensive solution for visual regression testing usi
 npm install ai-browser-test
 
 # Or from GitHub
-npm install git+https://github.com/henrywallace/vllm-testing.git
+npm install git+https://github.com/arclabs561/vllm-testing.git
 ```
 
 ## Quick Start

@@ -6,7 +6,7 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { 
+import {
   validateScreenshot,
   extractRenderedCode,
   multiPerspectiveEvaluation,
@@ -14,7 +14,7 @@ import {
   aggregateTemporalNotes,
   formatNotesForPrompt,
   createConfig
-} from '@visual-ai/validate';
+} from 'ai-browser-test';
 
 // Configure VLLM (optional - auto-detects from env vars)
 const config = createConfig({

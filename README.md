@@ -1,11 +1,19 @@
-# @visual-ai/validate
+# ai-browser-test
 
-Visual testing utilities using Vision Language Models (VLLM) for screenshot validation with Playwright.
+Browser testing utilities using Vision Language Models (VLLM) for multi-modal validation with Playwright.
 
 [![GitHub](https://img.shields.io/github/license/henrywallace/vllm-testing)](https://github.com/henrywallace/vllm-testing)
-[![Node.js](https://img.shields.io/node/v/@visual-ai/validate)](https://nodejs.org/)
+[![Node.js](https://img.shields.io/node/v/ai-browser-test)](https://nodejs.org/)
 
-**A standalone, general-purpose package for visual testing with AI-powered validation.**
+**A standalone, general-purpose package for browser testing with AI-powered multi-modal validation.**
+
+Supports:
+- **Browser/Playwright Integration** - Viewport management, device emulation, page interaction
+- **Multi-Modal Validation** - Screenshot + HTML + CSS + rendered code + DOM structure
+- **Persona-Based Experience Testing** - Test page experience from different persona perspectives with human-interpreted time scales
+- **Built-in Prompts** - Pluggable prompt templates (brutalist, Josh Comeau, etc.)
+- **Context/Hooks/Encoding** - Context compression, state history, temporal aggregation
+- **Temporal/Gameplay** - Screenshot capture over time, gameplay testing
 
 ## Overview
 
@@ -25,7 +33,7 @@ VLLM Testing provides a comprehensive solution for visual regression testing usi
 
 ```bash
 # From npm (recommended)
-npm install @visual-ai/validate
+npm install ai-browser-test
 
 # Or from GitHub
 npm install git+https://github.com/henrywallace/vllm-testing.git
@@ -36,7 +44,7 @@ npm install git+https://github.com/henrywallace/vllm-testing.git
 ### As a Library
 
 ```javascript
-import { validateScreenshot, createConfig } from '@visual-ai/validate';
+import { validateScreenshot, createConfig } from 'ai-browser-test';
 
 // Configure (optional - auto-detects from env vars)
 const config = createConfig({
@@ -212,6 +220,24 @@ The package includes cost tracking and caching to minimize API costs:
 
 1. Install: `npm install file:../vllm-testing`
 2. Use in your tests: `import { validateScreenshot } from '@visual-ai/validate'`
+
+## Research References
+
+This package is based on research in:
+- **Vision Language Models for Testing** - Using VLLMs for semantic screenshot validation
+- **Temporal Aggregation** - Opinion propagation and coherence analysis over time
+- **Multi-Perspective Evaluation** - Multiple personas evaluating same state
+- **Context Compression** - Context-aware simplification for GUI agents (ICCV 2025)
+- **LLM-as-a-Judge** - Using LLMs for automated evaluation
+
+### Key Papers
+
+- **ICCV 2025** - Context-Aware Simplification for GUI Agents
+- **Temporal Aggregation** - Opinion propagation and coherence analysis
+- **Multi-Perspective Evaluation** - Persona-based evaluation strategies
+- **LLM-as-a-Judge** - Automated evaluation using language models
+
+*Note: Full bibliography with ArXiv links coming soon.*
 
 ## License
 

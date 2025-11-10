@@ -2,7 +2,7 @@
 
 Visual testing utilities using Vision Language Models (VLLM) for screenshot validation with Playwright.
 
-[![GitHub](https://img.shields.io/github/license/queeraoke/vllm-testing)](https://github.com/queeraoke/vllm-testing)
+[![GitHub](https://img.shields.io/github/license/henrywallace/vllm-testing)](https://github.com/henrywallace/vllm-testing)
 [![Node.js](https://img.shields.io/node/v/@queeraoke/vllm-testing)](https://nodejs.org/)
 
 **Language: JavaScript (ES Modules)** - Aligned with Playwright ecosystem and existing codebase.

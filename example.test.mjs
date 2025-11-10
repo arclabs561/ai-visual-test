@@ -1,16 +1,8 @@
 /**
- * Example: Visual Testing with @queeraoke/vllm-testing
+ * Example: Visual Testing with @vllm-testing/core
  * 
  * This example demonstrates how to use the VLLM testing package
  * for comprehensive visual regression testing with Playwright.
- * 
- * Language: JavaScript (ES Modules) - .mjs
- * 
- * Why JavaScript?
- * - Zero compilation step (direct execution)
- * - Native Playwright support
- * - Matches existing codebase (all .mjs files)
- * - Industry standard for Playwright packages
  */
 
 import { test, expect } from '@playwright/test';
@@ -22,7 +14,7 @@ import {
   aggregateTemporalNotes,
   formatNotesForPrompt,
   createConfig
-} from '@queeraoke/vllm-testing';
+} from '@vllm-testing/core';
 
 // Configure VLLM (optional - auto-detects from env vars)
 const config = createConfig({
@@ -64,7 +56,7 @@ test.describe('Visual Testing Examples', () => {
   });
   
   test('multi-modal validation with rendered code', async ({ page }) => {
-    await page.goto('https://queeraoke.fyi');
+    await page.goto('https://example.com');
     await page.waitForLoadState('networkidle');
     
     // Extract rendered code
@@ -108,7 +100,7 @@ test.describe('Visual Testing Examples', () => {
   });
   
   test('temporal screenshot capture for animations', async ({ page }) => {
-    await page.goto('https://queeraoke.fyi');
+    await page.goto('https://example.com');
     await page.waitForLoadState('networkidle');
     
     // Capture temporal screenshots (for animations)
@@ -165,7 +157,7 @@ test.describe('Visual Testing Examples', () => {
   });
   
   test('payment screen validation', async ({ page }) => {
-    await page.goto('https://queeraoke.fyi');
+    await page.goto('https://example.com');
     await page.waitForLoadState('networkidle');
     
     // Fill form to generate payment code
@@ -231,7 +223,7 @@ ZERO TOLERANCE VIOLATIONS:
   });
   
   test('game UI validation', async ({ page }) => {
-    await page.goto('https://queeraoke.fyi');
+    await page.goto('https://example.com');
     await page.waitForLoadState('networkidle');
     
     // Activate game (press 'G')

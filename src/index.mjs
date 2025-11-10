@@ -1,7 +1,14 @@
 /**
- * @visual-ai/validate
+ * ai-browser-test
  * 
- * Visual testing utilities using Vision Language Models (VLLM) for screenshot validation.
+ * Browser testing utilities using Vision Language Models (VLLM) for multi-modal validation.
+ * 
+ * Supports:
+ * - Browser/Playwright integration
+ * - Multi-modal validation (screenshot + HTML + CSS + rendered code)
+ * - Persona-based experience testing with human-interpreted time scales
+ * - Built-in prompt templates (pluggable)
+ * - Context/hooks/encoding (compression, state history, temporal aggregation)
  * 
  * Main entry point - exports all public APIs.
  */

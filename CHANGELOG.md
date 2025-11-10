@@ -1,11 +1,32 @@
 # Changelog
 
-All notable changes to @visual-ai/validate will be documented in this file.
+All notable changes to ai-browser-test will be documented in this file.
+
+## [0.1.1] - 2025-01-27
+
+### Changed
+- Renamed package from `ai-screenshot-test` to `ai-browser-test`
+- Updated description to reflect browser/Playwright integration and multi-modal validation
+- Added persona-based experience testing with human-interpreted time scales
+- Updated keywords to better reflect capabilities
+
+### Added
+- `experiencePageAsPersona()` - Test page experience from persona perspective
+- `experiencePageWithPersonas()` - Test page experience with multiple personas
+- Human-interpreted time scales (reading time, interaction time) vs mechanical fps
 
 ## [0.1.0] - 2025-01-27
 
 ### Added
 - Initial release of VLLM Testing package
+- Core validation functions (`validateScreenshot`, `VLLMJudge`)
+- Multi-modal validation (`extractRenderedCode`, `multiPerspectiveEvaluation`)
+- Temporal aggregation (`aggregateTemporalNotes`, `formatNotesForPrompt`)
+- Score tracking (`ScoreTracker`)
+- Batch optimization (`BatchOptimizer`)
+- Feedback aggregation (`aggregateFeedback`, `generateRecommendations`)
+- Context compression (`compressContext`, `compressStateHistory`)
+- Structured data extraction (`extractStructuredData`)
 - Core VLLM judge functionality (`VLLMJudge`, `validateScreenshot`)
 - Configuration system with multi-provider support (Gemini, OpenAI, Claude)
 - File-based caching for VLLM responses

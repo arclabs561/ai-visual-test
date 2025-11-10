@@ -4,7 +4,7 @@
 
 - **Name**: `@vllm-testing/core`
 - **Version**: `0.1.0`
-- **Repository**: `https://github.com/henrywallace/vllm-testing.git`
+- **Repository**: `https://github.com/arclabs561/vllm-testing.git`
 - **License**: MIT (needs to be added)
 
 ## Pre-Publish Checklist

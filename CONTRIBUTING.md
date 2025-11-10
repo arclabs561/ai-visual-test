@@ -6,7 +6,7 @@ Thank you for your interest in contributing!
 
 ```bash
 # Clone the repository
-git clone https://github.com/henrywallace/vllm-testing.git
+git clone https://github.com/arclabs561/vllm-testing.git
 cd vllm-testing
 
 # Install dependencies (if any)

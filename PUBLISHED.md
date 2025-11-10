@@ -24,7 +24,7 @@ import { validateScreenshot, createConfig } from 'vllm-testing-core';
 - **Name**: `vllm-testing-core`
 - **Version**: `0.1.0`
 - **License**: MIT
-- **Repository**: https://github.com/henrywallace/vllm-testing
+- **Repository**: https://github.com/arclabs561/vllm-testing
 - **Size**: 20.4 kB (18 files)
 - **Access**: Public
 

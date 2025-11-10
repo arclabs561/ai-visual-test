@@ -4,7 +4,7 @@
 
 - **Package Name**: `@vllm-testing/core`
 - **Version**: `0.1.0`
-- **Repository**: Private GitHub (`henrywallace/vllm-testing`)
+- **Repository**: Private GitHub (`arclabs561/vllm-testing`)
 - **License**: MIT
 - **Current npm status**: Not published yet
 

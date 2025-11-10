@@ -23,7 +23,7 @@ After creating, you should see:
 Once the org is created, run:
 
 ```bash
-cd /Users/arc/Documents/dev/vllm-testing
+cd /Users/arc/Documents/dev/ai-browser-test
 npm publish --access public
 ```
 

@@ -6,8 +6,8 @@ Thank you for your interest in contributing!
 
 ```bash
 # Clone the repository
-git clone https://github.com/arclabs561/vllm-testing.git
-cd vllm-testing
+git clone https://github.com/arclabs561/ai-browser-test.git
+cd ai-browser-test
 
 # Install dependencies (if any)
 npm install
@@ -16,7 +16,7 @@ npm install
 ## Project Structure
 
 ```
-vllm-testing/
+ai-browser-test/
 ├── src/
 │   ├── index.mjs          # Main exports
 │   ├── judge.mjs          # VLLM judge

@@ -2,7 +2,7 @@
 
 ## Status
 
-✅ **Published to npm**: `vllm-testing-core@0.1.0`
+✅ **Published to npm**: `ai-browser-test-core@0.1.0`
 ✅ **Public access**: Available to everyone
 ✅ **Clean and agnostic**: No project-specific references
 ✅ **Security**: No secrets or API keys in code
@@ -10,21 +10,21 @@
 ## Installation
 
 ```bash
-npm install vllm-testing-core
+npm install ai-browser-test-core
 ```
 
 ## Usage
 
 ```javascript
-import { validateScreenshot, createConfig } from 'vllm-testing-core';
+import { validateScreenshot, createConfig } from 'ai-browser-test-core';
 ```
 
 ## Package Details
 
-- **Name**: `vllm-testing-core`
+- **Name**: `ai-browser-test-core`
 - **Version**: `0.1.0`
 - **License**: MIT
-- **Repository**: https://github.com/arclabs561/vllm-testing
+- **Repository**: https://github.com/arclabs561/ai-browser-test
 - **Size**: 20.4 kB (18 files)
 - **Access**: Public
 

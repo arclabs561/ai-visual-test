@@ -25,7 +25,7 @@
 
 ### Directory Structure
 ```
-vllm-testing/
+ai-browser-test/
 ├── src/              # Core source files (13 files)
 ├── api/              # Vercel serverless functions (2 files)
 ├── public/           # Static web interface (1 file)

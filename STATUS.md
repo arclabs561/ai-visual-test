@@ -2,7 +2,7 @@
 
 ## ✅ Completed
 
-1. **Package name updated**: `vllm-testing-core` → `@visual-ai/validate`
+1. **Package name updated**: `ai-browser-test-core` → `@visual-ai/validate`
 2. **All imports updated** in queeraoke (28 test files)
 3. **Documentation updated**: README, CONTRIBUTING, CHANGELOG
 4. **Example files updated**: example.test.mjs
@@ -25,7 +25,7 @@
 Once the org exists, run:
 
 ```bash
-cd /Users/arc/Documents/dev/vllm-testing
+cd /Users/arc/Documents/dev/ai-browser-test
 npm publish --access public
 ```
 

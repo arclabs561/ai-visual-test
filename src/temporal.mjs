@@ -168,13 +168,13 @@ function calculateCoherence(windows) {
 function detectConflicts(windows) {
   const conflicts = [];
   
-  const observations = windows.map(w => w.observations.toLowerCase());
+  const observations = windows.map(w => (w.observations || '').toLowerCase());
   
   const positiveWords = ['good', 'great', 'excellent', 'smooth', 'responsive', 'clear'];
   const negativeWords = ['bad', 'poor', 'slow', 'laggy', 'unclear', 'confusing'];
   
   for (let i = 0; i < observations.length; i++) {
-    const obs = observations[i];
+    const obs = observations[i] || '';
     const hasPositive = positiveWords.some(w => obs.includes(w));
     const hasNegative = negativeWords.some(w => obs.includes(w));
     

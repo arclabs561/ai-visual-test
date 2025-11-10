@@ -2,7 +2,7 @@
 
 Browser testing utilities using Vision Language Models (VLLM) for multi-modal validation with Playwright.
 
-[![GitHub](https://img.shields.io/github/license/arclabs561/vllm-testing)](https://github.com/arclabs561/ai-browser-test)
+[![GitHub](https://img.shields.io/github/license/arclabs561/ai-browser-test)](https://github.com/arclabs561/ai-browser-test)
 [![Node.js](https://img.shields.io/node/v/ai-browser-test)](https://nodejs.org/)
 
 **A standalone, general-purpose package for browser testing with AI-powered multi-modal validation.**
@@ -218,7 +218,7 @@ The package includes cost tracking and caching to minimize API costs:
 
 ### As Local Package
 
-1. Install: `npm install file:../vllm-testing`
+1. Install: `npm install file:../ai-browser-test`
 2. Use in your tests: `import { validateScreenshot } from '@visual-ai/validate'`
 
 ## Research References

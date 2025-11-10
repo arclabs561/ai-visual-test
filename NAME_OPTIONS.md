@@ -1,7 +1,7 @@
 # Package Name Options
 
 ## Current Name
-- `vllm-testing-core` - Generic, not descriptive, "core" suffix is unnecessary
+- `ai-browser-test-core` - Generic, not descriptive, "core" suffix is unnecessary
 
 ## Research Findings
 

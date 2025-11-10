@@ -1,110 +1,59 @@
 # Deployment Guide
 
-## For Deployed Sites (Vercel, etc.)
+## Vercel Deployment
 
-The `@queeraoke/vllm-testing` package is currently installed as a **local file dependency** (`file:../vllm-testing`). This works locally but needs special handling for deployment.
+### Quick Deploy
 
-## Option 1: Include Package in Repository (Recommended)
+```bash
+# Install Vercel CLI
+npm i -g vercel
 
-**Best for:** Single repository, simple deployment
+# Deploy
+cd /path/to/vllm-testing
+vercel
+```
 
-1. **Move package into repository:**
-   ```bash
-   cd /Users/arc/Documents/dev/queeraoke
-   mv ../vllm-testing packages/vllm-testing
-   ```
+### Environment Variables
 
-2. **Update package.json:**
-   ```json
-   {
-     "dependencies": {
-       "@queeraoke/vllm-testing": "file:./packages/vllm-testing"
-     }
-   }
-   ```
+Set these in Vercel dashboard:
 
-3. **Commit package to git:**
-   ```bash
-   git add packages/vllm-testing
-   git commit -m "Add vllm-testing package"
-   ```
+- `GEMINI_API_KEY` (or `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`)
+- `VLM_PROVIDER` (optional)
 
-**Pros:**
-- ✅ Works automatically in CI/CD
-- ✅ No additional setup needed
-- ✅ Version controlled with main repo
+### API Endpoints
 
-**Cons:**
-- Package is tied to this repository
+After deployment, you'll have:
 
-## Option 2: Publish to npm (Private/Public)
+- `https://your-site.vercel.app/api/validate` - Validation endpoint
+- `https://your-site.vercel.app/api/health` - Health check
+- `https://your-site.vercel.app/` - Web interface
 
-**Best for:** Reusable across multiple projects
+### Usage
 
-1. **Publish package:**
-   ```bash
-   cd /Users/arc/Documents/dev/vllm-testing
-   npm publish --access public  # or --access restricted for private
-   ```
+```javascript
+// Validate screenshot
+const response = await fetch('https://your-site.vercel.app/api/validate', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    image: base64Image,
+    prompt: 'Evaluate this screenshot...',
+    context: { testType: 'payment-screen' }
+  })
+});
 
-2. **Update package.json:**
-   ```json
-   {
-     "dependencies": {
-       "@queeraoke/vllm-testing": "^0.1.0"
-     }
-   }
-   ```
+const result = await response.json();
+```
 
-**Pros:**
-- ✅ Reusable across projects
-- ✅ Version management
-- ✅ Works in any CI/CD
+## Local Development
 
-**Cons:**
-- Requires npm account
-- Public packages are public (use private registry for private)
+```bash
+# Install dependencies
+npm install
 
-## Option 3: Git Submodule
+# Run tests
+npm test
 
-**Best for:** Shared package across multiple repos
-
-1. **Add as submodule:**
-   ```bash
-   git submodule add https://github.com/your-org/vllm-testing.git packages/vllm-testing
-   ```
-
-2. **Update package.json:**
-   ```json
-   {
-     "dependencies": {
-       "@queeraoke/vllm-testing": "file:./packages/vllm-testing"
-     }
-   }
-   ```
-
-**Pros:**
-- ✅ Separate repository
-- ✅ Version controlled
-
-**Cons:**
-- More complex setup
-- CI/CD needs submodule init
-
-## Option 4: Bundle Package (Current Setup)
-
-**Best for:** Quick deployment without changes
-
-The current setup (`file:../vllm-testing`) works if:
-- Package is in the same parent directory
-- CI/CD clones both directories
-- Or package is copied during build
-
-**For Vercel:**
-- Vercel will install dependencies during build
-- Local file dependencies work if package is in repo or accessible
-
-## Recommended: Option 1 (Move to packages/)
-
-This is the simplest and most reliable for deployment.
-
+# Use as library
+import { validateScreenshot } from '@vllm-testing/core';
+```

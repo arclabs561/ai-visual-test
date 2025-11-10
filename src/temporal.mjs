@@ -130,9 +130,9 @@ function calculateCoherence(windows) {
   const varianceCoherence = Math.max(0, 1.0 - (variance / Math.max(1, maxVariance)));
 
   // Metric 3: Observation consistency
-  const observations = windows.map(w => w.observations.toLowerCase());
   let observationConsistency = 1.0;
-  if (observations.length > 1) {
+  if (windows.length > 1) {
+    const observations = windows.map(w => (w.observations || '').toLowerCase());
     const keywords = observations.map(obs => {
       const words = obs.split(/\s+/).filter(w => w.length > 3);
       return new Set(words);
@@ -142,10 +142,12 @@ function calculateCoherence(windows) {
     for (let i = 1; i < keywords.length; i++) {
       const prev = keywords[i - 1];
       const curr = keywords[i];
-      const intersection = new Set([...prev].filter(x => curr.has(x)));
-      const union = new Set([...prev, ...curr]);
-      const overlap = union.size > 0 ? intersection.size / union.size : 0;
-      overlapSum += overlap;
+      if (prev && curr && prev.size > 0 && curr.size > 0) {
+        const intersection = new Set([...prev].filter(x => curr.has(x)));
+        const union = new Set([...prev, ...curr]);
+        const overlap = union.size > 0 ? intersection.size / union.size : 0;
+        overlapSum += overlap;
+      }
     }
     observationConsistency = overlapSum / Math.max(1, keywords.length - 1);
   }

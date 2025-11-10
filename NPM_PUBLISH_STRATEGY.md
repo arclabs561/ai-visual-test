@@ -2,9 +2,9 @@
 
 ## Current Status
 
-- **Package Name**: `@vllm-testing/core`
+- **Package Name**: `@ai-browser-test/core`
 - **Version**: `0.1.0`
-- **Repository**: Private GitHub (`arclabs561/vllm-testing`)
+- **Repository**: Private GitHub (`arclabs561/ai-browser-test`)
 - **License**: MIT
 - **Current npm status**: Not published yet
 
@@ -32,7 +32,7 @@ npm publish --access private
 **Pros:**
 - ✅ Free to publish
 - ✅ Discoverable on npmjs.com
-- ✅ Easy to share (just `npm install @vllm-testing/core`)
+- ✅ Easy to share (just `npm install @ai-browser-test/core`)
 - ✅ Can be used by anyone
 - ✅ Better for open source
 
@@ -87,7 +87,7 @@ npm publish --access public
 ## Alternative: Unscoped Name (Free Private)
 
 If you want free private packages, use unscoped name:
-- Change: `@vllm-testing/core` → `vllm-testing-core`
+- Change: `@ai-browser-test/core` → `ai-browser-test-core`
 - Then: `npm publish` (defaults to private for unscoped)
 
 **But**: Scoped packages are better for organization.

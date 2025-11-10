@@ -44,7 +44,7 @@ All notable changes to ai-browser-test will be documented in this file.
 - Extracted caching into `cache.mjs`
 - Extracted multi-modal validation into `multi-modal.mjs`
 - Centralized configuration in `config.mjs`
-- Renamed package from `@queeraoke/vllm-testing` to `@vllm-testing/core` for general-purpose use
+- Renamed package from `@queeraoke/ai-browser-test` to `@ai-browser-test/core` for general-purpose use
 
 ### Removed
 - Project-specific references

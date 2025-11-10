@@ -2,15 +2,15 @@
 
 ## Package Information
 
-- **Name**: `@vllm-testing/core`
+- **Name**: `@ai-browser-test/core`
 - **Version**: `0.1.0`
-- **Repository**: `https://github.com/arclabs561/vllm-testing.git`
+- **Repository**: `https://github.com/arclabs561/ai-browser-test.git`
 - **License**: MIT (needs to be added)
 
 ## Pre-Publish Checklist
 
 ### ✅ Ready
-- [x] Package name is scoped (`@vllm-testing/core`)
+- [x] Package name is scoped (`@ai-browser-test/core`)
 - [x] Version is set (`0.1.0`)
 - [x] Repository URL is correct
 - [x] Main entry point is set (`src/index.mjs`)
@@ -36,11 +36,11 @@
 
 4. **Not logged into npm**
    - Need to run `npm login` before publishing
-   - Need npm account with access to `@vllm-testing` scope
+   - Need npm account with access to `@ai-browser-test` scope
 
 5. **Scope ownership**
-   - Need to verify ownership of `@vllm-testing` scope
-   - Or use unscoped name like `vllm-testing-core`
+   - Need to verify ownership of `@ai-browser-test` scope
+   - Or use unscoped name like `ai-browser-test-core`
 
 ## Files to Include
 
@@ -104,7 +104,7 @@ npm login
 ### 4. Verify scope access
 ```bash
 npm whoami
-# Check if you have access to @vllm-testing scope
+# Check if you have access to @ai-browser-test scope
 ```
 
 ### 5. Publish
@@ -130,12 +130,12 @@ If this is only a library (not a deployable service):
 If you want both:
 - Keep current `files` configuration
 - Document that it can be used as library or deployed as service
-- Consider separate packages: `@vllm-testing/core` (library) and `@vllm-testing/service` (deployment)
+- Consider separate packages: `@ai-browser-test/core` (library) and `@ai-browser-test/service` (deployment)
 
 ### Scope Name
-- Current: `@vllm-testing/core`
-- Alternative: `vllm-testing-core` (unscoped, easier to publish)
-- Check if `@vllm-testing` scope exists or needs to be created
+- Current: `@ai-browser-test/core`
+- Alternative: `ai-browser-test-core` (unscoped, easier to publish)
+- Check if `@ai-browser-test` scope exists or needs to be created
 
 ## Current Status
 

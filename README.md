@@ -36,7 +36,7 @@ npm install git+https://github.com/henrywallace/vllm-testing.git
 ### As a Library
 
 ```javascript
-import { validateScreenshot, createConfig } from '@vllm-testing/core';
+import { validateScreenshot, createConfig } from 'vllm-testing-core';
 
 // Configure (optional - auto-detects from env vars)
 const config = createConfig({
@@ -211,7 +211,7 @@ The package includes cost tracking and caching to minimize API costs:
 ### As Local Package
 
 1. Install: `npm install file:../vllm-testing`
-2. Use in your tests: `import { validateScreenshot } from '@vllm-testing/core'`
+2. Use in your tests: `import { validateScreenshot } from 'vllm-testing-core'`
 
 ## License
 

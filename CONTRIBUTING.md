@@ -1,4 +1,4 @@
-# Contributing to @queeraoke/vllm-testing
+# Contributing to @vllm-testing/core
 
 Thank you for your interest in contributing!
 
@@ -6,7 +6,7 @@ Thank you for your interest in contributing!
 
 ```bash
 # Clone the repository
-git clone https://github.com/queeraoke/vllm-testing.git
+git clone https://github.com/henrywallace/vllm-testing.git
 cd vllm-testing
 
 # Install dependencies (if any)

@@ -1,5 +1,5 @@
 /**
- * @queeraoke/visual-testing
+ * @vllm-testing/core
  * 
  * Visual testing utilities using Vision Language Models (VLLM) for screenshot validation.
  * 

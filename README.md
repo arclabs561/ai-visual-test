@@ -152,6 +152,71 @@ Captures temporal screenshots for animation validation.
 
 Evaluates screenshot from multiple perspectives.
 
+### Evaluation Rubrics
+
+#### `buildRubricPrompt(rubric, includeDimensions)`
+
+Builds explicit evaluation rubric prompt. Research shows explicit rubrics improve reliability by 10-20%.
+
+#### `getRubricForTestType(testType)`
+
+Gets test-type-specific rubric (e.g., 'payment-screen', 'gameplay', 'form').
+
+**Example:**
+```javascript
+import { buildRubricPrompt, getRubricForTestType } from 'ai-browser-test';
+
+const rubric = getRubricForTestType('payment-screen');
+const rubricPrompt = buildRubricPrompt(rubric);
+```
+
+### Bias Detection
+
+#### `detectBias(judgment, options)`
+
+Detects biases in LLM judgments (verbosity, length, formatting, authority).
+
+#### `detectPositionBias(judgments)`
+
+Detects position bias across multiple judgments.
+
+**Example:**
+```javascript
+import { detectBias } from 'ai-browser-test';
+
+const result = await validateScreenshot('screenshot.png', 'Evaluate');
+const bias = detectBias(result.reasoning);
+
+if (bias.hasBias) {
+  console.log('Bias detected:', bias.biases);
+  console.log('Recommendations:', bias.recommendations);
+}
+```
+
+### Ensemble Judging
+
+#### `EnsembleJudge`
+
+Manages multiple LLM judges with consensus voting. Improves accuracy and reduces bias.
+
+#### `createEnsembleJudge(providers, options)`
+
+Creates ensemble judge with multiple providers.
+
+**Example:**
+```javascript
+import { createEnsembleJudge } from 'ai-browser-test';
+
+const ensemble = createEnsembleJudge(['gemini', 'openai'], {
+  votingMethod: 'weighted_average',
+  enableBiasDetection: true
+});
+
+const result = await ensemble.evaluate('screenshot.png', 'Evaluate this');
+console.log('Ensemble score:', result.score);
+console.log('Agreement:', result.agreement.score);
+```
+
 ### Temporal Aggregation
 
 #### `aggregateTemporalNotes(notes, options)`
@@ -232,12 +297,22 @@ This package is based on research in:
 
 ### Key Papers
 
-- **ICCV 2025** - Context-Aware Simplification for GUI Agents
+- **ICCV 2025** - Context-Aware Simplification for GUI Agents (arXiv:2507.03730)
+- **VETL** - LVLM-driven end-to-end web testing (arXiv:2410.12157)
+- **LLM-as-a-Judge Bias** - Evaluating and Mitigating Bias (arXiv:2510.12462)
+- **Ensemble Judging** - Multiple judges for consensus (various papers)
 - **Temporal Aggregation** - Opinion propagation and coherence analysis
 - **Multi-Perspective Evaluation** - Persona-based evaluation strategies
-- **LLM-as-a-Judge** - Automated evaluation using language models
 
-*Note: Full bibliography with ArXiv links coming soon.*
+### Research-Based Features
+
+This package implements research-backed best practices:
+
+1. **Explicit Rubrics** - Improves reliability by 10-20% (Monte Carlo Data, Evidently AI)
+2. **Bias Detection** - Detects superficial feature bias, position bias (arXiv:2510.12462)
+3. **Ensemble Judging** - Multiple judges with consensus voting for higher accuracy
+4. **Context Compression** - Aligned with ICCV 2025 research
+5. **Temporal Aggregation** - Novel application to testing domain
 
 ## License
 

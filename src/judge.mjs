@@ -11,6 +11,7 @@ import { fileURLToPath } from 'url';
 import { createConfig, getConfig } from './config.mjs';
 import { getCached, setCached } from './cache.mjs';
 import { FileError, ProviderError, TimeoutError } from './errors.mjs';
+import { buildRubricPrompt, getRubricForTestType } from './rubrics.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -212,6 +213,16 @@ export class VLLMJudge {
     // Build prompt with context information
     let fullPrompt = prompt;
     
+    // Add explicit rubric if not disabled (research shows this improves reliability)
+    const useRubric = context.useRubric !== false; // Default to true
+    if (useRubric) {
+      const rubric = context.testType 
+        ? getRubricForTestType(context.testType)
+        : null;
+      const rubricPrompt = buildRubricPrompt(rubric, context.includeDimensions !== false);
+      fullPrompt = `${fullPrompt}\n\n${rubricPrompt}`;
+    }
+    
     // Add context information if provided
     const contextParts = [];
     if (context.testType) {
@@ -228,7 +239,7 @@ export class VLLMJudge {
     }
     
     if (contextParts.length > 0) {
-      fullPrompt = `${prompt}\n\nContext:\n${contextParts.join('\n')}`;
+      fullPrompt = `${fullPrompt}\n\nContext:\n${contextParts.join('\n')}`;
     }
     
     return fullPrompt;

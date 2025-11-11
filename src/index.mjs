@@ -86,4 +86,17 @@ export {
   isAIBrowserTestError,
   isErrorType
 } from './errors.mjs';
+export {
+  DEFAULT_RUBRIC,
+  buildRubricPrompt,
+  getRubricForTestType
+} from './rubrics.mjs';
+export {
+  detectBias,
+  detectPositionBias
+} from './bias-detector.mjs';
+export {
+  EnsembleJudge,
+  createEnsembleJudge
+} from './ensemble-judge.mjs';
 

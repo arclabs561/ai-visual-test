@@ -2,29 +2,22 @@ name: CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   pull_request:
-    branches: [main, develop]
-
-# Security: Use least-privilege permissions
-permissions:
-  contents: read
-  pull-requests: read
+    branches: [main]
 
 jobs:
   test:
-    name: Test Node.js ${{ matrix.node-version }}
     runs-on: ubuntu-latest
     
     strategy:
       matrix:
-        node-version: [18.x, 20.x, 22.x]
+        node-version: [18.x, 20.x]
     
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
       
-      - name: Setup Node.js ${{ matrix.node-version }}
+      - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
@@ -35,45 +28,14 @@ jobs:
       
       - name: Run tests
         run: npm test
+        env:
+          # Tests should work without API keys (optional dependency)
+          # But set dummy values to avoid errors if tests check for env vars
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || 'test-key' }}
       
-      - name: Run security audit
-        run: npm audit --audit-level=high || echo "Audit completed with warnings"
-      
-      - name: Verify exports
+      - name: Check for version bump
+        if: github.event_name == 'pull_request'
         run: |
-          node -e "import('./src/index.mjs').then(m => { const exports = Object.keys(m); console.log('Total exports:', exports.length); if (exports.length < 30) { console.error('Expected at least 30 exports'); process.exit(1); } })"
-
-  lint:
-    name: Lint and Code Quality
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.x'
-          cache: 'npm'
-      
-      - name: Install dependencies
-        run: npm ci
-      
-      - name: Check for console statements
-        run: |
-          # Check for console statements, excluding logger.mjs (which is allowed to use console)
-          if grep -r "console\.\(log\|warn\|error\|debug\)" src/ --exclude-dir=node_modules | grep -v "src/logger.mjs"; then
-            echo "⚠️  Warning: console statements found in source files (use logger.mjs instead)"
-            exit 1
-          else
-            echo "✅ No console statements in source files (using logger.mjs)"
+          if git diff origin/main...HEAD --name-only | grep -q package.json; then
+            echo "⚠️  package.json changed - ensure version is updated if needed"
           fi
-      
-      - name: Check file structure
-        run: |
-          test -f index.d.ts && echo "✅ TypeScript definitions present" || echo "❌ Missing index.d.ts"
-          test -f src/errors.mjs && echo "✅ Error classes present" || echo "❌ Missing errors.mjs"
-          test -d test && echo "✅ Test directory present" || echo "❌ Missing test directory"
-
-

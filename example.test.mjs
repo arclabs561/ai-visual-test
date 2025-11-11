@@ -1,5 +1,5 @@
 /**
- * Example: Visual Testing with @vllm-testing/core
+ * Example: Visual Testing with ai-browser-test
  * 
  * This example demonstrates how to use the VLLM testing package
  * for comprehensive visual regression testing with Playwright.

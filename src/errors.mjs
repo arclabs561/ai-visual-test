@@ -131,3 +131,4 @@ export function isErrorType(error, errorClass) {
   return error instanceof errorClass;
 }
 
+

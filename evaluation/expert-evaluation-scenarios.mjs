@@ -19,6 +19,9 @@ import { chromium } from 'playwright';
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
 
+// Import challenging websites for progressive testing
+import { CHALLENGING_WEBSITES, getAllWebsitesSorted } from './challenging-websites.mjs';
+
 const EXPERT_WEBSITES = [
   {
     id: 'typography-expert',
@@ -346,10 +349,141 @@ async function evaluateExpertScenarios() {
   return results;
 }
 
+/**
+ * Evaluate challenging websites (progressive difficulty)
+ */
+export async function evaluateChallengingWebsites(options = {}) {
+  const { maxDifficulty = 'expert', limit = null } = options;
+  
+  const difficultyOrder = ['medium', 'hard', 'very-hard', 'extreme', 'expert'];
+  const maxIndex = difficultyOrder.indexOf(maxDifficulty);
+  
+  let websites = getAllWebsitesSorted();
+  if (maxIndex >= 0) {
+    websites = websites.filter(w => 
+      difficultyOrder.indexOf(w.difficulty) <= maxIndex
+    );
+  }
+  
+  if (limit) {
+    websites = websites.slice(0, limit);
+  }
+  
+  console.log(`🎯 Evaluating ${websites.length} challenging websites (up to ${maxDifficulty} difficulty)\n`);
+  
+  // Use the same evaluation function but with challenge-specific prompts
+  const results = [];
+  const sequentialContext = new SequentialDecisionContext({
+    maxHistory: 10,
+    adaptationEnabled: true
+  });
+  
+  const browser = await chromium.launch();
+  const context = await browser.newContext({
+    viewport: { width: 1920, height: 1080 }
+  });
+  const page = await context.newPage();
+  
+  for (let i = 0; i < websites.length; i++) {
+    const website = websites[i];
+    console.log(`\n[${i + 1}/${websites.length}] ${website.name} (${website.difficulty})`);
+    console.log(`URL: ${website.url}`);
+    
+    try {
+      const navigationTime = humanPerceptionTime('page-load', {
+        contentLength: 10000, // Complex sites have more content
+        attentionLevel: 'focused',
+        actionComplexity: 'complex',
+        persona: { name: 'Expert Evaluator' }
+      });
+      
+      await page.goto(website.url, { waitUntil: 'networkidle', timeout: 30000 });
+      await page.waitForTimeout(navigationTime);
+      
+      const screenshotPath = join(process.cwd(), 'evaluation', 'screenshots', `challenge-${website.id}.png`);
+      if (!existsSync(join(process.cwd(), 'evaluation', 'screenshots'))) {
+        mkdirSync(join(process.cwd(), 'evaluation', 'screenshots'), { recursive: true });
+      }
+      await page.screenshot({ path: screenshotPath, fullPage: true });
+      
+      // Build challenge-specific prompt
+      const { buildChallengePrompt } = await import('./challenging-websites.mjs');
+      const prompt = buildChallengePrompt(website);
+      const adaptedPrompt = sequentialContext.adaptPrompt(prompt, {
+        testType: 'challenging-website',
+        websiteId: website.id,
+        difficulty: website.difficulty
+      });
+      
+      const result = await validateScreenshot(
+        screenshotPath,
+        adaptedPrompt,
+        {
+          testType: 'challenging-website',
+          viewport: { width: 1920, height: 1080 },
+          sequentialContext: sequentialContext.getContext(),
+          enableBiasMitigation: true
+        }
+      );
+      
+      sequentialContext.addDecision({
+        score: result.score,
+        issues: result.issues || [],
+        assessment: result.assessment,
+        reasoning: result.reasoning
+      });
+      
+      results.push({
+        website: website.id,
+        name: website.name,
+        url: website.url,
+        difficulty: website.difficulty,
+        score: result.score,
+        issues: result.issues,
+        assessment: result.assessment,
+        reasoning: result.reasoning,
+        challenges: website.challenges,
+        focusAreas: website.focusAreas,
+        expectedScore: website.expectedScore
+      });
+      
+      console.log(`✅ Score: ${result.score}/10`);
+      console.log(`   Issues: ${result.issues?.length || 0}`);
+      console.log(`   Difficulty: ${website.difficulty}`);
+      
+    } catch (error) {
+      console.error(`❌ Error: ${error.message}`);
+      results.push({
+        website: website.id,
+        name: website.name,
+        url: website.url,
+        difficulty: website.difficulty,
+        error: error.message
+      });
+    }
+  }
+  
+  await browser.close();
+  
+  const resultsPath = join(process.cwd(), 'evaluation', 'results', `challenging-websites-${Date.now()}.json`);
+  writeFileSync(resultsPath, JSON.stringify({
+    timestamp: new Date().toISOString(),
+    total: websites.length,
+    results: results,
+    sequentialContext: sequentialContext.getContext()
+  }, null, 2));
+  
+  console.log(`\n✅ Challenging websites evaluation complete`);
+  console.log(`📊 Results saved to: ${resultsPath}`);
+  
+  return results;
+}
+
 // Run if called directly
 if (import.meta.url === `file://${process.argv[1]}`) {
   evaluateExpertScenarios().catch(console.error);
 }
 
 export { evaluateExpertScenarios, EXPERT_WEBSITES, buildExpertPrompt };
+// evaluateChallengingWebsites is already exported above as an async function
 

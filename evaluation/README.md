@@ -7,6 +7,12 @@ This directory contains scripts and datasets for evaluating `ai-browser-test` ag
 ```bash
 # Run evaluation against real websites
 node evaluation/run-evaluation.mjs
+
+# Test challenging websites (progressive difficulty)
+node evaluation/test-challenging-websites.mjs
+
+# Run expert evaluations
+node evaluation/expert-evaluation-scenarios.mjs
 ```
 
 ## Datasets

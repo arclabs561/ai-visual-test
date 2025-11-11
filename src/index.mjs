@@ -58,8 +58,11 @@ export {
   setConfig
 } from './config.mjs';
 export { loadEnv } from './load-env.mjs';
+export { enableDebug, disableDebug, isDebugEnabled, warn, log, error } from './logger.mjs';
 export { ScoreTracker } from './score-tracker.mjs';
 export { BatchOptimizer } from './batch-optimizer.mjs';
+export { TemporalBatchOptimizer } from './temporal-batch-optimizer.mjs';
+export { LatencyAwareBatchOptimizer } from './latency-aware-batch-optimizer.mjs';
 export { extractStructuredData } from './data-extractor.mjs';
 export { aggregateFeedback, generateRecommendations } from './feedback-aggregator.mjs';
 export { compressContext, compressStateHistory } from './context-compressor.mjs';
@@ -131,9 +134,6 @@ export {
   mergeTemporalContext,
   extractTemporalContext
 } from './temporal-context.mjs';
-export {
-  TemporalBatchOptimizer
-} from './temporal-batch-optimizer.mjs';
 export {
   EnsembleJudge,
   createEnsembleJudge

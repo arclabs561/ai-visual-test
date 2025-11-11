@@ -4,6 +4,7 @@
  */
 
 import { MultiScaleError, PerceptionTimeError, SequentialContextError } from './temporal-errors.mjs';
+import { warn } from './logger.mjs';
 
 /**
  * Validate temporal notes
@@ -43,7 +44,7 @@ export function validateNotes(notes) {
   }
   
   if (invalidNotes.length > 0) {
-    console.warn(`[Temporal] ${invalidNotes.length} invalid notes filtered out:`, invalidNotes);
+    warn(`[Temporal] ${invalidNotes.length} invalid notes filtered out:`, invalidNotes);
   }
   
   return validNotes;

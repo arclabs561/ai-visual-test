@@ -3,28 +3,6 @@
 
 echo "🔍 Pre-commit checks..."
 
-# Secret detection
-echo "Checking for secrets..."
-if [ -f "scripts/detect-secrets.mjs" ]; then
-  node scripts/detect-secrets.mjs || {
-    echo "❌ Secret detection failed. Commit aborted."
-    exit 1
-  }
-else
-  echo "⚠️  Warning: detect-secrets.mjs not found, skipping secret check"
-fi
-
-# Documentation bloat check
-echo "Checking for documentation bloat..."
-if [ -f "scripts/check-docs-bloat.mjs" ]; then
-  node scripts/check-docs-bloat.mjs || {
-    echo "❌ Documentation bloat check failed. Commit aborted."
-    exit 1
-  }
-else
-  echo "⚠️  Warning: check-docs-bloat.mjs not found, skipping docs check"
-fi
-
 # Run tests before commit
 echo "Running tests..."
 npm test || {

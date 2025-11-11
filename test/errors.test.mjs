@@ -115,3 +115,4 @@ test('Error inheritance', () => {
   assert(error instanceof Error);
 });
 
+

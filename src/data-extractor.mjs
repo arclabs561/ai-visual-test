@@ -11,6 +11,7 @@
 
 import { createConfig } from './config.mjs';
 import { loadEnv } from './load-env.mjs';
+import { warn } from './logger.mjs';
 // Load env before LLM utils
 loadEnv();
 // Use shared LLM utility library for text-only calls (optional dependency)
@@ -64,7 +65,7 @@ export async function extractStructuredData(text, schema, options = {}) {
         }
       }
     } catch (error) {
-      console.warn(`[DataExtractor] LLM extraction failed: ${error.message}`);
+      warn(`[DataExtractor] LLM extraction failed: ${error.message}`);
     }
   }
   
@@ -76,7 +77,7 @@ export async function extractStructuredData(text, schema, options = {}) {
         return extracted;
       }
     } catch (error) {
-      console.warn(`[DataExtractor] Regex extraction failed: ${error.message}`);
+      warn(`[DataExtractor] Regex extraction failed: ${error.message}`);
     }
   }
   
@@ -117,7 +118,7 @@ Return ONLY the JSON object, no other text.`;
       return parsed;
     }
   } catch (error) {
-    console.warn(`[DataExtractor] LLM extraction error: ${error.message}`);
+    warn(`[DataExtractor] LLM extraction error: ${error.message}`);
   }
   
   return null;

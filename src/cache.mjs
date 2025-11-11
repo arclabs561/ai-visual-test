@@ -10,6 +10,7 @@ import { join, dirname } from 'path';
 import { createHash } from 'crypto';
 import { fileURLToPath } from 'url';
 import { CacheError, FileError } from './errors.mjs';
+import { warn } from './logger.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -84,7 +85,7 @@ function loadCache() {
     
     return cache;
   } catch (error) {
-    console.warn(`[VLLM Cache] Failed to load cache: ${error.message}`);
+    warn(`[VLLM Cache] Failed to load cache: ${error.message}`);
     return new Map();
   }
 }
@@ -108,7 +109,7 @@ function saveCache(cache) {
     
     writeFileSync(CACHE_FILE, JSON.stringify(cacheData, null, 2), 'utf8');
   } catch (error) {
-    console.warn(`[VLLM Cache] Failed to save cache: ${error.message}`);
+    warn(`[VLLM Cache] Failed to save cache: ${error.message}`);
   }
 }
 

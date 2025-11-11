@@ -13,7 +13,7 @@
  */
 
 import { experiencePageAsPersona } from '../src/persona-experience.mjs';
-import { aggregateMultiScale, SequentialDecisionContext } from '../src/index.mjs';
+import { aggregateMultiScale, SequentialDecisionContext, validateScreenshot } from '../src/index.mjs';
 import { chromium } from 'playwright';
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';

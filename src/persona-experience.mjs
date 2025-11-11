@@ -67,7 +67,7 @@ export async function experiencePageAsPersona(page, persona, options = {}) {
       
       return screenshotPath;
     } catch (error) {
-      console.warn(`Failed to capture screenshot at step ${step}:`, error.message);
+      // Silently fail - screenshot capture is optional
       return null;
     }
   };
@@ -336,7 +336,7 @@ async function humanTimeScale(action, options = {}) {
     return Math.max(minTime || 0, Math.min(maxTime || Infinity, perceptionTime));
   } catch (error) {
     // Fallback to original implementation if import fails
-    console.warn('Could not import humanPerceptionTime, using fallback:', error.message);
+    // Silently fall back - this is expected in some environments
   }
 
   // Fallback: Human-interpreted time scale (original implementation)

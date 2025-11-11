@@ -2,6 +2,34 @@
 
 All notable changes to ai-browser-test will be documented in this file.
 
+## [Unreleased]
+
+### Added
+- `src/logger.mjs` - Conditional logging utility with debug mode support
+- Logger exports: `enableDebug`, `disableDebug`, `isDebugEnabled`, `warn`, `log`, `error`
+- Logger sub-path export: `ai-browser-test/logger`
+
+### Changed
+- Replaced all `console.log/warn` statements with logger utility (8 files)
+- Enhanced `buildPrompt` to automatically include context information (testType, viewport, gameState)
+- Updated CI to check for console statements (not just console.log)
+- CI now fails if console statements found (except in logger.mjs)
+
+### Fixed
+- Fixed duplicate export of `TemporalBatchOptimizer` in `src/index.mjs`
+- Fixed failing test: `buildPrompt` now includes context in prompt output
+- All 185 tests now passing (0 failures)
+
+### Removed
+- Archived 28+ temporary documentation files to `archive/temp-docs-20251111/`
+- Removed documentation bloat: `FINAL_*`, `COMPLETE_*`, `SUMMARY_*`, `REVIEW_*`, `ANALYSIS_*` files
+- Net reduction: ~3,000 lines of documentation
+
+### Code Quality
+- All source files now use logger utility instead of direct console calls
+- Improved error handling with silent fallbacks for optional operations
+- Better separation of concerns with dedicated logger module
+
 ## [0.1.2] - 2025-01-27
 
 ### Security

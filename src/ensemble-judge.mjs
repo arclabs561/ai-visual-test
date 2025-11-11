@@ -18,8 +18,13 @@ import { detectBias, detectPositionBias } from './bias-detector.mjs';
  * Ensemble Judge Class
  * 
  * Manages multiple judges and aggregates their results.
+ * 
+ * @class EnsembleJudge
  */
 export class EnsembleJudge {
+  /**
+   * @param {import('./index.mjs').EnsembleJudgeOptions} [options={}] - Ensemble configuration
+   */
   constructor(options = {}) {
     const {
       judges = [],
@@ -42,6 +47,11 @@ export class EnsembleJudge {
   
   /**
    * Evaluate screenshot with ensemble of judges
+   * 
+   * @param {string} imagePath - Path to screenshot file
+   * @param {string} prompt - Evaluation prompt
+   * @param {import('./index.mjs').ValidationContext} [context={}] - Validation context
+   * @returns {Promise<import('./index.mjs').EnsembleResult>} Ensemble evaluation result
    */
   async evaluate(imagePath, prompt, context = {}) {
     // Run all judges in parallel
@@ -284,7 +294,11 @@ export class EnsembleJudge {
 }
 
 /**
- * Create ensemble judge with multiple providers
+ * Create an ensemble judge with multiple providers
+ * 
+ * @param {string[]} [providers=['gemini', 'openai']] - Array of provider names
+ * @param {import('./index.mjs').EnsembleJudgeOptions} [options={}] - Ensemble configuration
+ * @returns {EnsembleJudge} Configured ensemble judge
  */
 export function createEnsembleJudge(providers = ['gemini', 'openai'], options = {}) {
   const judges = providers.map(provider => {

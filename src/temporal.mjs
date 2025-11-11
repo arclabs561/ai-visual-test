@@ -7,6 +7,14 @@
 
 /**
  * Aggregate notes temporally with coherence analysis
+ * 
+ * @param {import('./index.mjs').TemporalNote[]} notes - Array of temporal notes
+ * @param {{
+ *   windowSize?: number;
+ *   decayFactor?: number;
+ *   coherenceThreshold?: number;
+ * }} [options={}] - Aggregation options
+ * @returns {import('./index.mjs').AggregatedTemporalNotes} Aggregated temporal notes with windows and coherence
  */
 export function aggregateTemporalNotes(notes, options = {}) {
   const {
@@ -234,7 +242,10 @@ function generateSummary(windows, coherence, conflicts) {
 }
 
 /**
- * Format aggregated notes for VLLM prompt
+ * Format aggregated temporal notes for prompt inclusion
+ * 
+ * @param {import('./index.mjs').AggregatedTemporalNotes} aggregated - Aggregated temporal notes
+ * @returns {string} Formatted string for prompt inclusion
  */
 export function formatNotesForPrompt(aggregated) {
   const parts = [];
@@ -268,8 +279,10 @@ export function formatNotesForPrompt(aggregated) {
 }
 
 /**
- * Calculate coherence (exported for testing)
- * This is the same as the internal function, exported for external use
+ * Calculate coherence score for temporal windows
+ * 
+ * @param {import('./index.mjs').TemporalWindow[]} windows - Array of temporal windows
+ * @returns {number} Coherence score (0-1)
  */
 export function calculateCoherenceExported(windows) {
   return calculateCoherence(windows);

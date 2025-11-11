@@ -72,6 +72,10 @@ export const DEFAULT_RUBRIC = {
 
 /**
  * Build rubric prompt section
+ * 
+ * @param {import('./index.mjs').Rubric | null} [rubric=null] - Rubric to use, or null for default
+ * @param {boolean} [includeDimensions=true] - Whether to include evaluation dimensions
+ * @returns {string} Formatted rubric prompt text
  */
 export function buildRubricPrompt(rubric = null, includeDimensions = true) {
   const rubricToUse = rubric || DEFAULT_RUBRIC;
@@ -116,6 +120,9 @@ Provide your evaluation as JSON:
 
 /**
  * Get rubric for specific test type
+ * 
+ * @param {string} testType - Test type identifier (e.g., 'payment-screen', 'gameplay', 'form')
+ * @returns {import('./index.mjs').Rubric} Rubric configured for the test type
  */
 export function getRubricForTestType(testType) {
   const testTypeRubrics = {

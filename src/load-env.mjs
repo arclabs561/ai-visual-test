@@ -15,8 +15,8 @@ const __dirname = dirname(__filename);
 /**
  * Load environment variables from .env file
  * 
- * @param {string} basePath - Base path to search for .env file (optional)
- * @returns {boolean} - True if .env file was found and loaded
+ * @param {string | null} [basePath=null] - Base path to search for .env file (optional)
+ * @returns {boolean} True if .env file was found and loaded
  */
 export function loadEnv(basePath = null) {
   // Try multiple locations for .env file

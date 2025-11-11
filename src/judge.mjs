@@ -20,8 +20,13 @@ const __dirname = dirname(__filename);
  * VLLM Judge Class
  * 
  * Handles screenshot validation using Vision Language Models.
+ * 
+ * @class VLLMJudge
  */
 export class VLLMJudge {
+  /**
+   * @param {import('./config.mjs').ConfigOptions} [options={}] - Configuration options
+   */
   constructor(options = {}) {
     this.config = createConfig(options);
     this.provider = this.config.provider;
@@ -33,6 +38,9 @@ export class VLLMJudge {
 
   /**
    * Initialize cache (lazy initialization)
+   * 
+   * @private
+   * @returns {Promise<void>}
    */
   async _initCache() {
     if (this._cacheInitialized || !this.config.cache.enabled) return;
@@ -46,6 +54,10 @@ export class VLLMJudge {
 
   /**
    * Convert image to base64 for API
+   * 
+   * @param {string} imagePath - Path to the image file
+   * @returns {string} Base64-encoded image data
+   * @throws {FileError} If image file doesn't exist or can't be read
    */
   imageToBase64(imagePath) {
     if (!existsSync(imagePath)) {
@@ -61,6 +73,15 @@ export class VLLMJudge {
 
   /**
    * Judge screenshot using VLLM API
+   * 
+   * @param {string} imagePath - Path to screenshot file
+   * @param {string} prompt - Evaluation prompt for the VLLM
+   * @param {import('./index.mjs').ValidationContext} [context={}] - Validation context options
+   * @returns {Promise<import('./index.mjs').ValidationResult>} Validation result with score, issues, and assessment
+   * @throws {ValidationError} If inputs are invalid
+   * @throws {FileError} If screenshot file doesn't exist
+   * @throws {ProviderError} If API call fails
+   * @throws {TimeoutError} If API call times out
    */
   async judgeScreenshot(imagePath, prompt, context = {}) {
     // Validate inputs
@@ -226,6 +247,10 @@ export class VLLMJudge {
 
   /**
    * Build prompt for screenshot validation
+   * 
+   * @param {string} prompt - Base prompt text
+   * @param {import('./index.mjs').ValidationContext} [context={}] - Context to enhance prompt
+   * @returns {string} Enhanced prompt with rubric and context information
    */
   buildPrompt(prompt, context = {}) {
     // If custom prompt builder provided, use it
@@ -270,6 +295,9 @@ export class VLLMJudge {
 
   /**
    * Extract semantic information from judgment text
+   * 
+   * @param {string | object} judgment - Judgment text or structured object from VLLM
+   * @returns {import('./index.mjs').ValidationResult['semantic']} Extracted semantic information
    */
   extractSemanticInfo(judgment) {
     // Handle case where judgment is already an object
@@ -315,6 +343,9 @@ export class VLLMJudge {
 
   /**
    * Extract score from judgment text
+   * 
+   * @param {string} judgment - Judgment text to parse
+   * @returns {number | null} Extracted score (0-10) or null if not found
    */
   extractScore(judgment) {
     if (!judgment || typeof judgment !== 'string') return null;
@@ -341,6 +372,9 @@ export class VLLMJudge {
 
   /**
    * Extract issues from judgment text
+   * 
+   * @param {string} judgment - Judgment text to parse
+   * @returns {string[]} Array of extracted issues
    */
   extractIssues(judgment) {
     try {
@@ -366,6 +400,9 @@ export class VLLMJudge {
 
   /**
    * Extract assessment from judgment text
+   * 
+   * @param {string} judgment - Judgment text to parse
+   * @returns {string | null} Assessment ('pass', 'fail', or null)
    */
   extractAssessment(judgment) {
     try {
@@ -391,6 +428,12 @@ export class VLLMJudge {
 
   /**
    * Call Google Gemini API
+   * 
+   * @private
+   * @param {string} base64Image - Base64-encoded image data
+   * @param {string} prompt - Text prompt
+   * @param {AbortSignal} signal - Abort signal for cancellation
+   * @returns {Promise<Response>} Fetch response
    */
   async callGeminiAPI(base64Image, prompt, signal) {
     return fetch(
@@ -424,6 +467,12 @@ export class VLLMJudge {
 
   /**
    * Call OpenAI API
+   * 
+   * @private
+   * @param {string} base64Image - Base64-encoded image data
+   * @param {string} prompt - Text prompt
+   * @param {AbortSignal} signal - Abort signal for cancellation
+   * @returns {Promise<Response>} Fetch response
    */
   async callOpenAIAPI(base64Image, prompt, signal) {
     return fetch(`${this.providerConfig.apiUrl}/chat/completions`, {
@@ -454,6 +503,12 @@ export class VLLMJudge {
 
   /**
    * Call Anthropic Claude API
+   * 
+   * @private
+   * @param {string} base64Image - Base64-encoded image data
+   * @param {string} prompt - Text prompt
+   * @param {AbortSignal} signal - Abort signal for cancellation
+   * @returns {Promise<Response>} Fetch response
    */
   async callClaudeAPI(base64Image, prompt, signal) {
     return fetch(`${this.providerConfig.apiUrl}/messages`, {
@@ -487,6 +542,10 @@ export class VLLMJudge {
 
   /**
    * Estimate cost based on token usage
+   * 
+   * @param {unknown} data - API response data with usage information
+   * @param {string} provider - Provider name ('gemini', 'openai', 'claude')
+   * @returns {import('./index.mjs').ValidationResult['estimatedCost']} Cost estimation or null if free
    */
   estimateCost(data, provider) {
     if (!this.providerConfig.pricing || this.providerConfig.pricing.input === 0) {
@@ -530,6 +589,15 @@ export class VLLMJudge {
  * Validate screenshot (convenience function)
  * 
  * Creates a judge instance and validates a screenshot.
+ * 
+ * @param {string} imagePath - Path to screenshot file
+ * @param {string} prompt - Evaluation prompt for the VLLM
+ * @param {import('./index.mjs').ValidationContext} [context={}] - Validation context options
+ * @returns {Promise<import('./index.mjs').ValidationResult>} Validation result
+ * @throws {ValidationError} If inputs are invalid
+ * @throws {FileError} If screenshot file doesn't exist
+ * @throws {ProviderError} If API call fails
+ * @throws {TimeoutError} If API call times out
  */
 export async function validateScreenshot(imagePath, prompt, context = {}) {
   const judge = new VLLMJudge(context);

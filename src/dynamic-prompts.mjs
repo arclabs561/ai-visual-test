@@ -226,6 +226,13 @@ ${questions.map((q, i) => `${i + 1}. ${q}`).join('\n')}`;
  * @param {Array} variations - Array of variation configs
  * @returns {Array} Array of prompt variations
  */
+/**
+ * Generate multiple prompt variations for testing
+ * 
+ * @param {Record<string, unknown>} context - Testing context
+ * @param {Array<{ testingGoal?: string; focus?: string }>} [variations=[]] - Array of variation configs
+ * @returns {string[]} Array of prompt variations
+ */
 export function generatePromptVariations(context, variations = []) {
   const defaultVariations = [
     { testingGoal: 'ux-improvement', focus: 'user experience and delight' },
@@ -249,10 +256,10 @@ export function generatePromptVariations(context, variations = []) {
 /**
  * Generate interaction-specific prompt
  * 
- * @param {Object} interaction - Interaction details
- * @param {Object} beforeState - State before interaction
- * @param {Object} afterState - State after interaction
- * @param {string} testingGoal - Testing goal
+ * @param {Record<string, unknown>} interaction - Interaction details
+ * @param {Record<string, unknown>} beforeState - State before interaction
+ * @param {Record<string, unknown>} afterState - State after interaction
+ * @param {string} [testingGoal='ux-improvement'] - Testing goal
  * @returns {string} Interaction-specific prompt
  */
 export function generateInteractionPrompt(interaction, beforeState, afterState, testingGoal = 'ux-improvement') {
@@ -287,9 +294,9 @@ QUESTIONS:
 /**
  * Generate gameplay-specific prompt
  * 
- * @param {Object} gameState - Current game state
- * @param {Object} previousState - Previous game state (optional)
- * @param {string} focus - Focus area ('mechanics', 'visuals', 'feedback', 'balance')
+ * @param {Record<string, unknown>} gameState - Current game state
+ * @param {Record<string, unknown> | null} [previousState=null] - Previous game state (optional)
+ * @param {string} [focus='mechanics'] - Focus area ('mechanics', 'visuals', 'feedback', 'balance')
  * @returns {string} Gameplay-specific prompt
  */
 export function generateGameplayPrompt(gameState, previousState = null, focus = 'mechanics') {

@@ -8,6 +8,16 @@
 
 /**
  * Compress context by aggregating notes and extracting key insights
+ * 
+ * @param {import('./index.mjs').TemporalNote[]} notes - Array of temporal notes to compress
+ * @param {{
+ *   maxTokens?: number;
+ *   maxNotes?: number;
+ *   includeRecent?: boolean;
+ *   includeKeyEvents?: boolean;
+ *   aggregationStrategy?: 'temporal' | 'semantic' | 'importance';
+ * }} [options={}] - Compression options
+ * @returns {import('./index.mjs').TemporalNote[]} Compressed array of notes
  */
 export function compressContext(notes, options = {}) {
   const {
@@ -201,7 +211,14 @@ function estimateTokens(notes, summary = '') {
 }
 
 /**
- * Compress state history for VLLM prompts
+ * Compress state history by keeping important transitions
+ * 
+ * @param {Array<Record<string, unknown>>} stateHistory - Array of state objects
+ * @param {{
+ *   maxLength?: number;
+ *   preserveImportant?: boolean;
+ * }} [options={}] - Compression options
+ * @returns {Array<Record<string, unknown>>} Compressed state history
  */
 export function compressStateHistory(stateHistory, options = {}) {
   const {

@@ -14,8 +14,14 @@
  * Experience Trace
  * 
  * Complete trace of a user experience journey with all events, validations, and state changes.
+ * 
+ * @class ExperienceTrace
  */
 export class ExperienceTrace {
+  /**
+   * @param {string} sessionId - Unique session identifier
+   * @param {import('./index.mjs').Persona | null} [persona=null] - Persona configuration
+   */
   constructor(sessionId, persona = null) {
     this.sessionId = sessionId;
     this.persona = persona;
@@ -32,8 +38,9 @@ export class ExperienceTrace {
    * Add an experience event
    * 
    * @param {string} type - Event type ('interaction', 'state-change', 'validation', 'screenshot')
-   * @param {Object} data - Event data
-   * @param {number} timestamp - Event timestamp (defaults to now)
+   * @param {Record<string, unknown>} data - Event data
+   * @param {number | null} [timestamp=null] - Event timestamp (defaults to now)
+   * @returns {{ id: string; type: string; timestamp: number; elapsed: number; data: Record<string, unknown> }} Created event
    */
   addEvent(type, data, timestamp = null) {
     const event = {
@@ -51,8 +58,9 @@ export class ExperienceTrace {
   /**
    * Add VLLM validation result
    * 
-   * @param {Object} validation - Validation result from validateScreenshot
-   * @param {string} context - Validation context (stage, interaction, etc.)
+   * @param {import('./index.mjs').ValidationResult} validation - Validation result from validateScreenshot
+   * @param {Record<string, unknown>} [context={}] - Validation context (stage, interaction, etc.)
+   * @returns {{ id: string; timestamp: number; elapsed: number; validation: import('./index.mjs').ValidationResult; context: Record<string, unknown>; screenshot: string | null }} Validation event
    */
   addValidation(validation, context = {}) {
     const validationEvent = {
@@ -75,7 +83,8 @@ export class ExperienceTrace {
    * 
    * @param {string} path - Screenshot path
    * @param {string} step - Step name
-   * @param {Object} metadata - Additional metadata
+   * @param {Record<string, unknown>} [metadata={}] - Additional metadata
+   * @returns {{ id: string; path: string; step: string; timestamp: number; elapsed: number; [key: string]: unknown }} Screenshot event
    */
   addScreenshot(path, step, metadata = {}) {
     const screenshot = {
@@ -96,8 +105,9 @@ export class ExperienceTrace {
   /**
    * Add state snapshot
    * 
-   * @param {Object} state - State object (pageState, gameState, etc.)
+   * @param {Record<string, unknown>} state - State object (pageState, gameState, etc.)
    * @param {string} label - State label
+   * @returns {void}
    */
   addStateSnapshot(state, label = '') {
     const snapshot = {
@@ -117,8 +127,9 @@ export class ExperienceTrace {
   /**
    * Aggregate experience notes temporally
    * 
-   * @param {Function} aggregateTemporalNotes - Temporal aggregation function
-   * @param {Object} options - Aggregation options
+   * @param {(notes: import('./index.mjs').TemporalNote[], options?: Record<string, unknown>) => import('./index.mjs').AggregatedTemporalNotes} aggregateTemporalNotes - Temporal aggregation function
+   * @param {Record<string, unknown>} [options={}] - Aggregation options
+   * @returns {import('./index.mjs').AggregatedTemporalNotes} Aggregated notes
    */
   aggregateNotes(aggregateTemporalNotes, options = {}) {
     // Extract notes from events and validations
@@ -151,7 +162,17 @@ export class ExperienceTrace {
   /**
    * Get trace summary
    * 
-   * @returns {Object} Trace summary
+   * @returns {{
+   *   sessionId: string;
+   *   persona: import('./index.mjs').Persona | null;
+   *   duration: number;
+   *   eventCount: number;
+   *   validationCount: number;
+   *   screenshotCount: number;
+   *   stateSnapshotCount: number;
+   *   hasAggregatedNotes: boolean;
+   *   hasMetaEvaluation: boolean;
+   * }} Trace summary
    */
   getSummary() {
     return {
@@ -170,7 +191,19 @@ export class ExperienceTrace {
   /**
    * Get full trace for debugging
    * 
-   * @returns {Object} Complete trace
+   * @returns {{
+   *   sessionId: string;
+   *   persona: import('./index.mjs').Persona | null;
+   *   startTime: number;
+   *   duration: number;
+   *   events: Array<Record<string, unknown>>;
+   *   validations: Array<Record<string, unknown>>;
+   *   screenshots: Array<Record<string, unknown>>;
+   *   stateHistory: Array<Record<string, unknown>>;
+   *   aggregatedNotes: import('./index.mjs').AggregatedTemporalNotes | null;
+   *   metaEvaluation: Record<string, unknown> | null;
+   *   summary: Record<string, unknown>;
+   * }} Complete trace
    */
   getFullTrace() {
     return {
@@ -192,6 +225,7 @@ export class ExperienceTrace {
    * Export trace to JSON
    * 
    * @param {string} filePath - Path to save trace
+   * @returns {Promise<void>}
    */
   async exportToJSON(filePath) {
     const fs = await import('fs/promises');
@@ -203,6 +237,8 @@ export class ExperienceTrace {
  * Experience Tracer Manager
  * 
  * Manages multiple experience traces and provides meta-evaluation capabilities.
+ * 
+ * @class ExperienceTracerManager
  */
 export class ExperienceTracerManager {
   constructor() {
@@ -214,7 +250,7 @@ export class ExperienceTracerManager {
    * Create a new trace
    * 
    * @param {string} sessionId - Unique session ID
-   * @param {Object} persona - Persona configuration
+   * @param {import('./index.mjs').Persona | null} [persona=null] - Persona configuration
    * @returns {ExperienceTrace} New trace
    */
   createTrace(sessionId, persona = null) {
@@ -227,7 +263,7 @@ export class ExperienceTracerManager {
    * Get trace by session ID
    * 
    * @param {string} sessionId - Session ID
-   * @returns {ExperienceTrace|null} Trace or null
+   * @returns {ExperienceTrace | null} Trace or null if not found
    */
   getTrace(sessionId) {
     return this.traces.get(sessionId) || null;
@@ -236,7 +272,7 @@ export class ExperienceTracerManager {
   /**
    * Get all traces
    * 
-   * @returns {Array} Array of traces
+   * @returns {ExperienceTrace[]} Array of all traces
    */
   getAllTraces() {
     return Array.from(this.traces.values());
@@ -252,8 +288,8 @@ export class ExperienceTracerManager {
    * - Temporal coherence (do notes make sense over time?)
    * 
    * @param {string} sessionId - Session ID
-   * @param {Function} validateScreenshot - VLLM validation function
-   * @returns {Promise<Object>} Meta-evaluation result
+   * @param {(path: string, prompt: string, context: import('./index.mjs').ValidationContext) => Promise<import('./index.mjs').ValidationResult>} validateScreenshot - VLLM validation function
+   * @returns {Promise<Record<string, unknown>>} Meta-evaluation result
    */
   async metaEvaluateTrace(sessionId, validateScreenshot) {
     const trace = this.getTrace(sessionId);
@@ -402,9 +438,13 @@ export class ExperienceTracerManager {
   }
 
   /**
-   * Get meta-evaluation summary
+   * Get summary of all meta-evaluations
    * 
-   * @returns {Object} Summary of all meta-evaluations
+   * @returns {{
+   *   totalEvaluations: number;
+   *   averageQuality: number | null;
+   *   evaluations?: Array<Record<string, unknown>>;
+   * }} Meta-evaluation summary
    */
   getMetaEvaluationSummary() {
     if (this.metaEvaluations.length === 0) {
@@ -432,7 +472,7 @@ export class ExperienceTracerManager {
 let tracerManager = null;
 
 /**
- * Get or create tracer manager
+ * Get or create tracer manager singleton
  * 
  * @returns {ExperienceTracerManager} Tracer manager instance
  */

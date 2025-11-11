@@ -10,10 +10,10 @@
 /**
  * Experience a page from a persona's perspective
  * 
- * @param {Page} page - Playwright page object
- * @param {Object} persona - Persona configuration
- * @param {Object} options - Experience options
- * @returns {Promise<Object>} Experience result with notes, screenshots, and evaluation
+ * @param {any} page - Playwright page object
+ * @param {import('./index.mjs').Persona} persona - Persona configuration
+ * @param {import('./index.mjs').PersonaExperienceOptions} [options={}] - Experience options
+ * @returns {Promise<import('./index.mjs').PersonaExperienceResult>} Experience result with notes, screenshots, and evaluation
  */
 export async function experiencePageAsPersona(page, persona, options = {}) {
   const {
@@ -391,6 +391,14 @@ async function extractRenderedCode(page) {
  * @param {Array} personas - Array of persona configurations
  * @param {Object} options - Experience options
  * @returns {Promise<Array>} Array of experience results
+ */
+/**
+ * Experience a page from multiple persona perspectives
+ * 
+ * @param {any} page - Playwright page object
+ * @param {import('./index.mjs').Persona[]} personas - Array of persona configurations
+ * @param {import('./index.mjs').PersonaExperienceOptions} [options={}] - Experience options
+ * @returns {Promise<import('./index.mjs').PersonaExperienceResult[]>} Array of experience results
  */
 export async function experiencePageWithPersonas(page, personas, options = {}) {
   const experiences = [];

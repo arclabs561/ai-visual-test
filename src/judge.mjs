@@ -11,7 +11,9 @@ import { fileURLToPath } from 'url';
 import { createConfig, getConfig } from './config.mjs';
 import { getCached, setCached } from './cache.mjs';
 import { FileError, ProviderError, TimeoutError } from './errors.mjs';
-import { log } from './logger.mjs';
+import { log, warn } from './logger.mjs';
+import { retryWithBackoff, enhanceErrorMessage } from './retry.mjs';
+import { recordCost } from './cost-tracker.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -96,55 +98,129 @@ export class VLLMJudge {
     let data;
     let judgment = null;
     let error = null;
+    let attempts = 0;
 
     try {
       const base64Image = this.imageToBase64(imagePath);
       const fullPrompt = this.buildPrompt(prompt, context);
       
-      // Route to appropriate API based on provider
-      switch (this.provider) {
-        case 'gemini':
-          response = await this.callGeminiAPI(base64Image, fullPrompt, abortController.signal);
-          clearTimeout(timeoutId);
-          data = await response.json();
-          
-          if (data.error) {
-            throw new ProviderError(`Gemini API error: ${data.error.message}`, 'gemini', {
-              apiError: data.error
-            });
+      // Retry API calls with exponential backoff
+      const maxRetries = context.maxRetries ?? 3;
+      const apiResult = await retryWithBackoff(async () => {
+        attempts++;
+        let apiResponse;
+        let apiData;
+        
+        // Route to appropriate API based on provider
+        switch (this.provider) {
+          case 'gemini':
+            apiResponse = await this.callGeminiAPI(base64Image, fullPrompt, abortController.signal);
+            clearTimeout(timeoutId);
+            apiData = await apiResponse.json();
+            
+            if (apiData.error) {
+              const statusCode = apiResponse.status;
+              throw new ProviderError(
+                `Gemini API error: ${apiData.error.message}`,
+                'gemini',
+                {
+                  apiError: apiData.error,
+                  statusCode,
+                  retryable: statusCode === 429 || statusCode >= 500
+                }
+              );
+            }
+            
+            return {
+              judgment: apiData.candidates?.[0]?.content?.parts?.[0]?.text || 'No response',
+              data: apiData
+            };
+            
+          case 'openai':
+            apiResponse = await this.callOpenAIAPI(base64Image, fullPrompt, abortController.signal);
+            clearTimeout(timeoutId);
+            apiData = await apiResponse.json();
+            
+            if (apiData.error) {
+              const statusCode = apiResponse.status;
+              throw new ProviderError(
+                `OpenAI API error: ${apiData.error.message}`,
+                'openai',
+                {
+                  apiError: apiData.error,
+                  statusCode,
+                  retryable: statusCode === 429 || statusCode >= 500
+                }
+              );
+            }
+            
+            return {
+              judgment: apiData.choices?.[0]?.message?.content || 'No response',
+              data: apiData
+            };
+            
+          case 'claude':
+            apiResponse = await this.callClaudeAPI(base64Image, fullPrompt, abortController.signal);
+            clearTimeout(timeoutId);
+            apiData = await apiResponse.json();
+            
+            if (apiData.error) {
+              const statusCode = apiResponse.status;
+              throw new ProviderError(
+                `Claude API error: ${apiData.error.message || 'Unknown error'}`,
+                'claude',
+                {
+                  apiError: apiData.error,
+                  statusCode,
+                  retryable: statusCode === 429 || statusCode >= 500
+                }
+              );
+            }
+            
+            return {
+              judgment: apiData.content?.[0]?.text || 'No response',
+              data: apiData
+            };
+            
+          default:
+            throw new ProviderError(`Unknown provider: ${this.provider}`, this.provider);
+        }
+      }, {
+        maxRetries,
+        baseDelay: 1000,
+        maxDelay: 30000,
+        onRetry: (err, attempt, delay) => {
+          if (this.config.debug.verbose) {
+            warn(`[VLLM] Retry ${attempt}/${maxRetries} for ${this.provider} API: ${err.message} (waiting ${delay}ms)`);
           }
-          
-          judgment = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response';
-          break;
-          
-        case 'openai':
-          response = await this.callOpenAIAPI(base64Image, fullPrompt, abortController.signal);
-          clearTimeout(timeoutId);
-          data = await response.json();
-          
-          if (data.error) {
-            throw new ProviderError(`OpenAI API error: ${data.error.message}`, 'openai', {
-              apiError: data.error
-            });
-          }
-          
-          judgment = data.choices?.[0]?.message?.content || 'No response';
-          break;
-          
-        case 'claude':
-          response = await this.callClaudeAPI(base64Image, fullPrompt, abortController.signal);
-          clearTimeout(timeoutId);
-          data = await response.json();
-          judgment = data.content?.[0]?.text || 'No response';
-          break;
-          
-        default:
-          throw new ProviderError(`Unknown provider: ${this.provider}`, this.provider);
-      }
+        }
+      });
+      
+      judgment = apiResult.judgment;
+      data = apiResult.data;
       
       const responseTime = Date.now() - startTime;
       const semanticInfo = this.extractSemanticInfo(judgment);
-      const result = {
+      
+      // Estimate cost (data might not be available if retry succeeded)
+      const estimatedCost = data ? this.estimateCost(data, this.provider) : null;
+      
+      // Record cost for tracking
+      if (estimatedCost && estimatedCost.totalCost) {
+        try {
+          recordCost({
+            provider: this.provider,
+            cost: estimatedCost.totalCost,
+            inputTokens: estimatedCost.inputTokens || 0,
+            outputTokens: estimatedCost.outputTokens || 0,
+            testName: context.testType || context.step || 'unknown'
+          });
+        } catch {
+          // Silently fail if cost tracking unavailable
+        }
+      }
+      
+      const validationResult = {
         enabled: true,
         provider: this.provider,
         judgment,
@@ -153,50 +229,70 @@ export class VLLMJudge {
         assessment: semanticInfo.assessment,
         reasoning: semanticInfo.reasoning,
         pricing: this.providerConfig.pricing,
-        estimatedCost: this.estimateCost(data, this.provider),
+        estimatedCost,
         responseTime,
         timestamp: new Date().toISOString(),
         testName: context.testType || context.step || 'unknown',
         viewport: context.viewport || null,
-        raw: data,
-        semantic: semanticInfo
+        raw: data || null,
+        semantic: semanticInfo,
+        attempts: attempts || 1
       };
       
       // Cache result
       if (useCache) {
-        setCached(imagePath, prompt, context, result);
+        setCached(imagePath, prompt, context, validationResult);
       }
       
-      return result;
+      return validationResult;
     } catch (err) {
       clearTimeout(timeoutId);
       error = err;
       
       // Handle timeout errors specifically
       if (error.name === 'AbortError' || error.message?.includes('timeout') || error.message?.includes('aborted')) {
-        throw new TimeoutError(`VLLM API call timed out after ${timeout}ms`, timeout, {
+        const enhancedMessage = enhanceErrorMessage(
+          new TimeoutError(`VLLM API call timed out after ${timeout}ms`, timeout),
+          attempts || 1,
+          'judgeScreenshot'
+        );
+        throw new TimeoutError(enhancedMessage, timeout, {
           provider: this.provider,
-          imagePath
+          imagePath,
+          attempts: attempts || 1
         });
       }
       
-      // Re-throw ProviderError and FileError as-is
-      if (error instanceof ProviderError || error instanceof FileError || error instanceof TimeoutError) {
+      // Re-throw ProviderError with enhanced context
+      if (error instanceof ProviderError) {
+        const enhancedMessage = enhanceErrorMessage(error, attempts || 1, 'judgeScreenshot');
+        throw new ProviderError(enhancedMessage, this.provider, {
+          ...error.details,
+          imagePath,
+          prompt: prompt.substring(0, 100),
+          attempts: attempts || 1
+        });
+      }
+      
+      // Re-throw FileError and TimeoutError as-is (already have context)
+      if (error instanceof FileError || error instanceof TimeoutError) {
         throw error;
       }
       
-      // For other errors, return error object (backward compatibility)
+      // For other errors, enhance message and return error object (backward compatibility)
+      const enhancedMessage = enhanceErrorMessage(error, attempts || 1, 'judgeScreenshot');
       return {
         enabled: true,
         provider: this.provider,
-        error: error.message,
+        error: enhancedMessage,
         judgment: 'No response',
         score: null,
         issues: [],
         assessment: null,
-        reasoning: `API call failed: ${error.message}`,
+        reasoning: `API call failed: ${enhancedMessage}`,
         responseTime: Date.now() - startTime,
-        pricing: this.providerConfig.pricing
+        pricing: this.providerConfig.pricing,
+        attempts: attempts || 1
       };
     }
   }

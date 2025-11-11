@@ -63,6 +63,22 @@ function decodeHex(str) {
   }
 }
 
+// Decode Unicode escape sequences
+function decodeUnicode(str) {
+  try {
+    return str.replace(/\\u([0-9a-fA-F]{4})/g, (match, code) => {
+      return String.fromCharCode(parseInt(code, 16));
+    });
+  } catch {
+    return null;
+  }
+}
+
+// Reverse a string
+function reverseString(str) {
+  return str.split('').reverse().join('');
+}
+
 // Check if a string looks like base64
 function looksLikeBase64(str) {
   if (str.length < 10) return false;
@@ -190,6 +206,20 @@ const SECRET_PATTERNS = [
   { pattern: /(atob|Buffer\.from|btoa)\s*\(['"]([A-Za-z0-9+/=]{20,})['"]/i, name: 'Base64 Decode Function', checkDecode: true },
   { pattern: /Buffer\.from\s*\(['"]([0-9a-fA-F]{20,})['"],\s*['"]hex['"]/i, name: 'Hex Decode Function', checkDecode: true },
   { pattern: /['"]([A-Za-z0-9+/=]{40,})['"]\s*\.(toString|split|join)/i, name: 'Potential Obfuscated Secret', checkDecode: true },
+  
+  // Standalone hex-encoded secrets (40+ chars, high entropy)
+  { pattern: /['"]?([0-9a-fA-F]{40,})['"]?\s*[,;}\]]/, name: 'Potential Hex-encoded Secret', checkDecode: true, checkEntropy: true },
+  
+  // String manipulation patterns (reverse, split/join, substring)
+  { pattern: /['"]([a-zA-Z0-9_\-]{20,})['"]\s*\.split\(['"]\s*['"]\)\s*\.reverse\(\)\s*\.join\(['"]\s*['"]\)/i, name: 'String Reversal Obfuscation', checkDecode: true },
+  { pattern: /['"]([a-zA-Z0-9_\-]{20,})['"]\s*\.split\(['"]\s*['"]\)\s*\.join\(['"]\s*['"]\)/i, name: 'String Split/Join Obfuscation', checkDecode: true },
+  { pattern: /\.substring\([^)]+\)\s*\+\s*\.substring\([^)]+\)/i, name: 'Substring Concatenation Obfuscation' },
+  
+  // Unicode escape sequences
+  { pattern: /\\u[0-9a-fA-F]{4}/g, name: 'Unicode Escape Sequence', checkUnicode: true },
+  
+  // Template literals with expressions
+  { pattern: /`[^`]*\$\{[^}]+\}[^`]*`/, name: 'Template Literal with Expression', checkTemplate: true },
   
   // Variable names that might contain secrets (broader pattern)
   { pattern: /(credential|cred|auth|key|secret|token|password|passwd|pwd)\s*[:=]\s*['"]?([a-zA-Z0-9_\-/+=]{20,})['"]?/i, name: 'Credential Variable', checkEntropy: true },
@@ -381,6 +411,20 @@ function detectSecretsInFile(filepath, secretsIgnore) {
               } else if (looksLikeHex(secretValue)) {
                 const decoded = decodeHex(secretValue);
                 checkDecodedValue(decoded, secretValue, line, lineNum, filepath, issues);
+              } else {
+                // Try reversing the string (common obfuscation)
+                const reversed = reverseString(secretValue);
+                if (hasHighEntropy(reversed, 3.0) && reversed.length >= 20) {
+                  checkDecodedValue(reversed, secretValue, line, lineNum, filepath, issues);
+                }
+              }
+            }
+            
+            // Check Unicode escapes
+            if (pattern.source.includes('checkUnicode') || /\\u[0-9a-fA-F]{4}/.test(secretValue)) {
+              const unicodeDecoded = decodeUnicode(secretValue);
+              if (unicodeDecoded && unicodeDecoded !== secretValue) {
+                checkDecodedValue(unicodeDecoded, secretValue, line, lineNum, filepath, issues);
               }
             }
             
@@ -420,23 +464,92 @@ function detectSecretsInFile(filepath, secretsIgnore) {
       }
     });
     
-    // Check for multi-line string concatenation
-    const concatPattern = /(['"])([a-zA-Z0-9_\-]{10,})\1\s*\+\s*(['"])([a-zA-Z0-9_\-]{10,})\3/g;
-    let concatMatch;
-    let lineNum = 0;
-    for (const line of lines) {
-      lineNum++;
+    // Enhanced multi-line string concatenation detection
+    // Track string concatenation across multiple lines
+    let concatBuffer = [];
+    let concatStartLine = 0;
+    for (let lineNum = 0; lineNum < lines.length; lineNum++) {
+      const line = lines[lineNum];
+      
+      // Check for string concatenation patterns
+      const concatPattern = /(['"])([a-zA-Z0-9_\-]{10,})\1\s*\+\s*(['"])([a-zA-Z0-9_\-]{10,})\3/g;
+      let concatMatch;
       while ((concatMatch = concatPattern.exec(line)) !== null) {
         const combined = concatMatch[2] + concatMatch[4];
         if (hasHighEntropy(combined) && combined.length >= 20) {
           if (!isAllowedMatch(concatMatch, line, filepath, secretsIgnore)) {
             issues.push({
               file: filepath,
-              line: lineNum,
+              line: lineNum + 1,
               type: 'Potential Secret (string concatenation)',
               match: combined.substring(0, 8) + '...',
               context: line.trim().substring(0, 100),
               entropy: calculateEntropy(combined).toFixed(2),
+            });
+          }
+        }
+      }
+      
+      // Track multi-line concatenation
+      const multiLineConcat = /['"]([^'"]{10,})['"]\s*\+/;
+      if (multiLineConcat.test(line)) {
+        const match = line.match(multiLineConcat);
+        if (match) {
+          if (concatBuffer.length === 0) concatStartLine = lineNum + 1;
+          concatBuffer.push(match[1]);
+        }
+      } else if (concatBuffer.length > 0) {
+        // End of concatenation - check combined value
+        const combined = concatBuffer.join('');
+        if (hasHighEntropy(combined, 3.0) && combined.length >= 20) {
+          const fullContext = lines.slice(Math.max(0, concatStartLine - 1), lineNum + 1).join(' ').trim();
+          if (!isAllowedMatch({}, fullContext, filepath, secretsIgnore)) {
+            issues.push({
+              file: filepath,
+              line: concatStartLine,
+              type: 'Potential Secret (multi-line concatenation)',
+              match: combined.substring(0, 8) + '...',
+              context: fullContext.substring(0, 100),
+              entropy: calculateEntropy(combined).toFixed(2),
+            });
+          }
+        }
+        concatBuffer = [];
+      }
+      
+      // Check for string manipulation patterns
+      const reversePattern = /['"]([a-zA-Z0-9_\-]{20,})['"]\s*\.split\(['"]\s*['"]\)\s*\.reverse\(\)\s*\.join\(['"]\s*['"]\)/i;
+      const reverseMatch = line.match(reversePattern);
+      if (reverseMatch) {
+        const reversed = reverseString(reverseMatch[1]);
+        if (hasHighEntropy(reversed, 3.0) && reversed.length >= 20) {
+          checkDecodedValue(reversed, reverseMatch[1], line, lineNum, filepath, issues);
+        }
+      }
+      
+      // Check for Unicode escapes
+      if (/\\u[0-9a-fA-F]{4}/.test(line)) {
+        const unicodeDecoded = decodeUnicode(line);
+        if (unicodeDecoded && unicodeDecoded !== line) {
+          checkDecodedValue(unicodeDecoded, line, line, lineNum, filepath, issues);
+        }
+      }
+      
+      // Check template literals
+      const templatePattern = /`([^`]*)\$\{([^}]+)\}([^`]*)`/g;
+      let templateMatch;
+      while ((templateMatch = templatePattern.exec(line)) !== null) {
+        // Check if template literal contains high-entropy content
+        const templateContent = templateMatch[1] + templateMatch[2] + templateMatch[3];
+        if (hasHighEntropy(templateContent, 3.0) && templateContent.length >= 20) {
+          if (!isAllowedMatch(templateMatch, line, filepath, secretsIgnore)) {
+            issues.push({
+              file: filepath,
+              line: lineNum + 1,
+              type: 'Potential Secret (template literal)',
+              match: templateContent.substring(0, 8) + '...',
+              context: line.trim().substring(0, 100),
+              entropy: calculateEntropy(templateContent).toFixed(2),
             });
           }
         }

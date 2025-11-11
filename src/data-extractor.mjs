@@ -17,7 +17,7 @@ loadEnv();
 // Use shared LLM utility library for text-only calls (optional dependency)
 // Note: This module uses Claude Sonnet (advanced tier) for data extraction
 // which requires higher quality than simple validation tasks
-import { callLLM as callLLMUtil, extractJSON } from '@arclabs561/llm-utils';
+// Import is handled dynamically to make it optional
 
 /**
  * Extract structured data from text using multiple strategies

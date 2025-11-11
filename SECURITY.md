@@ -71,9 +71,14 @@ We will acknowledge receipt within 48 hours and provide an update on the status 
 
 ### API Endpoint (`/api/validate`)
 
-- **No authentication by default** - Add authentication for production use
-- **No rate limiting** - Implement rate limiting for public APIs
-- **Error messages** - May expose internal details (sanitize in production)
+- **Authentication** - Optional API key authentication via `API_KEY` or `VLLM_API_KEY` environment variable
+  - Set `REQUIRE_AUTH=true` to enforce authentication
+  - API key can be provided via `X-API-Key` header or `Authorization: Bearer <key>` header
+- **Rate Limiting** - Built-in rate limiting (10 requests/minute by default, configurable via `RATE_LIMIT_MAX_REQUESTS`)
+  - Rate limit headers: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`
+  - Returns 429 status when limit exceeded
+  - Uses in-memory store (use Redis for production multi-instance deployments)
+- **Error messages** - Sanitized to prevent information leakage
 
 ### File Operations
 
@@ -87,13 +92,15 @@ We will acknowledge receipt within 48 hours and provide an update on the status 
 
 ## Security Features
 
-- ✅ Pre-commit secret detection
+- ✅ Pre-commit secret detection (enhanced with red team recommendations)
 - ✅ Git history scanning option
 - ✅ Zero runtime dependencies
-- ✅ Input validation (partial)
-- ✅ Error handling (partial)
-- ⚠️ Rate limiting (missing - add for production)
-- ⚠️ Authentication (missing - add for production)
+- ✅ Input validation
+- ✅ Error handling with sanitization
+- ✅ Rate limiting (configurable, in-memory or Redis)
+- ✅ Authentication (optional API key)
+- ✅ Path traversal protection
+- ✅ Size limits on all inputs
 
 ## Changelog
 

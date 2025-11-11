@@ -11,6 +11,10 @@ import { normalize, resolve } from 'path';
 
 /**
  * Validate image file path
+ * 
+ * @param {string} imagePath - Path to image file
+ * @returns {true} Always returns true if valid
+ * @throws {ValidationError} If path is invalid, empty, or contains path traversal
  */
 export function validateImagePath(imagePath) {
   if (typeof imagePath !== 'string') {
@@ -48,6 +52,11 @@ export function validateImagePath(imagePath) {
 
 /**
  * Validate prompt string
+ * 
+ * @param {string} prompt - Prompt text to validate
+ * @param {number} [maxLength=10000] - Maximum allowed length
+ * @returns {true} Always returns true if valid
+ * @throws {ValidationError} If prompt is invalid, empty, or too long
  */
 export function validatePrompt(prompt, maxLength = 10000) {
   if (typeof prompt !== 'string') {
@@ -72,6 +81,11 @@ export function validatePrompt(prompt, maxLength = 10000) {
 
 /**
  * Validate context object
+ * 
+ * @param {unknown} context - Context object to validate (can be null/undefined)
+ * @param {number} [maxSize=50000] - Maximum serialized size in bytes
+ * @returns {true} Always returns true if valid
+ * @throws {ValidationError} If context is invalid type, too large, or non-serializable
  */
 export function validateContext(context, maxSize = 50000) {
   if (context === null || context === undefined) {
@@ -107,6 +121,12 @@ export function validateContext(context, maxSize = 50000) {
 
 /**
  * Validate timeout value
+ * 
+ * @param {number} timeout - Timeout value in milliseconds
+ * @param {number} [min=1000] - Minimum allowed timeout
+ * @param {number} [max=300000] - Maximum allowed timeout
+ * @returns {true} Always returns true if valid
+ * @throws {ValidationError} If timeout is invalid, too short, or too long
  */
 export function validateTimeout(timeout, min = 1000, max = 300000) {
   if (typeof timeout !== 'number') {
@@ -134,6 +154,10 @@ export function validateTimeout(timeout, min = 1000, max = 300000) {
 
 /**
  * Validate schema object for data extraction
+ * 
+ * @param {unknown} schema - Schema object to validate
+ * @returns {true} Always returns true if valid
+ * @throws {ValidationError} If schema is invalid or has invalid field types
  */
 export function validateSchema(schema) {
   if (!schema || typeof schema !== 'object' || Array.isArray(schema)) {
@@ -164,6 +188,15 @@ export function validateSchema(schema) {
 
 /**
  * Validate file path (general purpose)
+ * 
+ * @param {string} filePath - File path to validate
+ * @param {{
+   *   mustExist?: boolean;
+   *   allowedExtensions?: string[] | null;
+   *   maxLength?: number;
+   * }} [options={}] - Validation options
+ * @returns {true} Always returns true if valid
+ * @throws {ValidationError} If path is invalid, empty, too long, has path traversal, wrong extension, or doesn't exist (if required)
  */
 export function validateFilePath(filePath, options = {}) {
   const {

@@ -24,6 +24,9 @@ let cacheInstance = null;
 
 /**
  * Initialize cache with directory
+ * 
+ * @param {string | undefined} [cacheDir] - Cache directory path, or undefined for default
+ * @returns {void}
  */
 export function initCache(cacheDir) {
   CACHE_DIR = cacheDir || join(__dirname, '..', '..', '..', 'test-results', 'vllm-cache');
@@ -38,6 +41,11 @@ export function initCache(cacheDir) {
 
 /**
  * Generate cache key from image path, prompt, and context
+ * 
+ * @param {string} imagePath - Path to image file
+ * @param {string} prompt - Validation prompt
+ * @param {import('./index.mjs').ValidationContext} [context={}] - Validation context
+ * @returns {string} SHA-256 hash of cache key
  */
 export function generateCacheKey(imagePath, prompt, context = {}) {
   const keyData = {
@@ -119,6 +127,11 @@ function getCache() {
 
 /**
  * Get cached result
+ * 
+ * @param {string} imagePath - Path to image file
+ * @param {string} prompt - Validation prompt
+ * @param {import('./index.mjs').ValidationContext} [context={}] - Validation context
+ * @returns {import('./index.mjs').ValidationResult | null} Cached result or null if not found
  */
 export function getCached(imagePath, prompt, context = {}) {
   const cache = getCache();
@@ -128,6 +141,12 @@ export function getCached(imagePath, prompt, context = {}) {
 
 /**
  * Set cached result
+ * 
+ * @param {string} imagePath - Path to image file
+ * @param {string} prompt - Validation prompt
+ * @param {import('./index.mjs').ValidationContext} context - Validation context
+ * @param {import('./index.mjs').ValidationResult} result - Validation result to cache
+ * @returns {void}
  */
 export function setCached(imagePath, prompt, context, result) {
   const cache = getCache();
@@ -138,6 +157,8 @@ export function setCached(imagePath, prompt, context, result) {
 
 /**
  * Clear cache
+ * 
+ * @returns {void}
  */
 export function clearCache() {
   const cache = getCache();
@@ -147,6 +168,8 @@ export function clearCache() {
 
 /**
  * Get cache statistics
+ * 
+ * @returns {import('./index.mjs').CacheStats} Cache statistics
  */
 export function getCacheStats() {
   const cache = getCache();

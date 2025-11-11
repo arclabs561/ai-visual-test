@@ -11,8 +11,19 @@
 
 /**
  * Batch Optimizer Class
+ * 
+ * Optimizes VLLM API calls by queueing requests and caching responses.
+ * 
+ * @class BatchOptimizer
  */
 export class BatchOptimizer {
+  /**
+   * @param {{
+   *   maxConcurrency?: number;
+   *   batchSize?: number;
+   *   cacheEnabled?: boolean;
+   * }} [options={}] - Optimizer options
+   */
   constructor(options = {}) {
     const {
       maxConcurrency = 5,
@@ -40,6 +51,11 @@ export class BatchOptimizer {
   
   /**
    * Batch validate multiple screenshots
+   * 
+   * @param {string | string[]} imagePaths - Single image path or array of image paths
+   * @param {string} prompt - Validation prompt
+   * @param {import('./index.mjs').ValidationContext} [context={}] - Validation context
+   * @returns {Promise<import('./index.mjs').ValidationResult[]>} Array of validation results
    */
   async batchValidate(imagePaths, prompt, context = {}) {
     if (!Array.isArray(imagePaths)) {
@@ -147,6 +163,8 @@ export class BatchOptimizer {
   
   /**
    * Clear cache (useful for testing)
+   * 
+   * @returns {void}
    */
   clearCache() {
     if (this.cache) {
@@ -156,6 +174,8 @@ export class BatchOptimizer {
   
   /**
    * Get cache stats
+   * 
+   * @returns {{ cacheSize: number; queueLength: number; activeRequests: number }} Cache statistics
    */
   getCacheStats() {
     return {

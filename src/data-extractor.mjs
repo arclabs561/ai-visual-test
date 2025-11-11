@@ -13,6 +13,16 @@ import { createConfig } from './config.mjs';
 
 /**
  * Extract structured data from text using multiple strategies
+ * 
+ * @param {string} text - Text to extract data from
+ * @param {Record<string, { type: string; [key: string]: unknown }>} schema - Schema definition for extraction
+ * @param {{
+ *   method?: 'json' | 'llm' | 'regex';
+ *   provider?: string;
+ *   apiKey?: string;
+ *   fallback?: 'llm' | 'regex' | 'json' | 'auto';
+ * }} [options={}] - Extraction options
+ * @returns {Promise<unknown>} Extracted structured data matching schema, or null if extraction fails
  */
 export async function extractStructuredData(text, schema, options = {}) {
   if (!text) return null;

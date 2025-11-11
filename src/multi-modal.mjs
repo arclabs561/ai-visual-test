@@ -15,8 +15,9 @@ import { ValidationError } from './errors.mjs';
 /**
  * Extract rendered HTML/CSS for code analysis
  * 
- * @param {Page} page - Playwright page object
- * @returns {Promise<Object>} Rendered code structure
+ * @param {any} page - Playwright page object
+ * @returns {Promise<import('./index.mjs').RenderedCode>} Rendered code structure
+ * @throws {ValidationError} If page is not a valid Playwright Page object
  */
 export async function extractRenderedCode(page) {
   if (!page || typeof page.evaluate !== 'function') {
@@ -120,10 +121,11 @@ export async function extractRenderedCode(page) {
 /**
  * Capture temporal screenshots (for animations)
  * 
- * @param {Page} page - Playwright page object
- * @param {number} fps - Frames per second to capture
- * @param {number} duration - Duration in milliseconds
- * @returns {Promise<Array>} Array of screenshot paths
+ * @param {any} page - Playwright page object
+ * @param {number} [fps=2] - Frames per second to capture
+ * @param {number} [duration=2000] - Duration in milliseconds
+ * @returns {Promise<import('./index.mjs').TemporalScreenshot[]>} Array of temporal screenshots
+ * @throws {ValidationError} If page is not a valid Playwright Page object
  */
 export async function captureTemporalScreenshots(page, fps = 2, duration = 2000) {
   if (!page || typeof page.screenshot !== 'function') {
@@ -152,12 +154,13 @@ export async function captureTemporalScreenshots(page, fps = 2, duration = 2000)
  * Multi-perspective evaluation
  * Multiple personas evaluate the same state
  * 
- * @param {Function} validateFn - Function to validate screenshot (e.g., validateScreenshot)
+ * @param {(path: string, prompt: string, context: import('./index.mjs').ValidationContext) => Promise<import('./index.mjs').ValidationResult>} validateFn - Function to validate screenshot
  * @param {string} screenshotPath - Path to screenshot
- * @param {Object} renderedCode - Rendered code structure
- * @param {Object} gameState - Game state (optional)
- * @param {Array} personas - Array of persona objects (optional)
- * @returns {Promise<Array>} Array of evaluations
+ * @param {import('./index.mjs').RenderedCode} renderedCode - Rendered code structure
+ * @param {Record<string, unknown>} [gameState={}] - Game state (optional)
+ * @param {import('./index.mjs').Persona[] | null} [personas=null] - Array of persona objects (optional)
+ * @returns {Promise<import('./index.mjs').PerspectiveEvaluation[]>} Array of perspective evaluations
+ * @throws {ValidationError} If validateFn is not a function
  */
 export async function multiPerspectiveEvaluation(validateFn, screenshotPath, renderedCode, gameState = {}, personas = null) {
   if (!validateFn || typeof validateFn !== 'function') {
@@ -264,11 +267,28 @@ Provide evaluation from your persona's perspective.`;
 /**
  * Comprehensive multi-modal validation
  * 
- * @param {Function} validateFn - Function to validate screenshot
- * @param {Page} page - Playwright page object
+ * @param {(path: string, prompt: string, context: import('./index.mjs').ValidationContext) => Promise<import('./index.mjs').ValidationResult>} validateFn - Function to validate screenshot
+ * @param {any} page - Playwright page object
  * @param {string} testName - Test name
- * @param {Object} options - Options
- * @returns {Promise<Object>} Validation result
+ * @param {{
+ *   fps?: number;
+ *   duration?: number;
+ *   captureCode?: boolean;
+ *   captureState?: boolean;
+ *   multiPerspective?: boolean;
+ * }} [options={}] - Validation options
+ * @returns {Promise<{
+ *   screenshotPath: string;
+ *   renderedCode: import('./index.mjs').RenderedCode | null;
+ *   gameState: Record<string, unknown>;
+ *   temporalScreenshots: import('./index.mjs').TemporalScreenshot[];
+ *   perspectives: import('./index.mjs').PerspectiveEvaluation[];
+ *   codeValidation: Record<string, boolean>;
+ *   aggregatedScore: number | null;
+ *   aggregatedIssues: string[];
+ *   timestamp: number;
+ * }>} Comprehensive validation result
+ * @throws {ValidationError} If validateFn is not a function or page is invalid
  */
 export async function multiModalValidation(validateFn, page, testName, options = {}) {
   if (!validateFn || typeof validateFn !== 'function') {

@@ -13,9 +13,15 @@
 /**
  * Detect superficial feature bias in judgment
  * 
- * @param {Object} judgment - Judgment object or text
- * @param {Object} options - Detection options
- * @returns {Object} Bias detection results
+ * @param {string | object} judgment - Judgment object or text
+ * @param {{
+ *   checkVerbosity?: boolean;
+ *   checkLength?: boolean;
+ *   checkFormatting?: boolean;
+ *   checkPosition?: boolean;
+ *   checkAuthority?: boolean;
+ * }} [options={}] - Detection options
+ * @returns {import('./index.mjs').BiasDetectionResult} Bias detection results
  */
 export function detectBias(judgment, options = {}) {
   const {
@@ -208,10 +214,10 @@ function generateRecommendations(detectedBiases) {
 }
 
 /**
- * Check for position bias in multiple judgments
+ * Detect position bias in array of judgments
  * 
- * @param {Array} judgments - Array of judgment results
- * @returns {Object} Position bias detection results
+ * @param {Array<{ score: number | null }>} judgments - Array of judgment results with scores
+ * @returns {import('./index.mjs').PositionBiasResult} Position bias detection result
  */
 export function detectPositionBias(judgments) {
   if (judgments.length < 2) {

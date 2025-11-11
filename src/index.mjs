@@ -23,8 +23,8 @@ export { VLLMJudge, _validateScreenshot as validateScreenshot };
  * Utility function to parse VLLM responses into structured data.
  * Useful for custom implementations that need to parse judgment text.
  * 
- * @param {string|Object} judgment - Judgment text or object from VLLM
- * @returns {Object} Structured semantic information with score, issues, assessment, reasoning
+ * @param {string | object} judgment - Judgment text or object from VLLM
+ * @returns {import('./index.mjs').SemanticInfo} Structured semantic information with score, issues, assessment, reasoning
  */
 export function extractSemanticInfo(judgment) {
   // Create a temporary judge instance to access the method
@@ -99,4 +99,24 @@ export {
   EnsembleJudge,
   createEnsembleJudge
 } from './ensemble-judge.mjs';
+export {
+  isObject,
+  isString,
+  isNumber,
+  isArray,
+  isFunction,
+  isPromise,
+  isValidationResult,
+  isValidationContext,
+  isPersona,
+  isTemporalNote,
+  assertObject,
+  assertString,
+  assertNonEmptyString,
+  assertNumber,
+  assertArray,
+  assertFunction,
+  pick,
+  getProperty
+} from './type-guards.mjs';
 

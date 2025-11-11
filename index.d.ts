@@ -4,6 +4,61 @@
  * Provides type safety and IntelliSense support for the package.
  */
 
+// Utility Types
+/**
+ * Make specific properties optional
+ * @template T
+ * @template K
+ */
+export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
+/**
+ * Make specific properties required
+ * @template T
+ * @template K
+ */
+export type RequiredBy<T, K extends keyof T> = T & Required<Pick<T, K>>;
+
+/**
+ * Extract return type from a function
+ * @template T
+ */
+export type ReturnType<T extends (...args: any[]) => any> = T extends (...args: any[]) => infer R ? R : never;
+
+/**
+ * Extract parameter types from a function
+ * @template T
+ */
+export type Parameters<T extends (...args: any[]) => any> = T extends (...args: infer P) => any ? P : never;
+
+/**
+ * Deep partial - makes all nested properties optional
+ * @template T
+ */
+export type DeepPartial<T> = T extends object ? { [P in keyof T]?: DeepPartial<T[P]> } : T;
+
+/**
+ * Deep required - makes all nested properties required
+ * @template T
+ */
+export type DeepRequired<T> = T extends object ? { [P in keyof T]-?: DeepRequired<T[P]> } : T;
+
+/**
+ * Non-nullable - removes null and undefined from type
+ * @template T
+ */
+export type NonNullable<T> = T extends null | undefined ? never : T;
+
+/**
+ * Function type for validation functions
+ * @template T
+ */
+export type ValidationFunction<T = ValidationResult> = (
+  imagePath: string,
+  prompt: string,
+  context?: ValidationContext
+) => Promise<T>;
+
 // Error Types
 export class AIBrowserTestError extends Error {
   code: string;
@@ -102,7 +157,7 @@ export function detectPositionBias(judgments: Array<{ score: number | null }>): 
 
 // Ensemble Judging
 export interface EnsembleJudgeOptions {
-  judges?: Array<any>;
+  judges?: Array<VLLMJudge>;
   votingMethod?: 'weighted_average' | 'majority' | 'consensus';
   weights?: number[];
   minAgreement?: number;
@@ -162,7 +217,30 @@ export interface ValidationContext {
   gameState?: Record<string, unknown>;
   useCache?: boolean;
   timeout?: number;
+  useRubric?: boolean;
+  includeDimensions?: boolean;
+  url?: string;
+  description?: string;
+  step?: string;
   promptBuilder?: (prompt: string, context: ValidationContext) => string;
+}
+
+export interface EstimatedCost {
+  inputTokens: number;
+  outputTokens: number;
+  inputCost: string;
+  outputCost: string;
+  totalCost: string;
+  currency: string;
+}
+
+export interface SemanticInfo {
+  score: number | null;
+  issues: string[];
+  assessment: string | null;
+  reasoning: string;
+  brutalistViolations?: string[];
+  zeroToleranceViolations?: string[];
 }
 
 export interface ValidationResult {
@@ -172,28 +250,18 @@ export interface ValidationResult {
   issues: string[];
   assessment: string | null;
   reasoning: string;
-  estimatedCost?: {
-    inputTokens: number;
-    outputTokens: number;
-    inputCost: string;
-    outputCost: string;
-    totalCost: string;
-    currency: string;
-  } | null;
+  estimatedCost?: EstimatedCost | null;
   responseTime: number;
   cached?: boolean;
   judgment?: string;
   raw?: unknown;
-  semantic?: {
-    score: number | null;
-    issues: string[];
-    assessment: string | null;
-    reasoning: string;
-    brutalistViolations?: string[];
-    zeroToleranceViolations?: string[];
-  };
+  semantic?: SemanticInfo;
   error?: string;
   message?: string;
+  pricing?: { input: number; output: number };
+  timestamp?: string;
+  testName?: string;
+  viewport?: { width: number; height: number } | null;
 }
 
 export interface ConfigOptions {
@@ -242,22 +310,8 @@ export class VLLMJudge {
   
   imageToBase64(imagePath: string): string;
   buildPrompt(prompt: string, context: ValidationContext): string;
-  extractSemanticInfo(judgment: string | object): {
-    score: number | null;
-    issues: string[];
-    assessment: string | null;
-    reasoning: string;
-    brutalistViolations?: string[];
-    zeroToleranceViolations?: string[];
-  };
-  estimateCost(data: unknown, provider: string): {
-    inputTokens: number;
-    outputTokens: number;
-    inputCost: string;
-    outputCost: string;
-    totalCost: string;
-    currency: string;
-  } | null;
+  extractSemanticInfo(judgment: string | object): SemanticInfo;
+  estimateCost(data: unknown, provider: string): EstimatedCost | null;
   judgeScreenshot(imagePath: string, prompt: string, context?: ValidationContext): Promise<ValidationResult>;
 }
 
@@ -268,14 +322,7 @@ export function validateScreenshot(
   context?: ValidationContext
 ): Promise<ValidationResult>;
 
-export function extractSemanticInfo(judgment: string | object): {
-  score: number | null;
-  issues: string[];
-  assessment: string | null;
-  reasoning: string;
-  brutalistViolations?: string[];
-  zeroToleranceViolations?: string[];
-};
+export function extractSemanticInfo(judgment: string | object): SemanticInfo;
 
 // Multi-Modal Types
 export interface RenderedCode {
@@ -321,14 +368,14 @@ export function captureTemporalScreenshots(
   duration?: number
 ): Promise<TemporalScreenshot[]>;
 export function multiPerspectiveEvaluation(
-  validateFn: (path: string, prompt: string, context: ValidationContext) => Promise<ValidationResult>,
+  validateFn: ValidationFunction,
   screenshotPath: string,
   renderedCode: RenderedCode,
   gameState?: Record<string, unknown>,
   personas?: Persona[] | null
 ): Promise<PerspectiveEvaluation[]>;
 export function multiModalValidation(
-  validateFn: (path: string, prompt: string, context: ValidationContext) => Promise<ValidationResult>,
+  validateFn: ValidationFunction,
   page: any,
   testName: string,
   options?: {
@@ -428,12 +475,13 @@ export function loadEnv(basePath?: string | null): void;
 
 // ScoreTracker Class
 export class ScoreTracker {
-  constructor(options?: { historyLimit?: number });
-  record(score: number, metadata?: Record<string, unknown>): void;
-  getBaseline(): number | null;
-  getCurrent(): number | null;
-  compare(): { improved: boolean; delta: number; percentage: number } | null;
-  updateBaseline(): void;
+  constructor(options?: { baselineDir?: string; autoSave?: boolean });
+  record(testName: string, score: number, metadata?: Record<string, unknown>): { score: number; timestamp: string; metadata: Record<string, unknown> };
+  getBaseline(testName: string): number | null;
+  getCurrent(testName: string): number | null;
+  compare(testName: string, currentScore: number): { hasBaseline: boolean; baseline: number | null; current: number; improved: boolean; delta: number; percentage: number; regression?: boolean; trend?: string; history?: Array<{ score: number; timestamp: string; metadata?: Record<string, unknown> }> } | null;
+  updateBaseline(testName: string, newBaseline?: number | null): boolean;
+  getAll(): Record<string, { history: Array<{ score: number; timestamp: string; metadata?: Record<string, unknown> }>; current: number | null; baseline: number | null; firstRecorded: string; lastUpdated: string; baselineSetAt?: string }>;
   getStats(): {
     current: number | null;
     baseline: number | null;
@@ -441,23 +489,21 @@ export class ScoreTracker {
     average: number | null;
     min: number | null;
     max: number | null;
+    totalTests?: number;
+    testsWithBaselines?: number;
+    testsWithRegressions?: number;
+    testsWithImprovements?: number;
+    averageScore?: number;
+    averageBaseline?: number;
   };
 }
 
 // BatchOptimizer Class
 export class BatchOptimizer {
-  constructor();
-  queueRequest<T>(
-    validateFn: (...args: any[]) => Promise<T>,
-    ...args: any[]
-  ): Promise<T>;
-  flush(): Promise<void>;
-  getStats(): {
-    queued: number;
-    processing: number;
-    completed: number;
-    failed: number;
-  };
+  constructor(options?: { maxConcurrency?: number; batchSize?: number; cacheEnabled?: boolean });
+  batchValidate(imagePaths: string | string[], prompt: string, context?: ValidationContext): Promise<ValidationResult[]>;
+  clearCache(): void;
+  getCacheStats(): { cacheSize: number; queueLength: number; activeRequests: number };
 }
 
 // Data Extractor
@@ -533,4 +579,74 @@ export function experiencePageWithPersonas(
   personas: Persona[],
   options?: PersonaExperienceOptions
 ): Promise<PersonaExperienceResult[]>;
+
+// Type Guards
+export function isObject<T>(value: unknown): value is Record<string, T>;
+export function isString(value: unknown): value is string;
+export function isNumber(value: unknown): value is number;
+export function isPositiveInteger(value: unknown): value is number;
+export function isNonEmptyString(value: unknown): value is string;
+export function isArray<T>(value: unknown): value is T[];
+export function isFunction(value: unknown): value is Function;
+export function isPromise<T>(value: unknown): value is Promise<T>;
+export function isValidationResult(value: unknown): value is ValidationResult;
+export function isValidationContext(value: unknown): value is ValidationContext;
+export function isPersona(value: unknown): value is Persona;
+export function isTemporalNote(value: unknown): value is TemporalNote;
+
+// Type Assertions
+export function assertObject<T>(value: unknown, name?: string): asserts value is Record<string, T>;
+export function assertString(value: unknown, name?: string): asserts value is string;
+export function assertNonEmptyString(value: unknown, name?: string): asserts value is string;
+export function assertNumber(value: unknown, name?: string): asserts value is number;
+export function assertArray<T>(value: unknown, name?: string): asserts value is T[];
+export function assertFunction(value: unknown, name?: string): asserts value is Function;
+
+// Utility Functions
+export function pick<T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K>;
+export function getProperty<T, D>(obj: T, key: string, defaultValue: D): T[keyof T] | D;
+
+// Experience Tracer
+export class ExperienceTrace {
+  constructor(sessionId: string, persona?: Persona | null);
+  sessionId: string;
+  persona: Persona | null;
+  startTime: number;
+  events: Array<Record<string, unknown>>;
+  validations: Array<Record<string, unknown>>;
+  screenshots: Array<Record<string, unknown>>;
+  stateHistory: Array<Record<string, unknown>>;
+  aggregatedNotes: AggregatedTemporalNotes | null;
+  metaEvaluation: Record<string, unknown> | null;
+  
+  addEvent(type: string, data: Record<string, unknown>, timestamp?: number | null): Record<string, unknown>;
+  addValidation(validation: ValidationResult, context?: Record<string, unknown>): Record<string, unknown>;
+  addScreenshot(path: string, step: string, metadata?: Record<string, unknown>): Record<string, unknown>;
+  addStateSnapshot(state: Record<string, unknown>, label?: string): Record<string, unknown>;
+  aggregateNotes(
+    aggregateTemporalNotes: (notes: TemporalNote[], options?: Record<string, unknown>) => AggregatedTemporalNotes,
+    options?: Record<string, unknown>
+  ): AggregatedTemporalNotes;
+  getSummary(): Record<string, unknown>;
+  getFullTrace(): Record<string, unknown>;
+  exportToJSON(filePath: string): Promise<void>;
+}
+
+export class ExperienceTracerManager {
+  constructor();
+  createTrace(sessionId: string, persona?: Persona | null): ExperienceTrace;
+  getTrace(sessionId: string): ExperienceTrace | null;
+  getAllTraces(): ExperienceTrace[];
+  metaEvaluateTrace(
+    sessionId: string,
+    validateScreenshot: ValidationFunction
+  ): Promise<Record<string, unknown>>;
+  getMetaEvaluationSummary(): {
+    totalEvaluations: number;
+    averageQuality: number | null;
+    evaluations?: Array<Record<string, unknown>>;
+  };
+}
+
+export function getTracerManager(): ExperienceTracerManager;
 

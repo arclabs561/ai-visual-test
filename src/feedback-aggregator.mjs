@@ -8,6 +8,9 @@
 
 /**
  * Aggregate judge feedback from multiple test runs
+ * 
+ * @param {import('./index.mjs').ValidationResult[]} judgeResults - Array of validation results
+ * @returns {import('./index.mjs').AggregatedFeedback} Aggregated feedback with statistics and recommendations
  */
 export function aggregateFeedback(judgeResults) {
   const aggregated = {
@@ -183,7 +186,10 @@ function generateSummary(aggregated, stats) {
 }
 
 /**
- * Generate improvement recommendations from aggregated feedback
+ * Generate recommendations from aggregated feedback
+ * 
+ * @param {import('./index.mjs').AggregatedFeedback} aggregated - Aggregated feedback
+ * @returns {string[]} Array of recommendation strings
  */
 export function generateRecommendations(aggregated) {
   const recommendations = [];

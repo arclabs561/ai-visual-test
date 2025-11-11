@@ -679,7 +679,10 @@ async function analyzeDocBloat() {
   
   // Use archive comparison to identify files that match archived patterns
   if (archiveComparison && archiveComparison.matches.length > 0) {
+    // Show all matches, but prioritize high confidence ones
     const highConfidenceMatches = archiveComparison.matches.filter(m => m.confidence >= 2);
+    const mediumConfidenceMatches = archiveComparison.matches.filter(m => m.confidence === 1);
+    
     if (highConfidenceMatches.length > 0) {
       issues.push({
         type: 'archive_pattern_match',
@@ -689,6 +692,18 @@ async function analyzeDocBloat() {
           reasons: m.reasons,
         })),
         suggestion: 'These files match patterns of previously archived documents and should be archived',
+      });
+    }
+    
+    if (mediumConfidenceMatches.length > 0) {
+      warnings.push({
+        type: 'archive_pattern_match_weak',
+        message: `Found ${mediumConfidenceMatches.length} file(s) with potential matches to archived patterns`,
+        files: mediumConfidenceMatches.map(m => ({
+          name: m.file,
+          reasons: m.reasons,
+        })),
+        suggestion: 'Consider reviewing these files - they may match patterns of archived documents',
       });
     }
     
@@ -829,6 +844,12 @@ async function main() {
           console.error(`     Common suffixes: ${warning.topSuffixes.join(', ')}`);
         }
       }
+      if (warning.type === 'archive_pattern_match_weak') {
+        console.error('   Archive pattern matches:');
+        warning.files.forEach(f => {
+          console.error(`     - ${f.name}: ${f.reasons.join(', ')}`);
+        });
+      }
       if (warning.suggestion) {
         console.error(`   💡 ${warning.suggestion}`);
       }
@@ -857,10 +878,16 @@ async function main() {
   return 0;
 }
 
-// Run if executed directly
-if (import.meta.url === `file://${process.argv[1]}` || process.argv[1]?.endsWith('check-docs-bloat.mjs')) {
+// Run if executed directly (check if this file is being run, not imported)
+const runningAsScript = process.argv[1] && (
+  process.argv[1].includes('check-docs-bloat.mjs') ||
+  fileURLToPath(import.meta.url) === process.argv[1]
+);
+
+if (runningAsScript) {
   main().then(code => process.exit(code)).catch(error => {
     console.error('Error:', error.message);
+    if (error.stack) console.error(error.stack);
     process.exit(1);
   });
 }

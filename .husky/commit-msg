@@ -1,0 +1,59 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Commit message validation
+# Enforces conventional commits format: type(scope): subject
+# Examples: feat: add new feature, fix: resolve bug, docs: update README
+
+COMMIT_MSG_FILE=$1
+
+# Use Node.js validator if available (more sophisticated)
+if [ -f "scripts/validate-commit-msg.mjs" ]; then
+  node scripts/validate-commit-msg.mjs "$COMMIT_MSG_FILE" || exit 1
+  exit 0
+fi
+
+# Fallback to shell-based validation
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+# Skip validation for merge commits, revert commits, and fixup/squash commits
+if echo "$COMMIT_MSG" | grep -qE "^Merge |^Revert |^fixup!|^squash!"; then
+  exit 0
+fi
+
+# Conventional commit pattern: type(scope): subject
+# Types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert
+CONVENTIONAL_PATTERN="^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?: .{1,}"
+
+if ! echo "$COMMIT_MSG" | grep -qE "$CONVENTIONAL_PATTERN"; then
+  echo "❌ Invalid commit message format"
+  echo ""
+  echo "Commit messages must follow conventional commits format:"
+  echo "  type(scope): subject"
+  echo ""
+  echo "Types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert"
+  echo ""
+  echo "Examples:"
+  echo "  feat: add documentation bloat checker"
+  echo "  fix(judge): handle API errors gracefully"
+  echo "  docs: update README with usage examples"
+  echo "  test: add unit tests for cache module"
+  echo ""
+  echo "Your message:"
+  echo "  $COMMIT_MSG"
+  echo ""
+  exit 1
+fi
+
+# Warn about very short or very long subject lines
+SUBJECT=$(echo "$COMMIT_MSG" | head -1 | sed 's/.*: //')
+SUBJECT_LEN=${#SUBJECT}
+
+if [ "$SUBJECT_LEN" -lt 10 ]; then
+  echo "⚠️  Warning: Commit subject is very short (${SUBJECT_LEN} chars). Consider being more descriptive."
+fi
+
+if [ "$SUBJECT_LEN" -gt 72 ]; then
+  echo "⚠️  Warning: Commit subject is long (${SUBJECT_LEN} chars). Consider keeping it under 72 characters."
+fi
+

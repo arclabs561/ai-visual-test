@@ -1,0 +1,328 @@
+#!/usr/bin/env node
+/**
+ * Evaluation Metrics
+ * 
+ * Standard metrics for evaluating VLLM judgments against ground truth:
+ * - Precision, Recall, F1 Score
+ * - Accuracy
+ * - Cohen's Kappa (inter-judge agreement)
+ * - Mean Absolute Error (MAE) for scores
+ * - Root Mean Squared Error (RMSE) for scores
+ */
+
+/**
+ * Calculate confusion matrix for binary classification
+ */
+export function calculateConfusionMatrix(predictions, groundTruth, threshold = 0.5) {
+  let tp = 0, fp = 0, tn = 0, fn = 0;
+  
+  for (let i = 0; i < predictions.length; i++) {
+    const pred = predictions[i] >= threshold ? 1 : 0;
+    const truth = groundTruth[i] >= threshold ? 1 : 0;
+    
+    if (pred === 1 && truth === 1) tp++;
+    else if (pred === 1 && truth === 0) fp++;
+    else if (pred === 0 && truth === 0) tn++;
+    else if (pred === 0 && truth === 1) fn++;
+  }
+  
+  return { tp, fp, tn, fn };
+}
+
+/**
+ * Calculate precision
+ */
+export function calculatePrecision(confusionMatrix) {
+  const { tp, fp } = confusionMatrix;
+  if (tp + fp === 0) return 0;
+  return tp / (tp + fp);
+}
+
+/**
+ * Calculate recall (sensitivity)
+ */
+export function calculateRecall(confusionMatrix) {
+  const { tp, fn } = confusionMatrix;
+  if (tp + fn === 0) return 0;
+  return tp / (tp + fn);
+}
+
+/**
+ * Calculate F1 score
+ */
+export function calculateF1Score(precision, recall) {
+  if (precision + recall === 0) return 0;
+  return 2 * (precision * recall) / (precision + recall);
+}
+
+/**
+ * Calculate accuracy
+ */
+export function calculateAccuracy(confusionMatrix) {
+  const { tp, fp, tn, fn } = confusionMatrix;
+  const total = tp + fp + tn + fn;
+  if (total === 0) return 0;
+  return (tp + tn) / total;
+}
+
+/**
+ * Calculate Mean Absolute Error (MAE) for scores
+ */
+export function calculateMAE(predictions, groundTruth) {
+  if (predictions.length !== groundTruth.length) {
+    throw new Error('Predictions and ground truth must have same length');
+  }
+  
+  let sum = 0;
+  let count = 0;
+  
+  for (let i = 0; i < predictions.length; i++) {
+    if (predictions[i] !== null && groundTruth[i] !== null) {
+      sum += Math.abs(predictions[i] - groundTruth[i]);
+      count++;
+    }
+  }
+  
+  return count > 0 ? sum / count : 0;
+}
+
+/**
+ * Calculate Root Mean Squared Error (RMSE) for scores
+ */
+export function calculateRMSE(predictions, groundTruth) {
+  if (predictions.length !== groundTruth.length) {
+    throw new Error('Predictions and ground truth must have same length');
+  }
+  
+  let sum = 0;
+  let count = 0;
+  
+  for (let i = 0; i < predictions.length; i++) {
+    if (predictions[i] !== null && groundTruth[i] !== null) {
+      const diff = predictions[i] - groundTruth[i];
+      sum += diff * diff;
+      count++;
+    }
+  }
+  
+  return count > 0 ? Math.sqrt(sum / count) : 0;
+}
+
+/**
+ * Calculate Cohen's Kappa for inter-judge agreement
+ */
+export function calculateCohensKappa(judge1, judge2) {
+  if (judge1.length !== judge2.length) {
+    throw new Error('Judges must have same number of evaluations');
+  }
+  
+  // Create confusion matrix
+  const categories = [...new Set([...judge1, ...judge2])].sort();
+  const n = judge1.length;
+  const matrix = {};
+  
+  // Initialize matrix
+  categories.forEach(cat1 => {
+    matrix[cat1] = {};
+    categories.forEach(cat2 => {
+      matrix[cat1][cat2] = 0;
+    });
+  });
+  
+  // Count agreements
+  let agreements = 0;
+  for (let i = 0; i < n; i++) {
+    matrix[judge1[i]][judge2[i]]++;
+    if (judge1[i] === judge2[i]) {
+      agreements++;
+    }
+  }
+  
+  // Calculate observed agreement
+  const po = agreements / n;
+  
+  // Calculate expected agreement
+  let pe = 0;
+  categories.forEach(cat => {
+    const judge1Count = judge1.filter(j => j === cat).length;
+    const judge2Count = judge2.filter(j => j === cat).length;
+    pe += (judge1Count / n) * (judge2Count / n);
+  });
+  
+  // Calculate Kappa
+  if (pe === 1) return 1; // Perfect agreement
+  return (po - pe) / (1 - pe);
+}
+
+/**
+ * Calculate issue detection metrics
+ * Compares detected issues against ground truth issues
+ */
+export function calculateIssueMetrics(detectedIssues, groundTruthIssues) {
+  // Convert to sets for easier comparison
+  const detectedSet = new Set(detectedIssues.map(i => i.toLowerCase().trim()));
+  const groundTruthSet = new Set(groundTruthIssues.map(i => i.toLowerCase().trim()));
+  
+  // True positives: issues found in both
+  const tp = [...detectedSet].filter(i => groundTruthSet.has(i)).length;
+  
+  // False positives: issues detected but not in ground truth
+  const fp = [...detectedSet].filter(i => !groundTruthSet.has(i)).length;
+  
+  // False negatives: issues in ground truth but not detected
+  const fn = [...groundTruthSet].filter(i => !detectedSet.has(i)).length;
+  
+  // True negatives: not applicable for issue detection (no clear negative class)
+  
+  const precision = tp + fp > 0 ? tp / (tp + fp) : 0;
+  const recall = tp + fn > 0 ? tp / (tp + fn) : 0;
+  const f1 = precision + recall > 0 ? 2 * (precision * recall) / (precision + recall) : 0;
+  
+  return {
+    tp,
+    fp,
+    fn,
+    precision,
+    recall,
+    f1,
+    detectedCount: detectedIssues.length,
+    groundTruthCount: groundTruthIssues.length
+  };
+}
+
+/**
+ * Calculate comprehensive evaluation metrics
+ */
+export function calculateAllMetrics(evaluations) {
+  const metrics = {
+    scores: {
+      predictions: [],
+      groundTruth: []
+    },
+    issues: {
+      allDetected: [],
+      allGroundTruth: []
+    },
+    confusionMatrix: null,
+    scoreMetrics: {},
+    issueMetrics: {},
+    agreement: {}
+  };
+  
+  // Extract scores and issues
+  evaluations.forEach(evaluation => {
+    if (evaluation.result && evaluation.groundTruth) {
+      // Scores
+      if (evaluation.result.score !== null && evaluation.groundTruth.expectedScore) {
+        const expectedScore = (evaluation.groundTruth.expectedScore.min + evaluation.groundTruth.expectedScore.max) / 2;
+        metrics.scores.predictions.push(evaluation.result.score);
+        metrics.scores.groundTruth.push(expectedScore);
+      }
+      
+      // Issues
+      if (evaluation.result.issues) {
+        metrics.issues.allDetected.push(...evaluation.result.issues);
+      }
+      if (evaluation.groundTruth.expectedIssues) {
+        metrics.issues.allGroundTruth.push(...evaluation.groundTruth.expectedIssues);
+      }
+    }
+  });
+  
+  // Calculate score metrics
+  if (metrics.scores.predictions.length > 0) {
+    metrics.scoreMetrics = {
+      mae: calculateMAE(metrics.scores.predictions, metrics.scores.groundTruth),
+      rmse: calculateRMSE(metrics.scores.predictions, metrics.scores.groundTruth),
+      correlation: calculateCorrelation(metrics.scores.predictions, metrics.scores.groundTruth)
+    };
+  }
+  
+  // Calculate issue metrics
+  if (metrics.issues.allDetected.length > 0 || metrics.issues.allGroundTruth.length > 0) {
+    metrics.issueMetrics = calculateIssueMetrics(
+      metrics.issues.allDetected,
+      metrics.issues.allGroundTruth
+    );
+  }
+  
+  // Calculate binary classification metrics (score threshold at 7.0)
+  if (metrics.scores.predictions.length > 0) {
+    const binaryPredictions = metrics.scores.predictions.map(s => s >= 7.0 ? 1 : 0);
+    const binaryGroundTruth = metrics.scores.groundTruth.map(s => s >= 7.0 ? 1 : 0);
+    
+    metrics.confusionMatrix = calculateConfusionMatrix(binaryPredictions, binaryGroundTruth);
+    const precision = calculatePrecision(metrics.confusionMatrix);
+    const recall = calculateRecall(metrics.confusionMatrix);
+    
+    metrics.binaryMetrics = {
+      precision,
+      recall,
+      f1: calculateF1Score(precision, recall),
+      accuracy: calculateAccuracy(metrics.confusionMatrix)
+    };
+  }
+  
+  return metrics;
+}
+
+/**
+ * Calculate Pearson correlation coefficient
+ */
+function calculateCorrelation(x, y) {
+  if (x.length !== y.length) return 0;
+  if (x.length === 0) return 0;
+  
+  const n = x.length;
+  const sumX = x.reduce((a, b) => a + b, 0);
+  const sumY = y.reduce((a, b) => a + b, 0);
+  const sumXY = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
+  const sumX2 = x.reduce((sum, xi) => sum + xi * xi, 0);
+  const sumY2 = y.reduce((sum, yi) => sum + yi * yi, 0);
+  
+  const numerator = n * sumXY - sumX * sumY;
+  const denominator = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
+  
+  return denominator === 0 ? 0 : numerator / denominator;
+}
+
+/**
+ * Format metrics for display
+ */
+export function formatMetrics(metrics) {
+  const lines = [];
+  
+  lines.push('📊 Evaluation Metrics');
+  lines.push('');
+  
+  if (metrics.scoreMetrics) {
+    lines.push('Score Metrics:');
+    lines.push(`  MAE:  ${metrics.scoreMetrics.mae.toFixed(3)}`);
+    lines.push(`  RMSE: ${metrics.scoreMetrics.rmse.toFixed(3)}`);
+    if (metrics.scoreMetrics.correlation !== undefined) {
+      lines.push(`  Correlation: ${metrics.scoreMetrics.correlation.toFixed(3)}`);
+    }
+    lines.push('');
+  }
+  
+  if (metrics.binaryMetrics) {
+    lines.push('Binary Classification (threshold ≥7.0):');
+    lines.push(`  Precision: ${metrics.binaryMetrics.precision.toFixed(3)}`);
+    lines.push(`  Recall:    ${metrics.binaryMetrics.recall.toFixed(3)}`);
+    lines.push(`  F1 Score:  ${metrics.binaryMetrics.f1.toFixed(3)}`);
+    lines.push(`  Accuracy:  ${metrics.binaryMetrics.accuracy.toFixed(3)}`);
+    lines.push('');
+  }
+  
+  if (metrics.issueMetrics) {
+    lines.push('Issue Detection:');
+    lines.push(`  Precision: ${metrics.issueMetrics.precision.toFixed(3)}`);
+    lines.push(`  Recall:    ${metrics.issueMetrics.recall.toFixed(3)}`);
+    lines.push(`  F1 Score:  ${metrics.issueMetrics.f1.toFixed(3)}`);
+    lines.push(`  TP: ${metrics.issueMetrics.tp}, FP: ${metrics.issueMetrics.fp}, FN: ${metrics.issueMetrics.fn}`);
+    lines.push('');
+  }
+  
+  return lines.join('\n');
+}
+

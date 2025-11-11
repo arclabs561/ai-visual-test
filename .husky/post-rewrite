@@ -1,0 +1,36 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Post-rewrite hook - runs after git rebase, git commit --amend, etc.
+# Useful for cleanup and notifications after history rewriting
+
+REWRITE_TYPE=$1
+
+echo "✏️  Post-rewrite: $REWRITE_TYPE"
+
+if [ "$REWRITE_TYPE" = "rebase" ]; then
+  echo "🔄 Git history was rewritten (rebase)"
+  echo "   If you've already pushed, you'll need to force push:"
+  echo "   git push --force-with-lease"
+  echo ""
+  echo "⚠️  Warning: Force pushing rewrites history on remote"
+  echo "   Only do this if you're sure no one else has pulled your changes"
+fi
+
+if [ "$REWRITE_TYPE" = "amend" ]; then
+  echo "📝 Last commit was amended"
+  echo "   If you've already pushed, you'll need to force push:"
+  echo "   git push --force-with-lease"
+fi
+
+# Check if package.json changed during rewrite
+if git diff HEAD@{1} HEAD --name-only 2>/dev/null | grep -qE "(package\.json|package-lock\.json)"; then
+  echo "📦 Dependencies may have changed, consider running: npm install"
+fi
+
+# Show what changed
+COMMITS_REWRITTEN=$(git reflog show HEAD@{1}..HEAD 2>/dev/null | wc -l | tr -d ' ' || echo "?")
+if [ -n "$COMMITS_REWRITTEN" ] && [ "$COMMITS_REWRITTEN" != "?" ]; then
+  echo "📊 $COMMITS_REWRITTEN commit(s) affected"
+fi
+

@@ -1,0 +1,160 @@
+{
+  "timestamp": "2025-11-11T17:47:30.560Z",
+  "tests": [
+    {
+      "name": "Retryable Error Detection",
+      "hypothesis": "We correctly identify retryable vs non-retryable errors",
+      "tests": [
+        {
+          "name": "Timeout Error",
+          "expected": true,
+          "actual": true,
+          "passed": true,
+          "errorType": "TimeoutError",
+          "statusCode": "N/A"
+        },
+        {
+          "name": "Rate Limit (429)",
+          "expected": true,
+          "actual": true,
+          "passed": true,
+          "errorType": "ProviderError",
+          "statusCode": 429
+        },
+        {
+          "name": "Server Error (500)",
+          "expected": true,
+          "actual": true,
+          "passed": true,
+          "errorType": "ProviderError",
+          "statusCode": 500
+        },
+        {
+          "name": "Server Error (503)",
+          "expected": true,
+          "actual": true,
+          "passed": true,
+          "errorType": "ProviderError",
+          "statusCode": 503
+        },
+        {
+          "name": "Client Error (400)",
+          "expected": false,
+          "actual": false,
+          "passed": true,
+          "errorType": "ProviderError",
+          "statusCode": 400
+        },
+        {
+          "name": "Auth Error (401)",
+          "expected": false,
+          "actual": false,
+          "passed": true,
+          "errorType": "ProviderError",
+          "statusCode": 401
+        },
+        {
+          "name": "Network Error",
+          "expected": true,
+          "actual": false,
+          "passed": false,
+          "errorType": "Error",
+          "statusCode": "N/A"
+        },
+        {
+          "name": "Abort Error",
+          "expected": true,
+          "actual": false,
+          "passed": false,
+          "errorType": "Error",
+          "statusCode": "N/A"
+        }
+      ],
+      "passed": false,
+      "notes": "Rate limits and server errors should be retryable, auth errors should not"
+    },
+    {
+      "name": "Exponential Backoff Calculation",
+      "hypothesis": "Backoff increases exponentially with attempt number",
+      "actual": [
+        {
+          "attempt": 0,
+          "delay": 1000
+        },
+        {
+          "attempt": 1,
+          "delay": 2000
+        },
+        {
+          "attempt": 2,
+          "delay": 4000
+        },
+        {
+          "attempt": 3,
+          "delay": 8000
+        },
+        {
+          "attempt": 4,
+          "delay": 16000
+        }
+      ],
+      "analysis": {
+        "increasing": true,
+        "exponential": true,
+        "respectsMax": true
+      },
+      "passed": true,
+      "notes": "Backoff should increase exponentially and respect max delay"
+    },
+    {
+      "name": "Retry Execution",
+      "hypothesis": "Retry actually retries on retryable errors",
+      "expected": {
+        "attempts": 3,
+        "result": "success"
+      },
+      "actual": {
+        "attempts": 3,
+        "result": "success"
+      },
+      "passed": true,
+      "notes": "Should retry up to maxRetries times on retryable errors"
+    },
+    {
+      "name": "Non-Retryable Error Handling",
+      "hypothesis": "Non-retryable errors are not retried",
+      "expected": {
+        "attempts": 1,
+        "error": "Unauthorized"
+      },
+      "actual": {
+        "attempts": 1,
+        "error": "Unauthorized"
+      },
+      "passed": true,
+      "notes": "Should fail immediately on non-retryable errors"
+    },
+    {
+      "name": "Jitter Application",
+      "hypothesis": "Jitter adds randomness within ±25% range",
+      "actual": {
+        "sampleDelays": [
+          1129.000925058446,
+          829.5689349863601,
+          1245.8143767567938,
+          843.7735116510876,
+          1182.0661201975906
+        ],
+        "hasVariation": true,
+        "allInRange": true
+      },
+      "passed": true,
+      "notes": "Jitter should add variation within expected range"
+    }
+  ],
+  "summary": {
+    "total": 5,
+    "passed": 4,
+    "failed": 1
+  }
+}

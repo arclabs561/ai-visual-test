@@ -62,6 +62,11 @@ export class BatchOptimizer {
       imagePaths = [imagePaths];
     }
     
+    // Handle empty array
+    if (imagePaths.length === 0) {
+      return [];
+    }
+    
     // Process all screenshots in parallel (respecting concurrency limit)
     const results = await Promise.all(
       imagePaths.map(path => this._queueRequest(path, prompt, context))

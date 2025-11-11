@@ -1,0 +1,113 @@
+{
+  "timestamp": "2025-11-11T17:42:55.365Z",
+  "tests": [
+    {
+      "name": "Cost Recording Accuracy",
+      "hypothesis": "Costs are recorded and summed correctly",
+      "expected": {
+        "total": 0.0009,
+        "geminiTotal": 0.0005,
+        "count": 3
+      },
+      "actual": {
+        "total": 0.0009,
+        "geminiTotal": 0.0005,
+        "count": 3
+      },
+      "passed": true,
+      "notes": "Total cost and count should match recorded costs"
+    },
+    {
+      "name": "Cost Projection Accuracy",
+      "hypothesis": "Projections are based on historical averages",
+      "expected": {
+        "dailyAverage": 0.01,
+        "projected30Days": 0.3
+      },
+      "actual": {
+        "dailyAverage": 0.01,
+        "projected30Days": 0.3,
+        "trend": "stable"
+      },
+      "passed": true,
+      "notes": "Projection should be based on historical daily average"
+    },
+    {
+      "name": "Threshold Checking",
+      "hypothesis": "Threshold checking correctly identifies exceeded thresholds",
+      "expected": {
+        "threshold10": {
+          "exceeded": false,
+          "current": 8,
+          "remaining": 2
+        },
+        "threshold5": {
+          "exceeded": true,
+          "current": 8,
+          "remaining": 0
+        },
+        "threshold2": {
+          "exceeded": true,
+          "current": 8,
+          "remaining": 0
+        }
+      },
+      "actual": {
+        "threshold10": {
+          "exceeded": false,
+          "current": 8,
+          "remaining": 2
+        },
+        "threshold5": {
+          "exceeded": true,
+          "current": 8,
+          "remaining": 0
+        },
+        "threshold2": {
+          "exceeded": true,
+          "current": 8,
+          "remaining": 0
+        }
+      },
+      "passed": true,
+      "notes": "Should correctly identify when threshold is exceeded"
+    },
+    {
+      "name": "Provider Breakdown",
+      "hypothesis": "Costs are tracked separately per provider",
+      "expected": {
+        "gemini": 1,
+        "openai": 2,
+        "claude": 3,
+        "total": 6
+      },
+      "actual": {
+        "gemini": 1,
+        "openai": 2,
+        "claude": 3,
+        "total": 6
+      },
+      "passed": true,
+      "notes": "Each provider should have separate cost tracking"
+    },
+    {
+      "name": "Token Tracking",
+      "hypothesis": "Input and output tokens are tracked correctly",
+      "expected": {
+        "inputTokens": 2500,
+        "outputTokens": 1100
+      },
+      "actual": {
+        "inputTokens": 2500,
+        "outputTokens": 1100
+      },
+      "passed": true,
+      "notes": "Token counts should be summed correctly"
+    }
+  ],
+  "summary": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  }
+}

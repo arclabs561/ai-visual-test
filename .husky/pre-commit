@@ -20,4 +20,9 @@ if [ -n "$STAGED_FILES" ]; then
   fi
 fi
 
+# Sage Hooks - Documentation bloat detection (optional, can be disabled)
+if [ -f "node_modules/@arclabs561/sage-hooks/src/hooks/doc-bloat.mjs" ]; then
+  node node_modules/@arclabs561/sage-hooks/src/hooks/doc-bloat.mjs || exit 1
+fi
+
 echo "✅ Pre-commit checks passed"

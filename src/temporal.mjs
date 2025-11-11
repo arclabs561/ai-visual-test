@@ -136,10 +136,19 @@ function calculateCoherence(windows) {
   const directionConsistency = 1.0 - (directionChanges / Math.max(1, trends.length));
 
   // Metric 2: Score variance
+  // NOTE: This normalization may be too lenient for erratic behavior
+  // Consider: Should we use a fixed max variance or adaptive threshold?
   const meanScore = scores.reduce((a, b) => a + b, 0) / scores.length;
   const variance = scores.reduce((sum, score) => sum + Math.pow(score - meanScore, 2), 0) / scores.length;
-  const maxVariance = Math.pow(meanScore, 2);
-  const varianceCoherence = Math.max(0, 1.0 - (variance / Math.max(1, maxVariance)));
+  
+  // Use adaptive max variance: meanScore^2 for high scores, but also consider direction changes
+  // This makes variance coherence more sensitive to erratic behavior
+  const maxVariance = Math.max(meanScore * meanScore, 100); // At least 100 to avoid division by tiny numbers
+  const varianceCoherence = Math.max(0, 1.0 - (variance / maxVariance));
+  
+  // Add explicit penalty for frequent direction changes (erratic behavior)
+  const directionChangePenalty = directionChanges / Math.max(1, trends.length);
+  const adjustedVarianceCoherence = varianceCoherence * (1.0 - directionChangePenalty * 0.5);
 
   // Metric 3: Observation consistency
   let observationConsistency = 1.0;
@@ -164,10 +173,10 @@ function calculateCoherence(windows) {
     observationConsistency = overlapSum / Math.max(1, keywords.length - 1);
   }
 
-  // Weighted combination
+  // Weighted combination (use adjusted variance coherence that penalizes erratic behavior)
   const coherence = (
     directionConsistency * 0.4 +
-    varianceCoherence * 0.3 +
+    adjustedVarianceCoherence * 0.3 +
     observationConsistency * 0.3
   );
   

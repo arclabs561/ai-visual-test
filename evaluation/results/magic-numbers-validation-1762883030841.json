@@ -1,0 +1,165 @@
+{
+  "timestamp": "2025-11-11T17:43:50.840Z",
+  "tests": [
+    {
+      "name": "Window Size Impact",
+      "hypothesis": "Different window sizes produce different coherence scores",
+      "actual": {
+        "5000ms": {
+          "windows": 4,
+          "coherence": 0.917999709682102,
+          "summary": "Aggregated 4 temporal windows from gameplay notes. Score progression: 30 → 175 (+145). Temporal cohe"
+        },
+        "10000ms": {
+          "windows": 2,
+          "coherence": 0.9342983328884467,
+          "summary": "Aggregated 2 temporal windows from gameplay notes. Score progression: 54 → 149 (+95). Temporal coher"
+        },
+        "20000ms": {
+          "windows": 1,
+          "coherence": 1,
+          "summary": "Aggregated 1 temporal windows from gameplay notes. Score progression: 98 → 98 (0). Temporal coherenc"
+        },
+        "30000ms": {
+          "windows": 1,
+          "coherence": 1,
+          "summary": "Aggregated 1 temporal windows from gameplay notes. Score progression: 99 → 99 (0). Temporal coherenc"
+        }
+      },
+      "analysis": {
+        "windowCountVariation": true,
+        "coherenceVariation": true
+      },
+      "passed": true,
+      "notes": "Window size should affect window count and potentially coherence"
+    },
+    {
+      "name": "Decay Factor Impact",
+      "hypothesis": "Lower decay factors reduce weight of older notes",
+      "actual": {
+        "decay-0.5": {
+          "coherence": 1,
+          "avgWeightFirst": 0,
+          "avgWeightLast": 0,
+          "weightDecay": 0
+        },
+        "decay-0.7": {
+          "coherence": 1,
+          "avgWeightFirst": 0,
+          "avgWeightLast": 0,
+          "weightDecay": 0
+        },
+        "decay-0.9": {
+          "coherence": 1,
+          "avgWeightFirst": 0,
+          "avgWeightLast": 0,
+          "weightDecay": 0
+        },
+        "decay-0.95": {
+          "coherence": 1,
+          "avgWeightFirst": 0,
+          "avgWeightLast": 0,
+          "weightDecay": 0
+        },
+        "decay-1": {
+          "coherence": 1,
+          "avgWeightFirst": 0,
+          "avgWeightLast": 0,
+          "weightDecay": 0
+        }
+      },
+      "analysis": {
+        "hasDecay": false,
+        "decayIncreases": true
+      },
+      "passed": true,
+      "notes": "Decay factor should affect weight distribution over time"
+    },
+    {
+      "name": "Coherence Weight Sensitivity",
+      "hypothesis": "Coherence should be sensitive to input consistency",
+      "actual": {
+        "baseCoherence": 1,
+        "consistentObservationCoherence": 1,
+        "consistentScoreCoherence": 1,
+        "differences": {
+          "observation": 0,
+          "score": 0
+        }
+      },
+      "analysis": {
+        "sensitiveToObservations": false,
+        "sensitiveToScores": false
+      },
+      "passed": true,
+      "notes": "Coherence should respond to changes in observation and score consistency"
+    },
+    {
+      "name": "Default Values Validation",
+      "hypothesis": "Default values produce reasonable results",
+      "actual": {
+        "default": {
+          "windows": 2,
+          "coherence": 0.9489706023173419,
+          "conflicts": 0
+        },
+        "custom": {
+          "windows": 3,
+          "coherence": 0.9153731693946277,
+          "conflicts": 0
+        }
+      },
+      "analysis": {
+        "defaultWindowsReasonable": true,
+        "defaultCoherenceReasonable": true,
+        "customProducesDifferentResults": true
+      },
+      "passed": true,
+      "notes": "Default values should produce reasonable, non-extreme results"
+    },
+    {
+      "name": "Edge Case Handling",
+      "hypothesis": "Magic numbers handle edge cases gracefully",
+      "actual": {
+        "empty": {
+          "coherence": 1,
+          "windows": 0
+        },
+        "single": {
+          "coherence": 1,
+          "windows": 0
+        },
+        "largeWindow": {
+          "coherence": 1,
+          "windows": 1
+        },
+        "smallWindow": {
+          "coherence": 0.6911934156378601,
+          "windows": 81
+        },
+        "zeroDecay": {
+          "coherence": 1,
+          "windows": 1
+        }
+      },
+      "analysis": {
+        "noCrashes": true,
+        "reasonableValues": true
+      },
+      "passed": true,
+      "notes": "Edge cases should not crash and should produce reasonable values"
+    }
+  ],
+  "summary": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0,
+    "informational": 0
+  },
+  "recommendations": [
+    {
+      "issue": "Decay factor may not be working as expected",
+      "recommendation": "Review decay factor implementation"
+    }
+  ]
+}

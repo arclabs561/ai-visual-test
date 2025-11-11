@@ -59,6 +59,9 @@ export async function experiencePageAsPersona(page, persona, options = {}) {
         step,
         description
       });
+      // Add to trace if available (already done in captureScreenshotNow)
+      // No need to add again here
+      
       return screenshotPath;
     } catch (error) {
       console.warn(`Failed to capture screenshot at step ${step}:`, error.message);

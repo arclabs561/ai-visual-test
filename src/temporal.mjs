@@ -15,10 +15,14 @@ export function aggregateTemporalNotes(notes, options = {}) {
     coherenceThreshold = 0.7 // Minimum coherence score
   } = options;
 
-  // Filter gameplay notes and sort by timestamp
-  const gameplayNotes = notes
-    .filter(n => n.step?.startsWith('gameplay_note_') || n.timestamp)
+  // Filter and sort notes by timestamp
+  // Accept any note with a timestamp (not just gameplay_note_)
+  const validNotes = notes
+    .filter(n => n.timestamp || n.elapsed !== undefined)
     .sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+  
+  // Use validNotes instead of gameplayNotes for broader compatibility
+  const gameplayNotes = validNotes;
 
   if (gameplayNotes.length === 0) {
     return {

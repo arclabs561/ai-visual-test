@@ -11,6 +11,7 @@
  */
 
 import { ValidationError } from './errors.mjs';
+import { warn } from './logger.mjs';
 
 /**
  * Extract rendered HTML/CSS for code analysis
@@ -213,7 +214,7 @@ export async function multiPerspectiveEvaluation(validateFn, screenshotPath, ren
         focus: persona.focus,
         ...gameState
       }).catch(err => {
-        console.warn(`[Multi-Modal] Perspective ${persona.name} failed: ${err.message}`);
+        warn(`[Multi-Modal] Perspective ${persona.name} failed: ${err.message}`);
         return null;
       });
       

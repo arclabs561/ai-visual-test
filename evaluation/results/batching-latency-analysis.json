@@ -1,0 +1,178 @@
+{
+  "timestamp": "2025-11-11T13:34:20.709Z",
+  "results": [
+    {
+      "scenario": {
+        "name": "60 FPS Game (16.67ms frame time)",
+        "fps": 60,
+        "frameTime": 16.67,
+        "maxLatency": 100,
+        "screenshots": 10,
+        "description": "High frame rate game requiring real-time evaluation"
+      },
+      "sequential": {
+        "avgLatency": 126.7,
+        "maxLatency": 192,
+        "totalTime": 1267,
+        "meetsRequirement": false
+      },
+      "batch": {
+        "avgLatency": 168.5,
+        "maxLatency": 376,
+        "totalTime": 376,
+        "meetsRequirement": false
+      },
+      "temporal": {
+        "avgLatency": 4,
+        "maxLatency": 4,
+        "totalTime": 4,
+        "meetsRequirement": true
+      },
+      "efficiency": {
+        "sequential": 1267,
+        "batch": 376,
+        "temporal": 4,
+        "batchSavings": "70.3",
+        "temporalSavings": "99.7"
+      },
+      "meetsLatencyRequirement": {
+        "sequential": false,
+        "batch": false,
+        "temporal": true
+      }
+    },
+    {
+      "scenario": {
+        "name": "30 FPS Game (33.33ms frame time)",
+        "fps": 30,
+        "frameTime": 33.33,
+        "maxLatency": 200,
+        "screenshots": 10,
+        "description": "Standard frame rate game"
+      },
+      "sequential": {
+        "avgLatency": 120.7,
+        "maxLatency": 185,
+        "totalTime": 1207,
+        "meetsRequirement": true
+      },
+      "batch": {
+        "avgLatency": 236.7,
+        "maxLatency": 448,
+        "totalTime": 448,
+        "meetsRequirement": false
+      },
+      "temporal": {
+        "avgLatency": 1,
+        "maxLatency": 1,
+        "totalTime": 1,
+        "meetsRequirement": true
+      },
+      "efficiency": {
+        "sequential": 1207,
+        "batch": 448,
+        "temporal": 1,
+        "batchSavings": "62.9",
+        "temporalSavings": "99.9"
+      },
+      "meetsLatencyRequirement": {
+        "sequential": true,
+        "batch": false,
+        "temporal": true
+      }
+    },
+    {
+      "scenario": {
+        "name": "Reactive UI (10 FPS)",
+        "fps": 10,
+        "frameTime": 100,
+        "maxLatency": 500,
+        "screenshots": 10,
+        "description": "Interactive UI with animations"
+      },
+      "sequential": {
+        "avgLatency": 145.2,
+        "maxLatency": 192,
+        "totalTime": 1452,
+        "meetsRequirement": true
+      },
+      "batch": {
+        "avgLatency": 203.4,
+        "maxLatency": 423,
+        "totalTime": 423,
+        "meetsRequirement": true
+      },
+      "temporal": {
+        "avgLatency": 0,
+        "maxLatency": 0,
+        "totalTime": 0,
+        "meetsRequirement": true
+      },
+      "efficiency": {
+        "sequential": 1452,
+        "batch": 423,
+        "temporal": 0,
+        "batchSavings": "70.9",
+        "temporalSavings": "100.0"
+      },
+      "meetsLatencyRequirement": {
+        "sequential": true,
+        "batch": true,
+        "temporal": true
+      }
+    },
+    {
+      "scenario": {
+        "name": "Turn-Based Game",
+        "fps": 1,
+        "frameTime": 1000,
+        "maxLatency": 2000,
+        "screenshots": 10,
+        "description": "Turn-based game with time to think"
+      },
+      "sequential": {
+        "avgLatency": 134.7,
+        "maxLatency": 200,
+        "totalTime": 1347,
+        "meetsRequirement": true
+      },
+      "batch": {
+        "avgLatency": 158.5,
+        "maxLatency": 400,
+        "totalTime": 400,
+        "meetsRequirement": true
+      },
+      "temporal": {
+        "avgLatency": 1,
+        "maxLatency": 1,
+        "totalTime": 1,
+        "meetsRequirement": true
+      },
+      "efficiency": {
+        "sequential": 1347,
+        "batch": 400,
+        "temporal": 1,
+        "batchSavings": "70.3",
+        "temporalSavings": "99.9"
+      },
+      "meetsLatencyRequirement": {
+        "sequential": true,
+        "batch": true,
+        "temporal": true
+      }
+    }
+  ],
+  "analysis": {
+    "fastReactiveGames": {
+      "problem": "Fast reactive games (60 FPS) need <100ms latency",
+      "batchingIssue": "Batching adds queue delay + batch wait time",
+      "solution": "Need latency-aware batching or bypass batching for critical requests"
+    },
+    "efficiency": {
+      "benefit": "Batching improves throughput by 20-40%",
+      "cost": "Adds 50-200ms latency per request",
+      "tradeoff": "Efficiency vs. Reactivity"
+    },
+    "recommendations": []
+  }
+}

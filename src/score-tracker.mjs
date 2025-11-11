@@ -10,6 +10,7 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { warn } from './logger.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -55,7 +56,7 @@ export class ScoreTracker {
     try {
       return JSON.parse(readFileSync(this.baselineFile, 'utf8'));
     } catch (error) {
-      console.warn(`[ScoreTracker] Failed to load baselines: ${error.message}`);
+      warn(`[ScoreTracker] Failed to load baselines: ${error.message}`);
       return {};
     }
   }
@@ -69,7 +70,7 @@ export class ScoreTracker {
     try {
       writeFileSync(this.baselineFile, JSON.stringify(baselines, null, 2), 'utf8');
     } catch (error) {
-      console.warn(`[ScoreTracker] Failed to save baselines: ${error.message}`);
+      warn(`[ScoreTracker] Failed to save baselines: ${error.message}`);
     }
   }
   

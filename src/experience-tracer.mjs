@@ -10,6 +10,8 @@
  * Provides full traceability for debugging and meta-evaluation.
  */
 
+import { warn } from './logger.mjs';
+
 /**
  * Experience Trace
  * 
@@ -333,7 +335,7 @@ export class ExperienceTracerManager {
         );
         evaluation.visualValidation = visualValidation;
       } catch (e) {
-        console.warn('Visual meta-evaluation failed:', e.message);
+        warn('Visual meta-evaluation failed:', e.message);
       }
     }
 

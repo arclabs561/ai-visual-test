@@ -301,6 +301,47 @@ Clear cache.
 
 Get cache statistics.
 
+### Logger
+
+#### `enableDebug()`
+
+Enable debug logging (warnings and info messages will be shown).
+
+#### `disableDebug()`
+
+Disable debug logging (default - silent mode).
+
+#### `isDebugEnabled()`
+
+Check if debug logging is enabled.
+
+#### `warn(...args)`
+
+Log a warning (only if debug enabled).
+
+#### `log(...args)`
+
+Log info (only if debug enabled).
+
+#### `error(...args)`
+
+Log error (always logged, even when debug is disabled).
+
+**Example:**
+```javascript
+import { enableDebug, warn, log } from 'ai-browser-test';
+
+// Enable debug mode to see warnings
+enableDebug();
+
+// These will only log if debug is enabled
+warn('Cache failed to load');
+log('Processing screenshot');
+
+// Errors always log
+error('Critical failure');
+```
+
 ## Configuration
 
 ### Environment Variables

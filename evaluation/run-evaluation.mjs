@@ -42,16 +42,25 @@ const EVALUATION_DATASET = [
   }
 ];
 
-// Test cases with known issues (you can add more)
+// Test cases with known issues - Expanded
 const KNOWN_ISSUE_CASES = [
   {
-    name: 'Low Contrast Example',
-    url: 'https://example.com', // Replace with actual low-contrast site
-    description: 'Known low contrast issues',
-    expectedScore: { min: 0, max: 5 },
-    expectedIssues: ['contrast', 'readability'],
+    name: 'Simple Example',
+    url: 'https://example.com',
+    description: 'Minimal site for baseline',
+    expectedScore: { min: 5, max: 8 },
+    expectedIssues: [],
+    knownGood: ['simple', 'minimal'],
+    knownBad: []
+  },
+  {
+    name: 'Old Site Example',
+    url: 'https://www.craigslist.org',
+    description: 'Older design patterns',
+    expectedScore: { min: 3, max: 6 },
+    expectedIssues: ['outdated patterns', 'basic accessibility'],
     knownGood: [],
-    knownBad: ['low contrast', 'poor readability']
+    knownBad: ['outdated design', 'limited accessibility']
   }
 ];
 

@@ -37,6 +37,28 @@ npm install ai-browser-test
 
 # Or from GitHub
 npm install git+https://github.com/arclabs561/ai-browser-test.git
+
+# For local development (using npm link)
+cd /path/to/ai-browser-test
+npm link
+cd /path/to/your-project
+npm link ai-browser-test
+```
+
+### Environment Setup
+
+Create a `.env` file (see `.env.example` for template):
+
+```bash
+# Required: At least one API key
+GEMINI_API_KEY=your-key-here
+# OR
+OPENAI_API_KEY=your-key-here
+# OR
+ANTHROPIC_API_KEY=your-key-here
+
+# Optional: Explicit provider selection
+VLM_PROVIDER=gemini  # or 'openai', 'claude'
 ```
 
 ## Quick Start
@@ -382,6 +404,31 @@ The package includes cost tracking and caching to minimize API costs:
 
 1. Install: `npm install file:../ai-browser-test`
 2. Use in your tests: `import { validateScreenshot } from '@visual-ai/validate'`
+
+## Dependencies
+
+### Peer Dependencies
+
+- `@playwright/test` (optional) - Required for Playwright-dependent features like `multiModalValidation`, `extractRenderedCode`, etc.
+- `@arclabs561/llm-utils` (optional) - Used internally for text-only LLM calls in data extraction. If not available, falls back to basic extraction methods.
+
+### Local Development
+
+For local development with linked packages:
+
+```bash
+# Link llm-utils (if developing both packages)
+cd /path/to/llm-utils
+npm link
+cd /path/to/ai-browser-test
+npm link @arclabs561/llm-utils
+
+# Link ai-browser-test to your project
+cd /path/to/ai-browser-test
+npm link
+cd /path/to/your-project
+npm link ai-browser-test
+```
 
 ## Research References
 

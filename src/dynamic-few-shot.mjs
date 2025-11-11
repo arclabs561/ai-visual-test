@@ -28,8 +28,14 @@ export function selectFewShotExamples(prompt, examples = [], options = {}) {
     useSemanticMatching = true
   } = options;
   
-  if (examples.length === 0) {
+  // Validate inputs
+  if (!examples || !Array.isArray(examples) || examples.length === 0) {
     return [];
+  }
+  
+  // Validate prompt
+  if (typeof prompt !== 'string') {
+    return examples.slice(0, maxExamples); // Fallback to simple selection
   }
   
   if (!useSemanticMatching || examples.length <= maxExamples) {

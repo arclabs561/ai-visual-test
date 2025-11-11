@@ -1,6 +1,6 @@
-# Contributing to @visual-ai/validate
+# Contributing
 
-Thank you for your interest in contributing!
+Thanks for contributing to ai-browser-test!
 
 ## Development Setup
 

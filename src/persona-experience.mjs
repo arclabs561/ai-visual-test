@@ -59,8 +59,11 @@ export async function experiencePageAsPersona(page, persona, options = {}) {
         step,
         description
       });
-      // Add to trace if available (already done in captureScreenshotNow)
-      // No need to add again here
+      
+      // Add to trace if available
+      if (trace) {
+        trace.addScreenshot(screenshotPath, description || step);
+      }
       
       return screenshotPath;
     } catch (error) {
@@ -88,9 +91,7 @@ export async function experiencePageAsPersona(page, persona, options = {}) {
   
   // Capture screenshot immediately after page load
   const pageLoadScreenshot = await captureScreenshotNow('page-load', 'Page loaded');
-  if (trace && pageLoadScreenshot) {
-    trace.addScreenshot(pageLoadScreenshot, 'page-load');
-  }
+  // Screenshot already added to trace in captureScreenshotNow
 
   // Step 1: Initial page load experience (human time scale)
   const initialLoadTime = await humanTimeScale('page-load', {
@@ -126,7 +127,7 @@ export async function experiencePageAsPersona(page, persona, options = {}) {
   }
 
   // Persona's initial observation
-  experienceNotes.push({
+  const initialNote = {
     step: 'initial_experience',
     persona: persona.name,
     device: persona.device || device,
@@ -136,7 +137,21 @@ export async function experiencePageAsPersona(page, persona, options = {}) {
     renderedCode: renderedCode ? { html: renderedCode.html?.substring(0, 500) } : null,
     timestamp: Date.now(),
     elapsed: Date.now() - startTime
-  });
+  };
+  experienceNotes.push(initialNote);
+  
+  // Add to trace if available
+  if (trace) {
+    trace.addEvent('observation', {
+      step: 'initial_experience',
+      observation: initialNote.observation,
+      pageState: initialNote.pageState,
+      renderedCode: initialNote.renderedCode
+    });
+    if (pageState) {
+      trace.addStateSnapshot(pageState, 'initial_experience');
+    }
+  }
 
   // Step 2: Reading/scanning experience (human time scale)
   if (trace) {
@@ -169,6 +184,13 @@ export async function experiencePageAsPersona(page, persona, options = {}) {
   if (persona.goals && persona.goals.length > 0) {
     for (const goal of persona.goals) {
       // Capture before interaction
+      if (trace) {
+        trace.addEvent('interaction', {
+          step: `before-${goal}`,
+          goal,
+          observation: `Preparing to ${goal}`
+        });
+      }
       await captureScreenshotNow(`before-${goal}`, `Before ${goal}`);
       
       const interactionTime = await humanTimeScale('interaction', {
@@ -183,11 +205,25 @@ export async function experiencePageAsPersona(page, persona, options = {}) {
       await simulatePersonaInteraction(page, persona, goal);
       
       // Capture immediately after interaction (before delay)
+      if (trace) {
+        trace.addEvent('interaction', {
+          step: `during-${goal}`,
+          goal,
+          observation: `Performing ${goal}`
+        });
+      }
       await captureScreenshotNow(`during-${goal}`, `During ${goal}`);
 
       await page.waitForTimeout(interactionTime);
       
       // Capture after interaction delay
+      if (trace) {
+        trace.addEvent('interaction', {
+          step: `after-${goal}`,
+          goal,
+          observation: `Completed ${goal}`
+        });
+      }
       await captureScreenshotNow(`after-${goal}`, `After ${goal}`);
 
       // Update state
@@ -201,7 +237,7 @@ export async function experiencePageAsPersona(page, persona, options = {}) {
         });
       }
 
-      experienceNotes.push({
+      const interactionNote = {
         step: `interaction_${goal}`,
         persona: persona.name,
         goal,
@@ -209,15 +245,27 @@ export async function experiencePageAsPersona(page, persona, options = {}) {
         pageState,
         timestamp: Date.now(),
         elapsed: Date.now() - startTime
-      });
+      };
+      experienceNotes.push(interactionNote);
+      
+      // Add to trace if available
+      if (trace) {
+        trace.addEvent('interaction', {
+          step: `interaction_${goal}`,
+          goal,
+          observation: interactionNote.observation,
+          pageState: interactionNote.pageState
+        });
+        if (pageState) {
+          trace.addStateSnapshot(pageState, `after-${goal}`);
+        }
+      }
     }
   }
   
   // Capture final state
   const finalScreenshot = await captureScreenshotNow('final-state', 'Final state');
-  if (trace && finalScreenshot) {
-    trace.addScreenshot(finalScreenshot, 'final-state');
-  }
+  // Screenshot already added to trace in captureScreenshotNow
   
   // Add final event to trace
   if (trace) {

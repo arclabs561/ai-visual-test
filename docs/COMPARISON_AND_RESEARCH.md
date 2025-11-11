@@ -185,24 +185,52 @@ This document compares `ai-browser-test` with similar projects and research in t
 
 ## Related Research Papers
 
+### Critical Papers (2024-2025)
+
+**Web Testing with VLMs:**
+- **VETL** (arXiv:2410.12157) - First LVLM-driven end-to-end web testing, discovers 25% more actions
+- **VLM-Fuzz** (arXiv:2504.11675) - Vision language model assisted UI testing, 9% improvement in coverage
+- **A Survey on Web Testing** (arXiv:2503.05378) - Comprehensive survey of 259 papers (2014-2025)
+
+**UI Evaluation:**
+- **MLLM as a UI Judge** (arXiv:2510.08783) - Directly relevant, benchmarks MLLMs on 30 interfaces
+- **Test-Agent** (IEEE 2024) - Multimodal app automation testing framework
+
+**Web Agents:**
+- **WebSight** (arXiv:2508.16987) - Vision-first architecture, 68% success on WebVoyager
+- **WebVIA** (arXiv:2511.06251) - Web-based vision-language agentic framework
+- **WALT** (arXiv:2510.01524) - Web agents that learn tools with Set-of-Mark prompts
+
+**Persona-Based Testing:**
+- **PersonaTeaming** (arXiv:2509.03728v3) - Automated AI red-teaming with personas
+
 ### Vision Language Models
 - GPT-4V, Claude 3, Gemini Pro Vision - Multi-modal understanding
 - Vision-language pre-training - Combining visual and textual information
+- Qwen3-VL, LLaVA-OneVision - Recent advances in VLM capabilities
 
 ### Temporal Analysis
 - Time-series aggregation techniques
 - Coherence checking in temporal data
 - Exponential decay for weighted aggregation
+- Argumentative coherence in forecasting (2024-2025 research)
 
 ### Persona-Based Design
 - User-centered design evaluation
 - Accessibility testing methodologies
 - Human perception time scales
+- Automated persona generation (PersonaTeaming)
 
 ### Sequential Decision Making
 - Adaptive prompting strategies
 - Pattern detection in sequential data
 - Confidence-based adaptation
+
+### Benchmarks and Datasets
+- **VisualWebBench** - 1.5K instances from 139 websites, 7 tasks
+- **Mind2Web** - 2,350 tasks across 137 websites for generalist agents
+- **ScreenshotVQA** - UI screenshot understanding benchmark
+- **WebView Dataset** - 11k webpages with interaction graphs
 
 ## Future Research Directions
 
@@ -211,6 +239,16 @@ This document compares `ai-browser-test` with similar projects and research in t
 3. **Cost Optimization**: Already implemented provider selection - could research predictive cost models
 4. **Temporal Coherence**: Already implemented coherence checking - could research more sophisticated temporal models
 5. **Multi-Modal Fusion**: Already implemented multi-modal validation - could research optimal fusion strategies
+
+## Critical Research Update
+
+**See [`RESEARCH_UPDATE_2025.md`](./RESEARCH_UPDATE_2025.md) for comprehensive analysis of missing research papers and recent advances (2024-2025).**
+
+Key findings:
+- **10 critical papers** identified that should be integrated
+- **4 major benchmarks** not previously referenced
+- **8 critical gaps** in current implementation
+- **Good news**: Pair comparison already implemented (previously thought missing)
 
 ## Conclusion
 
@@ -223,4 +261,6 @@ This document compares `ai-browser-test` with similar projects and research in t
 5. **Multi-Provider**: Flexible, cost-effective provider selection
 
 It complements rather than replaces traditional pixel-based tools, offering semantic understanding where pixel-perfect consistency isn't the goal.
+
+**Research Alignment:** Well-aligned with latest research (VETL, MLLM as a UI Judge, WebSight), but several enhancements from recent papers should be integrated (see RESEARCH_UPDATE_2025.md).
 

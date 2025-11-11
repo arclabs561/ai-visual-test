@@ -95,59 +95,61 @@ export class LatencyAwareBatchOptimizer extends BatchOptimizer {
     
     this.processing = true;
     
-    // Sort queue by latency requirement (critical first)
-    const sortedQueue = [...this.queue].sort((a, b) => {
-      const latencyA = a.context?.maxLatency || this.defaultMaxLatency;
-      const latencyB = b.context?.maxLatency || this.defaultMaxLatency;
-      
-      // Critical requests (low latency) come first
-      if (latencyA < latencyB) return -1;
-      if (latencyA > latencyB) return 1;
-      
-      // If same latency, process in order
-      return 0;
-    });
-    
-    while (sortedQueue.length > 0 && this.activeRequests < this.maxConcurrency) {
-      // Calculate adaptive batch size based on latency requirements
-      const batchSize = this.adaptiveBatchSize 
-        ? this._calculateAdaptiveBatchSize(sortedQueue)
-        : this.batchSize;
-      
-      const batch = sortedQueue.splice(0, batchSize);
-      
-      // Remove from original queue
-      batch.forEach(item => {
-        const index = this.queue.findIndex(q => q.imagePath === item.imagePath);
-        if (index >= 0) this.queue.splice(index, 1);
+    try {
+      // Sort queue by latency requirement (critical first)
+      const sortedQueue = [...this.queue].sort((a, b) => {
+        const latencyA = a.context?.maxLatency || this.defaultMaxLatency;
+        const latencyB = b.context?.maxLatency || this.defaultMaxLatency;
+        
+        // Critical requests (low latency) come first
+        if (latencyA < latencyB) return -1;
+        if (latencyA > latencyB) return 1;
+        
+        // If same latency, process in order
+        return 0;
       });
       
-      // Process batch
-      const promises = batch.map(async ({ imagePath, prompt, context, validateFn, resolve, reject }) => {
-        try {
-          // Check cache
-          if (this.cache) {
-            const cacheKey = this._getCacheKey(imagePath, prompt, context);
-            if (this.cache.has(cacheKey)) {
-              resolve(this.cache.get(cacheKey));
-              return;
+      while (sortedQueue.length > 0 && this.activeRequests < this.maxConcurrency) {
+        // Calculate adaptive batch size based on latency requirements
+        const batchSize = this.adaptiveBatchSize 
+          ? this._calculateAdaptiveBatchSize(sortedQueue)
+          : this.batchSize;
+        
+        const batch = sortedQueue.splice(0, batchSize);
+        
+        // Remove from original queue
+        batch.forEach(item => {
+          const index = this.queue.findIndex(q => q.imagePath === item.imagePath);
+          if (index >= 0) this.queue.splice(index, 1);
+        });
+        
+        // Process batch
+        const promises = batch.map(async ({ imagePath, prompt, context, validateFn, resolve, reject }) => {
+          try {
+            // Check cache
+            if (this.cache) {
+              const cacheKey = this._getCacheKey(imagePath, prompt, context);
+              if (this.cache.has(cacheKey)) {
+                resolve(this.cache.get(cacheKey));
+                return;
+              }
             }
+            
+            const result = await this._processRequest(imagePath, prompt, context, validateFn);
+            resolve(result);
+          } catch (error) {
+            reject(error);
+          } finally {
+            // Remove from critical requests if processed
+            this.criticalRequests.delete(imagePath);
           }
-          
-          const result = await this._processRequest(imagePath, prompt, context, validateFn);
-          resolve(result);
-        } catch (error) {
-          reject(error);
-        } finally {
-          // Remove from critical requests if processed
-          this.criticalRequests.delete(imagePath);
-        }
-      });
-      
-      await Promise.allSettled(promises);
+        });
+        
+        await Promise.allSettled(promises);
+      }
+    } finally {
+      this.processing = false;
     }
-    
-    this.processing = false;
   }
   
   /**

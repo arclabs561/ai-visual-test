@@ -132,33 +132,35 @@ export class BatchOptimizer {
     
     this.processing = true;
     
-    while (this.queue.length > 0 && this.activeRequests < this.maxConcurrency) {
-      const batch = this.queue.splice(0, this.batchSize);
-      
-      // Process batch in parallel
-      const promises = batch.map(async ({ imagePath, prompt, context, validateFn, resolve, reject }) => {
-        try {
-          // Check cache again (might have been added by another request)
-          if (this.cache) {
-            const cacheKey = this._getCacheKey(imagePath, prompt, context);
-            if (this.cache.has(cacheKey)) {
-              resolve(this.cache.get(cacheKey));
-              return;
+    try {
+      while (this.queue.length > 0 && this.activeRequests < this.maxConcurrency) {
+        const batch = this.queue.splice(0, this.batchSize);
+        
+        // Process batch in parallel
+        const promises = batch.map(async ({ imagePath, prompt, context, validateFn, resolve, reject }) => {
+          try {
+            // Check cache again (might have been added by another request)
+            if (this.cache) {
+              const cacheKey = this._getCacheKey(imagePath, prompt, context);
+              if (this.cache.has(cacheKey)) {
+                resolve(this.cache.get(cacheKey));
+                return;
+              }
             }
+            
+            const result = await this._processRequest(imagePath, prompt, context, validateFn);
+            resolve(result);
+          } catch (error) {
+            reject(error);
           }
-          
-          const result = await this._processRequest(imagePath, prompt, context, validateFn);
-          resolve(result);
-        } catch (error) {
-          reject(error);
-        }
-      });
-      
-      // Wait for batch to complete before processing next batch
-      await Promise.allSettled(promises);
+        });
+        
+        // Wait for batch to complete before processing next batch
+        await Promise.allSettled(promises);
+      }
+    } finally {
+      this.processing = false;
     }
-    
-    this.processing = false;
   }
   
   /**

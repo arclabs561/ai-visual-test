@@ -90,61 +90,63 @@ export class TemporalBatchOptimizer extends BatchOptimizer {
     
     this.processing = true;
     
-    // Sort by priority and dependencies
-    const sortedQueue = this.sortByTemporalDependencies([...this.queue]);
-    
-    // Process in batches, respecting dependencies
-    while (sortedQueue.length > 0 && this.activeRequests < this.maxConcurrency) {
-      const batch = this.selectTemporalBatch(sortedQueue);
+    try {
+      // Sort by priority and dependencies
+      const sortedQueue = this.sortByTemporalDependencies([...this.queue]);
       
-      // Remove from queue
-      batch.forEach(item => {
-        const index = this.queue.findIndex(q => q.imagePath === item.imagePath);
-        if (index >= 0) this.queue.splice(index, 1);
-      });
-      
-      // Process batch
-      const promises = batch.map(async ({ imagePath, prompt, context, validateFn, resolve, reject }) => {
-        try {
-          // Check cache
-          if (this.cache) {
-            const cacheKey = this._getCacheKey(imagePath, prompt, context);
-            if (this.cache.has(cacheKey)) {
-              resolve(this.cache.get(cacheKey));
-              return;
+      // Process in batches, respecting dependencies
+      while (sortedQueue.length > 0 && this.activeRequests < this.maxConcurrency) {
+        const batch = this.selectTemporalBatch(sortedQueue);
+        
+        // Remove from queue
+        batch.forEach(item => {
+          const index = this.queue.findIndex(q => q.imagePath === item.imagePath);
+          if (index >= 0) this.queue.splice(index, 1);
+        });
+        
+        // Process batch
+        const promises = batch.map(async ({ imagePath, prompt, context, validateFn, resolve, reject }) => {
+          try {
+            // Check cache
+            if (this.cache) {
+              const cacheKey = this._getCacheKey(imagePath, prompt, context);
+              if (this.cache.has(cacheKey)) {
+                resolve(this.cache.get(cacheKey));
+                return;
+              }
             }
+            
+            // Add sequential context if available
+            if (this.sequentialContext) {
+              context = {
+                ...context,
+                sequentialContext: this.sequentialContext.getContext()
+              };
+            }
+            
+            const result = await this._processRequest(imagePath, prompt, context, validateFn);
+            
+            // Update sequential context
+            if (this.sequentialContext && result.score !== null) {
+              this.sequentialContext.addDecision({
+                score: result.score,
+                issues: result.issues || [],
+                assessment: result.assessment,
+                reasoning: result.reasoning
+              });
+            }
+            
+            resolve(result);
+          } catch (error) {
+            reject(error);
           }
-          
-          // Add sequential context if available
-          if (this.sequentialContext) {
-            context = {
-              ...context,
-              sequentialContext: this.sequentialContext.getContext()
-            };
-          }
-          
-          const result = await this._processRequest(imagePath, prompt, context, validateFn);
-          
-          // Update sequential context
-          if (this.sequentialContext && result.score !== null) {
-            this.sequentialContext.addDecision({
-              score: result.score,
-              issues: result.issues || [],
-              assessment: result.assessment,
-              reasoning: result.reasoning
-            });
-          }
-          
-          resolve(result);
-        } catch (error) {
-          reject(error);
-        }
-      });
-      
-      await Promise.allSettled(promises);
+        });
+        
+        await Promise.allSettled(promises);
+      }
+    } finally {
+      this.processing = false;
     }
-    
-    this.processing = false;
   }
   
   /**

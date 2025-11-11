@@ -8,9 +8,11 @@
  * Features:
  * - Pattern-based detection
  * - Entropy analysis for random-looking strings
+ * - Obfuscation detection (base64, hex, string concatenation)
  * - Configuration file support (.secretsignore)
  * - Git history scanning (optional)
  * - Performance optimizations
+ * - Red team tested against common bypass techniques
  */
 
 import { execSync } from 'child_process';
@@ -40,6 +42,80 @@ function calculateEntropy(str) {
 function hasHighEntropy(str, minEntropy = 3.5) {
   if (str.length < 10) return false;
   return calculateEntropy(str) >= minEntropy;
+}
+
+// Decode base64 string
+function decodeBase64(str) {
+  try {
+    return Buffer.from(str, 'base64').toString('utf-8');
+  } catch {
+    return null;
+  }
+}
+
+// Decode hex string
+function decodeHex(str) {
+  try {
+    if (!/^[0-9a-fA-F]+$/.test(str)) return null;
+    return Buffer.from(str, 'hex').toString('utf-8');
+  } catch {
+    return null;
+  }
+}
+
+// Check if a string looks like base64
+function looksLikeBase64(str) {
+  if (str.length < 10) return false;
+  // Base64 chars: A-Z, a-z, 0-9, +, /, = (padding)
+  return /^[A-Za-z0-9+/=]+$/.test(str) && str.length % 4 === 0;
+}
+
+// Check if a string looks like hex
+function looksLikeHex(str) {
+  if (str.length < 10) return false;
+  return /^[0-9a-fA-F]+$/.test(str) && str.length % 2 === 0;
+}
+
+// Extract potential secrets from decoded strings
+function checkDecodedValue(decoded, original, line, lineNum, filepath, issues) {
+  if (!decoded || decoded.length < 10) return;
+  
+  // Check if decoded value matches secret patterns
+  const secretPatterns = [
+    /^sk-[a-zA-Z0-9]{32,}/,
+    /^ghp_[a-zA-Z0-9]{36}/,
+    /^AIza[0-9A-Za-z_-]{35}/,
+    /^AKIA[0-9A-Z]{16}/,
+    /^xox[bapors]-[0-9a-zA-Z-]{10,}/,
+  ];
+  
+  for (const pattern of secretPatterns) {
+    if (pattern.test(decoded)) {
+      issues.push({
+        file: filepath,
+        line: lineNum + 1,
+        type: 'Obfuscated Secret (decoded)',
+        match: decoded.substring(0, 8) + '...',
+        context: line.trim().substring(0, 100),
+        original: original.substring(0, 20) + '...',
+        entropy: calculateEntropy(decoded).toFixed(2),
+      });
+      return;
+    }
+  }
+  
+  // Check entropy of decoded value
+  if (hasHighEntropy(decoded, 3.0) && decoded.length >= 20) {
+    issues.push({
+      file: filepath,
+      line: lineNum + 1,
+      type: 'Potential Obfuscated Secret (high entropy after decode)',
+      match: decoded.substring(0, 8) + '...',
+      context: line.trim().substring(0, 100),
+      original: original.substring(0, 20) + '...',
+      entropy: calculateEntropy(decoded).toFixed(2),
+    });
+  }
 }
 
 // Patterns to detect secrets (case-insensitive)
@@ -99,7 +175,7 @@ const SECRET_PATTERNS = [
   { pattern: /(client[_-]?secret|oauth[_-]?secret)\s*[:=]\s*['"]?([a-zA-Z0-9_\-/+=]{16,})['"]?/i, name: 'OAuth Secret', checkEntropy: true },
   
   // Generic long base64-like strings (potential secrets) - only if high entropy
-  { pattern: /['"]?([a-zA-Z0-9/+=]{40,})['"]?\s*[,;}\]]/, name: 'Potential Secret (long base64-like string)', checkEntropy: true },
+  { pattern: /['"]?([A-Za-z0-9+/=]{40,})['"]?\s*[,;}\]]/, name: 'Potential Secret (long base64-like string)', checkEntropy: true },
   
   // Twilio
   { pattern: /SK[0-9a-f]{32}/, name: 'Twilio API Key' },
@@ -109,6 +185,21 @@ const SECRET_PATTERNS = [
   
   // SendGrid
   { pattern: /SG\.[a-zA-Z0-9_-]{22}\.[a-zA-Z0-9_-]{43}/, name: 'SendGrid API Key' },
+  
+  // Obfuscation patterns
+  { pattern: /(atob|Buffer\.from|btoa)\s*\(['"]([A-Za-z0-9+/=]{20,})['"]/i, name: 'Base64 Decode Function', checkDecode: true },
+  { pattern: /Buffer\.from\s*\(['"]([0-9a-fA-F]{20,})['"],\s*['"]hex['"]/i, name: 'Hex Decode Function', checkDecode: true },
+  { pattern: /['"]([A-Za-z0-9+/=]{40,})['"]\s*\.(toString|split|join)/i, name: 'Potential Obfuscated Secret', checkDecode: true },
+  
+  // Variable names that might contain secrets (broader pattern)
+  { pattern: /(credential|cred|auth|key|secret|token|password|passwd|pwd)\s*[:=]\s*['"]?([a-zA-Z0-9_\-/+=]{20,})['"]?/i, name: 'Credential Variable', checkEntropy: true },
+  
+  // String concatenation patterns (multi-line)
+  { pattern: /['"]([a-zA-Z0-9_\-]{10,})['"]\s*\+\s*['"]([a-zA-Z0-9_\-]{10,})['"]/, name: 'String Concatenation (potential secret)', checkEntropy: true },
+  
+  // Comments with secrets
+  { pattern: /\/\/.*(api[_-]?key|secret|token|password)\s*[:=]\s*['"]?([a-zA-Z0-9_\-/+=]{20,})['"]?/i, name: 'Secret in Comment' },
+  { pattern: /\/\*.*(api[_-]?key|secret|token|password)\s*[:=]\s*['"]?([a-zA-Z0-9_\-/+=]{20,})['"]?.*\*\//i, name: 'Secret in Block Comment' },
 ];
 
 // Files to exclude from secret detection
@@ -144,6 +235,7 @@ const ALLOWED_PATTERNS = [
   /['"]mock[_-]?key['"]/,  // Mock keys
   /base64[_-]?encode/i,  // Base64 encoding functions
   /base64[_-]?decode/i,  // Base64 decoding functions
+  /red[_-]?team/i,  // Red team test files
 ];
 
 /**
@@ -244,8 +336,11 @@ function detectSecretsInFile(filepath, secretsIgnore) {
     const content = readFileSync(filepath, 'utf-8');
     const lines = content.split('\n');
     
+    // Also check the full content for multi-line patterns
+    const fullContent = content;
+    
     lines.forEach((line, lineNum) => {
-      SECRET_PATTERNS.forEach(({ pattern, name, checkEntropy = false }) => {
+      SECRET_PATTERNS.forEach(({ pattern, name, checkEntropy = false, checkDecode = false }) => {
         // Ensure pattern is global for matchAll
         const flags = pattern.flags || '';
         const globalPattern = flags.includes('g') 
@@ -278,6 +373,17 @@ function detectSecretsInFile(filepath, secretsIgnore) {
               return;
             }
             
+            // For decode patterns, try to decode and check
+            if (checkDecode) {
+              if (looksLikeBase64(secretValue)) {
+                const decoded = decodeBase64(secretValue);
+                checkDecodedValue(decoded, secretValue, line, lineNum, filepath, issues);
+              } else if (looksLikeHex(secretValue)) {
+                const decoded = decodeHex(secretValue);
+                checkDecodedValue(decoded, secretValue, line, lineNum, filepath, issues);
+              }
+            }
+            
             // Mask the secret for display
             const masked = secretValue.length > 8 
               ? secretValue.substring(0, 4) + '...' + secretValue.substring(secretValue.length - 4)
@@ -297,7 +403,46 @@ function detectSecretsInFile(filepath, secretsIgnore) {
           // Silently continue
         }
       });
+      
+      // Check for base64/hex encoded strings that might be secrets
+      if (looksLikeBase64(line) && line.length >= 40) {
+        const decoded = decodeBase64(line.trim());
+        if (decoded) {
+          checkDecodedValue(decoded, line.trim(), line, lineNum, filepath, issues);
+        }
+      }
+      
+      if (looksLikeHex(line) && line.length >= 40) {
+        const decoded = decodeHex(line.trim());
+        if (decoded) {
+          checkDecodedValue(decoded, line.trim(), line, lineNum, filepath, issues);
+        }
+      }
     });
+    
+    // Check for multi-line string concatenation
+    const concatPattern = /(['"])([a-zA-Z0-9_\-]{10,})\1\s*\+\s*(['"])([a-zA-Z0-9_\-]{10,})\3/g;
+    let concatMatch;
+    let lineNum = 0;
+    for (const line of lines) {
+      lineNum++;
+      while ((concatMatch = concatPattern.exec(line)) !== null) {
+        const combined = concatMatch[2] + concatMatch[4];
+        if (hasHighEntropy(combined) && combined.length >= 20) {
+          if (!isAllowedMatch(concatMatch, line, filepath, secretsIgnore)) {
+            issues.push({
+              file: filepath,
+              line: lineNum,
+              type: 'Potential Secret (string concatenation)',
+              match: combined.substring(0, 8) + '...',
+              context: line.trim().substring(0, 100),
+              entropy: calculateEntropy(combined).toFixed(2),
+            });
+          }
+        }
+      }
+    }
+    
   } catch (error) {
     // File might be binary or not readable, skip it
     if (error.code !== 'ENOENT') {
@@ -360,7 +505,7 @@ function detectSecretsInFileContent(content, filepath, secretsIgnore) {
   const lines = content.split('\n');
   
   lines.forEach((line, lineNum) => {
-    SECRET_PATTERNS.forEach(({ pattern, name, checkEntropy = false }) => {
+    SECRET_PATTERNS.forEach(({ pattern, name, checkEntropy = false, checkDecode = false }) => {
       const flags = pattern.flags || '';
       const globalPattern = flags.includes('g') 
         ? pattern 
@@ -381,6 +526,16 @@ function detectSecretsInFileContent(content, filepath, secretsIgnore) {
           
           if (checkEntropy && !hasHighEntropy(secretValue)) {
             return;
+          }
+          
+          if (checkDecode) {
+            if (looksLikeBase64(secretValue)) {
+              const decoded = decodeBase64(secretValue);
+              checkDecodedValue(decoded, secretValue, line, lineNum, filepath, issues);
+            } else if (looksLikeHex(secretValue)) {
+              const decoded = decodeHex(secretValue);
+              checkDecodedValue(decoded, secretValue, line, lineNum, filepath, issues);
+            }
           }
           
           const masked = secretValue.length > 8 
@@ -453,9 +608,12 @@ function main() {
     
     Object.entries(byFile).forEach(([file, issues]) => {
       console.error(`  ${file}:`);
-      issues.forEach(({ line, type, match, context, entropy, commit, inHistory }) => {
+      issues.forEach(({ line, type, match, context, entropy, commit, inHistory, original }) => {
         console.error(`    Line ${line}: ${type}`);
         console.error(`    Match: ${match}`);
+        if (original) {
+          console.error(`    Original (encoded): ${original}`);
+        }
         if (entropy) {
           console.error(`    Entropy: ${entropy} (high entropy indicates likely secret)`);
         }

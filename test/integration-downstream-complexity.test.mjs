@@ -1,8 +1,7 @@
 /**
  * Integration Tests: Downstream Complexity
  * 
- * These tests mirror the complex real-world usage patterns from downstream
- * applications like queeraoke, testing:
+ * These tests mirror complex real-world usage patterns for interactive application testing:
  * - Multi-persona evaluation with BatchOptimizer
  * - Temporal screenshots with state changes
  * - Multi-modal validation with rendered code + game state
@@ -30,7 +29,7 @@ import {
 import { createMockPage } from './helpers/mock-page.mjs';
 
 describe('Downstream Complexity: Multi-Persona with BatchOptimizer', () => {
-  it.skip('should handle multiple personas with batch optimization like queeraoke', async () => {
+  it.skip('should handle multiple personas with batch optimization for interactive applications', async () => {
     const mockPage = createMockPage({
       html: '<html><body><div id="game-paddle"></div><div id="game-canvas"></div></body></html>',
       gameState: { gameActive: true, score: 0, bricks: Array(20).fill({}) }
@@ -48,7 +47,7 @@ describe('Downstream Complexity: Multi-Persona with BatchOptimizer', () => {
       { name: 'Mobile User', device: 'mobile', goals: ['touch', 'responsive'] }
     ];
     
-    // Simulate queeraoke's pattern: experience with multiple personas
+    // Simulate interactive application pattern: experience with multiple personas
     const experiences = await experiencePageWithPersonas(mockPage, personas, {
       captureScreenshots: false,
       timeScale: 'human'
@@ -61,7 +60,7 @@ describe('Downstream Complexity: Multi-Persona with BatchOptimizer', () => {
       assert.ok(exp.notes.length > 0);
     });
     
-    // Simulate batch validation of screenshots (like queeraoke does)
+    // Simulate batch validation of screenshots for interactive applications
     const screenshotPaths = experiences.map((exp, i) => `test-screenshot-${i}.png`);
     
     // BatchOptimizer processes these via batchValidate
@@ -82,7 +81,7 @@ describe('Downstream Complexity: Temporal with State Changes', () => {
       html: '<html><body><div id="game"></div></body></html>'
     });
     
-    // Simulate queeraoke's pattern: capture temporal screenshots during gameplay
+    // Simulate interactive application pattern: capture temporal screenshots during gameplay
     const screenshots = await captureTemporalScreenshots(mockPage, {
       fps: 2,
       duration: 2000
@@ -106,7 +105,7 @@ describe('Downstream Complexity: Temporal with State Changes', () => {
       timestamp: shot.timestamp
     }));
     
-    // Aggregate temporal notes (like queeraoke does)
+    // Aggregate temporal notes for interactive applications
     const aggregated = aggregateTemporalNotes(notes, {
       windowSize: 5000,
       decayFactor: 0.9
@@ -123,12 +122,12 @@ describe('Downstream Complexity: Temporal with State Changes', () => {
 });
 
 describe('Downstream Complexity: Multi-Modal with Rendered Code', () => {
-  it('should perform multi-modal validation with rendered code like queeraoke', async () => {
+  it('should perform multi-modal validation with rendered code for interactive applications', async () => {
     const mockPage = createMockPage({
       html: '<html><head><style>body { color: red; }</style></head><body><div id="test">Content</div></body></html>'
     });
     
-    // Extract rendered code (like queeraoke does)
+    // Extract rendered code for interactive applications
     const renderedCode = await extractRenderedCode(mockPage);
     
     assert.ok(renderedCode);
@@ -136,7 +135,7 @@ describe('Downstream Complexity: Multi-Modal with Rendered Code', () => {
     assert.ok(renderedCode.criticalCSS);
     assert.ok(renderedCode.domStructure);
     
-    // Simulate multi-modal validation (like queeraoke's vllm-interactive-game.test.mjs)
+    // Simulate multi-modal validation for interactive game testing
     const mockValidateFn = async (path, prompt, context) => {
       return {
         enabled: false, // Mock - no real API call
@@ -312,7 +311,7 @@ describe('Downstream Complexity: Error Recovery', () => {
     
     // Test that batch optimizer handles empty batches
     const optimizer = new BatchOptimizer();
-    const emptyBatch = await optimizer.batchValidate([], 'test');
+    const emptyBatch = await optimizer.batchValidate([], 'test', {});
     assert.ok(Array.isArray(emptyBatch));
     assert.strictEqual(emptyBatch.length, 0);
   });

@@ -650,4 +650,92 @@ export class ExperienceTracerManager {
 
 export function getTracerManager(): ExperienceTracerManager;
 
+// Position Counter-Balance
+export interface CounterBalanceOptions {
+  enabled?: boolean;
+  baselinePath?: string | null;
+  contextOrder?: 'original' | 'reversed';
+}
+
+export interface CounterBalancedResult extends ValidationResult {
+  counterBalanced: boolean;
+  originalScore: number | null;
+  reversedScore: number | null;
+  scoreDifference: number | null;
+  metadata: {
+    counterBalancing: {
+      enabled: boolean;
+      originalResult: ValidationResult;
+      reversedResult: ValidationResult;
+      positionBiasDetected: boolean;
+    };
+  };
+}
+
+export function evaluateWithCounterBalance(
+  evaluateFn: ValidationFunction<ValidationResult>,
+  imagePath: string,
+  prompt: string,
+  context?: ValidationContext,
+  options?: CounterBalanceOptions
+): Promise<CounterBalancedResult>;
+
+export function shouldUseCounterBalance(context: ValidationContext): boolean;
+
+// Dynamic Few-Shot Examples
+export interface FewShotExample {
+  description?: string;
+  evaluation?: string;
+  score?: number | null;
+  screenshot?: string;
+  quality?: string;
+  result?: {
+    score?: number | null;
+    reasoning?: string;
+  };
+  json?: unknown;
+}
+
+export interface FewShotOptions {
+  maxExamples?: number;
+  similarityThreshold?: number;
+  useSemanticMatching?: boolean;
+}
+
+export function selectFewShotExamples(
+  prompt: string,
+  examples?: FewShotExample[],
+  options?: FewShotOptions
+): FewShotExample[];
+
+export function formatFewShotExamples(
+  examples: FewShotExample[],
+  format?: 'default' | 'json'
+): string;
+
+// Metrics
+export function spearmanCorrelation(
+  x: Array<number | null>,
+  y: Array<number | null>
+): number | null;
+
+export function pearsonCorrelation(
+  x: Array<number | null>,
+  y: Array<number | null>
+): number | null;
+
+export interface RankAgreementResult {
+  spearman: number | null;
+  pearson: number | null;
+  kendall: number | null;
+  exactMatches: number;
+  totalItems: number;
+  agreementRate: number;
+}
+
+export function calculateRankAgreement(
+  ranking1: Array<number | null>,
+  ranking2: Array<number | null>
+): RankAgreementResult;
+
 

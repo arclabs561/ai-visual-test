@@ -2,23 +2,68 @@
 
 All notable changes to ai-browser-test will be documented in this file.
 
-## [Unreleased]
+## [0.2.0] - 2025-11-11
 
 ### Added
-- `src/logger.mjs` - Conditional logging utility with debug mode support
-- Logger exports: `enableDebug`, `disableDebug`, `isDebugEnabled`, `warn`, `log`, `error`
-- Logger sub-path export: `ai-browser-test/logger`
+- **Temporal Batch Optimization**
+  - `TemporalBatchOptimizer` - Batch optimizer with temporal dependency awareness
+  - `LatencyAwareBatchOptimizer` - Dynamic latency-aware batching for real-time applications
+  - Temporal constants: `TIME_SCALES`, `MULTI_SCALE_WINDOWS`, `READING_SPEEDS`, `ATTENTION_MULTIPLIERS`
+  - Temporal context utilities: `createTemporalContext`, `mergeTemporalContext`, `extractTemporalContext`
+  - Temporal decision-making: `aggregateMultiScale`, `SequentialDecisionContext`, `humanPerceptionTime`
+  - Temporal error types: `TemporalError`, `PerceptionTimeError`, `SequentialContextError`, `MultiScaleError`, `TemporalBatchError`
+
+- **Bias Detection and Mitigation**
+  - `detectBias` and `detectPositionBias` - Detect bias in VLLM judgments
+  - `applyBiasMitigation`, `mitigateBias`, `mitigatePositionBias` - Bias mitigation utilities
+  - `comparePair` and `rankBatch` - Pair comparison and batch ranking for fair evaluation
+
+- **Ensemble and Advanced Judging**
+  - `EnsembleJudge` and `createEnsembleJudge` - Multi-provider ensemble judging with weighted aggregation
+  - `DEFAULT_RUBRIC`, `buildRubricPrompt`, `getRubricForTestType` - Rubric system for structured evaluation
+
+- **Logger Utility**
+  - `src/logger.mjs` - Conditional logging utility with debug mode support
+  - Logger exports: `enableDebug`, `disableDebug`, `isDebugEnabled`, `warn`, `log`, `error`
+  - Logger sub-path export: `ai-browser-test/logger`
+
+- **Type Guards and Validation**
+  - Comprehensive type guards: `isObject`, `isString`, `isNumber`, `isArray`, `isFunction`, `isPromise`
+  - Validation type guards: `isValidationResult`, `isValidationContext`, `isPersona`, `isTemporalNote`
+  - Assertion utilities: `assertObject`, `assertString`, `assertNonEmptyString`, `assertNumber`, `assertArray`, `assertFunction`
+  - Utility functions: `pick`, `getProperty`
+
+- **Evaluation System**
+  - Comprehensive evaluation system with dataset loaders and metrics
+  - Real-world evaluation with annotation datasets
+  - Expert evaluation scenarios and challenging website tests
+  - Interactive experience evaluation
+  - Data-driven analysis tools
+  - Performance benchmarking utilities
+  - Validation scripts for evaluation components
+
+- **Documentation**
+  - Deep arXiv research comparison and analysis
+  - Standalone and language-agnostic usage guide
+  - Test summary and marimo.io example notebooks
+  - Expert evaluation guide
+  - Real-world application documentation
+  - Consolidated evaluation documentation
 
 ### Changed
-- Replaced all `console.log/warn` statements with logger utility (8 files)
+- Replaced all `console.log/warn` statements with logger utility across all source files
 - Enhanced `buildPrompt` to automatically include context information (testType, viewport, gameState)
 - Updated CI to check for console statements (not just console.log)
 - CI now fails if console statements found (except in logger.mjs)
+- Improved error handling with silent fallbacks for optional operations
+- Better separation of concerns with dedicated logger module
+- Enhanced core modules with improved type safety and validation
 
 ### Fixed
 - Fixed duplicate export of `TemporalBatchOptimizer` in `src/index.mjs`
 - Fixed failing test: `buildPrompt` now includes context in prompt output
-- All 185 tests now passing (0 failures)
+- Fixed missing `ValidationError` import in `judge.mjs`
+- All 192 tests now passing (0 failures)
 
 ### Removed
 - Archived 28+ temporary documentation files to `archive/temp-docs-20251111/`
@@ -27,8 +72,9 @@ All notable changes to ai-browser-test will be documented in this file.
 
 ### Code Quality
 - All source files now use logger utility instead of direct console calls
-- Improved error handling with silent fallbacks for optional operations
-- Better separation of concerns with dedicated logger module
+- Comprehensive test coverage with 192 passing tests
+- Improved type safety with extensive type guards
+- Better error handling and validation throughout
 
 ## [0.1.2] - 2025-01-27
 

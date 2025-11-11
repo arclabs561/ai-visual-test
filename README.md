@@ -403,7 +403,7 @@ The package includes cost tracking and caching to minimize API costs:
 ### As Local Package
 
 1. Install: `npm install file:../ai-browser-test`
-2. Use in your tests: `import { validateScreenshot } from '@visual-ai/validate'`
+2. Use in your tests: `import { validateScreenshot } from 'ai-browser-test'`
 
 ## Dependencies
 

@@ -39,10 +39,20 @@ export {
   multiPerspectiveEvaluation
 } from './multi-modal.mjs';
 export {
+  buildStructuredFusionPrompt,
+  calculateModalityWeights,
+  compareFusionStrategies
+} from './multi-modal-fusion.mjs';
+export {
   aggregateTemporalNotes,
   formatNotesForPrompt,
   calculateCoherenceExported as calculateCoherence
 } from './temporal.mjs';
+export {
+  aggregateTemporalNotesAdaptive,
+  calculateOptimalWindowSize,
+  detectActivityPattern
+} from './temporal-adaptive.mjs';
 export {
   getCached,
   setCached,
@@ -67,6 +77,12 @@ export { extractStructuredData } from './data-extractor.mjs';
 export { aggregateFeedback, generateRecommendations } from './feedback-aggregator.mjs';
 export { compressContext, compressStateHistory } from './context-compressor.mjs';
 export { experiencePageAsPersona, experiencePageWithPersonas } from './persona-experience.mjs';
+export {
+  createEnhancedPersona,
+  experiencePageWithEnhancedPersona,
+  calculatePersonaConsistency,
+  calculatePersonaDiversity
+} from './persona-enhanced.mjs';
 export {
   ExperienceTrace,
   ExperienceTracerManager,

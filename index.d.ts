@@ -48,6 +48,113 @@ export class FileError extends AIBrowserTestError {
 export function isAIBrowserTestError(error: unknown): error is AIBrowserTestError;
 export function isErrorType<T extends AIBrowserTestError>(error: unknown, errorClass: new (...args: any[]) => T): error is T;
 
+// Rubrics
+export interface Rubric {
+  score: {
+    description: string;
+    criteria: Record<string, string>;
+  };
+  dimensions?: Record<string, {
+    description: string;
+    criteria: string[];
+  }>;
+}
+
+export const DEFAULT_RUBRIC: Rubric;
+export function buildRubricPrompt(rubric?: Rubric | null, includeDimensions?: boolean): string;
+export function getRubricForTestType(testType: string): Rubric;
+
+// Bias Detection
+export interface BiasDetectionResult {
+  hasBias: boolean;
+  biases: Array<{
+    type: string;
+    detected: boolean;
+    score: number;
+    evidence: Record<string, unknown>;
+  }>;
+  severity: 'none' | 'low' | 'medium' | 'high';
+  recommendations: string[];
+}
+
+export function detectBias(judgment: string | object, options?: {
+  checkVerbosity?: boolean;
+  checkLength?: boolean;
+  checkFormatting?: boolean;
+  checkPosition?: boolean;
+  checkAuthority?: boolean;
+}): BiasDetectionResult;
+
+export interface PositionBiasResult {
+  detected: boolean;
+  firstBias?: boolean;
+  lastBias?: boolean;
+  reason?: string;
+  evidence?: {
+    firstScore: number;
+    lastScore: number;
+    avgMiddle: number;
+    allScores: number[];
+  };
+}
+
+export function detectPositionBias(judgments: Array<{ score: number | null }>): PositionBiasResult;
+
+// Ensemble Judging
+export interface EnsembleJudgeOptions {
+  judges?: Array<any>;
+  votingMethod?: 'weighted_average' | 'majority' | 'consensus';
+  weights?: number[];
+  minAgreement?: number;
+  enableBiasDetection?: boolean;
+}
+
+export interface EnsembleResult {
+  score: number | null;
+  assessment: string;
+  issues: string[];
+  reasoning: string;
+  confidence: number;
+  agreement: {
+    score: number;
+    scoreAgreement: number;
+    assessmentAgreement: number;
+    mean: number;
+    stdDev: number;
+    scores: number[];
+  };
+  disagreement: {
+    hasDisagreement: boolean;
+    scoreRange: number;
+    assessmentDisagreement: boolean;
+    uniqueAssessments: string[];
+    maxScore: number;
+    minScore: number;
+  };
+  biasDetection?: {
+    individual: BiasDetectionResult[];
+    position: PositionBiasResult;
+  };
+  individualJudgments: Array<{
+    judgeIndex: number;
+    score: number | null;
+    assessment: string | null;
+    issues: string[];
+    reasoning: string | null;
+    provider: string;
+    error?: string;
+  }>;
+  judgeCount: number;
+  votingMethod: string;
+}
+
+export class EnsembleJudge {
+  constructor(options?: EnsembleJudgeOptions);
+  evaluate(imagePath: string, prompt: string, context?: Record<string, unknown>): Promise<EnsembleResult>;
+}
+
+export function createEnsembleJudge(providers?: string[], options?: EnsembleJudgeOptions): EnsembleJudge;
+
 // Core Types
 export interface ValidationContext {
   testType?: string;

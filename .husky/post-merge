@@ -1,0 +1,32 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Post-merge hook - runs after git merge or git pull
+# Useful for installing dependencies, rebuilding, etc.
+
+echo "🔀 Post-merge actions..."
+
+# Check if package.json or package-lock.json changed
+if git diff HEAD@{1} HEAD --name-only | grep -qE "(package\.json|package-lock\.json)"; then
+  echo "📦 Dependencies may have changed, consider running:"
+  echo "   npm install"
+fi
+
+# Check if husky hooks need updating
+if git diff HEAD@{1} HEAD --name-only | grep -qE "\.husky/"; then
+  echo "🪝 Git hooks were updated, they're already active"
+fi
+
+# Show what was merged
+MERGE_COMMITS=$(git log --merges --oneline HEAD@{1}..HEAD 2>/dev/null | wc -l | tr -d ' ')
+if [ "$MERGE_COMMITS" -gt 0 ]; then
+  echo "📥 Merged $MERGE_COMMITS merge commit(s)"
+  echo "   Review changes: git log HEAD@{1}..HEAD"
+fi
+
+# Warn if there are uncommitted changes after merge
+if ! git diff-index --quiet HEAD --; then
+  echo "⚠️  Warning: You have uncommitted changes after merge"
+  echo "   Review with: git status"
+fi
+

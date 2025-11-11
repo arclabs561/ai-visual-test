@@ -1,0 +1,41 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Post-commit hook - runs after successful commit
+# Useful for notifications, cleanup, or informational messages
+
+COMMIT_HASH=$(git rev-parse --short HEAD)
+COMMIT_MSG=$(git log -1 --pretty=%B)
+
+echo "📝 Commit $COMMIT_HASH created successfully"
+
+# Check if this commit includes documentation changes
+if git diff HEAD~1 HEAD --name-only | grep -qE "\.(md|MD)$"; then
+  echo "📄 Documentation files were modified in this commit"
+fi
+
+# Check if this commit includes test changes
+if git diff HEAD~1 HEAD --name-only | grep -qE "(test|spec)"; then
+  echo "🧪 Test files were modified in this commit"
+fi
+
+# Suggest next steps based on commit type
+if echo "$COMMIT_MSG" | grep -qE "^feat:"; then
+  echo "💡 Feature commit - consider:"
+  echo "   - Updating CHANGELOG.md"
+  echo "   - Adding/updating tests"
+  echo "   - Updating documentation"
+fi
+
+if echo "$COMMIT_MSG" | grep -qE "^fix:"; then
+  echo "🔧 Fix commit - consider:"
+  echo "   - Adding a test to prevent regression"
+  echo "   - Updating CHANGELOG.md"
+fi
+
+# Show files changed in this commit
+FILES_CHANGED=$(git diff HEAD~1 HEAD --name-only --diff-filter=ACM | wc -l | tr -d ' ')
+if [ "$FILES_CHANGED" -gt 0 ]; then
+  echo "📊 $FILES_CHANGED file(s) changed in this commit"
+fi
+

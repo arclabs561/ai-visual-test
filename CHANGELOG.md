@@ -147,11 +147,11 @@ All notable changes to ai-browser-test will be documented in this file.
 - Extracted caching into `cache.mjs`
 - Extracted multi-modal validation into `multi-modal.mjs`
 - Centralized configuration in `config.mjs`
-- Renamed package from `@queeraoke/ai-browser-test` to `@ai-browser-test/core` for general-purpose use
+- Renamed package for general-purpose use (removed application-specific naming)
 
 ### Removed
 - Project-specific references
-- Queeraoke-specific naming
+- Application-specific naming removed
 
 ### Migration
 - Package is now standalone and general-purpose

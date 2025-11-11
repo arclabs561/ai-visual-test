@@ -90,6 +90,18 @@ export {
   isErrorType
 } from './errors.mjs';
 export {
+  retryWithBackoff,
+  isRetryableError,
+  calculateBackoff,
+  enhanceErrorMessage
+} from './retry.mjs';
+export {
+  CostTracker,
+  getCostTracker,
+  recordCost,
+  getCostStats
+} from './cost-tracker.mjs';
+export {
   DEFAULT_RUBRIC,
   buildRubricPrompt,
   getRubricForTestType

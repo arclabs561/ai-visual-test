@@ -170,7 +170,7 @@ const gameplay = await testGameplay(page, { url: '...' });
 
 ## Common Patterns
 
-### Queeraoke Pattern
+### Interactive Game Testing Pattern
 ```javascript
 import { testGameplay, validateWithGoals } from 'ai-visual-test';
 

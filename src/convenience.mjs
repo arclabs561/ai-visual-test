@@ -4,7 +4,7 @@
  * Provides simplified APIs for common workflows, reducing boilerplate
  * and making the library easier to use for common patterns.
  * 
- * Based on Queeraoke usage patterns and common testing workflows.
+ * Based on common visual testing workflows and usage patterns.
  */
 
 import { validateScreenshot } from './judge.mjs';

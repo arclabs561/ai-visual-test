@@ -154,7 +154,7 @@ Review this judgment? (y/n/q to quit): y
 
 ## Integration
 
-### With Queeraoke
+### Integration Example
 
 ```javascript
 // In test file

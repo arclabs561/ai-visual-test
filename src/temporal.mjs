@@ -134,6 +134,17 @@ export function aggregateTemporalNotes(notes, options = {}) {
 
 /**
  * Calculate coherence score (0-1)
+ * 
+ * Coherence measures how consistent temporal notes are over time. Higher coherence
+ * indicates stable, predictable patterns. Lower coherence indicates erratic behavior.
+ * 
+ * CRITICAL BUG FIX (2025-01): The adjustedVarianceCoherence calculation was incomplete.
+ * It was: `const adjustedVarianceCoherence = Math.max;` which is just a function reference.
+ * This would cause incorrect coherence scores for erratic behavior. The fix completes
+ * the calculation with proper penalty for direction changes.
+ * 
+ * @param {Array} windows - Temporal window summaries with avgScore
+ * @returns {number} Coherence score 0-1 (1 = perfectly consistent, 0 = erratic)
  */
 function calculateCoherence(windows) {
   if (windows.length < 2) return 1.0;
@@ -152,6 +163,8 @@ function calculateCoherence(windows) {
   }
 
   // Metric 1: Direction consistency
+  // Count how often the direction of change flips (up→down or down→up)
+  // More flips = more erratic behavior
   let directionChanges = 0;
   for (let i = 1; i < trends.length; i++) {
     if (trends[i] !== trends[i - 1]) {
@@ -162,13 +175,15 @@ function calculateCoherence(windows) {
 
   // Metric 2: Score variance
   // Use stricter normalization that properly penalizes erratic behavior
+  // 
+  // IMPORTANT: We changed from meanScore² to score range because:
+  // - meanScore² was too lenient (e.g., mean=5 → maxVariance=25, but scores 0-10 have range=10)
+  // - Score range better captures actual variance in the data
+  // - For scores 0-10, max reasonable variance is ~25 (when scores vary uniformly from 0 to 10)
+  // - For scores 0-100, max reasonable variance is ~2500
   const meanScore = scores.reduce((a, b) => a + b, 0) / scores.length;
   const variance = scores.reduce((sum, score) => sum + Math.pow(score - meanScore, 2), 0) / scores.length;
   
-    // Use fixed max variance based on score range, not meanScore^2
-  // For scores 0-10, max reasonable variance is ~25 (when scores vary from 0 to 10)
-  // For scores 0-100, max reasonable variance is ~2500
-  // Use score range to determine max variance, not meanScore^2 (which is too lenient)
   const scoreRange = Math.max(...scores) - Math.min(...scores);
   const maxVariance = Math.max(
     Math.pow(scoreRange / 2, 2), // Variance for uniform distribution over range
@@ -179,10 +194,17 @@ function calculateCoherence(windows) {
   // Variance coherence: penalize high variance more aggressively
   const varianceCoherence = Math.max(0, Math.min(1, 1.0 - (variance / maxVariance)));
   
-    // Add stronger penalty for frequent direction changes (erratic behavior)
+  // Add stronger penalty for frequent direction changes (erratic behavior)
   // Direction changes are a strong signal of erratic behavior
+  // 
+  // CRITICAL: This calculation must be complete! The bug was:
+  //   const adjustedVarianceCoherence = Math.max; // WRONG - just function reference
+  // The fix is:
+  //   const adjustedVarianceCoherence = Math.max(0, Math.min(1, varianceCoherence * (1.0 - directionChangePenalty * 0.7)));
+  // 
+  // The 0.7 multiplier means direction changes reduce variance coherence by up to 70%
+  // This was increased from 0.5 to be more aggressive at detecting erratic behavior
   const directionChangePenalty = directionChanges / Math.max(1, trends.length);
-  // Apply penalty more aggressively: 0.7x multiplier (was 0.5x)
   const adjustedVarianceCoherence = Math.max(0, Math.min(1, varianceCoherence * (1.0 - directionChangePenalty * 0.7)));
 
   // Metric 3: Observation consistency
@@ -208,15 +230,51 @@ function calculateCoherence(windows) {
     observationConsistency = Math.max(0, Math.min(1, overlapSum / Math.max(1, keywords.length - 1)));
   }
 
-    // Add stability metric that directly penalizes erratic behavior
+  // Metric 3: Stability
+  // Stability directly penalizes erratic behavior by measuring direction change frequency
   // Stability = 1 - (directionChanges / maxPossibleChanges)
   // For n windows, max possible direction changes is n-2 (can't change at first or last)
   const maxPossibleChanges = Math.max(1, trends.length);
   const stability = Math.max(0, Math.min(1, 1.0 - (directionChanges / maxPossibleChanges)));
   
-  // Increase weight of direction consistency and stability
-  // Erratic behavior should be heavily penalized
-  // New weights: direction 0.35, stability 0.25, variance 0.25, observation 0.15
+  // Metric 4: Observation consistency (recalculated)
+  // Check if observations use similar keywords across windows
+  // Less reliable than score-based metrics (keyword matching is approximate)
+  observationConsistency = 1.0;
+  if (windows.length > 1) {
+    const observations = windows.map(w => (w.observations || '').toLowerCase());
+    const keywords = observations.map(obs => {
+      const words = obs.split(/\s+/).filter(w => w.length > 3);
+      return new Set(words);
+    });
+    
+    let overlapSum = 0;
+    for (let i = 1; i < keywords.length; i++) {
+      const prev = keywords[i - 1];
+      const curr = keywords[i];
+      if (prev && curr && prev.size > 0 && curr.size > 0) {
+      const intersection = new Set([...prev].filter(x => curr.has(x)));
+      const union = new Set([...prev, ...curr]);
+      const overlap = union.size > 0 ? intersection.size / union.size : 0;
+      overlapSum += overlap;
+      }
+    }
+    observationConsistency = Math.max(0, Math.min(1, overlapSum / Math.max(1, keywords.length - 1)));
+  }
+  
+  // Final coherence: Weighted combination of all metrics
+  // 
+  // Weight rationale (2025-01):
+  // - Direction (0.35): Strongest signal of erratic behavior, most reliable
+  // - Stability (0.25): Directly measures direction change frequency
+  // - Variance (0.25): Captures score spread, adjusted for direction changes
+  // - Observation (0.15): Least reliable (keyword-based), lowest weight
+  // 
+  // These weights were chosen to heavily penalize erratic behavior while still
+  // considering all aspects of temporal consistency. Don't change without:
+  // - Testing with known erratic vs. stable patterns
+  // - Validating against human-annotated coherence scores
+  // - Measuring impact on conflict detection
   const coherence = (
     directionConsistency * 0.35 +
     stability * 0.25 +

@@ -7,6 +7,13 @@
  * - Implementing request pooling with concurrency limits
  * 
  * General-purpose utility - no domain-specific logic.
+ * 
+ * CACHE ARCHITECTURE NOTE:
+ * - This has its OWN in-memory cache (Map), separate from VLLM cache
+ * - Cache key generation is problematic (truncation causes collisions)
+ * - No coordination with VLLM cache (could cache same thing twice)
+ * - No size limits or eviction (grows unbounded in long-running processes)
+ * - See CACHE_ARCHITECTURE_DEEP_DIVE.md for details
  */
 
 /**
@@ -41,9 +48,32 @@ export class BatchOptimizer {
   
   /**
    * Generate cache key from screenshot path and prompt
+   * 
+   * CRITICAL: This cache key generation is problematic!
+   * 
+   * Issues:
+   * 1. Truncation: prompt truncated to 100 chars, context to 50 chars
+   *    - Causes collisions: different prompts with same prefix = same key
+   *    - Wrong cache hits = incorrect results
+   * 
+   * 2. String concatenation, not hash
+   *    - VLLM cache uses SHA-256 hash (secure, no collisions)
+   *    - This uses string concatenation (collision-prone)
+   *    - Inconsistent with VLLM cache approach
+   * 
+   * 3. Whitespace removal in prompt
+   *    - `replace(/\s+/g, '')` removes all whitespace
+   *    - "Check accessibility" vs "Checkaccessibility" = same key (wrong!)
+   * 
+   * Why it exists: Probably for simplicity, but it's dangerous
+   * 
+   * Better approach: Use SHA-256 hash like VLLM cache, don't truncate
+   * 
+   * TODO: Fix this to use proper hashing and no truncation
    */
   _getCacheKey(imagePath, prompt, context) {
-    // Use image path hash + prompt hash for cache key
+    // WARNING: This implementation has collision risks
+    // Truncation and string concatenation can cause wrong cache hits
     const promptHash = prompt ? prompt.substring(0, 100).replace(/\s+/g, '') : '';
     const contextHash = context ? JSON.stringify(context).substring(0, 50) : '';
     return `${imagePath}-${promptHash}-${contextHash}`;

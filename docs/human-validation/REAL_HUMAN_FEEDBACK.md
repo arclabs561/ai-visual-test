@@ -157,7 +157,7 @@ Review this judgment? (y/n/q to quit): y
 ### With Queeraoke
 
 ```javascript
-// In queeraoke test file
+// In test file
 import { initHumanValidation } from 'ai-visual-test';
 
 // Initialize once

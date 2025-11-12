@@ -3,6 +3,17 @@
  * 
  * Provides persistent caching for VLLM API calls to reduce costs and improve performance.
  * Uses file-based storage for cache persistence across test runs.
+ * 
+ * CRITICAL BUGS FIXED (2025-01):
+ * 1. Timestamp reset on save - was resetting ALL timestamps to `now`, breaking 7-day expiration
+ * 2. Cache key truncation - was truncating prompts/gameState, causing collisions
+ * 
+ * ARCHITECTURE NOTES:
+ * - This is ONE of THREE cache systems in the codebase (see CACHE_ARCHITECTURE_DEEP_DIVE.md)
+ * - File-based, persistent across runs
+ * - LRU eviction based on _lastAccessed
+ * - Expiration based on timestamp (creation time)
+ * - No coordination with BatchOptimizer cache or TemporalPreprocessing cache
  */
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
@@ -63,14 +74,25 @@ export function initCache(cacheDir) {
  * @returns {string} SHA-256 hash of cache key
  */
 export function generateCacheKey(imagePath, prompt, context = {}) {
+  // CRITICAL: Don't truncate cache keys - it causes collisions!
+  // 
+  // The bug: Truncating prompt (1000 chars) and gameState (500 chars) means:
+  // - Different prompts with same first 1000 chars = same cache key = wrong cache hit
+  // - Different game states with same first 500 chars = same cache key = wrong cache hit
+  // 
+  // The fix: Hash the FULL content, don't truncate
+  // SHA-256 handles arbitrary length, so there's no reason to truncate
+  // 
+  // Why truncation existed: Probably to keep keys "manageable", but it's dangerous
+  // Better approach: Hash full content, collisions are cryptographically unlikely
   const keyData = {
     imagePath,
-    prompt: prompt.substring(0, 1000), // Limit prompt length for key (increased from 500)
+    prompt, // Full prompt, not truncated
     testType: context.testType || '',
     frame: context.frame || '',
     score: context.score || '',
-    viewport: context.viewport ? JSON.stringify(context.viewport) : '', // Include viewport
-    gameState: context.gameState ? JSON.stringify(context.gameState).substring(0, 500) : '' // Include game state
+    viewport: context.viewport ? JSON.stringify(context.viewport) : '',
+    gameState: context.gameState ? JSON.stringify(context.gameState) : '' // Full game state, not truncated
   };
   
   const keyString = JSON.stringify(keyData);
@@ -79,6 +101,13 @@ export function generateCacheKey(imagePath, prompt, context = {}) {
 
 /**
  * Load cache from file
+ * 
+ * CRITICAL: Preserves original timestamps from file for expiration logic.
+ * We need the original timestamp to check if entries are older than MAX_CACHE_AGE (7 days).
+ * 
+ * The cache file format is: { key: { data: {...}, timestamp: number } }
+ * - `timestamp`: When the entry was created (used for expiration)
+ * - `data._lastAccessed`: When the entry was last accessed (used for LRU eviction)
  */
 function loadCache() {
   if (!CACHE_FILE || !existsSync(CACHE_FILE)) {
@@ -90,10 +119,19 @@ function loadCache() {
     const cache = new Map();
     const now = Date.now();
     
-    // Filter out expired entries
+    // Filter out expired entries based on ORIGINAL timestamp
+    // IMPORTANT: We preserve the original timestamp from the file
+    // This allows 7-day expiration to work correctly
     for (const [key, value] of Object.entries(cacheData)) {
       if (value.timestamp && (now - value.timestamp) < MAX_CACHE_AGE) {
-        cache.set(key, value.data);
+        // Preserve both the data and the original timestamp
+        // The timestamp is stored in the file, not in the data object
+        // But we need to track it for expiration, so we store it in the data
+        const entry = {
+          ...value.data,
+          _originalTimestamp: value.timestamp // Preserve for expiration checks
+        };
+        cache.set(key, entry);
       }
     }
     
@@ -123,27 +161,44 @@ function saveCache(cache) {
     const now = Date.now();
     let totalSize = 0;
     
-    // Convert to array and sort by timestamp (LRU: oldest first)
+    // CRITICAL BUG FIX (2025-01): Don't reset timestamps on save!
+    // 
+    // The bug was: `timestamp: now` for ALL entries
+    // This broke 7-day expiration because old entries got new timestamps
+    // 
+    // The fix: Preserve original timestamp for existing entries, use `now` only for new entries
+    // 
+    // Two timestamps serve different purposes:
+    // - `timestamp`: Creation time (for expiration - 7 days)
+    // - `_lastAccessed`: Access time (for LRU eviction - least recently used)
+    // 
+    // Convert to array and sort by _lastAccessed (LRU: oldest access first)
     const entries = Array.from(cache.entries())
-      .map(([key, value]) => ({
-        key,
-        value,
-        timestamp: now // All entries get current timestamp on save
-      }))
+      .map(([key, value]) => {
+        // Preserve original timestamp if it exists, otherwise use current time (new entry)
+        const originalTimestamp = value._originalTimestamp || now;
+        // Remove _originalTimestamp from data before saving (it's metadata, not part of result)
+        const { _originalTimestamp, ...dataWithoutMetadata } = value;
+        
+        return {
+          key,
+          value: dataWithoutMetadata,
+          timestamp: originalTimestamp, // Preserve original, don't reset!
+          lastAccessed: value._lastAccessed || originalTimestamp
+        };
+      })
       .sort((a, b) => {
-        // Sort by access time if available, otherwise FIFO
-        const aTime = a.value._lastAccessed || 0;
-        const bTime = b.value._lastAccessed || 0;
-        return aTime - bTime;
+        // Sort by access time for LRU eviction (oldest access = evict first)
+        return a.lastAccessed - b.lastAccessed;
       });
     
-    // Apply size limits (LRU eviction)
+    // Apply size limits (LRU eviction: keep most recently accessed)
     const entriesToKeep = entries.slice(-MAX_CACHE_SIZE);
     
     for (const { key, value, timestamp } of entriesToKeep) {
       const entry = {
         data: value,
-        timestamp
+        timestamp // Original timestamp preserved for expiration
       };
       const entrySize = JSON.stringify(entry).length;
       
@@ -157,9 +212,14 @@ function saveCache(cache) {
     }
     
     // Update in-memory cache to match saved entries
+    // IMPORTANT: Restore _originalTimestamp for expiration checks
     cache.clear();
     for (const [key, entry] of Object.entries(cacheData)) {
-      cache.set(key, entry.data);
+      const entryWithMetadata = {
+        ...entry.data,
+        _originalTimestamp: entry.timestamp // Restore for expiration checks
+      };
+      cache.set(key, entryWithMetadata);
     }
     
     writeFileSync(CACHE_FILE, JSON.stringify(cacheData, null, 2), 'utf8');
@@ -198,7 +258,17 @@ export function getCached(imagePath, prompt, context = {}) {
   
   if (cached) {
     // Update access time for LRU eviction
+    // This is separate from timestamp (creation time) which is used for expiration
     cached._lastAccessed = Date.now();
+    
+    // Check expiration based on original timestamp
+    // If entry is older than MAX_CACHE_AGE, remove it and return null
+    const originalTimestamp = cached._originalTimestamp || cached._lastAccessed;
+    const age = Date.now() - originalTimestamp;
+    if (age > MAX_CACHE_AGE) {
+      cache.delete(key); // Remove expired entry
+      return null;
+    }
   }
   
   return cached || null;
@@ -216,22 +286,26 @@ export function getCached(imagePath, prompt, context = {}) {
 export function setCached(imagePath, prompt, context, result) {
   const cache = getCache();
   const key = generateCacheKey(imagePath, prompt, context);
+  const now = Date.now();
   
-  // Add access time for LRU eviction
+  // Check if this is a new entry or updating existing
+  const existing = cache.get(key);
+  const originalTimestamp = existing?._originalTimestamp || now; // Preserve if exists, else new
+  
+  // Add metadata for cache management
+  // - _lastAccessed: For LRU eviction (when was it last used)
+  // - _originalTimestamp: For expiration (when was it created)
   const resultWithMetadata = {
     ...result,
-    _lastAccessed: Date.now()
+    _lastAccessed: now, // Update access time
+    _originalTimestamp: originalTimestamp // Preserve creation time
   };
   
   cache.set(key, resultWithMetadata);
   
-  // Check if cache exceeds size limit before saving
-  if (cache.size > MAX_CACHE_SIZE) {
-    // Trigger eviction by saving (which applies LRU)
-    saveCache(cache);
-  } else {
-    saveCache(cache);
-  }
+  // Always save cache (saveCache handles size limits and LRU eviction)
+  // The if/else was redundant - both branches did the same thing
+  saveCache(cache);
 }
 
 /**

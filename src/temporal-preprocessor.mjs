@@ -30,6 +30,21 @@ class ActivityDetector {
   /**
    * Detect activity level from temporal notes
    * 
+   * Activity detection is critical for preprocessing routing:
+   * - High activity (>10 notes/sec): Use cache for speed
+   * - Medium activity (1-10 notes/sec): Hybrid (cache if valid, else compute)
+   * - Low activity (<1 note/sec): Background preprocessing (non-blocking)
+   * 
+   * Thresholds are based on human perception time scales:
+   * - High-Hz (>10Hz): Rapid interactions, fast state changes (gaming, scrolling)
+   * - Medium-Hz (1-10Hz): Normal browsing, moderate interactions
+   * - Low-Hz (<1Hz): Idle, reading, stable state (can do expensive preprocessing)
+   * 
+   * DON'T CHANGE THRESHOLDS without:
+   * - Testing with real browser interactions
+   * - Validating cache hit rates
+   * - Measuring latency impact
+   * 
    * @param {import('./index.mjs').TemporalNote[]} notes - Temporal notes
    * @param {number} recentWindow - Time window in ms to analyze (default: 5000ms)
    * @returns {'high' | 'medium' | 'low'} Activity level
@@ -131,6 +146,14 @@ class ActivityDetector {
  * 
  * Manages preprocessing of temporal notes during low-activity periods
  * and provides fast access to preprocessed data during high-activity periods.
+ * 
+ * CACHE ARCHITECTURE NOTE:
+ * - This is a THIRD cache system, completely separate from VLLM cache and BatchOptimizer cache
+ * - In-memory object (not a Map), single cache entry (most recent preprocessing)
+ * - No keys, no coordination with other caches
+ * - Cache validity based on age (5s) and note count change (>20%)
+ * - "Incremental aggregation" is currently a lie (does full recomputation)
+ * - See CACHE_ARCHITECTURE_DEEP_DIVE.md for details
  */
 export class TemporalPreprocessingManager {
   constructor(options = {}) {
@@ -247,16 +270,41 @@ export class TemporalPreprocessingManager {
   /**
    * Check if cache is valid for current notes
    * 
+   * CRITICAL LIMITATION: This only checks note COUNT, not note CONTENT!
+   * 
+   * The problem:
+   * - Validates cache if note count changed <20%
+   * - But doesn't check if notes actually changed
+   * - Example: 10 notes, replace 2 with different notes = same count = cache valid (WRONG!)
+   * 
+   * Why this exists:
+   * - Checking note content would require hashing/comparing all notes (expensive)
+   * - Count-based check is fast but imprecise
+   * - 20% threshold is arbitrary (why 20%? why not 10% or 30%?)
+   * 
+   * What should happen:
+   * - Hash note content to detect actual changes
+   * - Or use more sophisticated diff
+   * - Or accept that cache might be stale (document the risk)
+   * 
+   * Current impact:
+   * - Cache might be used when notes changed but count didn't
+   * - Stale aggregations returned
+   * - Coherence scores might be wrong
+   * 
    * @param {import('./index.mjs').TemporalNote[]} notes - Current notes
    * @returns {boolean} True if cache is valid
    */
   isCacheValid(notes) {
     if (!this.preprocessedCache.aggregated) return false;
     
+    // Age-based invalidation: cache expires after cacheMaxAge (default: 5s)
     const age = Date.now() - this.preprocessedCache.lastPreprocessTime;
     if (age > this.cacheMaxAge) return false;
     
-    // Check if note count changed significantly
+    // Count-based invalidation: cache invalid if note count changed >20%
+    // WARNING: This doesn't check if notes actually changed, just count!
+    // Same count but different notes = cache considered valid (might be stale)
     const noteCountDiff = Math.abs(notes.length - this.preprocessedCache.noteCount);
     if (noteCountDiff > notes.length * 0.2) return false; // >20% change
     
@@ -281,13 +329,44 @@ export class TemporalPreprocessingManager {
   /**
    * Incremental aggregation (faster than full recomputation)
    * 
+   * CRITICAL: This is currently a LIE - it does full recomputation, not incremental!
+   * 
+   * The problem:
+   * - Function name says "incremental"
+   * - Comment says "faster than full recomputation"
+   * - But implementation just calls `aggregateTemporalNotes()` = full recomputation
+   * 
+   * Why this exists:
+   * - Planned feature (TODO comment)
+   * - Called from `getFastAggregation()` when cache is "partially valid"
+   * - The idea: if cache is old but not too old, do incremental update instead of full recompute
+   * 
+   * What should happen:
+   * - Take cached aggregation
+   * - Add only new notes since cache was created
+   * - Update windows, coherence, etc. incrementally
+   * - Much faster than full recomputation
+   * 
+   * Current impact:
+   * - "Partially valid" cache path has no performance benefit
+   * - Might as well always do full recomputation
+   * - The "incremental" path is misleading
+   * 
+   * TODO: Implement true incremental aggregation OR remove this path
+   * 
    * @param {import('./index.mjs').TemporalNote[]} notes - Current notes
    * @param {Object} options - Aggregation options
    * @returns {import('./index.mjs').AggregatedTemporalNotes} Aggregated notes
    */
   _incrementalAggregation(notes, options) {
-    // For now, fall back to full computation
-    // TODO: Implement true incremental aggregation
+    // WARNING: This is NOT actually incremental - it does full recomputation
+    // The function name and comment are misleading
+    // TODO: Implement true incremental aggregation that:
+    //   1. Takes cached aggregation
+    //   2. Identifies new notes since cache
+    //   3. Updates only affected windows
+    //   4. Recomputes coherence for changed windows only
+    // OR: Remove this function and always do full recomputation
     return aggregateTemporalNotes(notes, options);
   }
   

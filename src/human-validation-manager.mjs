@@ -17,7 +17,7 @@ import { join } from 'path';
 let humanValidationModule = null;
 async function getHumanValidationModule() {
   if (!humanValidationModule) {
-    humanValidationModule = await import('../evaluation/human-validation.mjs');
+    humanValidationModule = await import('../evaluation/human-validation/human-validation.mjs');
   }
   return humanValidationModule;
 }
@@ -251,9 +251,9 @@ export class HumanValidationManager {
     } else {
       // No validator function - queue for later review
       // The judgment is already saved to disk, so it will be available
-      // when the user runs: node evaluation/real-human-feedback.mjs
+      // when the user runs: node evaluation/human-validation/real-human-feedback.mjs
       log(`[Human Validation] Queued judgment ${vllmJudgment.id} for human review`);
-      log(`[Human Validation] Run 'node evaluation/real-human-feedback.mjs' to review`);
+      log(`[Human Validation] Run 'node evaluation/human-validation/real-human-feedback.mjs' to review`);
     }
   }
   

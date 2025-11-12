@@ -91,8 +91,22 @@ export async function experiencePageAsPersona(page, persona, options = {}) {
   };
 
   // Set viewport based on persona device preference
-  // IMPORTANT: Always set viewport, even if persona.device is not set
-  // Use device from options if persona.device is not available
+  // 
+  // CRITICAL BUG FIX (2025-01): Viewports were only set if persona.device existed.
+  // This caused mobile/tablet personas to get desktop viewports (1280x720) when
+  // persona.device was not set but options.device was.
+  // 
+  // The fix: Check both persona.device AND options.device
+  // 
+  // Viewport sizes:
+  // - mobile: 375x667 (iPhone SE - smallest common mobile)
+  // - tablet: 768x1024 (iPad - standard tablet)
+  // - desktop: 1280x720 (standard desktop resolution)
+  // 
+  // DON'T CHANGE VIEWPORT SIZES without:
+  // - Understanding why these sizes were chosen
+  // - Testing with different viewports
+  // - Validating persona diversity tests
   const deviceToUse = persona.device || device;
   if (deviceToUse) {
     const deviceViewports = {

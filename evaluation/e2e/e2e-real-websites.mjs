@@ -111,7 +111,7 @@ async function test2048Game() {
           screenshot: initialScreenshot,
           prompt: 'Evaluate the 2048 game interface',
           temporalNotes: experience.notes,
-          aggregatedNotes: initialProcessed.aggregated,
+          aggregatedNotes: initialProcessed?.aggregated || null,
           experienceTrace: trace
         };
         
@@ -209,18 +209,24 @@ async function test2048Game() {
     }
     
     // Show temporal analysis (already aggregated above)
-    console.log(`  📈 Temporal coherence: ${(aggregated.coherence * 100).toFixed(0)}%`);
-    console.log(`  📊 Windows analyzed: ${aggregated.windows.length}`);
-    console.log(`  📊 Multi-scale scales: ${Object.keys(multiScale.scales).length}`);
-    Object.entries(multiScale.scales).forEach(([scale, data]) => {
-      console.log(`     - ${scale}: ${data.windows.length} windows, coherence: ${(data.coherence * 100).toFixed(0)}%`);
-    });
+    if (aggregated && aggregated.coherence !== undefined) {
+      console.log(`  📈 Temporal coherence: ${(aggregated.coherence * 100).toFixed(0)}%`);
+      console.log(`  📊 Windows analyzed: ${aggregated.windows?.length || 0}`);
+    }
+    if (multiScale && multiScale.scales) {
+      console.log(`  📊 Multi-scale scales: ${Object.keys(multiScale.scales).length}`);
+      Object.entries(multiScale.scales).forEach(([scale, data]) => {
+        if (data && data.windows && data.coherence !== undefined) {
+          console.log(`     - ${scale}: ${data.windows.length} windows, coherence: ${(data.coherence * 100).toFixed(0)}%`);
+        }
+      });
+    }
     
     return {
       success: true,
       initialScore: initialValidation ? initialValidation.score : null,
       finalScore: finalValidation ? finalValidation.score : null,
-      coherence: aggregated.coherence,
+      coherence: aggregated?.coherence ?? null,
       trace: trace
     };
   } catch (error) {
@@ -244,6 +250,12 @@ async function testGitHubHomepage() {
   
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage();
+  
+  // Create adaptive temporal processor for activity-based preprocessing
+  const temporalProcessor = createAdaptiveTemporalProcessor({
+    preprocessInterval: 2000,
+    cacheMaxAge: 5000
+  });
   
   try {
     const trace = new ExperienceTrace('github-homepage-test');
@@ -312,15 +324,19 @@ async function testGitHubHomepage() {
       const aggregated = processed.aggregated;
       const multiScale = processed.multiScale;
       
-      console.log(`  📈 Temporal coherence: ${(aggregated.coherence * 100).toFixed(0)}%`);
+      if (aggregated && aggregated.coherence !== undefined) {
+        console.log(`  📈 Temporal coherence: ${(aggregated.coherence * 100).toFixed(0)}%`);
+      }
       console.log(`  📊 Processing: ${processed.source} (${processed.latency})`);
-      console.log(`  📊 Multi-scale insights: ${Object.keys(multiScale.scales).length} scales analyzed`);
+      if (multiScale && multiScale.scales) {
+        console.log(`  📊 Multi-scale insights: ${Object.keys(multiScale.scales).length} scales analyzed`);
+      }
       
       return {
         success: true,
         initialScore: validation ? validation.score : null,
         scrolledScore: scrolledValidation ? scrolledValidation.score : null,
-        coherence: aggregated.coherence,
+        coherence: aggregated?.coherence ?? null,
         trace: trace
       };
     }
@@ -446,14 +462,18 @@ async function testWikipedia() {
       const aggregated = processed.aggregated;
       const multiScale = processed.multiScale;
       
-      console.log(`  📈 Temporal coherence: ${(aggregated.coherence * 100).toFixed(0)}%`);
+      if (aggregated && aggregated.coherence !== undefined) {
+        console.log(`  📈 Temporal coherence: ${(aggregated.coherence * 100).toFixed(0)}%`);
+      }
       console.log(`  📊 Processing: ${processed.source} (${processed.latency})`);
-      console.log(`  📊 Multi-scale insights: ${Object.keys(multiScale.scales).length} scales analyzed`);
+      if (multiScale && multiScale.scales) {
+        console.log(`  📊 Multi-scale insights: ${Object.keys(multiScale.scales).length} scales analyzed`);
+      }
       
       return {
         success: true,
         initialScore: validation ? validation.score : null,
-        coherence: aggregated.coherence,
+        coherence: aggregated?.coherence ?? null,
         trace: trace
       };
     }

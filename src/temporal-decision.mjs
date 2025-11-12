@@ -95,15 +95,20 @@ export function aggregateMultiScale(notes, options = {}) {
       windows[windowIndex].totalWeight += weight;
     }
     
+    // CRITICAL: windows is a sparse array (indexed by windowIndex), so we need to filter
+    // out undefined entries before mapping to ensure all windows have avgScore
+    // This prevents "Cannot read properties of undefined (reading 'avgScore')" errors
+    const definedWindows = windows.filter(w => w !== undefined);
+    
     scales[scaleName] = {
       windowSize,
-      windows: windows.map(w => ({
+      windows: definedWindows.map(w => ({
         window: w.index,
         timeRange: `${Math.round((w.startTime - startTime) / 1000)}s-${Math.round((w.endTime - startTime) / 1000)}s`,
         avgScore: w.totalWeight > 0 ? w.weightedScore / w.totalWeight : 0,
         noteCount: w.notes.length
       })),
-      coherence: calculateCoherenceForScale(windows)
+      coherence: calculateCoherenceForScale(definedWindows)
     };
   }
   
@@ -235,10 +240,19 @@ function generateMultiScaleSummary(scales) {
   const parts = [];
   
   for (const [scaleName, scale] of Object.entries(scales)) {
-    if (scale.windows.length > 0) {
-      const first = scale.windows[0].avgScore;
-      const last = scale.windows[scale.windows.length - 1].avgScore;
-      parts.push(`${scaleName} scale (${scale.windowSize}ms): ${first.toFixed(1)} → ${last.toFixed(1)}, coherence: ${(scale.coherence * 100).toFixed(0)}%`);
+    if (scale && scale.windows && scale.windows.length > 0) {
+      const firstWindow = scale.windows[0];
+      const lastWindow = scale.windows[scale.windows.length - 1];
+      
+      // Defensive check: windows might not have avgScore if they're empty
+      if (firstWindow && lastWindow && 
+          firstWindow.avgScore !== undefined && 
+          lastWindow.avgScore !== undefined) {
+        const first = firstWindow.avgScore;
+        const last = lastWindow.avgScore;
+        const coherence = scale.coherence !== undefined ? scale.coherence : 0;
+        parts.push(`${scaleName} scale (${scale.windowSize}ms): ${first.toFixed(1)} → ${last.toFixed(1)}, coherence: ${(coherence * 100).toFixed(0)}%`);
+      }
     }
   }
   

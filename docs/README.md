@@ -30,7 +30,7 @@ Complete guide to all documentation in this repository, organized by topic with 
 - → [API_CRITICAL_REQUIREMENTS.md](./api/API_CRITICAL_REQUIREMENTS.md) - Critical requirements
 
 ### [API_REVIEW_AND_ALIGNMENT.md](./api/API_REVIEW_AND_ALIGNMENT.md)
-**Summary**: Deep dive into API structure, comparing against research findings, Playwright patterns, and Queeraoke usage. Identifies gaps and alignment opportunities.
+**Summary**: Deep dive into API structure, comparing against research findings, Playwright patterns, and real-world usage patterns. Identifies gaps and alignment opportunities.
 
 **Key Topics**: API structure analysis, research alignment, usage patterns, design recommendations
 
@@ -122,7 +122,6 @@ Complete guide to all documentation in this repository, organized by topic with 
 **Connections**:
 - → [HUMAN_VALIDATION_CAPABILITIES.md](./human-validation/HUMAN_VALIDATION_CAPABILITIES.md) - Capabilities overview
 - → [API_CRITICAL_REQUIREMENTS.md](./api/API_CRITICAL_REQUIREMENTS.md) - Critical requirements
-- → [QUEERAOKE_HUMAN_VALIDATION_GUIDE.md](./human-validation/QUEERAOKE_HUMAN_VALIDATION_GUIDE.md) - Usage guide
 
 ### [HUMAN_VALIDATION_CAPABILITIES.md](./human-validation/HUMAN_VALIDATION_CAPABILITIES.md)
 **Summary**: Overview of human validation capabilities, features, and use cases. High-level summary of what the system can do.
@@ -151,13 +150,6 @@ Complete guide to all documentation in this repository, organized by topic with 
 - → [HUMAN_FEEDBACK_COLLECTION.md](./human-validation/HUMAN_FEEDBACK_COLLECTION.md) - Collection guide
 - → [REAL_HUMAN_FEEDBACK.md](./human-validation/REAL_HUMAN_FEEDBACK.md) - Real examples
 
-### [QUEERAOKE_HUMAN_VALIDATION_GUIDE.md](./human-validation/QUEERAOKE_HUMAN_VALIDATION_GUIDE.md)
-**Summary**: Specific guide for using human validation with Queeraoke. Practical examples and workflows.
-
-**Key Topics**: Queeraoke integration, practical examples, workflows
-
-**Connections**:
-- → [HUMAN_VALIDATION_INTEGRATION.md](./human-validation/HUMAN_VALIDATION_INTEGRATION.md) - Integration
 - → [BROWSER_EXPERIENCE_AND_GAMEPLAY.md](./features/BROWSER_EXPERIENCE_AND_GAMEPLAY.md) - Browser experience
 
 ---
@@ -309,7 +301,6 @@ Complete guide to all documentation in this repository, organized by topic with 
 ### Human Validation
 - [HUMAN_VALIDATION_INTEGRATION.md](./HUMAN_VALIDATION_INTEGRATION.md) - Integration guide
 - [HUMAN_FEEDBACK_COLLECTION.md](./HUMAN_FEEDBACK_COLLECTION.md) - Feedback collection
-- [QUEERAOKE_HUMAN_VALIDATION_GUIDE.md](./QUEERAOKE_HUMAN_VALIDATION_GUIDE.md) - Queeraoke guide
 
 ### Implementation
 - [IMPROVEMENTS_IMPLEMENTED.md](./IMPROVEMENTS_IMPLEMENTED.md) - What's implemented

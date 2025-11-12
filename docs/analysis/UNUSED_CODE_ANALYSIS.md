@@ -10,7 +10,7 @@ After researching the codebase, several features marked as "unused" are actually
 - **Location**: `src/prompt-composer.mjs:108`
 - **Usage**: Automatically prunes temporal notes before aggregation
 - **Status**: ✅ Already integrated, working as intended
-- **Note**: The "unused" label in `QUEERAOKE_CURRENT_USAGE.md` refers to queeraoke not using it directly, but it's used internally by the library
+- **Note**: This function is used internally by the library for temporal note processing
 
 ### ✅ `pruneTemporalNotes` - **USED**
 - **Location**: `src/temporal-preprocessor.mjs:215, 486`

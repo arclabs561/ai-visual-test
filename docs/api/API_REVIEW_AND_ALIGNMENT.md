@@ -1,11 +1,11 @@
-# API Review and Alignment: Research, Design, and Queeraoke Usage
+# API Review and Alignment: Research, Design, and Usage Patterns
 
 ## Executive Summary
 
 This document provides a comprehensive review of the API based on:
 1. **Research** - Best practices from Playwright, testing frameworks, and game AI
 2. **Design** - API structure, consistency, and usability
-3. **Queeraoke Usage** - Real-world downstream usage patterns
+3. **Real-World Usage** - Common usage patterns and workflows
 4. **Alignment** - Code and test alignment with design
 
 ## 1. Research Findings
@@ -111,9 +111,9 @@ This document provides a comprehensive review of the API based on:
 - ⚠️ Some functions not clearly categorized
 - ⚠️ Missing high-level convenience functions
 
-## 3. Queeraoke Usage Analysis
+## 3. Real-World Usage Analysis
 
-### Usage Patterns Found
+### Common Usage Patterns
 
 **Pattern 1: Basic Validation**
 ```javascript
@@ -170,7 +170,7 @@ const manager = initHumanValidation({
 });
 ```
 
-### What Queeraoke Needs
+### Common User Needs
 
 **From Analysis:**
 1. ✅ Browser/Playwright integration - **CRITICAL**
@@ -302,7 +302,7 @@ const manager = initHumanValidation({
 
 ### Priority 1: High-Level Convenience Functions
 
-**Why**: Queeraoke and other users compose multiple functions for common workflows. High-level functions reduce boilerplate.
+**Why**: Users often compose multiple functions for common workflows. High-level functions reduce boilerplate.
 
 **Proposed API:**
 
@@ -382,7 +382,7 @@ const result = await testGameplay(page, {
    - Human validation
 
 2. **Add Examples for Each Pattern**
-   - Queeraoke-style usage
+   - Interactive game testing
    - Simple validation
    - Multi-perspective
    - Variable goals
@@ -392,9 +392,9 @@ const result = await testGameplay(page, {
    - JSDoc comments
    - Examples in types
 
-## 7. Queeraoke-Specific Improvements
+## 7. Common Usage Improvements
 
-### Based on Queeraoke Usage
+### Based on Real-World Usage Patterns
 
 **Pattern 1: Multi-Perspective with Rendered Code**
 ```javascript
@@ -469,13 +469,13 @@ const result = await validateWithGoal('screenshot.png', {
 ### Phase 2: Short-term (This Month)
 
 4. **Integration Tests**
-   - Test with Queeraoke patterns
+   - Test with common usage patterns
    - Test with real games
    - Test variable goals end-to-end
 
 5. **Documentation**
    - Organize by use case
-   - Add Queeraoke examples
+   - Add practical examples
    - Complete API reference
 
 6. **Performance**
@@ -520,7 +520,7 @@ const result = await validateWithGoal('screenshot.png', {
    - Performance benchmarks
 
 5. ✅ **Aligned with Usage**
-   - Matches Queeraoke patterns
+   - Matches common usage patterns
    - Supports variable goals
    - Handles browser experiences
 
@@ -539,7 +539,7 @@ const result = await validateWithGoal('screenshot.png', {
 2. Standardize error handling and return types
 3. Add tests for new features
 4. Improve documentation organization
-5. Add integration tests with Queeraoke patterns
+5. Add integration tests with common usage patterns
 
 **Overall Assessment**: **8.5/10** (improved from 7.5/10)
 - ✅ Good foundation

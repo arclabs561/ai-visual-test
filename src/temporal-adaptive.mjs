@@ -2,7 +2,21 @@
  * Adaptive Temporal Aggregation
  * 
  * Implements adaptive window sizing based on note frequency and activity type.
- * Based on research findings that optimal window sizes vary by activity pattern.
+ * 
+ * Research context:
+ * - "Towards Dynamic Theory of Mind: Evaluating LLM Adaptation to Temporal Evolution of Human States"
+ *   (arXiv:2505.17663) - DynToM benchmark, optimal window sizes vary by activity pattern
+ *   * We use adaptive window sizing based on frequency (loosely related concept)
+ *   * We do NOT implement the DynToM benchmark or its specific methods
+ * - "The Other Mind: How Language Models Exhibit Human Temporal Cognition" (arXiv:2507.15851)
+ *   * Paper discusses Weber-Fechner law: logarithmic compression of temporal perception
+ *   * Paper discusses temporal reference points and hierarchical construction
+ *   * We use LINEAR frequency-based adjustment, NOT logarithmic compression
+ *   * We do NOT implement temporal reference points
+ * 
+ * IMPORTANT: This implementation uses LINEAR frequency-based window adjustment, NOT the
+ * logarithmic compression (Weber-Fechner law) described in arXiv:2507.15851. We cite
+ * the papers for adaptive window concepts, but do NOT implement their specific findings.
  */
 
 import { aggregateTemporalNotes } from './temporal.mjs';
@@ -144,5 +158,6 @@ export function aggregateTemporalNotesAdaptive(notes, options = {}) {
     coherenceThreshold
   });
 }
+
 
 

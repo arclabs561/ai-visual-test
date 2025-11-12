@@ -14,20 +14,12 @@ if (!existsSync(testResultsDir)) {
   mkdirSync(testResultsDir, { recursive: true });
 }
 
-// Create a mock screenshot file
+// Create a mock screenshot file - use base64 encoded minimal PNG (more reliable)
 function createMockScreenshot() {
   const path = join(testResultsDir, `test-${Date.now()}.png`);
-  // Create a minimal PNG file (1x1 pixel)
-  const pngData = Buffer.from([
-    0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, // PNG signature
-    0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52, // IHDR chunk
-    0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, // 1x1 dimensions
-    0x08, 0x02, 0x00, 0x00, 0x00, 0x90, 0x77, 0x53, 0xDE, // More PNG data
-    0x00, 0x00, 0x00, 0x0C, 0x49, 0x44, 0x41, 0x54, // IDAT chunk
-    0x08, 0x99, 0x01, 0x01, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x02, 0x00, 0x01,
-    0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82 // IEND
-  ]);
-  writeFileSync(path, pngData);
+  // Use base64-encoded minimal PNG (1x1 pixel, more reliable than raw bytes)
+  const minimalPng = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', 'base64');
+  writeFileSync(path, minimalPng);
   return path;
 }
 
@@ -36,10 +28,10 @@ describe('VLLMJudge', () => {
   let screenshotPath;
 
   beforeEach(() => {
-    // Create judge without API keys (disabled mode)
+    // Create judge without API keys (disabled mode) - use null to explicitly disable
     judge = new VLLMJudge({
       provider: 'gemini',
-      apiKey: undefined,
+      apiKey: null, // Explicitly null to disable (won't check env vars)
       cacheEnabled: false
     });
     screenshotPath = createMockScreenshot();
@@ -81,12 +73,13 @@ describe('VLLMJudge', () => {
     assert.ok(result.message.includes('disabled'));
   });
 
-  it('should build prompt with context', () => {
-    const prompt = judge.buildPrompt('Base prompt', {
+  it('should build prompt with context', async () => {
+    const prompt = await judge.buildPrompt('Base prompt', {
       testType: 'payment-screen',
       viewport: { width: 1280, height: 720 }
     });
     
+    assert.ok(typeof prompt === 'string');
     assert.ok(prompt.includes('Base prompt'));
     assert.ok(prompt.includes('payment-screen'));
   });
@@ -120,7 +113,10 @@ describe('validateScreenshot', () => {
     const result = await validateScreenshot(
       screenshotPath,
       'Test prompt',
-      { testType: 'unit-test' }
+      { 
+        testType: 'unit-test',
+        apiKey: null // Explicitly disable to test disabled behavior
+      }
     );
     
     assert.ok(typeof result === 'object');
@@ -134,7 +130,8 @@ describe('validateScreenshot', () => {
       {
         testType: 'payment-screen',
         viewport: { width: 1280, height: 720 },
-        useCache: false
+        useCache: false,
+        apiKey: null // Explicitly disable to test disabled behavior
       }
     );
     

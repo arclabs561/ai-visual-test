@@ -13,6 +13,10 @@
  * Main entry point - exports all public APIs.
  */
 
+// Auto-load .env file on module initialization
+import { loadEnv } from './load-env.mjs';
+loadEnv();
+
 import { VLLMJudge, validateScreenshot as _validateScreenshot } from './judge.mjs';
 
 // Initialize global error handlers (only in Node.js environment)
@@ -48,6 +52,14 @@ export {
   extractRenderedCode,
   multiPerspectiveEvaluation
 } from './multi-modal.mjs';
+
+export {
+  estimateUncertainty,
+  selfConsistencyCheck,
+  combineUncertaintySources,
+  enhanceWithUncertainty,
+  shouldUseSelfConsistency
+} from './uncertainty-reducer.mjs';
 export {
   buildStructuredFusionPrompt,
   calculateModalityWeights,
@@ -58,6 +70,38 @@ export {
   formatNotesForPrompt,
   calculateCoherenceExported as calculateCoherence
 } from './temporal.mjs';
+export {
+  formatTemporalContext,
+  formatTemporalForPrompt,
+  formatSingleScaleForPrompt,
+  formatMultiScaleForPrompt
+} from './temporal-prompt-formatter.mjs';
+export {
+  TemporalDecisionManager,
+  createTemporalDecisionManager
+} from './temporal-decision-manager.mjs';
+
+export {
+  TemporalPreprocessingManager,
+  AdaptiveTemporalProcessor,
+  createTemporalPreprocessingManager,
+  createAdaptiveTemporalProcessor
+} from './temporal-preprocessor.mjs';
+export {
+  pruneTemporalNotes,
+  propagateNotes,
+  selectTopWeightedNotes
+} from './temporal-note-pruner.mjs';
+export {
+  calculateAttentionWeight
+} from './temporal-decision.mjs';
+export {
+  detectRenderChanges,
+  calculateOptimalFPS,
+  detectVisualChanges,
+  captureOnRenderChanges,
+  captureAdaptiveTemporalScreenshots
+} from './render-change-detector.mjs';
 export {
   aggregateTemporalNotesAdaptive,
   calculateOptimalWindowSize,
@@ -87,6 +131,7 @@ export { extractStructuredData } from './data-extractor.mjs';
 export { aggregateFeedback, generateRecommendations } from './feedback-aggregator.mjs';
 export { compressContext, compressStateHistory } from './context-compressor.mjs';
 export { experiencePageAsPersona, experiencePageWithPersonas } from './persona-experience.mjs';
+export { ExplanationManager, getExplanationManager } from './explanation-manager.mjs';
 export {
   createEnhancedPersona,
   experiencePageWithEnhancedPersona,
@@ -99,11 +144,25 @@ export {
   getTracerManager
 } from './experience-tracer.mjs';
 export {
+  ExperiencePropagationTracker,
+  getPropagationTracker,
+  trackPropagation
+} from './experience-propagation.mjs';
+export {
+  checkCrossModalConsistency,
+  validateExperienceConsistency
+} from './cross-modal-consistency.mjs';
+export {
   generateDynamicPrompt,
   generatePromptVariations,
   generateInteractionPrompt,
   generateGameplayPrompt
 } from './dynamic-prompts.mjs';
+export {
+  generateGamePrompt,
+  createGameGoal,
+  createGameGoals
+} from './game-goal-prompts.mjs';
 export {
   AIBrowserTestError,
   ValidationError,
@@ -149,6 +208,13 @@ export {
   mitigatePositionBias
 } from './bias-mitigation.mjs';
 export {
+  validateWithResearchEnhancements,
+  validateMultipleWithPositionAnalysis,
+  validateWithLengthAlignment,
+  validateWithExplicitRubric,
+  validateWithAllResearchEnhancements
+} from './research-enhanced-validation.mjs';
+export {
   aggregateMultiScale,
   SequentialDecisionContext,
   humanPerceptionTime
@@ -179,6 +245,11 @@ export {
   EnsembleJudge,
   createEnsembleJudge
 } from './ensemble-judge.mjs';
+export {
+  HumanValidationManager,
+  getHumanValidationManager,
+  initHumanValidation
+} from './human-validation-manager.mjs';
 export {
   isObject,
   isString,
@@ -217,4 +288,10 @@ export {
   composeComparisonPrompt,
   composeMultiModalPrompt
 } from './prompt-composer.mjs';
+export {
+  testGameplay,
+  testBrowserExperience,
+  validateWithGoals
+} from './convenience.mjs';
+export { normalizeValidationResult } from './validation-result-normalizer.mjs';
 

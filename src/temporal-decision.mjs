@@ -1,16 +1,25 @@
 /**
  * Temporal Decision-Making
  * 
- * Implements research-aligned temporal decision-making for LLM evaluations:
+ * Implements multi-scale temporal aggregation for LLM evaluations:
  * - Multi-scale temporal aggregation (0.1s to 60s+)
  * - Sequential decision context
  * - Human perception time modeling
  * - Attention-based weighting
  * 
- * Based on research:
- * - Efficient Sequential Decision Making (arXiv:2406.12125)
- * - Human Time Perception (PMC research)
- * - Powers of 10: Time Scales in UX (NN/g)
+ * Research context:
+ * - Efficient Sequential Decision Making (arXiv:2406.12125) - Paper focuses on online
+ *   model selection achieving 6x performance gain with 1.5% LLM call rate. Our implementation
+ *   uses multi-scale temporal aggregation (inspired by temporal aspects) but does NOT
+ *   implement the paper's core online model selection algorithm or decision logic for
+ *   when to prompt. We cite this for temporal awareness concepts, not the core algorithm.
+ * - Human Time Perception (PMC research) - Human perception time scales
+ * - Powers of 10: Time Scales in UX (NN/g) - UX time scale research
+ * 
+ * IMPORTANT: This module implements temporal aggregation and attention-based weighting,
+ * NOT the adaptive LLM calling strategy or decision logic from arXiv:2406.12125.
+ * The paper's core contribution (online model selection, when-to-prompt decisions) is
+ * NOT implemented here. We use temporal concepts inspired by the paper's temporal aspects.
  * 
  * @module temporal-decision
  */
@@ -110,8 +119,12 @@ export function aggregateMultiScale(notes, options = {}) {
 /**
  * Calculate attention-based weight
  * Models how human attention affects temporal perception
+ * 
+ * @param {import('./index.mjs').TemporalNote} note - Temporal note
+ * @param {Object} context - Context with elapsed, windowSize, scaleName
+ * @returns {number} Attention weight
  */
-function calculateAttentionWeight(note, context) {
+export function calculateAttentionWeight(note, context) {
   const { elapsed, windowSize, scaleName } = context;
   
   // Base recency weight (exponential decay)
@@ -168,24 +181,51 @@ function calculateCoherenceForScale(windows) {
   
   const scores = windows.map(w => 
     w.totalWeight > 0 ? w.weightedScore / w.totalWeight : 0
-  );
+  ).filter(s => !isNaN(s) && isFinite(s));
   
-  // Direction consistency
-  let directionChanges = 0;
+  // Direction consistency calculation
+  // Need at least 2 scores to calculate direction
+  if (scores.length < 2) return 1.0;
+  
+  // Calculate trends (direction of change between consecutive scores)
+  const trends = [];
   for (let i = 1; i < scores.length; i++) {
-    const prevDir = scores[i - 1] >= scores[i - 2] ? 1 : -1;
-    const currDir = scores[i] >= scores[i - 1] ? 1 : -1;
-    if (prevDir !== currDir) directionChanges++;
+    const change = scores[i] - scores[i - 1];
+    trends.push(change >= 0 ? 1 : -1);
   }
-  const directionConsistency = 1.0 - (directionChanges / Math.max(1, scores.length - 1));
   
-  // Variance coherence
+  // Count direction changes
+  let directionChanges = 0;
+  for (let i = 1; i < trends.length; i++) {
+    if (trends[i] !== trends[i - 1]) {
+      directionChanges++;
+    }
+  }
+  const directionConsistency = Math.max(0, Math.min(1, 1.0 - (directionChanges / Math.max(1, trends.length))));
+  
+  // Use stricter variance normalization (same as temporal.mjs)
   const meanScore = scores.reduce((a, b) => a + b, 0) / scores.length;
   const variance = scores.reduce((sum, s) => sum + Math.pow(s - meanScore, 2), 0) / scores.length;
-  const maxVariance = Math.pow(meanScore, 2);
-  const varianceCoherence = Math.max(0, 1.0 - (variance / Math.max(1, maxVariance)));
   
-  return (directionConsistency * 0.6 + varianceCoherence * 0.4);
+  // Use score range to determine max variance, not meanScore^2
+  const scoreRange = Math.max(...scores) - Math.min(...scores);
+  const maxVariance = Math.max(
+    Math.pow(scoreRange / 2, 2),
+    Math.pow(meanScore * 0.5, 2),
+    10
+  );
+  const varianceCoherence = Math.max(0, Math.min(1, 1.0 - (variance / maxVariance)));
+  
+  // Add stability metric
+  const maxPossibleChanges = Math.max(1, scores.length - 2);
+  const stability = Math.max(0, Math.min(1, 1.0 - (directionChanges / maxPossibleChanges)));
+  
+  // Updated weights: direction 0.4, stability 0.3, variance 0.3
+  const coherence = directionConsistency * 0.4 + stability * 0.3 + varianceCoherence * 0.3;
+  
+  // Clamp to [0, 1] and handle NaN/Infinity
+  const clamped = Math.max(0, Math.min(1, isNaN(coherence) || !isFinite(coherence) ? 0.5 : coherence));
+  return clamped;
 }
 
 /**

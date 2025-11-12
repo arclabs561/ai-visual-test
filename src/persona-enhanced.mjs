@@ -5,6 +5,16 @@
  * - Workflows, frustrations, usage patterns
  * - Temporal evolution tracking
  * - Consistency metrics
+ * 
+ * Research:
+ * - "Can LLM be a Personalized Judge?" - Persona-based LLM judging with uncertainty estimation
+ * - "The Prompt Makes the Person(a)" - Systematic evaluation of sociodemographic persona prompting
+ * - "Persona-judge: Personalized Alignment of Large Language Models" - Personalized alignment
+ * - "PERSONA: Evaluating Pluralistic Alignment in LLMs" - Pluralistic alignment with personas
+ * 
+ * Note: Research shows direct persona-based judging has low reliability, but uncertainty
+ * estimation improves performance to >80% agreement on high-certainty samples. LLMs struggle
+ * to authentically simulate marginalized groups. Multi-agent debate can amplify bias.
  */
 
 import { experiencePageAsPersona } from './persona-experience.mjs';
@@ -185,5 +195,6 @@ export function calculatePersonaDiversity(personaExperiences) {
     personaCount: personaExperiences.length
   };
 }
+
 
 

@@ -2,11 +2,18 @@
  * Dynamic Few-Shot Example Selection
  * 
  * Research: ES-KNN (semantically similar in-context examples) outperforms
- * random examples. Examples should be semantically similar to evaluation task
- * (arXiv:2503.04779).
+ * random examples. Examples should be semantically similar to evaluation task.
  * 
- * This module provides dynamic few-shot example selection based on semantic
- * similarity to the evaluation prompt.
+ * Papers:
+ * - ES-KNN: arXiv:2506.05614 (Exemplar Selection KNN using semantic similarity)
+ * - KATE: arXiv:2101.06804 (Foundational work on kNN-augmented in-context examples)
+ * 
+ * Note: This implementation uses keyword-based similarity (Jaccard) rather than
+ * true semantic embeddings due to npm package constraints. For full ES-KNN,
+ * embedding-based cosine similarity would be required.
+ * 
+ * This module provides dynamic few-shot example selection based on similarity
+ * to the evaluation prompt.
  */
 
 /**

@@ -53,22 +53,45 @@ export class EnsembleJudge {
   }
   
   /**
-   * Calculate optimal weights using inverse logistic function
-   * Research: arXiv:2510.01499 - ω_i ∝ σ⁻¹(x_i) where σ(x) = e^x/(1+e^x)
+   * Calculate optimal weights using inverse generalized sigmoid function
+   * Research: arXiv:2510.01499 - ω_i = σ_K^{-1}(x_i) where σ_K(x) = e^x/(K-1+e^x)
+   * 
+   * CORRECTED: Uses generalized sigmoid σ_K(x) for N models, not standard logistic σ(x)
+   * For K=2 models, this reduces to standard logistic. For K>2, the formula differs.
    * 
    * @param {number[]} accuracies - Array of accuracy scores (0-1) for each judge
    * @returns {number[]} Optimal weights
    */
   calculateOptimalWeights(accuracies) {
-    // Inverse logistic: σ⁻¹(p) = ln(p / (1-p))
-    // For accuracy p, optimal weight ∝ σ⁻¹(p)
-    // Handle edge cases: p=0 → -∞, p=1 → +∞, so clamp to [0.01, 0.99]
-    const clamped = accuracies.map(a => Math.max(0.01, Math.min(0.99, a)));
-    const inverseLogistic = clamped.map(p => Math.log(p / (1 - p)));
+    const K = accuracies.length; // Number of models
     
-    // Normalize to positive weights (shift by min to make all positive)
-    const min = Math.min(...inverseLogistic);
-    const shifted = inverseLogistic.map(w => w - min + 1);
+    // Edge case: single judge gets weight 1.0
+    if (K === 1) {
+      return [1.0];
+    }
+    
+    // Handle edge cases: p=0 → -∞, p=1 → +∞, so clamp to [0.001, 0.999]
+    const clamped = accuracies.map(a => Math.max(0.001, Math.min(0.999, a)));
+    
+    // CORRECT formula: σ_K^{-1}(x) = ln(x(K-1) / (1-x))
+    // This is the inverse of σ_K(x) = e^x/(K-1+e^x)
+    const inverseSigmoid = clamped.map(p => {
+      if (p <= 0 || p >= 1) return 0; // Safety check
+      const numerator = p * (K - 1);
+      const denominator = 1 - p;
+      if (denominator <= 0 || numerator <= 0) return 0; // Safety check (handles K=1 case)
+      const ratio = numerator / denominator;
+      if (ratio <= 0) return 0; // Safety check for ln(0) or ln(negative)
+      return Math.log(ratio);
+    });
+    
+    // Normalize to positive weights (shift by min to make all positive, preserve ratios)
+    const min = Math.min(...inverseSigmoid);
+    const shifted = inverseSigmoid.map(w => {
+      const shiftedValue = w - min + 1;
+      // Ensure positive weight (clamp to minimum 0.001 to avoid zero weights)
+      return Math.max(0.001, shiftedValue);
+    });
     
     return shifted;
   }

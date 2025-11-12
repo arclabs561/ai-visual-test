@@ -230,6 +230,15 @@ async function main() {
   
   let message;
   if (commitMsgFile) {
+    // SECURITY: Validate commit message file path to prevent path traversal
+    // Git hooks should only provide paths within .git directory
+    const path = await import('path');
+    const normalizedPath = path.normalize(commitMsgFile);
+    if (normalizedPath.includes('..')) {
+      console.error('❌ Invalid commit message file path: path traversal detected');
+      process.exit(1);
+    }
+    
     const fs = await import('fs');
     if (!fs.existsSync(commitMsgFile)) {
       console.error(`❌ Commit message file not found: ${commitMsgFile}`);

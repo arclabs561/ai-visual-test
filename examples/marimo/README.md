@@ -86,8 +86,9 @@ This automatically installs dependencies in an isolated environment.
 ### 1. `basic_validation.py`
 Basic screenshot validation example:
 - Load and display screenshots
-- Validate using VLLM
-- Display results with scores and issues
+- Validate using VLLM (primary API: `validateScreenshot`)
+- Display results with scores, issues, uncertainty, and confidence
+- Uncertainty reduction enabled
 
 ### 2. `multi_modal_validation.py`
 Multi-modal validation combining:
@@ -101,26 +102,48 @@ Persona-based testing from multiple perspectives:
 - Different user types
 - Different devices
 - Different goals and expectations
+- Uses `experiencePageAsPersona` (updated API)
+- Automatic temporal aggregation
+
+### 4. `comprehensive_apis.py` ⭐ NEW
+Comprehensive demonstration of ALL available APIs:
+- `validateScreenshot` (primary API)
+- `testGameplay` (gameplay testing)
+- `testBrowserExperience` (browser experience)
+- `validateWithGoals` (goals-based validation)
+- `experiencePageAsPersona` (persona testing)
+- Temporal aggregation functions
+- Uncertainty reduction features
 
 ## Notes
 
 ⚠️ **Important:** These notebooks demonstrate calling the Node.js package from Python. Key points:
 
 1. **Function Signatures:**
-   - `validateScreenshot(imagePath, prompt, context)` - Basic screenshot validation
-     - Returns `ValidationResult` with `score` (0-10), `issues[]`, `assessment`, `reasoning`, `provider`, `cached`, `estimatedCost`, `responseTime`
-     - Context options: `testType`, `viewport`, `useCache`, `timeout`, `useRubric`
-   - `multiModalValidation(validateFn, page, testName, options)` - Multi-modal validation
-     - `validateFn` must match `validateScreenshot` signature: `(imagePath, prompt, context) => Promise<ValidationResult>`
-     - Options: `fps`, `duration`, `captureCode`, `captureState`, `multiPerspective`
-   - `experiencePageWithPersonas(page, personas, options)` - Persona-based testing
-     - `personas` must be `Persona[]` with structure: `{ name: string, perspective: string, focus: string[] }`
-     - Options: `viewport`, `device`, `darkMode`, `timeScale`, `captureScreenshots`, `captureState`, `captureCode`
+   - `validateScreenshot(imagePath, prompt, context)` - **Primary API** for screenshot validation
+     - Returns `ValidationResult` with `score` (0-10), `issues[]`, `assessment`, `reasoning`, `provider`, `cached`, `estimatedCost`, `responseTime`, `uncertainty`, `confidence`
+     - Context options: `testType`, `viewport`, `useCache`, `timeout`, `useRubric`, `enableUncertaintyReduction`, `enableHallucinationCheck`, `adaptiveSelfConsistency`
+   - `testGameplay(page, options)` - **New convenience function** for gameplay testing
+     - Options: `goal`, `stages`, `captureTemporal`, `captureState`
+     - Returns gameplay experience with temporal aggregation
+   - `testBrowserExperience(page, options)` - **New convenience function** for browser experience testing
+     - Options: `url`, `stages`, `goals`, `captureTemporal`, `captureCode`
+     - Returns browser experience across multiple stages
+   - `validateWithGoals(imagePath, options)` - **New convenience function** for goals-based validation
+     - Options: `goal` (string, object, array, or function), `testType`
+     - Supports variable goals for flexible evaluation
+   - `experiencePageAsPersona(page, persona, options)` - **Updated API** for persona-based testing
+     - `persona` structure: `{ name: string, goals: string[], concerns: string[], focus: string[] }`
+     - Options: `url`, `testType`, `captureCode`, `captureTemporal`, `duration`
+     - **Automatically performs temporal aggregation** (returns `aggregated` and `aggregatedMultiScale`)
+   - `aggregateTemporalNotes(notes, options)` - Standard temporal aggregation
+   - `aggregateMultiScale(notes, options)` - Multi-scale temporal aggregation
+   - `shouldUseSelfConsistency(context, partialResult)` - Adaptive self-consistency decision
 
 2. **Return Types:**
    - `validateScreenshot` returns `ValidationResult` with:
-     - `score`: number (0-10 scale, not 0-1)
-     - `issues`: string[]
+     - `score`: number | null (0-10 scale, not 0-1)
+     - `issues`: string[] (always present, may be empty)
      - `assessment`: string | null
      - `reasoning`: string
      - `provider`: string
@@ -128,8 +151,13 @@ Persona-based testing from multiple perspectives:
      - `estimatedCost`: { totalCost, inputCost, outputCost, inputTokens, outputTokens } | null
      - `responseTime`: number (milliseconds)
      - `enabled`: boolean (false if API key missing)
-   - `multiModalValidation` returns object with: `screenshotPath`, `renderedCode`, `perspectives`, `aggregatedScore` (0-10), `aggregatedIssues`, `timestamp`
-   - `experiencePageWithPersonas` returns `PersonaExperienceResult[]` with: `persona`, `notes`, `screenshots`, `renderedCode`, `evaluation` (ValidationResult), `timestamp`
+     - `uncertainty`: number | null (0-1, higher = more uncertain) ⭐ NEW
+     - `confidence`: number | null (0-1, higher = more confident) ⭐ NEW
+     - `selfConsistencyRecommended`: boolean | null ⭐ NEW
+   - `testGameplay` returns object with: `result` (ValidationResult), `stages`, `aggregated`, `aggregatedMultiScale`
+   - `testBrowserExperience` returns object with: `stages`, `averageScore`, `aggregated`, `aggregatedMultiScale`
+   - `validateWithGoals` returns object with: `result` (ValidationResult), `goal`, `aggregated` (if temporal notes provided)
+   - `experiencePageAsPersona` returns `PersonaExperienceResult` with: `persona`, `notes`, `screenshots`, `renderedCode`, `evaluation` (ValidationResult), `aggregated`, `aggregatedMultiScale` ⭐ NEW
 
 3. **For Playwright integration:**
    - The multi-modal and persona examples require Playwright

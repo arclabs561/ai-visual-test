@@ -42,32 +42,34 @@ function cleanup(paths) {
 
 describe('v0.3.0 Features Integration', () => {
   describe('Unified Prompt Composition', () => {
-    it('should compose single image prompt with rubric', () => {
-      const prompt = composeSingleImagePrompt(
+    it('should compose single image prompt with rubric', async () => {
+      const prompt = await composeSingleImagePrompt(
         'Evaluate this screenshot',
         { testType: 'accessibility' },
         { includeRubric: true }
       );
       
+      assert.ok(typeof prompt === 'string');
       assert.ok(prompt.includes('Evaluate this screenshot'));
       assert.ok(prompt.includes('RUBRIC') || prompt.includes('Criteria'));
       assert.ok(prompt.includes('accessibility') || prompt.includes('Test Type'));
     });
     
-    it('should compose comparison prompt with structured format', () => {
-      const prompt = composeComparisonPrompt(
+    it('should compose comparison prompt with structured format', async () => {
+      const prompt = await composeComparisonPrompt(
         'Compare these screenshots',
         { testType: 'visual-appeal' }
       );
       
+      assert.ok(typeof prompt === 'string');
       assert.ok(prompt.includes('Compare'));
       assert.ok(prompt.includes('winner') || prompt.includes('A') || prompt.includes('B'));
       assert.ok(prompt.includes('RUBRIC') || prompt.includes('Criteria'));
     });
     
-    it('should integrate with VLLMJudge.buildPrompt', () => {
+    it('should integrate with VLLMJudge.buildPrompt', async () => {
       const judge = new VLLMJudge({ enabled: false });
-      const prompt = judge.buildPrompt('Test prompt', {
+      const prompt = await judge.buildPrompt('Test prompt', {
         testType: 'accessibility',
         viewport: { width: 1920, height: 1080 }
       });
@@ -236,10 +238,11 @@ describe('v0.3.0 Features Integration', () => {
         createTestImage(img2);
         
         // 1. Use prompt composer
-        const prompt = composeComparisonPrompt(
+        const prompt = await composeComparisonPrompt(
           'Which screenshot has better accessibility?',
           { testType: 'accessibility' }
         );
+        assert.ok(typeof prompt === 'string');
         assert.ok(prompt.includes('accessibility'));
         
         // 2. Use multi-image comparison

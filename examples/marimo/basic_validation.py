@@ -123,7 +123,9 @@ def __(API_KEY, Path, height, image_info, json, os, screenshot_path, subprocess,
                 'Evaluate this screenshot for quality, accessibility, and design principles.',
                 {{
                     testType: 'general',
-                    viewport: {{ width: {width}, height: {height} }}
+                    viewport: {{ width: {width}, height: {height} }},
+                    enableUncertaintyReduction: true,
+                    enableHallucinationCheck: true
                 }}
             );
             
@@ -208,6 +210,16 @@ def __(ValidationResult, result):
                 **Provider:** {result.provider}
                 **Cached:** {result.cached or False}
                 **Response Time:** {result.responseTime:.0f}ms
+                """)
+                
+                # Display uncertainty/confidence if available
+                if hasattr(result, 'uncertainty') and result.uncertainty is not None:
+                    mo.md(f"""
+                **Uncertainty:** {result.uncertainty:.2f} (0-1, higher = more uncertain)
+                """)
+                if hasattr(result, 'confidence') and result.confidence is not None:
+                    mo.md(f"""
+                **Confidence:** {result.confidence:.2f} (0-1, higher = more confident)
                 """)
                 
                 # Display cost if available

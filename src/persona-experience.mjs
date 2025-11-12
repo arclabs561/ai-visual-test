@@ -7,6 +7,24 @@
  * Time scales are human-interpreted (reading time, interaction time, etc.) not mechanical fps.
  */
 
+import { warn, log } from './logger.mjs';
+import { trackPropagation } from './experience-propagation.mjs';
+import { checkCrossModalConsistency } from './cross-modal-consistency.mjs';
+
+// Lazy import for variable goals
+let generateGamePrompt = null;
+async function getGenerateGamePrompt() {
+  if (!generateGamePrompt) {
+    try {
+      const module = await import('./game-goal-prompts.mjs');
+      generateGamePrompt = module.generateGamePrompt;
+    } catch (error) {
+      return null;
+    }
+  }
+  return generateGamePrompt;
+}
+
 /**
  * Experience a page from a persona's perspective
  * 
@@ -73,13 +91,21 @@ export async function experiencePageAsPersona(page, persona, options = {}) {
   };
 
   // Set viewport based on persona device preference
-  if (persona.device) {
+  // IMPORTANT: Always set viewport, even if persona.device is not set
+  // Use device from options if persona.device is not available
+  const deviceToUse = persona.device || device;
+  if (deviceToUse) {
     const deviceViewports = {
       mobile: { width: 375, height: 667 },
       tablet: { width: 768, height: 1024 },
       desktop: { width: 1280, height: 720 }
     };
-    await page.setViewportSize(deviceViewports[persona.device] || viewport);
+    const targetViewport = deviceViewports[deviceToUse];
+    if (targetViewport) {
+      await page.setViewportSize(targetViewport);
+    } else {
+      await page.setViewportSize(viewport);
+    }
   } else {
     await page.setViewportSize(viewport);
   }
@@ -111,6 +137,8 @@ export async function experiencePageAsPersona(page, persona, options = {}) {
 
   if (captureCode) {
     renderedCode = await extractRenderedCode(page);
+    // Track HTML/CSS capture
+    trackPropagation('capture', { renderedCode }, 'Captured HTML/CSS from page');
   }
 
   if (captureState) {
@@ -127,6 +155,7 @@ export async function experiencePageAsPersona(page, persona, options = {}) {
   }
 
   // Persona's initial observation
+  // Preserve more HTML/CSS context (increased from 500 to 2000 chars, and always include critical CSS/DOM)
   const initialNote = {
     step: 'initial_experience',
     persona: persona.name,
@@ -134,11 +163,30 @@ export async function experiencePageAsPersona(page, persona, options = {}) {
     viewport: await page.viewportSize(),
     observation: `Arrived at page - ${pageState?.title || 'unknown'}`,
     pageState,
-    renderedCode: renderedCode ? { html: renderedCode.html?.substring(0, 500) } : null,
+    renderedCode: renderedCode ? {
+      html: renderedCode.html?.substring(0, 2000), // Increased from 500 to 2000
+      criticalCSS: renderedCode.criticalCSS, // Always preserve CSS
+      domStructure: renderedCode.domStructure // Always preserve DOM structure
+    } : null,
     timestamp: Date.now(),
     elapsed: Date.now() - startTime
   };
   experienceNotes.push(initialNote);
+  
+  // Track HTML/CSS in notes
+  trackPropagation('notes', { renderedCode: initialNote.renderedCode, pageState: initialNote.pageState }, 'Added HTML/CSS to experience notes');
+  
+  // Check cross-modal consistency
+  if (captureScreenshots && renderedCode) {
+    const consistency = checkCrossModalConsistency({
+      screenshot: pageLoadScreenshot,
+      renderedCode,
+      pageState
+    });
+    if (!consistency.isConsistent && consistency.issues.length > 0) {
+      warn(`[Experience] Cross-modal consistency issues: ${consistency.issues.join(', ')}`);
+    }
+  }
   
   // Add to trace if available
   if (trace) {
@@ -276,17 +324,84 @@ export async function experiencePageAsPersona(page, persona, options = {}) {
     });
   }
 
+  // Track final propagation
+  trackPropagation('experience-complete', {
+    renderedCode,
+    pageState,
+    screenshot: screenshots.length > 0 ? screenshots[0].path : null
+  }, 'Experience complete');
+  
+  // Final consistency check
+  let consistency = null;
+  if (captureScreenshots && renderedCode && screenshots.length > 0) {
+    consistency = checkCrossModalConsistency({
+      screenshot: screenshots[screenshots.length - 1].path,
+      renderedCode,
+      pageState
+    });
+  }
+
+  // Automatically aggregate temporal notes (use fixed temporal system)
+  let aggregated = null;
+  let aggregatedMultiScale = null;
+  if (experienceNotes.length > 0) {
+    try {
+      const { aggregateTemporalNotes } = await import('./temporal.mjs');
+      const { aggregateMultiScale } = await import('./temporal-decision.mjs');
+      
+      // Standard temporal aggregation
+      aggregated = aggregateTemporalNotes(experienceNotes, {
+        windowSize: 10000, // 10 second windows
+        decayFactor: 0.9
+      });
+      
+      // Multi-scale aggregation for richer analysis
+      // Always return multi-scale result (even if empty) for consistency
+      try {
+        aggregatedMultiScale = aggregateMultiScale(experienceNotes, {
+          attentionWeights: true
+        });
+        // Ensure it has the expected structure
+        if (!aggregatedMultiScale.scales) {
+          aggregatedMultiScale.scales = {};
+        }
+        if (!aggregatedMultiScale.coherence) {
+          aggregatedMultiScale.coherence = {};
+        }
+      } catch (error) {
+        // Return empty multi-scale result instead of null
+        warn(`[Experience] Multi-scale aggregation failed: ${error.message}`);
+        aggregatedMultiScale = {
+          scales: {},
+          summary: 'Multi-scale aggregation failed',
+          coherence: {}
+        };
+      }
+      
+      trackPropagation('temporal-aggregation', {
+        windows: aggregated.windows.length,
+        coherence: aggregated.coherence,
+        scales: Object.keys(aggregatedMultiScale.scales || {})
+      }, 'Aggregated temporal notes automatically');
+    } catch (error) {
+      warn(`[Experience] Temporal aggregation failed: ${error.message}`);
+    }
+  }
+
   return {
     persona: persona.name,
     device: persona.device || device,
     viewport: await page.viewportSize(),
     notes: experienceNotes,
+    aggregated, // Include aggregated temporal notes
+    aggregatedMultiScale, // Include multi-scale aggregation
     screenshots,
     renderedCode,
     pageState,
     duration: Date.now() - startTime,
     timeScale,
-    trace: trace ? trace.getSummary() : null
+    trace: trace ? trace.getSummary() : null,
+    consistency // Include consistency check result
   };
 }
 

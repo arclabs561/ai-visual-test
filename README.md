@@ -129,7 +129,7 @@ Validates a screenshot using vision language models.
 - `provider` (string): Which AI provider was used
 - `estimatedCost` (object): Cost estimate
 
-See [docs/API.md](docs/API.md) for full API reference.
+See [docs/API_ESSENTIALS.md](docs/API_ESSENTIALS.md) for API essentials and [docs/API_REVIEW_AND_ALIGNMENT.md](docs/API_REVIEW_AND_ALIGNMENT.md) for detailed API reference.
 
 ## Configuration
 
@@ -154,11 +154,23 @@ VLM_PROVIDER=gemini  # or 'openai', 'claude'
 - [Persona testing](test/persona-experience.test.mjs)
 - [Temporal analysis](test/temporal-evaluation.test.mjs)
 
+## Documentation
+
+Comprehensive documentation is available in the [`docs/`](./docs/) directory:
+
+- **[Documentation Index](./docs/README.md)** - Complete guide to all documentation with summaries and connections
+- **[API Essentials](./docs/API_ESSENTIALS.md)** - Quick start and API essentials
+- **[Research Integration](./docs/RESEARCH_INTEGRATION.md)** - Research papers and implementation status
+- **[Standalone Usage](./docs/STANDALONE_USAGE.md)** - How to use the library
+- **[Human Validation](./docs/HUMAN_VALIDATION_INTEGRATION.md)** - Human feedback and calibration system
+
+See [docs/README.md](./docs/README.md) for the complete documentation index.
+
 ## Research
 
 This package implements research-backed practices:
 
-- **Explicit rubrics** - Research shows 10-20% reliability improvement (not yet validated in our codebase)
+- **Explicit rubrics** - Research suggests explicit rubrics improve reliability (implementation integrated, validation pending)
 - **Bias detection** - Detects position bias, verbosity bias
 - **Ensemble judging** - Multiple providers for consensus
 - **Temporal aggregation** - Coherence checking over time
@@ -177,7 +189,7 @@ See [docs/RESEARCH_UPDATE_2025.md](docs/RESEARCH_UPDATE_2025.md) for research pa
 - ✅ Understands design principles
 - ✅ Provides human-readable feedback
 
-See [docs/COMPARISON_AND_RESEARCH.md](docs/COMPARISON_AND_RESEARCH.md) for detailed comparison.
+See [docs/RESEARCH_INTEGRATION.md](docs/RESEARCH_INTEGRATION.md) for research comparison and integration details.
 
 ## Dependencies
 

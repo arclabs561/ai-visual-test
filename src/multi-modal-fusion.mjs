@@ -3,7 +3,19 @@
  * 
  * Implements structured fusion with attention mechanisms for combining
  * screenshot, HTML, CSS, and rendered code modalities.
- * Based on research findings that structured fusion outperforms simple concatenation.
+ * 
+ * Research:
+ * - "Multimodal Fusion and Vision-Language Models: A Survey for Robot Vision" - Comprehensive survey
+ * - "Cross-Modal Consistency in Multimodal Large Language Models" - Consistency issues in GPT-4V
+ * - "Post-pre-training for Modality Alignment in Vision-Language Foundation Models" - CLIP-Refine
+ * - "Attention-Based Multimodal Fusion" - Various papers on attention mechanisms
+ * 
+ * Key findings: Structured fusion outperforms simple concatenation. Modality gap exists even
+ * after contrastive training. Cross-attention enables selective information integration.
+ * Hallucination is a major issue, especially with stylized images.
+ * 
+ * Note: This implementation uses heuristic-based attention weighting. Full research implementation
+ * would use learned cross-attention mechanisms and address the modality gap.
  */
 
 /**
@@ -173,5 +185,6 @@ export function compareFusionStrategies(basePrompt, modalities) {
     recommendation: 'Use structured fusion for better modality integration'
   };
 }
+
 
 

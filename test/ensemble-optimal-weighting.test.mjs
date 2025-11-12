@@ -35,7 +35,7 @@ describe('Ensemble Optimal Weighting', () => {
   it('should fall back to weighted_average if no accuracies provided', () => {
     const judge = new EnsembleJudge({
       judges: [new VLLMJudge({ enabled: false }), new VLLMJudge({ enabled: false })],
-      votingMethod: 'optimal'
+      votingMethod: 'optimal',
       // No judgeAccuracies
     });
     

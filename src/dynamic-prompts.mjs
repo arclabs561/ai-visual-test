@@ -294,12 +294,35 @@ QUESTIONS:
 /**
  * Generate gameplay-specific prompt
  * 
+ * Now supports variable goals/prompts via game-goal-prompts.mjs
+ * 
  * @param {Record<string, unknown>} gameState - Current game state
  * @param {Record<string, unknown> | null} [previousState=null] - Previous game state (optional)
- * @param {string} [focus='mechanics'] - Focus area ('mechanics', 'visuals', 'feedback', 'balance')
+ * @param {string | Object | Array | Function} [goalOrPrompt='mechanics'] - Goal, prompt, or focus area
+ * @param {Object} [context={}] - Additional context (persona, renderedCode, etc.)
  * @returns {string} Gameplay-specific prompt
  */
-export function generateGameplayPrompt(gameState, previousState = null, focus = 'mechanics') {
+export async function generateGameplayPrompt(gameState, previousState = null, goalOrPrompt = 'mechanics', context = {}) {
+  // Import variable goal system (lazy import to avoid circular dependencies)
+  let generateGamePrompt;
+  try {
+    const gameGoalModule = await import('./game-goal-prompts.mjs');
+    generateGamePrompt = gameGoalModule.generateGamePrompt;
+  } catch (err) {
+    // Fallback if module not available
+    generateGamePrompt = null;
+  }
+  
+  // If variable goal system available and goalOrPrompt is not a simple string focus
+  if (generateGamePrompt && (typeof goalOrPrompt !== 'string' || !['mechanics', 'visuals', 'feedback', 'balance'].includes(goalOrPrompt))) {
+    return generateGamePrompt(goalOrPrompt, {
+      gameState,
+      previousState,
+      ...context
+    });
+  }
+  
+  // Legacy support for simple focus strings
   const focusPrompts = {
     mechanics: `Evaluate gameplay mechanics. Are controls responsive? Is collision detection accurate? Is the game balanced?`,
     visuals: `Evaluate visual design. Are colors vibrant? Is the layout clear? Are animations smooth?`,
@@ -307,6 +330,7 @@ export function generateGameplayPrompt(gameState, previousState = null, focus = 
     balance: `Evaluate game balance. Is difficulty appropriate? Is progression clear? Is the game engaging?`
   };
 
+  const focus = typeof goalOrPrompt === 'string' ? goalOrPrompt : 'mechanics';
   let prompt = `${focusPrompts[focus] || focusPrompts.mechanics}
 
 CURRENT GAME STATE:

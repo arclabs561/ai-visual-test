@@ -12,7 +12,23 @@
  */
 
 import { buildRubricPrompt, DEFAULT_RUBRIC } from './rubrics.mjs';
-import { formatNotesForPrompt } from './temporal.mjs';
+import { formatNotesForPrompt, aggregateTemporalNotes } from './temporal.mjs';
+import { formatTemporalContext } from './temporal-prompt-formatter.mjs';
+import { selectTopWeightedNotes } from './temporal-note-pruner.mjs';
+
+// Lazy import for variable goals
+let generateGamePrompt = null;
+async function getGenerateGamePrompt() {
+  if (!generateGamePrompt) {
+    try {
+      const module = await import('./game-goal-prompts.mjs');
+      generateGamePrompt = module.generateGamePrompt;
+    } catch (error) {
+      return null;
+    }
+  }
+  return generateGamePrompt;
+}
 
 /**
  * Compose a complete evaluation prompt with all relevant components
@@ -31,7 +47,7 @@ import { formatNotesForPrompt } from './temporal.mjs';
  * }} [options={}] - Composition options
  * @returns {string} Composed prompt
  */
-export function composePrompt(basePrompt, options = {}) {
+export async function composePrompt(basePrompt, options = {}) {
   const {
     rubric = DEFAULT_RUBRIC,
     includeRubric = true, // Default true (research: 10-20% improvement)
@@ -41,7 +57,8 @@ export function composePrompt(basePrompt, options = {}) {
     gameState = null,
     isMultiImage = false,
     isComparison = false,
-    context = {}
+    context = {},
+    goal = null // Support variable goals for cohesive integration
   } = options;
   
   const parts = [];
@@ -51,12 +68,68 @@ export function composePrompt(basePrompt, options = {}) {
     parts.push(buildRubricPrompt(rubric, true));
   }
   
-  // 2. Base prompt
-  parts.push(basePrompt);
+  // 2. Base prompt (or generate from goal if provided)
+  let finalBasePrompt = basePrompt;
+  if (goal) {
+    try {
+      const generateGamePromptFn = await getGenerateGamePrompt();
+      if (generateGamePromptFn) {
+        finalBasePrompt = generateGamePromptFn(goal, {
+          gameState: gameState || context.gameState || {},
+          previousState: context.previousState || null,
+          renderedCode: renderedCode || context.renderedCode || null,
+          persona: persona || (context.persona ? {
+            name: context.persona,
+            perspective: context.perspective,
+            focus: context.focus || []
+          } : null),
+          stage: context.stage || context.testType || 'gameplay'
+        });
+      }
+    } catch (error) {
+      // Fallback to base prompt if goal generation fails
+      if (context.debug?.verbose) {
+        console.warn(`[Prompt Composer] Goal prompt generation failed: ${error.message}`);
+      }
+    }
+  }
+  parts.push(finalBasePrompt);
   
   // 3. Temporal context (if available)
   if (temporalNotes) {
-    parts.push('\n\n' + formatNotesForPrompt(temporalNotes));
+    // Check if temporalNotes is raw array or aggregated object
+    // formatTemporalContext handles both single-scale and multi-scale aggregation
+    let processedTemporalNotes = temporalNotes;
+    if (Array.isArray(temporalNotes)) {
+      // Raw notes array - prune and select top-weighted notes before aggregating
+      // This implements note propagation: only keep relevant notes
+      try {
+        // Prune to top-weighted notes (implements note propagation)
+        const prunedNotes = selectTopWeightedNotes(temporalNotes, {
+          topN: context.maxTemporalNotes || 10 // Default: top 10 notes
+        });
+        
+        // Aggregate pruned notes
+        processedTemporalNotes = aggregateTemporalNotes(prunedNotes);
+      } catch (error) {
+        // If pruning/aggregation fails, skip temporal context
+        if (context.debug?.verbose) {
+          console.warn(`[Prompt Composer] Failed to prune/aggregate temporal notes: ${error.message}`);
+        }
+        processedTemporalNotes = null;
+      }
+    }
+    
+    // Format temporal context (handles both single-scale and multi-scale)
+    if (processedTemporalNotes) {
+      const temporalContext = formatTemporalContext(processedTemporalNotes, {
+        includeMultiScale: true,
+        naturalLanguage: true // Use natural language for better VLM understanding
+      });
+      if (temporalContext) {
+        parts.push('\n\n' + temporalContext);
+      }
+    }
   }
   
   // 4. Persona perspective (if provided)
@@ -223,8 +296,8 @@ function buildContextSection(context) {
  * }} [options={}] - Additional options
  * @returns {string} Composed prompt
  */
-export function composeSingleImagePrompt(basePrompt, context = {}, options = {}) {
-  return composePrompt(basePrompt, {
+export async function composeSingleImagePrompt(basePrompt, context = {}, options = {}) {
+  return await composePrompt(basePrompt, {
     includeRubric: options.includeRubric !== false,
     temporalNotes: options.temporalNotes || null,
     persona: context.persona ? {
@@ -236,6 +309,7 @@ export function composeSingleImagePrompt(basePrompt, context = {}, options = {})
     gameState: context.gameState || null,
     isMultiImage: false,
     isComparison: false,
+    goal: context.goal || null, // Support variable goals
     context
   });
 }
@@ -250,8 +324,8 @@ export function composeSingleImagePrompt(basePrompt, context = {}, options = {})
  * }} [options={}] - Additional options
  * @returns {string} Composed comparison prompt
  */
-export function composeComparisonPrompt(basePrompt, context = {}, options = {}) {
-  return composePrompt(basePrompt, {
+export async function composeComparisonPrompt(basePrompt, context = {}, options = {}) {
+  return await composePrompt(basePrompt, {
     includeRubric: options.includeRubric !== false,
     temporalNotes: null, // Pair comparison doesn't use temporal notes
     persona: null, // Pair comparison is objective
@@ -259,6 +333,7 @@ export function composeComparisonPrompt(basePrompt, context = {}, options = {}) 
     gameState: null,
     isMultiImage: true,
     isComparison: true,
+    goal: context.goal || null, // Support variable goals (though less common for comparisons)
     context
   });
 }
@@ -275,8 +350,8 @@ export function composeComparisonPrompt(basePrompt, context = {}, options = {}) 
  * }} [options={}] - Additional options
  * @returns {string} Composed multi-modal prompt
  */
-export function composeMultiModalPrompt(basePrompt, context = {}, options = {}) {
-  return composePrompt(basePrompt, {
+export async function composeMultiModalPrompt(basePrompt, context = {}, options = {}) {
+  return await composePrompt(basePrompt, {
     includeRubric: options.includeRubric !== false,
     temporalNotes: options.temporalNotes || null,
     persona: options.persona || (context.persona ? {
@@ -288,6 +363,7 @@ export function composeMultiModalPrompt(basePrompt, context = {}, options = {}) 
     gameState: context.gameState || null,
     isMultiImage: false,
     isComparison: false,
+    goal: context.goal || options.goal || null, // Support variable goals
     context: {
       ...context,
       gameStateAlreadyIncluded: true // Prevent duplicate gameState

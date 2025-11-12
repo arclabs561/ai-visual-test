@@ -14,6 +14,7 @@ import { FileError, ProviderError, TimeoutError } from './errors.mjs';
 import { log, warn } from './logger.mjs';
 import { retryWithBackoff, enhanceErrorMessage } from './retry.mjs';
 import { recordCost } from './cost-tracker.mjs';
+import { normalizeValidationResult } from './validation-result-normalizer.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -74,12 +75,17 @@ export class VLLMJudge {
     const imagePaths = Array.isArray(imagePath) ? imagePath : [imagePath];
     const isMultiImage = imagePaths.length > 1;
     if (!this.enabled) {
-      return {
+      // Return normalized disabled result
+      return normalizeValidationResult({
         enabled: false,
         provider: this.provider,
         message: `API validation disabled (set ${this.provider.toUpperCase()}_API_KEY or API_KEY)`,
-        pricing: this.providerConfig.pricing
-      };
+        pricing: this.providerConfig.pricing,
+        score: null,
+        issues: [],
+        reasoning: 'API validation is disabled',
+        assessment: null
+      }, 'judgeScreenshot-disabled');
     }
 
     // Initialize cache if needed
@@ -112,7 +118,7 @@ export class VLLMJudge {
     try {
       // Convert all images to base64
       const base64Images = imagePaths.map(path => this.imageToBase64(path));
-      const fullPrompt = this.buildPrompt(prompt, context, isMultiImage);
+      const fullPrompt = await this.buildPrompt(prompt, context, isMultiImage);
       
       // Retry API calls with exponential backoff
       const maxRetries = context.maxRetries ?? 3;
@@ -226,6 +232,42 @@ export class VLLMJudge {
       const responseTime = Date.now() - startTime;
       const semanticInfo = this.extractSemanticInfo(judgment);
       
+      // Enhance with uncertainty reduction (if enabled)
+      let uncertainty = null;
+      let confidence = null;
+      let selfConsistencyRecommended = false;
+      let selfConsistencyN = 0;
+      let selfConsistencyReason = '';
+      
+      if (context.enableUncertaintyReduction !== false) {
+        try {
+          const { enhanceWithUncertainty } = await import('./uncertainty-reducer.mjs');
+          // Pass context and partial result for adaptive self-consistency decision
+          const enhanced = enhanceWithUncertainty({
+            judgment,
+            logprobs,
+            attempts,
+            screenshotPath: imagePath,
+            score: semanticInfo.score,
+            issues: semanticInfo.issues || []
+          }, {
+            enableHallucinationCheck: context.enableHallucinationCheck !== false,
+            adaptiveSelfConsistency: context.adaptiveSelfConsistency !== false
+          }, context);
+          uncertainty = enhanced.uncertainty;
+          confidence = enhanced.confidence;
+          // Extract self-consistency recommendation (for future use or logging)
+          selfConsistencyRecommended = enhanced.selfConsistencyRecommended || false;
+          selfConsistencyN = enhanced.selfConsistencyN || 0;
+          selfConsistencyReason = enhanced.selfConsistencyReason || '';
+        } catch (error) {
+          // Silently fail - uncertainty reduction is optional
+          if (this.config.debug.verbose) {
+            warn(`[VLLM] Uncertainty reduction failed: ${error.message}`);
+          }
+        }
+      }
+      
       // Estimate cost (data might not be available if retry succeeded)
       const estimatedCost = data ? this.estimateCost(data, this.provider) : null;
       
@@ -261,8 +303,53 @@ export class VLLMJudge {
         raw: data || null,
         semantic: semanticInfo,
         attempts: attempts || 1,
-        logprobs // Include logprobs for uncertainty estimation (if available)
+        logprobs, // Include logprobs for uncertainty estimation (if available)
+        uncertainty, // Uncertainty estimate (0-1, higher = more uncertain)
+        confidence, // Confidence estimate (0-1, higher = more confident)
+        screenshotPath: imagePath, // Include for human validation
+        // Self-consistency recommendation (based on uncertainty × payout analysis)
+        selfConsistencyRecommended, // Whether self-consistency is recommended for this validation
+        selfConsistencyN, // Recommended number of self-consistency calls (0 = not recommended)
+        selfConsistencyReason // Reason for recommendation (for logging/debugging)
       };
+      
+      // Collect VLLM judgment for human validation (non-blocking)
+      if (context.enableHumanValidation !== false) {
+        try {
+          const { getHumanValidationManager } = await import('./human-validation-manager.mjs');
+          const manager = getHumanValidationManager();
+          if (manager && manager.enabled) {
+            // Non-blocking: Don't wait for human validation collection
+            manager.collectVLLMJudgment(validationResult, imagePath, prompt, context)
+              .catch(err => {
+                // Silently fail - human validation is optional
+                if (this.config.debug.verbose) {
+                  warn('[VLLM] Human validation collection failed:', err.message);
+                }
+              });
+          }
+        } catch (err) {
+          // Silently fail if human validation manager not available
+        }
+      }
+      
+      // Apply calibration if available (non-blocking check)
+      if (context.applyCalibration !== false && validationResult.score !== null) {
+        try {
+          const { getHumanValidationManager } = await import('./human-validation-manager.mjs');
+          const manager = getHumanValidationManager();
+          if (manager && manager.enabled) {
+            const calibratedScore = manager.applyCalibration(validationResult.score);
+            if (calibratedScore !== validationResult.score) {
+              validationResult.originalScore = validationResult.score;
+              validationResult.score = calibratedScore;
+              validationResult.calibrated = true;
+            }
+          }
+        } catch (err) {
+          // Silently fail if calibration not available
+        }
+      }
       
       // Cache result (use first image path for single image, or combined key for multi-image)
       if (useCache) {
@@ -270,7 +357,8 @@ export class VLLMJudge {
         setCached(cacheKey, prompt, context, validationResult);
       }
       
-      return validationResult;
+      // Normalize result structure before returning (ensures consistent structure)
+      return normalizeValidationResult(validationResult, 'judgeScreenshot');
     } catch (err) {
       clearTimeout(timeoutId);
       error = err;
@@ -305,21 +393,18 @@ export class VLLMJudge {
         throw error;
       }
       
-      // For other errors, enhance message and return error object (backward compatibility)
+      // For other errors, enhance message and throw (consistent error handling)
       const enhancedMessage = enhanceErrorMessage(error, attempts || 1, 'judgeScreenshot');
-      return {
-        enabled: true,
-        provider: this.provider,
-        error: enhancedMessage,
-        judgment: 'No response',
-        score: null,
-        issues: [],
-        assessment: null,
-        reasoning: `API call failed: ${enhancedMessage}`,
-        responseTime: Date.now() - startTime,
-        pricing: this.providerConfig.pricing,
-        attempts: attempts || 1
-      };
+      throw new ProviderError(
+        `VLLM API call failed: ${enhancedMessage}`,
+        this.provider,
+        {
+          imagePath,
+          prompt: prompt.substring(0, 100),
+          attempts: attempts || 1,
+          originalError: error.message
+        }
+      );
     }
   }
 
@@ -329,25 +414,30 @@ export class VLLMJudge {
    * Uses unified prompt composition system for research-backed consistency.
    * Research: Explicit rubrics improve reliability by 10-20% (arXiv:2412.05579)
    * 
-   * @param {string} prompt - Base prompt
+   * Supports variable goals: if context.goal is provided, it will be used to generate
+   * the base prompt before composition. This allows seamless integration of variable
+   * goals throughout the system.
+   * 
+   * @param {string} prompt - Base prompt (or ignored if context.goal is provided)
    * @param {import('./index.mjs').ValidationContext} context - Validation context
    * @param {boolean} [isMultiImage=false] - Whether this is a multi-image comparison
    * @returns {string} Full prompt with context
    */
-  buildPrompt(prompt, context = {}, isMultiImage = false) {
+  async buildPrompt(prompt, context = {}, isMultiImage = false) {
     // If custom prompt builder provided, use it
     if (context.promptBuilder && typeof context.promptBuilder === 'function') {
       return context.promptBuilder(prompt, context);
     }
     
-    // Use unified prompt composition system
+    // Use unified prompt composition system (which handles variable goals)
+    // Pass goal in context - composeSingleImagePrompt/composeComparisonPrompt will handle it
     try {
       if (isMultiImage) {
-        return composeComparisonPrompt(prompt, context, {
+        return await composeComparisonPrompt(prompt, context, {
           includeRubric: context.includeRubric !== false // Default true (research-backed)
         });
       } else {
-        return composeSingleImagePrompt(prompt, context, {
+        return await composeSingleImagePrompt(prompt, context, {
           includeRubric: context.includeRubric !== false, // Default true (research-backed)
           temporalNotes: context.temporalNotes || null
         });
@@ -393,11 +483,36 @@ export class VLLMJudge {
   extractSemanticInfo(judgment) {
     // Handle case where judgment is already an object
     if (typeof judgment === 'object' && judgment !== null && !Array.isArray(judgment)) {
+      // Normalize issues: handle both array of strings and array of objects
+      let issues = judgment.issues || [];
+      if (issues.length > 0 && typeof issues[0] === 'string') {
+        // Convert string array to object array for consistency
+        issues = issues.map(desc => ({
+          description: desc,
+          importance: 'medium',
+          annoyance: 'medium',
+          impact: 'minor-inconvenience'
+        }));
+      }
+      
+      // Normalize recommendations: handle both array of strings and array of objects
+      let recommendations = judgment.recommendations || [];
+      if (recommendations.length > 0 && typeof recommendations[0] === 'string') {
+        recommendations = recommendations.map(suggestion => ({
+          priority: 'medium',
+          suggestion,
+          expectedImpact: 'improved user experience'
+        }));
+      }
+      
       return {
         score: judgment.score || null,
-        issues: judgment.issues || [],
+        issues: issues,
         assessment: judgment.assessment || null,
         reasoning: judgment.reasoning || null,
+        strengths: judgment.strengths || [],
+        recommendations: recommendations,
+        evidence: judgment.evidence || null,
         brutalistViolations: judgment.brutalistViolations || [],
         zeroToleranceViolations: judgment.zeroToleranceViolations || []
       };
@@ -410,11 +525,34 @@ export class VLLMJudge {
       const jsonMatch = judgmentText.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         const parsed = JSON.parse(jsonMatch[0]);
+        // Normalize issues and recommendations
+        let issues = parsed.issues || [];
+        if (issues.length > 0 && typeof issues[0] === 'string') {
+          issues = issues.map(desc => ({
+            description: desc,
+            importance: 'medium',
+            annoyance: 'medium',
+            impact: 'minor-inconvenience'
+          }));
+        }
+        
+        let recommendations = parsed.recommendations || [];
+        if (recommendations.length > 0 && typeof recommendations[0] === 'string') {
+          recommendations = recommendations.map(suggestion => ({
+            priority: 'medium',
+            suggestion,
+            expectedImpact: 'improved user experience'
+          }));
+        }
+        
         return {
           score: parsed.score || null,
-          issues: parsed.issues || [],
+          issues: issues,
           assessment: parsed.assessment || null,
           reasoning: parsed.reasoning || null,
+          strengths: parsed.strengths || [],
+          recommendations: recommendations,
+          evidence: parsed.evidence || null,
           brutalistViolations: parsed.brutalistViolations || [],
           zeroToleranceViolations: parsed.zeroToleranceViolations || []
         };
@@ -439,10 +577,23 @@ export class VLLMJudge {
     if (!judgment || typeof judgment !== 'string') return null;
     
     const patterns = [
+      // JSON format: "score": 7
       /"score"\s*:\s*(\d+)/i,
+      // Text format: Score: 7 or Score 7
       /score[:\s]*(\d+)/i,
+      // Fraction format: score: 7/10 or 7/10
       /score[:\s]*(\d+)\s*\/\s*10/i,
-      /(\d+)\s*\/\s*10/i
+      /(\d+)\s*\/\s*10/i,
+      // Rating format: Rating: 7, Rated 7
+      /rating[:\s]*(\d+)/i,
+      /rated[:\s]*(\d+)/i,
+      // Verdict format: Verdict: PASS (7/10) or Verdict: FAIL (3/10)
+      /verdict[:\s]*(?:pass|fail)[:\s]*\((\d+)\s*\/\s*10\)/i,
+      // Markdown format: **Score**: 7 or ## Score: 7
+      /\*\*score\*\*[:\s]*(\d+)/i,
+      /##\s*score[:\s]*(\d+)/i,
+      // Structured text: "Overall Score: 7 out of 10"
+      /overall\s*score[:\s]*(\d+)\s*(?:out\s*of|\/)\s*10/i
     ];
     
     for (const pattern of patterns) {
@@ -453,6 +604,27 @@ export class VLLMJudge {
           return score;
         }
       }
+    }
+    
+    // Try to infer from verdict language
+    const lower = judgment.toLowerCase();
+    if (lower.includes('excellent') || lower.includes('outstanding')) {
+      return 9;
+    }
+    if (lower.includes('very good') || lower.includes('great')) {
+      return 8;
+    }
+    if (lower.includes('good') || lower.includes('satisfactory')) {
+      return 7;
+    }
+    if (lower.includes('fair') || lower.includes('adequate')) {
+      return 6;
+    }
+    if (lower.includes('poor') || lower.includes('needs improvement')) {
+      return 4;
+    }
+    if (lower.includes('fail') && !lower.includes('pass')) {
+      return 3;
     }
     
     return null;
@@ -589,11 +761,20 @@ export class VLLMJudge {
           role: 'user',
           content
         }],
-        temperature: 0.1,
-        max_tokens: 2000,
-        top_p: 0.95,
-        logprobs: true, // Request logprobs for uncertainty estimation
-        top_logprobs: 5
+        // Some OpenAI models have limited parameter support
+        // Models that only support default temperature (1): gpt-4o-mini, gpt-5
+        // Models that support custom temperature: gpt-4o, gpt-4-turbo, etc.
+        // Only include temperature if model supports custom values (omit for models that require default)
+        ...(this.providerConfig.model.includes('mini') || this.providerConfig.model.includes('gpt-5')
+          ? {} // Use default temperature (1) - don't specify for models that require it
+          : { temperature: 0.1, top_p: 0.95 } // Custom values for models that support them
+        ),
+        // Use max_completion_tokens for newer models (gpt-4o, gpt-5), max_tokens for older models
+        ...(this.providerConfig.model.startsWith('gpt-4o') || this.providerConfig.model.startsWith('gpt-5')
+          ? { max_completion_tokens: 2000 }
+          : { max_tokens: 2000 })
+        // Note: logprobs removed - not all OpenAI models support it (e.g., vision models)
+        // If needed, can be conditionally added based on model support
       })
     });
   }

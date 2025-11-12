@@ -2,16 +2,23 @@
  * Temporal Batch Optimizer
  * 
  * Adaptive batching that considers temporal dependencies and human perception.
- * Based on research:
+ * 
+ * Research context (loosely related):
  * - Efficient Sequential Decision Making (arXiv:2406.12125)
- *   * LLMs need explicit mechanisms for sequential decisions
- *   * Online model selection achieves 6x gains with 1.5% LLM calls
+ *   * Paper focuses on online model selection (NOT implemented here)
+ *   * We use temporal dependency concepts inspired by sequential decision aspects
+ *   * We do NOT implement the paper's core online model selection algorithm
  * - Serving LLM Reasoning Efficiently (arXiv:2505.13326)
- *   * "Short and right" thinking management
- *   * Adaptive batching improves efficiency
+ *   * Paper discusses "short and right" thinking management (NOT implemented here)
+ *   * We do adaptive batching with temporal awareness (loosely related concept)
+ *   * We do NOT implement the paper's specific adaptive batching strategy
  * - Human Time Perception (NN/g, PMC)
- *   * 0.1s threshold for direct manipulation
- *   * Attention affects temporal perception
+ *   * 0.1s threshold for direct manipulation (used in time scales)
+ *   * Attention affects temporal perception (used in weighting)
+ * 
+ * IMPORTANT: This implements temporal-aware batching with dependencies, but does NOT
+ * implement the core algorithms from the cited papers. The citations are for loosely
+ * related concepts, not direct implementations.
  */
 
 import { BatchOptimizer } from './batch-optimizer.mjs';

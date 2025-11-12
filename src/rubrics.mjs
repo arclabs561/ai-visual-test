@@ -3,7 +3,7 @@
  * 
  * Provides explicit scoring rubrics for LLM-as-a-judge evaluation.
  * Research shows that explicit rubrics improve reliability by 10-20%
- * and reduce bias from superficial features.
+ * and reduce bias from superficial features (LLMs-as-Judges Survey, arXiv:2412.05579).
  */
 
 /**
@@ -121,15 +121,48 @@ ${Object.entries(rubricToUse.dimensions)
   .join('\n')}`;
   }
 
-  prompt += `\n\n### Output Format:
+  prompt += `\n\n### Issue Importance and Annoyance:
+For each issue you identify, consider:
+- **Importance**: How critical is this issue? (critical, high, medium, low)
+- **Annoyance**: How annoying/frustrating is this issue to users? (very-high, high, medium, low)
+- **Impact**: What is the impact on user experience? (blocks-use, degrades-experience, minor-inconvenience, cosmetic)
+
+### Suggestions and Evidence:
+When providing recommendations, include:
+- **Specific suggestions**: Concrete, actionable improvements
+- **Evidence**: What in the screenshot supports your judgment? (visual elements, layout issues, accessibility violations, etc.)
+- **Priority**: Which issues should be fixed first? (based on importance and annoyance)
+
+### Output Format:
 Provide your evaluation as JSON:
 {
   "score": <0-10 integer>,
   "assessment": "<pass|fail|needs-improvement>",
-  "issues": ["<issue1>", "<issue2>", ...],
+  "issues": [
+    {
+      "description": "<issue description>",
+      "importance": "<critical|high|medium|low>",
+      "annoyance": "<very-high|high|medium|low>",
+      "impact": "<blocks-use|degrades-experience|minor-inconvenience|cosmetic>",
+      "evidence": "<what in the screenshot supports this issue>",
+      "suggestion": "<specific, actionable recommendation>"
+    }
+  ],
   "reasoning": "<explanation of score>",
   "strengths": ["<strength1>", "<strength2>", ...],
-  "recommendations": ["<recommendation1>", ...]
+  "recommendations": [
+    {
+      "priority": "<high|medium|low>",
+      "suggestion": "<specific recommendation>",
+      "evidence": "<what supports this recommendation>",
+      "expectedImpact": "<what improvement this would bring>"
+    }
+  ],
+  "evidence": {
+    "visual": "<visual evidence from screenshot>",
+    "functional": "<functional evidence>",
+    "accessibility": "<accessibility evidence>"
+  }
 }`;
 
   return prompt;

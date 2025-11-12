@@ -128,7 +128,7 @@ export async function extractRenderedCode(page) {
  * @returns {Promise<import('./index.mjs').TemporalScreenshot[]>} Array of temporal screenshots
  * @throws {ValidationError} If page is not a valid Playwright Page object
  */
-export async function captureTemporalScreenshots(page, fps = 2, duration = 2000) {
+export async function captureTemporalScreenshots(page, fps = 2, duration = 2000, options = {}) {
   if (!page || typeof page.screenshot !== 'function') {
     throw new ValidationError('captureTemporalScreenshots requires a Playwright Page object', {
       received: typeof page,
@@ -136,16 +136,49 @@ export async function captureTemporalScreenshots(page, fps = 2, duration = 2000)
     });
   }
 
+  const {
+    optimizeForSpeed = false, // Optimize screenshot quality for high FPS
+    outputDir = 'test-results'
+  } = options;
+
   const screenshots = [];
   const interval = 1000 / fps; // ms between frames
   const frames = Math.floor(duration / interval);
   
+      // Optimize screenshot quality for high FPS to reduce overhead
+  const screenshotOptions = {
+    type: 'png'
+  };
+  
+  if (optimizeForSpeed && fps > 30) {
+    // For high FPS (>30fps), use lower quality to reduce overhead
+    screenshotOptions.quality = 70; // Lower quality (if supported by format)
+  }
+  
   for (let i = 0; i < frames; i++) {
     const timestamp = Date.now();
-    const path = `test-results/temporal-${timestamp}-${i}.png`;
-    await page.screenshot({ path, type: 'png' });
-    screenshots.push({ path, frame: i, timestamp });
-    await page.waitForTimeout(interval);
+    const path = `${outputDir}/temporal-${timestamp}-${i}.png`;
+    
+    try {
+      await page.screenshot({ ...screenshotOptions, path });
+      screenshots.push({ path, frame: i, timestamp });
+      
+        // Use more efficient timing for high FPS
+      // For very high FPS (>30), use smaller wait intervals to maintain accuracy
+      if (fps > 30) {
+        // Calculate actual elapsed time and adjust wait
+        const elapsed = Date.now() - timestamp;
+        const waitTime = Math.max(0, interval - elapsed);
+        if (waitTime > 0) {
+          await page.waitForTimeout(waitTime);
+        }
+      } else {
+        await page.waitForTimeout(interval);
+      }
+    } catch (error) {
+      warn(`[Temporal Capture] Screenshot ${i} failed: ${error.message}`);
+      // Continue with next frame
+    }
   }
   
   return screenshots;
@@ -206,14 +239,22 @@ export async function multiPerspectiveEvaluation(validateFn, screenshotPath, ren
       // Build prompt with persona perspective
       const prompt = buildPersonaPrompt(persona, renderedCode, gameState);
       
-      const evaluation = await validateFn(screenshotPath, prompt, {
+      // Support variable goals in context for cohesive integration
+      const evaluationContext = {
         gameState,
         renderedCode,
         persona: persona.name,
         perspective: persona.perspective,
         focus: persona.focus,
         ...gameState
-      }).catch(err => {
+      };
+      
+      // If persona has a goal property, pass it through
+      if (persona.goal) {
+        evaluationContext.goal = persona.goal;
+      }
+      
+      const evaluation = await validateFn(screenshotPath, prompt, evaluationContext).catch(err => {
         warn(`[Multi-Modal] Perspective ${persona.name} failed: ${err.message}`);
         return null;
       });

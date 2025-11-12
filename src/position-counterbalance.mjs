@@ -1,14 +1,20 @@
 /**
  * Position Counter-Balancing for Single Evaluations
  * 
- * Research: Position bias is severe (70-80% preference for first answer).
+ * Research: Position bias is severe and systematic (arXiv:2406.07791).
  * Counter-balancing (running evaluations twice with reversed order) effectively
  * eliminates bias (arXiv:2508.02020).
+ * 
+ * Note: arXiv:2406.07791 is the systematic study showing position bias is not random
+ * and varies significantly across judges and tasks. arXiv:2508.02020 demonstrates
+ * that counter-balancing effectively eliminates this bias.
  * 
  * This module provides systematic counter-balancing for single screenshot
  * evaluations when position might matter (e.g., when comparing against baseline,
  * or when context order matters).
  */
+
+import { normalizeValidationResult } from './validation-result-normalizer.mjs';
 
 /**
  * Run evaluation with counter-balancing to eliminate position bias
@@ -86,7 +92,7 @@ Original: ${firstResult.reasoning || 'N/A'}
 Reversed: ${secondResult.reasoning || 'N/A'}
 Average score: ${avgScore?.toFixed(2) || 'N/A'}`;
   
-  return {
+  const counterBalancedResult = {
     ...firstResult,
     score: avgScore,
     issues: uniqueIssues,
@@ -109,6 +115,9 @@ Average score: ${avgScore?.toFixed(2) || 'N/A'}`;
       }
     }
   };
+  
+  // Normalize result structure before returning (ensures consistent structure)
+  return normalizeValidationResult(counterBalancedResult, 'evaluateWithCounterBalance');
 }
 
 /**

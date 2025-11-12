@@ -7,14 +7,25 @@
 
 import { execSync } from 'child_process';
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
-import { join, dirname } from 'path';
+import { join, dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const REPO_NAME = process.argv[2] || 'llm-utils';
+// SECURITY: Sanitize repo name to prevent path traversal
+const rawRepoName = process.argv[2] || 'llm-utils';
+// Only allow alphanumeric, hyphens, underscores, and dots (for npm scopes)
+const sanitizedRepoName = rawRepoName.replace(/[^a-zA-Z0-9._-]/g, '_');
+const REPO_NAME = sanitizedRepoName.substring(0, 100); // Limit length
 const REPO_PATH = join(__dirname, '..', '..', REPO_NAME);
+
+// Additional security: Ensure path doesn't escape parent directory
+const resolvedPath = resolve(REPO_PATH);
+const resolvedParent = resolve(__dirname, '..', '..');
+if (!resolvedPath.startsWith(resolvedParent)) {
+  throw new Error('Path traversal detected in repository name');
+}
 
 async function createRepo() {
   console.log(`Creating shared LLM utility repo: ${REPO_NAME}`);

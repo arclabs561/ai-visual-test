@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Human Feedback Collection - Queeraoke</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 30px;
+    }
+    
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+    
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+    }
+    
+    .judgment-card {
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      background: #fafafa;
+    }
+    
+    .judgment-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .judgment-id {
+      font-family: monospace;
+      color: #666;
+      font-size: 0.9em;
+    }
+    
+    .vllm-section {
+      background: #e3f2fd;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+    }
+    
+    .vllm-score {
+      font-size: 2em;
+      font-weight: bold;
+      color: #1976d2;
+    }
+    
+    .screenshot-container {
+      margin: 20px 0;
+      text-align: center;
+    }
+    
+    .screenshot-container img {
+      max-width: 100%;
+      border: 2px solid #ddd;
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .human-input-section {
+      background: #fff3e0;
+      padding: 20px;
+      border-radius: 6px;
+      margin-top: 20px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+    }
+    
+    input[type="number"],
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+      font-family: inherit;
+    }
+    
+    input[type="number"] {
+      max-width: 100px;
+    }
+    
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    .issues-input {
+      font-size: 14px;
+    }
+    
+    .button {
+      background: #1976d2;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    
+    .button:hover {
+      background: #1565c0;
+    }
+    
+    .button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    
+    .button-secondary {
+      background: #666;
+    }
+    
+    .button-secondary:hover {
+      background: #555;
+    }
+    
+    .status {
+      padding: 10px;
+      border-radius: 4px;
+      margin: 10px 0;
+    }
+    
+    .status.success {
+      background: #c8e6c9;
+      color: #2e7d32;
+    }
+    
+    .status.error {
+      background: #ffcdd2;
+      color: #c62828;
+    }
+    
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }
+    
+    .stat-card {
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 6px;
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 2em;
+      font-weight: bold;
+      color: #1976d2;
+    }
+    
+    .stat-label {
+      color: #666;
+      font-size: 0.9em;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>👤 Human Feedback Collection</h1>
+    <p class="subtitle">Review VLLM judgments and provide your feedback for calibration</p>
+    
+    <div id="stats" class="stats" style="display: none;">
+      <div class="stat-card">
+        <div class="stat-value" id="pending-count">0</div>
+        <div class="stat-label">Pending Reviews</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="completed-count">0</div>
+        <div class="stat-label">Completed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="calibration-status">-</div>
+        <div class="stat-label">Calibration Status</div>
+      </div>
+    </div>
+    
+    <div id="judgments-container"></div>
+    
+    <div id="no-judgments" style="display: none; text-align: center; padding: 40px; color: #666;">
+      <p>✅ No pending validations found.</p>
+      <p>Run some evaluations with human validation enabled first.</p>
+    </div>
+  </div>
+  
+  <script type="module">
+    // This would be a real implementation that:
+    // 1. Loads pending VLLM judgments from the API or file system
+    // 2. Displays them in the UI
+    // 3. Collects human feedback
+    // 4. Saves human judgments
+    // 5. Shows calibration status
+    
+    // For now, this is a template showing the UI structure
+    console.log('Human Feedback UI - Template');
+    console.log('This would connect to the human validation system to:');
+    console.log('1. Load pending VLLM judgments');
+    console.log('2. Display screenshots and VLLM judgments');
+    console.log('3. Collect human feedback');
+    console.log('4. Save human judgments');
+    console.log('5. Show calibration status');
+  </script>
+</body>
+</html>
+

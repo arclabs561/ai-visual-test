@@ -7,8 +7,9 @@
  */
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
-import { join } from 'path';
-import { calculateCohensKappa, calculateMAE, calculateRMSE, calculatePearsonCorrelation, calculateSpearmanCorrelation } from './metrics.mjs';
+import { join, resolve } from 'path';
+import { calculateCohensKappa, calculateMAE, calculateRMSE, calculateSpearmanCorrelation } from './metrics.mjs';
+import { pearsonCorrelation, spearmanCorrelation } from '../src/metrics.mjs';
 
 const VALIDATION_DIR = join(process.cwd(), 'evaluation', 'human-validation');
 if (!existsSync(VALIDATION_DIR)) {
@@ -58,9 +59,25 @@ if (!existsSync(VALIDATION_DIR)) {
 
 /**
  * Collect human judgment
+ * 
+ * SECURITY: Sanitizes judgment.id to prevent path traversal attacks
  */
-export function collectHumanJudgment(judgment: HumanJudgment) {
-  const filePath = join(VALIDATION_DIR, `human-${judgment.id}.json`);
+export function collectHumanJudgment(judgment) {
+  // Sanitize ID to prevent path traversal
+  // Only allow alphanumeric, hyphens, and underscores
+  const sanitizedId = String(judgment.id || 'unknown').replace(/[^a-zA-Z0-9_-]/g, '_');
+  // Limit length to prevent abuse
+  const safeId = sanitizedId.substring(0, 100);
+  
+  const filePath = join(VALIDATION_DIR, `human-${safeId}.json`);
+  
+  // Additional security: Ensure path doesn't escape VALIDATION_DIR
+  const resolvedPath = resolve(filePath);
+  const resolvedDir = resolve(VALIDATION_DIR);
+  if (!resolvedPath.startsWith(resolvedDir)) {
+    throw new Error('Path traversal detected in judgment ID');
+  }
+  
   writeFileSync(filePath, JSON.stringify(judgment, null, 2));
   return filePath;
 }
@@ -68,7 +85,7 @@ export function collectHumanJudgment(judgment: HumanJudgment) {
 /**
  * Load human judgment
  */
-export function loadHumanJudgment(id: string): HumanJudgment | null {
+export function loadHumanJudgment(id) {
   const filePath = join(VALIDATION_DIR, `human-${id}.json`);
   if (!existsSync(filePath)) return null;
   return JSON.parse(readFileSync(filePath, 'utf-8'));
@@ -77,10 +94,7 @@ export function loadHumanJudgment(id: string): HumanJudgment | null {
 /**
  * Compare human and VLLM judgments
  */
-export function compareJudgments(
-  humanJudgments: HumanJudgment[],
-  vllmJudgments: VLLMJudgment[]
-): CalibrationResult {
+export function compareJudgments(humanJudgments, vllmJudgments) {
   // Match judgments by ID
   const matched = [];
   for (const human of humanJudgments) {
@@ -100,8 +114,8 @@ export function compareJudgments(
 
   const mae = calculateMAE(vllmScores, humanScores);
   const rmse = calculateRMSE(vllmScores, humanScores);
-  const pearson = calculatePearsonCorrelation(vllmScores, humanScores);
-  const spearman = calculateSpearmanCorrelation(vllmScores, humanScores);
+  const pearson = pearsonCorrelation(vllmScores, humanScores) || 0;
+  const spearman = spearmanCorrelation(vllmScores, humanScores) || calculateSpearmanCorrelation(vllmScores, humanScores);
 
   // Calculate Cohen's Kappa (for binary classification: pass/fail)
   const humanBinary = humanScores.map(s => s >= 7 ? 1 : 0);
@@ -168,7 +182,7 @@ export function compareJudgments(
 /**
  * Generate calibration report
  */
-export function generateCalibrationReport(calibration: CalibrationResult): string {
+export function generateCalibrationReport(calibration) {
   let report = '# Human-VLLM Calibration Report\n\n';
   
   report += '## Agreement Metrics\n\n';
@@ -193,7 +207,7 @@ export function generateCalibrationReport(calibration: CalibrationResult): strin
 /**
  * Save calibration results
  */
-export function saveCalibrationResults(calibration: CalibrationResult, outputPath?: string) {
+export function saveCalibrationResults(calibration, outputPath) {
   const path = outputPath || join(VALIDATION_DIR, `calibration-${Date.now()}.json`);
   writeFileSync(path, JSON.stringify(calibration, null, 2));
   

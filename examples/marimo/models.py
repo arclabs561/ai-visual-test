@@ -55,6 +55,13 @@ class ValidationResult(BaseModel):
     timestamp: Optional[str] = None
     testName: Optional[str] = None
     viewport: Optional[Viewport] = None
+    # New fields from uncertainty reduction and enhanced features
+    uncertainty: Optional[float] = Field(None, ge=0, le=1, description="Uncertainty estimate (0-1, higher = more uncertain)")
+    confidence: Optional[float] = Field(None, ge=0, le=1, description="Confidence estimate (0-1, higher = more confident)")
+    screenshotPath: Optional[str] = None
+    selfConsistencyRecommended: Optional[bool] = None
+    selfConsistencyN: Optional[int] = None
+    selfConsistencyReason: Optional[str] = None
 
 
 class Persona(BaseModel):
@@ -114,7 +121,7 @@ class MultiModalValidationResult(BaseModel):
 
 
 class PersonaExperienceResult(BaseModel):
-    """Result from experiencePageAsPersona or experiencePageWithPersonas."""
+    """Result from experiencePageAsPersona (updated API)."""
     persona: Persona
     notes: list[TemporalNote] = Field(default_factory=list)
     screenshots: list[TemporalScreenshot] = Field(default_factory=list)
@@ -128,5 +135,8 @@ class PersonaExperienceResult(BaseModel):
     duration: Optional[int] = None
     timeScale: Optional[Literal["human", "mechanical"]] = None
     trace: Optional[dict] = None
+    # New fields from temporal aggregation
+    aggregated: Optional[dict] = None
+    aggregatedMultiScale: Optional[dict] = None
 
 

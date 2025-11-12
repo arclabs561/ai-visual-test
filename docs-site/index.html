@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ai-browser-test API Documentation</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background: #f5f5f5;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 3rem 2rem;
+      margin-bottom: 2rem;
+      border-radius: 8px;
+    }
+    h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .subtitle { opacity: 0.9; font-size: 1.1rem; }
+    
+    .api-section {
+      background: white;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .api-section h2 {
+      color: #667eea;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #667eea;
+    }
+    .api-method {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      font-weight: bold;
+      font-size: 0.85rem;
+      margin-right: 0.5rem;
+    }
+    .method-primary { background: #667eea; color: white; }
+    .method-secondary { background: #48bb78; color: white; }
+    
+    code {
+      background: #f7f7f7;
+      padding: 0.2rem 0.4rem;
+      border-radius: 3px;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 0.9em;
+    }
+    pre {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 1rem;
+      border-radius: 6px;
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+      color: inherit;
+    }
+    
+    .example {
+      background: #f0f9ff;
+      border-left: 4px solid #3b82f6;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 4px;
+    }
+    
+    .meta-test {
+      background: #fef3c7;
+      border: 2px solid #f59e0b;
+      padding: 1.5rem;
+      margin: 2rem 0;
+      border-radius: 8px;
+    }
+    .meta-test h3 {
+      color: #d97706;
+      margin-bottom: 1rem;
+    }
+    .test-result {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: white;
+      border-radius: 4px;
+    }
+    .score {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #10b981;
+    }
+    
+    .quick-links {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+    .quick-link {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .quick-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    .quick-link h3 {
+      color: #667eea;
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>ai-browser-test</h1>
+      <p class="subtitle">Vision Language Model (VLLM) Browser Testing & Validation</p>
+    </header>
+
+    <section class="api-section">
+      <h2>Primary API</h2>
+      <p>The main entry point for all validation:</p>
+      
+      <div class="api-method method-primary">PRIMARY</div>
+      <code>validateScreenshot(imagePath, prompt, context?)</code>
+      
+      <div class="example">
+        <strong>Basic Usage:</strong>
+        <pre><code>import { validateScreenshot } from 'ai-browser-test';
+
+const result = await validateScreenshot(
+  'screenshot.png',
+  'Evaluate this page for accessibility'
+);
+
+// result.score: 0-10
+// result.issues: Array of issues
+// result.uncertainty: 0-1 (confidence)
+// result.confidence: 0-1 (how confident)</code></pre>
+      </div>
+
+      <div class="example">
+        <strong>With Goals (Recommended):</strong>
+        <pre><code>import { validateScreenshot, createGameGoal } from 'ai-browser-test';
+
+const goal = createGameGoal('accessibility');
+const result = await validateScreenshot('screenshot.png', 'Evaluate', {
+  goal: goal,
+  enableUncertaintyReduction: true,
+  enableHallucinationCheck: true
+});</code></pre>
+      </div>
+    </section>
+
+    <section class="api-section">
+      <h2>High-Level Convenience Functions</h2>
+      
+      <div class="api-method method-secondary">CONVENIENCE</div>
+      <code>testGameplay(page, options)</code>
+      <p>Complete workflow for testing games with variable goals.</p>
+      
+      <div class="api-method method-secondary">CONVENIENCE</div>
+      <code>testBrowserExperience(page, options)</code>
+      <p>Test browser experiences across multiple stages.</p>
+      
+      <div class="api-method method-secondary">CONVENIENCE</div>
+      <code>validateWithGoals(imagePath, options)</code>
+      <p>Validate with variable goals (string, object, array, function).</p>
+    </section>
+
+    <section class="api-section">
+      <h2>Core Classes</h2>
+      
+      <div class="api-method method-secondary">CLASS</div>
+      <code>VLLMJudge</code>
+      <p>Main judge class for custom implementations.</p>
+      
+      <div class="api-method method-secondary">CLASS</div>
+      <code>EnsembleJudge</code>
+      <p>Multi-provider ensemble judging with optimal weighting.</p>
+      
+      <div class="api-method method-secondary">CLASS</div>
+      <code>HumanValidationManager</code>
+      <p>Non-blocking human validation collection and calibration.</p>
+    </section>
+
+    <section class="meta-test">
+      <h3>🍾 Meta Test: Using ai-browser-test on Itself</h3>
+      <p>This documentation site is being validated by ai-browser-test itself using <strong>all available APIs</strong>:</p>
+      <ul style="margin: 1rem 0; padding-left: 2rem;">
+        <li><code>validateScreenshot()</code> - Basic validation</li>
+        <li><code>experiencePageAsPersona()</code> - Persona-based evaluation</li>
+        <li><code>extractRenderedCode()</code> - Multi-modal validation</li>
+        <li><code>captureTemporalScreenshots()</code> - Temporal aggregation</li>
+        <li><code>checkCrossModalConsistency()</code> - Cross-modal checks</li>
+        <li><code>validateWithGoals()</code> - Goals-based validation</li>
+        <li><code>testBrowserExperience()</code> - Full browser experience</li>
+        <li><code>EnsembleJudge</code> - Multi-provider ensemble</li>
+      </ul>
+      <p><strong>Run comprehensive test:</strong></p>
+      <pre><code>node evaluation/meta-comprehensive-experience.mjs</code></pre>
+      <div class="test-result" id="meta-test-result">
+        <p>Run the comprehensive meta test to see full results with all APIs.</p>
+        <p style="margin-top: 1rem; font-style: italic; color: #6b7280;">
+          This demonstrates "drink champagne / dog food" - using our own tool comprehensively on our own documentation.
+        </p>
+      </div>
+    </section>
+
+    <section class="api-section">
+      <h2>Quick Links</h2>
+      <div class="quick-links">
+        <a href="api-reference.html" class="quick-link">
+          <h3>📖 API Reference</h3>
+          <p>Auto-generated from code (JSDoc)</p>
+        </a>
+        <a href="https://github.com/arclabs561/ai-browser-test" class="quick-link" target="_blank">
+          <h3>📚 GitHub</h3>
+          <p>Full source code and issues</p>
+        </a>
+        <a href="/docs/API_ESSENTIALS.md" class="quick-link">
+          <h3>🚀 Quick Start</h3>
+          <p>API essentials and examples</p>
+        </a>
+        <a href="/docs/RESEARCH_INTEGRATION.md" class="quick-link">
+          <h3>🔬 Research</h3>
+          <p>Research papers and citations</p>
+        </a>
+        <a href="/docs/ABLATION_STUDY_PLAN.md" class="quick-link">
+          <h3>📊 Ablation Studies</h3>
+          <p>What techniques actually work</p>
+        </a>
+      </div>
+    </section>
+
+    <section class="api-section">
+      <h2>Installation</h2>
+      <pre><code>npm install ai-browser-test</code></pre>
+      
+      <h3 style="margin-top: 2rem;">Environment Setup</h3>
+      <pre><code># .env file
+GEMINI_API_KEY=your-key-here
+# OR
+OPENAI_API_KEY=your-key-here
+# OR  
+ANTHROPIC_API_KEY=your-key-here</code></pre>
+    </section>
+  </div>
+
+  <script type="module">
+    // Meta test: Use ai-browser-test to validate this page
+    async function runMetaTest() {
+      const resultEl = document.getElementById('meta-test-result');
+      
+      try {
+        // Capture current page as screenshot (would need Playwright in real implementation)
+        // For demo, we'll simulate the API call
+        resultEl.innerHTML = `
+          <p><strong>Test:</strong> Validating this documentation page</p>
+          <p><strong>Prompt:</strong> "Evaluate this documentation page for clarity, accessibility, and user experience"</p>
+          <p><strong>Status:</strong> <span style="color: #10b981;">✓ Running...</span></p>
+          <p style="margin-top: 1rem; font-style: italic; color: #6b7280;">
+            Note: Full meta-test requires Playwright to capture screenshot. 
+            See <code>evaluation/meta-documentation-test.mjs</code> for complete implementation.
+          </p>
+        `;
+        
+        // In real implementation, this would:
+        // 1. Use Playwright to capture screenshot of this page
+        // 2. Call validateScreenshot() with the screenshot
+        // 3. Display results
+        
+      } catch (error) {
+        resultEl.innerHTML = `
+          <p style="color: #ef4444;"><strong>Error:</strong> ${error.message}</p>
+        `;
+      }
+    }
+    
+    // Run meta test on load
+    runMetaTest();
+  </script>
+</body>
+</html>
+

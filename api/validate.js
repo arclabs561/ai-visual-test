@@ -23,7 +23,7 @@
  * }
  */
 
-import { validateScreenshot, createConfig } from '../src/index.mjs';
+import { validateScreenshot, createConfig, normalizeValidationResult } from '../src/index.mjs';
 import { writeFileSync, unlinkSync } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
@@ -183,13 +183,27 @@ export default async function handler(req, res) {
     try {
       const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
       imageBuffer = Buffer.from(base64Data, 'base64');
+      
+      // Additional validation: check decoded buffer size matches expected
+      // Base64 encoding increases size by ~33%, so decoded should be smaller
+      const expectedMaxDecoded = Math.floor(MAX_IMAGE_SIZE * 0.75); // Conservative estimate
+      if (imageBuffer.length > expectedMaxDecoded) {
+        return res.status(400).json({ error: 'Decoded image exceeds maximum size' });
+      }
     } catch (error) {
       return res.status(400).json({ error: 'Invalid base64 image' });
     }
 
     // Save to temporary file with secure random name (prevents race conditions and information disclosure)
+    // SECURITY: Use cryptographically secure random suffix to prevent collisions
     const randomSuffix = randomBytes(16).toString('hex');
     const tempPath = join(tmpdir(), `vllm-validate-${randomSuffix}.png`);
+    
+    // RESOURCE PROTECTION: File system operation is rate-limited by API rate limiting above
+    // This writeFileSync is bounded by:
+    // 1. Rate limiting (prevents too many concurrent operations)
+    // 2. Size limits (MAX_IMAGE_SIZE prevents large files)
+    // 3. Serverless timeout (function will timeout if operation takes too long)
     writeFileSync(tempPath, imageBuffer);
 
     try {
@@ -199,8 +213,11 @@ export default async function handler(req, res) {
       // Clean up temp file
       unlinkSync(tempPath);
 
-      // Return result
-      return res.status(200).json(result);
+      // Normalize result structure before returning (ensures consistent API response)
+      const normalizedResult = normalizeValidationResult(result, 'api/validate');
+
+      // Return normalized result
+      return res.status(200).json(normalizedResult);
     } catch (error) {
       // Clean up temp file on error
       try {

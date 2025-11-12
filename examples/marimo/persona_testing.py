@@ -98,8 +98,9 @@ def __(API_KEY, URL, json, personas, Persona):
     import json as py_json
     
     # Create Node.js script for persona testing
+    # Updated to use experiencePageAsPersona (new API) instead of experiencePageWithPersonas
     node_script = f"""
-    import {{ experiencePageWithPersonas }} from 'ai-browser-test';
+    import {{ experiencePageAsPersona }} from 'ai-browser-test';
     import {{ chromium }} from 'playwright';
     
     async function run() {{
@@ -111,18 +112,23 @@ def __(API_KEY, URL, json, personas, Persona):
             
             const personas = {py_json.dumps([p.model_dump() if isinstance(p, Persona) else p for p in personas])};
             
-            // experiencePageWithPersonas signature: (page, personas, options)
-            const results = await experiencePageWithPersonas(
-                page,
-                personas,
-                {{
-                    viewport: {{ width: 1280, height: 720 }},
-                    device: 'desktop',
-                    captureScreenshots: true,
-                    captureState: true,
-                    captureCode: true
-                }}
-            );
+            // experiencePageAsPersona signature: (page, persona, options)
+            // Automatically performs temporal aggregation
+            const results = [];
+            for (const persona of personas) {{
+                const result = await experiencePageAsPersona(
+                    page,
+                    persona,
+                    {{
+                        url: {py_json.dumps(URL)},
+                        testType: 'persona-testing',
+                        captureCode: true,
+                        captureTemporal: true,
+                        duration: 5000  // 5 seconds
+                    }}
+                );
+                results.push(result);
+            }}
             
             console.log(JSON.stringify(results, null, 2));
         }} catch (error) {{
@@ -138,6 +144,8 @@ def __(API_KEY, URL, json, personas, Persona):
     
     print("📝 Persona testing script created")
     print("   (In production, this would execute and return results)")
+    print("   Note: Uses experiencePageAsPersona (updated API)")
+    print("   Note: Automatically performs temporal aggregation")
     print("   Note: Requires @playwright/test to be installed")
     
     # Mock results matching actual PersonaExperienceResult structure

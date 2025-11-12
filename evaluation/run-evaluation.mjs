@@ -6,7 +6,7 @@
  * Compares VLLM judgments against ground truth annotations.
  */
 
-import { validateScreenshot, createConfig } from '../src/index.mjs';
+import { validateScreenshot, createConfig, aggregateTemporalNotes, formatNotesForPrompt } from '../src/index.mjs';
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { execSync } from 'child_process';
@@ -122,25 +122,29 @@ async function evaluateCase(testCase, index) {
     };
   }
   
-  // Validate with VLLM
-  const prompt = `Evaluate this webpage for quality, accessibility, and design. 
-Check for:
-- Visual design and aesthetics
-- Functional correctness
-- Usability and clarity
-- Accessibility compliance (WCAG)
-- Color contrast
-- Keyboard navigation
-- Screen reader compatibility
-
-Provide a score from 0-10 and list any issues found.`;
+  // Validate with VLLM using cohesive goals API
+  // Use goal in context - prompt composition will automatically generate appropriate prompt
+  const goal = {
+    description: 'Evaluate webpage for quality, accessibility, and design',
+    criteria: [
+      'Visual design and aesthetics',
+      'Functional correctness',
+      'Usability and clarity',
+      'Accessibility compliance (WCAG)',
+      'Color contrast',
+      'Keyboard navigation',
+      'Screen reader compatibility'
+    ]
+  };
   
   const result = await validateScreenshot(
     screenshotPath,
-    prompt,
+    'Evaluate this webpage', // Base prompt (goal will enhance it)
     {
       testType: 'evaluation',
-      viewport: { width: 1280, height: 720 }
+      viewport: { width: 1280, height: 720 },
+      goal: goal, // Cohesive integration - prompt composition uses this
+      enableUncertaintyReduction: true // Use uncertainty reduction for better confidence
     }
   );
   

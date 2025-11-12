@@ -39,6 +39,9 @@ function testConsistentProgression() {
  * Expected: Low coherence (<0.5)
  */
 function testErraticBehavior() {
+  // CRITICAL: Use 1s window so each note is in its own window
+  // This allows us to detect erratic behavior across windows
+  // Scores: 0 -> 10 -> 5 -> 15 -> 3 (very erratic)
   const notes = [
     { timestamp: 0, gameState: { score: 0 }, observation: 'Game started' },
     { timestamp: 1000, gameState: { score: 10 }, observation: 'Score increasing' },
@@ -47,7 +50,7 @@ function testErraticBehavior() {
     { timestamp: 4000, gameState: { score: 3 }, observation: 'Score decreased' }
   ];
   
-  const aggregated = aggregateTemporalNotes(notes);
+  const aggregated = aggregateTemporalNotes(notes, { windowSize: 1000 }); // 1s windows - each note in own window
   const coherence = aggregated.coherence;
   
   return {

@@ -12,7 +12,7 @@
  * Compares all methods on real dataset and analyzes results.
  */
 
-import { validateScreenshot, comparePair, rankBatch, createConfig } from '../src/index.mjs';
+import { validateScreenshot, comparePair, rankBatch, createConfig, aggregateTemporalNotes, formatNotesForPrompt } from '../src/index.mjs';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join } from 'path';
 import { calculateAllMetrics, formatMetrics, calculateSpearmanCorrelation } from './metrics.mjs';
@@ -26,6 +26,8 @@ const RESULTS_DIR = join(process.cwd(), 'evaluation', 'results');
 async function evaluateScoring(sample, prompt, options = {}) {
   const { enableBiasMitigation = true } = options;
   
+  // CRITICAL: Collect notes for temporal aggregation across samples
+  // (In a real scenario, we'd have temporal notes from the experience)
   const result = await validateScreenshot(
     sample.screenshot,
     prompt,
@@ -35,6 +37,9 @@ async function evaluateScoring(sample, prompt, options = {}) {
       enableBiasMitigation
     }
   );
+  
+  // Note: Temporal aggregation would happen if we had notes from experience
+  // For now, we just collect the result
   
   return {
     method: 'scoring',

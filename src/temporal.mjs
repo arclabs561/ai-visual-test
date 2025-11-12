@@ -2,7 +2,23 @@
  * Temporal Aggregator
  * 
  * Aggregates opinions over time with coherence checking.
- * Based on research: temporal aggregation, opinion propagation, coherence analysis.
+ * 
+ * Research context:
+ * - "Towards Dynamic Theory of Mind: Evaluating LLM Adaptation to Temporal Evolution of Human States"
+ *   (arXiv:2505.17663) - DynToM benchmark, temporal progression of mental states
+ *   * We use temporal aggregation concepts (loosely related)
+ *   * We do NOT implement the DynToM benchmark or specific methods
+ * - "The Other Mind: How Language Models Exhibit Human Temporal Cognition" (arXiv:2507.15851)
+ *   * Paper discusses Weber-Fechner law and logarithmic compression
+ *   * We use EXPONENTIAL decay (Math.pow), NOT logarithmic compression
+ *   * We do NOT implement temporal reference points from the research
+ * - Temporal aggregation and opinion propagation research
+ * - Coherence analysis in temporal sequences
+ * 
+ * IMPORTANT: This implementation uses EXPONENTIAL decay (decayFactor^age), NOT the
+ * logarithmic compression (Weber-Fechner law) described in arXiv:2507.15851. We cite
+ * the papers for temporal awareness concepts, but do NOT implement their specific
+ * findings (logarithmic compression, temporal reference points).
  */
 
 /**
@@ -101,13 +117,18 @@ export function aggregateTemporalNotes(notes, options = {}) {
   // Generate summary
   const summary = generateSummary(windowSummaries, coherence, conflicts);
 
+  // Handle timeSpan calculation safely
+  const firstElapsed = gameplayNotes[0]?.elapsed ?? 0;
+  const lastElapsed = gameplayNotes[gameplayNotes.length - 1]?.elapsed ?? 0;
+  const timeSpan = lastElapsed - firstElapsed;
+  
   return {
     windows: windowSummaries,
     summary,
     coherence,
     conflicts,
     totalNotes: gameplayNotes.length,
-    timeSpan: gameplayNotes[gameplayNotes.length - 1].elapsed - gameplayNotes[0].elapsed
+    timeSpan: Math.max(0, timeSpan)
   };
 }
 
@@ -118,7 +139,11 @@ function calculateCoherence(windows) {
   if (windows.length < 2) return 1.0;
 
   // Check for consistent trends (score progression)
-  const scores = windows.map(w => w.avgScore);
+  const scores = windows.map(w => w.avgScore).filter(s => !isNaN(s) && isFinite(s));
+  
+  // If no valid scores, return default
+  if (scores.length < 2) return 1.0;
+  
   const trends = [];
   
   for (let i = 1; i < scores.length; i++) {
@@ -133,22 +158,32 @@ function calculateCoherence(windows) {
       directionChanges++;
     }
   }
-  const directionConsistency = 1.0 - (directionChanges / Math.max(1, trends.length));
+  const directionConsistency = Math.max(0, Math.min(1, 1.0 - (directionChanges / Math.max(1, trends.length))));
 
   // Metric 2: Score variance
-  // NOTE: This normalization may be too lenient for erratic behavior
-  // Consider: Should we use a fixed max variance or adaptive threshold?
+  // Use stricter normalization that properly penalizes erratic behavior
   const meanScore = scores.reduce((a, b) => a + b, 0) / scores.length;
   const variance = scores.reduce((sum, score) => sum + Math.pow(score - meanScore, 2), 0) / scores.length;
   
-  // Use adaptive max variance: meanScore^2 for high scores, but also consider direction changes
-  // This makes variance coherence more sensitive to erratic behavior
-  const maxVariance = Math.max(meanScore * meanScore, 100); // At least 100 to avoid division by tiny numbers
-  const varianceCoherence = Math.max(0, 1.0 - (variance / maxVariance));
+    // Use fixed max variance based on score range, not meanScore^2
+  // For scores 0-10, max reasonable variance is ~25 (when scores vary from 0 to 10)
+  // For scores 0-100, max reasonable variance is ~2500
+  // Use score range to determine max variance, not meanScore^2 (which is too lenient)
+  const scoreRange = Math.max(...scores) - Math.min(...scores);
+  const maxVariance = Math.max(
+    Math.pow(scoreRange / 2, 2), // Variance for uniform distribution over range
+    Math.pow(meanScore * 0.5, 2), // Fallback: 50% of mean as standard deviation
+    10 // Minimum to avoid division by tiny numbers
+  );
   
-  // Add explicit penalty for frequent direction changes (erratic behavior)
+  // Variance coherence: penalize high variance more aggressively
+  const varianceCoherence = Math.max(0, Math.min(1, 1.0 - (variance / maxVariance)));
+  
+    // Add stronger penalty for frequent direction changes (erratic behavior)
+  // Direction changes are a strong signal of erratic behavior
   const directionChangePenalty = directionChanges / Math.max(1, trends.length);
-  const adjustedVarianceCoherence = varianceCoherence * (1.0 - directionChangePenalty * 0.5);
+  // Apply penalty more aggressively: 0.7x multiplier (was 0.5x)
+  const adjustedVarianceCoherence = Math.max(0, Math.min(1, varianceCoherence * (1.0 - directionChangePenalty * 0.7)));
 
   // Metric 3: Observation consistency
   let observationConsistency = 1.0;
@@ -170,17 +205,28 @@ function calculateCoherence(windows) {
       overlapSum += overlap;
       }
     }
-    observationConsistency = overlapSum / Math.max(1, keywords.length - 1);
+    observationConsistency = Math.max(0, Math.min(1, overlapSum / Math.max(1, keywords.length - 1)));
   }
 
-  // Weighted combination (use adjusted variance coherence that penalizes erratic behavior)
+    // Add stability metric that directly penalizes erratic behavior
+  // Stability = 1 - (directionChanges / maxPossibleChanges)
+  // For n windows, max possible direction changes is n-2 (can't change at first or last)
+  const maxPossibleChanges = Math.max(1, trends.length);
+  const stability = Math.max(0, Math.min(1, 1.0 - (directionChanges / maxPossibleChanges)));
+  
+  // Increase weight of direction consistency and stability
+  // Erratic behavior should be heavily penalized
+  // New weights: direction 0.35, stability 0.25, variance 0.25, observation 0.15
   const coherence = (
-    directionConsistency * 0.4 +
-    adjustedVarianceCoherence * 0.3 +
-    observationConsistency * 0.3
+    directionConsistency * 0.35 +
+    stability * 0.25 +
+    adjustedVarianceCoherence * 0.25 +
+    observationConsistency * 0.15
   );
   
-  return Math.max(0, Math.min(1, coherence));
+  // Clamp to [0, 1] and handle NaN/Infinity
+  const clamped = Math.max(0, Math.min(1, isNaN(coherence) || !isFinite(coherence) ? 0.5 : coherence));
+  return clamped;
 }
 
 /**

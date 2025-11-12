@@ -3,6 +3,14 @@
  * 
  * Uses bias detection to actively adjust scores and mitigate biases.
  * Research shows active mitigation is more effective than detection alone.
+ * 
+ * Based on research findings that counter-balancing and active score adjustment
+ * can effectively eliminate position bias and other evaluation biases.
+ * 
+ * Research:
+ * - Position bias: Systematic study (arXiv:2406.07791) - Position bias not random, varies by judge/task
+ * - Counter-balancing: Effective elimination method (arXiv:2508.02020)
+ * - Verbosity bias: Length alignment reduces bias (arXiv:2407.01085 - AdapAlpaca)
  */
 
 import { detectBias, detectPositionBias } from './bias-detector.mjs';
@@ -50,13 +58,27 @@ export function mitigateBias(result, biasDetection, options = {}) {
       
       switch (bias.type) {
         case 'verbosity':
-          // Verbosity bias: reduce score if reasoning is too verbose
-          // Verbose reasoning doesn't mean better quality
+         // Verbosity bias: reduce score if reasoning is too verbose
+         // Research: arXiv:2310.10076, arXiv:2407.01085
+         // LLMs prefer longer answers more than humans. AdapAlpaca (arXiv:2407.01085)
+         // proposes length alignment for fair comparison by decomposing preference into
+         // desirability (length-independent) and information mass (length-dependent).
+         //
+         // IMPORTANT: This is a SIMPLIFIED mitigation. We do NOT implement AdapAlpaca's
+         // full length alignment method or desirability/information mass decomposition.
+         // Full implementation would:
+         // - Align lengths of reference and test responses under equivalent length intervals
+         // - Decompose preference into desirability (length-independent) and information mass
+         // - Normalize response lengths before comparison
+         //
+         // Current implementation: Simple score reduction based on verbosity detection.
+         // This is NOT the AdapAlpaca method, just a simplified approximation.
           adjustment = -0.5 * bias.score;
           adjustments.push({
             type: 'verbosity',
             adjustment: adjustment.toFixed(2),
-            reason: 'Reduced score due to verbosity bias'
+            reason: 'Reduced score due to verbosity bias (research: arXiv:2310.10076, 2407.01085). Full AdapAlpaca would align lengths under equivalent intervals.',
+            researchNote: 'AdapAlpaca decomposes win rate into desirability (length-independent) and information mass (length-dependent)'
           });
           break;
           

@@ -120,8 +120,18 @@ export async function evaluateInteractiveWebsite(website, options = {}) {
         }
       );
       
-      // Aggregate temporal notes
-      const aggregated = aggregateMultiScale(experienceResult.notes || [], {
+      // CRITICAL: Use automatically aggregated notes from experience (now included)
+      // Also aggregate manually for cross-persona analysis
+      const { aggregateTemporalNotes } = await import('../src/index.mjs');
+      
+      // Use aggregated notes from experience if available
+      const aggregated = experienceResult.aggregated || aggregateTemporalNotes(experienceResult.notes || [], {
+        windowSize: 10000,
+        decayFactor: 0.9
+      });
+      
+      // Multi-scale aggregation for richer analysis
+      const aggregatedMultiScale = experienceResult.aggregatedMultiScale || aggregateMultiScale(experienceResult.notes || [], {
         timeScales: {
           immediate: 100,   // 0.1s - instant reactions
           short: 1000,      // 1s - quick assessments
@@ -132,6 +142,7 @@ export async function evaluateInteractiveWebsite(website, options = {}) {
       });
       
       // Get final evaluation
+      // CRITICAL: Include temporal notes in validation context
       let evaluation = experienceResult.evaluation;
       if (!evaluation && experienceResult.screenshots && experienceResult.screenshots.length > 0) {
         const { validateScreenshot } = await import('../src/index.mjs');
@@ -143,7 +154,8 @@ export async function evaluateInteractiveWebsite(website, options = {}) {
             testType: 'interactive-experience',
             viewport: { width: 1920, height: 1080 },
             sequentialContext: sequentialContext.getContext(),
-            enableBiasMitigation: true
+            enableBiasMitigation: true,
+            temporalNotes: aggregated // CRITICAL: Include aggregated temporal notes
           }
         );
       }
@@ -162,7 +174,8 @@ export async function evaluateInteractiveWebsite(website, options = {}) {
         persona: persona.name,
         evaluation: evaluation,
         notes: experienceResult.notes,
-        aggregated: aggregated,
+        aggregated: aggregated, // Standard temporal aggregation
+        aggregatedMultiScale: aggregatedMultiScale, // CRITICAL: Multi-scale aggregation
         screenshots: experienceResult.screenshots
       });
       
@@ -252,6 +265,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 }
 
 export { evaluateInteractiveWebsite, evaluateAllInteractiveExperiences, createInteractivePersonas };
+
 
 
 

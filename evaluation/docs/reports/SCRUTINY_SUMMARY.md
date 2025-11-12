@@ -216,7 +216,7 @@ This document summarizes all validation tests, research findings, and critical i
 ### Long-Term Validation
 
 1. **Real-World Dataset Evaluation**
-   - Evaluate on queeraoke's actual scenarios
+   - Evaluate on real-world test scenarios
    - Measure accuracy against ground truth
    - Track performance over time
 

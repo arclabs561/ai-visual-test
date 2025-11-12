@@ -186,7 +186,7 @@ const coherence = (
 ### Long-Term Validation
 
 1. **Real-World Dataset Evaluation**
-   - Evaluate on queeraoke's actual test scenarios
+   - Evaluate on real-world test scenarios
    - Measure accuracy against ground truth
    - Track performance over time
 

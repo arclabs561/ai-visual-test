@@ -43,81 +43,110 @@ test('loadEnv - returns false when no .env file', () => {
 
 test('loadEnv - loads .env file', () => {
   const envFile = join(TEST_DIR, '.env');
-  writeFileSync(envFile, 'TEST_KEY=test_value\nTEST_KEY2=test_value2');
+  // Use whitelisted keys for testing
+  writeFileSync(envFile, 'GEMINI_API_KEY=test_value\nVLM_PROVIDER=test_value2');
   
-  const originalValue = process.env.TEST_KEY;
-  delete process.env.TEST_KEY;
+  const originalValue = process.env.GEMINI_API_KEY;
+  delete process.env.GEMINI_API_KEY;
+  delete process.env.VLM_PROVIDER;
   
   try {
     const result = loadEnv(TEST_DIR);
     assert.strictEqual(result, true);
-    assert.strictEqual(process.env.TEST_KEY, 'test_value');
-    assert.strictEqual(process.env.TEST_KEY2, 'test_value2');
+    assert.strictEqual(process.env.GEMINI_API_KEY, 'test_value');
+    assert.strictEqual(process.env.VLM_PROVIDER, 'test_value2');
   } finally {
     if (originalValue) {
-      process.env.TEST_KEY = originalValue;
+      process.env.GEMINI_API_KEY = originalValue;
     } else {
-      delete process.env.TEST_KEY;
+      delete process.env.GEMINI_API_KEY;
     }
-    delete process.env.TEST_KEY2;
+    delete process.env.VLM_PROVIDER;
   }
 });
 
 test('loadEnv - skips comments', () => {
   const envFile = join(TEST_DIR, '.env');
-  writeFileSync(envFile, '# This is a comment\nTEST_KEY=test_value');
+  // Use whitelisted key for testing
+  writeFileSync(envFile, '# This is a comment\nGEMINI_API_KEY=test_value');
   
-  const originalValue = process.env.TEST_KEY;
-  delete process.env.TEST_KEY;
+  const originalValue = process.env.GEMINI_API_KEY;
+  delete process.env.GEMINI_API_KEY;
   
   try {
     const result = loadEnv(TEST_DIR);
     assert.strictEqual(result, true);
-    assert.strictEqual(process.env.TEST_KEY, 'test_value');
+    assert.strictEqual(process.env.GEMINI_API_KEY, 'test_value');
   } finally {
     if (originalValue) {
-      process.env.TEST_KEY = originalValue;
+      process.env.GEMINI_API_KEY = originalValue;
     } else {
-      delete process.env.TEST_KEY;
+      delete process.env.GEMINI_API_KEY;
     }
   }
 });
 
 test('loadEnv - removes quotes', () => {
   const envFile = join(TEST_DIR, '.env');
-  writeFileSync(envFile, 'TEST_KEY="quoted_value"\nTEST_KEY2=\'single_quoted\'');
+  // Use whitelisted keys for testing
+  writeFileSync(envFile, 'GEMINI_API_KEY="quoted_value"\nVLM_PROVIDER=\'single_quoted\'');
   
-  const originalValue = process.env.TEST_KEY;
-  delete process.env.TEST_KEY;
-  delete process.env.TEST_KEY2;
+  const originalValue = process.env.GEMINI_API_KEY;
+  delete process.env.GEMINI_API_KEY;
+  delete process.env.VLM_PROVIDER;
   
   try {
     const result = loadEnv(TEST_DIR);
     assert.strictEqual(result, true);
-    assert.strictEqual(process.env.TEST_KEY, 'quoted_value');
-    assert.strictEqual(process.env.TEST_KEY2, 'single_quoted');
+    assert.strictEqual(process.env.GEMINI_API_KEY, 'quoted_value');
+    assert.strictEqual(process.env.VLM_PROVIDER, 'single_quoted');
   } finally {
     if (originalValue) {
-      process.env.TEST_KEY = originalValue;
+      process.env.GEMINI_API_KEY = originalValue;
     } else {
-      delete process.env.TEST_KEY;
+      delete process.env.GEMINI_API_KEY;
     }
-    delete process.env.TEST_KEY2;
+    delete process.env.VLM_PROVIDER;
   }
 });
 
 test('loadEnv - respects existing env vars', () => {
   const envFile = join(TEST_DIR, '.env');
-  writeFileSync(envFile, 'TEST_KEY=env_file_value');
+  // Use whitelisted key for testing
+  writeFileSync(envFile, 'GEMINI_API_KEY=env_file_value');
   
-  process.env.TEST_KEY = 'existing_value';
+  process.env.GEMINI_API_KEY = 'existing_value';
   
   try {
     const result = loadEnv(TEST_DIR);
     assert.strictEqual(result, true);
-    assert.strictEqual(process.env.TEST_KEY, 'existing_value'); // Should not override
+    assert.strictEqual(process.env.GEMINI_API_KEY, 'existing_value'); // Should not override
   } finally {
-    delete process.env.TEST_KEY;
+    delete process.env.GEMINI_API_KEY;
+  }
+});
+
+test('loadEnv - ignores non-whitelisted keys', () => {
+  const envFile = join(TEST_DIR, '.env');
+  // Include both whitelisted and non-whitelisted keys
+  writeFileSync(envFile, 'GEMINI_API_KEY=allowed_value\nMALICIOUS_KEY=should_be_ignored\nANOTHER_BAD_KEY=also_ignored');
+  
+  delete process.env.GEMINI_API_KEY;
+  delete process.env.MALICIOUS_KEY;
+  delete process.env.ANOTHER_BAD_KEY;
+  
+  try {
+    const result = loadEnv(TEST_DIR);
+    assert.strictEqual(result, true);
+    // Whitelisted key should be set
+    assert.strictEqual(process.env.GEMINI_API_KEY, 'allowed_value');
+    // Non-whitelisted keys should be ignored
+    assert.strictEqual(process.env.MALICIOUS_KEY, undefined);
+    assert.strictEqual(process.env.ANOTHER_BAD_KEY, undefined);
+  } finally {
+    delete process.env.GEMINI_API_KEY;
+    delete process.env.MALICIOUS_KEY;
+    delete process.env.ANOTHER_BAD_KEY;
   }
 });
 

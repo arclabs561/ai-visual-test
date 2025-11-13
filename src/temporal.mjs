@@ -32,11 +32,13 @@
  * }} [options={}] - Aggregation options
  * @returns {import('./index.mjs').AggregatedTemporalNotes} Aggregated temporal notes with windows and coherence
  */
+import { TEMPORAL_CONSTANTS } from './constants.mjs';
+
 export function aggregateTemporalNotes(notes, options = {}) {
   const {
-    windowSize = 10000, // 10 second windows
-    decayFactor = 0.9, // Exponential decay for older notes
-    coherenceThreshold = 0.7 // Minimum coherence score
+    windowSize = TEMPORAL_CONSTANTS.DEFAULT_WINDOW_SIZE_MS,
+    decayFactor = TEMPORAL_CONSTANTS.DEFAULT_DECAY_FACTOR,
+    coherenceThreshold = TEMPORAL_CONSTANTS.DEFAULT_COHERENCE_THRESHOLD
   } = options;
 
   // Filter and sort notes by timestamp
@@ -61,6 +63,9 @@ export function aggregateTemporalNotes(notes, options = {}) {
   const windows = [];
   const startTime = gameplayNotes[0].timestamp || Date.now();
   
+  // INVARIANT: Notes are sorted by timestamp (line 48), so elapsed is always >= 0
+  // This ensures windowIndex is always >= 0 (Math.floor of non-negative number)
+  // If notes were unsorted, negative elapsed would create negative window indices
   for (let i = 0; i < gameplayNotes.length; i++) {
     const note = gameplayNotes[i];
     const elapsed = note.elapsed || (note.timestamp - startTime);
@@ -87,7 +92,14 @@ export function aggregateTemporalNotes(notes, options = {}) {
     });
     
     // Extract score from gameState if available
+    // NOTE: Score extraction order matters - gameState.score takes precedence over note.score
+    // This is because gameState.score is more reliable (from actual game state)
     const score = note.gameState?.score || note.score || 0;
+    
+    // Accumulate weighted score and total weight for this window
+    // INVARIANT: weightedScore must be divided by totalWeight to get average
+    // Both are accumulated across all notes in the window
+    // The weight uses exponential decay: Math.pow(decayFactor, age / windowSize)
     windows[windowIndex].weightedScore += score * weight;
     windows[windowIndex].totalWeight += weight;
   }
@@ -138,7 +150,7 @@ export function aggregateTemporalNotes(notes, options = {}) {
  * Coherence measures how consistent temporal notes are over time. Higher coherence
  * indicates stable, predictable patterns. Lower coherence indicates erratic behavior.
  * 
- * CRITICAL BUG FIX (2025-01): The adjustedVarianceCoherence calculation was incomplete.
+ * BUG FIX (2025-01): The adjustedVarianceCoherence calculation was incomplete.
  * It was: `const adjustedVarianceCoherence = Math.max;` which is just a function reference.
  * This would cause incorrect coherence scores for erratic behavior. The fix completes
  * the calculation with proper penalty for direction changes.
@@ -197,7 +209,7 @@ function calculateCoherence(windows) {
   // Add stronger penalty for frequent direction changes (erratic behavior)
   // Direction changes are a strong signal of erratic behavior
   // 
-  // CRITICAL: This calculation must be complete! The bug was:
+  // NOTE: This calculation must be complete! The bug was:
   //   const adjustedVarianceCoherence = Math.max; // WRONG - just function reference
   // The fix is:
   //   const adjustedVarianceCoherence = Math.max(0, Math.min(1, varianceCoherence * (1.0 - directionChangePenalty * 0.7)));

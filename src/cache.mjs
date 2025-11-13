@@ -4,7 +4,7 @@
  * Provides persistent caching for VLLM API calls to reduce costs and improve performance.
  * Uses file-based storage for cache persistence across test runs.
  * 
- * CRITICAL BUGS FIXED (2025-01):
+ * BUGS FIXED (2025-01):
  * 1. Timestamp reset on save - was resetting ALL timestamps to `now`, breaking 7-day expiration
  * 2. Cache key truncation - was truncating prompts/gameState, causing collisions
  * 
@@ -26,12 +26,14 @@ import { warn } from './logger.mjs';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+import { CACHE_CONSTANTS } from './constants.mjs';
+
 // Default cache directory (can be overridden)
 let CACHE_DIR = null;
 let CACHE_FILE = null;
-const MAX_CACHE_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
-const MAX_CACHE_SIZE = 1000; // Maximum number of cache entries (LRU eviction)
-const MAX_CACHE_SIZE_BYTES = 100 * 1024 * 1024; // 100MB maximum cache file size
+const MAX_CACHE_AGE = CACHE_CONSTANTS.MAX_CACHE_AGE_MS;
+const MAX_CACHE_SIZE = CACHE_CONSTANTS.MAX_CACHE_SIZE;
+const MAX_CACHE_SIZE_BYTES = CACHE_CONSTANTS.MAX_CACHE_SIZE_BYTES;
 
 // Cache instance
 let cacheInstance = null;
@@ -74,7 +76,7 @@ export function initCache(cacheDir) {
  * @returns {string} SHA-256 hash of cache key
  */
 export function generateCacheKey(imagePath, prompt, context = {}) {
-  // CRITICAL: Don't truncate cache keys - it causes collisions!
+  // NOTE: Don't truncate cache keys - it causes collisions!
   // 
   // The bug: Truncating prompt (1000 chars) and gameState (500 chars) means:
   // - Different prompts with same first 1000 chars = same cache key = wrong cache hit
@@ -102,7 +104,7 @@ export function generateCacheKey(imagePath, prompt, context = {}) {
 /**
  * Load cache from file
  * 
- * CRITICAL: Preserves original timestamps from file for expiration logic.
+ * NOTE: Preserves original timestamps from file for expiration logic.
  * We need the original timestamp to check if entries are older than MAX_CACHE_AGE (7 days).
  * 
  * The cache file format is: { key: { data: {...}, timestamp: number } }
@@ -115,7 +117,15 @@ function loadCache() {
   }
   
   try {
-    const cacheData = JSON.parse(readFileSync(CACHE_FILE, 'utf8'));
+    let cacheData;
+    try {
+      cacheData = JSON.parse(readFileSync(CACHE_FILE, 'utf8'));
+    } catch (parseError) {
+      // SECURITY: Handle malformed JSON gracefully to prevent DoS
+      warn(`[VLLM Cache] Failed to parse cache file (corrupted?): ${parseError.message}`);
+      // Recover by starting with empty cache
+      return new Map();
+    }
     const cache = new Map();
     const now = Date.now();
     
@@ -161,7 +171,7 @@ function saveCache(cache) {
     const now = Date.now();
     let totalSize = 0;
     
-    // CRITICAL BUG FIX (2025-01): Don't reset timestamps on save!
+    // BUG FIX (2025-01): Don't reset timestamps on save!
     // 
     // The bug was: `timestamp: now` for ALL entries
     // This broke 7-day expiration because old entries got new timestamps

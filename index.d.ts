@@ -100,6 +100,13 @@ export class FileError extends AIBrowserTestError {
   constructor(message: string, filePath: string, details?: Record<string, unknown>);
 }
 
+export class StateMismatchError extends ValidationError {
+  discrepancies: string[];
+  extracted: unknown;
+  expected: unknown;
+  constructor(discrepancies: string[], extracted: unknown, expected: unknown, message?: string);
+}
+
 export function isAIBrowserTestError(error: unknown): error is AIBrowserTestError;
 export function isErrorType<T extends AIBrowserTestError>(error: unknown, errorClass: new (...args: any[]) => T): error is T;
 
@@ -738,5 +745,200 @@ export function calculateRankAgreement(
   ranking2: Array<number | null>
 ): RankAgreementResult;
 
+// Validators
+export interface StateValidatorOptions<T = unknown> {
+  tolerance?: number;
+  validateScreenshot?: ValidationFunction;
+  stateExtractor?: (result: ValidationResult, expected: T) => Partial<T>;
+  stateComparator?: (extracted: Partial<T>, expected: T, options: { tolerance: number }) => {
+    matches: boolean;
+    discrepancies: string[];
+  };
+}
 
+export interface StateValidationOptions<T = unknown> {
+  promptBuilder?: (expected: T, options: Record<string, unknown>) => string;
+  testType?: string;
+  context?: Record<string, unknown>;
+  stateDescription?: string;
+  extractionTasks?: string[];
+}
+
+export interface StateValidationResult<T = unknown> extends ValidationResult {
+  extractedState: Partial<T>;
+  expectedState: T;
+  validation: {
+    matches: boolean;
+    discrepancies: string[];
+  };
+  matches: boolean;
+}
+
+export class StateValidator<T = unknown> {
+  constructor(options?: StateValidatorOptions<T>);
+  static validate<T = unknown>(
+    screenshotPath: string,
+    expectedState: T,
+    options?: StateValidationOptions<T>
+  ): Promise<StateValidationResult<T>>;
+  validateState(
+    screenshotPath: string,
+    expectedState: T,
+    options?: StateValidationOptions<T>
+  ): Promise<StateValidationResult<T>>;
+  buildStatePrompt(expectedState: T, options?: StateValidationOptions<T>): string;
+}
+
+export interface AccessibilityValidatorOptions {
+  minContrast?: number;
+  standards?: string[];
+  zeroTolerance?: boolean;
+  validateScreenshot?: ValidationFunction;
+}
+
+export interface AccessibilityOptions {
+  customPrompt?: string;
+  minContrast?: number;
+  standards?: string[];
+  testType?: string;
+  [key: string]: unknown;
+}
+
+export interface AccessibilityResult extends ValidationResult {
+  violations: {
+    zeroTolerance: string[];
+    critical: string[];
+    warnings: string[];
+  };
+  passes: boolean;
+  contrastCheck: {
+    ratios: string[];
+    minRatio: number | null;
+    meetsRequirement: boolean | null;
+  };
+  standards: string[];
+}
+
+export class AccessibilityValidator {
+  constructor(options?: AccessibilityValidatorOptions);
+  static validate(
+    screenshotPath: string,
+    options?: AccessibilityOptions
+  ): Promise<AccessibilityResult>;
+  validateAccessibility(
+    screenshotPath: string,
+    options?: AccessibilityOptions
+  ): Promise<AccessibilityResult>;
+  buildAccessibilityPrompt(options?: AccessibilityOptions): string;
+  detectViolations(result: ValidationResult): {
+    zeroTolerance: string[];
+    critical: string[];
+    warnings: string[];
+  };
+  extractContrastInfo(result: ValidationResult): {
+    ratios: string[];
+    minRatio: number | null;
+    meetsRequirement: boolean | null;
+  };
+}
+
+export type PromptTemplate = (variables: Record<string, unknown>, context?: Record<string, unknown>) => string;
+
+export interface PromptBuilderOptions {
+  templates?: Record<string, PromptTemplate | string>;
+  rubric?: Rubric;
+  defaultContext?: Record<string, unknown>;
+}
+
+export interface PromptOptions {
+  variables?: Record<string, unknown>;
+  context?: Record<string, unknown>;
+  includeRubric?: boolean;
+  includeZeroTolerance?: boolean;
+  includeScoring?: boolean;
+  enforceZeroTolerance?: boolean;
+  rubric?: Rubric;
+}
+
+export class PromptBuilder {
+  constructor(options?: PromptBuilderOptions);
+  buildPrompt(basePrompt: string, options?: PromptOptions): string;
+  buildFromTemplate(templateName: string, variables?: Record<string, unknown>, options?: PromptOptions): string;
+  registerTemplate(name: string, template: PromptTemplate | string): void;
+}
+
+export interface RubricOptions {
+  enforceZeroTolerance?: boolean;
+  includeZeroTolerance?: boolean;
+  includeScoring?: boolean;
+}
+
+export interface RubricCriterion {
+  id: string;
+  rule: string;
+  weight?: number;
+  zeroTolerance?: boolean;
+  penalty?: number;
+  description?: string;
+}
+
+export interface ExtendedRubric extends Rubric {
+  criteria?: RubricCriterion[];
+  name?: string;
+  description?: string;
+}
+
+export function validateWithRubric(
+  screenshotPath: string,
+  prompt: string,
+  rubric: ExtendedRubric,
+  context?: ValidationContext,
+  options?: RubricOptions
+): Promise<ValidationResult & { zeroToleranceViolation?: boolean }>;
+
+export interface BatchValidatorOptions {
+  maxConcurrency?: number;
+  batchSize?: number;
+  cacheEnabled?: boolean;
+  trackCosts?: boolean;
+  trackStats?: boolean;
+}
+
+export interface BatchValidationStats {
+  total: number;
+  passed: number;
+  failed: number;
+  duration: number;
+  costStats: ReturnType<CostTracker['getStats']> | null;
+  performance: {
+    totalRequests: number;
+    avgDuration: number;
+    minDuration: number;
+    maxDuration: number;
+    successRate: number;
+  } | null;
+}
+
+export interface BatchValidationResult {
+  results: ValidationResult[];
+  stats: BatchValidationStats | null;
+}
+
+export class BatchValidator extends BatchOptimizer {
+  constructor(options?: BatchValidatorOptions);
+  batchValidate(
+    screenshots: string | string[],
+    prompt: string,
+    context?: ValidationContext
+  ): Promise<BatchValidationResult>;
+  getCostStats(): ReturnType<CostTracker['getStats']>;
+  getPerformanceStats(): {
+    totalRequests: number;
+    avgDuration: number;
+    minDuration: number;
+    maxDuration: number;
+    successRate: number;
+  };
+  resetStats(): void;
+}
 

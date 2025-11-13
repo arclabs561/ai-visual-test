@@ -8,9 +8,25 @@
 import { readFileSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { warn } from './logger.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+// SECURITY: Whitelist allowed environment variable keys to prevent injection
+// Only allow keys that are actually used by this application
+const ALLOWED_ENV_KEYS = [
+  'GEMINI_API_KEY',
+  'OPENAI_API_KEY',
+  'ANTHROPIC_API_KEY',
+  'API_KEY',
+  'VLLM_API_KEY',
+  'VLM_PROVIDER',
+  'VLM_MODEL',
+  'VLM_MODEL_TIER',
+  'RATE_LIMIT_MAX_REQUESTS',
+  'REQUIRE_AUTH'
+];
 
 /**
  * Load environment variables from .env file
@@ -52,6 +68,13 @@ export function loadEnv(basePath = null) {
           if (match) {
             const key = match[1].trim();
             let value = match[2].trim();
+            
+            // SECURITY: Only allow whitelisted environment variable keys
+            // Prevents malicious .env files from setting arbitrary variables
+            if (!ALLOWED_ENV_KEYS.includes(key)) {
+              warn(`[LoadEnv] Ignoring unknown environment variable key: ${key}`);
+              continue;
+            }
             
             // Remove quotes if present
             if ((value.startsWith('"') && value.endsWith('"')) ||

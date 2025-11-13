@@ -15,6 +15,7 @@ import { buildRubricPrompt, DEFAULT_RUBRIC } from './rubrics.mjs';
 import { formatNotesForPrompt, aggregateTemporalNotes } from './temporal.mjs';
 import { formatTemporalContext } from './temporal-prompt-formatter.mjs';
 import { selectTopWeightedNotes } from './temporal-note-pruner.mjs';
+import { warn } from './logger.mjs';
 
 // Lazy import for variable goals
 let generateGamePrompt = null;
@@ -89,7 +90,7 @@ export async function composePrompt(basePrompt, options = {}) {
     } catch (error) {
       // Fallback to base prompt if goal generation fails
       if (context.debug?.verbose) {
-        console.warn(`[Prompt Composer] Goal prompt generation failed: ${error.message}`);
+        warn(`[Prompt Composer] Goal prompt generation failed: ${error.message}`);
       }
     }
   }
@@ -114,7 +115,7 @@ export async function composePrompt(basePrompt, options = {}) {
       } catch (error) {
         // If pruning/aggregation fails, skip temporal context
         if (context.debug?.verbose) {
-          console.warn(`[Prompt Composer] Failed to prune/aggregate temporal notes: ${error.message}`);
+          warn(`[Prompt Composer] Failed to prune/aggregate temporal notes: ${error.message}`);
         }
         processedTemporalNotes = null;
       }

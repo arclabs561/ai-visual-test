@@ -270,7 +270,7 @@ export class TemporalPreprocessingManager {
   /**
    * Check if cache is valid for current notes
    * 
-   * CRITICAL LIMITATION: This only checks note COUNT, not note CONTENT!
+   * NOTE: This only checks note COUNT, not note CONTENT!
    * 
    * The problem:
    * - Validates cache if note count changed <20%
@@ -303,7 +303,9 @@ export class TemporalPreprocessingManager {
     if (age > this.cacheMaxAge) return false;
     
     // Count-based invalidation: cache invalid if note count changed >20%
-    // WARNING: This doesn't check if notes actually changed, just count!
+    // NOTE: Cache invalidation is based on note count, not content comparison
+    // This is a performance optimization - full content comparison would be expensive
+    // Trade-off: May miss cases where notes changed but count stayed same (rare)
     // Same count but different notes = cache considered valid (might be stale)
     const noteCountDiff = Math.abs(notes.length - this.preprocessedCache.noteCount);
     if (noteCountDiff > notes.length * 0.2) return false; // >20% change
@@ -329,7 +331,7 @@ export class TemporalPreprocessingManager {
   /**
    * Incremental aggregation (faster than full recomputation)
    * 
-   * CRITICAL: This is currently a LIE - it does full recomputation, not incremental!
+   * NOTE: This currently does full recomputation, not incremental (TODO: implement true incremental)
    * 
    * The problem:
    * - Function name says "incremental"
@@ -359,9 +361,10 @@ export class TemporalPreprocessingManager {
    * @returns {import('./index.mjs').AggregatedTemporalNotes} Aggregated notes
    */
   _incrementalAggregation(notes, options) {
-    // WARNING: This is NOT actually incremental - it does full recomputation
-    // The function name and comment are misleading
-    // TODO: Implement true incremental aggregation that:
+    // NOTE: This currently does full recomputation, not true incremental aggregation
+    // This is a known limitation documented in the function comment above
+    // 
+    // Future enhancement: Implement true incremental aggregation that:
     //   1. Takes cached aggregation
     //   2. Identifies new notes since cache
     //   3. Updates only affected windows

@@ -22,9 +22,12 @@ export default async function handler(req, res) {
       timestamp: new Date().toISOString()
     });
   } catch (error) {
+    // SECURITY: Don't expose internal error details
+    // Log server-side for debugging, return generic message to client
+    console.error('[Health] Error:', error);
     return res.status(500).json({
       status: 'error',
-      error: error.message
+      error: 'Health check failed'
     });
   }
 }

@@ -12,7 +12,18 @@
  * Compares all methods on real dataset and analyzes results.
  */
 
-import { validateScreenshot, comparePair, rankBatch, createConfig, aggregateTemporalNotes, formatNotesForPrompt } from '../../src/index.mjs';
+import { 
+  validateScreenshot, 
+  comparePair, 
+  rankBatch, 
+  createConfig, 
+  aggregateTemporalNotes, 
+  formatNotesForPrompt,
+  EnsembleJudge,
+  createEnsembleJudge,
+  validateWithGoals,
+  createGameGoal
+} from '../../src/index.mjs';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join } from 'path';
 import { calculateAllMetrics, formatMetrics, calculateSpearmanCorrelation } from '../utils/metrics.mjs';
@@ -124,6 +135,66 @@ async function evaluateBatchRanking(samples, prompt, options = {}) {
 }
 
 /**
+ * Evaluate using Ensemble Judge (multiple providers)
+ */
+async function evaluateWithEnsemble(sample, prompt, options = {}) {
+  const config = createConfig();
+  
+  // Get available providers
+  const availableProviders = [];
+  if (config.providers?.gemini?.apiKey) availableProviders.push('gemini');
+  if (config.providers?.openai?.apiKey) availableProviders.push('openai');
+  if (config.providers?.claude?.apiKey) availableProviders.push('claude');
+  
+  if (availableProviders.length < 2) {
+    return { 
+      method: 'ensemble', 
+      error: `Need at least 2 providers (found: ${availableProviders.length})` 
+    };
+  }
+  
+  const ensemble = createEnsembleJudge({
+    providers: availableProviders,
+    weights: 'optimal'
+  });
+  
+  const result = await ensemble.judge(sample.screenshot, prompt, {
+    testType: 'comprehensive-evaluation',
+    viewport: sample.metadata?.viewport || { width: 1280, height: 720 }
+  });
+  
+  return {
+    method: 'ensemble',
+    result,
+    providers: availableProviders,
+    agreement: result.agreement
+  };
+}
+
+/**
+ * Evaluate using validateWithGoals (goals-based validation)
+ */
+async function evaluateWithGoals(sample, prompt, options = {}) {
+  const goal = createGameGoal('accessibility', {
+    description: 'Evaluate accessibility compliance',
+    criteria: ['WCAG compliance', 'keyboard navigation', 'screen reader support']
+  });
+  
+  const result = await validateWithGoals(sample.screenshot, {
+    goal,
+    prompt,
+    testType: 'comprehensive-evaluation',
+    viewport: sample.metadata?.viewport || { width: 1280, height: 720 }
+  });
+  
+  return {
+    method: 'goals-based',
+    result,
+    goal: goal.name
+  };
+}
+
+/**
  * Main comprehensive evaluation
  */
 async function runComprehensiveEvaluation() {
@@ -182,7 +253,9 @@ Be thorough and specific.`;
     methods: {
       scoring: [],
       pairComparison: null,
-      batchRanking: null
+      batchRanking: null,
+      ensemble: [],
+      goalsBased: []
     },
     analysis: {}
   };
@@ -235,6 +308,59 @@ Be thorough and specific.`;
         console.log(`   ${r.rank}. ${validSamples[r.index].name} (score: ${r.score.toFixed(2)})`);
       });
     }
+  }
+  
+  // Method 4: Ensemble Judging (if multiple providers available)
+  console.log('\n📊 Method 4: Ensemble Judging\n');
+  
+  const config = createConfig();
+  const availableProviders = [];
+  if (config.providers?.gemini?.apiKey) availableProviders.push('gemini');
+  if (config.providers?.openai?.apiKey) availableProviders.push('openai');
+  if (config.providers?.claude?.apiKey) availableProviders.push('claude');
+  
+  if (availableProviders.length >= 2) {
+    console.log(`   Using ${availableProviders.length} providers: ${availableProviders.join(', ')}\n`);
+    
+    for (let i = 0; i < Math.min(5, validSamples.length); i++) {
+      const sample = validSamples[i];
+      console.log(`[${i + 1}/5] ${sample.name}`);
+      
+      const ensembleResult = await evaluateWithEnsemble(sample, prompt);
+      if (!ensembleResult.error) {
+        results.methods.ensemble.push({
+          sampleId: sample.id,
+          sampleName: sample.name,
+          ...ensembleResult
+        });
+        console.log(`   Ensemble score: ${ensembleResult.result.score?.toFixed(2) || 'N/A'}/10`);
+        console.log(`   Agreement: ${(ensembleResult.agreement * 100).toFixed(1)}%`);
+      } else {
+        console.log(`   ⚠️  ${ensembleResult.error}`);
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+  } else {
+    console.log(`   ⚠️  Need at least 2 providers for ensemble (found: ${availableProviders.length})`);
+  }
+  
+  // Method 5: Goals-Based Validation
+  console.log('\n📊 Method 5: Goals-Based Validation\n');
+  
+  for (let i = 0; i < Math.min(5, validSamples.length); i++) {
+    const sample = validSamples[i];
+    console.log(`[${i + 1}/5] ${sample.name}`);
+    
+    const goalsResult = await evaluateWithGoals(sample, prompt);
+    results.methods.goalsBased.push({
+      sampleId: sample.id,
+      sampleName: sample.name,
+      ...goalsResult
+    });
+    console.log(`   Goals-based score: ${goalsResult.result.score?.toFixed(2) || 'N/A'}/10`);
+    
+    await new Promise(resolve => setTimeout(resolve, 2000));
   }
   
   // Analyze results

@@ -108,9 +108,10 @@ function checkAuth(req) {
     return { authenticated: true };
   }
   
+  // SECURITY: Only accept API key from headers, not request body
+  // API keys in request bodies are logged, visible in dev tools, and stored in history
   const providedKey = req.headers['x-api-key'] || 
-                     req.headers['authorization']?.replace('Bearer ', '') ||
-                     req.body?.apiKey;
+                     req.headers['authorization']?.replace('Bearer ', '');
   
   if (!providedKey) {
     return { authenticated: false, error: 'Authentication required. Provide API key via X-API-Key header or Authorization: Bearer <key>' };
@@ -179,9 +180,16 @@ export default async function handler(req, res) {
     }
 
     // Decode base64 image
+    // SECURITY: Whitelist specific MIME types to prevent unexpected formats
+    const validMimeTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
+    const mimeMatch = image.match(/^data:(image\/(?:png|jpeg|jpg|gif|webp));base64,/);
+    if (!mimeMatch) {
+      return res.status(400).json({ error: 'Invalid image MIME type. Supported: image/png, image/jpeg, image/jpg, image/gif, image/webp' });
+    }
+    
     let imageBuffer;
     try {
-      const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
+      const base64Data = image.replace(/^data:image\/(?:png|jpeg|jpg|gif|webp);base64,/, '');
       imageBuffer = Buffer.from(base64Data, 'base64');
       
       // Additional validation: check decoded buffer size matches expected

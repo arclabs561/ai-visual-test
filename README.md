@@ -40,6 +40,8 @@ Set `GEMINI_API_KEY` or `OPENAI_API_KEY` in your environment. Works with Gemini 
 - **Accessibility checks** - AI can spot contrast issues, missing labels
 - **Design principles** - Validates brutalist, minimal, or other design styles
 - **Temporal testing** - Analyzes animations and gameplay over time
+- **State validation** - Validates game state, UI state, form state matches visual representation
+- **Rubric-based evaluation** - Uses explicit rubrics for consistent, reliable scoring
 
 ## What it's not good for
 
@@ -83,6 +85,110 @@ test('payment screen is accessible', async ({ page }) => {
   
   expect(result.score).toBeGreaterThan(7);
 });
+```
+
+## Validators
+
+Generic validators for common testing patterns:
+
+### State Validator
+
+Validate that visual state matches expected state (game state, UI state, form state):
+
+```javascript
+import { StateValidator } from 'ai-visual-test';
+
+const validator = new StateValidator({ tolerance: 5 });
+const result = await validator.validateState(
+  'screenshot.png',
+  { ball: { x: 100, y: 200 }, paddle: { x: 150 } }
+);
+
+if (!result.matches) {
+  console.log('State mismatches:', result.validation.discrepancies);
+}
+```
+
+### Accessibility Validator
+
+Configurable accessibility validation with WCAG standards:
+
+```javascript
+import { AccessibilityValidator } from 'ai-visual-test';
+
+const a11y = new AccessibilityValidator({
+  minContrast: 4.5, // WCAG-AA
+  standards: ['WCAG-AA'],
+  zeroTolerance: false
+});
+
+const result = await a11y.validateAccessibility('screenshot.png');
+if (!result.passes) {
+  console.log('Violations:', result.violations);
+}
+```
+
+### Prompt Builder
+
+Template-based prompt construction with rubric integration:
+
+```javascript
+import { PromptBuilder } from 'ai-visual-test';
+
+const builder = new PromptBuilder({
+  templates: {
+    accessibility: (vars) => `Check ${vars.element} for ${vars.standard} compliance`
+  }
+});
+
+const prompt = builder.buildFromTemplate('accessibility', {
+  element: 'buttons',
+  standard: 'WCAG-AA'
+});
+```
+
+### Rubric Validation
+
+Validate with explicit rubrics for consistent scoring:
+
+```javascript
+import { validateWithRubric } from 'ai-visual-test';
+
+const rubric = {
+  score: {
+    criteria: {
+      10: 'Perfect',
+      8: 'Good',
+      5: 'Acceptable'
+    }
+  },
+  criteria: [
+    { id: 'ZT-1', rule: 'Contrast <4.5:1 = FAIL', zeroTolerance: true }
+  ]
+};
+
+const result = await validateWithRubric('screenshot.png', 'Check accessibility', rubric);
+```
+
+### Batch Validator
+
+Batch validation with cost tracking and statistics:
+
+```javascript
+import { BatchValidator } from 'ai-visual-test';
+
+const validator = new BatchValidator({
+  trackCosts: true,
+  trackStats: true
+});
+
+const { results, stats } = await validator.batchValidate(
+  ['screenshot1.png', 'screenshot2.png'],
+  'Evaluate UI quality'
+);
+
+console.log('Cost:', stats.costStats);
+console.log('Performance:', stats.performance);
 ```
 
 ## Persona-based testing

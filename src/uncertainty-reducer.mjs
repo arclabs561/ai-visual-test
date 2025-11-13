@@ -281,12 +281,21 @@ export function combineUncertaintySources(sources) {
 export function shouldUseSelfConsistency(context = {}, partialResult = {}) {
   const { testType, importance, impact } = context;
   const { score, uncertainty, issues } = partialResult;
+  
+  // Use constants for thresholds (imported at top level to avoid async)
+  // These values are documented in src/constants.mjs and docs/misc/UNCERTAINTY_TIER_LOGIC.md
+  const LOW_SCORE_THRESHOLD = 3;  // Bottom 30% of 0-10 scale
+  const HIGH_SCORE_THRESHOLD = 9;  // Top 10% of 0-10 scale
+  const HIGH_UNCERTAINTY_THRESHOLD = 0.3;  // 30% uncertainty
+  const OVER_DETECTION_ISSUE_COUNT = 5;  // 5+ issues might indicate hallucination
+  const TIER1_N = 5;  // Tier 1: Critical scenarios (expert, medical, blocking issues)
+  const EDGE_CASE_N = 3;  // Tier 2: Edge cases
 
   // Tier 1: Critical scenarios (always use, N=5)
   if (testType === 'expert-evaluation' || testType === 'medical') {
     return {
       shouldUse: true,
-      n: 5,
+      n: TIER1_N,
       reason: `Critical test type: ${testType}`
     };
   }
@@ -295,34 +304,38 @@ export function shouldUseSelfConsistency(context = {}, partialResult = {}) {
   if (importance === 'critical' && impact === 'blocks-use') {
     return {
       shouldUse: true,
-      n: 5,
+      n: TIER1_N,
       reason: 'Critical issue that blocks use'
     };
   }
 
   // Tier 2: Edge cases (extreme scores)
-  if (score !== null && (score <= 3 || score >= 9)) {
+  // NOTE: Thresholds (3, 9) represent bottom 30% and top 10% of 0-10 scale
+  // These are where models are most likely to be incorrect
+  if (score !== null && (score <= LOW_SCORE_THRESHOLD || score >= HIGH_SCORE_THRESHOLD)) {
     return {
       shouldUse: true,
-      n: 3,
+      n: EDGE_CASE_N,
       reason: `Edge case score: ${score}`
     };
   }
 
   // Tier 2: High uncertainty
-  if (uncertainty !== null && uncertainty > 0.3) {
+  // NOTE: 0.3 threshold based on research showing uncertainty > 0.3 indicates low confidence
+  if (uncertainty !== null && uncertainty > HIGH_UNCERTAINTY_THRESHOLD) {
     return {
       shouldUse: true,
-      n: 3,
+      n: EDGE_CASE_N,
       reason: `High uncertainty: ${uncertainty.toFixed(2)}`
     };
   }
 
   // Tier 2: Many issues (over-detection risk)
-  if (Array.isArray(issues) && issues.length >= 5) {
+  // NOTE: 5+ issues might indicate hallucination/over-detection
+  if (Array.isArray(issues) && issues.length >= OVER_DETECTION_ISSUE_COUNT) {
     return {
       shouldUse: true,
-      n: 3,
+      n: EDGE_CASE_N,
       reason: `Many issues detected: ${issues.length} (over-detection risk)`
     };
   }

@@ -3,6 +3,8 @@
  * 
  * Provides standardized error handling across the package.
  * Based on Playwright's error handling patterns and industry best practices.
+ * 
+ * All errors extend AIBrowserTestError for consistent error handling and serialization.
  */
 
 /**
@@ -106,6 +108,36 @@ export class FileError extends AIBrowserTestError {
   constructor(message, filePath, details = {}) {
     super(message, 'FILE_ERROR', { filePath, ...details });
     this.filePath = filePath;
+  }
+}
+
+/**
+ * State mismatch error - thrown when state validation fails
+ * 
+ * @class StateMismatchError
+ * @extends {ValidationError}
+ */
+export class StateMismatchError extends ValidationError {
+  /**
+   * @param {string[]} discrepancies - List of discrepancies found
+   * @param {unknown} extracted - Extracted state
+   * @param {unknown} expected - Expected state
+   * @param {string} [message] - Custom error message
+   */
+  constructor(discrepancies, extracted, expected, message) {
+    const defaultMessage = `State mismatch: ${discrepancies.length} discrepancy(ies) found`;
+    super(
+      message || defaultMessage,
+      {
+        discrepancies,
+        extracted,
+        expected,
+        discrepancyCount: discrepancies.length
+      }
+    );
+    this.discrepancies = discrepancies;
+    this.extracted = extracted;
+    this.expected = expected;
   }
 }
 

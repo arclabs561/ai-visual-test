@@ -10,11 +10,13 @@
  * 
  * CACHE ARCHITECTURE NOTE:
  * - This has its OWN in-memory cache (Map), separate from VLLM cache
- * - Cache key generation is problematic (truncation causes collisions)
+ * - Cache key generation fixed (2025-01): Now uses SHA-256 hash, no truncation
  * - No coordination with VLLM cache (could cache same thing twice)
  * - No size limits or eviction (grows unbounded in long-running processes)
  * - See CACHE_ARCHITECTURE_DEEP_DIVE.md for details
  */
+
+import { createHash } from 'crypto';
 
 /**
  * Batch Optimizer Class
@@ -49,34 +51,38 @@ export class BatchOptimizer {
   /**
    * Generate cache key from screenshot path and prompt
    * 
-   * CRITICAL: This cache key generation is problematic!
+   * NOTE: This cache key generation may need improvement for better cache hit rates
    * 
    * Issues:
+   * BUG FIX (2025-01): Fixed truncation and string concatenation issues.
+   * 
+   * Previous issues:
    * 1. Truncation: prompt truncated to 100 chars, context to 50 chars
    *    - Causes collisions: different prompts with same prefix = same key
    *    - Wrong cache hits = incorrect results
    * 
    * 2. String concatenation, not hash
    *    - VLLM cache uses SHA-256 hash (secure, no collisions)
-   *    - This uses string concatenation (collision-prone)
+   *    - This used string concatenation (collision-prone)
    *    - Inconsistent with VLLM cache approach
    * 
    * 3. Whitespace removal in prompt
-   *    - `replace(/\s+/g, '')` removes all whitespace
+   *    - `replace(/\s+/g, '')` removed all whitespace
    *    - "Check accessibility" vs "Checkaccessibility" = same key (wrong!)
    * 
-   * Why it exists: Probably for simplicity, but it's dangerous
-   * 
-   * Better approach: Use SHA-256 hash like VLLM cache, don't truncate
-   * 
-   * TODO: Fix this to use proper hashing and no truncation
+   * Fix: Use SHA-256 hash like VLLM cache, don't truncate
+   * - Hash full content to avoid collisions
+   * - Cryptographically secure (collisions are extremely unlikely)
+   * - Consistent with VLLM cache approach
    */
   _getCacheKey(imagePath, prompt, context) {
-    // WARNING: This implementation has collision risks
-    // Truncation and string concatenation can cause wrong cache hits
-    const promptHash = prompt ? prompt.substring(0, 100).replace(/\s+/g, '') : '';
-    const contextHash = context ? JSON.stringify(context).substring(0, 50) : '';
-    return `${imagePath}-${promptHash}-${contextHash}`;
+    const keyData = {
+      imagePath,
+      prompt: prompt || '',
+      context: context ? JSON.stringify(context) : ''
+    };
+    const keyString = JSON.stringify(keyData);
+    return createHash('sha256').update(keyString).digest('hex');
   }
   
   /**

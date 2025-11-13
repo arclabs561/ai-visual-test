@@ -352,10 +352,10 @@ const result = await testGameplay(page, {
    ```javascript
    // All validation functions return same shape
    interface ValidationResult {
-     score: number; // 0-10, always present
+     score: number | null; // 0-10, property always exists but value may be null
      issues: string[]; // Always array
      reasoning: string; // Always present
-     assessment: string; // Optional
+     assessment: string | null; // Property always exists but value may be null
      // ... other fields
    }
    ```

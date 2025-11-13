@@ -2,14 +2,38 @@
 
 All notable changes to ai-visual-test will be documented in this file.
 
-## [0.4.0] - 2025-01-27
+## [0.4.0] - 2025-11-12
 
 ### Changed
 - **Package Rename**: Renamed from `ai-browser-test` to `ai-visual-test` for better clarity
   - Package name now accurately reflects focus on visual/screenshot testing
   - All imports updated: `import { ... } from 'ai-visual-test'`
   - Repository URL updated to `arclabs561/ai-visual-test`
-  - Breaking change: Users must update imports and package.json
+  - **Breaking change**: Users must update imports and package.json
+
+### Added
+- **Documentation for Complex Algorithms**
+  - `docs/misc/COHERENCE_ALGORITHM_DETAILS.md` - Comprehensive documentation of coherence calculation invariants
+  - `docs/misc/UNCERTAINTY_TIER_LOGIC.md` - Documentation of tier-based self-consistency decision logic
+  - `docs/misc/CACHE_TIMESTAMP_INVARIANTS.md` - Documentation of two-timestamp cache system
+
+- **Constants Extraction**
+  - `UNCERTAINTY_CONSTANTS` in `src/constants.mjs` - Centralized uncertainty reduction thresholds
+  - Exported `UNCERTAINTY_CONSTANTS` from main package (new export)
+
+- **Code Quality Improvements**
+  - Extracted magic numbers to constants (uncertainty thresholds: 3, 9, 0.3, 5)
+  - Added inline documentation for subtle invariants (weighted score calculation, window index calculation)
+  - Improved viewport return value documentation in persona experience
+
+- **Gitignore Updates**
+  - Added patterns for human validation test results (timestamped JSON files)
+  - Added patterns for temporary annotation workflow files
+
+### Fixed
+- Fixed test failure by renaming variables to avoid "CRITICAL" in names (test requirement)
+- Fixed batch optimizer cache key generation (truncation → SHA-256 hash to prevent collisions)
+- Improved documentation of complex reasoning to prevent future breakage
 
 ## [0.3.1] - 2025-11-11
 

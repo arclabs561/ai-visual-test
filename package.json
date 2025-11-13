@@ -1,91 +1,57 @@
 {
   "name": "ai-visual-test",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/arclabs561/ai-visual-test.git"
-  },
-  "homepage": "https://github.com/arclabs561/ai-visual-test#readme",
-  "bugs": {
-    "url": "https://github.com/arclabs561/ai-visual-test/issues"
-  },
-  "funding": {
-    "type": "github",
-    "url": "https://github.com/sponsors/arclabs561"
-  },
   "version": "0.4.0",
-  "description": "AI-powered visual testing using Vision Language Models (VLLM) for screenshot validation with Playwright. Semantic visual regression testing that understands UI meaning, not just pixels.",
+  "description": "AI-powered visual testing framework for web applications using Vision Language Models",
   "type": "module",
   "main": "src/index.mjs",
-  "types": "index.d.ts",
   "exports": {
     ".": "./src/index.mjs",
-    "./judge": "./src/judge.mjs",
-    "./multi-modal": "./src/multi-modal.mjs",
-    "./temporal": "./src/temporal.mjs",
-    "./cache": "./src/cache.mjs",
-    "./config": "./src/config.mjs",
-    "./load-env": "./src/load-env.mjs",
-    "./persona-experience": "./src/persona-experience.mjs",
-    "./logger": "./src/logger.mjs"
+    "./package.json": "./package.json"
   },
-  "files": [
-    "src/**/*.mjs",
-    "index.d.ts",
-    "api/**/*.js",
-    "public/**/*.html",
-    "vercel.json",
-    "README.md",
-    "CHANGELOG.md",
-    "DEPLOYMENT.md",
-    "CONTRIBUTING.md",
-    "LICENSE",
-    "example.test.mjs",
-    "docs/SECURITY_RED_TEAM_REPORT.md",
-    "SECURITY.md",
-    ".secretsignore.example"
-  ],
   "scripts": {
     "test": "node --test test/*.test.mjs",
-    "test:watch": "node --test --watch test/*.test.mjs",
-    "test:coverage": "node --test test/*.test.mjs",
+    "test:validation": "node --test test/validation-*.test.mjs",
+    "test:unit": "node --test test/unit/*.test.mjs",
+    "test:integration": "node --test test/integration/*.test.mjs",
+    "test:e2e": "node --test test/e2e/*.test.mjs",
+    "annotate": "node evaluation/utils/invoke-human-annotation.mjs",
+    "annotate:quick": "node evaluation/utils/quick-start-annotation.mjs",
+    "annotate:full": "node evaluation/utils/start-human-annotation.mjs",
+    "validate:annotations": "node evaluation/utils/validate-annotation-quality.mjs",
+    "validate:dataset": "node evaluation/utils/validate-dataset-quality.mjs",
+    "match:vllm": "node evaluation/utils/match-annotations-with-vllm.mjs",
     "docs": "node scripts/generate-docs.mjs",
-    "docs:watch": "node scripts/generate-docs.mjs && chokidar 'src/**/*.mjs' -c 'npm run docs'",
-    "docs:typedoc": "typedoc",
-    "prepare": "husky install || true"
+    "lint": "echo 'No linter configured'",
+    "prepublishOnly": "npm test"
   },
   "keywords": [
-    "browser-testing",
-    "playwright",
-    "vllm",
-    "vision-language-model",
-    "multi-modal-validation",
-    "persona-testing",
-    "ai-testing",
     "visual-testing",
-    "screenshot-validation",
+    "ai",
+    "vllm",
+    "vision-language-models",
+    "playwright",
     "accessibility",
-    "e2e-testing"
+    "ui-testing",
+    "screenshot-validation"
   ],
-  "author": "arclabs561 <henry@henrywallace.io>",
+  "author": "",
   "license": "MIT",
-  "peerDependencies": {
-    "@arclabs561/llm-utils": "*",
-    "@playwright/test": "^1.56.0"
+  "dependencies": {
+    "@playwright/test": "^1.48.0",
+    "dotenv": "^16.4.5"
   },
-  "peerDependenciesMeta": {
-    "@playwright/test": {
-      "optional": true
-    },
-    "@arclabs561/llm-utils": {
-      "optional": true
-    }
+  "devDependencies": {
+    "@types/node": "^22.10.1"
   },
   "engines": {
     "node": ">=18.0.0"
   },
-  "devDependencies": {
-    "playwright": "1.56.1",
-    "typedoc": "0.28.14",
-    "typescript": "5.9.3"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arclabs561/ai-visual-test.git"
+  },
+  "homepage": "https://github.com/arclabs561/ai-visual-test#readme",
+  "bugs": {
+    "url": "https://github.com/arclabs561/ai-visual-test/issues"
   }
 }

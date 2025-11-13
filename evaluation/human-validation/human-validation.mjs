@@ -84,11 +84,30 @@ export function collectHumanJudgment(judgment) {
 
 /**
  * Load human judgment
+ * 
+ * SECURITY: Sanitizes id to prevent path traversal attacks (same as collectHumanJudgment)
  */
 export function loadHumanJudgment(id) {
-  const filePath = join(VALIDATION_DIR, `human-${id}.json`);
+  // SECURITY: Sanitize ID to prevent path traversal (same logic as collectHumanJudgment)
+  const sanitizedId = String(id || 'unknown').replace(/[^a-zA-Z0-9_-]/g, '_');
+  const safeId = sanitizedId.substring(0, 100);
+  
+  const filePath = join(VALIDATION_DIR, `human-${safeId}.json`);
+  
+  // Additional security: Ensure path doesn't escape VALIDATION_DIR
+  const resolvedPath = resolve(filePath);
+  const resolvedDir = resolve(VALIDATION_DIR);
+  if (!resolvedPath.startsWith(resolvedDir)) {
+    throw new Error('Path traversal detected in judgment ID');
+  }
+  
   if (!existsSync(filePath)) return null;
-  return JSON.parse(readFileSync(filePath, 'utf-8'));
+  try {
+    return JSON.parse(readFileSync(filePath, 'utf-8'));
+  } catch (error) {
+    // SECURITY: Handle malformed JSON gracefully to prevent DoS
+    throw new Error(`Failed to parse human judgment file: ${error.message}`);
+  }
 }
 
 /**

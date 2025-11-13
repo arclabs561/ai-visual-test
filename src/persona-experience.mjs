@@ -92,7 +92,7 @@ export async function experiencePageAsPersona(page, persona, options = {}) {
 
   // Set viewport based on persona device preference
   // 
-  // CRITICAL BUG FIX (2025-01): Viewports were only set if persona.device existed.
+  // BUG FIX (2025-01): Viewports were only set if persona.device existed.
   // This caused mobile/tablet personas to get desktop viewports (1280x720) when
   // persona.device was not set but options.device was.
   // 
@@ -402,10 +402,14 @@ export async function experiencePageAsPersona(page, persona, options = {}) {
     }
   }
 
+  // Get actual viewport size (may differ from requested if browser clamped it)
+  // This ensures we return what was actually set, not what we requested
+  const actualViewport = await page.viewportSize();
+  
   return {
     persona: persona.name,
     device: persona.device || device,
-    viewport: await page.viewportSize(),
+    viewport: actualViewport,
     notes: experienceNotes,
     aggregated, // Include aggregated temporal notes
     aggregatedMultiScale, // Include multi-scale aggregation

@@ -55,6 +55,20 @@ describe('experiencePageAsPersona', () => {
       
       assert.strictEqual(result.device, persona.device);
       assert.ok(result.viewport);
+      
+      // Verify exact viewport dimensions for each device type
+      const expectedViewports = {
+        mobile: { width: 375, height: 667 },
+        tablet: { width: 768, height: 1024 },
+        desktop: { width: 1280, height: 720 }
+      };
+      const expected = expectedViewports[persona.device];
+      if (expected) {
+        assert.strictEqual(result.viewport.width, expected.width, 
+          `Mobile viewport width should be ${expected.width}`);
+        assert.strictEqual(result.viewport.height, expected.height,
+          `Mobile viewport height should be ${expected.height}`);
+      }
     }
   });
 

@@ -290,7 +290,7 @@ FOCUS AREAS: ${persona.focus.join(', ')}
 RENDERED CODE ANALYSIS (DOM STRUCTURE):
 ${JSON.stringify(renderedCode.domStructure, null, 2)}
 
-CRITICAL CSS VALIDATION (COMPUTED STYLES):
+CSS VALIDATION (COMPUTED STYLES):
 ${JSON.stringify(renderedCode.criticalCSS, null, 2)}
 
 GAME STATE (IF APPLICABLE):

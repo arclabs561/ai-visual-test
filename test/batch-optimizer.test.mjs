@@ -79,14 +79,15 @@ test('BatchOptimizer - getCacheStats with cache disabled', () => {
 
 // CRITICAL ISSUE TESTS (2025-01)
 
-test('BatchOptimizer - cache key truncation causes collisions', () => {
-  // CRITICAL ISSUE: Cache key uses string concatenation with truncation
-  // Different prompts/states with same prefix = same cache key = wrong cache hit
+test('BatchOptimizer - cache key uses full hash (no truncation)', () => {
+  // BUG FIX (2025-01): Cache key now uses SHA-256 hash of full content
+  // Different prompts with same prefix now produce different cache keys (no collisions)
   // 
-  // The problem:
+  // Previous issue:
   // - Prompt truncated to 100 chars, context to 50 chars
-  // - Different prompts with same first 100 chars = same cache key
-  // - This causes wrong cache hits
+  // - Different prompts with same first 100 chars = same cache key (wrong!)
+  // 
+  // Fix: Use SHA-256 hash of full content, no truncation
   
   const optimizer = new BatchOptimizer({ cacheEnabled: true });
   
@@ -97,10 +98,12 @@ test('BatchOptimizer - cache key truncation causes collisions', () => {
   const key1 = optimizer._getCacheKey('test.png', longPrompt1, {});
   const key2 = optimizer._getCacheKey('test.png', longPrompt2, {});
   
-  // CRITICAL: Keys should be the same (collision!) because truncation removes the difference
-  // This is the documented bug - truncation causes collisions
-  assert.strictEqual(key1, key2,
-    'Cache key truncation causes collisions (known issue - prompts >100 chars with same prefix)');
+  // These should be different (different prompts) - fix ensures no collisions
+  assert.notStrictEqual(key1, key2, 'Cache keys should be different for different prompts (no truncation)');
+  
+  // Same prompts should produce same key
+  const key3 = optimizer._getCacheKey('test.png', longPrompt1, {});
+  assert.strictEqual(key1, key3, 'Same prompts should produce same cache key');
   
   // Same prompt should produce same key (this is correct)
   const key1Again = optimizer._getCacheKey('test.png', longPrompt1, {});

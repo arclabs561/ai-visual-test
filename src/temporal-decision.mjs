@@ -95,7 +95,7 @@ export function aggregateMultiScale(notes, options = {}) {
       windows[windowIndex].totalWeight += weight;
     }
     
-    // CRITICAL: windows is a sparse array (indexed by windowIndex), so we need to filter
+    // NOTE: windows is a sparse array (indexed by windowIndex), so we need to filter
     // out undefined entries before mapping to ensure all windows have avgScore
     // This prevents "Cannot read properties of undefined (reading 'avgScore')" errors
     const definedWindows = windows.filter(w => w !== undefined);

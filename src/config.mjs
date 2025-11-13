@@ -7,6 +7,7 @@
 
 import { ConfigError } from './errors.mjs';
 import { loadEnv } from './load-env.mjs';
+import { API_CONSTANTS } from './constants.mjs';
 
 // Load .env file automatically on module load
 loadEnv();
@@ -76,8 +77,8 @@ export function createConfig(options = {}) {
     env = process.env,
     cacheDir = null,
     cacheEnabled = true,
-    maxConcurrency = 5,
-    timeout = 30000,
+    maxConcurrency = API_CONSTANTS.DEFAULT_MAX_CONCURRENCY,
+    timeout = API_CONSTANTS.DEFAULT_TIMEOUT_MS,
     verbose = false,
     modelTier = null, // 'fast', 'balanced', 'best', or null for default
     model = null      // Explicit model override

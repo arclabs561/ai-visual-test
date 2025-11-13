@@ -1,0 +1,121 @@
+{
+  "name": "Human-Annotated Dataset Integration Guide",
+  "created": "2025-11-12T23:23:55.569Z",
+  "datasets": [
+    {
+      "name": "WebUI Dataset",
+      "source": "https://github.com/js0nwu/webui",
+      "type": "visual-ui-understanding",
+      "downloadInfo": {
+        "repository": "js0nwu/webui",
+        "files": [
+          "download scripts",
+          "dataset files"
+        ],
+        "format": "JSON with screenshots and metadata",
+        "annotations": [
+          "accessibility trees",
+          "layouts",
+          "computed styles",
+          "element bounding boxes"
+        ]
+      },
+      "integrationSteps": [
+        "1. Download dataset from: https://github.com/js0nwu/webui",
+        "2. Extract files to: evaluation/datasets/human-annotated/visual-ui-understanding/",
+        "3. Run conversion: node evaluation/utils/convert-dataset.mjs --type visual-ui-understanding",
+        "4. Validate: node evaluation/utils/validate-dataset-quality.mjs evaluation/datasets/human-annotated/visual-ui-understanding/converted-dataset.json"
+      ],
+      "expectedFormat": {
+        "samples": "Array of samples with screenshots and annotations",
+        "annotations": [
+          "accessibility trees",
+          "layouts",
+          "computed styles",
+          "element bounding boxes"
+        ],
+        "requiredFields": [
+          "screenshot",
+          "annotations",
+          "metadata"
+        ]
+      }
+    },
+    {
+      "name": "Tabular Accessibility Dataset",
+      "source": "https://www.mdpi.com/2306-5729/10/9/149",
+      "type": "accessibility-auditing",
+      "downloadInfo": {
+        "repository": null,
+        "files": [
+          "dataset files",
+          "annotations"
+        ],
+        "format": "JSON/CSV with WCAG violations",
+        "annotations": [
+          "WCAG violations",
+          "ground truth labels",
+          "accessibility issues"
+        ]
+      },
+      "integrationSteps": [
+        "1. Download dataset from: https://www.mdpi.com/2306-5729/10/9/149",
+        "2. Extract files to: evaluation/datasets/human-annotated/accessibility-auditing/",
+        "3. Run conversion: node evaluation/utils/convert-dataset.mjs --type accessibility-auditing",
+        "4. Validate: node evaluation/utils/validate-dataset-quality.mjs evaluation/datasets/human-annotated/accessibility-auditing/converted-dataset.json"
+      ],
+      "expectedFormat": {
+        "samples": "Array of samples with screenshots and annotations",
+        "annotations": [
+          "WCAG violations",
+          "ground truth labels",
+          "accessibility issues"
+        ],
+        "requiredFields": [
+          "screenshot",
+          "annotations",
+          "metadata"
+        ]
+      }
+    },
+    {
+      "name": "WCAG Test Cases",
+      "source": "https://www.w3.org/WAI/standards-guidelines/act/report/testcases/",
+      "type": "wcag-test-cases",
+      "downloadInfo": {
+        "repository": null,
+        "files": [
+          "test case files",
+          "expected outcomes"
+        ],
+        "format": "HTML/JSON with expected outcomes",
+        "annotations": [
+          "pass/fail",
+          "WCAG level",
+          "rule ID",
+          "expected outcome"
+        ]
+      },
+      "integrationSteps": [
+        "1. Download dataset from: https://www.w3.org/WAI/standards-guidelines/act/report/testcases/",
+        "2. Extract files to: evaluation/datasets/human-annotated/wcag-test-cases/",
+        "3. Run conversion: node evaluation/utils/convert-dataset.mjs --type wcag-test-cases",
+        "4. Validate: node evaluation/utils/validate-dataset-quality.mjs evaluation/datasets/human-annotated/wcag-test-cases/converted-dataset.json"
+      ],
+      "expectedFormat": {
+        "samples": "Array of samples with screenshots and annotations",
+        "annotations": [
+          "pass/fail",
+          "WCAG level",
+          "rule ID",
+          "expected outcome"
+        ],
+        "requiredFields": [
+          "screenshot",
+          "annotations",
+          "metadata"
+        ]
+      }
+    }
+  ]
+}

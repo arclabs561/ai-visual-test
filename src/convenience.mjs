@@ -18,6 +18,7 @@ import { checkCrossModalConsistency, validateExperienceConsistency } from './cro
 import { trackPropagation } from './experience-propagation.mjs';
 import { ValidationError } from './errors.mjs';
 import { log, warn } from './logger.mjs';
+import { TEMPORAL_CONSTANTS } from './constants.mjs';
 
 /**
  * Test gameplay with variable goals
@@ -25,9 +26,16 @@ import { log, warn } from './logger.mjs';
  * Complete workflow for testing games with variable goals/prompts.
  * Handles persona experience, temporal capture, goal evaluation, and consistency checks.
  * 
+ * IMPROVEMENT: Better support for queeraoke-style game testing:
+ * - Handles games that activate from payment screens (not just standalone games)
+ * - Supports game activation via keyboard shortcuts (e.g., 'g' key)
+ * - Better game state extraction (window.gameState)
+ * - Supports temporal preprocessing for better performance
+ * - Better integration with queeraoke's game testing patterns
+ * 
  * @param {import('playwright').Page} page - Playwright page object
  * @param {Object} options - Test options
- * @param {string} options.url - Game URL
+ * @param {string} options.url - Game URL (or page URL if game activates from page)
  * @param {string | Object | Array | Function} [options.goals] - Variable goals (string, object, array, or function)
  * @param {Array<Object>} [options.personas] - Personas to test with
  * @param {boolean} [options.captureTemporal] - Capture temporal screenshots
@@ -35,6 +43,9 @@ import { log, warn } from './logger.mjs';
  * @param {number} [options.duration] - Duration for temporal capture (ms)
  * @param {boolean} [options.captureCode] - Extract rendered code
  * @param {boolean} [options.checkConsistency] - Check cross-modal consistency
+ * @param {string} [options.gameActivationKey] - Keyboard key to activate game (e.g., 'g' for queeraoke)
+ * @param {string} [options.gameSelector] - Selector to wait for game activation (e.g., '#game-paddle')
+ * @param {boolean} [options.useTemporalPreprocessing] - Use temporal preprocessing for better performance
  * @returns {Promise<Object>} Test results
  */
 export async function testGameplay(page, options = {}) {
@@ -46,14 +57,17 @@ export async function testGameplay(page, options = {}) {
     fps = 2,
     duration = 5000,
     captureCode = true,
-    checkConsistency = true
+    checkConsistency = true,
+    gameActivationKey = null, // e.g., 'g' for queeraoke
+    gameSelector = null, // e.g., '#game-paddle' for queeraoke
+    useTemporalPreprocessing = false
   } = options;
 
   if (!url) {
     throw new ValidationError('testGameplay: url is required', { function: 'testGameplay', parameter: 'url' });
   }
 
-  log('[Convenience] Testing gameplay:', { url, goals });
+  log('[Convenience] Testing gameplay:', { url, goals, gameActivationKey, gameSelector });
 
   const result = {
     url,
@@ -66,9 +80,25 @@ export async function testGameplay(page, options = {}) {
   };
 
   try {
-    // Navigate to game
+    // Navigate to game/page
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
     await page.waitForLoadState('networkidle');
+
+    // IMPROVEMENT: Activate game if needed (for queeraoke-style games)
+    if (gameActivationKey) {
+      log(`[Convenience] Activating game with key: ${gameActivationKey}`);
+      await page.keyboard.press(gameActivationKey);
+      
+      // Wait for game to activate
+      if (gameSelector) {
+        await page.waitForSelector(gameSelector, { timeout: 5000 }).catch(() => {
+          warn(`[Convenience] Game selector ${gameSelector} not found after activation`);
+        });
+      }
+      
+      // Wait a bit for game to initialize
+      await page.waitForTimeout(500);
+    }
 
     // Extract rendered code
     let renderedCode = null;
@@ -77,13 +107,19 @@ export async function testGameplay(page, options = {}) {
       trackPropagation('capture', { renderedCode }, 'Captured HTML/CSS for gameplay test');
     }
 
-    // Get game state
+    // IMPROVEMENT: Better game state extraction (handles queeraoke's gameState structure)
     const gameState = await page.evaluate(() => {
-      return window.gameState || {
-        gameActive: false,
-        score: 0,
-        level: 0,
-        lives: 3
+      const state = window.gameState || {};
+      return {
+        gameActive: state.gameActive || false,
+        score: state.score || 0,
+        level: state.level || 0,
+        lives: state.lives || 3,
+        ball: state.ball || null,
+        paddle: state.paddle || null,
+        bricks: state.bricks || null,
+        // Include any other game state properties
+        ...state
       };
     });
 
@@ -111,11 +147,37 @@ export async function testGameplay(page, options = {}) {
       result.experiences = [experience];
     }
 
-    // Capture temporal screenshots (if requested)
+    // IMPROVEMENT: Capture temporal screenshots with preprocessing support
     if (captureTemporal) {
       const temporalScreenshots = await captureTemporalScreenshots(page, fps, duration);
       result.temporalScreenshots = temporalScreenshots;
       trackPropagation('temporal', { count: temporalScreenshots.length }, 'Captured temporal screenshots');
+      
+      // IMPROVEMENT: Use temporal preprocessing if requested (better performance)
+      if (useTemporalPreprocessing && temporalScreenshots.length > 0) {
+        const { createTemporalPreprocessingManager, createAdaptiveTemporalProcessor } = await import('./temporal-preprocessor.mjs');
+        const preprocessingManager = createTemporalPreprocessingManager();
+        const adaptiveProcessor = createAdaptiveTemporalProcessor(preprocessingManager);
+        
+        const notes = temporalScreenshots.map((frame, index) => ({
+          timestamp: frame.timestamp,
+          elapsed: frame.elapsed || index * (1000 / fps),
+          screenshotPath: frame.path,
+          step: `gameplay_frame_${index}`,
+          observation: `Frame ${index} of gameplay`
+        }));
+        
+        const processed = await adaptiveProcessor.process(notes, {
+          testType: 'gameplay-temporal',
+          viewport: await page.viewportSize()
+        });
+        
+        result.processedTemporalNotes = processed;
+        trackPropagation('temporal-preprocessing', { 
+          original: notes.length, 
+          processed: processed.length 
+        }, 'Processed temporal notes with adaptive preprocessing');
+      }
     }
 
     // Evaluate with variable goals
@@ -443,6 +505,13 @@ export async function testBrowserExperience(page, options = {}) {
  * Validate screenshot with variable goals
  * 
  * Simplified API for validating screenshots with variable goals/prompts.
+ * Supports string goals, goal objects, arrays, and functions.
+ * 
+ * IMPROVEMENT: Better integration with queeraoke patterns:
+ * - Supports brutalist rubric goals
+ * - Supports accessibility goals with contrast requirements
+ * - Supports game state validation goals
+ * - Better error messages and context
  * 
  * @param {string} screenshotPath - Path to screenshot
  * @param {Object} options - Validation options
@@ -490,8 +559,8 @@ export async function validateWithGoals(screenshotPath, options = {}) {
     // Auto-aggregate if notes provided but not aggregated
     try {
       temporalNotes = aggregateTemporalNotes(context.notes, {
-        windowSize: DEFAULT_TEMPORAL_WINDOW_SIZE,
-        decayFactor: DEFAULT_TEMPORAL_DECAY
+        windowSize: TEMPORAL_CONSTANTS.DEFAULT_WINDOW_SIZE_MS,
+        decayFactor: TEMPORAL_CONSTANTS.DEFAULT_DECAY_FACTOR
       });
     } catch (error) {
       warn('[Convenience] Auto-aggregation failed, continuing without temporal notes:', error.message);

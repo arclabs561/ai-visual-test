@@ -2,7 +2,15 @@
  * VLLM Judge
  * 
  * Core screenshot validation using Vision Language Models.
- * Supports multiple providers (Gemini, OpenAI, Claude).
+ * Supports multiple providers (Gemini, OpenAI, Claude, Groq).
+ * 
+ * GROQ INTEGRATION:
+ * - Groq uses OpenAI-compatible API (routes to callOpenAIAPI)
+ * - ~0.22s latency (10x faster than typical providers)
+ * - Best for high-frequency decisions (10-60Hz temporal decisions)
+ * 
+ * NOTE: Groq should also be added to @arclabs561/llm-utils for text-only LLM calls.
+ * This package handles VLLM (vision) calls; llm-utils handles text-only calls.
  */
 
 import { readFileSync, writeFileSync, existsSync } from 'fs';
@@ -207,6 +215,35 @@ export class VLLMJudge {
             
             return {
               judgment: apiData.content?.[0]?.text || 'No response',
+              data: apiData,
+              logprobs
+            };
+            
+          case 'groq':
+            // Groq uses OpenAI-compatible API, so we can reuse callOpenAIAPI
+            // Groq's endpoint is already set in providerConfig.apiUrl (https://api.groq.com/openai/v1)
+            apiResponse = await this.callOpenAIAPI(base64Images, fullPrompt, abortController.signal, isMultiImage);
+            clearTimeout(timeoutId);
+            apiData = await apiResponse.json();
+            
+            if (apiData.error) {
+              const statusCode = apiResponse.status;
+              throw new ProviderError(
+                `Groq API error: ${apiData.error.message || 'Unknown error'}`,
+                'groq',
+                {
+                  apiError: apiData.error,
+                  statusCode,
+                  retryable: statusCode === 429 || statusCode >= 500
+                }
+              );
+            }
+            
+            // Groq may provide logprobs (OpenAI-compatible, but check availability)
+            logprobs = apiData.choices?.[0]?.logprobs || null;
+            
+            return {
+              judgment: apiData.choices?.[0]?.message?.content || 'No response',
               data: apiData,
               logprobs
             };
@@ -858,6 +895,11 @@ export class VLLMJudge {
       case 'claude':
         inputTokens = data.usage?.input_tokens || 0;
         outputTokens = data.usage?.output_tokens || 0;
+        break;
+      case 'groq':
+        // Groq uses OpenAI-compatible API format
+        inputTokens = data.usage?.prompt_tokens || 0;
+        outputTokens = data.usage?.completion_tokens || 0;
         break;
     }
     

@@ -312,8 +312,6 @@ Be thorough and specific.`;
   
   // Method 4: Ensemble Judging (if multiple providers available)
   console.log('\n📊 Method 4: Ensemble Judging\n');
-  
-  const config = createConfig();
   const availableProviders = [];
   if (config.providers?.gemini?.apiKey) availableProviders.push('gemini');
   if (config.providers?.openai?.apiKey) availableProviders.push('openai');

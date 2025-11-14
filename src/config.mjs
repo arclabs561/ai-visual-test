@@ -15,6 +15,14 @@ loadEnv();
 /**
  * Model tiers for each provider
  * Updated January 2025: Latest models - Gemini 2.5 Pro, GPT-5, Claude 4.5 Sonnet
+ * 
+ * GROQ INTEGRATION (2025):
+ * - Groq added for high-frequency decisions (10-60Hz temporal decisions)
+ * - ~0.22s latency (vs 1-3s for other providers)
+ * - 185-276 tokens/sec throughput
+ * - OpenAI-compatible API
+ * - Cost-competitive, free tier available
+ * - Best for: Fast tier decisions, high-Hz temporal decisions, real-time applications
  */
 const MODEL_TIERS = {
   gemini: {
@@ -31,11 +39,26 @@ const MODEL_TIERS = {
     fast: 'claude-3-5-haiku-20241022', // Fast, cheaper
     balanced: 'claude-sonnet-4-5',     // Best balance (released September 2025, enhanced vision)
     best: 'claude-sonnet-4-5'          // Best quality (latest flagship, September 2025)
+  },
+  groq: {
+    // NOTE: Groq vision support requires different model
+    // For vision: meta-llama/llama-4-scout-17b-16e-instruct (preview, supports vision)
+    // For text-only: llama-3.3-70b-versatile is fastest (~0.22s latency)
+    fast: 'meta-llama/llama-4-scout-17b-16e-instruct',   // Vision-capable, fastest Groq option
+    balanced: 'meta-llama/llama-4-scout-17b-16e-instruct', // Vision-capable, balanced
+    best: 'meta-llama/llama-4-scout-17b-16e-instruct'   // Vision-capable, best quality (preview)
+    // WARNING: Groq vision models are preview-only. Text-only: use llama-3.3-70b-versatile
   }
 };
 
 /**
  * Default provider configurations
+ * 
+ * GROQ INTEGRATION:
+ * - OpenAI-compatible API (easy migration)
+ * - ~0.22s latency (10x faster than typical providers)
+ * - Best for high-frequency decisions (10-60Hz temporal decisions)
+ * - Free tier available for testing
  */
 const PROVIDER_CONFIGS = {
   gemini: {
@@ -61,6 +84,18 @@ const PROVIDER_CONFIGS = {
     freeTier: false,
     pricing: { input: 3.00, output: 15.00 }, // Updated pricing for 4.5
     priority: 3
+  },
+  groq: {
+    name: 'groq',
+    apiUrl: 'https://api.groq.com/openai/v1', // OpenAI-compatible endpoint
+    model: 'meta-llama/llama-4-scout-17b-16e-instruct',   // Vision-capable (preview), ~0.22s latency
+    freeTier: true,                      // Free tier available
+    pricing: { input: 0.59, output: 0.79 }, // Actual 2025 pricing: $0.59/$0.79 per 1M tokens (real-time API)
+    priority: 0,                         // Highest priority for high-frequency decisions
+    latency: 220,                        // ~0.22s latency in ms (10x faster than typical)
+    throughput: 200,                     // ~200 tokens/sec average
+    visionSupported: true               // llama-4-scout-17b-16e-instruct supports vision (preview)
+    // Text-only alternative: llama-3.3-70b-versatile (faster, no vision)
   }
 };
 
@@ -148,7 +183,8 @@ function detectProvider(env) {
     return explicitProvider;
   }
 
-  // Auto-detect: prefer cheaper providers first
+  // Auto-detect: prefer cheaper/faster providers first
+  // Groq has priority 0 (highest) for high-frequency decisions
   const availableProviders = Object.values(PROVIDER_CONFIGS)
     .filter(config => {
       // Check provider-specific key
@@ -183,6 +219,11 @@ function getApiKey(provider, env) {
   // Special case: Anthropic uses ANTHROPIC_API_KEY (not CLAUDE_API_KEY)
   if (provider === 'claude' && env.ANTHROPIC_API_KEY) {
     return env.ANTHROPIC_API_KEY;
+  }
+
+  // Special case: Groq uses GROQ_API_KEY
+  if (provider === 'groq' && env.GROQ_API_KEY) {
+    return env.GROQ_API_KEY;
   }
 
   // Fallback to generic API_KEY

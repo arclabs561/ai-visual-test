@@ -14,13 +14,27 @@ import { ValidationError } from './errors.mjs';
 import { warn } from './logger.mjs';
 
 /**
- * Extract rendered HTML/CSS for code analysis
+ * Extract rendered HTML/CSS for dual-view validation
+ * 
+ * Captures both source code (HTML/CSS) and rendered state for multi-modal validation.
+ * This enables validation against both the "source of truth" (code) and the "rendered output" (visuals).
+ * 
+ * Dual View Benefits:
+ * - Detect CSS rendering issues (code says one thing, visual shows another)
+ * - Validate structural correctness (DOM matches expectations)
+ * - Check computed styles vs. source styles
+ * - Identify layout bugs (positioning, z-index, visibility)
+ * - Verify accessibility attributes in code vs. visual rendering
  * 
  * @param {any} page - Playwright page object
+ * @param {Object} [options] - Extraction options
+ * @param {string[]} [options.selectors] - Custom selectors to extract (defaults to common patterns)
+ * @param {number} [options.htmlLimit=10000] - Max HTML chars to extract (default 10k)
+ * @param {boolean} [options.includeAllCSS=false] - Include all computed styles (default: only critical)
  * @returns {Promise<import('./index.mjs').RenderedCode>} Rendered code structure
  * @throws {ValidationError} If page is not a valid Playwright Page object
  */
-export async function extractRenderedCode(page) {
+export async function extractRenderedCode(page, options = {}) {
   if (!page || typeof page.evaluate !== 'function') {
     throw new ValidationError('extractRenderedCode requires a Playwright Page object', {
       received: typeof page,
@@ -28,94 +42,192 @@ export async function extractRenderedCode(page) {
     });
   }
 
+  const { 
+    selectors = null, // Custom selectors, or null for auto-detection
+    htmlLimit = 10000,
+    includeAllCSS = false
+  } = options;
+
+  // Extract full HTML (source of truth)
   const html = await page.content();
   
+  // Extract all stylesheets (source CSS)
+  const stylesheets = await page.evaluate(() => {
+    const sheets = [];
+    for (const sheet of document.styleSheets) {
+      try {
+        const rules = [];
+        for (const rule of sheet.cssRules || []) {
+          rules.push({
+            selectorText: rule.selectorText,
+            cssText: rule.cssText,
+            style: rule.style ? Object.fromEntries(
+              Array.from(rule.style).map(prop => [prop, rule.style.getPropertyValue(prop)])
+            ) : null
+          });
+        }
+        sheets.push({
+          href: sheet.href,
+          rules: rules.slice(0, 100) // Limit to first 100 rules per sheet
+        });
+      } catch (e) {
+        // Cross-origin stylesheets may throw
+        sheets.push({ href: sheet.href, error: 'Cross-origin or inaccessible' });
+      }
+    }
+    return sheets;
+  });
+  
   // Extract critical CSS (computed styles for key elements)
-  const criticalCSS = await page.evaluate(() => {
+  // This is the "rendered" CSS (what actually applies, not source)
+  const criticalCSS = await page.evaluate((customSelectors) => {
     const styles = {};
-    const criticalSelectors = [
-      '#pride-parade',
-      '#pride-footer',
-      '#payment-code',
-      '#game-paddle',
-      '#game-ball',
-      '.flag-row',
-      '.code',
-      'body'
+    
+    // Auto-detect common selectors if not provided
+    const selectorsToCheck = customSelectors || [
+      'body',
+      'main',
+      'header',
+      'footer',
+      '[role="main"]',
+      '[role="banner"]',
+      '[role="contentinfo"]',
+      'button',
+      'a',
+      'input',
+      'form',
+      '#app',
+      '#root',
+      '.container',
+      '.main-content'
     ];
     
-    criticalSelectors.forEach(selector => {
-      const el = document.querySelector(selector);
-      if (el) {
-        const computed = window.getComputedStyle(el);
-        styles[selector] = {
-          position: computed.position,
-          top: computed.top,
-          bottom: computed.bottom,
-          left: computed.left,
-          right: computed.right,
-          width: computed.width,
-          height: computed.height,
-          backgroundColor: computed.backgroundColor,
-          color: computed.color,
-          display: computed.display,
-          visibility: computed.visibility,
-          zIndex: computed.zIndex,
-          transform: computed.transform,
-          opacity: computed.opacity
-        };
+    selectorsToCheck.forEach(selector => {
+      try {
+        const el = document.querySelector(selector);
+        if (el) {
+          const computed = window.getComputedStyle(el);
+          styles[selector] = {
+            position: computed.position,
+            top: computed.top,
+            bottom: computed.bottom,
+            left: computed.left,
+            right: computed.right,
+            width: computed.width,
+            height: computed.height,
+            backgroundColor: computed.backgroundColor,
+            color: computed.color,
+            display: computed.display,
+            visibility: computed.visibility,
+            zIndex: computed.zIndex,
+            transform: computed.transform,
+            opacity: computed.opacity,
+            fontSize: computed.fontSize,
+            fontFamily: computed.fontFamily,
+            lineHeight: computed.lineHeight,
+            margin: computed.margin,
+            padding: computed.padding,
+            border: computed.border,
+            borderRadius: computed.borderRadius,
+            boxShadow: computed.boxShadow,
+            overflow: computed.overflow,
+            textAlign: computed.textAlign
+          };
+        }
+      } catch (e) {
+        // Skip invalid selectors
       }
     });
     
     return styles;
-  });
+  }, selectors);
   
-  // Extract DOM structure for key elements
+  // Extract DOM structure (text-encoded representation)
   const domStructure = await page.evaluate(() => {
-    const structure = {};
+    const structure = {
+      body: {
+        tagName: document.body?.tagName,
+        children: document.body?.children?.length || 0,
+        textContent: document.body?.textContent?.substring(0, 500) || '',
+        attributes: Array.from(document.body?.attributes || []).reduce((acc, attr) => {
+          acc[attr.name] = attr.value;
+          return acc;
+        }, {})
+      },
+      head: {
+        title: document.title,
+        meta: Array.from(document.querySelectorAll('meta')).map(m => ({
+          name: m.getAttribute('name') || m.getAttribute('property'),
+          content: m.getAttribute('content')
+        })),
+        links: Array.from(document.querySelectorAll('link[rel="stylesheet"]')).map(l => ({
+          href: l.href,
+          rel: l.rel
+        }))
+      },
+      mainElements: []
+    };
     
-    // Pride parade structure
-    const prideParade = document.querySelector('#pride-parade');
-    if (prideParade) {
-      structure.prideParade = {
-        exists: true,
-        flagRowCount: prideParade.querySelectorAll('.flag-row').length,
-        position: prideParade.getBoundingClientRect(),
-        computedTop: window.getComputedStyle(prideParade).top,
-        computedBottom: window.getComputedStyle(prideParade).bottom
-      };
-    }
+    // Extract key elements (auto-detect)
+    const keySelectors = [
+      'main', '[role="main"]', '#app', '#root', 
+      'header', '[role="banner"]',
+      'footer', '[role="contentinfo"]',
+      'nav', '[role="navigation"]',
+      'article', '[role="article"]',
+      'section'
+    ];
     
-    // Footer structure
-    const prideFooter = document.querySelector('#pride-footer') || document.querySelector('#footer-rainbow');
-    if (prideFooter) {
-      structure.footer = {
-        exists: true,
-        position: prideFooter.getBoundingClientRect(),
-        computedTop: window.getComputedStyle(prideFooter).top,
-        computedBottom: window.getComputedStyle(prideFooter).bottom
-      };
-    }
-    
-    // Payment code structure
-    const paymentCode = document.querySelector('#payment-code');
-    if (paymentCode) {
-      structure.paymentCode = {
-        exists: true,
-        visible: !paymentCode.classList.contains('hidden'),
-        text: paymentCode.textContent?.trim(),
-        position: paymentCode.getBoundingClientRect()
-      };
-    }
+    keySelectors.forEach(selector => {
+      try {
+        const el = document.querySelector(selector);
+        if (el) {
+          structure.mainElements.push({
+            selector: selector,
+            tagName: el.tagName,
+            id: el.id,
+            className: el.className,
+            textContent: el.textContent?.substring(0, 200) || '',
+            attributes: Array.from(el.attributes).reduce((acc, attr) => {
+              acc[attr.name] = attr.value;
+              return acc;
+            }, {}),
+            boundingRect: el.getBoundingClientRect(),
+            computedStyles: {
+              display: window.getComputedStyle(el).display,
+              visibility: window.getComputedStyle(el).visibility,
+              position: window.getComputedStyle(el).position
+            }
+          });
+        }
+      } catch (e) {
+        // Skip invalid selectors
+      }
+    });
     
     return structure;
   });
   
   return {
-    html: html.substring(0, 10000), // First 10k chars (key structure)
+    // Source code (text-encoded HTML)
+    html: html.substring(0, htmlLimit),
+    
+    // Source CSS (from stylesheets)
+    stylesheets: stylesheets,
+    
+    // Rendered CSS (computed styles - what actually applies)
     criticalCSS,
+    
+    // DOM structure (text-encoded representation)
     domStructure,
-    timestamp: Date.now()
+    
+    // Metadata
+    timestamp: Date.now(),
+    url: page.url(),
+    viewport: {
+      width: page.viewportSize()?.width || 0,
+      height: page.viewportSize()?.height || 0
+    }
   };
 }
 

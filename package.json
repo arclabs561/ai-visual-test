@@ -1,6 +1,6 @@
 {
   "name": "ai-visual-test",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "AI-powered visual testing framework for web applications using Vision Language Models",
   "type": "module",
   "main": "src/index.mjs",
@@ -36,7 +36,17 @@
     "match:vllm": "node evaluation/utils/match-annotations-with-vllm.mjs",
     "docs": "node scripts/generate-docs.mjs",
     "lint": "echo 'No linter configured'",
-    "prepublishOnly": "npm test"
+    "prepublishOnly": "npm test",
+    "check:secrets": "node scripts/detect-secrets.mjs",
+    "check:quality": "node node_modules/@arclabs561/hookwise/src/hooks/code-quality.mjs || echo 'Hookwise not available'",
+    "check:docs": "node node_modules/@arclabs561/hookwise/src/hooks/doc-bloat.mjs || echo 'Hookwise not available'",
+    "check:security": "node node_modules/@arclabs561/hookwise/src/hooks/security.mjs || echo 'Hookwise not available'",
+    "check:test-performance": "node node_modules/@arclabs561/hookwise/src/hooks/test-performance.mjs || node scripts/analyze-test-performance.mjs",
+    "check:commit": "node node_modules/@arclabs561/hookwise/src/hooks/commit-msg.mjs .git/COMMIT_EDITMSG || echo 'Hookwise not available'",
+    "check:all": "npm run check:secrets && npx hookwise garden && npm run check:test-performance",
+    "garden": "npx hookwise garden",
+    "test:performance": "npm run check:test-performance",
+    "test:slow": "npm test 2>&1 | grep -E '✔.*\\([0-9]+\\.[0-9]+ms\\)' | sort -t'(' -k2 -nr | head -20"
   },
   "keywords": [
     "visual-testing",
@@ -66,7 +76,10 @@
     }
   },
   "devDependencies": {
-    "@types/node": "^22.10.1"
+    "@types/node": "^22.10.1",
+    "async-mutex": "0.5.0",
+    "fast-check": "4.3.0",
+    "proper-lockfile": "4.1.2"
   },
   "engines": {
     "node": ">=18.0.0"

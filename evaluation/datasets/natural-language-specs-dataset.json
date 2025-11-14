@@ -1,0 +1,245 @@
+{
+  "name": "Natural Language Specs Dataset",
+  "created": "2025-01-12T00:00:00.000Z",
+  "description": "Dataset of natural language test specifications for validation and error analysis. Based on real-world BDD patterns and queeraoke usage.",
+  "version": "1.0.0",
+  "sources": [
+    "Real-world BDD patterns (Cucumber, SpecFlow, Behave)",
+    "Queeraoke test patterns (200+ tests)",
+    "Research findings on BDD best practices"
+  ],
+  "categories": [
+    "game_testing",
+    "accessibility",
+    "browser_experience",
+    "state_validation",
+    "temporal_sequences",
+    "property_based"
+  ],
+  "specs": [
+    {
+      "id": "game-001",
+      "category": "game_testing",
+      "name": "Basic Game Activation",
+      "spec": "Given I visit queeraoke.fyi\nWhen I activate the easter egg game (press 'g')\nThen the game should be playable\nContext: viewport=1280x720, device=desktop",
+      "expectedInterfaces": ["testGameplay"],
+      "expectedContext": {
+        "url": "https://queeraoke.fyi",
+        "gameActivationKey": "g",
+        "viewport": { "width": 1280, "height": 720 },
+        "device": "desktop"
+      },
+      "qualityScore": 90,
+      "tags": ["game", "activation", "basic"]
+    },
+    {
+      "id": "game-002",
+      "category": "game_testing",
+      "name": "Game with Temporal Capture",
+      "spec": "Given I visit game.example.com\nWhen I activate the game (press 'g', selector: #game-element)\nThen the game should be fun to play\nAnd the score should update over time\nContext: fps: 2, duration: 10 seconds, temporal: true",
+      "expectedInterfaces": ["testGameplay"],
+      "expectedContext": {
+        "url": "https://game.example.com",
+        "gameActivationKey": "g",
+        "gameSelector": "#game-element",
+        "fps": 2,
+        "duration": 10000,
+        "captureTemporal": true
+      },
+      "qualityScore": 85,
+      "tags": ["game", "temporal", "score"]
+    },
+    {
+      "id": "accessibility-001",
+      "category": "accessibility",
+      "name": "Basic Accessibility Check",
+      "spec": "Given I visit a website\nWhen the page loads\nThen it should be accessible\nAnd contrast should meet WCAG standards",
+      "expectedInterfaces": ["validateAccessibilitySmart"],
+      "expectedContext": {},
+      "qualityScore": 80,
+      "tags": ["accessibility", "wcag", "contrast"]
+    },
+    {
+      "id": "accessibility-002",
+      "category": "accessibility",
+      "name": "Accessibility with Persona",
+      "spec": "Given I visit example.com as a visually impaired user\nWhen I navigate the page\nThen all interactive elements should be keyboard accessible\nAnd screen reader announcements should be clear",
+      "expectedInterfaces": ["validateAccessibilitySmart", "testBrowserExperience"],
+      "expectedContext": {
+        "persona": "visually impaired user"
+      },
+      "qualityScore": 85,
+      "tags": ["accessibility", "persona", "keyboard"]
+    },
+    {
+      "id": "browser-001",
+      "category": "browser_experience",
+      "name": "Complete User Journey",
+      "spec": "Given I visit an e-commerce site\nWhen I browse products\nAnd I add items to cart\nAnd I proceed to checkout\nThen the checkout form should be usable\nAnd payment options should be clear",
+      "expectedInterfaces": ["testBrowserExperience"],
+      "expectedContext": {},
+      "qualityScore": 75,
+      "tags": ["ecommerce", "journey", "checkout"]
+    },
+    {
+      "id": "state-001",
+      "category": "state_validation",
+      "name": "Game State Consistency",
+      "spec": "Given I play a game\nWhen the game state changes\nThen the visual representation should match the internal state\nAnd cleared elements should be visually removed",
+      "expectedInterfaces": ["validateStateSmart", "testGameplay"],
+      "expectedContext": {},
+      "qualityScore": 80,
+      "tags": ["state", "consistency", "game"]
+    },
+    {
+      "id": "temporal-001",
+      "category": "temporal_sequences",
+      "name": "Animation Validation",
+      "spec": "Given I visit a page with animations\nWhen I observe the page for 5 seconds\nThen animations should be smooth\nAnd the page should remain responsive\nContext: fps: 2, duration: 5 seconds",
+      "expectedInterfaces": ["validateScreenshot"],
+      "expectedContext": {
+        "fps": 2,
+        "duration": 5000,
+        "captureTemporal": true
+      },
+      "qualityScore": 85,
+      "tags": ["temporal", "animation", "performance"]
+    },
+    {
+      "id": "property-001",
+      "category": "property_based",
+      "name": "Score Range Property",
+      "spec": "For all screenshots, the validation score should be between 0 and 10",
+      "expectedInterfaces": ["validateScreenshot"],
+      "expectedContext": {},
+      "qualityScore": 70,
+      "tags": ["property", "invariant", "score"]
+    },
+    {
+      "id": "property-002",
+      "category": "property_based",
+      "name": "State Consistency Property",
+      "spec": "For all game states, the visual representation should match the internal state",
+      "expectedInterfaces": ["validateStateSmart"],
+      "expectedContext": {},
+      "qualityScore": 75,
+      "tags": ["property", "consistency", "state"]
+    },
+    {
+      "id": "negative-001",
+      "category": "game_testing",
+      "name": "Poor Structure (Missing Given/When/Then)",
+      "spec": "I visit a website and the game should work",
+      "expectedInterfaces": ["validateScreenshot"],
+      "expectedContext": {},
+      "qualityScore": 40,
+      "tags": ["negative", "poor_structure"],
+      "expectedIssues": ["missing_structure"]
+    },
+    {
+      "id": "negative-002",
+      "category": "accessibility",
+      "name": "Technical Language (Anti-pattern)",
+      "spec": "Given I visit example.com\nWhen the API endpoint /api/status returns 200\nThen the DOM should have proper ARIA attributes\nAnd CSS selectors should match accessibility standards",
+      "expectedInterfaces": ["validateAccessibilitySmart"],
+      "expectedContext": {},
+      "qualityScore": 50,
+      "tags": ["negative", "technical_language"],
+      "expectedIssues": ["technical_language"]
+    },
+    {
+      "id": "negative-003",
+      "category": "browser_experience",
+      "name": "Overly Complex (Too Many Steps)",
+      "spec": "Given I visit a website\nWhen I click the first button\nAnd I fill in the first form field\nAnd I click the second button\nAnd I fill in the second form field\nAnd I click the third button\nAnd I fill in the third form field\nAnd I click the fourth button\nAnd I fill in the fourth form field\nAnd I click the submit button\nThen the form should be submitted\nAnd I should see a success message\nAnd the page should redirect\nAnd I should be logged in",
+      "expectedInterfaces": ["testBrowserExperience"],
+      "expectedContext": {},
+      "qualityScore": 45,
+      "tags": ["negative", "overly_complex"],
+      "expectedIssues": ["overly_complex"]
+    },
+    {
+      "id": "negative-004",
+      "category": "game_testing",
+      "name": "Hardcoded Values (Anti-pattern)",
+      "spec": "Given I visit game.example.com\nWhen I play the game\nThen the score should be exactly 42\nAnd there should be exactly 10 enemies\nAnd the game should last exactly 60 seconds",
+      "expectedInterfaces": ["testGameplay"],
+      "expectedContext": {},
+      "qualityScore": 55,
+      "tags": ["negative", "hardcoded_values"],
+      "expectedIssues": ["hardcoded_values"]
+    },
+    {
+      "id": "negative-005",
+      "category": "browser_experience",
+      "name": "Dependent Scenarios (Anti-pattern)",
+      "spec": "Given I visit example.com\nWhen I complete the previous scenario\nAnd I do the next step\nThen the result should match the previous result",
+      "expectedInterfaces": ["testBrowserExperience"],
+      "expectedContext": {},
+      "qualityScore": 50,
+      "tags": ["negative", "dependent_scenarios"],
+      "expectedIssues": ["dependent_scenarios"]
+    },
+    {
+      "id": "real-world-001",
+      "category": "game_testing",
+      "name": "Queeraoke Real Pattern - Direct Prompt",
+      "spec": "CRITICAL VALIDATION: Payment screen must be perfect. Check:\n- Payment code is clearly visible\n- QR codes are properly rendered and scannable\n- Payment links are accessible\n- Layout is clean and organized",
+      "expectedInterfaces": ["validateScreenshot"],
+      "expectedContext": {},
+      "qualityScore": 90,
+      "tags": ["real_world", "queeraoke", "direct_prompt"]
+    },
+    {
+      "id": "real-world-002",
+      "category": "game_testing",
+      "name": "Queeraoke Real Pattern - Goals",
+      "spec": "Given I visit queeraoke.fyi\nWhen I activate the game\nThen the game should be fun\nAnd the game should be accessible\nAnd the game should have visual consistency",
+      "expectedInterfaces": ["testGameplay"],
+      "expectedContext": {
+        "url": "https://queeraoke.fyi",
+        "goals": ["fun", "accessibility", "visual-consistency"]
+      },
+      "qualityScore": 85,
+      "tags": ["real_world", "queeraoke", "goals"]
+    },
+    {
+      "id": "real-world-003",
+      "category": "accessibility",
+      "name": "News Page Accessibility",
+      "spec": "Given I visit a news website\nWhen the page loads\nThen headlines should be readable\nAnd images should have alt text\nAnd the layout should be responsive",
+      "expectedInterfaces": ["validateScreenshot", "validateAccessibilitySmart"],
+      "expectedContext": {},
+      "qualityScore": 80,
+      "tags": ["real_world", "news", "accessibility"]
+    },
+    {
+      "id": "real-world-004",
+      "category": "browser_experience",
+      "name": "GitHub PR Page",
+      "spec": "Given I open a GitHub pull request\nWhen the PR page loads\nThen the diff should be visible\nAnd comments should be readable\nAnd the merge button should be accessible",
+      "expectedInterfaces": ["validateScreenshot", "testBrowserExperience"],
+      "expectedContext": {},
+      "qualityScore": 80,
+      "tags": ["real_world", "github", "pr"]
+    },
+    {
+      "id": "real-world-005",
+      "category": "game_testing",
+      "name": "Flash Game Testing",
+      "spec": "Given I open a flash game website\nWhen the game loads\nThen the game should be playable\nAnd the controls should be visible\nAnd the score should be displayed",
+      "expectedInterfaces": ["testGameplay", "validateScreenshot"],
+      "expectedContext": {},
+      "qualityScore": 75,
+      "tags": ["real_world", "flash_game", "controls"]
+    }
+  ],
+  "metadata": {
+    "totalSpecs": 19,
+    "positiveExamples": 10,
+    "negativeExamples": 5,
+    "realWorldExamples": 4,
+    "averageQualityScore": 72.1
+  }
+}
+

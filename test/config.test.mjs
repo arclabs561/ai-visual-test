@@ -62,7 +62,21 @@ test('createConfig - debug configuration', () => {
 });
 
 test('createConfig - environment variable detection', () => {
-  const originalEnv = process.env.GEMINI_API_KEY;
+  // Save all provider keys
+  const originalKeys = {
+    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+    GROQ_API_KEY: process.env.GROQ_API_KEY,
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY
+  };
+  
+  // Clear all keys first
+  delete process.env.GEMINI_API_KEY;
+  delete process.env.GROQ_API_KEY;
+  delete process.env.OPENAI_API_KEY;
+  delete process.env.ANTHROPIC_API_KEY;
+  
+  // Set only GEMINI_API_KEY
   process.env.GEMINI_API_KEY = 'env-key-123';
   
   try {
@@ -70,11 +84,15 @@ test('createConfig - environment variable detection', () => {
     assert.strictEqual(config.provider, 'gemini');
     assert.strictEqual(config.apiKey, 'env-key-123');
   } finally {
-    if (originalEnv) {
-      process.env.GEMINI_API_KEY = originalEnv;
+    // Restore original keys
+    if (originalKeys.GEMINI_API_KEY) {
+      process.env.GEMINI_API_KEY = originalKeys.GEMINI_API_KEY;
     } else {
       delete process.env.GEMINI_API_KEY;
     }
+    if (originalKeys.GROQ_API_KEY) process.env.GROQ_API_KEY = originalKeys.GROQ_API_KEY;
+    if (originalKeys.OPENAI_API_KEY) process.env.OPENAI_API_KEY = originalKeys.OPENAI_API_KEY;
+    if (originalKeys.ANTHROPIC_API_KEY) process.env.ANTHROPIC_API_KEY = originalKeys.ANTHROPIC_API_KEY;
   }
 });
 

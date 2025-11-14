@@ -1,12 +1,28 @@
 #!/usr/bin/env sh
 # Husky v9+ doesn't need the husky.sh sourcing
 
-# Hookwise - Code quality checks (optional, skip if not installed)
-if [ -f "node_modules/@arclabs561/hookwise/src/hooks/code-quality.mjs" ]; then
-  node node_modules/@arclabs561/hookwise/src/hooks/code-quality.mjs || true
+# Secret detection - CRITICAL for npm package (run first, blocking)
+if [ -f "scripts/detect-secrets.mjs" ]; then
+  node scripts/detect-secrets.mjs || exit 1
 fi
 
-# Hookwise - Documentation bloat detection (optional)
+# Hookwise - Code quality checks (optional, skip if not installed)
+if [ -f "node_modules/@arclabs561/hookwise/src/hooks/code-quality.mjs" ]; then
+  node node_modules/@arclabs561/hookwise/src/hooks/code-quality.mjs || exit 1
+fi
+
+# Hookwise - Documentation bloat detection (blocking for this repo)
 if [ -f "node_modules/@arclabs561/hookwise/src/hooks/doc-bloat.mjs" ]; then
-  node node_modules/@arclabs561/hookwise/src/hooks/doc-bloat.mjs || true
+  node node_modules/@arclabs561/hookwise/src/hooks/doc-bloat.mjs || exit 1
+fi
+
+# Hookwise - Security checks (if available)
+if [ -f "node_modules/@arclabs561/hookwise/src/hooks/security.mjs" ]; then
+  node node_modules/@arclabs561/hookwise/src/hooks/security.mjs || exit 1
+fi
+
+# Hookwise - Test performance checks (optional, non-blocking for pre-commit)
+# Run manually with: npm run check:test-performance
+if [ -f "node_modules/@arclabs561/hookwise/src/hooks/test-performance.mjs" ]; then
+  node node_modules/@arclabs561/hookwise/src/hooks/test-performance.mjs || true
 fi

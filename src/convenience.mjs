@@ -24,14 +24,16 @@ import { TEMPORAL_CONSTANTS } from './constants.mjs';
  * Test gameplay with variable goals
  * 
  * Complete workflow for testing games with variable goals/prompts.
+ * Originally motivated by queeraoke (https://queeraoke.fyi), an interactive karaoke game
+ * that requires real-time validation, variable goals, and temporal understanding.
+ * 
  * Handles persona experience, temporal capture, goal evaluation, and consistency checks.
  * 
- * IMPROVEMENT: Better support for queeraoke-style game testing:
- * - Handles games that activate from payment screens (not just standalone games)
- * - Supports game activation via keyboard shortcuts (e.g., 'g' key)
- * - Better game state extraction (window.gameState)
- * - Supports temporal preprocessing for better performance
- * - Better integration with queeraoke's game testing patterns
+ * Supports queeraoke-style games:
+ * - Games that activate from payment screens (not just standalone games)
+ * - Game activation via keyboard shortcuts (e.g., 'g' key)
+ * - Game state extraction (window.gameState)
+ * - Temporal preprocessing for better performance
  * 
  * @param {import('playwright').Page} page - Playwright page object
  * @param {Object} options - Test options
@@ -46,6 +48,7 @@ import { TEMPORAL_CONSTANTS } from './constants.mjs';
  * @param {string} [options.gameActivationKey] - Keyboard key to activate game (e.g., 'g' for queeraoke)
  * @param {string} [options.gameSelector] - Selector to wait for game activation (e.g., '#game-paddle')
  * @param {boolean} [options.useTemporalPreprocessing] - Use temporal preprocessing for better performance
+ * @param {boolean} [options.play] - If true, actually play the game (uses playGame() internally)
  * @returns {Promise<Object>} Test results
  */
 export async function testGameplay(page, options = {}) {
@@ -60,8 +63,25 @@ export async function testGameplay(page, options = {}) {
     checkConsistency = true,
     gameActivationKey = null, // e.g., 'g' for queeraoke
     gameSelector = null, // e.g., '#game-paddle' for queeraoke
-    useTemporalPreprocessing = false
+    useTemporalPreprocessing = false,
+    play = false // NEW: Option to actually play the game
   } = options;
+  
+  // If play mode, use playGame() function
+  if (play) {
+    const { playGame } = await import('./game-player.mjs');
+    const goal = Array.isArray(goals) ? goals[0] : goals;
+    const goalString = typeof goal === 'string' ? goal : goal?.description || 'Play the game well';
+    
+    return await playGame(page, {
+      goal: goalString,
+      maxSteps: options.maxSteps || 100,
+      fps: options.fps || 2,
+      gameActivationKey,
+      gameSelector,
+      url
+    });
+  }
 
   if (!url) {
     throw new ValidationError('testGameplay: url is required', { function: 'testGameplay', parameter: 'url' });
@@ -84,7 +104,7 @@ export async function testGameplay(page, options = {}) {
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
     await page.waitForLoadState('networkidle');
 
-    // IMPROVEMENT: Activate game if needed (for queeraoke-style games)
+    // Activate game if needed (originally for queeraoke-style games that activate from payment screens)
     if (gameActivationKey) {
       log(`[Convenience] Activating game with key: ${gameActivationKey}`);
       await page.keyboard.press(gameActivationKey);
@@ -107,7 +127,7 @@ export async function testGameplay(page, options = {}) {
       trackPropagation('capture', { renderedCode }, 'Captured HTML/CSS for gameplay test');
     }
 
-    // IMPROVEMENT: Better game state extraction (handles queeraoke's gameState structure)
+    // Extract game state (handles queeraoke's gameState structure and other games)
     const gameState = await page.evaluate(() => {
       const state = window.gameState || {};
       return {
@@ -507,10 +527,13 @@ export async function testBrowserExperience(page, options = {}) {
  * Simplified API for validating screenshots with variable goals/prompts.
  * Supports string goals, goal objects, arrays, and functions.
  * 
- * IMPROVEMENT: Better integration with queeraoke patterns:
- * - Supports brutalist rubric goals
- * - Supports accessibility goals with contrast requirements
- * - Supports game state validation goals
+ * Originally motivated by queeraoke (https://queeraoke.fyi), an interactive karaoke game
+ * that requires real-time validation, variable goals, and temporal understanding.
+ * 
+ * Supports:
+ * - Brutalist rubric goals
+ * - Accessibility goals with contrast requirements
+ * - Game state validation goals
  * - Better error messages and context
  * 
  * @param {string} screenshotPath - Path to screenshot

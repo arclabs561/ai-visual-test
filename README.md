@@ -37,12 +37,15 @@ Set `GEMINI_API_KEY` or `OPENAI_API_KEY` in your environment. Works with Gemini 
 
 - **Semantic validation** - Understands UI meaning, not just pixels (VLLM-based)
 - **Dynamic content** - Handles feeds, timestamps, user data gracefully
-- **Accessibility checks** - AI can spot contrast issues, missing labels (VLLM) or fast programmatic checks
-- **Design principles** - Validates brutalist, minimal, or other design styles
+- **Accessibility checks** - Fast programmatic checks (<100ms) or VLLM semantic evaluation
+- **Design principles** - Validates brutalist, minimal, or other design styles (VLLM)
 - **Temporal testing** - Analyzes animations and gameplay over time
-- **State validation** - Validates game state, UI state, form state matches visual representation (VLLM or programmatic)
+- **State validation** - Fast programmatic validation or VLLM extraction from screenshots
 - **Rubric-based evaluation** - Uses explicit rubrics for consistent, reliable scoring
-- **Fast programmatic checks** - Deterministic contrast, state, and position validation (<100ms, no API calls)
+- **Smart validation** - Automatically chooses the right validator (programmatic vs VLLM vs hybrid)
+- **Game testing** - Validate gameplay screenshots with variable goals (inspired by [queeraoke](https://queeraoke.fyi))
+- **Game playing** (optional) - Actually play games using validation + decision-making + action execution
+- **Natural language specs** - Write tests in plain English, LLM-parses and executes them (not formal specs)
 
 ## What it's not good for
 
@@ -88,20 +91,144 @@ test('payment screen is accessible', async ({ page }) => {
 });
 ```
 
+## Natural Language Specifications
+
+Write tests in plain English (not formal specs like TLA+ or Alloy). Auto-extracts context from spec text:
+
+```javascript
+import { executeSpec, testGameplay, validateScreenshot } from 'ai-visual-test';
+
+// Pattern 1: Direct natural language prompt (most common)
+const result = await validateScreenshot(
+  screenshotPath,
+  `CRITICAL VALIDATION: Payment screen must be perfect. Check:
+  - Payment code is clearly visible
+  - QR codes are properly rendered and scannable
+  - Payment links are accessible`,
+  {
+    testType: 'payment-critical',
+    viewport: { width: 1280, height: 720 }
+  }
+);
+
+// Pattern 2: testGameplay with goals (game testing)
+const gameplayResult = await testGameplay(page, {
+  url: 'https://game.example.com',
+  goals: ['fun', 'accessibility', 'visual-consistency'],
+  gameActivationKey: 'g',
+  gameSelector: '#game-element',
+  captureTemporal: true,
+  fps: 2,
+  duration: 10000,
+  captureCode: true, // Multi-modal: screenshot + code + state
+  checkConsistency: true
+});
+
+// Pattern 3: Natural language spec with auto-extracted context
+const spec = `
+  Given I visit game.example.com
+  When I activate the game (press 'g')
+  Then the game should be playable
+  And the score should update
+  Context: viewport=1280x720, fps: 2, duration: 10 seconds
+`;
+
+// Context auto-extracted - no need to pass URL, viewport, FPS, duration
+const specResult = await executeSpec(page, spec, {
+  gameSelector: '#game-element' // Only pass what's not in spec
+});
+```
+
+**Use Cases:**
+- Interactive web games (easter eggs, flash games, canvas games)
+- News pages and articles
+- GitHub PR pages and code reviews
+- E-commerce checkout flows
+- Form validation and accessibility
+- Websites in development
+- Any web experience requiring validation
+
+**See:** `docs/NATURAL_LANGUAGE_SPECS_QUEERAOKE_EXAMPLES.md` for real-world examples and patterns.
+- Any web experience
+
+**Property-Based Testing:**
+```javascript
+import { generatePropertyTests } from 'ai-visual-test';
+
+const properties = [
+  'Screenshots should always have a score between 0 and 10',
+  'Game state should always match visual representation'
+];
+
+const tests = await generatePropertyTests(properties);
+await tests.run();
+```
+
+## Game Use Cases
+
+This package was originally motivated by [queeraoke](https://queeraoke.fyi), an interactive karaoke game that requires:
+- Real-time gameplay validation (60Hz frame-by-frame)
+- Variable goals (fun, accessibility, visual clarity)
+- Temporal sequences (understanding gameplay over time)
+- State validation (score, level, position)
+
+### Game Testing
+
+```javascript
+import { testGameplay } from 'ai-visual-test';
+
+// Test if game is fun and accessible
+const result = await testGameplay(page, {
+  url: 'https://game.example.com',
+  goals: ['fun', 'accessibility', 'performance'],
+  gameActivationKey: 'g', // For games that activate from keyboard
+  gameSelector: '#game-paddle' // Wait for game element
+});
+```
+
+### Game Playing (Optional)
+
+```javascript
+import { playGame, GameGym } from 'ai-visual-test';
+
+// Simple API - internal loop (for most users)
+const result = await playGame(page, {
+  goal: 'Maximize score',
+  maxSteps: 50,
+  fps: 2 // 2 decisions per second (not 60 FPS - AI needs time to think)
+});
+
+// Advanced API - external iterator (for power users, RL integration)
+const gym = new GameGym(page, {
+  goal: 'Maximize score',
+  maxSteps: 100
+});
+
+let obs = await gym.reset();
+while (!gym.done) {
+  const action = await decideAction(obs); // Your decision logic
+  const result = await gym.step(action);
+  obs = result.observation;
+}
+```
+
 ## Validators
 
 Generic validators for common testing patterns:
 
-### State Validator
+### State Validator (VLLM-based)
 
-Validate that visual state matches expected state (game state, UI state, form state):
+**⚠️ Note:** `StateValidator` uses VLLM to extract state from screenshots. If you have page access, use `validateStateProgrammatic` instead (faster, free, deterministic).
+
+Validate that visual state matches expected state using VLLM (when you only have screenshots):
 
 ```javascript
 import { StateValidator } from 'ai-visual-test';
 
+// VLLM-based: Extracts state from screenshot using AI
 const validator = new StateValidator({ tolerance: 5 });
 const result = await validator.validateState(
-  'screenshot.png',
+  'screenshot.png',  // Screenshot path (required)
   { ball: { x: 100, y: 200 }, paddle: { x: 150 } }
 );
 
@@ -109,6 +236,11 @@ if (!result.matches) {
   console.log('State mismatches:', result.validation.discrepancies);
 }
 ```
+
+**When to use:**
+- ✅ Only have screenshots (no page access)
+- ✅ Need semantic state extraction from images
+- ❌ Don't use if you have page access (use `validateStateProgrammatic` instead)
 
 ### Accessibility Validator
 
@@ -192,6 +324,45 @@ console.log('Cost:', stats.costStats);
 console.log('Performance:', stats.performance);
 ```
 
+## Smart Validators (Recommended)
+
+**NEW:** Smart validators automatically select the best validator type based on available context. Use these to avoid common mistakes.
+
+```javascript
+import { validateSmart, validateAccessibilitySmart, validateStateSmart } from 'ai-visual-test';
+
+// Automatically uses programmatic if page available, VLLM if only screenshot
+const result = await validateAccessibilitySmart({
+  page: page,              // If available, uses programmatic (fast, free)
+  screenshotPath: 'screenshot.png',  // If only this, uses VLLM (semantic)
+  minContrast: 21.0,
+  needSemantic: false      // Set true to use hybrid (best of both)
+});
+
+// Smart state validation
+const stateResult = await validateStateSmart({
+  page: page,              // If available, uses programmatic
+  screenshotPath: 'screenshot.png',  // If only this, uses VLLM
+  expectedState: { ball: { x: 100, y: 200 } },
+  selectors: { ball: '#game-ball' },
+  needSemantic: false      // Set true to use hybrid
+});
+
+// Universal smart validator
+const result = await validateSmart({
+  type: 'accessibility',   // or 'state', 'element', 'visual'
+  page: page,
+  screenshotPath: 'screenshot.png',
+  // ... other options based on type
+});
+```
+
+**Why use smart validators?**
+- ✅ Automatically chooses the right tool (programmatic vs VLLM vs hybrid)
+- ✅ Prevents common mistakes (using VLLM for measurable things)
+- ✅ Guides users to faster, more reliable validators when available
+- ✅ Still allows manual override when needed
+
 ## Programmatic Validators
 
 Fast, deterministic validators for when you have Playwright page access. Use these for fast feedback (<100ms) instead of VLLM when possible.
@@ -220,12 +391,14 @@ console.log(`${keyboard.focusableElements} focusable elements`);
 
 ### State Validation (Programmatic)
 
+**✅ Recommended:** Use this when you have page access (fast, free, deterministic).
+
 Fast state validation using direct state access:
 
 ```javascript
 import { validateStateProgrammatic, validateElementPosition } from 'ai-visual-test';
 
-// Validate game state matches visual representation
+// Validate game state matches visual representation (programmatic - no VLLM)
 const result = await validateStateProgrammatic(page, {
   ball: { x: 100, y: 200 },
   paddle: { x: 150 }
@@ -240,6 +413,12 @@ const result = await validateStateProgrammatic(page, {
 if (!result.matches) {
   console.log('Discrepancies:', result.discrepancies);
 }
+```
+
+**Key Difference:**
+- `validateStateProgrammatic` = Programmatic (uses page access, fast, free)
+- `StateValidator` = VLLM-based (uses screenshots, slower, costs API calls)
+- **Use programmatic when you have page access!**
 
 // Validate element position
 const position = await validateElementPosition(

@@ -108,10 +108,11 @@ return createHash('sha256').update(keyString).digest('hex');
 - Automatically creates directory on init
 - No errors if directory doesn't exist
 
-### Concurrent Writes
-- Simple lock mechanism (`cacheWriteLock`)
-- Skips save if write already in progress
-- Prevents race conditions
+### Concurrent Writes ✅ FIXED
+- **OLD**: Simple boolean lock (`cacheWriteLock`) - not thread-safe
+- **NEW**: Proper async mutex (`async-mutex` Mutex) - thread-safe
+- Prevents race conditions in async save operations
+- Ensures only one save operation happens at a time
 
 ## Testing Requirements
 

@@ -60,6 +60,15 @@ export function createMockPage(options = {}) {
           return element;
         };
         
+        // Create mock stylesheet
+        const createMockStyleSheet = () => ({
+          href: null,
+          cssRules: [],
+          [Symbol.iterator]: function* () {
+            // Empty iterator for now, but make it iterable
+          }
+        });
+        
         const mockDocument = {
           querySelector: (selector) => {
             // Return mock element for known selectors
@@ -78,7 +87,14 @@ export function createMockPage(options = {}) {
             classList: {
               contains: (cls) => false
             }
-          }
+          },
+          // Make styleSheets iterable (array-like object)
+          styleSheets: (function() {
+            const sheets = [createMockStyleSheet()];
+            // Make it iterable
+            sheets[Symbol.iterator] = Array.prototype[Symbol.iterator];
+            return sheets;
+          })()
         };
         
         const mockWindow = {

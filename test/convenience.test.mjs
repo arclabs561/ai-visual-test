@@ -12,20 +12,10 @@ import {
   createGameGoal
 } from '../src/index.mjs';
 import { createMockPage } from './helpers/mock-page.mjs';
-import { writeFileSync, unlinkSync, existsSync, mkdirSync } from 'fs';
-import { join, dirname } from 'path';
+import { createTempImage } from './test-image-utils.mjs';
+import { unlinkSync, existsSync } from 'fs';
+import { join } from 'path';
 import { tmpdir } from 'os';
-
-// Helper to create temporary test image file
-function createTempImage(path) {
-  const dir = dirname(path);
-  if (!existsSync(dir)) {
-    mkdirSync(dir, { recursive: true });
-  }
-  const minimalPng = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', 'base64');
-  writeFileSync(path, minimalPng);
-  return path;
-}
 
 describe('Convenience Functions', () => {
   describe('validateWithGoals', () => {

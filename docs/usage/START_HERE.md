@@ -53,9 +53,9 @@ npm run match:vllm
 
 ## Documentation
 
-- **Quick Start**: `ANNOTATION_QUICK_START.md`
-- **Full Guide**: `HUMAN_INVOCATION_READY.md`
-- **Enhanced System**: `ENHANCED_ANNOTATION_SYSTEM.md`
+- **Quick Start**: See `archive/ground-truth-annotation-2025-01/ANNOTATION_QUICK_START.md`
+- **Enhanced System**: See `archive/ground-truth-annotation-2025-01/ENHANCED_ANNOTATION_SYSTEM.md`
+- **Full Guide**: See `archive/ground-truth-annotation-2025-01/` for complete annotation documentation
 
 ---
 

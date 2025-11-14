@@ -83,7 +83,7 @@ describe('Iterative Improvements', () => {
   
   describe('Sequential Context Optimization', () => {
     test('high confidence triggers stronger adaptation', () => {
-      const context = new SequentialDecisionContext();
+      const context = new SequentialDecisionContext({ adaptationEnabled: true });
       [7, 8, 7, 8, 7, 8].forEach(score => {
         context.addDecision({ score, issues: ['contrast'] });
       });
@@ -100,7 +100,7 @@ describe('Iterative Improvements', () => {
     });
     
     test('low confidence uses gentler language', () => {
-      const context = new SequentialDecisionContext();
+      const context = new SequentialDecisionContext({ adaptationEnabled: true });
       [2, 9, 3, 8, 4].forEach(score => {
         context.addDecision({ score, issues: [] });
       });

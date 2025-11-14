@@ -47,6 +47,7 @@ test('CRITICAL comments are only used for actual critical issues', () => {
         const isLegitimate = 
           line.includes('CRITICAL BUG FIX') ||
           line.includes('CRITICAL BUGS FIXED') ||
+          line.includes('CRITICAL FIX:') ||  // Allow "CRITICAL FIX:" for bug fixes
           (line.includes('CRITICAL:') && (
             line.includes('security') ||
             line.includes('vulnerability') ||

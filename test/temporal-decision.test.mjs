@@ -19,7 +19,9 @@ describe('SequentialDecisionContext', () => {
     assert.ok(context);
     assert.strictEqual(context.history.length, 0);
     assert.strictEqual(context.maxHistory, 10);
-    assert.strictEqual(context.adaptationEnabled, true);
+    // CRITICAL FIX: Default changed to false based on evaluation data showing sequential context increases variance
+    // Evaluation data shows: Isolated variance 0.231, Sequential variance 0.324 (40% increase)
+    assert.strictEqual(context.adaptationEnabled, false, 'Default should be false to prevent variance increase');
   });
   
   test('constructor with custom options', () => {
@@ -117,7 +119,7 @@ describe('SequentialDecisionContext', () => {
   });
   
   test('adaptPrompt - adapts based on history', () => {
-    const context = new SequentialDecisionContext();
+    const context = new SequentialDecisionContext({ adaptationEnabled: true });
     context.addDecision({ score: 5, issues: ['contrast'] });
     context.addDecision({ score: 6, issues: ['contrast'] });
     

@@ -283,8 +283,57 @@ export {
   testBrowserExperience,
   validateWithGoals
 } from './convenience.mjs';
+
+// Game playing (optional - requires Playwright)
+// Originally motivated by queeraoke (https://queeraoke.fyi)
+export {
+  playGame,
+  GameGym,
+  decideGameAction,
+  executeGameAction
+} from './game-player.mjs';
+
+// Natural language specifications (LLM-parseable, not formal specs)
+export {
+  parseSpec,
+  mapToInterfaces,
+  executeSpec,
+  generatePropertyTests,
+  testBehavior,
+  validateSpec
+} from './natural-language-specs.mjs';
+export {
+  TEMPLATES,
+  createSpecFromTemplate,
+  composeTemplates,
+  inheritTemplate,
+  registerTemplate,
+  listTemplates,
+  getTemplate,
+  validateTemplate
+} from './spec-templates.mjs';
+export {
+  createSpecConfig,
+  getSpecConfig,
+  setSpecConfig,
+  resetSpecConfig
+} from './spec-config.mjs';
+// Error analysis utilities (evaluation tools, not core API)
+// Import from evaluation/utils/spec-error-analysis.mjs if needed
+export {
+  validateSmart,
+  validateAccessibilitySmart,
+  validateStateSmart,
+  validateElementSmart,
+  detectValidationMethod
+} from './smart-validator.mjs';
+export {
+  selectModelTier,
+  selectProvider,
+  selectModelTierAndProvider
+} from './model-tier-selector.mjs';
 export { normalizeValidationResult } from './validation-result-normalizer.mjs';
-export { CACHE_CONSTANTS, TEMPORAL_CONSTANTS, API_CONSTANTS, UNCERTAINTY_CONSTANTS } from './constants.mjs';
+export { CACHE_CONSTANTS, TEMPORAL_CONSTANTS, API_CONSTANTS, UNCERTAINTY_CONSTANTS, BATCH_OPTIMIZER_CONSTANTS } from './constants.mjs';
 export {
   StateValidator,
   AccessibilityValidator,

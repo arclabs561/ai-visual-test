@@ -36,6 +36,7 @@ import {
 } from './temporal-constants.mjs';
 import { validateAndSortNotes, validateTimeScales, validateAction, validatePerceptionContext, validateSequentialContextOptions } from './temporal-validation.mjs';
 import { MultiScaleError, PerceptionTimeError } from './temporal-errors.mjs';
+import { warn, log } from './logger.mjs';
 
 /**
  * Multi-scale temporal aggregation
@@ -272,7 +273,15 @@ export class SequentialDecisionContext {
     this.currentState = null;
     this.adaptations = {};
     this.maxHistory = options.maxHistory || 10;
-    this.adaptationEnabled = options.adaptationEnabled !== false;
+    // CRITICAL: Default to false based on evaluation data showing sequential context increases variance
+    // Evaluation data (data-driven-analysis-1762832349830.json) shows:
+    // - Isolated variance: 0.231
+    // - Sequential variance: 0.324 (40% increase)
+    // Research shows sequential context can increase variance due to prompt brittleness, attention variability
+    // Users should explicitly enable if they need sequential context, understanding the variance trade-off
+    this.adaptationEnabled = options.adaptationEnabled === true;
+    this.varianceTracking = options.varianceTracking !== false; // Track variance by default
+    this.baselineVariance = null; // Will be set after first few isolated evaluations
   }
   
   /**
@@ -292,6 +301,17 @@ export class SequentialDecisionContext {
     
     // Update current state
     this.currentState = decision;
+    
+    // Track baseline variance for first few isolated evaluations (before sequential context kicks in)
+    // This allows us to detect if sequential context increases variance
+    // Research shows sequential context can increase variance by 40%+ due to prompt brittleness,
+    // attention variability, and few-shot learning instability (up to 14% variance from example selection)
+    if (this.varianceTracking && this.history.length >= 3 && this.baselineVariance === null) {
+      const scores = this.history.map(d => d.score).filter(s => s !== null);
+      if (scores.length >= 3) {
+        this.baselineVariance = calculateVariance(scores);
+      }
+    }
   }
   
   /**
@@ -304,6 +324,49 @@ export class SequentialDecisionContext {
     
     // Identify patterns in history
     const patterns = this.identifyPatterns();
+    
+    // CRITICAL: Check if variance has increased (evaluation data shows sequential context can increase variance)
+    // If variance tracking is enabled and variance has increased significantly, disable adaptation
+    // VERIFIABLE: Variance increase is always logged (not just in verbose mode) and tracked in metrics
+    // ENHANCEMENT: Also track variance decreases (improvements) for completeness
+    if (this.varianceTracking && this.baselineVariance !== null && patterns.scoreVariance) {
+      const varianceChange = (patterns.scoreVariance - this.baselineVariance) / this.baselineVariance;
+      // If variance increased by more than 20%, disable adaptation to prevent further degradation
+      if (varianceChange > 0.2) {
+        // VERIFIABLE: Always log variance increase (not just in verbose mode) - this is a critical metric
+        warn(`[SequentialContext] Variance increased by ${(varianceChange * 100).toFixed(1)}% (${this.baselineVariance.toFixed(3)} → ${patterns.scoreVariance.toFixed(3)}). Disabling adaptation to prevent further degradation.`);
+        // Track variance increase event for metrics
+        if (!this.varianceIncreaseEvents) {
+          this.varianceIncreaseEvents = [];
+        }
+        this.varianceIncreaseEvents.push({
+          timestamp: Date.now(),
+          baselineVariance: this.baselineVariance,
+          currentVariance: patterns.scoreVariance,
+          increasePercent: varianceChange * 100,
+          historyLength: this.history.length
+        });
+        // Temporarily disable adaptation for this prompt
+        return basePrompt;
+      }
+      // ENHANCEMENT: Track variance decreases (improvements) - MCP research shows this is valuable
+      // Variance decrease indicates improved model stability
+      if (varianceChange < -0.1) { // 10% decrease threshold
+        log(`[SequentialContext] Variance decreased by ${Math.abs(varianceChange * 100).toFixed(1)}% (${this.baselineVariance.toFixed(3)} → ${patterns.scoreVariance.toFixed(3)}). Model stability improved.`);
+        // Track variance decrease for metrics (could add separate array, but using same structure for now)
+        if (!this.varianceIncreaseEvents) {
+          this.varianceIncreaseEvents = [];
+        }
+        this.varianceIncreaseEvents.push({
+          timestamp: Date.now(),
+          baselineVariance: this.baselineVariance,
+          currentVariance: patterns.scoreVariance,
+          increasePercent: varianceChange * 100, // Negative for decreases
+          historyLength: this.history.length,
+          type: 'decrease'
+        });
+      }
+    }
     
     // Build context from history
     const historyContext = this.buildHistoryContext(patterns);
@@ -436,12 +499,55 @@ ${this.buildAdaptationInstructions(patterns, currentContext)}`;
   
   /**
    * Get context for current decision
+   * 
+   * VERIFIABLE: Returns variance metrics to verify claims about variance tracking
    */
   getContext() {
+    const patterns = this.identifyPatterns();
     return {
       historyLength: this.history.length,
       recentDecisions: this.history.slice(-3),
-      patterns: this.identifyPatterns()
+      patterns,
+      // VERIFIABLE: Export variance metrics to verify variance tracking claims
+      varianceMetrics: this.varianceTracking ? {
+        baselineVariance: this.baselineVariance,
+        currentVariance: patterns.scoreVariance,
+        varianceIncrease: this.baselineVariance !== null && patterns.scoreVariance
+          ? ((patterns.scoreVariance - this.baselineVariance) / this.baselineVariance) * 100
+          : null,
+        varianceIncreaseEvents: this.varianceIncreaseEvents || [],
+        adaptationEnabled: this.adaptationEnabled,
+        adaptationDisabledDueToVariance: this.baselineVariance !== null && patterns.scoreVariance
+          ? ((patterns.scoreVariance - this.baselineVariance) / this.baselineVariance) > 0.2
+          : false
+      } : null
+    };
+  }
+  
+  /**
+   * Get variance statistics for verification
+   * 
+   * VERIFIABLE: Exports variance metrics to verify claims about variance increase detection
+   * 
+   * @returns {Object} Variance statistics
+   */
+  getVarianceStats() {
+    if (!this.varianceTracking) {
+      return { trackingEnabled: false };
+    }
+    
+    const patterns = this.identifyPatterns();
+    return {
+      trackingEnabled: true,
+      baselineVariance: this.baselineVariance,
+      currentVariance: patterns.scoreVariance,
+      varianceIncrease: this.baselineVariance !== null && patterns.scoreVariance
+        ? ((patterns.scoreVariance - this.baselineVariance) / this.baselineVariance) * 100
+        : null,
+      varianceIncreaseEvents: this.varianceIncreaseEvents || [],
+      adaptationEnabled: this.adaptationEnabled,
+      historyLength: this.history.length,
+      scores: this.history.map(d => d.score).filter(s => s !== null)
     };
   }
 }

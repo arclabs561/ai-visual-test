@@ -19,6 +19,7 @@ const ALLOWED_ENV_KEYS = [
   'GEMINI_API_KEY',
   'OPENAI_API_KEY',
   'ANTHROPIC_API_KEY',
+  'GROQ_API_KEY',  // Added for Groq integration (high-frequency decisions)
   'API_KEY',
   'VLLM_API_KEY',
   'VLM_PROVIDER',
@@ -27,6 +28,40 @@ const ALLOWED_ENV_KEYS = [
   'RATE_LIMIT_MAX_REQUESTS',
   'REQUIRE_AUTH'
 ];
+
+// Valid values for VLM_PROVIDER
+// Groq added for high-frequency decisions (10-60Hz temporal decisions)
+const VALID_PROVIDERS = ['gemini', 'openai', 'claude', 'groq'];
+
+// Validation functions for environment variables
+function validateRateLimitMaxRequests(value) {
+  const num = parseInt(value, 10);
+  if (isNaN(num) || num < 1 || num > 1000) {
+    warn(`[LoadEnv] Invalid RATE_LIMIT_MAX_REQUESTS: ${value}. Must be between 1 and 1000. Using default.`);
+    return null; // Will use default
+  }
+  return num;
+}
+
+function validateVLMProvider(value) {
+  const normalized = value?.toLowerCase().trim();
+  if (normalized && !VALID_PROVIDERS.includes(normalized)) {
+    warn(`[LoadEnv] Invalid VLM_PROVIDER: ${value}. Must be one of: ${VALID_PROVIDERS.join(', ')}. Ignoring.`);
+    return null; // Ignore invalid provider
+  }
+  return normalized;
+}
+
+function validateRequireAuth(value) {
+  if (value === 'true' || value === '1' || value === 'yes') {
+    return true;
+  }
+  if (value === 'false' || value === '0' || value === 'no' || value === '') {
+    return false;
+  }
+  warn(`[LoadEnv] Invalid REQUIRE_AUTH: ${value}. Must be 'true' or 'false'. Using default.`);
+  return null; // Will use default
+}
 
 /**
  * Load environment variables from .env file
@@ -82,9 +117,31 @@ export function loadEnv(basePath = null) {
               value = value.slice(1, -1);
             }
             
+            // Validate and transform values based on key
+            let validatedValue = value;
+            if (key === 'RATE_LIMIT_MAX_REQUESTS') {
+              const validated = validateRateLimitMaxRequests(value);
+              if (validated === null) {
+                continue; // Skip invalid value
+              }
+              validatedValue = String(validated);
+            } else if (key === 'VLM_PROVIDER') {
+              const validated = validateVLMProvider(value);
+              if (validated === null) {
+                continue; // Skip invalid value
+              }
+              validatedValue = validated;
+            } else if (key === 'REQUIRE_AUTH') {
+              const validated = validateRequireAuth(value);
+              if (validated === null) {
+                continue; // Skip invalid value
+              }
+              validatedValue = String(validated);
+            }
+            
             // Only set if not already set (env vars take precedence)
             if (!process.env[key]) {
-              process.env[key] = value;
+              process.env[key] = validatedValue;
             }
           }
         }

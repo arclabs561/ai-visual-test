@@ -45,6 +45,17 @@ export const API_CONSTANTS = {
 };
 
 /**
+ * Batch Optimizer Configuration
+ */
+export const BATCH_OPTIMIZER_CONSTANTS = {
+  /** Maximum queue size before rejecting new requests (prevents memory leaks) */
+  MAX_QUEUE_SIZE: 1000,
+  
+  /** Request timeout in milliseconds (30 seconds) */
+  REQUEST_TIMEOUT_MS: 30000
+};
+
+/**
  * Uncertainty Reduction Configuration
  */
 export const UNCERTAINTY_CONSTANTS = {

@@ -43,8 +43,8 @@ test('loadEnv - returns false when no .env file', () => {
 
 test('loadEnv - loads .env file', () => {
   const envFile = join(TEST_DIR, '.env');
-  // Use whitelisted keys for testing
-  writeFileSync(envFile, 'GEMINI_API_KEY=test_value\nVLM_PROVIDER=test_value2');
+  // Use whitelisted keys for testing with valid provider value
+  writeFileSync(envFile, 'GEMINI_API_KEY=test_value\nVLM_PROVIDER=gemini');
   
   const originalValue = process.env.GEMINI_API_KEY;
   delete process.env.GEMINI_API_KEY;
@@ -54,7 +54,7 @@ test('loadEnv - loads .env file', () => {
     const result = loadEnv(TEST_DIR);
     assert.strictEqual(result, true);
     assert.strictEqual(process.env.GEMINI_API_KEY, 'test_value');
-    assert.strictEqual(process.env.VLM_PROVIDER, 'test_value2');
+    assert.strictEqual(process.env.VLM_PROVIDER, 'gemini');
   } finally {
     if (originalValue) {
       process.env.GEMINI_API_KEY = originalValue;
@@ -88,8 +88,8 @@ test('loadEnv - skips comments', () => {
 
 test('loadEnv - removes quotes', () => {
   const envFile = join(TEST_DIR, '.env');
-  // Use whitelisted keys for testing
-  writeFileSync(envFile, 'GEMINI_API_KEY="quoted_value"\nVLM_PROVIDER=\'single_quoted\'');
+  // Use whitelisted keys for testing with valid provider value
+  writeFileSync(envFile, 'GEMINI_API_KEY="quoted_value"\nVLM_PROVIDER=\'openai\'');
   
   const originalValue = process.env.GEMINI_API_KEY;
   delete process.env.GEMINI_API_KEY;
@@ -99,7 +99,7 @@ test('loadEnv - removes quotes', () => {
     const result = loadEnv(TEST_DIR);
     assert.strictEqual(result, true);
     assert.strictEqual(process.env.GEMINI_API_KEY, 'quoted_value');
-    assert.strictEqual(process.env.VLM_PROVIDER, 'single_quoted');
+    assert.strictEqual(process.env.VLM_PROVIDER, 'openai');
   } finally {
     if (originalValue) {
       process.env.GEMINI_API_KEY = originalValue;

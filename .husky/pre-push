@@ -3,6 +3,15 @@
 
 echo "🚀 Pre-push checks..."
 
+# Hookwise - Pre-push validation (if available)
+if [ -f "node_modules/@arclabs561/hookwise/src/hooks/pre-push.mjs" ]; then
+  echo "Running hookwise pre-push checks..."
+  node node_modules/@arclabs561/hookwise/src/hooks/pre-push.mjs || {
+    echo "❌ Hookwise pre-push checks failed. Push aborted."
+    exit 1
+  }
+fi
+
 # Run full test suite before pushing
 echo "Running full test suite..."
 npm test || {

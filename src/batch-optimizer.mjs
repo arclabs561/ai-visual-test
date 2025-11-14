@@ -28,19 +28,27 @@ import { createHash } from 'crypto';
  * 
  * @class BatchOptimizer
  */
+import { API_CONSTANTS, BATCH_OPTIMIZER_CONSTANTS } from './constants.mjs';
+import { TimeoutError } from './errors.mjs';
+import { warn } from './logger.mjs';
+
 export class BatchOptimizer {
   /**
    * @param {{
    *   maxConcurrency?: number;
    *   batchSize?: number;
    *   cacheEnabled?: boolean;
+   *   maxQueueSize?: number;
+   *   requestTimeout?: number;
    * }} [options={}] - Optimizer options
    */
   constructor(options = {}) {
     const {
-      maxConcurrency = 5,
+      maxConcurrency = API_CONSTANTS.DEFAULT_MAX_CONCURRENCY,
       batchSize = 3,
-      cacheEnabled = true
+      cacheEnabled = true,
+      maxQueueSize = BATCH_OPTIMIZER_CONSTANTS.MAX_QUEUE_SIZE,
+      requestTimeout = BATCH_OPTIMIZER_CONSTANTS.REQUEST_TIMEOUT_MS
     } = options;
     
     this.queue = [];
@@ -49,6 +57,19 @@ export class BatchOptimizer {
     this.batchSize = batchSize;
     this.maxConcurrency = maxConcurrency;
     this.activeRequests = 0;
+    this.maxQueueSize = maxQueueSize;
+    this.requestTimeout = requestTimeout;
+    
+    // CRITICAL FIX: Initialize metrics in constructor to prevent undefined errors
+    // Metrics are used in _queueRequest before getPerformanceMetrics() is called
+    this.metrics = {
+      queueRejections: 0,
+      timeouts: 0,
+      totalQueued: 0,
+      totalProcessed: 0,
+      averageWaitTime: 0,
+      waitTimes: []
+    };
   }
   
   /**
@@ -116,6 +137,8 @@ export class BatchOptimizer {
   
   /**
    * Queue VLLM request for batch processing
+   * 
+   * SECURITY: Queue size limit prevents memory leaks from unbounded queue growth
    */
   async _queueRequest(imagePath, prompt, context, validateFn = null) {
     // Check cache first
@@ -127,13 +150,161 @@ export class BatchOptimizer {
     }
     
     // If under concurrency limit, process immediately
+    // CRITICAL FIX: Track metrics for immediate processing too (not just queued requests)
+    // Note: totalQueued counts ALL requests (immediate + queued), totalProcessed counts completed requests
     if (this.activeRequests < this.maxConcurrency) {
-      return this._processRequest(imagePath, prompt, context, validateFn);
+      try {
+        this.metrics.totalQueued++; // Count immediate processing in total requests
+        // Note: totalProcessed will be incremented when request completes (in resolve handler for queued, or we could add it here)
+        // For now, we track it in the resolve handler for consistency
+      } catch (metricsError) {
+        warn(`[BatchOptimizer] Error updating metrics: ${metricsError.message}`);
+      }
+      // Track start time for immediate processing (for consistency with queued requests)
+      const startTime = Date.now();
+      // CRITICAL FIX: Wrap _processRequest in try-catch to ensure metrics balance even on errors
+      // MCP research confirms: If totalQueued is incremented but request fails, metrics become inaccurate
+      // This ensures totalProcessed is tracked even if _processRequest throws
+      try {
+        const result = await this._processRequest(imagePath, prompt, context, validateFn);
+        // Track successful completion for immediate processing
+        try {
+          this.metrics.totalProcessed++;
+          const waitTime = Date.now() - startTime;
+          this.metrics.waitTimes.push(waitTime);
+          if (this.metrics.waitTimes.length > 100) {
+            this.metrics.waitTimes.shift();
+          }
+          if (this.metrics.waitTimes.length === 1) {
+            this.metrics.averageWaitTime = waitTime;
+          } else {
+            const count = this.metrics.waitTimes.length;
+            this.metrics.averageWaitTime = this.metrics.averageWaitTime + (waitTime - this.metrics.averageWaitTime) / count;
+          }
+        } catch (metricsError) {
+          warn(`[BatchOptimizer] Error updating metrics: ${metricsError.message}`);
+        }
+        return result;
+      } catch (error) {
+        // CRITICAL FIX: Track failed requests to maintain metrics accuracy
+        // Even if request fails, we should track that it was "processed" (attempted)
+        // This prevents totalQueued > totalProcessed imbalance
+        try {
+          this.metrics.totalProcessed++; // Count failed attempts too
+          // Note: We could add a separate totalFailed counter, but for now we count all attempts
+        } catch (metricsError) {
+          warn(`[BatchOptimizer] Error updating failure metrics: ${metricsError.message}`);
+        }
+        // Re-throw error so caller can handle it
+        throw error;
+      }
     }
     
-    // Otherwise, queue for later
+    // Check queue size limit (prevent memory leaks)
+    // VERIFIABLE: Track queue rejections to verify "prevents memory leaks" claim
+    // CRITICAL FIX: Increment totalQueued BEFORE checking queue size to ensure rejectionRate calculation is accurate
+    // This ensures rejected requests are included in the denominator for accurate rate calculation
+    const queueStartTime = Date.now();
+    try {
+      this.metrics.totalQueued++;
+    } catch (metricsError) {
+      // Metrics are best-effort, don't let them crash the application
+      warn(`[BatchOptimizer] Error updating metrics: ${metricsError.message}`);
+    }
+    
+    if (this.queue.length >= this.maxQueueSize) {
+      try {
+        this.metrics.queueRejections++;
+      } catch (metricsError) {
+        warn(`[BatchOptimizer] Error updating rejection metrics: ${metricsError.message}`);
+      }
+      warn(`[BatchOptimizer] Queue is full (${this.queue.length}/${this.maxQueueSize}). Rejecting request to prevent memory leak. Total rejections: ${this.metrics.queueRejections}`);
+      throw new TimeoutError(
+        `Queue is full (${this.queue.length}/${this.maxQueueSize}). Too many concurrent requests.`,
+        { queueSize: this.queue.length, maxQueueSize: this.maxQueueSize }
+      );
+    }
+    
+    // Otherwise, queue for later with timeout
+    // VERIFIABLE: Track queue time and timeouts to verify "prevents indefinite waiting" claim
+    
     return new Promise((resolve, reject) => {
-      this.queue.push({ imagePath, prompt, context, validateFn, resolve, reject });
+      // Set timeout for queued request (prevents indefinite waiting)
+      // CRITICAL FIX: Use a flag to prevent double-counting if request completes just before timeout
+      let timeoutFired = false;
+      let queueEntry = null; // Store reference to queue entry for timeout callback
+      
+      const timeoutId = setTimeout(() => {
+        timeoutFired = true;
+        // Remove from queue if still waiting
+        // CRITICAL FIX: Use stored queueEntry reference instead of searching by resolve function
+        // The resolve function is wrapped, so direct comparison might not work
+        if (queueEntry) {
+          const index = this.queue.indexOf(queueEntry);
+          if (index >= 0) {
+            this.queue.splice(index, 1);
+            // VERIFIABLE: Track timeout to verify claim
+            // Only increment if request was still in queue (not already processed)
+            // CRITICAL FIX: Wrap in try-catch to ensure metrics don't crash application
+            try {
+              this.metrics.timeouts++;
+            } catch (metricsError) {
+              warn(`[BatchOptimizer] Error updating timeout metrics: ${metricsError.message}`);
+            }
+            const waitTime = Date.now() - queueStartTime;
+            warn(`[BatchOptimizer] Request timed out after ${waitTime}ms in queue (limit: ${this.requestTimeout}ms). Total timeouts: ${this.metrics.timeouts}`);
+            reject(new TimeoutError(
+              `Request timed out after ${this.requestTimeout}ms in queue`,
+              { timeout: this.requestTimeout, queuePosition: index, waitTime }
+            ));
+          }
+        }
+        // If queueEntry not found, request was already processed, don't count as timeout
+      }, this.requestTimeout);
+      
+      // Create queue entry with wrapped resolve/reject to clear timeout
+      queueEntry = {
+        imagePath,
+        prompt,
+        context,
+        validateFn,
+        queueStartTime, // Track when queued for wait time calculation
+        resolve: (value) => {
+          clearTimeout(timeoutId);
+          // CRITICAL FIX: Check if timeout already fired to prevent double-counting
+          if (!timeoutFired) {
+            // VERIFIABLE: Track wait time to verify queue performance
+            // CRITICAL FIX: Wrap in try-catch to ensure metrics don't crash application
+            try {
+              const waitTime = Date.now() - queueStartTime;
+              this.metrics.waitTimes.push(waitTime);
+              this.metrics.totalProcessed++;
+              // Keep only last 100 wait times for average calculation
+              if (this.metrics.waitTimes.length > 100) {
+                this.metrics.waitTimes.shift();
+              }
+              // OPTIMIZATION: Use running average instead of recalculating sum every time
+              // Running average: newAvg = oldAvg + (newValue - oldAvg) / count
+              if (this.metrics.waitTimes.length === 1) {
+                this.metrics.averageWaitTime = waitTime;
+              } else {
+                const count = this.metrics.waitTimes.length;
+                this.metrics.averageWaitTime = this.metrics.averageWaitTime + (waitTime - this.metrics.averageWaitTime) / count;
+              }
+            } catch (metricsError) {
+              // Metrics are best-effort, don't let them crash the application
+              warn(`[BatchOptimizer] Error updating metrics: ${metricsError.message}`);
+            }
+          }
+          resolve(value);
+        },
+        reject: (error) => {
+          clearTimeout(timeoutId);
+          reject(error);
+        }
+      };
+      
+      this.queue.push(queueEntry);
       this._processQueue();
     });
   }
@@ -228,6 +399,52 @@ export class BatchOptimizer {
       cacheSize: this.cache ? this.cache.size : 0,
       queueLength: this.queue.length,
       activeRequests: this.activeRequests
+    };
+  }
+  
+  /**
+   * Get performance metrics
+   * 
+   * VERIFIABLE: Exports metrics to verify claims about queue limits and timeouts
+   * 
+   * @returns {Object} Performance metrics including queue rejections and timeouts
+   */
+  getPerformanceMetrics() {
+    // CRITICAL FIX: Metrics are now initialized in constructor, but keep this check
+    // for defensive programming (in case constructor wasn't called properly)
+    if (!this.metrics) {
+      this.metrics = {
+        queueRejections: 0,
+        timeouts: 0,
+        totalQueued: 0,
+        totalProcessed: 0,
+        averageWaitTime: 0,
+        waitTimes: []
+      };
+    }
+    
+    return {
+      queue: {
+        currentLength: this.queue.length,
+        maxSize: this.maxQueueSize,
+        rejections: this.metrics.queueRejections,
+        totalQueued: this.metrics.totalQueued,
+        totalProcessed: this.metrics.totalProcessed,
+        averageWaitTime: this.metrics.averageWaitTime,
+        timeouts: this.metrics.timeouts,
+        timeoutRate: this.metrics.totalQueued > 0 
+          ? (this.metrics.timeouts / this.metrics.totalQueued) * 100 
+          : 0,
+        rejectionRate: this.metrics.totalQueued > 0
+          ? (this.metrics.queueRejections / (this.metrics.totalQueued + this.metrics.queueRejections)) * 100
+          : 0
+      },
+      concurrency: {
+        active: this.activeRequests,
+        max: this.maxConcurrency,
+        utilization: (this.activeRequests / this.maxConcurrency) * 100
+      },
+      cache: this.getCacheStats()
     };
   }
 }

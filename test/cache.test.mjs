@@ -110,10 +110,24 @@ test('getCacheStats - returns cache statistics', () => {
   assert.strictEqual(stats.size, 2);
   assert.ok(stats.maxAge);
   assert.ok(stats.cacheFile);
+  
+  // VERIFIABLE: Verify atomic write metrics are present (always initialized)
+  assert.ok('atomicWrites' in stats, 'Should have atomicWrites metric');
+  assert.ok('atomicWriteFailures' in stats, 'Should have atomicWriteFailures metric');
+  assert.ok('tempFileCleanups' in stats, 'Should have tempFileCleanups metric');
+  assert.ok('atomicWriteSuccessRate' in stats, 'Should have atomicWriteSuccessRate metric');
+  assert.strictEqual(typeof stats.atomicWrites, 'number', 'atomicWrites should be a number');
+  assert.strictEqual(typeof stats.atomicWriteFailures, 'number', 'atomicWriteFailures should be a number');
+  assert.strictEqual(typeof stats.tempFileCleanups, 'number', 'tempFileCleanups should be a number');
+  assert.ok(stats.atomicWriteSuccessRate >= 0 && stats.atomicWriteSuccessRate <= 100, 
+    'atomicWriteSuccessRate should be between 0 and 100');
 });
 
-test('cache persistence - survives reinitialization', () => {
+test('cache persistence - survives reinitialization', async () => {
   setCached('test.png', 'prompt', {}, { score: 8 });
+  
+  // Wait for async save to complete (saveCache is now async)
+  await new Promise(resolve => setTimeout(resolve, 100));
   
   // Reinitialize cache
   initCache(TEST_CACHE_DIR);

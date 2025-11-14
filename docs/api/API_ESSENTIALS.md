@@ -27,11 +27,27 @@ const result = await validateScreenshot('screenshot.png', 'Evaluate', {
 ```javascript
 import { testGameplay, testBrowserExperience, validateWithGoals } from 'ai-visual-test';
 
-// Gameplay testing
+// Gameplay testing (originally motivated by queeraoke - https://queeraoke.fyi)
 const gameplay = await testGameplay(page, {
   url: 'https://game.example.com',
   goals: ['fun', 'accessibility', 'performance']
 });
+
+// Game playing (optional - actually play the game)
+const playResult = await playGame(page, {
+  goal: 'Maximize score',
+  maxSteps: 50,
+  fps: 2 // 2 decisions per second (not 60 FPS)
+});
+
+// Advanced: External iterator (RL Gym-style) for power users
+const gym = new GameGym(page, { goal: 'Maximize score' });
+let obs = await gym.reset();
+while (!gym.done) {
+  const action = await decideAction(obs);
+  const result = await gym.step(action);
+  obs = result.observation;
+}
 
 // Browser experience
 const experience = await testBrowserExperience(page, {

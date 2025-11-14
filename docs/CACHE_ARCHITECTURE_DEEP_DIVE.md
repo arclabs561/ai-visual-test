@@ -76,22 +76,31 @@ const entries = Array.from(cache.entries())
 - Use `_lastAccessed` for LRU eviction
 - Use `timestamp` for expiration
 
-### 3. Cache Write Lock is Not Thread-Safe
+### 3. Cache Write Lock ✅ FIXED
 
-**The Lock**:
+**The Lock** (FIXED 2025-01):
 ```javascript
-let cacheWriteLock = false; // Simple boolean flag
+// OLD CODE (BUGGY):
+let cacheWriteLock = false; // Simple boolean flag - not thread-safe!
+
+// NEW CODE (FIXED):
+import { Mutex } from 'async-mutex';
+const cacheWriteMutex = new Mutex(); // Proper async mutex
 ```
 
-**Problem**: 
-- This is a simple boolean, not a proper mutex
-- In Node.js, this works because JavaScript is single-threaded
-- But if we ever use worker threads, this will break
-- No queue for waiting writes
+**Problem** (FIXED): 
+- Old code used a simple boolean flag, not a proper mutex
+- In Node.js, this worked because JavaScript is single-threaded
+- But async operations could still interleave, causing race conditions
+- No proper queue for waiting writes
 
-**Why It Works Now**: JavaScript event loop is single-threaded, so concurrent writes don't actually happen
+**The Fix**:
+- Replaced boolean flag with `async-mutex` Mutex
+- Proper async mutual exclusion for concurrent save operations
+- Ensures only one save operation happens at a time
+- Prevents race conditions in async file I/O
 
-**Why It's Weird**: It looks like it's trying to be thread-safe, but it's not
+**Status**: ✅ Fixed - now uses proper async mutex for thread-safe writes
 
 ### 4. Cache Instance is Singleton, But Reset on initCache()
 

@@ -204,6 +204,42 @@ const evaluation2 = await validateScreenshot(screenshot2, prompt);
 
 ### Gameplay Experience
 
+**Originally motivated by queeraoke (https://queeraoke.fyi)**, an interactive karaoke game requiring real-time validation.
+
+#### Option 1: Simple Game Playing (Internal Loop)
+
+```javascript
+import { playGame } from 'ai-visual-test';
+
+// Simple API - actually play the game
+const result = await playGame(page, {
+  goal: 'Maximize score',
+  maxSteps: 50,
+  fps: 2 // 2 decisions per second (not 60 FPS - AI needs time to think)
+});
+```
+
+#### Option 2: Advanced Game Playing (External Iterator - RL Gym-style)
+
+```javascript
+import { GameGym } from 'ai-visual-test';
+
+// Advanced API - external control for RL algorithms, parallel games, etc.
+const gym = new GameGym(page, {
+  goal: 'Maximize score',
+  maxSteps: 100
+});
+
+let obs = await gym.reset();
+while (!gym.done) {
+  const action = await decideAction(obs); // Your decision logic
+  const result = await gym.step(action);
+  obs = result.observation;
+}
+```
+
+#### Option 3: Manual Game Playing (Full Control)
+
 ```javascript
 // 1. Enter the game
 await page.goto('https://game.example.com');

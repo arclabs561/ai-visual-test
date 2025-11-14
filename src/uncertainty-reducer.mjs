@@ -172,6 +172,35 @@ export async function selfConsistencyCheck(judgeFn, n = 3, options = {}) {
   // Confidence: weighted by consistency and number of calls
   const confidence = consistency * Math.min(1.0, results.length / n);
 
+  // VERIFIABLE: Calculate improvement metrics if baseline is provided
+  // This allows verification of the "improves accuracy by 5-15%" claim
+  let improvementMetrics = null;
+  if (options.baselineScore !== undefined && options.baselineScore !== null) {
+    const scoreImprovement = meanScore - options.baselineScore;
+    // CRITICAL FIX: Handle baseline=0 case more robustly
+    // MCP research: When baseline is 0, standard percentage formula breaks (division by zero)
+    // Solution: Normalize against maximum scale (default 10, but configurable)
+    // This ensures consistent behavior across different scales (0-10, 0-100, etc.)
+    const maxScale = options.maxScale || 10; // Default to 0-10 scale, but allow override
+    const improvementPercent = options.baselineScore > 0 
+      ? (scoreImprovement / options.baselineScore) * 100 
+      : (scoreImprovement / maxScale) * 100; // Normalize against scale maximum when baseline is 0
+    
+    improvementMetrics = {
+      baselineScore: options.baselineScore,
+      improvedScore: meanScore,
+      improvement: scoreImprovement,
+      improvementPercent,
+      // Research claim: 5-15% improvement
+      meetsResearchClaim: improvementPercent >= 5 && improvementPercent <= 15
+    };
+    
+    // VERIFIABLE: Log improvement when it meets research claim threshold
+    if (improvementPercent >= 5) {
+      log(`[SelfConsistency] Accuracy improvement: ${improvementPercent.toFixed(1)}% (${options.baselineScore.toFixed(1)} → ${meanScore.toFixed(1)})`);
+    }
+  }
+
   return {
     score: Math.round(meanScore * 10) / 10, // Round to 1 decimal
     uncertainty: Math.max(0, Math.min(1, uncertainty)),
@@ -181,7 +210,9 @@ export async function selfConsistencyCheck(judgeFn, n = 3, options = {}) {
     calls: results.length,
     stdDev,
     scores,
-    results
+    results,
+    // VERIFIABLE: Export improvement metrics to verify research claim
+    improvementMetrics
   };
 }
 

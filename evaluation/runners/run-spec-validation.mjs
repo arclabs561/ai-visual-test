@@ -1,0 +1,241 @@
+/**
+ * Run Comprehensive Spec Validation
+ * 
+ * Validates natural language specs against:
+ * - Real-world BDD patterns
+ * - Research findings
+ * - Error analysis
+ * - Quality metrics
+ */
+
+import { readFileSync } from 'fs';
+import { join } from 'path';
+import { runErrorAnalysis, analyzeSpecQuality } from '../utils/spec-error-analysis.mjs';
+import { createSpecFromTemplate, listTemplates } from '../../src/spec-templates.mjs';
+import { validateSpec, parseSpec } from '../../src/natural-language-specs.mjs';
+
+/**
+ * Load spec dataset
+ */
+function loadSpecDataset() {
+  const datasetPath = join(process.cwd(), 'evaluation', 'datasets', 'natural-language-specs-dataset.json');
+  const dataset = JSON.parse(readFileSync(datasetPath, 'utf-8'));
+  return dataset.specs;
+}
+
+/**
+ * Validate spec against real-world patterns
+ */
+async function validateAgainstPatterns(spec) {
+  const specText = typeof spec === 'string' ? spec : (spec.spec || spec.text || '');
+  
+  // Parse spec
+  const parsed = await parseSpec(specText);
+  
+  // Validate structure
+  const validation = validateSpec(specText);
+  
+  // Analyze quality
+  const quality = analyzeSpecQuality(specText);
+  
+  return {
+    parsed,
+    validation,
+    quality,
+    patterns: {
+      hasStructure: validation.valid || validation.warnings.length === 0,
+      hasContext: parsed.context && Object.keys(parsed.context).length > 0,
+      hasInterfaces: parsed.interfaces && parsed.interfaces.length > 0,
+      qualityScore: quality.score
+    }
+  };
+}
+
+/**
+ * Compare with expected results
+ */
+function compareWithExpected(spec, result) {
+  const comparison = {
+    specId: spec.id,
+    name: spec.name,
+    matches: {},
+    discrepancies: []
+  };
+  
+  // Check expected interfaces
+  if (spec.expectedInterfaces) {
+    const actualInterfaces = result.parsed?.interfaces || [];
+    const matchesInterfaces = spec.expectedInterfaces.every(iface => 
+      actualInterfaces.includes(iface)
+    );
+    
+    comparison.matches.interfaces = matchesInterfaces;
+    if (!matchesInterfaces) {
+      comparison.discrepancies.push({
+        type: 'interfaces',
+        expected: spec.expectedInterfaces,
+        actual: actualInterfaces
+      });
+    }
+  }
+  
+  // Check expected context
+  if (spec.expectedContext) {
+    const actualContext = result.parsed?.context || {};
+    const contextMatches = Object.entries(spec.expectedContext).every(([key, value]) => {
+      const actual = actualContext[key];
+      if (typeof value === 'object' && value !== null) {
+        return JSON.stringify(actual) === JSON.stringify(value);
+      }
+      return actual === value;
+    });
+    
+    comparison.matches.context = contextMatches;
+    if (!contextMatches) {
+      comparison.discrepancies.push({
+        type: 'context',
+        expected: spec.expectedContext,
+        actual: actualContext
+      });
+    }
+  }
+  
+  // Check quality score
+  if (spec.qualityScore !== undefined) {
+    const actualScore = result.quality.score;
+    const scoreDiff = Math.abs(actualScore - spec.qualityScore);
+    comparison.matches.qualityScore = scoreDiff <= 10; // Allow 10 point variance
+    if (scoreDiff > 10) {
+      comparison.discrepancies.push({
+        type: 'qualityScore',
+        expected: spec.qualityScore,
+        actual: actualScore,
+        diff: scoreDiff
+      });
+    }
+  }
+  
+  // Check expected issues (for negative examples)
+  if (spec.expectedIssues) {
+    const actualIssues = result.quality.patterns || [];
+    const hasExpectedIssues = spec.expectedIssues.every(issue =>
+      actualIssues.includes(issue)
+    );
+    
+    comparison.matches.expectedIssues = hasExpectedIssues;
+    if (!hasExpectedIssues) {
+      comparison.discrepancies.push({
+        type: 'expectedIssues',
+        expected: spec.expectedIssues,
+        actual: actualIssues
+      });
+    }
+  }
+  
+  return comparison;
+}
+
+/**
+ * Run comprehensive validation
+ */
+async function runComprehensiveValidation() {
+  console.log('🔬 Running Comprehensive Spec Validation\n');
+  
+  // Load dataset
+  const specs = loadSpecDataset();
+  console.log(`Loaded ${specs.length} specs from dataset\n`);
+  
+  // Validate each spec
+  const results = [];
+  for (const spec of specs) {
+    console.log(`Validating: ${spec.name} (${spec.id})`);
+    
+    try {
+      const validation = await validateAgainstPatterns(spec);
+      const comparison = compareWithExpected(spec, validation);
+      
+      results.push({
+        spec,
+        validation,
+        comparison
+      });
+      
+      // Print quick status
+      const allMatch = Object.values(comparison.matches).every(m => m === true);
+      console.log(`  ${allMatch ? '✅' : '⚠️'} Quality: ${validation.quality.score}/100`);
+      if (!allMatch) {
+        console.log(`  Discrepancies: ${comparison.discrepancies.length}`);
+      }
+    } catch (error) {
+      console.log(`  ❌ Error: ${error.message}`);
+      results.push({
+        spec,
+        error: error.message
+      });
+    }
+  }
+  
+  // Run error analysis
+  console.log('\n📊 Running Error Analysis...\n');
+  const errorAnalysis = await runErrorAnalysis(
+    specs.map(s => s.spec),
+    { saveReport: true }
+  );
+  
+  // Generate summary
+  const summary = {
+    timestamp: new Date().toISOString(),
+    totalSpecs: specs.length,
+    validated: results.filter(r => !r.error).length,
+    errors: results.filter(r => r.error).length,
+    averageQualityScore: results
+      .filter(r => r.validation)
+      .reduce((sum, r) => sum + (r.validation.quality.score || 0), 0) /
+      results.filter(r => r.validation).length,
+    matches: {
+      interfaces: results.filter(r => r.comparison?.matches?.interfaces === true).length,
+      context: results.filter(r => r.comparison?.matches?.context === true).length,
+      qualityScore: results.filter(r => r.comparison?.matches?.qualityScore === true).length
+    },
+    errorAnalysis: errorAnalysis.summary
+  };
+  
+  console.log('\n📋 Validation Summary\n');
+  console.log(`Total Specs: ${summary.totalSpecs}`);
+  console.log(`Validated: ${summary.validated}`);
+  console.log(`Errors: ${summary.errors}`);
+  console.log(`Average Quality Score: ${summary.averageQualityScore.toFixed(1)}/100\n`);
+  
+  console.log('Matches:');
+  console.log(`  Interfaces: ${summary.matches.interfaces}/${summary.validated}`);
+  console.log(`  Context: ${summary.matches.context}/${summary.validated}`);
+  console.log(`  Quality Score: ${summary.matches.qualityScore}/${summary.validated}\n`);
+  
+  // Test templates
+  console.log('🧪 Testing Templates...\n');
+  const templates = listTemplates();
+  console.log(`Available templates: ${templates.length}`);
+  
+  for (const template of templates.slice(0, 3)) {
+    try {
+      const spec = createSpecFromTemplate(template.name.toLowerCase().replace(/\s+/g, '_'), {});
+      console.log(`  ✅ ${template.name}: Generated spec (${spec.length} chars)`);
+    } catch (error) {
+      console.log(`  ❌ ${template.name}: ${error.message}`);
+    }
+  }
+  
+  return {
+    summary,
+    results,
+    errorAnalysis
+  };
+}
+
+// Run if called directly
+if (import.meta.url === `file://${process.argv[1]}`) {
+  runComprehensiveValidation().catch(console.error);
+}
+
+export { runComprehensiveValidation };
+

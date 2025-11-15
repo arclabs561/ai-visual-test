@@ -1,0 +1,67 @@
+name: Update Package Deprecation Message
+
+on:
+  workflow_dispatch:
+    inputs:
+      otp:
+        description: '2FA OTP code from your authenticator app'
+        required: true
+        type: string
+      message:
+        description: 'Deprecation message (optional - uses default if empty)'
+        required: false
+        type: string
+        default: 'This package has been renamed to ai-visual-test. Please use npm install ai-visual-test instead. See https://www.npmjs.com/package/ai-visual-test for the latest version.'
+
+permissions:
+  contents: read
+
+jobs:
+  update-deprecation:
+    runs-on: ubuntu-latest
+    if: github.repository == 'arclabs561/ai-visual-test'
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+      
+      - name: Configure npm authentication
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+      
+      - name: Show current deprecation message
+        run: |
+          echo "Current deprecation message:"
+          npm view ai-browser-test deprecated || echo "No deprecation message found"
+      
+      - name: Update deprecation message
+        run: |
+          MESSAGE="${{ github.event.inputs.message }}"
+          if [ -z "$MESSAGE" ]; then
+            MESSAGE="This package has been renamed to ai-visual-test. Please use npm install ai-visual-test instead. See https://www.npmjs.com/package/ai-visual-test for the latest version."
+          fi
+          echo "Updating deprecation message to: $MESSAGE"
+          npm deprecate ai-browser-test "$MESSAGE" --otp=${{ github.event.inputs.otp }}
+      
+      - name: Verify updated deprecation
+        run: |
+          echo "Verifying deprecation message..."
+          DEPRECATED=$(npm view ai-browser-test deprecated 2>&1 || echo "")
+          echo "New deprecation message:"
+          echo "$DEPRECATED"
+          if [[ "$DEPRECATED" == *"ai-visual-test"* ]]; then
+            echo "✅ Deprecation message updated successfully!"
+          else
+            echo "⚠️  Warning: Message may not have updated correctly"
+            echo "Current message: $DEPRECATED"
+          fi
+      
+      - name: Test installation warning
+        run: |
+          echo "Testing that users will see deprecation warning..."
+          npm install ai-browser-test@0.3.1 --dry-run 2>&1 | grep -i "deprecated\|warn" || echo "Note: Deprecation warning may appear during actual install"
+

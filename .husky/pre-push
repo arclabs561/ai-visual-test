@@ -12,12 +12,18 @@ if [ -f "node_modules/@arclabs561/hookwise/src/hooks/pre-push.mjs" ]; then
   }
 fi
 
-# Run full test suite before pushing
-echo "Running full test suite..."
-npm test || {
-  echo "❌ Tests failed. Push aborted."
-  exit 1
-}
+# Run full test suite before pushing (skip with --no-verify or SKIP_TESTS=1)
+if [ "$SKIP_TESTS" != "1" ]; then
+  echo "Running full test suite..."
+  echo "  (Set SKIP_TESTS=1 to skip, or use --no-verify for emergency pushes)"
+  npm test || {
+    echo "❌ Tests failed. Push aborted."
+    echo "   Use 'SKIP_TESTS=1 git push' to skip tests, or 'git push --no-verify' for emergency"
+    exit 1
+  }
+else
+  echo "⚠️  Skipping tests (SKIP_TESTS=1)"
+fi
 
 # Check if package.json version was updated (if package.json changed)
 if git diff HEAD@{1} HEAD --name-only | grep -q "package.json"; then

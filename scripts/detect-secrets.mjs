@@ -181,6 +181,11 @@ const SECRET_PATTERNS = [
   { pattern: /(database[_-]?url|db[_-]?url|connection[_-]?string)\s*[:=]\s*['"]?([^\s'"]*:\/\/[^\s'"]*:[^\s'"]*@[^\s'"]+)['"]?/i, name: 'Database URL with Credentials' },
   { pattern: /(mongodb|postgres|mysql|redis|postgresql)[_:\/]+[^\s'"]*:[^\s'"]*@/i, name: 'Database Connection String' },
   
+  // Backup and temporary env files (should never be committed)
+  { pattern: /\.env\.(bak|backup|old|save|tmp)/i, name: 'Backup Environment File' },
+  { pattern: /\.env\.bak/i, name: 'Backup Environment File (.env.bak)' },
+  { pattern: /\.env\.backup/i, name: 'Backup Environment File (.env.backup)' },
+  
   // URLs with embedded credentials
   { pattern: /https?:\/\/[a-zA-Z0-9_\-]+:[a-zA-Z0-9_\-]+@/, name: 'URL with Embedded Credentials' },
   
@@ -246,6 +251,7 @@ const EXCLUDE_PATTERNS = [
   /CHANGELOG\.md$/,
   /LICENSE$/,
   /\.secretsignore$/,
+  // But DO NOT exclude .env.bak, .env.backup, etc. - these should be detected!
 ];
 
 // Patterns that are allowed (false positives)
@@ -266,6 +272,10 @@ const ALLOWED_PATTERNS = [
   /base64[_-]?encode/i,  // Base64 encoding functions
   /base64[_-]?decode/i,  // Base64 decoding functions
   /red[_-]?team/i,  // Red team test files
+  /^#.*\.env\.(bak|backup|old)/,  // Comments in .gitignore about backup files
+  /\.gitignore.*\.env\.(bak|backup|old)/,  // .gitignore patterns for backup files
+  /^\s*\.env\.(bak|backup|old|save|tmp)\s*$/,  // .gitignore entries for backup files
+  /^\s*\*\.env\.(bak|backup|old)\s*$/,  // .gitignore glob patterns for backup files
 ];
 
 /**

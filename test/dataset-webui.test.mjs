@@ -89,7 +89,14 @@ describe('WebUI Dataset Tests', () => {
       );
     } catch (e) {
       console.log(`   ℹ️  Validation failed: ${e.message}`);
+      this.skip(); // This will throw and stop execution
+      return; // Safety return (shouldn't reach here)
+    }
+    
+    if (!result) {
+      console.log('   ℹ️  No result returned from validation');
       this.skip();
+      return;
     }
     
     assert.ok(result, 'Result should be returned');

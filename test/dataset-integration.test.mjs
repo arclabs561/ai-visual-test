@@ -24,6 +24,7 @@ describe('Dataset Integration Tests', () => {
       } catch (e) {
         console.log(`   ℹ️  Dataset loading failed: ${e.message}`);
         this.skip(); // Skip test if dataset loading fails
+        return; // Safety return
       }
       
       // Gracefully handle missing dataset directory (removed from repo)
@@ -95,10 +96,13 @@ describe('Dataset Integration Tests', () => {
       } catch (e) {
         console.log(`   ℹ️  Dataset loading failed: ${e.message}`);
         this.skip();
+        return;
       }
       
       if (!dataset || !dataset.samples || dataset.samples.length === 0) {
+        console.log('   ℹ️  No samples available');
         this.skip();
+        return;
       }
       
       const sample = dataset.samples[0];

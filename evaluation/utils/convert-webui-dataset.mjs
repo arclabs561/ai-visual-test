@@ -180,6 +180,7 @@ async function convertWebUIDataset(options = {}) {
   console.log(`📄 Output: ${outputFile}\n`);
   
   if (!existsSync(WEBUI_DATASET_DIR)) {
+    throw new Error(`Dataset directory not found: ${WEBUI_DATASET_DIR}`);
     console.error(`❌ Dataset directory not found: ${WEBUI_DATASET_DIR}`);
     process.exit(1);
   }

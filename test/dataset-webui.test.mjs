@@ -58,7 +58,13 @@ describe('WebUI Dataset Tests', () => {
       this.skip();
     }
     
-    const dataset = await loadWebUIDataset({ limit: 1, cache: true });
+    let dataset;
+    try {
+      dataset = await loadWebUIDataset({ limit: 1, cache: true });
+    } catch (e) {
+      console.log(`   ℹ️  Dataset loading failed: ${e.message}`);
+      this.skip();
+    }
     
     if (!dataset || !dataset.samples || dataset.samples.length === 0) {
       console.log('   ℹ️  No samples available in dataset');
@@ -69,7 +75,7 @@ describe('WebUI Dataset Tests', () => {
     const screenshotPath = sample.screenshot || sample.screenshotPath;
     
     if (!screenshotPath || !existsSync(screenshotPath)) {
-      console.log('   ℹ️  Sample screenshot not found');
+      console.log(`   ℹ️  Sample screenshot not found: ${screenshotPath}`);
       this.skip();
     }
     

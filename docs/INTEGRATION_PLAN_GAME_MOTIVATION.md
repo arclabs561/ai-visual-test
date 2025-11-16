@@ -15,7 +15,7 @@
 ### Phase 1: Update Documentation (No Code Changes)
 
 1. **Update README** - Add game use cases prominently
-2. **Update API docs** - Reference queeraoke/game motivation
+2. **Update API docs** - Reference interactive game motivation
 3. **Update code comments** - Add motivation context
 4. **Create examples** - Show game testing/playing examples
 
@@ -30,21 +30,21 @@
 
 1. **Add game playing tests** - Test the new functionality
 2. **Update existing tests** - Reference game motivation
-3. **Add queeraoke examples** - Show real-world usage
+3. **Add interactive game examples** - Show real-world usage
 
 ## Implementation Details
 
 ### 1. Update README
 
 **Add to "What it's good for":**
-- **Game testing** - Validate gameplay screenshots with variable goals (inspired by queeraoke)
+- **Game testing** - Validate gameplay screenshots with variable goals (inspired by interactive games)
 - **Game playing** (optional) - Actually play games using validation + decision-making
 
 **Add new section "Game Use Cases":**
 ```markdown
 ## Game Use Cases
 
-This package was originally motivated by [queeraoke](https://queeraoke.fyi), an interactive karaoke game that requires:
+This package was originally motivated by interactive games requiring:
 - Real-time gameplay validation (60Hz frame-by-frame)
 - Variable goals (fun, accessibility, visual clarity)
 - Temporal sequences (understanding gameplay over time)
@@ -86,13 +86,12 @@ const result = await playGame(page, {
  * Test gameplay with variable goals
  * 
  * Complete workflow for testing games with variable goals/prompts.
- * Originally motivated by queeraoke (https://queeraoke.fyi), an interactive
- * karaoke game that requires real-time validation, variable goals, and
+ * Originally motivated by interactive games requiring real-time validation, variable goals, and
  * temporal understanding.
  * 
  * Handles persona experience, temporal capture, goal evaluation, and consistency checks.
  * 
- * Supports queeraoke-style games:
+ * Supports interactive games:
  * - Games that activate from payment screens (not just standalone games)
  * - Game activation via keyboard shortcuts (e.g., 'g' key)
  * - Game state extraction (window.gameState)
@@ -102,7 +101,7 @@ const result = await playGame(page, {
  * @param {Object} options - Test options
  * @param {string} options.url - Game URL (or page URL if game activates from page)
  * @param {string | Object | Array | Function} [options.goals] - Variable goals
- * @param {string} [options.gameActivationKey] - Keyboard key to activate game (e.g., 'g' for queeraoke)
+ * @param {string} [options.gameActivationKey] - Keyboard key to activate game (e.g., 'g')
  * @param {string} [options.gameSelector] - Selector to wait for game activation (e.g., '#game-paddle')
  * @param {boolean} [options.play] - If true, actually play the game (uses playGame() internally)
  * @returns {Promise<Object>} Test results
@@ -119,7 +118,7 @@ const result = await playGame(page, {
  * Optional module for actually playing games (not just testing them).
  * Uses validation to understand game state, then makes decisions and executes actions.
  * 
- * Originally motivated by queeraoke (https://queeraoke.fyi), but works for any web game.
+ * Originally motivated by interactive games, but works for any web game.
  * 
  * Design: Game playing = validation + decision-making + action execution
  * - Validation: Understand game state from screenshots (we have this)
@@ -206,7 +205,7 @@ export async function executeGameAction(page, action) {
  * This is slower than human gameplay (1-5 FPS for decision-making, not 60 FPS)
  * because VLLM calls take 1-3 seconds.
  * 
- * Originally motivated by queeraoke (https://queeraoke.fyi), but works for any web game.
+ * Originally motivated by interactive games, but works for any web game.
  * 
  * @param {import('playwright').Page} page - Playwright page object
  * @param {Object} options - Game playing options
@@ -376,5 +375,5 @@ test('testGameplay with play option', async ({ page }) => {
 - Game playing is slower (1-5 FPS, not 60 FPS) because VLLM needs time
 - Uses existing validation infrastructure
 - Optional feature - doesn't change core behavior
-- Clearly documented as inspired by queeraoke
+- Clearly documented as inspired by interactive games
 

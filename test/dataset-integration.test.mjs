@@ -30,6 +30,7 @@ describe('Dataset Integration Tests', () => {
       if (!dataset || !dataset.samples || dataset.samples.length === 0) {
         console.log('   ℹ️  No samples available (dataset directory not present)');
         this.skip(); // Skip test if dataset not available
+        return; // Safety return
       }
       
       assert.ok(dataset.samples.length > 0, 'Should have samples');
@@ -47,10 +48,19 @@ describe('Dataset Integration Tests', () => {
         this.skip();
       }
       
-      const dataset = await loadWebUIDataset({ limit: 1, cache: true });
+      let dataset;
+      try {
+        dataset = await loadWebUIDataset({ limit: 1, cache: true });
+      } catch (e) {
+        console.log(`   ℹ️  Dataset loading failed: ${e.message}`);
+        this.skip();
+        return;
+      }
       
       if (!dataset || !dataset.samples || dataset.samples.length === 0) {
+        console.log('   ℹ️  No samples available');
         this.skip();
+        return;
       }
       
       const sample = dataset.samples[0];

@@ -195,7 +195,7 @@ await testBehavior(page, behavior, {
 
 ### Mapping Natural Language to Interfaces
 
-The system maps natural language specs to our existing interfaces, based on queeraoke's real-world patterns:
+The system maps natural language specs to our existing interfaces, based on real-world interactive game patterns:
 
 ```javascript
 // Natural language spec
@@ -343,7 +343,7 @@ function generatePropertyTests(properties) {
 ```javascript
 // Spec includes context - auto-extracted!
 const spec = `
-  Given I visit queeraoke.fyi
+  Given I visit example-game.com
   When I activate the easter egg game (press 'g', selector: #game-paddle)
   Then the game should be playable
   Context: viewport=1280x720, device=desktop, fps: 2, duration: 10 seconds
@@ -398,7 +398,7 @@ if (validation.suggestions.length > 0) {
 - Missing URL detection
 - Missing validation keywords
 
-## Example: Complete Workflow (Based on Queeraoke Patterns)
+## Example: Complete Workflow (Based on Interactive Game Patterns)
 
 ```javascript
 import { executeSpec, testBehavior, generatePropertyTests, testGameplay, validateScreenshot } from 'ai-visual-test';

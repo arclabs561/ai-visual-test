@@ -47,13 +47,13 @@ const result = await executeSpec(page, spec, options);
 import { SpecBuilder } from 'ai-visual-test';
 
 const result = await SpecBuilder
-  .given('I visit queeraoke.fyi')
+  .given('I visit example-game.com')
   .when('I activate the easter egg game (press "g")')
   .then('the game should be playable')
   .and('the score should update')
   .and('the game should be accessible')
   .withContext({
-    url: 'https://queeraoke.fyi',
+    url: 'https://example-game.com',
     gameActivationKey: 'g',
     gameSelector: '#game-paddle'
   })
@@ -76,12 +76,12 @@ import { executeSpec } from 'ai-visual-test';
 
 const result = await executeSpec(page, {
   spec: `
-    Given I visit queeraoke.fyi
+    Given I visit example-game.com
     When I activate the easter egg game
     Then the game should be playable
   `,
   context: {
-    url: 'https://queeraoke.fyi',
+    url: 'https://example-game.com',
     gameActivationKey: 'g',
     gameSelector: '#game-paddle',
     viewport: { width: 1280, height: 720 },

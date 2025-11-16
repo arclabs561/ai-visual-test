@@ -204,7 +204,7 @@ const evaluation2 = await validateScreenshot(screenshot2, prompt);
 
 ### Gameplay Experience
 
-**Originally motivated by queeraoke (https://queeraoke.fyi)**, an interactive karaoke game requiring real-time validation.
+**Originally motivated by interactive games** requiring real-time validation (60Hz).
 
 #### Option 1: Simple Game Playing (Internal Loop)
 

@@ -90,7 +90,7 @@ node evaluation/human-feedback-ui.mjs
 1. **Human Input Mechanism**: No actual way for humans to provide feedback
 2. **UI/Interface**: CLI exists but needs to be run manually
 3. **Workflow**: No automated process for human review
-4. **Integration**: Not integrated into Queeraoke workflow
+4. **Integration**: Not integrated into interactive game workflows
 
 ## Recommended Approach
 
@@ -113,7 +113,7 @@ Build a simple web UI that:
 
 ### Phase 3: Integration (Future)
 
-Integrate into Queeraoke workflow:
+Integrate into interactive game workflow:
 - Automatic notification when validations needed
 - Dashboard showing calibration status
 - Batch review interface

@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-**Primary Goal**: 60Hz real-time validation for interactive games (Queeraoke)
+**Primary Goal**: 60Hz real-time validation for interactive games
 **Critical Finding**: Core high-frequency features are **implemented but NOT tested**
 **Status**: Workflow failing due to missing WCAG dataset (separate issue)
 
@@ -17,7 +17,7 @@
 
 ## Core Use Cases (from docs/DOWNSTREAM_USE_CASES_AND_MOTIVATION.md)
 
-### Primary: Interactive Games (Queeraoke - 60Hz validation)
+### Primary: Interactive Games (60Hz real-time validation)
 **Requirements:**
 - High-frequency validation (10-60Hz) for real-time gameplay
 - Variable goals based on game state (fun, accessibility, performance)

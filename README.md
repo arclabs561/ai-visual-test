@@ -39,6 +39,7 @@ console.log(result.issues); // ['Missing error messages', 'Low contrast']
 
 ## What it's good for
 
+- **High-frequency validation** - Real-time validation for interactive games (10-60Hz) with <100ms latency
 - **Accessibility** - Fast programmatic checks or VLLM semantic evaluation
 - **Design principles** - Validates brutalist, minimal, or other styles
 - **Temporal testing** - Analyzes animations and gameplay over time
@@ -99,6 +100,34 @@ import { parseSpec } from 'ai-visual-test/specs';
 import { getCacheStats } from 'ai-visual-test/utils';
 ```
 
+### High-Frequency Validation (60Hz Games)
+
+```javascript
+import { test } from '@playwright/test';
+import { LatencyAwareBatchOptimizer, selectModelTier, selectProvider } from 'ai-visual-test';
+
+test('real-time game validation', async ({ page }) => {
+  // Auto-select fast tier for 60Hz validation
+  const tier = selectModelTier({ frequency: 60 });
+  const provider = selectProvider({ speed: 'ultra-fast', env: process.env });
+  
+  // Use latency-aware optimizer for <100ms requirements
+  const optimizer = new LatencyAwareBatchOptimizer();
+  
+  // Capture at 60fps and validate with <100ms latency
+  for (let i = 0; i < 60; i++) {
+    await page.screenshot({ path: `frame-${i}.png` });
+    const result = await optimizer.addRequest(
+      `frame-${i}.png`,
+      'Is the game playable?',
+      { frequency: 60 },
+      50 // 50ms max latency for 60Hz
+    );
+    // Process result...
+  }
+});
+```
+
 ### With Playwright
 
 ```javascript
@@ -120,7 +149,9 @@ test('payment screen', async ({ page }) => {
 
 ## Features
 
-- **Multi-provider** - Gemini, OpenAI, Claude
+- **High-frequency support** - Optimized for 60Hz real-time validation with latency-aware batching
+- **Auto-optimization** - Automatically selects fast model tiers and providers for high-frequency decisions
+- **Multi-provider** - Gemini, OpenAI, Claude, Groq
 - **Cost-effective** - Auto-selects cheapest provider, includes caching
 - **Multi-modal** - Screenshots + rendered code + context
 - **Temporal** - Time-series validation for animations

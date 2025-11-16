@@ -27,7 +27,7 @@ const result = await validateScreenshot('screenshot.png', 'Evaluate', {
 ```javascript
 import { testGameplay, testBrowserExperience, validateWithGoals } from 'ai-visual-test';
 
-// Gameplay testing (originally motivated by queeraoke - https://queeraoke.fyi)
+// Gameplay testing (optimized for 60Hz real-time validation)
 const gameplay = await testGameplay(page, {
   url: 'https://game.example.com',
   goals: ['fun', 'accessibility', 'performance']

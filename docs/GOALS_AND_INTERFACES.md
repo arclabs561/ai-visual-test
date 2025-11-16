@@ -50,7 +50,7 @@ const result = await validateWithGoals('screenshot.png', {
 - **Purpose**: Complete workflow for game testing
 - **Use when**: Testing games with variable goals
 - **Requires**: Playwright page object
-- **Originally motivated by**: [queeraoke](https://queeraoke.fyi) - interactive karaoke game requiring real-time validation
+- **Originally motivated by**: Interactive games requiring real-time validation (60Hz)
 - **Supports**: `play: true` option to actually play the game (uses `playGame()` internally)
 
 **`playGame(page, options)`** (Optional - Game Playing)

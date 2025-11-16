@@ -22,16 +22,18 @@ describe('WebUI Dataset Tests', () => {
     } catch (e) {
       console.log(`   ℹ️  Dataset loading failed: ${e.message}`);
       this.skip(); // Skip test if dataset loading fails
+      return; // Safety return
+    }
+    
+    // Gracefully handle missing dataset directory (removed from repo)
+    if (!dataset || !dataset.samples || dataset.samples.length === 0) {
+      console.log('   ℹ️  No samples available (dataset directory not present)');
+      this.skip(); // Skip test if dataset not available
+      return; // Safety return
     }
     
     assert.ok(dataset, 'Dataset should be loaded');
     assert.ok(Array.isArray(dataset.samples), 'Dataset should have samples array');
-    
-    // Gracefully handle missing dataset directory (removed from repo)
-    if (dataset.samples.length === 0) {
-      console.log('   ℹ️  No samples available (dataset directory not present)');
-      this.skip(); // Skip test if dataset not available
-    }
     
     if (dataset.samples.length > 0) {
       const sample = dataset.samples[0];

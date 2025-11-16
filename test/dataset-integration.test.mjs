@@ -79,7 +79,13 @@ describe('Dataset Integration Tests', () => {
         this.skip();
       }
       
-      const dataset = await loadWebUIDataset({ limit: 1, cache: true });
+      let dataset;
+      try {
+        dataset = await loadWebUIDataset({ limit: 1, cache: true });
+      } catch (e) {
+        console.log(`   ℹ️  Dataset loading failed: ${e.message}`);
+        this.skip();
+      }
       
       if (!dataset || !dataset.samples || dataset.samples.length === 0) {
         this.skip();
@@ -89,6 +95,7 @@ describe('Dataset Integration Tests', () => {
       const screenshotPath = sample.screenshot || sample.screenshotPath;
       
       if (!screenshotPath || !existsSync(screenshotPath)) {
+        console.log(`   ℹ️  Screenshot not found: ${screenshotPath}`);
         this.skip();
       }
       

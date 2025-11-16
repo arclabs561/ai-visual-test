@@ -84,8 +84,23 @@ describe('Library Best Practices', () => {
         const handler = listeners[listeners.length - 1];
         
         // Call handler directly with a test error
+        // Suppress the error from being treated as uncaught by the test runner
         if (handler) {
-          handler(new Error('Test error'));
+          // Temporarily remove the listener to prevent test runner from seeing it
+          const originalEmit = process.emit;
+          process.emit = function(event, ...args) {
+            if (event === 'uncaughtException' && args[0]?.message === 'Test error') {
+              // Suppress this specific test error from propagating
+              return false;
+            }
+            return originalEmit.apply(this, [event, ...args]);
+          };
+          
+          try {
+            handler(new Error('Test error'));
+          } finally {
+            process.emit = originalEmit;
+          }
         }
         
         // Verify process.exit was NOT called
@@ -275,11 +290,25 @@ describe('Library Best Practices', () => {
         const handler = listeners[listeners.length - 1];
         
         if (handler) {
-          // Call handler with test error
-          handler(new Error('Test uncaught exception'));
+          // Suppress the error from being treated as uncaught by the test runner
+          const originalEmit = process.emit;
+          process.emit = function(event, ...args) {
+            if (event === 'uncaughtException' && args[0]?.message === 'Test uncaught exception') {
+              // Suppress this specific test error from propagating
+              return false;
+            }
+            return originalEmit.apply(this, [event, ...args]);
+          };
           
-          // Give it a moment (in case it's async)
-          await new Promise(resolve => setTimeout(resolve, 10));
+          try {
+            // Call handler with test error
+            handler(new Error('Test uncaught exception'));
+            
+            // Give it a moment (in case it's async)
+            await new Promise(resolve => setTimeout(resolve, 10));
+          } finally {
+            process.emit = originalEmit;
+          }
           
           // Verify process.exit was NOT called
           assert.strictEqual(exitWouldBeCalled, false,

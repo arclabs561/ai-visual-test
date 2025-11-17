@@ -1,0 +1,926 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>TechRevu</title>
+<meta name="description" content="TechRevu technology news and reviews main page">
+<!-- Start Dropdown Menu Style -->
+<style type="text/css">
+a:link {
+	color:#000000;
+	text-decoration:none;
+	font-weight:bold;
+}
+a:visited {
+	color:#333333;
+	text-decoration:none;
+}
+a:hover {
+	color:#000000;
+	text-decoration:underline;
+}
+a:active {
+	color:#000000;
+	text-decoration:none;
+}
+.whitelink a:link {
+	color:#ffffff;
+	text-decoration:none;
+	font-weight:bold;
+}
+NavFont {
+	background:#666666;
+	weight:bold;
+	size:10px;
+	font-family:veranda, sans-serif;
+}
+#dropmenudiv {
+	position:absolute;
+	border:0px solid black;
+	border-bottom-width: 0;
+	text-decoration: none;
+	font:normal 12px Verdana;
+	line-height:18px;
+	z-index:100;
+}
+#dropmenudiv a {
+	width: 100%;
+	display: block;
+	text-indent: 3px;
+	border-bottom: 0px solid black;
+	padding: 1px 0;
+	text-decoration: none;
+	font-weight: bold;
+}
+#dropmenudiv a:link { /*link forground color*/
+	color: #ffffff;
+}
+#dropmenudiv a:hover { /*hover background color*/
+	background-color: #777777;
+}
+#dropmenudiv a:hover { /*hover forground color*/
+	color: #ffffff;
+}
+</style>
+<script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script async="" src="//cse.google.com/adsense/search/async-ads.js"></script><script src="https://partner.googleadservices.com/gampad/cookie.js?domain=techrevu.com&amp;callback=_gfp_s_&amp;client=ca-pub-6099968897198772&amp;gpid_exp=1"></script><script type="text/javascript" async="" src="https://cse.google.com/cse.js?cx=002699616035030361375:i2girctycvu"></script><script src="https://pagead2.googlesyndication.com/pagead/managed/js/adsense/m202206210101/show_ads_impl_fy2019.js" id="google_shimpl"></script><script type="text/javascript">
+
+/***********************************************
+* AnyLink Drop Down Menu- ? Dynamic Drive (www.dynamicdrive.com)
+* This notice MUST stay intact for legal use
+* Visit http://www.dynamicdrive.com/ for full source code
+***********************************************/
+
+//Contents for menu 1
+var menu1=new Array()
+menu1[0]='<a href="http://www.techrevu.com/php/Review-id.php?id=2452">About Us</a>'
+menu1[1]='<a href="http://www.techrevu.com/php/Review-id.php?id=2453">Submissions</a>'
+menu1[2]='<a href="http://www.techrevu.com/php/Review-id.php?id=1494">Style Guide</a>'
+menu1[3]='<a href="http://www.techrevu.com/php/Review-id.php?id=2670">TechRevu Audience</a>'
+
+//Contents for menu 2, and so on
+var menu2=new Array()
+menu2[0]='<a href="http://www.sfrevu.com"><b>SFRevu</b> - What If</a>'
+menu2[1]='<a href="http://www.gumshoereview.com"><b>Gumshoe</b> - A literary investigation</a>'
+
+//Contents for menu 3, and so on
+var menu3=new Array()
+menu3[0]='<a href="http://www.techrevu.com/index.php?Topic=computer"><b>Compute</b> - Computers, Software, and Development</a>'
+menu3[1]='<a href="http://www.techrevu.com/index.php?Topic=web"><b>Web</b> - Web Development and Design</a>'
+menu3[2]='<a href="http://www.techrevu.com/index.php?Topic=creative"><b>Creative Tech</b> - Art and Technology</a>'
+menu3[3]='<a href="http://www.techrevu.com/index.php?Topic=green"><b>Green Tech</b> - Energy and Environment</a>'
+menu3[4]='<a href="http://www.techrevu.com/index.php?Topic=education"><b>Ed Tech</b> - Technology & Education</a>'
+menu3[5]='<a href="http://www.techrevu.com/index.php?Topic=photo"><b>Photo Tech</b> - Cameras, Printers, and Imaging</a>'
+menu3[6]='<a href="http://www.techrevu.com/index.php?Topic=personal"><b>Personal Tech</b> - Gadgets and Style</a>'
+menu3[7]='<a href="http://www.techrevu.com/index.php?Topic=space"><b>Space</b> - Astronomy and Spaceflight</a>'
+menu3[8]='<a href="http://www.techrevu.com/index.php?Topic=transport"><b>Transport</b> - Planes, Trains, Cars, Bikes, Scooters</a>'
+var menuwidth='165px' //default menu width
+var menubgcolor='#999999'  //menu bgcolor
+var disappeardelay=250  //menu disappear speed onMouseout (in miliseconds)
+var hidemenu_onclick="yes" //hide menu when user clicks within menu?
+
+/////No further editing needed
+
+var ie4=document.all
+var ns6=document.getElementById&&!document.all
+
+if (ie4||ns6)
+document.write('<div id="dropmenudiv" style="visibility:hidden;width:'+menuwidth+';background-color:'+menubgcolor+'" onMouseover="clearhidemenu()" onMouseout="dynamichide(event)"></div>')
+
+function getposOffset(what, offsettype){
+var totaloffset=(offsettype=="left")? what.offsetLeft : what.offsetTop;
+var parentEl=what.offsetParent;
+while (parentEl!=null){
+totaloffset=(offsettype=="left")? totaloffset+parentEl.offsetLeft : totaloffset+parentEl.offsetTop;
+parentEl=parentEl.offsetParent;
+}
+return totaloffset;
+}
+
+
+function showhide(obj, e, visible, hidden, menuwidth){
+if (ie4||ns6)
+dropmenuobj.style.left=dropmenuobj.style.top="-500px"
+if (menuwidth!=""){
+dropmenuobj.widthobj=dropmenuobj.style
+dropmenuobj.widthobj.width=menuwidth
+}
+if (e.type=="click" && obj.visibility==hidden || e.type=="mouseover")
+obj.visibility=visible
+else if (e.type=="click")
+obj.visibility=hidden
+}
+
+function iecompattest(){
+return (document.compatMode && document.compatMode!="BackCompat")? document.documentElement : document.body
+}
+
+function clearbrowseredge(obj, whichedge){
+var edgeoffset=0
+if (whichedge=="rightedge"){
+var windowedge=ie4 && !window.opera? iecompattest().scrollLeft+iecompattest().clientWidth-15 : window.pageXOffset+window.innerWidth-15
+dropmenuobj.contentmeasure=dropmenuobj.offsetWidth
+if (windowedge-dropmenuobj.x < dropmenuobj.contentmeasure)
+edgeoffset=dropmenuobj.contentmeasure-obj.offsetWidth
+}
+else{
+var topedge=ie4 && !window.opera? iecompattest().scrollTop : window.pageYOffset
+var windowedge=ie4 && !window.opera? iecompattest().scrollTop+iecompattest().clientHeight-15 : window.pageYOffset+window.innerHeight-18
+dropmenuobj.contentmeasure=dropmenuobj.offsetHeight
+if (windowedge-dropmenuobj.y < dropmenuobj.contentmeasure){ //move up?
+edgeoffset=dropmenuobj.contentmeasure+obj.offsetHeight
+if ((dropmenuobj.y-topedge)<dropmenuobj.contentmeasure) //up no good either?
+edgeoffset=dropmenuobj.y+obj.offsetHeight-topedge
+}
+}
+return edgeoffset
+}
+
+function populatemenu(what){
+if (ie4||ns6)
+dropmenuobj.innerHTML=what.join("")
+}
+
+
+function dropdownmenu(obj, e, menucontents, menuwidth){
+if (window.event) event.cancelBubble=true
+else if (e.stopPropagation) e.stopPropagation()
+clearhidemenu()
+dropmenuobj=document.getElementById? document.getElementById("dropmenudiv") : dropmenudiv
+populatemenu(menucontents)
+
+if (ie4||ns6){
+showhide(dropmenuobj.style, e, "visible", "hidden", menuwidth)
+dropmenuobj.x=getposOffset(obj, "left")
+dropmenuobj.y=getposOffset(obj, "top")
+dropmenuobj.style.left=dropmenuobj.x-clearbrowseredge(obj, "rightedge")+"px"
+dropmenuobj.style.top=dropmenuobj.y-clearbrowseredge(obj, "bottomedge")+obj.offsetHeight+"px"
+}
+
+return clickreturnvalue()
+}
+
+function clickreturnvalue(){
+if (ie4||ns6) return false
+else return true
+}
+
+function contains_ns6(a, b) {
+while (b.parentNode)
+if ((b = b.parentNode) == a)
+return true;
+return false;
+}
+
+function dynamichide(e){
+if (ie4&&!dropmenuobj.contains(e.toElement))
+delayhidemenu()
+else if (ns6&&e.currentTarget!= e.relatedTarget&& !contains_ns6(e.currentTarget, e.relatedTarget))
+delayhidemenu()
+}
+
+function hidemenu(e){
+if (typeof dropmenuobj!="undefined"){
+if (ie4||ns6)
+dropmenuobj.style.visibility="hidden"
+}
+}
+
+function delayhidemenu(){
+if (ie4||ns6)
+delayhide=setTimeout("hidemenu()",disappeardelay)
+}
+
+function clearhidemenu(){
+if (typeof delayhide!="undefined")
+clearTimeout(delayhide)
+}
+
+if (hidemenu_onclick=="yes")
+document.onclick=hidemenu
+
+</script><meta http-equiv="origin-trial" content="AzoawhTRDevLR66Y6MROu167EDncFPBvcKOaQispTo9ouEt5LvcBjnRFqiAByRT+2cDHG1Yj4dXwpLeIhc98/gIAAACFeyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjYxMjk5MTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A6+nc62kbJgC46ypOwRsNW6RkDn2x7tgRh0wp7jb3DtFF7oEhu1hhm4rdZHZ6zXvnKZLlYcBlQUImC4d3kKihAcAAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjYxMjk5MTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A/9La288e7MDEU2ifusFnMg1C2Ij6uoa/Z/ylwJIXSsWfK37oESIPbxbt4IU86OGqDEPnNVruUiMjfKo65H/CQwAAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXRhZ3NlcnZpY2VzLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjYxMjk5MTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="AzoawhTRDevLR66Y6MROu167EDncFPBvcKOaQispTo9ouEt5LvcBjnRFqiAByRT+2cDHG1Yj4dXwpLeIhc98/gIAAACFeyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjYxMjk5MTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A6+nc62kbJgC46ypOwRsNW6RkDn2x7tgRh0wp7jb3DtFF7oEhu1hhm4rdZHZ6zXvnKZLlYcBlQUImC4d3kKihAcAAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjYxMjk5MTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A/9La288e7MDEU2ifusFnMg1C2Ij6uoa/Z/ylwJIXSsWfK37oESIPbxbt4IU86OGqDEPnNVruUiMjfKo65H/CQwAAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXRhZ3NlcnZpY2VzLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjYxMjk5MTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="AzoawhTRDevLR66Y6MROu167EDncFPBvcKOaQispTo9ouEt5LvcBjnRFqiAByRT+2cDHG1Yj4dXwpLeIhc98/gIAAACFeyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjYxMjk5MTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A6+nc62kbJgC46ypOwRsNW6RkDn2x7tgRh0wp7jb3DtFF7oEhu1hhm4rdZHZ6zXvnKZLlYcBlQUImC4d3kKihAcAAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjYxMjk5MTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A/9La288e7MDEU2ifusFnMg1C2Ij6uoa/Z/ylwJIXSsWfK37oESIPbxbt4IU86OGqDEPnNVruUiMjfKo65H/CQwAAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXRhZ3NlcnZpY2VzLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjYxMjk5MTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><script src="https://www.google.com/cse/static/element/3e1664f444e6eb06/cse_element__en.js?usqp=CAI%3D" type="text/javascript"></script><link type="text/css" rel="stylesheet" href="https://www.google.com/cse/static/element/3e1664f444e6eb06/default+en.css"><link type="text/css" rel="stylesheet" href="https://www.google.com/cse/static/style/look/v4/default.css"><link rel="preload" href="https://adservice.google.com/adsid/integrator.js?domain=techrevu.com" as="script"><script type="text/javascript" src="https://adservice.google.com/adsid/integrator.js?domain=techrevu.com"></script><style type="text/css">.gsc-control-cse{font-family:arial, sans-serif}.gsc-control-cse .gsc-table-result{font-family:arial, sans-serif}.gsc-refinementsGradient{background:linear-gradient(to left,rgba(233,233,233,1),rgba(233,233,233,0))}</style><style type="text/css">.gscb_a{display:inline-block;font:27px/13px arial,sans-serif}.gsst_a .gscb_a{color:#a1b9ed;cursor:pointer}.gsst_a:hover .gscb_a,.gsst_a:focus .gscb_a{color:#36c}.gsst_a{display:inline-block}.gsst_a{cursor:pointer;padding:0 4px}.gsst_a:hover{text-decoration:none!important}.gsst_b{font-size:16px;padding:0 2px;position:relative;user-select:none;-webkit-user-select:none;white-space:nowrap}.gsst_e{vertical-align:middle;opacity:0.55;}.gsst_a:hover .gsst_e,.gsst_a:focus .gsst_e{opacity:0.72;}.gsst_a:active .gsst_e{opacity:1;}.gsst_f{background:white;text-align:left}.gsst_g{background-color:white;border:1px solid #ccc;border-top-color:#d9d9d9;box-shadow:0 2px 4px rgba(0,0,0,0.2);-webkit-box-shadow:0 2px 4px rgba(0,0,0,0.2);margin:-1px -3px;padding:0 6px}.gsst_h{background-color:white;height:1px;margin-bottom:-1px;position:relative;top:-1px}.gsib_a{width:100%;padding:4px 6px 0}.gsib_a,.gsib_b{vertical-align:top}.gssb_c{border:0;position:absolute;z-index:989}.gssb_e{border:1px solid #ccc;border-top-color:#d9d9d9;box-shadow:0 2px 4px rgba(0,0,0,0.2);-webkit-box-shadow:0 2px 4px rgba(0,0,0,0.2);cursor:default}.gssb_f{visibility:hidden;white-space:nowrap}.gssb_k{border:0;display:block;position:absolute;top:0;z-index:988}.gsdd_a{border:none!important}.gsq_a{padding:0}.gssb_a{padding:0 7px}.gssb_a,.gssb_a td{white-space:nowrap;overflow:hidden;line-height:22px}#gssb_b{font-size:11px;color:#36c;text-decoration:none}#gssb_b:hover{font-size:11px;color:#36c;text-decoration:underline}.gssb_g{text-align:center;padding:8px 0 7px;position:relative}.gssb_h{font-size:15px;height:28px;margin:0.2em;-webkit-appearance:button}.gssb_i{background:#eee}.gss_ifl{visibility:hidden;padding-left:5px}.gssb_i .gss_ifl{visibility:visible}a.gssb_j{font-size:13px;color:#36c;text-decoration:none;line-height:100%}a.gssb_j:hover{text-decoration:underline}.gssb_l{height:1px;background-color:#e5e5e5}.gssb_m{color:#000;background:#fff}.gssb_a{padding:0 9px}.gsib_a{padding:5px 9px 4px 9px}.gscb_a{line-height:27px}.gssb_e{border:0}.gssb_l{margin:5px 0}input.gsc-input::-webkit-input-placeholder{font-size:14px}input.gsc-input:-moz-placeholder{font-size:14px}input.gsc-input::-moz-placeholder{font-size:14px}input.gsc-input:-ms-input-placeholder{font-size:14px}input.gsc-input:focus::-webkit-input-placeholder{color:transparent}input.gsc-input:focus:-moz-placeholder{color:transparent}input.gsc-input:focus::-moz-placeholder{color:transparent}input.gsc-input:focus:-ms-input-placeholder{color:transparent}.gssb_c .gsc-completion-container{position:static}.gssb_c{z-index:5000}.gsc-completion-container table{background:transparent;font-size:inherit;font-family:inherit}.gssb_c > tbody > tr,.gssb_c > tbody > tr > td,.gssb_d,.gssb_d > tbody > tr,.gssb_d > tbody > tr > td,.gssb_e,.gssb_e > tbody > tr,.gssb_e > tbody > tr > td{padding:0;margin:0;border:0}.gssb_a table,.gssb_a table tr,.gssb_a table tr td{padding:0;margin:0;border:0}</style><meta http-equiv="origin-trial" content="AzoawhTRDevLR66Y6MROu167EDncFPBvcKOaQispTo9ouEt5LvcBjnRFqiAByRT+2cDHG1Yj4dXwpLeIhc98/gIAAACFeyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjYxMjk5MTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A6+nc62kbJgC46ypOwRsNW6RkDn2x7tgRh0wp7jb3DtFF7oEhu1hhm4rdZHZ6zXvnKZLlYcBlQUImC4d3kKihAcAAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjYxMjk5MTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A/9La288e7MDEU2ifusFnMg1C2Ij6uoa/Z/ylwJIXSsWfK37oESIPbxbt4IU86OGqDEPnNVruUiMjfKo65H/CQwAAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXRhZ3NlcnZpY2VzLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjYxMjk5MTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><link rel="preload" href="https://adservice.google.com/adsid/integrator.js?domain=techrevu.com" as="script"><script type="text/javascript" src="https://adservice.google.com/adsid/integrator.js?domain=techrevu.com"></script></head><body bgcolor="#666666"><div id="dropmenudiv" style="visibility:hidden;width:165px;background-color:#999999" onmouseover="clearhidemenu()" onmouseout="dynamichide(event)"></div>
+<!-- End Dropdown Menu Style -->
+
+
+<!-- Changed table width
+<table width="950" border="1" align="center" cellpadding="5" cellspacing="2" 
+		bordercolor="#999999" bgcolor="#999999" id="AutoNumber3" style="border-collapse: collapse;">
+ -->
+ 
+
+<table width="1240" border="1" align="center" cellpadding="5" cellspacing="2" bordercolor="#999999" bgcolor="#999999" id="AutoNumber3" style="border-collapse: collapse;">
+<tbody>
+  <tr>
+    <td colspan="3" align="left" valign="bottom">
+<!-- Logo -->
+<div>
+    <a href="http://www.techrevu.com"><img src="IMAGES/techrevu_logo.jpg" alt="TechRevu - What's Next" style="padding:0px 5px 0px 0px;" border="0" hspace="0" vspace="0" width="200" align="left"></a>
+</div>
+<!-- End Logo -->
+
+
+<!-- Google Adsense Banner -->
+<div style="float:left; left-margin:10px;">
+<script type="text/javascript"><!--
+google_ad_client = "pub-6099968897198772";
+/* 728x90, created 1/13/10 */
+google_ad_slot = "3471924342";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script><ins id="aswift_0_expand" style="display:inline-table;border:none;margin:0;padding:0;position:relative;visibility:visible;background-color:transparent;width:728px;height:90px;" data-ad-slot="3471924342" tabindex="0" title="Advertisement" aria-label="Advertisement" data-ad-status="filled"><ins id="aswift_0_anchor" style="display:block;border:none;margin:0;padding:0;position:relative;visibility:visible;background-color:transparent;width:728px;height:90px;"><iframe id="aswift_0" name="aswift_0" style="left:0;position:absolute;top:0;border:0;width:728px;height:90px;" sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation" width="728" height="90" frameborder="0" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" src="https://googleads.g.doubleclick.net/pagead/ads?client=ca-pub-6099968897198772&amp;output=html&amp;h=90&amp;slotname=3471924342&amp;adk=1654631674&amp;adf=2537275265&amp;pi=t.ma~as.3471924342&amp;w=728&amp;lmt=1656251549&amp;url=http%3A%2F%2Ftechrevu.com%2F&amp;wgl=1&amp;dt=1656251548704&amp;bpp=47&amp;bdt=83&amp;idt=460&amp;shv=r20220622&amp;mjsv=m202206210101&amp;ptt=5&amp;saldr=sa&amp;abxe=1&amp;correlator=8425739268170&amp;frm=20&amp;pv=2&amp;ga_vid=1609054461.1656251549&amp;ga_sid=1656251549&amp;ga_hid=781298765&amp;ga_fc=1&amp;u_tz=0&amp;u_his=2&amp;u_h=600&amp;u_w=800&amp;u_ah=600&amp;u_aw=800&amp;u_cd=24&amp;u_sd=1&amp;adx=219&amp;ady=14&amp;biw=800&amp;bih=600&amp;scr_x=0&amp;scr_y=0&amp;eid=44759876%2C44759927%2C44759842%2C31067528&amp;oid=2&amp;pvsid=3414299703729706&amp;uas=0&amp;nvt=1&amp;eae=0&amp;fc=640&amp;brdim=0%2C0%2C0%2C0%2C800%2C0%2C800%2C600%2C800%2C600&amp;vis=1&amp;rsz=%7C%7ClE%7C&amp;abl=CS&amp;pfx=0&amp;fu=1024&amp;bc=23&amp;ifi=1&amp;uci=a!1&amp;fsb=1&amp;xpc=uHvjIAW4MX&amp;p=http%3A//techrevu.com&amp;dtd=497" data-google-container-id="a!1" data-google-query-id="CMeLguqhy_gCFWUA-QAdDgwIMA" data-load-complete="true"></iframe></ins></ins>
+</div>
+<!-- End Google Adsense Banner -->
+
+<!-- Start Editorisl Masthead -->
+<div style="float:right; padding:5px; left-margin:10px; width:280px; height:80px; background-color:#FFF">
+<!--RSS Feed Badge and Link-->    
+    <a href="http://www.techrevu.com/php/rss-update.php"><img src="IMAGES/rss.jpg" alt="TechRevu - What's Next" border="0" hspace="0" vspace="0" width="30" align="right"></a>
+<!--END RSS Feed Badge and Link--> 
+<font face="Arial" size="2"><strong>
+Editor: Ernest Lilley<br>
+News Editor: Charles Mohapel</strong><br>
+</font>
+<font face="Arial" size="1"><strong>Contributing Editors:</strong> David Em / 
+Daniel Dern / Alex Pournelle / Dan Spisak / Jonathan McClure<br>
+<hr>
+© 2002 -  2022 TechRevu / Enest Lilley
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>06/26/22</strong></font>
+</div>
+<!-- End Editorisl Masthead -->
+
+</td>
+
+   
+  
+
+
+</tr>
+
+
+
+
+
+<!-- Start Drop Down Menu -->
+  <tr>
+    <td colspan="3" align="center" valign="bottom"><navfont>
+      <span class="whitelink"> <a href="default.htm" onclick="return clickreturnvalue()" onmouseover="dropdownmenu
+(this, event, menu1, '350px')" onmouseout="delayhidemenu()">About TechRevu</a>
+      </span></navfont>
+      &nbsp;&nbsp;
+      <navfont>
+      <span class="whitelink"> <a href="default.htm" onclick="return clickreturnvalue()" onmouseover="dropdownmenu
+(this, event, menu2, '350px')" onmouseout="delayhidemenu()">Our Other Pubs</a>
+      </span></navfont>
+       &nbsp;&nbsp;
+      <navfont>
+      <span class="whitelink"> <a href="default.htm" onclick="return clickreturnvalue()" onmouseover="dropdownmenu
+(this, event, menu3, '350px')" onmouseout="delayhidemenu()">TechFocus</a>
+      </span></navfont>
+       &nbsp;&nbsp; 
+
+</td>
+</tr>
+
+<!-- End Drop Down Menu -->
+
+
+
+
+  <!-- End info column -->
+
+  <!-- Article Column -->
+  <tr><td valign="top" bgcolor="#FFFFFF">
+  <!-- <script type="text/javascript" src="http://output41.rssinclude.com/output?type=js&amp;id=332083&amp;hash=7002f2a327896220c186225abf3a47ae"></script> -->
+  <!-- Topic Banner -->
+  
+<!-- Facebook artile column script 
+ <div id="fb-root"></div>
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v8.0&appId=190726067681434&autoLogAppEvents=1" nonce="kw41TrXr"></script>
+
+	<div class="fb-page" data-href="https://www.facebook.com/techrevu/" 
+	data-tabs="timeline" data-width="" data-height="" 
+	data-small-header="false" data-adapt-container-width="false" data-hide-cover="true" 
+	data-show-facepile="false">
+	<blockquote cite="https://www.facebook.com/techrevu/" class="fb-xfbml-parse-ignore">
+	<a href="https://www.facebook.com/techrevu/">fbFlash</a></blockquote>
+	</div>
+	<p>
+	-->
+
+
+            <!-- End Topic Banner -->
+      <font size="2" face="Arial" color="#000099"> <u><b>Articles &amp; Reviews</b></u></font>
+      <p> <font face="Arial"><font size="-1"> 
+			<a href="/php/Review-id.php?id=6949"><img src="../IMAGES/pepcom-denyc-2019-board.png" alt="Digital Experience NYC Summer 2019" align="left" border="0" hspace="5" width="150"></a>
+			<a target="blank" href="/php/Review-id.php?id=6949">
+			<b><font face="Arial">Pepcom in NYC, June 2019: Nifty New Notebooks, Storage, Phones And More</font></b></a><font face="Arial"><br></font>
+			<font face="Arial" size="-2"><b>Digital Experience NYC Summer 2019</b>
+			<br>
+			by Daniel P. Dern
+			</font><br>
+			</font></font></p><p><font face="Arial"><font size="-1">At Pepcom's press/analyst-only June 20, 2019 "Digital Spectacular," there weren't any tablets, cameras, or printers, and (as one attendee lamented to me) only one smart TV -- but Lenovo was showing their notebook refresh; Kingston, Seagate and Western Digital had intriguing new storage; and Moto and Nokia had some of their newer smartphones, among other things... enough to keep me busy looking and learning (and schmoozing), enough to make me glad I went.</font></font></p><font face="Arial"><font size="-1">
+			<p> 
+			
+			<a href="/php/Review-id.php?id=6948"><img src="http://www.e357.net/beingernest/wp-content/uploads/2019/05/impossible-technology-retro-future-vehicles-jomar-machado-designboom-22.png" alt="" align="right" border="0" hspace="5" width="150"></a>
+			<a target="blank" href="/php/Review-id.php?id=6948">
+			<b><font face="Arial">Clarke's First Law: Impossible Things</font></b></a><font face="Arial"><br></font>
+			<font face="Arial" size="-2"><b></b>
+			<br>
+			by Ernest Lilley
+			</font><br>
+			
+			</p><p> 
+			
+			<a href="/php/Review-id.php?id=6947"><img src="../IMAGES/USB4.png" alt="USB 4 Announced by USB Promoter Group" align="left" border="0" hspace="5" width="150"></a>
+			<a target="blank" href="/php/Review-id.php?id=6947">
+			<b><font face="Arial">USB 4 Faster, Stronger, and Now With Thunderbolt!</font></b></a><font face="Arial"><br></font>
+			<font face="Arial" size="-2"><b>USB 4 Announced by USB Promoter Group</b>
+			<br>
+			by Ernest Lilley
+			</font><br>
+			</p><p>If you're still wringing&nbsp;your hands over having to give up USB Micro connectors for Type C, you probably won't be thrilled to know that the current versions, 3.2/3.1 are about to be upgraded&nbsp;to version 4. Actually, that has nothing to do with connectors, because connector type and USB specification are separate, and there's no suggestion that&nbsp;the type&nbsp;C has had its day.&nbsp; The changes from 3 to 4 are all good, taking data transfer&nbsp;rates up to meet internet download speeds at 40 GBPS, the power and protocols to run multiple displays, and most interestingly, an end to the Apple Thunderbolt v USB debate, with Thunderbolt added into USB.</p>
+			<p> 
+			
+			<a href="/php/Review-id.php?id=6945"><img src="../IMAGES/China_Cottonseed_on_the_Moon.PNG" alt="The Life and Death of China's Lunar Crop" align="right" border="0" hspace="5" width="150"></a>
+			<a target="blank" href="/php/Review-id.php?id=6945">
+			<b><font face="Arial">In Your Face Neil Armstrong! China Colonizes the Moon.</font></b></a><font face="Arial"><br></font>
+			<font face="Arial" size="-2"><b>The Life and Death of China's Lunar Crop</b>
+			<br>
+			by Ernest Lilley
+			</font><br>
+			</p><p>China's Chang'e-4 probe carried a plant growing experiment, and its cottonseeds have sprouted the first plants on the moon before night fell and froze them. Seems like we saw that in a movie not too long ago...</p>
+			<p> 
+			
+			<a href="/php/Review-id.php?id=6943"><img src="../IMAGES/201901SF-Pics.jpg" alt="SF Picks for January 2019" align="left" border="0" hspace="5" width="150"></a>
+			<a target="blank" href="/php/Review-id.php?id=6943">
+			<b><font face="Arial">Science Fiction Reads to Start 2019 With</font></b></a><font face="Arial"><br></font>
+			<font face="Arial" size="-2"><b>SF Picks for January 2019</b>
+			<br>
+			by Ernest Lilley
+			</font><br>
+			</p><p>January is a tough month for new releases after the buying binges of the last two months, but there are still a number of books coming out that look like a good way to start off the year.&nbsp;</p>
+			<p> 
+			
+			<a href="/php/Review-id.php?id=6940"><img src="https://cdn.idropnews.com/wp-content/uploads/2018/11/14183013/Dr7zbpKU4AEvcOC-1000x600.jpg" alt="Apple Responds to Report of iPhone X Exploding" align="right" border="0" hspace="5" width="150"></a>
+			<a target="blank" href="/php/Review-id.php?id=6940">
+			<b><font face="Arial">How Do You Like Your iPhone X?  Not Extra Crispy We Hope!</font></b></a><font face="Arial"><br></font>
+			<font face="Arial" size="-2"><b>Apple Responds to Report of iPhone X Exploding</b>
+			<br>
+			by Charles Mohapel
+			</font><br>
+			</p><p>Ever since Apple introduced the first iPhone, they have been one of Apple's hottest selling products and once again this has proven to be literally the case.&nbsp; The culprit this time was an iPhone X purchased in January 2018.&nbsp; Apparently people need to watch their iPhones carefully when updating to iOS 12.1.&nbsp;</p>
+			<p> 
+			
+			<a href="/php/Review-id.php?id=6936"><img src="http://www.e357.net/beingernest/wp-content/uploads/2018/10/Rocketbooks-DSC05092.jpg" alt="Rocketbook Everlast" align="left" border="0" hspace="5" width="150"></a>
+			<a target="blank" href="/php/Review-id.php?id=6936">
+			<b><font face="Arial">This reusable notebook might just get you to love writing again.</font></b></a><font face="Arial"><br></font>
+			<font face="Arial" size="-2"><b>Rocketbook Everlast</b>
+			<br>
+			by Ernest Lilley
+			</font><br>
+			</p><p>The Rocketbook Everlast is one of the best examples of simple tech I've seen. It's a reusable notebook, or pad if you get the smaller one, which uses the Pilot&nbsp;<strong>Frixion</strong>&nbsp;pen on waterproof pages that you wipe or erase clean. There's an app that works with it to send pages to your phone, tablet, or cloud accounts, but I used it for weeks before even downloading the app.</p>
+<p>They had me at erasable ink pad with a Pilot gel pen.</p>
+			<p> 
+			
+			<a href="/php/Review-id.php?id=6933"><img src="https://cdn-4.nikon-cdn.com/e/Q5NM96RZZo-YRYNeYvAi9aeqFMY3fvEkMLBOAiSy_A3VzU3XkadcI1IHZs9eZrJd9L7vTlE9nMfTAFZT6tSkouFSBsV0W5GapqsvUdwgoa8=/Views/26522_P1000_top2.png" alt="Coolpix P1000" align="right" border="0" hspace="5" width="150"></a>
+			<a target="blank" href="/php/Review-id.php?id=6933">
+			<b><font face="Arial">Is It A Camera Or A Telescope? With A 24-3000mm Zoom It's Both</font></b></a><font face="Arial"><br></font>
+			<font face="Arial" size="-2"><b>Coolpix P1000</b>
+			<br>
+			by Ernest Lilley
+			</font><br>
+			</p><p>It's a camera, it's a telescope, it's super, whatever it is. Nikon has put ain insanely wide zoom (24-3000 mm equiv) on their latest Coolpix&nbsp;with an eye towards amateur&nbsp;astrophotographers and people who just don't like getting too close to their subjects. As much as I like my Sony RX10 with its 600 mm zoom, I wish I'd had one of these when I shot the eclipse last year.&nbsp;</p>
+			<p> 
+			
+			<a href="/php/Review-id.php?id=6930"><img src="../IMAGES/CAPCLAVE20181.jpg" alt="Capclave 2018" align="left" border="0" hspace="5" width="150"></a>
+			<a target="blank" href="/php/Review-id.php?id=6930">
+			<b><font face="Arial">Capclave 2018 - Nancy Kress, Alyssa Wong, And A Flock Of Dodos Agree: Reading Isn't Dead Yet</font></b></a><font face="Arial"><br></font>
+			<font face="Arial" size="-2"><b>Capclave 2018</b>
+			<br>
+			by Ernest Lilley
+			</font><br>
+			</p><p>I was only able to spend one day at Capclave, the Washington Science Fiction Association's annual convention, held in Rockville MD, but I had a great time. I only wish I'd actually gotten to any of the panels they had lined up, but that's often the way of SF cons where you're liable to run into old friends and make new ones over spirited discussions of the past, present, and future of your favorite genre.</p>
+			<p> 
+			
+			<a href="/php/Review-id.php?id=6929"><img src="https://cdn.vox-cdn.com/thumbor/t6X8_Sd_1P5CoE3cJBM2V3x1-zk=/0x0:2040x1360/920x613/filters:focal(857x517:1183x843)/cdn.vox-cdn.com/uploads/chorus_image/image/58688091/DSCF5006.0.0.jpg" alt="Why You Shouldn't Buy Huawei Phones If You Care About Privacy" align="right" border="0" hspace="5" width="150"></a>
+			<a target="blank" href="/php/Review-id.php?id=6929">
+			<b><font face="Arial">US Intelligence Community Warns Against Buying Huawei Phones</font></b></a><font face="Arial"><br></font>
+			<font face="Arial" size="-2"><b>Why You Shouldn't Buy Huawei Phones If You Care About Privacy</b>
+			<br>
+			by Charles Mohapel
+			</font><br>
+			</p><p>Most of us have suspected for some time now that Apple, Google, and the US intelligence community have been spying on us, something they have more or less admitted to, but when it comes to suspecting Chinese intelligence of doing the same, it becomes a matter of National Security.&nbsp; When the US intelligence community believes Huawei's close association with the Communist Chinese Government is a genuine threat, we believe them more readily than media persons who are very doubtful.&nbsp; Given Russian and Chinese meddling in the 2016 and 2018 elections, as well as the sources available to the intelligence community that the media doesn't have access to, we believe the intelligence community.&nbsp; In addition, the U.K.'s National Cyber Security Centre advised telecommunication companies in the U.K. to avoid technology offered by Chinese&nbsp;state-owned firm ZTE which they say presents a "risk to U.K. national security that could not be mitigated effectively or practicably."</p>
+			<p> 
+			
+			
+			<a target="blank" href="/php/Review-id.php?id=6931">
+			<b><font face="Arial">Pepcom Holiday Spectacular 2018 NYC</font></b></a><font face="Arial"><br></font>
+			<font face="Arial" size="-2"><b></b>
+			<br>
+			by Daniel P. Dern
+			</font><br>
+			</p><p>Pepcom's Thursday, September 20, 2018 Holiday Spectacular held in NYC's Metropolitan Pavi...<a href="/php/Review-id.php?id=6931\&quot;">cont</a>
+			</p><p> 
+			
+			
+			<a target="blank" href="/php/Review-id.php?id=6926">
+			<b><font face="Arial">Board the Intrepid in NYC for the Space &amp; Science Festival</font></b></a><font face="Arial"><br></font>
+			<font face="Arial" size="-2"><b>Defying Gravity: Women in Space</b>
+			<br>
+			by Eleanor Lang
+			</font><br>
+			</p><p>I needed a moment when I finished experiencing&nbsp;<strong>Defying Gravity</strong>, the new mix...<a href="/php/Review-id.php?id=6926\&quot;">cont</a>
+			</p><p> 
+			
+			
+			<a target="blank" href="/php/Review-id.php?id=6925">
+			<b><font face="Arial">Sennheiser Opens New Canadian Headquarters In Montreal</font></b></a><font face="Arial"><br></font>
+			<font face="Arial" size="-2"><b>Sennheiser Opens New Office In Montreal</b>
+			<br>
+			by Charles Mohapel
+			</font><br>
+			</p><p>On Monday, September 10th, 2018, Sennheiser held a press event to promote the opening of their ne...<a href="/php/Review-id.php?id=6925\&quot;">cont</a>
+			</p><p> 
+			
+			
+			<a target="blank" href="/php/Review-id.php?id=6924">
+			<b><font face="Arial">Evolution Meets Revolution as Canon Announces The All-New EOS R System</font></b></a><font face="Arial"><br></font>
+			<font face="Arial" size="-2"><b>Canon Announces The All-New EOS R System</b>
+			<br>
+			by Charles Mohapel
+			</font><br>
+			</p><p>On September 5, 2018, Canon U.S.A joined Sony, Panasonic, and Fujuifilm, plus fellow newcomer Nik...<a href="/php/Review-id.php?id=6924\&quot;">cont</a>
+			</p><p> 
+			
+			
+			<a target="blank" href="/php/Review-id.php?id=6912">
+			<b><font face="Arial">Small Number of Apple iPhone 8 Contain Defective Logic Boards</font></b></a><font face="Arial"><br></font>
+			<font face="Arial" size="-2"><b>iPhone 8 Logic Board Replacement Program</b>
+			<br>
+			by Charles Mohapel
+			</font><br>
+			</p><p>If you purchased an Apple iPhone 8 between September 2017 and March 2018 in Australia, China, Hon...<a href="/php/Review-id.php?id=6912\&quot;">cont</a>
+			</p><p> 
+			
+			
+			<a target="blank" href="/php/Review-id.php?id=6910">
+			<b><font face="Arial">Yet Another Major Data Breach Exposed At Sprint</font></b></a><font face="Arial"><br></font>
+			<font face="Arial" size="-2"><b>Sprint, Boost, and Virgin Mobile Data Breach: Change Your Account Passwords Now</b>
+			<br>
+			by Charles Mohapel
+			</font><br>
+			</p><p>Although Sprint insists “that customer security is among the carrier’s top priorities...<a href="/php/Review-id.php?id=6910\&quot;">cont</a>
+			</p><p> 
+			
+			
+			<a target="blank" href="/php/Review-id.php?id=6918">
+			<b><font face="Arial">If Your Company Works With, Or Is Considering SharePoint, OneDrive, and Office 365, A Good Event To Attend</font></b></a><font face="Arial"><br></font>
+			<font face="Arial" size="-2"><b>SPTechCon Boston 2018</b>
+			<br>
+			by Daniel P. Dern
+			</font><br>
+			</p><p>While I don't write often directly about Microsoft SharePoint, I do write about topics and pr...<a href="/php/Review-id.php?id=6918\&quot;">cont</a>
+			</p><p> 
+			
+			
+			<a target="blank" href="/php/Review-id.php?id=6909">
+			<b><font face="Arial">The New Leica M10-P Separates Itself From Other Digital Cameras With Its Almost Inaudible Shutter Release And Omission Of The Classic Red-Dot Logo</font></b></a><font face="Arial"><br></font>
+			<font face="Arial" size="-2"><b>The New Leica M10-P Separates Itself From Other Digital Cameras With Its Subtlety</b>
+			<br>
+			by Charles Mohapel
+			</font><br>
+			</p><p>We love what Leica has done with the introduction of their groundbreaking Leica M10-P digital cam...<a href="/php/Review-id.php?id=6909\&quot;">cont</a>
+			</p><p> 
+			
+			
+			<a target="blank" href="/php/Review-id.php?id=6906">
+			<b><font face="Arial">Dear Sony A7 - Nikon is Coming For You</font></b></a><font face="Arial"><br></font>
+			<font face="Arial" size="-2"><b>Nikon Releases Mirrorless Z Series Cameras</b>
+			<br>
+			by Ernest Lilley
+			</font><br>
+			</p><p>With the introduction of two mirrorless full frame cameras, Nikon is making a clear challenge to ...<a href="/php/Review-id.php?id=6906\&quot;">cont</a>
+			</p><p> 
+			
+			
+			<a target="blank" href="/php/Review-id.php?id=6903">
+			<b><font face="Arial">Android 9 Pie: Powered By AI For A Smarter, Simpler Experience That Adapts To You</font></b></a><font face="Arial"><br></font>
+			<font face="Arial" size="-2"><b>Android 9 Pie: Powered By AI For A Smarter, Simpler Experience</b>
+			<br>
+			by Charles Mohapel
+			</font><br>
+			</p><p>Today (August 6, 2018) Google officially introduced Android 9 Pie, the latest version of the Andr...<a href="/php/Review-id.php?id=6903\&quot;">cont</a>
+			</p><p> 
+			
+			
+			<a target="blank" href="/php/Review-id.php?id=6902">
+			<b><font face="Arial">Bose Go Anywhere SoundLink is Just Plain Awesome. Mostly.</font></b></a><font face="Arial"><br></font>
+			<font face="Arial" size="-2"><b>SoundLink Color Bluetooth speaker II</b>
+			<br>
+			by TR Staff
+			</font><br>
+			</p><p>The upgraded Bose SoundLink Color Bluetooth speaker offers even better sound, a choice of colors,...<a href="/php/Review-id.php?id=6902\&quot;">cont</a>
+			</p><p> 
+			
+			
+			<a target="blank" href="/php/Review-id.php?id=6898">
+			<b><font face="Arial">Apple's 2016 MacBook Keyboard Redesign Is Fraught With Problems</font></b></a><font face="Arial"><br></font>
+			<font face="Arial" size="-2"><b>Keyboard Service Program for MacBook and MacBook Pro</b>
+			<br>
+			by Charles Mohapel
+			</font><br>
+			</p><p>It comes as no surprise to a significant number of owners of MacBook and MacBook Pro laptops manu...<a href="/php/Review-id.php?id=6898\&quot;">cont</a>
+			</p><p> 
+			
+			
+			<a target="blank" href="/php/Review-id.php?id=6897">
+			<b><font face="Arial">Achieving Escape Velocity at the The Museum of Science Fiction's Annual Event</font></b></a><font face="Arial"><br></font>
+			<font face="Arial" size="-2"><b>Escape Velocity 2018</b>
+			<br>
+			by Ernest Lilley
+			</font><br>
+			</p><p>Escape Velocity 2018 took place May 25-27 at the Gaylord National Resort &amp; Convention Center....<a href="/php/Review-id.php?id=6897\&quot;">cont</a>
+			</p><p> 
+			
+			
+			<a target="blank" href="/php/Review-id.php?id=6896">
+			<b><font face="Arial">NASA / SpaceX Launch Destroys Official Photographer's Camera</font></b></a><font face="Arial"><br></font>
+			<font face="Arial" size="-2"><b>What Really Happened To That Melted NASA Camera?</b>
+			<br>
+			by Charles Mohapel
+			</font><br>
+			</p><p>On May 22, 2018, NASA photographer Bill Ingalls had 6 remote cameras set up to photograph the NAS...<a href="/php/Review-id.php?id=6896\&quot;">cont</a>
+			</p><p> 
+			
+			
+			<a target="blank" href="/php/Review-id.php?id=6895">
+			<b><font face="Arial">The Fourth Man To Walk On The Moon Has Passed Into History</font></b></a><font face="Arial"><br></font>
+			<font face="Arial" size="-2"><b>Astronaut Alan Bean Dies In Houston At 86</b>
+			<br>
+			by Charles Mohapel
+			</font><br>
+			</p><p>Though not one of the famed Mercury 7 astronauts, Astronaut Alan Bean was part of NASA's thir...<a href="/php/Review-id.php?id=6895\&quot;">cont</a>
+			</p><p> 
+			
+			
+			<a target="blank" href="/php/Review-id.php?id=6894">
+			<b><font face="Arial">Was Semi-Autonomous Autopilot Feature Involved In Fatal Tesla Crash?</font></b></a><font face="Arial"><br></font>
+			<font face="Arial" size="-2"><b>Police Probe Whether Autopilot Feature Was On In Tesla Crash</b>
+			<br>
+			by Charles Mohapel
+			</font><br>
+			</p><p>This week has not been a good week for Tesla automobiles as two of the electric cars were involve...<a href="/php/Review-id.php?id=6894\&quot;">cont</a>
+			</p><p> 
+			
+			
+			<a target="blank" href="/php/Review-id.php?id=6893">
+			<b><font face="Arial">SpaceX Takes Major Step Forward With Launch Of Block 5 Falcon 9 Heavy Rocket</font></b></a><font face="Arial"><br></font>
+			<font face="Arial" size="-2"><b>Block 5 Rocket Launch Marks The End Of The Beginning For SpaceX</b>
+			<br>
+			by Charles Mohapel
+			</font><br>
+			</p><p>The "Block 5" variant of the SpaceX Falcon 9 Heavy Rocket is the most powerful and sophisticated ...<a href="/php/Review-id.php?id=6893\&quot;">cont</a>
+			</p><p> 
+			
+			
+			<a target="blank" href="/php/Review-id.php?id=6890">
+			<b><font face="Arial">Your iPhone Security Is Now Next To Useless</font></b></a><font face="Arial"><br></font>
+			<font face="Arial" size="-2"><b>Security Experts Warn iPhone Users to Change Their Passwords Now</b>
+			<br>
+			by Charles Mohapel
+			</font><br>
+			</p><p>If you own an iPhone, your security is extremely vulnerable to brute-force attacks like those fro...<a href="/php/Review-id.php?id=6890\&quot;">cont</a>
+			</p><p> 
+			
+			
+			<a target="blank" href="/php/Review-id.php?id=6889">
+			<b><font face="Arial">Apple Offers Free Replacement Batteries For Certain MacBook Pro Models</font></b></a><font face="Arial"><br></font>
+			<font face="Arial" size="-2"><b>13-inch MacBook Pro (non Touch Bar) Battery Replacement Program</b>
+			<br>
+			by Charles Mohapel
+			</font><br>
+			</p><p>If you have a 13-inch MacBook Pro (non Touch Bar) manufactured between October 2016 and October 2...<a href="/php/Review-id.php?id=6889\&quot;">cont</a>
+			</p><p> 
+			
+			
+			<a target="blank" href="/php/Review-id.php?id=6886">
+			<b><font face="Arial">Danger Will Robinson! Lost in Space is back and better than ever</font></b></a><font face="Arial"><br></font>
+			<font face="Arial" size="-2"><b>Lost in Space (Netflix Original Series)</b>
+			<br>
+			by Ernest Lilley
+			</font><br>
+			</p><p><strong>Relax, the computer will land us just fine. That's&nbsp;what it's there forcont
+			</strong></p></font><p><font size="-1"><strong> 
+			 </strong></font><strong> </strong></p></font></td>
+    <!-- End Article Column -->
+    
+    <!-- News Column -->
+    <td width="250" valign="top" bgcolor="#FFFFFF">
+    <font size="2" face="Arial" color="#000099"> <u><b>Tech News/Leads</b></u></font>
+      <p> <font face="Arial"><font size="-1"> 
+			<a href="/php/Review-id.php?id=6942"><img src="http://static.leica-camera.com/var/leica/storage/images/media/media-asset-management-mam/global-international/photography/m-system/confidential-0815/made-in-germany/m10-parts2/2436367-1-eng-MA/M10-Parts_teaser-1316x878.jpg" alt="Leica M10-D -- Digital Heart, Analogue Soul" align="left" border="0" hspace="5" width="75"></a>
+			<a target="blank" href="/php/Review-id.php?id=6942">
+			<b>Leica M10-D -- Digital - Analogue Blend</b></a>
+			Leica M10-D -- Digital Heart, Analogue Soul<br>
+			<font size="-1">
+			</font></font></font></p><p><font face="Arial"><font size="-1"><font size="-1">Having previously used a Leica M-9 digital camera at a Leica event, we find it interesting that t...<a href="/php/Review-id.php?id=6942">more</a>
+			</font>
+			</font></font></p><p><font face="Arial"><font size="-1">
+			
+			<a href="/php/Review-id.php?id=6941"><img src="https://static.shoplightspeed.com/shops/610753/files/010475386/leica-q-typ-116-khaki.jpg" alt="Leica Q 'Khaki'- New Special Edition With Khaki-Coloured Leather Trim" align="right" border="0" hspace="5" width="75"></a>
+			<a target="blank" href="/php/Review-id.php?id=6941">
+			<b>Leica Q 'Khaki' - New Special Edition With Khaki-Coloured Leather Trim, Classic Leica Script, And Proven Camera Features</b></a>
+			Leica Q 'Khaki'- New Special Edition With Khaki-Coloured Leather Trim<br>
+			<font size="-1">
+			</font></font></font></p><p><font face="Arial"><font size="-1"><font size="-1">On October 10, 2018, Leica Camera AG announced the Special Edition Leica Q ‘Khaki’ in...<a href="/php/Review-id.php?id=6941">more</a>
+			</font>
+			</font></font></p><p><font face="Arial"><font size="-1">
+			
+			<a href="/php/Review-id.php?id=6939"><img src="https://www.apple.com/newsroom/images/product/ipad/standard/iPad-Pro_display-change_10302018_inline.gif.large.gif" alt="New iPad Pro With All-Screen Design Is Most Advanced, Powerful iPad Ever" align="left" border="0" hspace="5" width="75"></a>
+			<a target="blank" href="/php/Review-id.php?id=6939">
+			<b>The New 2018 iPad Pro Is A Quantum Leap Forward</b></a>
+			New iPad Pro With All-Screen Design Is Most Advanced, Powerful iPad Ever<br>
+			<font size="-1">
+			</font></font></font></p><p><font face="Arial"><font size="-1"><font size="-1">October 30th, 2018 saw Apple introducing the new 2018 iPad Pro, a quantum leap forward in perform...<a href="/php/Review-id.php?id=6939">more</a>
+			</font>
+			</font></font></p><p><font face="Arial"><font size="-1">
+			
+			<a href="/php/Review-id.php?id=6938"><img src="https://www.apple.com/newsroom/images/product/mac/standard/MacBook-Air-gold-10302018_big.jpg.large.jpg" alt="All-New MacBook Air Takes Flight" align="right" border="0" hspace="5" width="75"></a>
+			<a target="blank" href="/php/Review-id.php?id=6938">
+			<b>Apple Introduces Brand New MacBook Air</b></a>
+			All-New MacBook Air Takes Flight<br>
+			<font size="-1">
+			</font></font></font></p><p><font face="Arial"><font size="-1"><font size="-1">October 30th, 2018 saw Apple introducing its all new <span data-offset-key="2mdmh-0-0"><span data...<a="" href="/php/Review-id.php?id=6938">more
+			</span></span></font>
+			</font></font></p><p><font face="Arial"><font size="-1">
+			
+			<a href="/php/Review-id.php?id=6937"><img src="https://www.apple.com/newsroom/images/product/mac/standard/mac-mini_top-down-isometric_10302018_big.jpg.large.jpg" alt="New Mac mini Packs A Huge Punch" align="left" border="0" hspace="5" width="75"></a>
+			<a target="blank" href="/php/Review-id.php?id=6937">
+			<b>The Mac mini - Re-engineered In No Small Way</b></a>
+			New Mac mini Packs A Huge Punch<br>
+			<font size="-1">
+			</font></font></font></p><p><font face="Arial"><font size="-1"><font size="-1">October 30th, 2018 saw Apple introducing its significantly improved Mac mini models, complete wit...<a href="/php/Review-id.php?id=6937">more</a>
+			</font>
+			</font></font></p><p><font face="Arial"><font size="-1">
+			
+			<a href="/php/Review-id.php?id=6935"><img src="https://www.adobe.com/content/dam/offers-homepage/us/en/homepage/homepage-bg-cc-max-day1-mobile-1440x810.jpg.img.jpg" alt="Adobe Announces Next Generation of Creative Cloud at MAX 2018" align="right" border="0" hspace="5" width="75"></a>
+			<a target="blank" href="/php/Review-id.php?id=6935">
+			<b>Adobe Introduces Major Updates To Creative Cloud at MAX 2018</b></a>
+			Adobe Announces Next Generation of Creative Cloud at MAX 2018<br>
+			<font size="-1">
+			</font></font></font></p><p><font face="Arial"><font size="-1"><font size="-1">On Monday October 15, 2018, attendees at<span class="il"> Adobe</span> MAX 2018, the Creativity C...<a href="/php/Review-id.php?id=6935">more</a>
+			</font>
+			</font></font></p><p><font face="Arial"><font size="-1">
+			
+			<a href="/php/Review-id.php?id=6934"><img src="https://www.androidcentral.com/sites/androidcentral.com/files/styles/xlarge_wm_brw/public/article_images/2018/10/google-pixel-3-and-3-xl-black-4.jpg?itok=kyWhADBv" alt="Google Pixel 3: Make Every Day More Extraordinary" align="left" border="0" hspace="5" width="75"></a>
+			<a target="blank" href="/php/Review-id.php?id=6934">
+			<b>Google Introduces Brand New Pixel 3 and Pixel 3XL</b></a>
+			Google Pixel 3: Make Every Day More Extraordinary<br>
+			<font size="-1">
+			</font></font></font></p><p><font face="Arial"><font size="-1"><font size="-1">On October 9, 2018, Google introduced their new Pixel 3 and Pixel 3XL smartphones, featuring a su...<a href="/php/Review-id.php?id=6934">more</a>
+			</font>
+			</font></font></p><p><font face="Arial"><font size="-1">
+			
+			<a href="/php/Review-id.php?id=6932"><img src="https://scontent-iad3-1.xx.fbcdn.net/v/t1.0-9/43117875_10156863881935209_5133523217746493440_o.jpg?_nc_cat=100&amp;oh=9f13dbccc14ae5275e2d5d3f71f838c8&amp;oe=5C1CC1D4" alt="Sony RX100 Mk.VI" align="right" border="0" hspace="5" width="75"></a>
+			<a target="blank" href="/php/Review-id.php?id=6932">
+			<b>With a New Lens and Improved Body, The MKVI Ups Its Game</b></a>
+			Sony RX100 Mk.VI<br>
+			<font size="-1">
+			</font></font></font></p><p><font face="Arial"><font size="-1"><font size="-1">Sony's RX100 has always been one of my favorite cameras, but it was held back by too narrow a...<a href="/php/Review-id.php?id=6932">more</a>
+			</font>
+			</font></font></p><p><font face="Arial"><font size="-1">
+			
+			<a href="/php/Review-id.php?id=6928"><img src="https://cdn.shopify.com/s/files/1/0532/0233/products/Emergency-Rain-Covers_0000_Emergency-Rain-Cover-Small-Right-036.jpg?v=1536953465" alt="Emergency Camera Rain Covers for Use in Severe Weather" align="left" border="0" hspace="5" width="75"></a>
+			<a target="blank" href="/php/Review-id.php?id=6928">
+			<b>Emergency Camera Rain Covers for Quick Deployment in Severe Weather</b></a>
+			Emergency Camera Rain Covers for Use in Severe Weather<br>
+			<font size="-1">
+			</font></font></font></p><p><font face="Arial"><font size="-1"><font size="-1">Even if your camera is dust and water-resistant, as it gets older, the seal may no longer provide...<a href="/php/Review-id.php?id=6928">more</a>
+			</font>
+			</font></font></p><p><font face="Arial"><font size="-1">
+			
+			<a href="/php/Review-id.php?id=6927"><img src="https://cdn.shopify.com/s/files/1/0532/0233/collections/Hydrophobia_Rain_Cover_1024x1024.jpg?v=1537210742" alt="Hydrophobia Rain Covers Provide Optimum Severe Weather Protection" align="right" border="0" hspace="5" width="75"></a>
+			<a target="blank" href="/php/Review-id.php?id=6927">
+			<b>Upgraded Hydrophobia Rain Covers Provide the Optimum in Severe Weather Protection</b></a>
+			Hydrophobia Rain Covers Provide Optimum Severe Weather Protection<br>
+			<font size="-1">
+			</font></font></font></p><p><font face="Arial"><font size="-1"><font size="-1">Over the years we've known Think Tank Photo, they have a proven track record of developing co...<a href="/php/Review-id.php?id=6927">more</a>
+			</font>
+			</font></font></p><p><font face="Arial"><font size="-1">
+			
+			<a href="/php/Review-id.php?id=6923"><img src="https://cdn.shopify.com/s/files/1/0532/0233/collections/LensCaseDuo_Family_1024x1024.jpg" alt="New 'Lens Case Duo' Provides Enhanced Camera Lens Protection" align="left" border="0" hspace="5" width="75"></a>
+			<a target="blank" href="/php/Review-id.php?id=6923">
+			<b>Think Tank Photo Introduces New Lens Case Line</b></a>
+			New 'Lens Case Duo' Provides Enhanced Camera Lens Protection<br>
+			<font size="-1">
+			</font></font></font></p><p><font face="Arial"><font size="-1"><font size="-1">Once again Think Tank Photo has added to their outstanding product line, introducing the 6 sizes ...<a href="/php/Review-id.php?id=6923">more</a>
+			</font>
+			</font></font></p><p><font face="Arial"><font size="-1">
+			
+			<a href="/php/Review-id.php?id=6922"><img src="https://www.apple.com/newsroom/images/product/iphone/standard/Apple-iPhone-Xs-combo-gold-09122018_big.jpg.large.jpg" alt="iPhone Xs and iPhone Xs Max Bring Updated Displays To iPhone" align="right" border="0" hspace="5" width="75"></a>
+			<a target="blank" href="/php/Review-id.php?id=6922">
+			<b>iPhone Xs and iPhone Xs Max Bring The Best And Biggest Displays To iPhone</b></a>
+			iPhone Xs and iPhone Xs Max Bring Updated Displays To iPhone<br>
+			<font size="-1">
+			</font></font></font></p><p><font face="Arial"><font size="-1"><font size="-1">Last year Apple raised the bar with the premium priced iPhone X.&nbsp; Now the bar has been raise...<a href="/php/Review-id.php?id=6922">more</a>
+			</font>
+			</font></font></p><p><font face="Arial"><font size="-1">
+			
+			<a href="/php/Review-id.php?id=6921"><img src="https://www.apple.com/newsroom/images/product/iphone/standard/iPhone_XR_lcd-display_09122018_inline.jpg.large.jpg" alt="Apple Introduces iPhone XR" align="left" border="0" hspace="5" width="75"></a>
+			<a target="blank" href="/php/Review-id.php?id=6921">
+			<b>Apple Introduces New More Affordable iPhone XR</b></a>
+			Apple Introduces iPhone XR<br>
+			<font size="-1">
+			</font></font></font></p><p><font face="Arial"><font size="-1"><font size="-1">Last year Apple introduced the premium priced iPhone X and now they are introducing the more affo...<a href="/php/Review-id.php?id=6921">more</a>
+			</font>
+			</font></font></p><p><font face="Arial"><font size="-1">
+			
+			<a href="/php/Review-id.php?id=6920"><img src="https://www.apple.com/newsroom/images/product/homepod/standard/Apple-HomePod-Siri-screen-09122018_inline.jpg.large.jpg" alt="HomePod Adds New Features And Siri Languages" align="right" border="0" hspace="5" width="75"></a>
+			<a target="blank" href="/php/Review-id.php?id=6920">
+			<b>HomePod Adds Exciting New Features And Siri Languages Such As Spanish and Canadian French</b></a>
+			HomePod Adds New Features And Siri Languages<br>
+			<font size="-1">
+			</font></font></font></p><p><font face="Arial"><font size="-1"><font size="-1">If you already own an Apple HomePod, you have a number of new features and Siri languages to look...<a href="/php/Review-id.php?id=6920">more</a>
+			</font>
+			</font></font></p><p><font face="Arial"><font size="-1">
+			
+			<a href="/php/Review-id.php?id=6919"><img src="https://www.apple.com/newsroom/images/product/watch/standard/apple-watch-series4_watch-front-training_09122018_big.jpg.large.jpg" alt="Apple Watch Series 4: Beautifully Redesigned" align="left" border="0" hspace="5" width="75"></a>
+			<a target="blank" href="/php/Review-id.php?id=6919">
+			<b>Apple Watch Series 4: Beautifully Redesigned With Breakthrough Communication, Fitness, And Health Capabilities</b></a>
+			Apple Watch Series 4: Beautifully Redesigned<br>
+			<font size="-1">
+			</font></font></font></p><p><font face="Arial"><font size="-1"><font size="-1">If you own one of the first 3 series of Apple watches or are in the market for a new digital watc...<a href="/php/Review-id.php?id=6919">more</a>
+			</font>
+			</font></font></p><p><font face="Arial"><font size="-1">
+			
+			
+			<a target="blank" href="/php/Review-id.php?id=6917">
+			<b>Chinese Smartphone Manufacturer Fined $10.5 Million For 4G LTE Patent Infringement</b></a>
+			
+			<font size="-1">
+			</font></font></font></p><p><font face="Arial"><font size="-1"><font size="-1">Huawei is&nbsp;China's leading patent producer of cellphones, but they apparently have no iss...<a href="/php/Review-id.php?id=6917">more</a>
+			</font>
+			</font></font></p><p><font face="Arial"><font size="-1">
+			
+			
+			<a target="blank" href="/php/Review-id.php?id=6916">
+			<b>Listen To Sennheiser's 7.1 Surround Sound GSP 550 Gaming Headset</b></a>
+			
+			<font size="-1">
+			</font></font></font></p><p><font face="Arial"><font size="-1"><font size="-1">On August 30th , 2018, Sennheiser introduced their newest gaming headset, the GSP 550 gaming head...<a href="/php/Review-id.php?id=6916">more</a>
+			</font>
+			</font></font></p><p><font face="Arial"><font size="-1">
+			
+			
+			<a target="blank" href="/php/Review-id.php?id=6915">
+			<b>MOMENTUM True Wireless And Forthcoming AMBEO Soundbar Set Benchmarks In Audio</b></a>
+			
+			<font size="-1">
+			</font></font></font></p><p><font face="Arial"><font size="-1"><font size="-1">At IFA 2018, held in Berlin from August 31 to September 5, 2018, Sennheiser introduced the MOMENT...<a href="/php/Review-id.php?id=6915">more</a>
+			</font>
+			</font></font></p><p><font face="Arial"><font size="-1">
+			
+			
+			<a target="blank" href="/php/Review-id.php?id=6914">
+			<b>Apple Fall Event 2018 -- What's New, Shiny, And Unexpected?</b></a>
+			
+			<font size="-1">
+			</font></font></font></p><p><font face="Arial"><font size="-1"><font size="-1">For loyal Apple customers, the Apple Fall Event 2018 scheduled for September 12th is the adult ve...<a href="/php/Review-id.php?id=6914">more</a>
+			</font>
+			</font></font></p><p><font face="Arial"><font size="-1">
+			
+			
+			<a target="blank" href="/php/Review-id.php?id=6913">
+			<b>Apple Rumored to Kill 3D Touch, Launch Low-Cost HomePod and AirPods 2 in 2019</b></a>
+			
+			<font size="-1">
+			</font></font></font></p><p><font face="Arial"><font size="-1"><font size="-1">There are conflicting rumors about when Apple will release thei AirPods 2 and Low-Cost HomePod in...<a href="/php/Review-id.php?id=6913">more</a>
+			</font>
+			</font></font></p><p><font face="Arial"><font size="-1">
+			
+			
+			<a target="blank" href="/php/Review-id.php?id=6911">
+			<b>Apparently The Demise of the iPad mini Is Imminent</b></a>
+			
+			<font size="-1">
+			</font></font></font></p><p><font face="Arial"><font size="-1"><font size="-1">Rumors of the upcoming update of&nbsp;Apple's iPad mini are looking less and less likely as t...<a href="/php/Review-id.php?id=6911">more</a>
+			</font>
+			</font></font></p><p><font face="Arial"><font size="-1">
+			
+			
+			<a target="blank" href="/php/Review-id.php?id=6908">
+			<b>Retrospective -- Looking Back On Your Work Makes You More Creative In The Future</b></a>
+			
+			<font size="-1">
+			</font></font></font></p><p><font face="Arial"><font size="-1"><font size="-1">If you love the fine products designed and sold by Think Tank Photo just released Version 2.0 of ...<a href="/php/Review-id.php?id=6908">more</a>
+			</font>
+			</font></font></p><p><font face="Arial"><font size="-1">
+			 </font> </font></p></td>
+    <!-- End News Column -->
+ 
+   <!-- Ads Column -->
+    <td bgcolor="#ffffff" valign="top" width="325" align="center">
+
+
+<!-- Websearch -->
+<script>
+  (function() {
+    var cx = '002699616035030361375:i2girctycvu';
+    var gcse = document.createElement('script');
+    gcse.type = 'text/javascript';
+    gcse.async = true;
+    gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(gcse, s);
+  })();
+</script>
+<div id="___gcse_0"><div class="gsc-control-cse gsc-control-cse-en"><div class="gsc-control-wrapper-cse" dir="ltr"><form class="gsc-search-box gsc-search-box-tools" accept-charset="utf-8"><table cellspacing="0" cellpadding="0" class="gsc-search-box"><tbody><tr><td class="gsc-input"><div class="gsc-input-box" id="gsc-iw-id1"><table cellspacing="0" cellpadding="0" id="gs_id50" class="gstl_50 gsc-input" style="width: 100%; padding: 0px;"><tbody><tr><td id="gs_tti50" class="gsib_a"><input autocomplete="off" type="text" size="10" class="gsc-input" name="search" title="search" id="gsc-i-id1" dir="ltr" spellcheck="false" style="width: 100%; padding: 0px; border: none; margin: -0.0625em 0px 0px; height: 1.25em; background: url(&quot;https://www.google.com/cse/static/images/1x/en/branding.png&quot;) left center no-repeat rgb(255, 255, 255); outline: none;"></td><td class="gsib_b"><div class="gsst_b" id="gs_st50" dir="ltr"><a class="gsst_a" href="javascript:void(0)" title="Clear search box" role="button" style="display: none;"><span class="gscb_a" id="gs_cb50" aria-hidden="true">×</span></a></div></td></tr></tbody></table></div></td><td class="gsc-search-button"><button class="gsc-search-button gsc-search-button-v2"><svg width="13" height="13" viewBox="0 0 13 13"><title>search</title><path d="m4.8495 7.8226c0.82666 0 1.5262-0.29146 2.0985-0.87438 0.57232-0.58292 0.86378-1.2877 0.87438-2.1144 0.010599-0.82666-0.28086-1.5262-0.87438-2.0985-0.59352-0.57232-1.293-0.86378-2.0985-0.87438-0.8055-0.010599-1.5103 0.28086-2.1144 0.87438-0.60414 0.59352-0.8956 1.293-0.87438 2.0985 0.021197 0.8055 0.31266 1.5103 0.87438 2.1144 0.56172 0.60414 1.2665 0.8956 2.1144 0.87438zm4.4695 0.2115 3.681 3.6819-1.259 1.284-3.6817-3.7 0.0019784-0.69479-0.090043-0.098846c-0.87973 0.76087-1.92 1.1413-3.1207 1.1413-1.3553 0-2.5025-0.46363-3.4417-1.3909s-1.4088-2.0686-1.4088-3.4239c0-1.3553 0.4696-2.4966 1.4088-3.4239 0.9392-0.92727 2.0864-1.3969 3.4417-1.4088 1.3553-0.011889 2.4906 0.45771 3.406 1.4088 0.9154 0.95107 1.379 2.0924 1.3909 3.4239 0 1.2126-0.38043 2.2588-1.1413 3.1385l0.098834 0.090049z"></path></svg></button></td><td class="gsc-clear-button"><div class="gsc-clear-button" title="clear results">&nbsp;</div></td></tr></tbody></table></form><div class="gsc-results-wrapper-overlay"><div class="gsc-results-close-btn" tabindex="0"></div><div class="gsc-positioningWrapper"><div class="gsc-tabsAreaInvisible"><div aria-label="refinement" role="tab" class="gsc-tabHeader gsc-inline-block gsc-tabhActive">Custom Search</div><span class="gs-spacer"> </span></div></div><div class="gsc-positioningWrapper"><div class="gsc-refinementsAreaInvisible"></div></div><div class="gsc-above-wrapper-area-invisible"><table cellspacing="0" cellpadding="0" class="gsc-above-wrapper-area-container"><tbody><tr><td class="gsc-result-info-container"><div class="gsc-result-info-invisible"></div></td><td class="gsc-orderby-container"><div class="gsc-orderby-invisible"><div class="gsc-orderby-label gsc-inline-block">Sort by:</div><div class="gsc-option-menu-container gsc-inline-block"><div class="gsc-selected-option-container gsc-inline-block"><div class="gsc-selected-option">Relevance</div><div class="gsc-option-selector"></div></div><div class="gsc-option-menu-invisible"><div class="gsc-option-menu-item gsc-option-menu-item-highlighted"><div class="gsc-option">Relevance</div></div><div class="gsc-option-menu-item"><div class="gsc-option">Date</div></div></div></div></div></td></tr></tbody></table></div><div class="gsc-adBlockInvisible"></div><div class="gsc-wrapper"><div class="gsc-adBlockInvisible"></div><div class="gsc-resultsbox-invisible"><div class="gsc-resultsRoot gsc-tabData gsc-tabdActive"><div><div class="gsc-expansionArea"></div></div></div></div></div></div><div class="gsc-modal-background-image" tabindex="0"></div></div></div></div>
+  
+<hr>
+<!-- Websearch -->
+
+<!--Facebook Feed -->
+<div style="width:300px">
+      <a target="blank" href="http://external.ak.fbcdn.net/safe_image.php?d=AQD3BrYa8llvcVBM&amp;url=https%3A%2F%2Fsocialmediaclub.org%2Fsites%2Fdefault%2Ffiles%2Fimagecache%2Flarge%2Ffacebook-icon.png">
+					<img src="http://external.ak.fbcdn.net/safe_image.php?d=AQD3BrYa8llvcVBM&amp;url=https%3A%2F%2Fsocialmediaclub.org%2Fsites%2Fdefault%2Ffiles%2Fimagecache%2Flarge%2Ffacebook-icon.png" style="padding-right:4px" align="left" border="0" width="30"></a>      <font face="Arial">
+<font face="Arial" size="2">
+<p><b><a target="_blank" href="http://www.facebook.com/pages/TechRevu/265172995208">TechRevu on Facebook</a></b>        	                     / 
+<i>What's new on the TechRevu Facebook Page?</i></p>
+<iframe src="//www.facebook.com/plugins/likebox.php?href=http%3A%2F%2Fwww.facebook.com%2Fpages%2FTechRevu%2F265172995208&amp;width=700&amp;height=395&amp;show_faces=false&amp;colorscheme=light&amp;stream=true&amp;border_color&amp;header=false" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:300px; height:395px;" allowtransparency="true"></iframe>
+</font></font></div><font face="Arial"><font face="Arial" size="2">
+<!--End Facebook Feed -->
+
+
+
+
+<!-- Advertising -->      
+   <strong>Our Other Pubs:</strong>
+   <p align="center">
+   
+    <!-- SFRevu AD -->
+      <a href="http://www.sfrevu.com"><img src="IMAGES/Do-You-SFRevu-Insert-120w.jpg" alt="Do You SFRevu? Thousands of Intelligent Beings Do Every Month" border="1" hspace="0" vspace="0" width="155" height="275"></a>
+
+        <!-- Gumshoe AD -->
+        <a href="http://www.gumshoereview.com"><img src="IMAGES/Gumshoe-Ad-Insert-120w.jpg" alt="Gumshoe Review - a literary investigation." border="1" hspace="0" vspace="0" width="155" height="275"></a>
+      </p><p>
+        <!-- End Ads -->
+
+<!--- Google Adsense Skyscraper ---->            
+<script type="text/javascript"><!--
+google_ad_client = "pub-6099968897198772";
+/* 160x600, created 1/13/10 */
+google_ad_slot = "4115054847";
+google_ad_width = 160;
+google_ad_height = 600;
+//-->
+</script>
+<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script><ins id="aswift_1_expand" style="display: inline-table; border: none; margin: 0px; padding: 0px; position: relative; visibility: visible; background-color: transparent; width: 160px; height: 0px;" data-ad-slot="4115054847" tabindex="0" title="Advertisement" aria-label="Advertisement" data-ad-status="unfilled"><ins id="aswift_1_anchor" style="display: block; border: none; margin: 0px; padding: 0px; position: relative; visibility: visible; background-color: transparent; width: 160px; height: 0px; overflow: hidden; opacity: 0;"><iframe id="aswift_1" name="aswift_1" style="left: 0px; position: absolute; top: 0px; border: 0px; width: 160px; height: 0px;" sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation" width="160" height="0" frameborder="0" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" src="https://googleads.g.doubleclick.net/pagead/ads?client=ca-pub-6099968897198772&amp;output=html&amp;h=600&amp;slotname=4115054847&amp;adk=2182607594&amp;adf=1675406948&amp;pi=t.ma~as.4115054847&amp;w=160&amp;lmt=1656251549&amp;url=http%3A%2F%2Ftechrevu.com%2F&amp;wgl=1&amp;dt=1656251548800&amp;bpp=56&amp;bdt=180&amp;idt=499&amp;shv=r20220622&amp;mjsv=m202206210101&amp;ptt=5&amp;saldr=sa&amp;abxe=1&amp;prev_slotnames=3471924342&amp;correlator=8425739268170&amp;frm=20&amp;pv=1&amp;ga_vid=1609054461.1656251549&amp;ga_sid=1656251549&amp;ga_hid=781298765&amp;ga_fc=1&amp;u_tz=0&amp;u_his=2&amp;u_h=600&amp;u_w=800&amp;u_ah=600&amp;u_aw=800&amp;u_cd=24&amp;u_sd=1&amp;adx=918&amp;ady=989&amp;biw=800&amp;bih=600&amp;scr_x=0&amp;scr_y=0&amp;eid=44759876%2C44759927%2C44759842%2C31067528&amp;oid=2&amp;pvsid=3414299703729706&amp;uas=0&amp;nvt=1&amp;eae=0&amp;fc=640&amp;brdim=0%2C0%2C0%2C0%2C800%2C0%2C800%2C600%2C800%2C600&amp;vis=1&amp;rsz=d%7C%7CeEbr%7C&amp;abl=CS&amp;pfx=0&amp;fu=1024&amp;bc=23&amp;ifi=2&amp;uci=a!2&amp;btvi=1&amp;fsb=1&amp;xpc=kMQb744j19&amp;p=http%3A//techrevu.com&amp;dtd=511" data-google-container-id="a!2" data-google-query-id="CLKJh-qhy_gCFY7FZAod8rIG0A" data-load-complete="true"></iframe></ins></ins>
+<!--- End Google Adsense Skyscraper ---->
+
+
+<!--- Google Adsense Skyscraper ---->            
+<script type="text/javascript"><!--
+google_ad_client = "pub-6099968897198772";
+/* 160x600, created 1/13/10 */
+google_ad_slot = "4115054847";
+google_ad_width = 160;
+google_ad_height = 600;
+//-->
+</script>
+<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script><ins id="aswift_2_expand" style="display: inline-table; border: none; margin: 0px; padding: 0px; position: relative; visibility: visible; background-color: transparent; width: 160px; height: 0px;" data-ad-slot="4115054847" tabindex="0" title="Advertisement" aria-label="Advertisement" data-ad-status="unfilled"><ins id="aswift_2_anchor" style="display: block; border: none; margin: 0px; padding: 0px; position: relative; visibility: visible; background-color: transparent; width: 160px; height: 0px; overflow: hidden; opacity: 0;"><iframe id="aswift_2" name="aswift_2" style="left: 0px; position: absolute; top: 0px; border: 0px; width: 160px; height: 0px;" sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation" width="160" height="0" frameborder="0" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" src="https://googleads.g.doubleclick.net/pagead/ads?client=ca-pub-6099968897198772&amp;output=html&amp;h=600&amp;slotname=4115054847&amp;adk=2182607594&amp;adf=2673671765&amp;pi=t.ma~as.4115054847&amp;w=160&amp;lmt=1656251549&amp;url=http%3A%2F%2Ftechrevu.com%2F&amp;wgl=1&amp;dt=1656251548862&amp;bpp=5&amp;bdt=242&amp;idt=470&amp;shv=r20220622&amp;mjsv=m202206210101&amp;ptt=5&amp;saldr=sa&amp;abxe=1&amp;prev_slotnames=3471924342%2C4115054847&amp;correlator=8425739268170&amp;frm=20&amp;pv=1&amp;ga_vid=1609054461.1656251549&amp;ga_sid=1656251549&amp;ga_hid=781298765&amp;ga_fc=1&amp;u_tz=0&amp;u_his=2&amp;u_h=600&amp;u_w=800&amp;u_ah=600&amp;u_aw=800&amp;u_cd=24&amp;u_sd=1&amp;adx=1082&amp;ady=989&amp;biw=800&amp;bih=600&amp;scr_x=0&amp;scr_y=0&amp;eid=44759876%2C44759927%2C44759842%2C31067528&amp;oid=2&amp;pvsid=3414299703729706&amp;uas=0&amp;nvt=1&amp;eae=0&amp;fc=640&amp;brdim=0%2C0%2C0%2C0%2C800%2C0%2C800%2C600%2C800%2C600&amp;vis=1&amp;rsz=d%7C%7CeEbr%7C&amp;abl=CS&amp;pfx=0&amp;fu=1024&amp;bc=23&amp;ifi=3&amp;uci=a!3&amp;btvi=2&amp;fsb=1&amp;xpc=UW1JZIrrxq&amp;p=http%3A//techrevu.com&amp;dtd=479" data-google-container-id="a!3" data-google-query-id="CNzrieqhy_gCFZaz7Aod1tcAxw" data-load-complete="true"></iframe></ins></ins>
+<!--- End Google Adsense Skyscraper ---->
+
+
+
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+        <script type="text/javascript">
+_uacct = "UA-3134639-3";
+urchinTracker();
+</script>
+
+</p></font></font></td></tr></tbody></table><table cellspacing="0" cellpadding="0" class="gstl_50 gssb_c" style="width: 214px; display: none; top: 190px; position: absolute; left: 1070px;"><tbody><tr><td class="gssb_f"></td><td class="gssb_e" style="width: 100%;"></td></tr></tbody></table><iframe src="https://www.google.com/recaptcha/api2/aframe" width="0" height="0" style="display: none;"></iframe><ins class="adsbygoogle adsbygoogle-noablate" data-adsbygoogle-status="done" style="display: none !important;" data-ad-status="unfilled"><ins id="aswift_3_expand" tabindex="0" title="Advertisement" aria-label="Advertisement" style="border: none; height: 0px; width: 0px; margin: 0px; padding: 0px; position: relative; visibility: visible; background-color: transparent; display: inline-table;"><ins id="aswift_3_anchor" style="border: none; height: 0px; width: 0px; margin: 0px; padding: 0px; position: relative; visibility: visible; background-color: transparent; display: block;"><iframe id="aswift_3" name="aswift_3" style="left:0;position:absolute;top:0;border:0;width:undefinedpx;height:undefinedpx;" sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation" frameborder="0" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" src="https://googleads.g.doubleclick.net/pagead/ads?client=ca-pub-6099968897198772&amp;output=html&amp;adk=1812271804&amp;adf=3025194257&amp;lmt=1656251558&amp;plat=1%3A8%2C2%3A8%2C9%3A32776%2C16%3A8388608%2C17%3A32%2C24%3A32%2C25%3A32%2C30%3A1048576%2C32%3A32&amp;format=0x0&amp;url=http%3A%2F%2Ftechrevu.com%2F&amp;ea=0&amp;pra=7&amp;wgl=1&amp;dt=1656251558177&amp;bpp=3&amp;bdt=9556&amp;idt=3&amp;shv=r20220622&amp;mjsv=m202206210101&amp;ptt=9&amp;saldr=aa&amp;abxe=1&amp;cookie=ID%3D81812ac63d5df50a-22182c6acdd300c5%3AT%3D1656251549%3ART%3D1656251549%3AS%3DALNI_MadjdyYRcbWVPaYJBJ8iolAo3_rZw&amp;gpic=UID%3D00000695486e2de2%3AT%3D1656251549%3ART%3D1656251549%3AS%3DALNI_MZgtccKeKKRTzezmc6fpWOGRLTHbQ&amp;prev_slotnames=3471924342%2C4115054847%2C4115054847&amp;nras=1&amp;correlator=8425739268170&amp;frm=20&amp;pv=1&amp;ga_vid=1609054461.1656251549&amp;ga_sid=1656251549&amp;ga_hid=781298765&amp;ga_fc=1&amp;u_tz=0&amp;u_his=2&amp;u_h=600&amp;u_w=800&amp;u_ah=600&amp;u_aw=800&amp;u_cd=24&amp;u_sd=1&amp;adx=-12245933&amp;ady=-12245933&amp;biw=800&amp;bih=600&amp;scr_x=0&amp;scr_y=0&amp;eid=44759876%2C44759927%2C44759842%2C31067528&amp;oid=2&amp;psts=AGkb-H_f4UFpsa2-DgZdVFxxoccrDBYkT46DPve9ornsYOBuYjVfeRQmQcE6nixsUZq25ZQzzDfJe5SfeD1_7FFO&amp;pvsid=3414299703729706&amp;tmod=1079466795&amp;uas=0&amp;nvt=1&amp;fsapi=1&amp;eae=2&amp;fc=1920&amp;brdim=0%2C0%2C0%2C0%2C800%2C0%2C800%2C600%2C800%2C600&amp;vis=1&amp;rsz=%7C%7Cs%7C&amp;abl=NS&amp;fu=33792&amp;bc=23&amp;ifi=4&amp;uci=a!4&amp;fsb=1&amp;dtd=38" data-google-container-id="a!4" data-load-complete="true"></iframe></ins></ins></ins></body><iframe id="google_esf" name="google_esf" src="https://googleads.g.doubleclick.net/pagead/html/r20220622/r20190131/zrt_lookup.html" style="display: none;"></iframe></html>

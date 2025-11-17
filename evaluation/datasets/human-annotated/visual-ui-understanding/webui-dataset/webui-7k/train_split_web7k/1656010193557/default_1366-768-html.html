@@ -1,0 +1,1420 @@
+<!DOCTYPE html><html lang="en-US" class=""><head><meta charset="UTF-8"><script>if(navigator.userAgent.match(/MSIE|Internet Explorer/i)||navigator.userAgent.match(/Trident\/7\..*?rv:11/i)){var href=document.location.href;if(!href.match(/[?&]nowprocket/)){if(href.indexOf("?")==-1){if(href.indexOf("#")==-1){document.location.href=href+"?nowprocket=1"}else{document.location.href=href.replace("#","?nowprocket=1#")}}else{if(href.indexOf("#")==-1){document.location.href=href+"&nowprocket=1"}else{document.location.href=href.replace("#","&nowprocket=1#")}}}}</script><script>class RocketLazyLoadScripts{constructor(){this.triggerEvents=["keydown","mousedown","mousemove","touchmove","touchstart","touchend","wheel"],this.userEventHandler=this._triggerListener.bind(this),this.touchStartHandler=this._onTouchStart.bind(this),this.touchMoveHandler=this._onTouchMove.bind(this),this.touchEndHandler=this._onTouchEnd.bind(this),this.clickHandler=this._onClick.bind(this),this.interceptedClicks=[],window.addEventListener("pageshow",(e=>{this.persisted=e.persisted})),window.addEventListener("DOMContentLoaded",(()=>{this._preconnect3rdParties()})),this.delayedScripts={normal:[],async:[],defer:[]},this.allJQueries=[]}_addUserInteractionListener(e){document.hidden?e._triggerListener():(this.triggerEvents.forEach((t=>window.addEventListener(t,e.userEventHandler,{passive:!0}))),window.addEventListener("touchstart",e.touchStartHandler,{passive:!0}),window.addEventListener("mousedown",e.touchStartHandler),document.addEventListener("visibilitychange",e.userEventHandler))}_removeUserInteractionListener(){this.triggerEvents.forEach((e=>window.removeEventListener(e,this.userEventHandler,{passive:!0}))),document.removeEventListener("visibilitychange",this.userEventHandler)}_onTouchStart(e){"HTML"!==e.target.tagName&&(window.addEventListener("touchend",this.touchEndHandler),window.addEventListener("mouseup",this.touchEndHandler),window.addEventListener("touchmove",this.touchMoveHandler,{passive:!0}),window.addEventListener("mousemove",this.touchMoveHandler),e.target.addEventListener("click",this.clickHandler),this._renameDOMAttribute(e.target,"onclick","rocket-onclick"))}_onTouchMove(e){window.removeEventListener("touchend",this.touchEndHandler),window.removeEventListener("mouseup",this.touchEndHandler),window.removeEventListener("touchmove",this.touchMoveHandler,{passive:!0}),window.removeEventListener("mousemove",this.touchMoveHandler),e.target.removeEventListener("click",this.clickHandler),this._renameDOMAttribute(e.target,"rocket-onclick","onclick")}_onTouchEnd(e){window.removeEventListener("touchend",this.touchEndHandler),window.removeEventListener("mouseup",this.touchEndHandler),window.removeEventListener("touchmove",this.touchMoveHandler,{passive:!0}),window.removeEventListener("mousemove",this.touchMoveHandler)}_onClick(e){e.target.removeEventListener("click",this.clickHandler),this._renameDOMAttribute(e.target,"rocket-onclick","onclick"),this.interceptedClicks.push(e),e.preventDefault(),e.stopPropagation(),e.stopImmediatePropagation()}_replayClicks(){window.removeEventListener("touchstart",this.touchStartHandler,{passive:!0}),window.removeEventListener("mousedown",this.touchStartHandler),this.interceptedClicks.forEach((e=>{e.target.dispatchEvent(new MouseEvent("click",{view:e.view,bubbles:!0,cancelable:!0}))}))}_renameDOMAttribute(e,t,n){e.hasAttribute&&e.hasAttribute(t)&&(event.target.setAttribute(n,event.target.getAttribute(t)),event.target.removeAttribute(t))}_triggerListener(){this._removeUserInteractionListener(this),"loading"===document.readyState?document.addEventListener("DOMContentLoaded",this._loadEverythingNow.bind(this)):this._loadEverythingNow()}_preconnect3rdParties(){let e=[];document.querySelectorAll("script[type=rocketlazyloadscript]").forEach((t=>{if(t.hasAttribute("src")){const n=new URL(t.src).origin;n!==location.origin&&e.push({src:n,crossOrigin:t.crossOrigin||"module"===t.getAttribute("data-rocket-type")})}})),e=[...new Map(e.map((e=>[JSON.stringify(e),e]))).values()],this._batchInjectResourceHints(e,"preconnect")}async _loadEverythingNow(){this.lastBreath=Date.now(),this._delayEventListeners(),this._delayJQueryReady(this),this._handleDocumentWrite(),this._registerAllDelayedScripts(),this._preloadAllScripts(),await this._loadScriptsFromList(this.delayedScripts.normal),await this._loadScriptsFromList(this.delayedScripts.defer),await this._loadScriptsFromList(this.delayedScripts.async);try{await this._triggerDOMContentLoaded(),await this._triggerWindowLoad()}catch(e){}window.dispatchEvent(new Event("rocket-allScriptsLoaded")),this._replayClicks()}_registerAllDelayedScripts(){document.querySelectorAll("script[type=rocketlazyloadscript]").forEach((e=>{e.hasAttribute("src")?e.hasAttribute("async")&&!1!==e.async?this.delayedScripts.async.push(e):e.hasAttribute("defer")&&!1!==e.defer||"module"===e.getAttribute("data-rocket-type")?this.delayedScripts.defer.push(e):this.delayedScripts.normal.push(e):this.delayedScripts.normal.push(e)}))}async _transformScript(e){return await this._littleBreath(),new Promise((t=>{const n=document.createElement("script");[...e.attributes].forEach((e=>{let t=e.nodeName;"type"!==t&&("data-rocket-type"===t&&(t="type"),n.setAttribute(t,e.nodeValue))})),e.hasAttribute("src")?(n.addEventListener("load",t),n.addEventListener("error",t)):(n.text=e.text,t());try{e.parentNode.replaceChild(n,e)}catch(e){t()}}))}async _loadScriptsFromList(e){const t=e.shift();return t?(await this._transformScript(t),this._loadScriptsFromList(e)):Promise.resolve()}_preloadAllScripts(){this._batchInjectResourceHints([...this.delayedScripts.normal,...this.delayedScripts.defer,...this.delayedScripts.async],"preload")}_batchInjectResourceHints(e,t){var n=document.createDocumentFragment();e.forEach((e=>{if(e.src){const i=document.createElement("link");i.href=e.src,i.rel=t,"preconnect"!==t&&(i.as="script"),e.getAttribute&&"module"===e.getAttribute("data-rocket-type")&&(i.crossOrigin=!0),e.crossOrigin&&(i.crossOrigin=e.crossOrigin),n.appendChild(i)}})),document.head.appendChild(n)}_delayEventListeners(){let e={};function t(t,n){!function(t){function n(n){return e[t].eventsToRewrite.indexOf(n)>=0?"rocket-"+n:n}e[t]||(e[t]={originalFunctions:{add:t.addEventListener,remove:t.removeEventListener},eventsToRewrite:[]},t.addEventListener=function(){arguments[0]=n(arguments[0]),e[t].originalFunctions.add.apply(t,arguments)},t.removeEventListener=function(){arguments[0]=n(arguments[0]),e[t].originalFunctions.remove.apply(t,arguments)})}(t),e[t].eventsToRewrite.push(n)}function n(e,t){let n=e[t];Object.defineProperty(e,t,{get:()=>n||function(){},set(i){e["rocket"+t]=n=i}})}t(document,"DOMContentLoaded"),t(window,"DOMContentLoaded"),t(window,"load"),t(window,"pageshow"),t(document,"readystatechange"),n(document,"onreadystatechange"),n(window,"onload"),n(window,"onpageshow")}_delayJQueryReady(e){let t=window.jQuery;Object.defineProperty(window,"jQuery",{get:()=>t,set(n){if(n&&n.fn&&!e.allJQueries.includes(n)){n.fn.ready=n.fn.init.prototype.ready=function(t){e.domReadyFired?t.bind(document)(n):document.addEventListener("rocket-DOMContentLoaded",(()=>t.bind(document)(n)))};const t=n.fn.on;n.fn.on=n.fn.init.prototype.on=function(){if(this[0]===window){function e(e){return e.split(" ").map((e=>"load"===e||0===e.indexOf("load.")?"rocket-jquery-load":e)).join(" ")}"string"==typeof arguments[0]||arguments[0]instanceof String?arguments[0]=e(arguments[0]):"object"==typeof arguments[0]&&Object.keys(arguments[0]).forEach((t=>{delete Object.assign(arguments[0],{[e(t)]:arguments[0][t]})[t]}))}return t.apply(this,arguments),this},e.allJQueries.push(n)}t=n}})}async _triggerDOMContentLoaded(){this.domReadyFired=!0,await this._littleBreath(),document.dispatchEvent(new Event("rocket-DOMContentLoaded")),await this._littleBreath(),window.dispatchEvent(new Event("rocket-DOMContentLoaded")),await this._littleBreath(),document.dispatchEvent(new Event("rocket-readystatechange")),await this._littleBreath(),document.rocketonreadystatechange&&document.rocketonreadystatechange()}async _triggerWindowLoad(){await this._littleBreath(),window.dispatchEvent(new Event("rocket-load")),await this._littleBreath(),window.rocketonload&&window.rocketonload(),await this._littleBreath(),this.allJQueries.forEach((e=>e(window).trigger("rocket-jquery-load"))),await this._littleBreath();const e=new Event("rocket-pageshow");e.persisted=this.persisted,window.dispatchEvent(e),await this._littleBreath(),window.rocketonpageshow&&window.rocketonpageshow({persisted:this.persisted})}_handleDocumentWrite(){const e=new Map;document.write=document.writeln=function(t){const n=document.currentScript,i=document.createRange(),r=n.parentElement;let o=e.get(n);void 0===o&&(o=n.nextSibling,e.set(n,o));const s=document.createDocumentFragment();i.setStart(s,0),s.appendChild(i.createContextualFragment(t)),r.insertBefore(s,o)}}async _littleBreath(){Date.now()-this.lastBreath>45&&(await this._requestAnimFrame(),this.lastBreath=Date.now())}async _requestAnimFrame(){return document.hidden?new Promise((e=>setTimeout(e))):new Promise((e=>requestAnimationFrame(e)))}static run(){const e=new RocketLazyLoadScripts;e._addUserInteractionListener(e)}}RocketLazyLoadScripts.run();</script>
+	
+			<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<meta property="og:title" content="Chitika Insights">
+<meta property="og:description" content="Exclusive Research &amp; Insights Reports">
+<meta property="og:image" content="https://research.chitika.com/wp-content/uploads/2022/03/fig-25-03-2022_01-22-59.jpg">
+<meta property="og:image:width" content="500">
+<meta property="og:image:height" content="300">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:type" content="article">
+<meta property="og:article:published_time" content="2022-03-24 14:35:52">
+<meta property="og:article:modified_time" content="2022-04-11 14:15:20">
+<meta property="og:article:tag" content="Insights">
+<meta property="og:article:tag" content="timeless">
+<meta property="og:article:tag" content="Updated">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Chitika Insights">
+<meta name="twitter:description" content="Exclusive Research &amp; Insights Reports">
+<meta name="twitter:image" content="https://research.chitika.com/wp-content/uploads/2022/03/fig-25-03-2022_01-22-59.jpg">
+
+	<!-- This site is optimized with the Yoast SEO Premium plugin v18.4 (Yoast SEO v19.1) - https://yoast.com/wordpress/plugins/seo/ -->
+	<title>Insights Archives - Chitika Insights</title><link rel="preload" as="style" href="https://fonts.googleapis.com/css?family=Montserrat%3A300%2C400%2C400i%2C700%7COpen%20Sans%3A300%2C400%2C400i%2C700%7COpen%20Sans%3A400%7CMontserrat%3A700&amp;display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat%3A300%2C400%2C400i%2C700%7COpen%20Sans%3A300%2C400%2C400i%2C700%7COpen%20Sans%3A400%7CMontserrat%3A700&amp;display=swap" media="all" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat%3A300%2C400%2C400i%2C700%7COpen%20Sans%3A300%2C400%2C400i%2C700%7COpen%20Sans%3A400%7CMontserrat%3A700&#038;display=swap" /></noscript>
+	<link rel="canonical" href="https://ec2-44-196-179-174.compute-1.amazonaws.com/category/insights/">
+	<link rel="next" href="https://ec2-44-196-179-174.compute-1.amazonaws.com/category/insights/page/2/">
+	<meta property="og:url" content="https://ec2-44-196-179-174.compute-1.amazonaws.com/category/insights/">
+	<meta property="og:site_name" content="Chitika Insights">
+	<meta name="twitter:site" content="@chitika">
+	<script type="application/ld+json" class="yoast-schema-graph">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://www.research.chitika.com/#organization","name":"Chitika Insights","url":"https://www.research.chitika.com/","sameAs":["https://www.linkedin.com/company/chitika-inc./","https://www.youtube.com/user/ChitikaInsights","https://en.wikipedia.org/wiki/Chitika","https://www.facebook.com/Chitika/","https://twitter.com/chitika"],"logo":{"@type":"ImageObject","inLanguage":"en-US","@id":"https://www.research.chitika.com/#/schema/logo/image/","url":"https://research.chitika.com/wp-content/uploads/2022/02/chitika-logo_0.jpg","contentUrl":"https://research.chitika.com/wp-content/uploads/2022/02/chitika-logo_0.jpg","width":1041,"height":1041,"caption":"Chitika Insights"},"image":{"@id":"https://www.research.chitika.com/#/schema/logo/image/"}},{"@type":"WebSite","@id":"https://www.research.chitika.com/#website","url":"https://www.research.chitika.com/","name":"Chitika Insights","description":"Exclusive Research &amp; Insights Reports","publisher":{"@id":"https://www.research.chitika.com/#organization"},"potentialAction":[{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://www.research.chitika.com/?s={search_term_string}"},"query-input":"required name=search_term_string"}],"inLanguage":"en-US"},{"@type":"CollectionPage","@id":"https://ec2-44-196-179-174.compute-1.amazonaws.com/category/insights/#webpage","url":"https://ec2-44-196-179-174.compute-1.amazonaws.com/category/insights/","name":"Insights Archives - Chitika Insights","isPartOf":{"@id":"https://www.research.chitika.com/#website"},"breadcrumb":{"@id":"https://ec2-44-196-179-174.compute-1.amazonaws.com/category/insights/#breadcrumb"},"inLanguage":"en-US","potentialAction":[{"@type":"ReadAction","target":["https://ec2-44-196-179-174.compute-1.amazonaws.com/category/insights/"]}]},{"@type":"BreadcrumbList","@id":"https://ec2-44-196-179-174.compute-1.amazonaws.com/category/insights/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.research.chitika.com/"},{"@type":"ListItem","position":2,"name":"Insights"}]}]}</script>
+	<!-- / Yoast SEO Premium plugin. -->
+
+
+<link rel="dns-prefetch" href="//use.fontawesome.com">
+<link rel="dns-prefetch" href="//fonts.googleapis.com">
+<link href="https://fonts.gstatic.com" crossorigin="" rel="preconnect">
+<link rel="alternate" type="application/rss+xml" title="Chitika Insights » Feed" href="https://research.chitika.com/feed/">
+<link rel="alternate" type="application/rss+xml" title="Chitika Insights » Comments Feed" href="https://research.chitika.com/comments/feed/">
+<link rel="alternate" type="application/rss+xml" title="Chitika Insights » Insights Category Feed" href="https://research.chitika.com/category/insights/feed/">
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 0.07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	<link rel="stylesheet" id="wp-block-library-css" href="https://research.chitika.com/wp-includes/css/dist/block-library/style.min.css?ver=5.9.3" type="text/css" media="all">
+<link rel="stylesheet" id="wpforms-gutenberg-form-selector-css" href="https://research.chitika.com/wp-content/plugins/wpforms-lite/assets/css/wpforms-full.min.css?ver=1.7.4.2" type="text/css" media="all">
+<style id="global-styles-inline-css" type="text/css">
+body{--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--duotone--dark-grayscale: url('#wp-duotone-dark-grayscale');--wp--preset--duotone--grayscale: url('#wp-duotone-grayscale');--wp--preset--duotone--purple-yellow: url('#wp-duotone-purple-yellow');--wp--preset--duotone--blue-red: url('#wp-duotone-blue-red');--wp--preset--duotone--midnight: url('#wp-duotone-midnight');--wp--preset--duotone--magenta-yellow: url('#wp-duotone-magenta-yellow');--wp--preset--duotone--purple-green: url('#wp-duotone-purple-green');--wp--preset--duotone--blue-orange: url('#wp-duotone-blue-orange');--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+</style>
+<link rel="stylesheet" id="amazonpolly-css" href="https://research.chitika.com/wp-content/plugins/amazon-polly/public/css/amazonpolly-public.css?ver=1.0.0" type="text/css" media="all">
+<link rel="stylesheet" id="contact-form-7-css" href="https://research.chitika.com/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=5.6" type="text/css" media="all">
+<style id="extendify-gutenberg-patterns-and-templates-utilities-inline-css" type="text/css">
+.ext-absolute{position:absolute!important}.ext-relative{position:relative!important}.ext-top-base{top:var(--wp--style--block-gap,1.75rem)!important}.ext-top-lg{top:var(--extendify--spacing--large,3rem)!important}.ext--top-base{top:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.ext--top-lg{top:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.ext-right-base{right:var(--wp--style--block-gap,1.75rem)!important}.ext-right-lg{right:var(--extendify--spacing--large,3rem)!important}.ext--right-base{right:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.ext--right-lg{right:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.ext-bottom-base{bottom:var(--wp--style--block-gap,1.75rem)!important}.ext-bottom-lg{bottom:var(--extendify--spacing--large,3rem)!important}.ext--bottom-base{bottom:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.ext--bottom-lg{bottom:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.ext-left-base{left:var(--wp--style--block-gap,1.75rem)!important}.ext-left-lg{left:var(--extendify--spacing--large,3rem)!important}.ext--left-base{left:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.ext--left-lg{left:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.ext-order-1{order:1!important}.ext-order-2{order:2!important}.ext-col-auto{grid-column:auto!important}.ext-col-span-1{grid-column:span 1/span 1!important}.ext-col-span-2{grid-column:span 2/span 2!important}.ext-col-span-3{grid-column:span 3/span 3!important}.ext-col-span-4{grid-column:span 4/span 4!important}.ext-col-span-5{grid-column:span 5/span 5!important}.ext-col-span-6{grid-column:span 6/span 6!important}.ext-col-span-7{grid-column:span 7/span 7!important}.ext-col-span-8{grid-column:span 8/span 8!important}.ext-col-span-9{grid-column:span 9/span 9!important}.ext-col-span-10{grid-column:span 10/span 10!important}.ext-col-span-11{grid-column:span 11/span 11!important}.ext-col-span-12{grid-column:span 12/span 12!important}.ext-col-span-full{grid-column:1/-1!important}.ext-col-start-1{grid-column-start:1!important}.ext-col-start-2{grid-column-start:2!important}.ext-col-start-3{grid-column-start:3!important}.ext-col-start-4{grid-column-start:4!important}.ext-col-start-5{grid-column-start:5!important}.ext-col-start-6{grid-column-start:6!important}.ext-col-start-7{grid-column-start:7!important}.ext-col-start-8{grid-column-start:8!important}.ext-col-start-9{grid-column-start:9!important}.ext-col-start-10{grid-column-start:10!important}.ext-col-start-11{grid-column-start:11!important}.ext-col-start-12{grid-column-start:12!important}.ext-col-start-13{grid-column-start:13!important}.ext-col-start-auto{grid-column-start:auto!important}.ext-col-end-1{grid-column-end:1!important}.ext-col-end-2{grid-column-end:2!important}.ext-col-end-3{grid-column-end:3!important}.ext-col-end-4{grid-column-end:4!important}.ext-col-end-5{grid-column-end:5!important}.ext-col-end-6{grid-column-end:6!important}.ext-col-end-7{grid-column-end:7!important}.ext-col-end-8{grid-column-end:8!important}.ext-col-end-9{grid-column-end:9!important}.ext-col-end-10{grid-column-end:10!important}.ext-col-end-11{grid-column-end:11!important}.ext-col-end-12{grid-column-end:12!important}.ext-col-end-13{grid-column-end:13!important}.ext-col-end-auto{grid-column-end:auto!important}.ext-row-auto{grid-row:auto!important}.ext-row-span-1{grid-row:span 1/span 1!important}.ext-row-span-2{grid-row:span 2/span 2!important}.ext-row-span-3{grid-row:span 3/span 3!important}.ext-row-span-4{grid-row:span 4/span 4!important}.ext-row-span-5{grid-row:span 5/span 5!important}.ext-row-span-6{grid-row:span 6/span 6!important}.ext-row-span-full{grid-row:1/-1!important}.ext-row-start-1{grid-row-start:1!important}.ext-row-start-2{grid-row-start:2!important}.ext-row-start-3{grid-row-start:3!important}.ext-row-start-4{grid-row-start:4!important}.ext-row-start-5{grid-row-start:5!important}.ext-row-start-6{grid-row-start:6!important}.ext-row-start-7{grid-row-start:7!important}.ext-row-start-auto{grid-row-start:auto!important}.ext-row-end-1{grid-row-end:1!important}.ext-row-end-2{grid-row-end:2!important}.ext-row-end-3{grid-row-end:3!important}.ext-row-end-4{grid-row-end:4!important}.ext-row-end-5{grid-row-end:5!important}.ext-row-end-6{grid-row-end:6!important}.ext-row-end-7{grid-row-end:7!important}.ext-row-end-auto{grid-row-end:auto!important}.ext-m-0:not([style*=margin]){margin:0!important}.ext-m-auto:not([style*=margin]){margin:auto!important}.ext-m-base:not([style*=margin]){margin:var(--wp--style--block-gap,1.75rem)!important}.ext-m-lg:not([style*=margin]){margin:var(--extendify--spacing--large,3rem)!important}.ext--m-base:not([style*=margin]){margin:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.ext--m-lg:not([style*=margin]){margin:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.ext-mx-0:not([style*=margin]){margin-left:0!important;margin-right:0!important}.ext-mx-auto:not([style*=margin]){margin-left:auto!important;margin-right:auto!important}.ext-mx-base:not([style*=margin]){margin-left:var(--wp--style--block-gap,1.75rem)!important;margin-right:var(--wp--style--block-gap,1.75rem)!important}.ext-mx-lg:not([style*=margin]){margin-left:var(--extendify--spacing--large,3rem)!important;margin-right:var(--extendify--spacing--large,3rem)!important}.ext--mx-base:not([style*=margin]){margin-left:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important;margin-right:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.ext--mx-lg:not([style*=margin]){margin-left:calc(var(--extendify--spacing--large, 3rem)*-1)!important;margin-right:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.ext-my-0:not([style*=margin]){margin-bottom:0!important;margin-top:0!important}.ext-my-auto:not([style*=margin]){margin-bottom:auto!important;margin-top:auto!important}.ext-my-base:not([style*=margin]){margin-bottom:var(--wp--style--block-gap,1.75rem)!important;margin-top:var(--wp--style--block-gap,1.75rem)!important}.ext-my-lg:not([style*=margin]){margin-bottom:var(--extendify--spacing--large,3rem)!important;margin-top:var(--extendify--spacing--large,3rem)!important}.ext--my-base:not([style*=margin]){margin-bottom:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important;margin-top:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.ext--my-lg:not([style*=margin]){margin-bottom:calc(var(--extendify--spacing--large, 3rem)*-1)!important;margin-top:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.ext-mt-0:not([style*=margin]){margin-top:0!important}.ext-mt-auto:not([style*=margin]){margin-top:auto!important}.ext-mt-base:not([style*=margin]){margin-top:var(--wp--style--block-gap,1.75rem)!important}.ext-mt-lg:not([style*=margin]){margin-top:var(--extendify--spacing--large,3rem)!important}.ext--mt-base:not([style*=margin]){margin-top:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.ext--mt-lg:not([style*=margin]){margin-top:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.ext-mr-0:not([style*=margin]){margin-right:0!important}.ext-mr-auto:not([style*=margin]){margin-right:auto!important}.ext-mr-base:not([style*=margin]){margin-right:var(--wp--style--block-gap,1.75rem)!important}.ext-mr-lg:not([style*=margin]){margin-right:var(--extendify--spacing--large,3rem)!important}.ext--mr-base:not([style*=margin]){margin-right:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.ext--mr-lg:not([style*=margin]){margin-right:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.ext-mb-0:not([style*=margin]){margin-bottom:0!important}.ext-mb-auto:not([style*=margin]){margin-bottom:auto!important}.ext-mb-base:not([style*=margin]){margin-bottom:var(--wp--style--block-gap,1.75rem)!important}.ext-mb-lg:not([style*=margin]){margin-bottom:var(--extendify--spacing--large,3rem)!important}.ext--mb-base:not([style*=margin]){margin-bottom:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.ext--mb-lg:not([style*=margin]){margin-bottom:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.ext-ml-0:not([style*=margin]){margin-left:0!important}.ext-ml-auto:not([style*=margin]){margin-left:auto!important}.ext-ml-base:not([style*=margin]){margin-left:var(--wp--style--block-gap,1.75rem)!important}.ext-ml-lg:not([style*=margin]){margin-left:var(--extendify--spacing--large,3rem)!important}.ext--ml-base:not([style*=margin]){margin-left:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.ext--ml-lg:not([style*=margin]){margin-left:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.ext-block{display:block!important}.ext-inline-block{display:inline-block!important}.ext-inline{display:inline!important}.ext-flex{display:flex!important}.ext-inline-flex{display:inline-flex!important}.ext-grid{display:grid!important}.ext-inline-grid{display:inline-grid!important}.ext-hidden{display:none!important}.ext-w-auto{width:auto!important}.ext-w-full{width:100%!important}.ext-max-w-full{max-width:100%!important}.ext-flex-1{flex:1 1 0%!important}.ext-flex-auto{flex:1 1 auto!important}.ext-flex-initial{flex:0 1 auto!important}.ext-flex-none{flex:none!important}.ext-flex-shrink-0{flex-shrink:0!important}.ext-flex-shrink{flex-shrink:1!important}.ext-flex-grow-0{flex-grow:0!important}.ext-flex-grow{flex-grow:1!important}.ext-list-none{list-style-type:none!important}.ext-grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))!important}.ext-grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))!important}.ext-grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))!important}.ext-grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr))!important}.ext-grid-cols-5{grid-template-columns:repeat(5,minmax(0,1fr))!important}.ext-grid-cols-6{grid-template-columns:repeat(6,minmax(0,1fr))!important}.ext-grid-cols-7{grid-template-columns:repeat(7,minmax(0,1fr))!important}.ext-grid-cols-8{grid-template-columns:repeat(8,minmax(0,1fr))!important}.ext-grid-cols-9{grid-template-columns:repeat(9,minmax(0,1fr))!important}.ext-grid-cols-10{grid-template-columns:repeat(10,minmax(0,1fr))!important}.ext-grid-cols-11{grid-template-columns:repeat(11,minmax(0,1fr))!important}.ext-grid-cols-12{grid-template-columns:repeat(12,minmax(0,1fr))!important}.ext-grid-cols-none{grid-template-columns:none!important}.ext-grid-rows-1{grid-template-rows:repeat(1,minmax(0,1fr))!important}.ext-grid-rows-2{grid-template-rows:repeat(2,minmax(0,1fr))!important}.ext-grid-rows-3{grid-template-rows:repeat(3,minmax(0,1fr))!important}.ext-grid-rows-4{grid-template-rows:repeat(4,minmax(0,1fr))!important}.ext-grid-rows-5{grid-template-rows:repeat(5,minmax(0,1fr))!important}.ext-grid-rows-6{grid-template-rows:repeat(6,minmax(0,1fr))!important}.ext-grid-rows-none{grid-template-rows:none!important}.ext-flex-row{flex-direction:row!important}.ext-flex-row-reverse{flex-direction:row-reverse!important}.ext-flex-col{flex-direction:column!important}.ext-flex-col-reverse{flex-direction:column-reverse!important}.ext-flex-wrap{flex-wrap:wrap!important}.ext-flex-wrap-reverse{flex-wrap:wrap-reverse!important}.ext-flex-nowrap{flex-wrap:nowrap!important}.ext-items-start{align-items:flex-start!important}.ext-items-end{align-items:flex-end!important}.ext-items-center{align-items:center!important}.ext-items-baseline{align-items:baseline!important}.ext-items-stretch{align-items:stretch!important}.ext-justify-start{justify-content:flex-start!important}.ext-justify-end{justify-content:flex-end!important}.ext-justify-center{justify-content:center!important}.ext-justify-between{justify-content:space-between!important}.ext-justify-around{justify-content:space-around!important}.ext-justify-evenly{justify-content:space-evenly!important}.ext-justify-items-start{justify-items:start!important}.ext-justify-items-end{justify-items:end!important}.ext-justify-items-center{justify-items:center!important}.ext-justify-items-stretch{justify-items:stretch!important}.ext-gap-0{gap:0!important}.ext-gap-base{gap:var(--wp--style--block-gap,1.75rem)!important}.ext-gap-lg{gap:var(--extendify--spacing--large,3rem)!important}.ext-gap-x-0{-moz-column-gap:0!important;column-gap:0!important}.ext-gap-x-base{-moz-column-gap:var(--wp--style--block-gap,1.75rem)!important;column-gap:var(--wp--style--block-gap,1.75rem)!important}.ext-gap-x-lg{-moz-column-gap:var(--extendify--spacing--large,3rem)!important;column-gap:var(--extendify--spacing--large,3rem)!important}.ext-gap-y-0{row-gap:0!important}.ext-gap-y-base{row-gap:var(--wp--style--block-gap,1.75rem)!important}.ext-gap-y-lg{row-gap:var(--extendify--spacing--large,3rem)!important}.ext-justify-self-auto{justify-self:auto!important}.ext-justify-self-start{justify-self:start!important}.ext-justify-self-end{justify-self:end!important}.ext-justify-self-center{justify-self:center!important}.ext-justify-self-stretch{justify-self:stretch!important}.ext-rounded-none{border-radius:0!important}.ext-rounded-full{border-radius:9999px!important}.ext-rounded-t-none{border-top-left-radius:0!important;border-top-right-radius:0!important}.ext-rounded-t-full{border-top-left-radius:9999px!important;border-top-right-radius:9999px!important}.ext-rounded-r-none{border-bottom-right-radius:0!important;border-top-right-radius:0!important}.ext-rounded-r-full{border-bottom-right-radius:9999px!important;border-top-right-radius:9999px!important}.ext-rounded-b-none{border-bottom-left-radius:0!important;border-bottom-right-radius:0!important}.ext-rounded-b-full{border-bottom-left-radius:9999px!important;border-bottom-right-radius:9999px!important}.ext-rounded-l-none{border-bottom-left-radius:0!important;border-top-left-radius:0!important}.ext-rounded-l-full{border-bottom-left-radius:9999px!important;border-top-left-radius:9999px!important}.ext-rounded-tl-none{border-top-left-radius:0!important}.ext-rounded-tl-full{border-top-left-radius:9999px!important}.ext-rounded-tr-none{border-top-right-radius:0!important}.ext-rounded-tr-full{border-top-right-radius:9999px!important}.ext-rounded-br-none{border-bottom-right-radius:0!important}.ext-rounded-br-full{border-bottom-right-radius:9999px!important}.ext-rounded-bl-none{border-bottom-left-radius:0!important}.ext-rounded-bl-full{border-bottom-left-radius:9999px!important}.ext-border-0{border-width:0!important}.ext-border-t-0{border-top-width:0!important}.ext-border-r-0{border-right-width:0!important}.ext-border-b-0{border-bottom-width:0!important}.ext-border-l-0{border-left-width:0!important}.ext-p-0:not([style*=padding]){padding:0!important}.ext-p-base:not([style*=padding]){padding:var(--wp--style--block-gap,1.75rem)!important}.ext-p-lg:not([style*=padding]){padding:var(--extendify--spacing--large,3rem)!important}.ext-px-0:not([style*=padding]){padding-left:0!important;padding-right:0!important}.ext-px-base:not([style*=padding]){padding-left:var(--wp--style--block-gap,1.75rem)!important;padding-right:var(--wp--style--block-gap,1.75rem)!important}.ext-px-lg:not([style*=padding]){padding-left:var(--extendify--spacing--large,3rem)!important;padding-right:var(--extendify--spacing--large,3rem)!important}.ext-py-0:not([style*=padding]){padding-bottom:0!important;padding-top:0!important}.ext-py-base:not([style*=padding]){padding-bottom:var(--wp--style--block-gap,1.75rem)!important;padding-top:var(--wp--style--block-gap,1.75rem)!important}.ext-py-lg:not([style*=padding]){padding-bottom:var(--extendify--spacing--large,3rem)!important;padding-top:var(--extendify--spacing--large,3rem)!important}.ext-pt-0:not([style*=padding]){padding-top:0!important}.ext-pt-base:not([style*=padding]){padding-top:var(--wp--style--block-gap,1.75rem)!important}.ext-pt-lg:not([style*=padding]){padding-top:var(--extendify--spacing--large,3rem)!important}.ext-pr-0:not([style*=padding]){padding-right:0!important}.ext-pr-base:not([style*=padding]){padding-right:var(--wp--style--block-gap,1.75rem)!important}.ext-pr-lg:not([style*=padding]){padding-right:var(--extendify--spacing--large,3rem)!important}.ext-pb-0:not([style*=padding]){padding-bottom:0!important}.ext-pb-base:not([style*=padding]){padding-bottom:var(--wp--style--block-gap,1.75rem)!important}.ext-pb-lg:not([style*=padding]){padding-bottom:var(--extendify--spacing--large,3rem)!important}.ext-pl-0:not([style*=padding]){padding-left:0!important}.ext-pl-base:not([style*=padding]){padding-left:var(--wp--style--block-gap,1.75rem)!important}.ext-pl-lg:not([style*=padding]){padding-left:var(--extendify--spacing--large,3rem)!important}.ext-text-left{text-align:left!important}.ext-text-center{text-align:center!important}.ext-text-right{text-align:right!important}.ext-leading-none{line-height:1!important}.ext-leading-tight{line-height:1.25!important}.ext-leading-snug{line-height:1.375!important}.ext-leading-normal{line-height:1.5!important}.ext-leading-relaxed{line-height:1.625!important}.ext-leading-loose{line-height:2!important}.clip-path--rhombus img{-webkit-clip-path:polygon(15% 6%,80% 29%,84% 93%,23% 69%);clip-path:polygon(15% 6%,80% 29%,84% 93%,23% 69%)}.clip-path--diamond img{-webkit-clip-path:polygon(5% 29%,60% 2%,91% 64%,36% 89%);clip-path:polygon(5% 29%,60% 2%,91% 64%,36% 89%)}.clip-path--rhombus-alt img{-webkit-clip-path:polygon(14% 9%,85% 24%,91% 89%,19% 76%);clip-path:polygon(14% 9%,85% 24%,91% 89%,19% 76%)}.wp-block-columns[class*=fullwidth-cols]{margin-bottom:unset}.wp-block-column.editor\:pointer-events-none{margin-bottom:0!important;margin-top:0!important}.is-root-container.block-editor-block-list__layout>[data-align=full]:not(:first-of-type)>.wp-block-column.editor\:pointer-events-none,.is-root-container.block-editor-block-list__layout>[data-align=wide]>.wp-block-column.editor\:pointer-events-none{margin-top:calc(var(--wp--style--block-gap, 28px)*-1)!important}.ext .wp-block-columns .wp-block-column[style*=padding]{padding-left:0!important;padding-right:0!important}.ext .wp-block-columns+.wp-block-columns:not([class*=mt-]):not([class*=my-]):not([style*=margin]){margin-top:0!important}[class*=fullwidth-cols] .wp-block-column:first-child,[class*=fullwidth-cols] .wp-block-group:first-child{margin-top:0}[class*=fullwidth-cols] .wp-block-column:last-child,[class*=fullwidth-cols] .wp-block-group:last-child{margin-bottom:0}[class*=fullwidth-cols] .wp-block-column:first-child>*,[class*=fullwidth-cols] .wp-block-column>:first-child{margin-top:0}.ext .is-not-stacked-on-mobile .wp-block-column,[class*=fullwidth-cols] .wp-block-column>:last-child{margin-bottom:0}.wp-block-columns[class*=fullwidth-cols]:not(.is-not-stacked-on-mobile)>.wp-block-column:not(:last-child){margin-bottom:var(--wp--style--block-gap,1.75rem)}@media (min-width:782px){.wp-block-columns[class*=fullwidth-cols]:not(.is-not-stacked-on-mobile)>.wp-block-column:not(:last-child){margin-bottom:0}}.wp-block-columns[class*=fullwidth-cols].is-not-stacked-on-mobile>.wp-block-column{margin-bottom:0!important}@media (min-width:600px) and (max-width:781px){.wp-block-columns[class*=fullwidth-cols]:not(.is-not-stacked-on-mobile)>.wp-block-column:nth-child(2n){margin-left:var(--wp--style--block-gap,2em)}}@media (max-width:781px){.tablet\:fullwidth-cols.wp-block-columns:not(.is-not-stacked-on-mobile){flex-wrap:wrap}.tablet\:fullwidth-cols.wp-block-columns:not(.is-not-stacked-on-mobile)>.wp-block-column,.tablet\:fullwidth-cols.wp-block-columns:not(.is-not-stacked-on-mobile)>.wp-block-column:not([style*=margin]){margin-left:0!important}.tablet\:fullwidth-cols.wp-block-columns:not(.is-not-stacked-on-mobile)>.wp-block-column{flex-basis:100%!important}}@media (max-width:1079px){.desktop\:fullwidth-cols.wp-block-columns:not(.is-not-stacked-on-mobile){flex-wrap:wrap}.desktop\:fullwidth-cols.wp-block-columns:not(.is-not-stacked-on-mobile)>.wp-block-column,.desktop\:fullwidth-cols.wp-block-columns:not(.is-not-stacked-on-mobile)>.wp-block-column:not([style*=margin]){margin-left:0!important}.desktop\:fullwidth-cols.wp-block-columns:not(.is-not-stacked-on-mobile)>.wp-block-column{flex-basis:100%!important}.desktop\:fullwidth-cols.wp-block-columns:not(.is-not-stacked-on-mobile)>.wp-block-column:not(:last-child){margin-bottom:var(--wp--style--block-gap,1.75rem)!important}}.direction-rtl{direction:rtl}.direction-ltr{direction:ltr}.is-style-inline-list{padding-left:0!important}.is-style-inline-list li{list-style-type:none!important}@media (min-width:782px){.is-style-inline-list li{display:inline!important;margin-right:var(--wp--style--block-gap,1.75rem)!important}}@media (min-width:782px){.is-style-inline-list li:first-child{margin-left:0!important}}@media (min-width:782px){.is-style-inline-list li:last-child{margin-right:0!important}}.bring-to-front{position:relative;z-index:10}.text-stroke{-webkit-text-stroke-color:var(--wp--preset--color--background)}.text-stroke,.text-stroke--primary{-webkit-text-stroke-width:var(
+        --wp--custom--typography--text-stroke-width,2px
+    )}.text-stroke--primary{-webkit-text-stroke-color:var(--wp--preset--color--primary)}.text-stroke--secondary{-webkit-text-stroke-width:var(
+        --wp--custom--typography--text-stroke-width,2px
+    );-webkit-text-stroke-color:var(--wp--preset--color--secondary)}.editor\:no-caption .block-editor-rich-text__editable{display:none!important}.editor\:no-inserter .wp-block-column:not(.is-selected)>.block-list-appender,.editor\:no-inserter .wp-block-cover__inner-container>.block-list-appender,.editor\:no-inserter .wp-block-group__inner-container>.block-list-appender,.editor\:no-inserter>.block-list-appender{display:none}.editor\:no-resize .components-resizable-box__handle,.editor\:no-resize .components-resizable-box__handle:after,.editor\:no-resize .components-resizable-box__side-handle:before{display:none;pointer-events:none}.editor\:no-resize .components-resizable-box__container{display:block}.editor\:pointer-events-none{pointer-events:none}.is-style-angled{justify-content:flex-end}.ext .is-style-angled>[class*=_inner-container],.is-style-angled{align-items:center}.is-style-angled .wp-block-cover__image-background,.is-style-angled .wp-block-cover__video-background{-webkit-clip-path:polygon(0 0,30% 0,50% 100%,0 100%);clip-path:polygon(0 0,30% 0,50% 100%,0 100%);z-index:1}@media (min-width:782px){.is-style-angled .wp-block-cover__image-background,.is-style-angled .wp-block-cover__video-background{-webkit-clip-path:polygon(0 0,55% 0,65% 100%,0 100%);clip-path:polygon(0 0,55% 0,65% 100%,0 100%)}}.has-foreground-color{color:var(--wp--preset--color--foreground,#000)!important}.has-foreground-background-color{background-color:var(--wp--preset--color--foreground,#000)!important}.has-background-color{color:var(--wp--preset--color--background,#fff)!important}.has-background-background-color{background-color:var(--wp--preset--color--background,#fff)!important}.has-primary-color{color:var(--wp--preset--color--primary,#4b5563)!important}.has-primary-background-color{background-color:var(--wp--preset--color--primary,#4b5563)!important}.has-secondary-color{color:var(--wp--preset--color--secondary,#9ca3af)!important}.has-secondary-background-color{background-color:var(--wp--preset--color--secondary,#9ca3af)!important}.ext.has-text-color h1,.ext.has-text-color h2,.ext.has-text-color h3,.ext.has-text-color h4,.ext.has-text-color h5,.ext.has-text-color h6,.ext.has-text-color p{color:currentColor}.has-white-color{color:var(--wp--preset--color--white,#fff)!important}.has-black-color{color:var(--wp--preset--color--black,#000)!important}.has-ext-foreground-background-color{background-color:var(
+        --wp--preset--color--foreground,var(--wp--preset--color--black,#000)
+    )!important}.has-ext-primary-background-color{background-color:var(
+        --wp--preset--color--primary,var(--wp--preset--color--cyan-bluish-gray,#000)
+    )!important}.wp-block-button__link.has-black-background-color{border-color:var(--wp--preset--color--black,#000)}.wp-block-button__link.has-white-background-color{border-color:var(--wp--preset--color--white,#fff)}.has-ext-small-font-size{font-size:var(--wp--preset--font-size--ext-small)!important}.has-ext-medium-font-size{font-size:var(--wp--preset--font-size--ext-medium)!important}.has-ext-large-font-size{font-size:var(--wp--preset--font-size--ext-large)!important;line-height:1.2}.has-ext-x-large-font-size{font-size:var(--wp--preset--font-size--ext-x-large)!important;line-height:1}.has-ext-xx-large-font-size{font-size:var(--wp--preset--font-size--ext-xx-large)!important;line-height:1}.has-ext-x-large-font-size:not([style*=line-height]),.has-ext-xx-large-font-size:not([style*=line-height]){line-height:1.1}.ext .wp-block-group>*{margin-bottom:0;margin-top:0}.ext .wp-block-group>*+*{margin-bottom:0}.ext .wp-block-group>*+*,.ext h2{margin-top:var(--wp--style--block-gap,1.75rem)}.ext h2{margin-bottom:var(--wp--style--block-gap,1.75rem)}.has-ext-x-large-font-size+h3,.has-ext-x-large-font-size+p{margin-top:.5rem}.ext .wp-block-buttons>.wp-block-button.wp-block-button__width-25{min-width:12rem;width:calc(25% - var(--wp--style--block-gap, .5em)*.75)}.ext .ext-grid>[class*=_inner-container]{display:grid}.ext>[class*=_inner-container]>.ext-grid:not([class*=columns]),.ext>[class*=_inner-container]>.wp-block>.ext-grid:not([class*=columns]){display:initial!important}.ext .ext-grid-cols-1>[class*=_inner-container]{grid-template-columns:repeat(1,minmax(0,1fr))!important}.ext .ext-grid-cols-2>[class*=_inner-container]{grid-template-columns:repeat(2,minmax(0,1fr))!important}.ext .ext-grid-cols-3>[class*=_inner-container]{grid-template-columns:repeat(3,minmax(0,1fr))!important}.ext .ext-grid-cols-4>[class*=_inner-container]{grid-template-columns:repeat(4,minmax(0,1fr))!important}.ext .ext-grid-cols-5>[class*=_inner-container]{grid-template-columns:repeat(5,minmax(0,1fr))!important}.ext .ext-grid-cols-6>[class*=_inner-container]{grid-template-columns:repeat(6,minmax(0,1fr))!important}.ext .ext-grid-cols-7>[class*=_inner-container]{grid-template-columns:repeat(7,minmax(0,1fr))!important}.ext .ext-grid-cols-8>[class*=_inner-container]{grid-template-columns:repeat(8,minmax(0,1fr))!important}.ext .ext-grid-cols-9>[class*=_inner-container]{grid-template-columns:repeat(9,minmax(0,1fr))!important}.ext .ext-grid-cols-10>[class*=_inner-container]{grid-template-columns:repeat(10,minmax(0,1fr))!important}.ext .ext-grid-cols-11>[class*=_inner-container]{grid-template-columns:repeat(11,minmax(0,1fr))!important}.ext .ext-grid-cols-12>[class*=_inner-container]{grid-template-columns:repeat(12,minmax(0,1fr))!important}.ext .ext-grid-cols-13>[class*=_inner-container]{grid-template-columns:repeat(13,minmax(0,1fr))!important}.ext .ext-grid-cols-none>[class*=_inner-container]{grid-template-columns:none!important}.ext .ext-grid-rows-1>[class*=_inner-container]{grid-template-rows:repeat(1,minmax(0,1fr))!important}.ext .ext-grid-rows-2>[class*=_inner-container]{grid-template-rows:repeat(2,minmax(0,1fr))!important}.ext .ext-grid-rows-3>[class*=_inner-container]{grid-template-rows:repeat(3,minmax(0,1fr))!important}.ext .ext-grid-rows-4>[class*=_inner-container]{grid-template-rows:repeat(4,minmax(0,1fr))!important}.ext .ext-grid-rows-5>[class*=_inner-container]{grid-template-rows:repeat(5,minmax(0,1fr))!important}.ext .ext-grid-rows-6>[class*=_inner-container]{grid-template-rows:repeat(6,minmax(0,1fr))!important}.ext .ext-grid-rows-none>[class*=_inner-container]{grid-template-rows:none!important}.ext .ext-items-start>[class*=_inner-container]{align-items:flex-start!important}.ext .ext-items-end>[class*=_inner-container]{align-items:flex-end!important}.ext .ext-items-center>[class*=_inner-container]{align-items:center!important}.ext .ext-items-baseline>[class*=_inner-container]{align-items:baseline!important}.ext .ext-items-stretch>[class*=_inner-container]{align-items:stretch!important}.ext.wp-block-group>:last-child{margin-bottom:0}.ext .wp-block-group__inner-container{padding:0!important}.ext.has-background{padding-left:var(--wp--style--block-gap,1.75rem);padding-right:var(--wp--style--block-gap,1.75rem)}.ext [class*=inner-container]>.alignwide [class*=inner-container],.ext [class*=inner-container]>[data-align=wide] [class*=inner-container]{max-width:var(--responsive--alignwide-width,120rem)}.ext [class*=inner-container]>.alignwide [class*=inner-container]>*,.ext [class*=inner-container]>[data-align=wide] [class*=inner-container]>*{max-width:100%!important}.ext .wp-block-image{position:relative;text-align:center}.ext .wp-block-image img{display:inline-block;vertical-align:middle}body{--extendify--spacing--large:var(
+        --wp--custom--spacing--large,clamp(2em,8vw,8em)
+    );--wp--preset--font-size--ext-small:1rem;--wp--preset--font-size--ext-medium:1.125rem;--wp--preset--font-size--ext-large:clamp(1.65rem,3.5vw,2.15rem);--wp--preset--font-size--ext-x-large:clamp(3rem,6vw,4.75rem);--wp--preset--font-size--ext-xx-large:clamp(3.25rem,7.5vw,5.75rem);--wp--preset--color--black:#000;--wp--preset--color--white:#fff}.ext *{box-sizing:border-box}.block-editor-block-preview__content-iframe .ext [data-type="core/spacer"] .components-resizable-box__container{background:transparent!important}.block-editor-block-preview__content-iframe .ext [data-type="core/spacer"] .block-library-spacer__resize-container:before{display:none!important}.ext .wp-block-group__inner-container figure.wp-block-gallery.alignfull{margin-bottom:unset;margin-top:unset}.ext .alignwide{margin-left:auto!important;margin-right:auto!important}.is-root-container.block-editor-block-list__layout>[data-align=full]:not(:first-of-type)>.ext-my-0,.is-root-container.block-editor-block-list__layout>[data-align=wide]>.ext-my-0:not([style*=margin]){margin-top:calc(var(--wp--style--block-gap, 28px)*-1)!important}.block-editor-block-preview__content-iframe .preview\:min-h-50{min-height:50vw!important}.block-editor-block-preview__content-iframe .preview\:min-h-60{min-height:60vw!important}.block-editor-block-preview__content-iframe .preview\:min-h-70{min-height:70vw!important}.block-editor-block-preview__content-iframe .preview\:min-h-80{min-height:80vw!important}.block-editor-block-preview__content-iframe .preview\:min-h-100{min-height:100vw!important}.ext-mr-0.alignfull:not([style*=margin]):not([style*=margin]){margin-right:0!important}.ext-ml-0:not([style*=margin]):not([style*=margin]){margin-left:0!important}.is-root-container .wp-block[data-align=full]>.ext-mx-0:not([style*=margin]):not([style*=margin]){margin-left:calc(var(--wp--custom--spacing--outer, 0)*1)!important;margin-right:calc(var(--wp--custom--spacing--outer, 0)*1)!important;overflow:hidden;width:unset}@media (min-width:782px){.tablet\:ext-absolute{position:absolute!important}.tablet\:ext-relative{position:relative!important}.tablet\:ext-top-base{top:var(--wp--style--block-gap,1.75rem)!important}.tablet\:ext-top-lg{top:var(--extendify--spacing--large,3rem)!important}.tablet\:ext--top-base{top:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.tablet\:ext--top-lg{top:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.tablet\:ext-right-base{right:var(--wp--style--block-gap,1.75rem)!important}.tablet\:ext-right-lg{right:var(--extendify--spacing--large,3rem)!important}.tablet\:ext--right-base{right:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.tablet\:ext--right-lg{right:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.tablet\:ext-bottom-base{bottom:var(--wp--style--block-gap,1.75rem)!important}.tablet\:ext-bottom-lg{bottom:var(--extendify--spacing--large,3rem)!important}.tablet\:ext--bottom-base{bottom:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.tablet\:ext--bottom-lg{bottom:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.tablet\:ext-left-base{left:var(--wp--style--block-gap,1.75rem)!important}.tablet\:ext-left-lg{left:var(--extendify--spacing--large,3rem)!important}.tablet\:ext--left-base{left:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.tablet\:ext--left-lg{left:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.tablet\:ext-order-1{order:1!important}.tablet\:ext-order-2{order:2!important}.tablet\:ext-m-0:not([style*=margin]){margin:0!important}.tablet\:ext-m-auto:not([style*=margin]){margin:auto!important}.tablet\:ext-m-base:not([style*=margin]){margin:var(--wp--style--block-gap,1.75rem)!important}.tablet\:ext-m-lg:not([style*=margin]){margin:var(--extendify--spacing--large,3rem)!important}.tablet\:ext--m-base:not([style*=margin]){margin:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.tablet\:ext--m-lg:not([style*=margin]){margin:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.tablet\:ext-mx-0:not([style*=margin]){margin-left:0!important;margin-right:0!important}.tablet\:ext-mx-auto:not([style*=margin]){margin-left:auto!important;margin-right:auto!important}.tablet\:ext-mx-base:not([style*=margin]){margin-left:var(--wp--style--block-gap,1.75rem)!important;margin-right:var(--wp--style--block-gap,1.75rem)!important}.tablet\:ext-mx-lg:not([style*=margin]){margin-left:var(--extendify--spacing--large,3rem)!important;margin-right:var(--extendify--spacing--large,3rem)!important}.tablet\:ext--mx-base:not([style*=margin]){margin-left:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important;margin-right:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.tablet\:ext--mx-lg:not([style*=margin]){margin-left:calc(var(--extendify--spacing--large, 3rem)*-1)!important;margin-right:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.tablet\:ext-my-0:not([style*=margin]){margin-bottom:0!important;margin-top:0!important}.tablet\:ext-my-auto:not([style*=margin]){margin-bottom:auto!important;margin-top:auto!important}.tablet\:ext-my-base:not([style*=margin]){margin-bottom:var(--wp--style--block-gap,1.75rem)!important;margin-top:var(--wp--style--block-gap,1.75rem)!important}.tablet\:ext-my-lg:not([style*=margin]){margin-bottom:var(--extendify--spacing--large,3rem)!important;margin-top:var(--extendify--spacing--large,3rem)!important}.tablet\:ext--my-base:not([style*=margin]){margin-bottom:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important;margin-top:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.tablet\:ext--my-lg:not([style*=margin]){margin-bottom:calc(var(--extendify--spacing--large, 3rem)*-1)!important;margin-top:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.tablet\:ext-mt-0:not([style*=margin]){margin-top:0!important}.tablet\:ext-mt-auto:not([style*=margin]){margin-top:auto!important}.tablet\:ext-mt-base:not([style*=margin]){margin-top:var(--wp--style--block-gap,1.75rem)!important}.tablet\:ext-mt-lg:not([style*=margin]){margin-top:var(--extendify--spacing--large,3rem)!important}.tablet\:ext--mt-base:not([style*=margin]){margin-top:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.tablet\:ext--mt-lg:not([style*=margin]){margin-top:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.tablet\:ext-mr-0:not([style*=margin]){margin-right:0!important}.tablet\:ext-mr-auto:not([style*=margin]){margin-right:auto!important}.tablet\:ext-mr-base:not([style*=margin]){margin-right:var(--wp--style--block-gap,1.75rem)!important}.tablet\:ext-mr-lg:not([style*=margin]){margin-right:var(--extendify--spacing--large,3rem)!important}.tablet\:ext--mr-base:not([style*=margin]){margin-right:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.tablet\:ext--mr-lg:not([style*=margin]){margin-right:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.tablet\:ext-mb-0:not([style*=margin]){margin-bottom:0!important}.tablet\:ext-mb-auto:not([style*=margin]){margin-bottom:auto!important}.tablet\:ext-mb-base:not([style*=margin]){margin-bottom:var(--wp--style--block-gap,1.75rem)!important}.tablet\:ext-mb-lg:not([style*=margin]){margin-bottom:var(--extendify--spacing--large,3rem)!important}.tablet\:ext--mb-base:not([style*=margin]){margin-bottom:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.tablet\:ext--mb-lg:not([style*=margin]){margin-bottom:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.tablet\:ext-ml-0:not([style*=margin]){margin-left:0!important}.tablet\:ext-ml-auto:not([style*=margin]){margin-left:auto!important}.tablet\:ext-ml-base:not([style*=margin]){margin-left:var(--wp--style--block-gap,1.75rem)!important}.tablet\:ext-ml-lg:not([style*=margin]){margin-left:var(--extendify--spacing--large,3rem)!important}.tablet\:ext--ml-base:not([style*=margin]){margin-left:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.tablet\:ext--ml-lg:not([style*=margin]){margin-left:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.tablet\:ext-block{display:block!important}.tablet\:ext-inline-block{display:inline-block!important}.tablet\:ext-inline{display:inline!important}.tablet\:ext-flex{display:flex!important}.tablet\:ext-inline-flex{display:inline-flex!important}.tablet\:ext-grid{display:grid!important}.tablet\:ext-inline-grid{display:inline-grid!important}.tablet\:ext-hidden{display:none!important}.tablet\:ext-w-auto{width:auto!important}.tablet\:ext-w-full{width:100%!important}.tablet\:ext-max-w-full{max-width:100%!important}.tablet\:ext-flex-1{flex:1 1 0%!important}.tablet\:ext-flex-auto{flex:1 1 auto!important}.tablet\:ext-flex-initial{flex:0 1 auto!important}.tablet\:ext-flex-none{flex:none!important}.tablet\:ext-flex-shrink-0{flex-shrink:0!important}.tablet\:ext-flex-shrink{flex-shrink:1!important}.tablet\:ext-flex-grow-0{flex-grow:0!important}.tablet\:ext-flex-grow{flex-grow:1!important}.tablet\:ext-list-none{list-style-type:none!important}.tablet\:ext-grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))!important}.tablet\:ext-grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))!important}.tablet\:ext-grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))!important}.tablet\:ext-grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr))!important}.tablet\:ext-grid-cols-5{grid-template-columns:repeat(5,minmax(0,1fr))!important}.tablet\:ext-grid-cols-6{grid-template-columns:repeat(6,minmax(0,1fr))!important}.tablet\:ext-grid-cols-7{grid-template-columns:repeat(7,minmax(0,1fr))!important}.tablet\:ext-grid-cols-8{grid-template-columns:repeat(8,minmax(0,1fr))!important}.tablet\:ext-grid-cols-9{grid-template-columns:repeat(9,minmax(0,1fr))!important}.tablet\:ext-grid-cols-10{grid-template-columns:repeat(10,minmax(0,1fr))!important}.tablet\:ext-grid-cols-11{grid-template-columns:repeat(11,minmax(0,1fr))!important}.tablet\:ext-grid-cols-12{grid-template-columns:repeat(12,minmax(0,1fr))!important}.tablet\:ext-grid-cols-none{grid-template-columns:none!important}.tablet\:ext-flex-row{flex-direction:row!important}.tablet\:ext-flex-row-reverse{flex-direction:row-reverse!important}.tablet\:ext-flex-col{flex-direction:column!important}.tablet\:ext-flex-col-reverse{flex-direction:column-reverse!important}.tablet\:ext-flex-wrap{flex-wrap:wrap!important}.tablet\:ext-flex-wrap-reverse{flex-wrap:wrap-reverse!important}.tablet\:ext-flex-nowrap{flex-wrap:nowrap!important}.tablet\:ext-items-start{align-items:flex-start!important}.tablet\:ext-items-end{align-items:flex-end!important}.tablet\:ext-items-center{align-items:center!important}.tablet\:ext-items-baseline{align-items:baseline!important}.tablet\:ext-items-stretch{align-items:stretch!important}.tablet\:ext-justify-start{justify-content:flex-start!important}.tablet\:ext-justify-end{justify-content:flex-end!important}.tablet\:ext-justify-center{justify-content:center!important}.tablet\:ext-justify-between{justify-content:space-between!important}.tablet\:ext-justify-around{justify-content:space-around!important}.tablet\:ext-justify-evenly{justify-content:space-evenly!important}.tablet\:ext-justify-items-start{justify-items:start!important}.tablet\:ext-justify-items-end{justify-items:end!important}.tablet\:ext-justify-items-center{justify-items:center!important}.tablet\:ext-justify-items-stretch{justify-items:stretch!important}.tablet\:ext-justify-self-auto{justify-self:auto!important}.tablet\:ext-justify-self-start{justify-self:start!important}.tablet\:ext-justify-self-end{justify-self:end!important}.tablet\:ext-justify-self-center{justify-self:center!important}.tablet\:ext-justify-self-stretch{justify-self:stretch!important}.tablet\:ext-p-0:not([style*=padding]){padding:0!important}.tablet\:ext-p-base:not([style*=padding]){padding:var(--wp--style--block-gap,1.75rem)!important}.tablet\:ext-p-lg:not([style*=padding]){padding:var(--extendify--spacing--large,3rem)!important}.tablet\:ext-px-0:not([style*=padding]){padding-left:0!important;padding-right:0!important}.tablet\:ext-px-base:not([style*=padding]){padding-left:var(--wp--style--block-gap,1.75rem)!important;padding-right:var(--wp--style--block-gap,1.75rem)!important}.tablet\:ext-px-lg:not([style*=padding]){padding-left:var(--extendify--spacing--large,3rem)!important;padding-right:var(--extendify--spacing--large,3rem)!important}.tablet\:ext-py-0:not([style*=padding]){padding-bottom:0!important;padding-top:0!important}.tablet\:ext-py-base:not([style*=padding]){padding-bottom:var(--wp--style--block-gap,1.75rem)!important;padding-top:var(--wp--style--block-gap,1.75rem)!important}.tablet\:ext-py-lg:not([style*=padding]){padding-bottom:var(--extendify--spacing--large,3rem)!important;padding-top:var(--extendify--spacing--large,3rem)!important}.tablet\:ext-pt-0:not([style*=padding]){padding-top:0!important}.tablet\:ext-pt-base:not([style*=padding]){padding-top:var(--wp--style--block-gap,1.75rem)!important}.tablet\:ext-pt-lg:not([style*=padding]){padding-top:var(--extendify--spacing--large,3rem)!important}.tablet\:ext-pr-0:not([style*=padding]){padding-right:0!important}.tablet\:ext-pr-base:not([style*=padding]){padding-right:var(--wp--style--block-gap,1.75rem)!important}.tablet\:ext-pr-lg:not([style*=padding]){padding-right:var(--extendify--spacing--large,3rem)!important}.tablet\:ext-pb-0:not([style*=padding]){padding-bottom:0!important}.tablet\:ext-pb-base:not([style*=padding]){padding-bottom:var(--wp--style--block-gap,1.75rem)!important}.tablet\:ext-pb-lg:not([style*=padding]){padding-bottom:var(--extendify--spacing--large,3rem)!important}.tablet\:ext-pl-0:not([style*=padding]){padding-left:0!important}.tablet\:ext-pl-base:not([style*=padding]){padding-left:var(--wp--style--block-gap,1.75rem)!important}.tablet\:ext-pl-lg:not([style*=padding]){padding-left:var(--extendify--spacing--large,3rem)!important}.tablet\:ext-text-left{text-align:left!important}.tablet\:ext-text-center{text-align:center!important}.tablet\:ext-text-right{text-align:right!important}}@media (min-width:1080px){.desktop\:ext-absolute{position:absolute!important}.desktop\:ext-relative{position:relative!important}.desktop\:ext-top-base{top:var(--wp--style--block-gap,1.75rem)!important}.desktop\:ext-top-lg{top:var(--extendify--spacing--large,3rem)!important}.desktop\:ext--top-base{top:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.desktop\:ext--top-lg{top:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.desktop\:ext-right-base{right:var(--wp--style--block-gap,1.75rem)!important}.desktop\:ext-right-lg{right:var(--extendify--spacing--large,3rem)!important}.desktop\:ext--right-base{right:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.desktop\:ext--right-lg{right:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.desktop\:ext-bottom-base{bottom:var(--wp--style--block-gap,1.75rem)!important}.desktop\:ext-bottom-lg{bottom:var(--extendify--spacing--large,3rem)!important}.desktop\:ext--bottom-base{bottom:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.desktop\:ext--bottom-lg{bottom:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.desktop\:ext-left-base{left:var(--wp--style--block-gap,1.75rem)!important}.desktop\:ext-left-lg{left:var(--extendify--spacing--large,3rem)!important}.desktop\:ext--left-base{left:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.desktop\:ext--left-lg{left:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.desktop\:ext-order-1{order:1!important}.desktop\:ext-order-2{order:2!important}.desktop\:ext-m-0:not([style*=margin]){margin:0!important}.desktop\:ext-m-auto:not([style*=margin]){margin:auto!important}.desktop\:ext-m-base:not([style*=margin]){margin:var(--wp--style--block-gap,1.75rem)!important}.desktop\:ext-m-lg:not([style*=margin]){margin:var(--extendify--spacing--large,3rem)!important}.desktop\:ext--m-base:not([style*=margin]){margin:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.desktop\:ext--m-lg:not([style*=margin]){margin:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.desktop\:ext-mx-0:not([style*=margin]){margin-left:0!important;margin-right:0!important}.desktop\:ext-mx-auto:not([style*=margin]){margin-left:auto!important;margin-right:auto!important}.desktop\:ext-mx-base:not([style*=margin]){margin-left:var(--wp--style--block-gap,1.75rem)!important;margin-right:var(--wp--style--block-gap,1.75rem)!important}.desktop\:ext-mx-lg:not([style*=margin]){margin-left:var(--extendify--spacing--large,3rem)!important;margin-right:var(--extendify--spacing--large,3rem)!important}.desktop\:ext--mx-base:not([style*=margin]){margin-left:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important;margin-right:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.desktop\:ext--mx-lg:not([style*=margin]){margin-left:calc(var(--extendify--spacing--large, 3rem)*-1)!important;margin-right:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.desktop\:ext-my-0:not([style*=margin]){margin-bottom:0!important;margin-top:0!important}.desktop\:ext-my-auto:not([style*=margin]){margin-bottom:auto!important;margin-top:auto!important}.desktop\:ext-my-base:not([style*=margin]){margin-bottom:var(--wp--style--block-gap,1.75rem)!important;margin-top:var(--wp--style--block-gap,1.75rem)!important}.desktop\:ext-my-lg:not([style*=margin]){margin-bottom:var(--extendify--spacing--large,3rem)!important;margin-top:var(--extendify--spacing--large,3rem)!important}.desktop\:ext--my-base:not([style*=margin]){margin-bottom:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important;margin-top:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.desktop\:ext--my-lg:not([style*=margin]){margin-bottom:calc(var(--extendify--spacing--large, 3rem)*-1)!important;margin-top:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.desktop\:ext-mt-0:not([style*=margin]){margin-top:0!important}.desktop\:ext-mt-auto:not([style*=margin]){margin-top:auto!important}.desktop\:ext-mt-base:not([style*=margin]){margin-top:var(--wp--style--block-gap,1.75rem)!important}.desktop\:ext-mt-lg:not([style*=margin]){margin-top:var(--extendify--spacing--large,3rem)!important}.desktop\:ext--mt-base:not([style*=margin]){margin-top:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.desktop\:ext--mt-lg:not([style*=margin]){margin-top:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.desktop\:ext-mr-0:not([style*=margin]){margin-right:0!important}.desktop\:ext-mr-auto:not([style*=margin]){margin-right:auto!important}.desktop\:ext-mr-base:not([style*=margin]){margin-right:var(--wp--style--block-gap,1.75rem)!important}.desktop\:ext-mr-lg:not([style*=margin]){margin-right:var(--extendify--spacing--large,3rem)!important}.desktop\:ext--mr-base:not([style*=margin]){margin-right:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.desktop\:ext--mr-lg:not([style*=margin]){margin-right:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.desktop\:ext-mb-0:not([style*=margin]){margin-bottom:0!important}.desktop\:ext-mb-auto:not([style*=margin]){margin-bottom:auto!important}.desktop\:ext-mb-base:not([style*=margin]){margin-bottom:var(--wp--style--block-gap,1.75rem)!important}.desktop\:ext-mb-lg:not([style*=margin]){margin-bottom:var(--extendify--spacing--large,3rem)!important}.desktop\:ext--mb-base:not([style*=margin]){margin-bottom:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.desktop\:ext--mb-lg:not([style*=margin]){margin-bottom:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.desktop\:ext-ml-0:not([style*=margin]){margin-left:0!important}.desktop\:ext-ml-auto:not([style*=margin]){margin-left:auto!important}.desktop\:ext-ml-base:not([style*=margin]){margin-left:var(--wp--style--block-gap,1.75rem)!important}.desktop\:ext-ml-lg:not([style*=margin]){margin-left:var(--extendify--spacing--large,3rem)!important}.desktop\:ext--ml-base:not([style*=margin]){margin-left:calc(var(--wp--style--block-gap, 1.75rem)*-1)!important}.desktop\:ext--ml-lg:not([style*=margin]){margin-left:calc(var(--extendify--spacing--large, 3rem)*-1)!important}.desktop\:ext-block{display:block!important}.desktop\:ext-inline-block{display:inline-block!important}.desktop\:ext-inline{display:inline!important}.desktop\:ext-flex{display:flex!important}.desktop\:ext-inline-flex{display:inline-flex!important}.desktop\:ext-grid{display:grid!important}.desktop\:ext-inline-grid{display:inline-grid!important}.desktop\:ext-hidden{display:none!important}.desktop\:ext-w-auto{width:auto!important}.desktop\:ext-w-full{width:100%!important}.desktop\:ext-max-w-full{max-width:100%!important}.desktop\:ext-flex-1{flex:1 1 0%!important}.desktop\:ext-flex-auto{flex:1 1 auto!important}.desktop\:ext-flex-initial{flex:0 1 auto!important}.desktop\:ext-flex-none{flex:none!important}.desktop\:ext-flex-shrink-0{flex-shrink:0!important}.desktop\:ext-flex-shrink{flex-shrink:1!important}.desktop\:ext-flex-grow-0{flex-grow:0!important}.desktop\:ext-flex-grow{flex-grow:1!important}.desktop\:ext-list-none{list-style-type:none!important}.desktop\:ext-grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))!important}.desktop\:ext-grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))!important}.desktop\:ext-grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))!important}.desktop\:ext-grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr))!important}.desktop\:ext-grid-cols-5{grid-template-columns:repeat(5,minmax(0,1fr))!important}.desktop\:ext-grid-cols-6{grid-template-columns:repeat(6,minmax(0,1fr))!important}.desktop\:ext-grid-cols-7{grid-template-columns:repeat(7,minmax(0,1fr))!important}.desktop\:ext-grid-cols-8{grid-template-columns:repeat(8,minmax(0,1fr))!important}.desktop\:ext-grid-cols-9{grid-template-columns:repeat(9,minmax(0,1fr))!important}.desktop\:ext-grid-cols-10{grid-template-columns:repeat(10,minmax(0,1fr))!important}.desktop\:ext-grid-cols-11{grid-template-columns:repeat(11,minmax(0,1fr))!important}.desktop\:ext-grid-cols-12{grid-template-columns:repeat(12,minmax(0,1fr))!important}.desktop\:ext-grid-cols-none{grid-template-columns:none!important}.desktop\:ext-flex-row{flex-direction:row!important}.desktop\:ext-flex-row-reverse{flex-direction:row-reverse!important}.desktop\:ext-flex-col{flex-direction:column!important}.desktop\:ext-flex-col-reverse{flex-direction:column-reverse!important}.desktop\:ext-flex-wrap{flex-wrap:wrap!important}.desktop\:ext-flex-wrap-reverse{flex-wrap:wrap-reverse!important}.desktop\:ext-flex-nowrap{flex-wrap:nowrap!important}.desktop\:ext-items-start{align-items:flex-start!important}.desktop\:ext-items-end{align-items:flex-end!important}.desktop\:ext-items-center{align-items:center!important}.desktop\:ext-items-baseline{align-items:baseline!important}.desktop\:ext-items-stretch{align-items:stretch!important}.desktop\:ext-justify-start{justify-content:flex-start!important}.desktop\:ext-justify-end{justify-content:flex-end!important}.desktop\:ext-justify-center{justify-content:center!important}.desktop\:ext-justify-between{justify-content:space-between!important}.desktop\:ext-justify-around{justify-content:space-around!important}.desktop\:ext-justify-evenly{justify-content:space-evenly!important}.desktop\:ext-justify-items-start{justify-items:start!important}.desktop\:ext-justify-items-end{justify-items:end!important}.desktop\:ext-justify-items-center{justify-items:center!important}.desktop\:ext-justify-items-stretch{justify-items:stretch!important}.desktop\:ext-justify-self-auto{justify-self:auto!important}.desktop\:ext-justify-self-start{justify-self:start!important}.desktop\:ext-justify-self-end{justify-self:end!important}.desktop\:ext-justify-self-center{justify-self:center!important}.desktop\:ext-justify-self-stretch{justify-self:stretch!important}.desktop\:ext-p-0:not([style*=padding]){padding:0!important}.desktop\:ext-p-base:not([style*=padding]){padding:var(--wp--style--block-gap,1.75rem)!important}.desktop\:ext-p-lg:not([style*=padding]){padding:var(--extendify--spacing--large,3rem)!important}.desktop\:ext-px-0:not([style*=padding]){padding-left:0!important;padding-right:0!important}.desktop\:ext-px-base:not([style*=padding]){padding-left:var(--wp--style--block-gap,1.75rem)!important;padding-right:var(--wp--style--block-gap,1.75rem)!important}.desktop\:ext-px-lg:not([style*=padding]){padding-left:var(--extendify--spacing--large,3rem)!important;padding-right:var(--extendify--spacing--large,3rem)!important}.desktop\:ext-py-0:not([style*=padding]){padding-bottom:0!important;padding-top:0!important}.desktop\:ext-py-base:not([style*=padding]){padding-bottom:var(--wp--style--block-gap,1.75rem)!important;padding-top:var(--wp--style--block-gap,1.75rem)!important}.desktop\:ext-py-lg:not([style*=padding]){padding-bottom:var(--extendify--spacing--large,3rem)!important;padding-top:var(--extendify--spacing--large,3rem)!important}.desktop\:ext-pt-0:not([style*=padding]){padding-top:0!important}.desktop\:ext-pt-base:not([style*=padding]){padding-top:var(--wp--style--block-gap,1.75rem)!important}.desktop\:ext-pt-lg:not([style*=padding]){padding-top:var(--extendify--spacing--large,3rem)!important}.desktop\:ext-pr-0:not([style*=padding]){padding-right:0!important}.desktop\:ext-pr-base:not([style*=padding]){padding-right:var(--wp--style--block-gap,1.75rem)!important}.desktop\:ext-pr-lg:not([style*=padding]){padding-right:var(--extendify--spacing--large,3rem)!important}.desktop\:ext-pb-0:not([style*=padding]){padding-bottom:0!important}.desktop\:ext-pb-base:not([style*=padding]){padding-bottom:var(--wp--style--block-gap,1.75rem)!important}.desktop\:ext-pb-lg:not([style*=padding]){padding-bottom:var(--extendify--spacing--large,3rem)!important}.desktop\:ext-pl-0:not([style*=padding]){padding-left:0!important}.desktop\:ext-pl-base:not([style*=padding]){padding-left:var(--wp--style--block-gap,1.75rem)!important}.desktop\:ext-pl-lg:not([style*=padding]){padding-left:var(--extendify--spacing--large,3rem)!important}.desktop\:ext-text-left{text-align:left!important}.desktop\:ext-text-center{text-align:center!important}.desktop\:ext-text-right{text-align:right!important}}
+
+</style>
+<link rel="stylesheet" id="font-awesome-official-css" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" type="text/css" media="all" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous">
+<link rel="stylesheet" id="bootstrap-css" href="https://research.chitika.com/wp-content/themes/gillion/css/plugins/bootstrap.min.css?ver=3.3.4" type="text/css" media="all">
+<link rel="stylesheet" id="font-awesome-css" href="https://research.chitika.com/wp-content/plugins/elementor/assets/lib/font-awesome/css/font-awesome.min.css?ver=4.7.0" type="text/css" media="all">
+<link rel="stylesheet" id="gillion-plugins-css" href="https://research.chitika.com/wp-content/themes/gillion/css/plugins.css?ver=5.9.3" type="text/css" media="all">
+<link rel="stylesheet" id="gillion-styles-css" href="https://research.chitika.com/wp-content/themes/gillion/style.css?ver=5.9.3" type="text/css" media="all">
+<link rel="stylesheet" id="gillion-responsive-css" href="https://research.chitika.com/wp-content/themes/gillion/css/responsive.css?ver=5.9.3" type="text/css" media="all">
+<style id="gillion-responsive-inline-css" type="text/css">
+@media (min-width: 1250px) {.container { max-width: 1200px!important;min-width: 1200px!important; width: 1200px!important;}/* Elementor Page Builder */.elementor-section-boxed.elementor-top-section > .elementor-container { width: 1200px;min-width: auto;max-width: 100%; }.elementor-section-boxed.elementor-top-section > .elementor-container .elementor-section > .elementor-container {width: 100%;}} 
+
+
+
+body {}.single-post .post-item-single-container figure img { width: 100%;}.single-post ol li, .single-post ul li { line-height: 1.5;}
+</style>
+<link rel="stylesheet" id="gillion-theme-settings-css" href="https://research.chitika.com/wp-content/uploads/gillion-dynamic-styles.css?ver=809877918" type="text/css" media="all">
+<link rel="stylesheet" id="plyr-css" href="https://research.chitika.com/wp-content/themes/gillion/css/plugins/plyr.css?ver=5.9.3" type="text/css" media="all">
+
+<link rel="stylesheet" id="gillion-child-style-css" href="https://research.chitika.com/wp-content/themes/gillion-child/style.css?ver=5.9.3" type="text/css" media="all">
+<noscript></noscript><link rel="stylesheet" id="font-awesome-official-v4shim-css" href="https://use.fontawesome.com/releases/v5.15.4/css/v4-shims.css" type="text/css" media="all" integrity="sha384-Vq76wejb3QJM4nDatBa5rUOve+9gkegsjCebvV/9fvXlGWo4HCMR4cJZjjcF6Viv" crossorigin="anonymous">
+<style id="font-awesome-official-v4shim-inline-css" type="text/css">
+@font-face {
+font-family: "FontAwesome";
+font-display: block;
+src: url("https://use.fontawesome.com/releases/v5.15.4/webfonts/fa-brands-400.eot"),
+		url("https://use.fontawesome.com/releases/v5.15.4/webfonts/fa-brands-400.eot?#iefix") format("embedded-opentype"),
+		url("https://use.fontawesome.com/releases/v5.15.4/webfonts/fa-brands-400.woff2") format("woff2"),
+		url("https://use.fontawesome.com/releases/v5.15.4/webfonts/fa-brands-400.woff") format("woff"),
+		url("https://use.fontawesome.com/releases/v5.15.4/webfonts/fa-brands-400.ttf") format("truetype"),
+		url("https://use.fontawesome.com/releases/v5.15.4/webfonts/fa-brands-400.svg#fontawesome") format("svg");
+}
+
+@font-face {
+font-family: "FontAwesome";
+font-display: block;
+src: url("https://use.fontawesome.com/releases/v5.15.4/webfonts/fa-solid-900.eot"),
+		url("https://use.fontawesome.com/releases/v5.15.4/webfonts/fa-solid-900.eot?#iefix") format("embedded-opentype"),
+		url("https://use.fontawesome.com/releases/v5.15.4/webfonts/fa-solid-900.woff2") format("woff2"),
+		url("https://use.fontawesome.com/releases/v5.15.4/webfonts/fa-solid-900.woff") format("woff"),
+		url("https://use.fontawesome.com/releases/v5.15.4/webfonts/fa-solid-900.ttf") format("truetype"),
+		url("https://use.fontawesome.com/releases/v5.15.4/webfonts/fa-solid-900.svg#fontawesome") format("svg");
+}
+
+@font-face {
+font-family: "FontAwesome";
+font-display: block;
+src: url("https://use.fontawesome.com/releases/v5.15.4/webfonts/fa-regular-400.eot"),
+		url("https://use.fontawesome.com/releases/v5.15.4/webfonts/fa-regular-400.eot?#iefix") format("embedded-opentype"),
+		url("https://use.fontawesome.com/releases/v5.15.4/webfonts/fa-regular-400.woff2") format("woff2"),
+		url("https://use.fontawesome.com/releases/v5.15.4/webfonts/fa-regular-400.woff") format("woff"),
+		url("https://use.fontawesome.com/releases/v5.15.4/webfonts/fa-regular-400.ttf") format("truetype"),
+		url("https://use.fontawesome.com/releases/v5.15.4/webfonts/fa-regular-400.svg#fontawesome") format("svg");
+unicode-range: U+F004-F005,U+F007,U+F017,U+F022,U+F024,U+F02E,U+F03E,U+F044,U+F057-F059,U+F06E,U+F070,U+F075,U+F07B-F07C,U+F080,U+F086,U+F089,U+F094,U+F09D,U+F0A0,U+F0A4-F0A7,U+F0C5,U+F0C7-F0C8,U+F0E0,U+F0EB,U+F0F3,U+F0F8,U+F0FE,U+F111,U+F118-F11A,U+F11C,U+F133,U+F144,U+F146,U+F14A,U+F14D-F14E,U+F150-F152,U+F15B-F15C,U+F164-F165,U+F185-F186,U+F191-F192,U+F1AD,U+F1C1-F1C9,U+F1CD,U+F1D8,U+F1E3,U+F1EA,U+F1F6,U+F1F9,U+F20A,U+F247-F249,U+F24D,U+F254-F25B,U+F25D,U+F267,U+F271-F274,U+F279,U+F28B,U+F28D,U+F2B5-F2B6,U+F2B9,U+F2BB,U+F2BD,U+F2C1-F2C2,U+F2D0,U+F2D2,U+F2DC,U+F2ED,U+F328,U+F358-F35B,U+F3A5,U+F3D1,U+F410,U+F4AD;
+}
+</style>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" async="async" src="https://research.chitika.com/wp-includes/js/jquery/jquery.min.js?ver=3.6.0" id="jquery-core-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" async="async" src="https://research.chitika.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.3.2" id="jquery-migrate-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" async="async" src="https://research.chitika.com/wp-content/plugins/amazon-polly/public/js/amazonpolly-public.js?ver=1.0.0" id="amazonpolly-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" async="async" src="https://research.chitika.com/wp-content/themes/gillion/js/plugins.js?ver=5.9.3" id="gillion-plugins-js"></script>
+<script type="text/javascript" id="gillion-scripts-js-extra">
+/* <![CDATA[ */
+var gillion_loadmore_posts = {"ajax_url":"https:\/\/research.chitika.com\/wp-admin\/admin-ajax.php"};
+var gillion = {"siteurl":"https:\/\/research.chitika.com\/","loggedin":"","page_loader":"0","notice":"enable","header_animation_dropdown_delay":"1000","header_animation_dropdown":"easeOutQuint","header_animation_dropdown_speed":"300","lightbox_opacity":"0.88","lightbox_transition":"elastic","page_numbers_prev":"Previous","page_numbers_next":"Next","rtl_support":"","footer_parallax":"","social_share":"{\"twitter\":\"1\",\"facebook\":\"1\",\"linkedin\":\"1\",\"whatsapp\":\"1\",\"messenger\":\"1\"}","text_show_all":"Show All"};
+/* ]]> */
+</script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" async="async" src="https://research.chitika.com/wp-content/themes/gillion/js/scripts.js?ver=5.9.3" id="gillion-scripts-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" async="async" src="https://research.chitika.com/wp-content/themes/gillion/js/plugins/plyr.min.js?ver=5.9.3" id="plyr-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" async="async" src="https://research.chitika.com/wp-content/themes/gillion-child/js/scripts.js?ver=5.9.3" id="gillion-child-scripts-js"></script>
+<link rel="https://api.w.org/" href="https://research.chitika.com/wp-json/"><link rel="alternate" type="application/json" href="https://research.chitika.com/wp-json/wp/v2/categories/21"><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://research.chitika.com/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://research.chitika.com/wp-includes/wlwmanifest.xml"> 
+<meta name="generator" content="WordPress 5.9.3">
+<meta name="generator" content="Redux 4.3.15">		<script>
+			document.documentElement.className = document.documentElement.className.replace( 'no-js', 'js' );
+		</script>
+				<style>
+			.no-js img.lazyload { display: none; }
+			figure.wp-block-image img.lazyloading { min-width: 150px; }
+							.lazyload, .lazyloading { opacity: 0; }
+				.lazyloaded {
+					opacity: 1;
+					transition: opacity 400ms;
+					transition-delay: 0ms;
+				}
+					</style>
+		<style type="text/css">.broken_link, a.broken_link {
+	text-decoration: line-through;
+}</style><link rel="icon" href="https://research.chitika.com/wp-content/uploads/2022/02/cropped-chitika-logo_0-32x32.jpg" sizes="32x32">
+<link rel="icon" href="https://research.chitika.com/wp-content/uploads/2022/02/cropped-chitika-logo_0-192x192.jpg" sizes="192x192">
+<link rel="apple-touch-icon" href="https://research.chitika.com/wp-content/uploads/2022/02/cropped-chitika-logo_0-180x180.jpg">
+<meta name="msapplication-TileImage" content="https://research.chitika.com/wp-content/uploads/2022/02/cropped-chitika-logo_0-270x270.jpg">
+</head>
+<body class="archive category category-insights category-21 sh-body-header-sticky sh-bookmarks-style_title sh-title-style1 sh-section-tabs-style1 sh-carousel-style1 sh-carousel-position-title sh-post-categories-style1 sh-review-style1 sh-meta-order-bottom sh-instagram-widget-columns2 sh-categories-position-title sh-media-icon-title sh-wc-labels-off sh-instagram-widget-with-button elementor-default elementor-kit-11604">
+
+
+<div class="sh-header-side">
+	</div>
+<div class="sh-header-side-overlay"></div>
+
+	<div id="page-container" class="">
+		
+	<div class="sh-page-notice">
+		<div class="container">
+			<div class="sh-table">
+				<div class="sh-table-cell">
+					By using our website, you agree to the use of our cookies.				</div>
+				<div class="sh-table-cell text-right">
+																<a href="#" class="sh-page-notice-button">
+							Got it!						</a>
+									</div>
+			</div>
+		</div>
+	</div>
+
+
+									<header class="primary-mobile">
+					<div id="header-mobile" class="sh-header-mobile">
+	<div class="sh-header-mobile-navigation">
+		<div class="container">
+			<div class="sh-table sh-header-mobile-table">
+				<div class="sh-table-cell">
+
+										<nav id="header-navigation-mobile" class="header-standard-position sh-header-mobile-navigation-left">
+						<div class="sh-nav-container">
+							<ul class="sh-nav">
+								<li>
+									<div class="sh-hamburger-menu sh-nav-dropdown">
+					                	<span></span>
+					                	<span></span>
+					                	<span></span>
+					                	<span></span>
+					                </div>
+								</li>
+							</ul>
+						</div>
+					</nav>
+
+				</div>
+				<div class="sh-table-cell sh-header-logo-container">
+
+										        <div class="header-logo">
+            <a href="https://research.chitika.com/" class="header-logo-container sh-table-small">
+                <div class="sh-table-cell">
+
+                    <img width="426" height="118" alt="Chitika Insights" data-src="https://research.chitika.com/wp-content/uploads/2022/02/download-1.png" class="sh-standard-logo lazyloaded" src="https://research.chitika.com/wp-content/uploads/2022/02/download-1.png"><noscript><img width="426" height="118"   alt="Chitika Insights" height=&quot;50&quot; data-src="https://research.chitika.com/wp-content/uploads/2022/02/download-1.png" class="sh-standard-logo lazyload" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" /><noscript><img width="426" height="118" class="sh-standard-logo" src="https://research.chitika.com/wp-content/uploads/2022/02/download-1.png" alt="Chitika Insights" height=&quot;50&quot; /></noscript>
+                    <img width="426" height="118" alt="Chitika Insights" data-src="https://research.chitika.com/wp-content/uploads/2022/02/download-1.png" class="sh-sticky-logo lazyload" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><noscript><img width="426" height="118"   alt="Chitika Insights" height=&quot;50&quot; data-src="https://research.chitika.com/wp-content/uploads/2022/02/download-1.png" class="sh-sticky-logo lazyload" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" /><noscript><img width="426" height="118" class="sh-sticky-logo" src="https://research.chitika.com/wp-content/uploads/2022/02/download-1.png" alt="Chitika Insights" height=&quot;50&quot; /></noscript>
+                    <img width="426" height="118" alt="Chitika Insights" data-src="https://research.chitika.com/wp-content/uploads/2022/02/download-1.png" class="sh-light-logo lazyload" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><noscript><img width="426" height="118"   alt="Chitika Insights" height=&quot;50&quot; data-src="https://research.chitika.com/wp-content/uploads/2022/02/download-1.png" class="sh-light-logo lazyload" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" /><noscript><img width="426" height="118" class="sh-light-logo" src="https://research.chitika.com/wp-content/uploads/2022/02/download-1.png" alt="Chitika Insights" height=&quot;50&quot; /></noscript>
+
+                </div>
+            </a>
+        </div>
+
+    
+				</div>
+				<div class="sh-table-cell">
+
+										<nav class="header-standard-position sh-header-mobile-navigation-right">
+						<div class="sh-nav-container">
+							<ul class="sh-nav">
+
+																 <li class="menu-item menu-item-has-children sh-nav-readmore sh-nav-special"> <a href="https://research.chitika.com/?read-it-later"> <div> <i class="ti-bookmark"></i> <span class="sh-read-later-total">0</span> </div> </a> </li> 
+							</ul>
+						</div>
+					</nav>
+
+				</div>
+			</div>
+		</div>
+	</div>
+	<nav class="sh-header-mobile-dropdown">
+		<div class="container sh-nav-container">
+			<ul class="sh-nav-mobile"></ul>
+		</div>
+
+		<div class="container sh-nav-container">
+							<div class="header-mobile-social-media">
+					<a href="https://www.facebook.com/Chitika/" target="_blank" class="social-media-facebook">
+                    <i class="fa fa-facebook"></i>
+                </a><a href="https://twitter.com/chitika" target="_blank" class="social-media-twitter">
+                    <i class="fa fa-twitter"></i>
+                </a><a href="https://www.youtube.com/user/ChitikaInsights" target="_blank" class="social-media-youtube">
+                    <i class="fa fa-youtube"></i>
+                </a><a href="https://www.linkedin.com/company/chitika-inc./" target="_blank" class="social-media-linkedin">
+                    <i class="fa fa-linkedin"></i>
+                </a><div class="sh-clear"></div>				</div>
+					</div>
+
+					<div class="header-mobile-search">
+				<div class="container sh-nav-container">
+					<form role="search" method="get" class="header-mobile-form" action="https://research.chitika.com/">
+						<input class="header-mobile-form-input" type="text" placeholder="Search here.." value="" name="s" required="">
+						<button type="submit" class="header-mobile-form-submit">
+							<i class="icon-magnifier"></i>
+						</button>
+					</form>
+				</div>
+			</div>
+			</nav>
+</div>
+				</header>
+				<header class="primary-desktop">
+						<div class="sh-header-top">
+		<div class="container">
+			<div class="sh-table">
+
+								<div class="sh-table-cell">
+											<div class="sh-nav-container"><ul id="menu-topbar-navigation" class="sh-nav"><li id="menu-item-12169" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-12169"><a href="https://research.chitika.com/about/">About Us</a></li>
+<li id="menu-item-12237" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-12237"><a href="https://research.chitika.com/about-2/">History</a></li>
+<li id="menu-item-12238" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-12238"><a href="https://research.chitika.com/presscenter/">Press Center</a></li>
+<li id="menu-item-12239" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-12239"><a href="https://research.chitika.com/methodology/">Research Methodology</a></li>
+<li id="menu-item-12168" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-12168"><a href="https://research.chitika.com/contact/">Contact Us</a></li>
+</ul></div>									</div>
+
+								<div class="sh-table-cell">
+					<div class="sh-header-top-meta">
+						<div class="header-social-media">
+							<a href="https://www.facebook.com/Chitika/" target="_blank" class="social-media-facebook">
+                    <i class="fa fa-facebook"></i>
+                </a><a href="https://twitter.com/chitika" target="_blank" class="social-media-twitter">
+                    <i class="fa fa-twitter"></i>
+                </a><a href="https://www.youtube.com/user/ChitikaInsights" target="_blank" class="social-media-youtube">
+                    <i class="fa fa-youtube"></i>
+                </a><a href="https://www.linkedin.com/company/chitika-inc./" target="_blank" class="social-media-linkedin">
+                    <i class="fa fa-linkedin"></i>
+                </a><div class="sh-clear"></div>						</div>
+						<div class="sh-header-top-date">
+							<span class="sh-header-top-date-day">23</span>
+							<span class="sh-header-top-date-meta">
+								<span class="sh-header-top-date-month">Jun</span>
+								<span class="sh-header-top-date-year">2022</span>
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+<div class="sh-header-height sh-header-3">
+	<div class="sh-header-middle">
+		<div class="container sh-header-additional">
+			<div class="sh-table">
+				<div class="sh-table-cell sh-header-logo-container">
+
+										<nav class="header-standard-position">
+						<div class="sh-nav-container">
+							<ul class="sh-nav sh-nav-left">
+								<li>
+																		        <div class="header-logo">
+            <a href="https://research.chitika.com/" class="header-logo-container sh-table-small">
+                <div class="sh-table-cell">
+
+                    <img width="426" height="118" alt="Chitika Insights" data-src="https://research.chitika.com/wp-content/uploads/2022/02/download-1.png" class="sh-standard-logo ls-is-cached lazyloaded" src="https://research.chitika.com/wp-content/uploads/2022/02/download-1.png"><noscript><img width="426" height="118"   alt="Chitika Insights" height=&quot;50&quot; data-src="https://research.chitika.com/wp-content/uploads/2022/02/download-1.png" class="sh-standard-logo lazyload" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" /><noscript><img width="426" height="118" class="sh-standard-logo" src="https://research.chitika.com/wp-content/uploads/2022/02/download-1.png" alt="Chitika Insights" height=&quot;50&quot; /></noscript>
+                    <img width="426" height="118" alt="Chitika Insights" data-src="https://research.chitika.com/wp-content/uploads/2022/02/download-1.png" class="sh-sticky-logo lazyload" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><noscript><img width="426" height="118"   alt="Chitika Insights" height=&quot;50&quot; data-src="https://research.chitika.com/wp-content/uploads/2022/02/download-1.png" class="sh-sticky-logo lazyload" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" /><noscript><img width="426" height="118" class="sh-sticky-logo" src="https://research.chitika.com/wp-content/uploads/2022/02/download-1.png" alt="Chitika Insights" height=&quot;50&quot; /></noscript>
+                    <img width="426" height="118" alt="Chitika Insights" data-src="https://research.chitika.com/wp-content/uploads/2022/02/download-1.png" class="sh-light-logo lazyload" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><noscript><img width="426" height="118"   alt="Chitika Insights" height=&quot;50&quot; data-src="https://research.chitika.com/wp-content/uploads/2022/02/download-1.png" class="sh-light-logo lazyload" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" /><noscript><img width="426" height="118" class="sh-light-logo" src="https://research.chitika.com/wp-content/uploads/2022/02/download-1.png" alt="Chitika Insights" height=&quot;50&quot; /></noscript>
+
+                </div>
+            </a>
+        </div>
+
+    								</li>
+							</ul>
+						</div>
+					</nav>
+
+				</div>
+							</div>
+		</div>
+	</div>
+	<div class="sh-header sh-header-3 sh-sticky-header">
+		<div class="container">
+			<div class="sh-table">
+				<div class="sh-table-cell sh-header-nav-container">
+
+										<nav id="header-navigation" class="header-standard-position">
+													<div class="sh-nav-container"><ul id="menu-header-menu" class="sh-nav"><li id="menu-item-11613" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-11613"><a href="#">Research Reports</a><ul class="sub-menu"><li id="menu-item-11614" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-11614"><a href="/tag/insights/">Insights</a></li><li id="menu-item-11615" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-11615"><a href="/tag/market-share/">Market Share</a></li></ul></li><li id="menu-item-11617" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-11617"><a href="/tag/google/">Google</a></li><li id="menu-item-11618" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-11618"><a href="/tag/apple/">Apple</a></li><li id="menu-item-12200" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-12200"><a href="/tag/facebook/">Facebook</a></li><li id="menu-item-11621" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-11621"><a href="/tag/timeless/">SEO</a></li><li id="menu-item-11622" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-11622"><a href="/tag/online-advertising/">Online Advertising</a></li><li id="menu-item-11623" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-11623"><a href="/category/featured/">Blog</a></li></ul></div>											</nav>
+
+				</div>
+				<div class="sh-table-cell sh-header-meta-container">
+
+										<nav class="header-standard-position">
+						<div class="sh-nav-container">
+							<ul class="sh-nav">
+
+								
+            <li class="menu-item sh-nav-menu sh-nav-special">
+                <a href="#">
+                    <i class="icon-energy sh-nav-menu-icon-closed" data-attr-closed="icon-energy" data-attr-opened="ti-close"></i>
+                </a>
+            </li>								
+            <li class="menu-item sh-nav-search sh-nav-special">
+                <a href="#"><i class="icon icon-magnifier"></i></a>
+            </li>								
+            <li class="menu-item menu-item-has-children sh-nav-share sh-nav-special">
+            	<a href="#">
+            		<div>
+            			<i class="icon icon-share"></i>
+            		</div>
+            	</a>
+            	<ul class="sub-menu sh-nav-share-ul">
+            		<li class="sh-share-item sh-share-item-facebook menu-item">
+                <a href="https://www.facebook.com/Chitika/" target="_blank">
+                    <i class="fa fa-facebook"></i>
+                </a>
+            </li><li class="sh-share-item sh-share-item-twitter menu-item">
+                <a href="https://twitter.com/chitika" target="_blank">
+                    <i class="fa fa-twitter"></i>
+                </a>
+            </li><li class="sh-share-item sh-share-item-youtube menu-item">
+                <a href="https://www.youtube.com/user/ChitikaInsights" target="_blank">
+                    <i class="fa fa-youtube"></i>
+                </a>
+            </li><li class="sh-share-item sh-share-item-linkedin menu-item">
+                <a href="https://www.linkedin.com/company/chitika-inc./" target="_blank">
+                    <i class="fa fa-linkedin"></i>
+                </a>
+            </li>
+            	</ul>
+            </li>																								 <li class="menu-item menu-item-has-children sh-nav-readmore sh-nav-special"> <a href="https://research.chitika.com/?read-it-later"> <div> <i class="ti-bookmark"></i> <span class="sh-read-later-total">0</span> </div> </a> <ul class="sub-menu sh-read-later-list sh-read-later-list-init"> <li class="sh-read-later-item menu-item text-center"> <a href="https://research.chitika.com/?read-it-later"> Login to add posts to your read later list </a> </li> </ul> </li> 								
+							</ul>
+						</div>
+					</nav>
+
+				</div>
+			</div>
+		</div>
+		<div class="sh-header-search-side">
+	<div class="sh-header-search-side-container">
+
+		<form method="get" class="sh-header-search-form" action="https://research.chitika.com/">
+			<input type="text" value="" name="s" class="sh-header-search-side-input" placeholder="Enter a keyword to search...">
+			<div class="sh-header-search-side-close">
+				<i class="ti-close"></i>
+			</div>
+			<div class="sh-header-search-side-icon">
+				<i class="ti-search"></i>
+			</div>
+		</form>
+
+	</div>
+</div>
+	</div>
+</div>
+				</header>
+			
+			
+	
+		<div class="sh-titlebar">
+			<div class="container">
+				<div class="sh-table sh-titlebar-height-small">
+					<div class="titlebar-title sh-table-cell">
+
+						<h1>
+							Category: <span>Insights</span>						</h1>
+
+					</div>
+									</div>
+			</div>
+		</div>
+
+	
+
+			
+		
+			<div id="wrapper" class="layout-default">
+				
+				<div class="content-container sh-page-layout-default">
+									<div class="container entry-content">
+				
+				
+	
+    	<div id="content-wrapper" class="content-wrapper-with-sidebar">
+    		<div id="content" class="content-with-sidebar-right">
+    			<div class="sh-group blog-list blog-style-large">
+
+    				
+	<article id="post-1509" class="post-item post-1509 post type-post status-publish format-standard has-post-thumbnail hentry category-insights category-timeless tag-insights tag-timeless tag-updated">
+		<div class="post-container">
+
+							<div class="post-categories-container">
+                <div class="post-categories"><a href="https://research.chitika.com/category/insights/">Insights</a>, <a href="https://research.chitika.com/category/timeless/">Timeless</a></div>
+            </div>				<a href="https://research.chitika.com/tablet-hourly-usage-study-ipad-dominates-surface-users-more-active-during-working-hours/" class="post-title">
+					<h2>
+												Surface vs Ipad For Work&nbsp;<span class="post-read-later post-read-later-guest" href="#login-register" data-type="add" data-id="1509"><i class="fa fa-bookmark-o"></i></span>					</h2>
+				</a>
+				<div class="post-meta">
+					
+    <div class="post-meta-content">
+                    <span class="post-auhor-date">
+                                <span>
+                <a href="https://research.chitika.com/author/user/" class="post-author">Sarah V</a></span>,
+                                    <a href="https://research.chitika.com/tablet-hourly-usage-study-ipad-dominates-surface-users-more-active-during-working-hours/" class="post-date">
+                                                                            3 months ago                                            </a>
+                            </span>
+        
+                
+                
+                
+                            <span class="post-readtime">
+                <i class="icon icon-clock"></i>
+                4 min <span>read</span>            </span>
+        
+                
+                                            <span class="responsive-post-read-later">
+                    &nbsp;<span class="post-read-later post-read-later-guest" href="#login-register" data-type="add" data-id="1509"><i class="fa fa-bookmark-o"></i></span>                </span>
+                        </div>
+
+				</div>
+			
+							<div class="post-thumbnail">
+											<img width="500" height="300" alt="" data-srcset="https://research.chitika.com/wp-content/uploads/2022/03/fig-25-03-2022_01-22-59.jpg 500w, https://research.chitika.com/wp-content/uploads/2022/03/fig-25-03-2022_01-22-59-300x180.jpg 300w" data-src="https://research.chitika.com/wp-content/uploads/2022/03/fig-25-03-2022_01-22-59.jpg" data-sizes="(max-width: 500px) 100vw, 500px" class="attachment-gillion-landscape-large size-gillion-landscape-large wp-post-image lazyloaded" src="https://research.chitika.com/wp-content/uploads/2022/03/fig-25-03-2022_01-22-59.jpg" sizes="(max-width: 500px) 100vw, 500px" srcset="https://research.chitika.com/wp-content/uploads/2022/03/fig-25-03-2022_01-22-59.jpg 500w, https://research.chitika.com/wp-content/uploads/2022/03/fig-25-03-2022_01-22-59-300x180.jpg 300w"><noscript><img width="500" height="300" src="https://research.chitika.com/wp-content/uploads/2022/03/fig-25-03-2022_01-22-59.jpg" class="attachment-gillion-landscape-large size-gillion-landscape-large wp-post-image" alt="" srcset="https://research.chitika.com/wp-content/uploads/2022/03/fig-25-03-2022_01-22-59.jpg 500w, https://research.chitika.com/wp-content/uploads/2022/03/fig-25-03-2022_01-22-59-300x180.jpg 300w" sizes="(max-width: 500px) 100vw, 500px" /></noscript>					
+					            <a href="https://research.chitika.com/tablet-hourly-usage-study-ipad-dominates-surface-users-more-active-during-working-hours/" class="post-overlay"></a>
+        									</div>
+			
+			
+			<div class="post-content-container">
+				<div class="post-content">
+					<p>Microsoft has positioned its Surface tablets as devices more fit for work activities as compared to those from other manufacturers. The question remains though, are Surface tablets actually being used in work settings more so than iPads or other tablets?</p>
+				</div>
+			</div>
+
+			        <div class="post-readmore sh-table">
+        	<div class="sh-table-cell post-readmore-text">
+        		<a href="https://research.chitika.com/tablet-hourly-usage-study-ipad-dominates-surface-users-more-active-during-working-hours/">
+        			<h6>Read more</h6>
+        		</a>
+        	</div>
+        	<div class="sh-table-cell post-readmore-line">
+        		<div class="post-readmore-line-content"></div>
+        	</div>
+        	<div class="sh-table-cell">
+        		<div class="post-content-share post-content-share-side" data-url="https://research.chitika.com/tablet-hourly-usage-study-ipad-dominates-surface-users-more-active-during-working-hours/" data-title="Surface vs Ipad For Work"></div>
+        	</div>
+        </div>
+
+    
+		</div>
+	</article>
+
+
+	<article id="post-1688" class="post-item post-1688 post type-post status-publish format-standard has-post-thumbnail hentry category-insights category-timeless tag-insights tag-timeless tag-updated">
+		<div class="post-container">
+
+							<div class="post-categories-container">
+                <div class="post-categories"><a href="https://research.chitika.com/category/insights/">Insights</a>, <a href="https://research.chitika.com/category/timeless/">Timeless</a></div>
+            </div>				<a href="https://research.chitika.com/infographic-iphone-usage-rates-by-state/" class="post-title">
+					<h2>
+												Which States Love the iPhone More?&nbsp;<span class="post-read-later post-read-later-guest" href="#login-register" data-type="add" data-id="1688"><i class="fa fa-bookmark-o"></i></span>					</h2>
+				</a>
+				<div class="post-meta">
+					
+    <div class="post-meta-content">
+                    <span class="post-auhor-date">
+                                <span>
+                <a href="https://research.chitika.com/author/user/" class="post-author">Sarah V</a></span>,
+                                    <a href="https://research.chitika.com/infographic-iphone-usage-rates-by-state/" class="post-date">
+                                                                            4 months ago                                            </a>
+                            </span>
+        
+                
+                
+                
+                            <span class="post-readtime">
+                <i class="icon icon-clock"></i>
+                2 min <span>read</span>            </span>
+        
+                
+                                            <span class="responsive-post-read-later">
+                    &nbsp;<span class="post-read-later post-read-later-guest" href="#login-register" data-type="add" data-id="1688"><i class="fa fa-bookmark-o"></i></span>                </span>
+                        </div>
+
+				</div>
+			
+							<div class="post-thumbnail">
+											<img width="500" height="300" alt="" loading="lazy" data-srcset="https://research.chitika.com/wp-content/uploads/2022/03/fig-23-03-2022_03-18-22.jpg 500w, https://research.chitika.com/wp-content/uploads/2022/03/fig-23-03-2022_03-18-22-300x180.jpg 300w" data-src="https://research.chitika.com/wp-content/uploads/2022/03/fig-23-03-2022_03-18-22.jpg" data-sizes="(max-width: 500px) 100vw, 500px" class="attachment-gillion-landscape-large size-gillion-landscape-large wp-post-image lazyloaded" src="https://research.chitika.com/wp-content/uploads/2022/03/fig-23-03-2022_03-18-22.jpg" sizes="(max-width: 500px) 100vw, 500px" srcset="https://research.chitika.com/wp-content/uploads/2022/03/fig-23-03-2022_03-18-22.jpg 500w, https://research.chitika.com/wp-content/uploads/2022/03/fig-23-03-2022_03-18-22-300x180.jpg 300w"><noscript><img width="500" height="300" src="https://research.chitika.com/wp-content/uploads/2022/03/fig-23-03-2022_03-18-22.jpg" class="attachment-gillion-landscape-large size-gillion-landscape-large wp-post-image" alt="" loading="lazy" srcset="https://research.chitika.com/wp-content/uploads/2022/03/fig-23-03-2022_03-18-22.jpg 500w, https://research.chitika.com/wp-content/uploads/2022/03/fig-23-03-2022_03-18-22-300x180.jpg 300w" sizes="(max-width: 500px) 100vw, 500px" /></noscript>					
+					            <a href="https://research.chitika.com/infographic-iphone-usage-rates-by-state/" class="post-overlay"></a>
+        									</div>
+			
+			
+			<div class="post-content-container">
+				<div class="post-content">
+					<p>Which states can afford and love the iPhone more? This study delves into the iPhone usage by state and other key findings.</p>
+				</div>
+			</div>
+
+			        <div class="post-readmore sh-table">
+        	<div class="sh-table-cell post-readmore-text">
+        		<a href="https://research.chitika.com/infographic-iphone-usage-rates-by-state/">
+        			<h6>Read more</h6>
+        		</a>
+        	</div>
+        	<div class="sh-table-cell post-readmore-line">
+        		<div class="post-readmore-line-content"></div>
+        	</div>
+        	<div class="sh-table-cell">
+        		<div class="post-content-share post-content-share-side" data-url="https://research.chitika.com/infographic-iphone-usage-rates-by-state/" data-title="Which States Love the iPhone More?"></div>
+        	</div>
+        </div>
+
+    
+		</div>
+	</article>
+
+
+	<article id="post-1667" class="post-item post-1667 post type-post status-publish format-standard has-post-thumbnail hentry category-insights tag-insights">
+		<div class="post-container">
+
+							<div class="post-categories-container">
+                <div class="post-categories"><a href="https://research.chitika.com/category/insights/">Insights</a></div>
+            </div>				<a href="https://research.chitika.com/os-x-yosemite-adoption-rate-slightly-outpaces-mavericks-in-north-america/" class="post-title">
+					<h2>
+												OS X Yosemite Adoption Rate Slightly Outpaces Mavericks in North America&nbsp;<span class="post-read-later post-read-later-guest" href="#login-register" data-type="add" data-id="1667"><i class="fa fa-bookmark-o"></i></span>					</h2>
+				</a>
+				<div class="post-meta">
+					
+    <div class="post-meta-content">
+                    <span class="post-auhor-date">
+                                <span>
+                <a href="https://research.chitika.com/author/user/" class="post-author">Sarah V</a></span>,
+                                    <a href="https://research.chitika.com/os-x-yosemite-adoption-rate-slightly-outpaces-mavericks-in-north-america/" class="post-date">
+                                                                            4 months ago                                            </a>
+                            </span>
+        
+                
+                
+                
+                            <span class="post-readtime">
+                <i class="icon icon-clock"></i>
+                3 min <span>read</span>            </span>
+        
+                
+                                            <span class="responsive-post-read-later">
+                    &nbsp;<span class="post-read-later post-read-later-guest" href="#login-register" data-type="add" data-id="1667"><i class="fa fa-bookmark-o"></i></span>                </span>
+                        </div>
+
+				</div>
+			
+							<div class="post-thumbnail">
+											<img width="662" height="409" alt="" loading="lazy" data-srcset="https://research.chitika.com/wp-content/uploads/2014/10/os-x-yosemite.png 662w, https://research.chitika.com/wp-content/uploads/2014/10/os-x-yosemite-300x185.png 300w, https://research.chitika.com/wp-content/uploads/2014/10/os-x-yosemite-585x361.png 585w" data-src="https://research.chitika.com/wp-content/uploads/2014/10/os-x-yosemite.png" data-sizes="(max-width: 662px) 100vw, 662px" class="attachment-gillion-landscape-large size-gillion-landscape-large wp-post-image lazyload" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><noscript><img width="662" height="409" src="https://research.chitika.com/wp-content/uploads/2014/10/os-x-yosemite.png" class="attachment-gillion-landscape-large size-gillion-landscape-large wp-post-image" alt="" loading="lazy" srcset="https://research.chitika.com/wp-content/uploads/2014/10/os-x-yosemite.png 662w, https://research.chitika.com/wp-content/uploads/2014/10/os-x-yosemite-300x185.png 300w, https://research.chitika.com/wp-content/uploads/2014/10/os-x-yosemite-585x361.png 585w" sizes="(max-width: 662px) 100vw, 662px" /></noscript>					
+					            <a href="https://research.chitika.com/os-x-yosemite-adoption-rate-slightly-outpaces-mavericks-in-north-america/" class="post-overlay"></a>
+        									</div>
+			
+			
+			<div class="post-content-container">
+				<div class="post-content">
+					<p>As part of Apple’s multi-faceted event held on October 16, 2014, the company officially released OS X Yosemite to the general public. Apple had previously made a public beta of the OS available for the first time in the company’s history, and this seems to…</p>
+				</div>
+			</div>
+
+			        <div class="post-readmore sh-table">
+        	<div class="sh-table-cell post-readmore-text">
+        		<a href="https://research.chitika.com/os-x-yosemite-adoption-rate-slightly-outpaces-mavericks-in-north-america/">
+        			<h6>Read more</h6>
+        		</a>
+        	</div>
+        	<div class="sh-table-cell post-readmore-line">
+        		<div class="post-readmore-line-content"></div>
+        	</div>
+        	<div class="sh-table-cell">
+        		<div class="post-content-share post-content-share-side" data-url="https://research.chitika.com/os-x-yosemite-adoption-rate-slightly-outpaces-mavericks-in-north-america/" data-title="OS X Yosemite Adoption Rate Slightly Outpaces Mavericks in North America"></div>
+        	</div>
+        </div>
+
+    
+		</div>
+	</article>
+
+
+	<article id="post-1694" class="post-item post-1694 post type-post status-publish format-standard has-post-thumbnail hentry category-insights tag-insights">
+		<div class="post-container">
+
+							<div class="post-categories-container">
+                <div class="post-categories"><a href="https://research.chitika.com/category/insights/">Insights</a></div>
+            </div>				<a href="https://research.chitika.com/first-quarter-2015-tablet-update-samsung-usage-share-increases-by-88-year-over-year/" class="post-title">
+					<h2>
+												First Quarter 2015 Tablet Update: Samsung Usage Share Increases by 88% Year-over-Year&nbsp;<span class="post-read-later post-read-later-guest" href="#login-register" data-type="add" data-id="1694"><i class="fa fa-bookmark-o"></i></span>					</h2>
+				</a>
+				<div class="post-meta">
+					
+    <div class="post-meta-content">
+                    <span class="post-auhor-date">
+                                <span>
+                <a href="https://research.chitika.com/author/user/" class="post-author">Sarah V</a></span>,
+                                    <a href="https://research.chitika.com/first-quarter-2015-tablet-update-samsung-usage-share-increases-by-88-year-over-year/" class="post-date">
+                                                                            4 months ago                                            </a>
+                            </span>
+        
+                
+                
+                
+                            <span class="post-readtime">
+                <i class="icon icon-clock"></i>
+                4 min <span>read</span>            </span>
+        
+                
+                                            <span class="responsive-post-read-later">
+                    &nbsp;<span class="post-read-later post-read-later-guest" href="#login-register" data-type="add" data-id="1694"><i class="fa fa-bookmark-o"></i></span>                </span>
+                        </div>
+
+				</div>
+			
+							<div class="post-thumbnail">
+											<img width="680" height="400" alt="" loading="lazy" data-srcset="https://research.chitika.com/wp-content/uploads/2022/02/Graph-Samsung-Smartphone-680.png 680w, https://research.chitika.com/wp-content/uploads/2022/02/Graph-Samsung-Smartphone-680-300x176.png 300w" data-src="https://research.chitika.com/wp-content/uploads/2022/02/Graph-Samsung-Smartphone-680.png" data-sizes="(max-width: 680px) 100vw, 680px" class="attachment-gillion-landscape-large size-gillion-landscape-large wp-post-image lazyload" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><noscript><img width="680" height="400" src="https://research.chitika.com/wp-content/uploads/2022/02/Graph-Samsung-Smartphone-680.png" class="attachment-gillion-landscape-large size-gillion-landscape-large wp-post-image" alt="" loading="lazy" srcset="https://research.chitika.com/wp-content/uploads/2022/02/Graph-Samsung-Smartphone-680.png 680w, https://research.chitika.com/wp-content/uploads/2022/02/Graph-Samsung-Smartphone-680-300x176.png 300w" sizes="(max-width: 680px) 100vw, 680px" /></noscript>					
+					            <a href="https://research.chitika.com/first-quarter-2015-tablet-update-samsung-usage-share-increases-by-88-year-over-year/" class="post-overlay"></a>
+        									</div>
+			
+			
+			<div class="post-content-container">
+				<div class="post-content">
+					<p>Between January 2014 and January 2015, Samsung tablets experienced the largest increase in North American usage share of any other tablet brand. Conversely, users of Apple’s iPad, while still responsible for the largest portion of North American tablet Web traffic, now generate a usage share…</p>
+				</div>
+			</div>
+
+			        <div class="post-readmore sh-table">
+        	<div class="sh-table-cell post-readmore-text">
+        		<a href="https://research.chitika.com/first-quarter-2015-tablet-update-samsung-usage-share-increases-by-88-year-over-year/">
+        			<h6>Read more</h6>
+        		</a>
+        	</div>
+        	<div class="sh-table-cell post-readmore-line">
+        		<div class="post-readmore-line-content"></div>
+        	</div>
+        	<div class="sh-table-cell">
+        		<div class="post-content-share post-content-share-side" data-url="https://research.chitika.com/first-quarter-2015-tablet-update-samsung-usage-share-increases-by-88-year-over-year/" data-title="First Quarter 2015 Tablet Update: Samsung Usage Share Increases by 88% Year-over-Year"></div>
+        	</div>
+        </div>
+
+    
+		</div>
+	</article>
+
+
+	<article id="post-1682" class="post-item post-1682 post type-post status-publish format-standard has-post-thumbnail hentry category-insights tag-insights tag-updated">
+		<div class="post-container">
+
+							<div class="post-categories-container">
+                <div class="post-categories"><a href="https://research.chitika.com/category/insights/">Insights</a></div>
+            </div>				<a href="https://research.chitika.com/phablet-status-report-77-of-north-american-usage-from-samsung-users-but-apple-others-growing-quickly/" class="post-title">
+					<h2>
+												Phablet Status Report: 77% of North American Usage from Samsung Users, but Apple, Others Growing Quickly&nbsp;<span class="post-read-later post-read-later-guest" href="#login-register" data-type="add" data-id="1682"><i class="fa fa-bookmark-o"></i></span>					</h2>
+				</a>
+				<div class="post-meta">
+					
+    <div class="post-meta-content">
+                    <span class="post-auhor-date">
+                                <span>
+                <a href="https://research.chitika.com/author/user/" class="post-author">Sarah V</a></span>,
+                                    <a href="https://research.chitika.com/phablet-status-report-77-of-north-american-usage-from-samsung-users-but-apple-others-growing-quickly/" class="post-date">
+                                                                            8 years ago                                            </a>
+                            </span>
+        
+                
+                
+                
+                            <span class="post-readtime">
+                <i class="icon icon-clock"></i>
+                4 min <span>read</span>            </span>
+        
+                
+                                            <span class="responsive-post-read-later">
+                    &nbsp;<span class="post-read-later post-read-later-guest" href="#login-register" data-type="add" data-id="1682"><i class="fa fa-bookmark-o"></i></span>                </span>
+                        </div>
+
+				</div>
+			
+							<div class="post-thumbnail">
+											<img width="456" height="378" alt="" loading="lazy" data-srcset="https://research.chitika.com/wp-content/uploads/2011/10/chitika021313.jpg 456w, https://research.chitika.com/wp-content/uploads/2011/10/chitika021313-300x249.jpg 300w" data-src="https://research.chitika.com/wp-content/uploads/2011/10/chitika021313.jpg" data-sizes="(max-width: 456px) 100vw, 456px" class="attachment-gillion-landscape-large size-gillion-landscape-large wp-post-image lazyload" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><noscript><img width="456" height="378"   alt="" loading="lazy" data-srcset="https://research.chitika.com/wp-content/uploads/2011/10/chitika021313.jpg 456w, https://research.chitika.com/wp-content/uploads/2011/10/chitika021313-300x249.jpg 300w"  data-src="https://research.chitika.com/wp-content/uploads/2011/10/chitika021313.jpg" data-sizes="(max-width: 456px) 100vw, 456px" class="attachment-gillion-landscape-large size-gillion-landscape-large wp-post-image lazyload" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" /><noscript><img width="456" height="378"   alt="" loading="lazy" data-srcset="https://research.chitika.com/wp-content/uploads/2011/10/chitika021313.jpg 456w, https://research.chitika.com/wp-content/uploads/2011/10/chitika021313-300x249.jpg 300w"  data-src="https://research.chitika.com/wp-content/uploads/2011/10/chitika021313.jpg" data-sizes="(max-width: 456px) 100vw, 456px" class="attachment-gillion-landscape-large size-gillion-landscape-large wp-post-image lazyload" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" /><noscript><img width="456" height="378" src="https://research.chitika.com/wp-content/uploads/2011/10/chitika021313.jpg" class="attachment-gillion-landscape-large size-gillion-landscape-large wp-post-image" alt="" loading="lazy" srcset="https://research.chitika.com/wp-content/uploads/2011/10/chitika021313.jpg 456w, https://research.chitika.com/wp-content/uploads/2011/10/chitika021313-300x249.jpg 300w" sizes="(max-width: 456px) 100vw, 456px" /></noscript>					
+					            <a href="https://research.chitika.com/phablet-status-report-77-of-north-american-usage-from-samsung-users-but-apple-others-growing-quickly/" class="post-overlay"></a>
+        									</div>
+			
+			
+			<div class="post-content-container">
+				<div class="post-content">
+					<p>Several years following their North American debut, smartphones with five-inch and larger screens, nicknamed phablets, have become decidedly mainstream. Samsung has designed both of its latest flagship Galaxy S devices with screens surpassing the five-inch mark, and Apple released its first phablet-style iPhone earlier this…</p>
+				</div>
+			</div>
+
+			        <div class="post-readmore sh-table">
+        	<div class="sh-table-cell post-readmore-text">
+        		<a href="https://research.chitika.com/phablet-status-report-77-of-north-american-usage-from-samsung-users-but-apple-others-growing-quickly/">
+        			<h6>Read more</h6>
+        		</a>
+        	</div>
+        	<div class="sh-table-cell post-readmore-line">
+        		<div class="post-readmore-line-content"></div>
+        	</div>
+        	<div class="sh-table-cell">
+        		<div class="post-content-share post-content-share-side" data-url="https://research.chitika.com/phablet-status-report-77-of-north-american-usage-from-samsung-users-but-apple-others-growing-quickly/" data-title="Phablet Status Report: 77% of North American Usage from Samsung Users, but Apple, Others Growing Quickly"></div>
+        	</div>
+        </div>
+
+    
+		</div>
+	</article>
+
+
+	<article id="post-1641" class="post-item post-1641 post type-post status-publish format-standard has-post-thumbnail hentry category-insights tag-insights tag-updated">
+		<div class="post-container">
+
+							<div class="post-categories-container">
+                <div class="post-categories"><a href="https://research.chitika.com/category/insights/">Insights</a></div>
+            </div>				<a href="https://research.chitika.com/q3-uk-tablet-update-ipad-usage-share-near-75-amazon-sees-sizable-gain-since-april/" class="post-title">
+					<h2>
+												Q3 UK Tablet Update: iPad Usage Share near 75%, Amazon Sees Sizable Gain Since April&nbsp;<span class="post-read-later post-read-later-guest" href="#login-register" data-type="add" data-id="1641"><i class="fa fa-bookmark-o"></i></span>					</h2>
+				</a>
+				<div class="post-meta">
+					
+    <div class="post-meta-content">
+                    <span class="post-auhor-date">
+                                <span>
+                <a href="https://research.chitika.com/author/user/" class="post-author">Sarah V</a></span>,
+                                    <a href="https://research.chitika.com/q3-uk-tablet-update-ipad-usage-share-near-75-amazon-sees-sizable-gain-since-april/" class="post-date">
+                                                                            8 years ago                                            </a>
+                            </span>
+        
+                
+                
+                
+                            <span class="post-readtime">
+                <i class="icon icon-clock"></i>
+                3 min <span>read</span>            </span>
+        
+                
+                                            <span class="responsive-post-read-later">
+                    &nbsp;<span class="post-read-later post-read-later-guest" href="#login-register" data-type="add" data-id="1641"><i class="fa fa-bookmark-o"></i></span>                </span>
+                        </div>
+
+				</div>
+			
+							<div class="post-thumbnail">
+											<img width="456" height="378" alt="" loading="lazy" data-srcset="https://research.chitika.com/wp-content/uploads/2011/10/chitika021313.jpg 456w, https://research.chitika.com/wp-content/uploads/2011/10/chitika021313-300x249.jpg 300w" data-src="https://research.chitika.com/wp-content/uploads/2011/10/chitika021313.jpg" data-sizes="(max-width: 456px) 100vw, 456px" class="attachment-gillion-landscape-large size-gillion-landscape-large wp-post-image lazyload" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><noscript><img width="456" height="378"   alt="" loading="lazy" data-srcset="https://research.chitika.com/wp-content/uploads/2011/10/chitika021313.jpg 456w, https://research.chitika.com/wp-content/uploads/2011/10/chitika021313-300x249.jpg 300w"  data-src="https://research.chitika.com/wp-content/uploads/2011/10/chitika021313.jpg" data-sizes="(max-width: 456px) 100vw, 456px" class="attachment-gillion-landscape-large size-gillion-landscape-large wp-post-image lazyload" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" /><noscript><img width="456" height="378"   alt="" loading="lazy" data-srcset="https://research.chitika.com/wp-content/uploads/2011/10/chitika021313.jpg 456w, https://research.chitika.com/wp-content/uploads/2011/10/chitika021313-300x249.jpg 300w"  data-src="https://research.chitika.com/wp-content/uploads/2011/10/chitika021313.jpg" data-sizes="(max-width: 456px) 100vw, 456px" class="attachment-gillion-landscape-large size-gillion-landscape-large wp-post-image lazyload" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" /><noscript><img width="456" height="378" src="https://research.chitika.com/wp-content/uploads/2011/10/chitika021313.jpg" class="attachment-gillion-landscape-large size-gillion-landscape-large wp-post-image" alt="" loading="lazy" srcset="https://research.chitika.com/wp-content/uploads/2011/10/chitika021313.jpg 456w, https://research.chitika.com/wp-content/uploads/2011/10/chitika021313-300x249.jpg 300w" sizes="(max-width: 456px) 100vw, 456px" /></noscript>					
+					            <a href="https://research.chitika.com/q3-uk-tablet-update-ipad-usage-share-near-75-amazon-sees-sizable-gain-since-april/" class="post-overlay"></a>
+        									</div>
+			
+			
+			<div class="post-content-container">
+				<div class="post-content">
+					<p>Similar to the North American ecosystem, Apple iPad users generate the lion’s share of tablet-based Web traffic within the UK. Additionally, Samsung, Amazon, and Google users represent the next-largest UK tablet traffic segments, albeit in a slightly different order than what is observed in the…</p>
+				</div>
+			</div>
+
+			        <div class="post-readmore sh-table">
+        	<div class="sh-table-cell post-readmore-text">
+        		<a href="https://research.chitika.com/q3-uk-tablet-update-ipad-usage-share-near-75-amazon-sees-sizable-gain-since-april/">
+        			<h6>Read more</h6>
+        		</a>
+        	</div>
+        	<div class="sh-table-cell post-readmore-line">
+        		<div class="post-readmore-line-content"></div>
+        	</div>
+        	<div class="sh-table-cell">
+        		<div class="post-content-share post-content-share-side" data-url="https://research.chitika.com/q3-uk-tablet-update-ipad-usage-share-near-75-amazon-sees-sizable-gain-since-april/" data-title="Q3 UK Tablet Update: iPad Usage Share near 75%, Amazon Sees Sizable Gain Since April"></div>
+        	</div>
+        </div>
+
+    
+		</div>
+	</article>
+
+
+	<article id="post-1636" class="post-item post-1636 post type-post status-publish format-standard has-post-thumbnail hentry category-insights tag-insights">
+		<div class="post-container">
+
+							<div class="post-categories-container">
+                <div class="post-categories"><a href="https://research.chitika.com/category/insights/">Insights</a></div>
+            </div>				<a href="https://research.chitika.com/amazon-fire-phone-shows-steady-but-slow-growth-in-north-america/" class="post-title">
+					<h2>
+												Amazon Fire Phone Shows Steady, but Slow Growth in North America&nbsp;<span class="post-read-later post-read-later-guest" href="#login-register" data-type="add" data-id="1636"><i class="fa fa-bookmark-o"></i></span>					</h2>
+				</a>
+				<div class="post-meta">
+					
+    <div class="post-meta-content">
+                    <span class="post-auhor-date">
+                                <span>
+                <a href="https://research.chitika.com/author/user/" class="post-author">Sarah V</a></span>,
+                                    <a href="https://research.chitika.com/amazon-fire-phone-shows-steady-but-slow-growth-in-north-america/" class="post-date">
+                                                                            8 years ago                                            </a>
+                            </span>
+        
+                
+                
+                
+                            <span class="post-readtime">
+                <i class="icon icon-clock"></i>
+                3 min <span>read</span>            </span>
+        
+                
+                                            <span class="responsive-post-read-later">
+                    &nbsp;<span class="post-read-later post-read-later-guest" href="#login-register" data-type="add" data-id="1636"><i class="fa fa-bookmark-o"></i></span>                </span>
+                        </div>
+
+				</div>
+			
+							<div class="post-thumbnail">
+											<img width="500" height="300" alt="" loading="lazy" data-srcset="https://research.chitika.com/wp-content/uploads/2014/08/fig-01-04-2022_11-45-53.jpg 500w, https://research.chitika.com/wp-content/uploads/2014/08/fig-01-04-2022_11-45-53-300x180.jpg 300w" data-src="https://research.chitika.com/wp-content/uploads/2014/08/fig-01-04-2022_11-45-53.jpg" data-sizes="(max-width: 500px) 100vw, 500px" class="attachment-gillion-landscape-large size-gillion-landscape-large wp-post-image lazyload" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><noscript><img width="500" height="300" src="https://research.chitika.com/wp-content/uploads/2014/08/fig-01-04-2022_11-45-53.jpg" class="attachment-gillion-landscape-large size-gillion-landscape-large wp-post-image" alt="" loading="lazy" srcset="https://research.chitika.com/wp-content/uploads/2014/08/fig-01-04-2022_11-45-53.jpg 500w, https://research.chitika.com/wp-content/uploads/2014/08/fig-01-04-2022_11-45-53-300x180.jpg 300w" sizes="(max-width: 500px) 100vw, 500px" /></noscript>					
+					            <a href="https://research.chitika.com/amazon-fire-phone-shows-steady-but-slow-growth-in-north-america/" class="post-overlay"></a>
+        									</div>
+			
+			
+			<div class="post-content-container">
+				<div class="post-content">
+					<p>Over two and a half years following the release of its Kindle Fire tablet, Amazon released its first smartphone on July 25, 2014. While the Fire Phone was listed atop Amazon’s Best Seller list for several days in early August, North American usage of the…</p>
+				</div>
+			</div>
+
+			        <div class="post-readmore sh-table">
+        	<div class="sh-table-cell post-readmore-text">
+        		<a href="https://research.chitika.com/amazon-fire-phone-shows-steady-but-slow-growth-in-north-america/">
+        			<h6>Read more</h6>
+        		</a>
+        	</div>
+        	<div class="sh-table-cell post-readmore-line">
+        		<div class="post-readmore-line-content"></div>
+        	</div>
+        	<div class="sh-table-cell">
+        		<div class="post-content-share post-content-share-side" data-url="https://research.chitika.com/amazon-fire-phone-shows-steady-but-slow-growth-in-north-america/" data-title="Amazon Fire Phone Shows Steady, but Slow Growth in North America"></div>
+        	</div>
+        </div>
+
+    
+		</div>
+	</article>
+
+
+	<article id="post-1586" class="post-item post-1586 post type-post status-publish format-standard has-post-thumbnail hentry category-insights tag-insights tag-updated">
+		<div class="post-container">
+
+							<div class="post-categories-container">
+                <div class="post-categories"><a href="https://research.chitika.com/category/insights/">Insights</a></div>
+            </div>				<a href="https://research.chitika.com/samsung-galaxy-s5-adoption-outpaces-predecessor-in-north-america/" class="post-title">
+					<h2>
+												Samsung Galaxy S5 Adoption Outpaces Predecessor in North America&nbsp;<span class="post-read-later post-read-later-guest" href="#login-register" data-type="add" data-id="1586"><i class="fa fa-bookmark-o"></i></span>					</h2>
+				</a>
+				<div class="post-meta">
+					
+    <div class="post-meta-content">
+                    <span class="post-auhor-date">
+                                <span>
+                <a href="https://research.chitika.com/author/user/" class="post-author">Sarah V</a></span>,
+                                    <a href="https://research.chitika.com/samsung-galaxy-s5-adoption-outpaces-predecessor-in-north-america/" class="post-date">
+                                                                            8 years ago                                            </a>
+                            </span>
+        
+                
+                
+                
+                            <span class="post-readtime">
+                <i class="icon icon-clock"></i>
+                3 min <span>read</span>            </span>
+        
+                
+                                            <span class="responsive-post-read-later">
+                    &nbsp;<span class="post-read-later post-read-later-guest" href="#login-register" data-type="add" data-id="1586"><i class="fa fa-bookmark-o"></i></span>                </span>
+                        </div>
+
+				</div>
+			
+							<div class="post-thumbnail">
+											<img width="456" height="378" alt="" loading="lazy" data-srcset="https://research.chitika.com/wp-content/uploads/2011/10/chitika021313.jpg 456w, https://research.chitika.com/wp-content/uploads/2011/10/chitika021313-300x249.jpg 300w" data-src="https://research.chitika.com/wp-content/uploads/2011/10/chitika021313.jpg" data-sizes="(max-width: 456px) 100vw, 456px" class="attachment-gillion-landscape-large size-gillion-landscape-large wp-post-image lazyload" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><noscript><img width="456" height="378"   alt="" loading="lazy" data-srcset="https://research.chitika.com/wp-content/uploads/2011/10/chitika021313.jpg 456w, https://research.chitika.com/wp-content/uploads/2011/10/chitika021313-300x249.jpg 300w"  data-src="https://research.chitika.com/wp-content/uploads/2011/10/chitika021313.jpg" data-sizes="(max-width: 456px) 100vw, 456px" class="attachment-gillion-landscape-large size-gillion-landscape-large wp-post-image lazyload" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" /><noscript><img width="456" height="378"   alt="" loading="lazy" data-srcset="https://research.chitika.com/wp-content/uploads/2011/10/chitika021313.jpg 456w, https://research.chitika.com/wp-content/uploads/2011/10/chitika021313-300x249.jpg 300w"  data-src="https://research.chitika.com/wp-content/uploads/2011/10/chitika021313.jpg" data-sizes="(max-width: 456px) 100vw, 456px" class="attachment-gillion-landscape-large size-gillion-landscape-large wp-post-image lazyload" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" /><noscript><img width="456" height="378" src="https://research.chitika.com/wp-content/uploads/2011/10/chitika021313.jpg" class="attachment-gillion-landscape-large size-gillion-landscape-large wp-post-image" alt="" loading="lazy" srcset="https://research.chitika.com/wp-content/uploads/2011/10/chitika021313.jpg 456w, https://research.chitika.com/wp-content/uploads/2011/10/chitika021313-300x249.jpg 300w" sizes="(max-width: 456px) 100vw, 456px" /></noscript>					
+					            <a href="https://research.chitika.com/samsung-galaxy-s5-adoption-outpaces-predecessor-in-north-america/" class="post-overlay"></a>
+        									</div>
+			
+			
+			<div class="post-content-container">
+				<div class="post-content">
+					<p>The Galaxy S5, Samsung’s latest flagship smartphone, debuted on April 11, 2014 across all the major U.S. carriers. One major promotion also coincided with the device’s release, with Verizon offering customers the option to buy one Galaxy S5 and get another one free. Based on…</p>
+				</div>
+			</div>
+
+			        <div class="post-readmore sh-table">
+        	<div class="sh-table-cell post-readmore-text">
+        		<a href="https://research.chitika.com/samsung-galaxy-s5-adoption-outpaces-predecessor-in-north-america/">
+        			<h6>Read more</h6>
+        		</a>
+        	</div>
+        	<div class="sh-table-cell post-readmore-line">
+        		<div class="post-readmore-line-content"></div>
+        	</div>
+        	<div class="sh-table-cell">
+        		<div class="post-content-share post-content-share-side" data-url="https://research.chitika.com/samsung-galaxy-s5-adoption-outpaces-predecessor-in-north-america/" data-title="Samsung Galaxy S5 Adoption Outpaces Predecessor in North America"></div>
+        	</div>
+        </div>
+
+    
+		</div>
+	</article>
+
+
+	<article id="post-10025" class="post-item post-10025 post type-post status-publish format-standard has-post-thumbnail hentry category-insights tag-insights tag-updated">
+		<div class="post-container">
+
+							<div class="post-categories-container">
+                <div class="post-categories"><a href="https://research.chitika.com/category/insights/">Insights</a></div>
+            </div>				<a href="https://research.chitika.com/update-north-american-android-kitkat-4-1-1-usage-rates-in-wake-of-heartbleed-vulnerability/" class="post-title">
+					<h2>
+												UPDATE: North American Android KitKat, 4.1.1 Usage Rates in Wake of "Heartbleed" Vulnerability&nbsp;<span class="post-read-later post-read-later-guest" href="#login-register" data-type="add" data-id="10025"><i class="fa fa-bookmark-o"></i></span>					</h2>
+				</a>
+				<div class="post-meta">
+					
+    <div class="post-meta-content">
+                    <span class="post-auhor-date">
+                                <span>
+                <a href="https://research.chitika.com/author/user/" class="post-author">Sarah V</a></span>,
+                                    <a href="https://research.chitika.com/update-north-american-android-kitkat-4-1-1-usage-rates-in-wake-of-heartbleed-vulnerability/" class="post-date">
+                                                                            8 years ago                                            </a>
+                            </span>
+        
+                
+                
+                
+                            <span class="post-readtime">
+                <i class="icon icon-clock"></i>
+                4 min <span>read</span>            </span>
+        
+                
+                                            <span class="responsive-post-read-later">
+                    &nbsp;<span class="post-read-later post-read-later-guest" href="#login-register" data-type="add" data-id="10025"><i class="fa fa-bookmark-o"></i></span>                </span>
+                        </div>
+
+				</div>
+			
+							<div class="post-thumbnail">
+											<img width="750" height="400" alt="" loading="lazy" data-srcset="https://research.chitika.com/wp-content/uploads/2014/04/fig-02-03-2022_05-17-56.jpg 750w, https://research.chitika.com/wp-content/uploads/2014/04/fig-02-03-2022_05-17-56-300x160.jpg 300w, https://research.chitika.com/wp-content/uploads/2014/04/fig-02-03-2022_05-17-56-585x312.jpg 585w" data-src="https://research.chitika.com/wp-content/uploads/2014/04/fig-02-03-2022_05-17-56.jpg" data-sizes="(max-width: 750px) 100vw, 750px" class="attachment-gillion-landscape-large size-gillion-landscape-large wp-post-image lazyload" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><noscript><img width="750" height="400" src="https://research.chitika.com/wp-content/uploads/2014/04/fig-02-03-2022_05-17-56.jpg" class="attachment-gillion-landscape-large size-gillion-landscape-large wp-post-image" alt="" loading="lazy" srcset="https://research.chitika.com/wp-content/uploads/2014/04/fig-02-03-2022_05-17-56.jpg 750w, https://research.chitika.com/wp-content/uploads/2014/04/fig-02-03-2022_05-17-56-300x160.jpg 300w, https://research.chitika.com/wp-content/uploads/2014/04/fig-02-03-2022_05-17-56-585x312.jpg 585w" sizes="(max-width: 750px) 100vw, 750px" /></noscript>					
+					            <a href="https://research.chitika.com/update-north-american-android-kitkat-4-1-1-usage-rates-in-wake-of-heartbleed-vulnerability/" class="post-overlay"></a>
+        									</div>
+			
+			
+			<div class="post-content-container">
+				<div class="post-content">
+					<p>Recent Web usage data indicates that Google’s latest Android OS version, KitKat, is being used at nearly equal rates by North American smartphone and tablet users. Meanwhile, with Android 4.1.1 being the only version of Android exhibiting a vulnerability due to the Open SSL “Heartbleed”…</p>
+				</div>
+			</div>
+
+			        <div class="post-readmore sh-table">
+        	<div class="sh-table-cell post-readmore-text">
+        		<a href="https://research.chitika.com/update-north-american-android-kitkat-4-1-1-usage-rates-in-wake-of-heartbleed-vulnerability/">
+        			<h6>Read more</h6>
+        		</a>
+        	</div>
+        	<div class="sh-table-cell post-readmore-line">
+        		<div class="post-readmore-line-content"></div>
+        	</div>
+        	<div class="sh-table-cell">
+        		<div class="post-content-share post-content-share-side" data-url="https://research.chitika.com/update-north-american-android-kitkat-4-1-1-usage-rates-in-wake-of-heartbleed-vulnerability/" data-title="UPDATE: North American Android KitKat, 4.1.1 Usage Rates in Wake of &quot;Heartbleed&quot; Vulnerability"></div>
+        	</div>
+        </div>
+
+    
+		</div>
+	</article>
+
+
+	<article id="post-1567" class="post-item post-1567 post type-post status-publish format-standard has-post-thumbnail hentry category-insights tag-insights tag-updated">
+		<div class="post-container">
+
+							<div class="post-categories-container">
+                <div class="post-categories"><a href="https://research.chitika.com/category/insights/">Insights</a></div>
+            </div>				<a href="https://research.chitika.com/htc-status-report-one-users-generate-40-6-of-htc-smartphone-web-traffic/" class="post-title">
+					<h2>
+												HTC Status Report: One Users Generate 40.6% of HTC Smartphone Web Traffic&nbsp;<span class="post-read-later post-read-later-guest" href="#login-register" data-type="add" data-id="1567"><i class="fa fa-bookmark-o"></i></span>					</h2>
+				</a>
+				<div class="post-meta">
+					
+    <div class="post-meta-content">
+                    <span class="post-auhor-date">
+                                <span>
+                <a href="https://research.chitika.com/author/user/" class="post-author">Sarah V</a></span>,
+                                    <a href="https://research.chitika.com/htc-status-report-one-users-generate-40-6-of-htc-smartphone-web-traffic/" class="post-date">
+                                                                            8 years ago                                            </a>
+                            </span>
+        
+                
+                
+                
+                            <span class="post-readtime">
+                <i class="icon icon-clock"></i>
+                4 min <span>read</span>            </span>
+        
+                
+                                            <span class="responsive-post-read-later">
+                    &nbsp;<span class="post-read-later post-read-later-guest" href="#login-register" data-type="add" data-id="1567"><i class="fa fa-bookmark-o"></i></span>                </span>
+                        </div>
+
+				</div>
+			
+							<div class="post-thumbnail">
+											<img width="562" height="400" alt="" loading="lazy" data-srcset="https://research.chitika.com/wp-content/uploads/2014/04/Htc-repot.png 562w, https://research.chitika.com/wp-content/uploads/2014/04/Htc-repot-300x214.png 300w" data-src="https://research.chitika.com/wp-content/uploads/2014/04/Htc-repot.png" data-sizes="(max-width: 562px) 100vw, 562px" class="attachment-gillion-landscape-large size-gillion-landscape-large wp-post-image lazyload" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><noscript><img width="562" height="400" src="https://research.chitika.com/wp-content/uploads/2014/04/Htc-repot.png" class="attachment-gillion-landscape-large size-gillion-landscape-large wp-post-image" alt="" loading="lazy" srcset="https://research.chitika.com/wp-content/uploads/2014/04/Htc-repot.png 562w, https://research.chitika.com/wp-content/uploads/2014/04/Htc-repot-300x214.png 300w" sizes="(max-width: 562px) 100vw, 562px" /></noscript>					
+					            <a href="https://research.chitika.com/htc-status-report-one-users-generate-40-6-of-htc-smartphone-web-traffic/" class="post-overlay"></a>
+        									</div>
+			
+			
+			<div class="post-content-container">
+				<div class="post-content">
+					<p>Taiwanese device maker HTC produced one of 2013’s most smartphones with the HTC One. Analyst and company estimates pointed to the device and its subsequent variations collectively generating moderately successful sales, but having trended downwards to close out the year. The company’s latest flagship device,…</p>
+				</div>
+			</div>
+
+			        <div class="post-readmore sh-table">
+        	<div class="sh-table-cell post-readmore-text">
+        		<a href="https://research.chitika.com/htc-status-report-one-users-generate-40-6-of-htc-smartphone-web-traffic/">
+        			<h6>Read more</h6>
+        		</a>
+        	</div>
+        	<div class="sh-table-cell post-readmore-line">
+        		<div class="post-readmore-line-content"></div>
+        	</div>
+        	<div class="sh-table-cell">
+        		<div class="post-content-share post-content-share-side" data-url="https://research.chitika.com/htc-status-report-one-users-generate-40-6-of-htc-smartphone-web-traffic/" data-title="HTC Status Report: One Users Generate 40.6% of HTC Smartphone Web Traffic"></div>
+        	</div>
+        </div>
+
+    
+		</div>
+	</article>
+
+
+    			</div>
+    			<div class="sh-pagination sh-default-color"><ul class="page-numbers">
+	<li><span aria-current="page" class="page-numbers current">1</span></li>
+	<li><a class="page-numbers" href="https://research.chitika.com/category/insights/page/2/">2</a></li>
+	<li><a class="page-numbers" href="https://research.chitika.com/category/insights/page/3/">3</a></li>
+	<li><a class="next page-numbers" href="https://research.chitika.com/category/insights/page/2/">Next</a></li>
+</ul>
+</div>
+    		</div>
+    		    			<div id="sidebar" class="sidebar-right">
+    				
+<div class="sidebar-container">
+			<div id="block-41" class="widget-item widget_block">
+<h2>About Chitika Insights</h2>
+</div><div id="block-42" class="widget-item widget_block widget_text">
+<p>Chitika Insights was the research arm of online advertising network Chitika. Insights used Chitika's unique data to monitor and report on Internet trends - search engines, clickthrough rates, the mobile war, and more. </p>
+</div><div id="block-39" class="widget-item widget_block widget_text">
+<p>Additionally, the Chitika Insights team monitored the day's tech news closely, and provided an in-depth, data-driven commentary on the latest breaking news. Our studies and data have been featured prominently in major publications, such as The New York Times, Forbes, Barrons and about 3000+ respected publications.</p>
+</div><div id="nav_menu-4" class="widget-item widget_nav_menu"><div class="sh-widget-title-styling"><h3 class="widget-title">Methodology</h3></div><div class="menu-topbar-navigation-container"><ul id="menu-topbar-navigation-1" class="menu"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-12169"><a href="https://research.chitika.com/about/">About Us</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-12237"><a href="https://research.chitika.com/about-2/">History</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-12238"><a href="https://research.chitika.com/presscenter/">Press Center</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-12239"><a href="https://research.chitika.com/methodology/">Research Methodology</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-12168"><a href="https://research.chitika.com/contact/">Contact Us</a></li>
+</ul></div></div><div id="nav_menu-3" class="widget-item widget_nav_menu"><div class="sh-widget-title-styling"><h3 class="widget-title">Most Popular Topics</h3></div><div class="menu-header-menu-container"><ul id="menu-header-menu-1" class="menu"><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-11613"><a href="#">Research Reports</a>
+<ul class="sub-menu">
+	<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-11614"><a href="/tag/insights/">Insights</a></li>
+	<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-11615"><a href="/tag/market-share/">Market Share</a></li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-11617"><a href="/tag/google/">Google</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-11618"><a href="/tag/apple/">Apple</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-12200"><a href="/tag/facebook/">Facebook</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-11621"><a href="/tag/timeless/">SEO</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-11622"><a href="/tag/online-advertising/">Online Advertising</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-11623"><a href="/category/featured/">Blog</a></li>
+</ul></div></div><div id="block-12" class="widget-item widget_block widget_recent_entries"><ul class="wp-block-latest-posts__list wp-block-latest-posts"><li><a href="https://research.chitika.com/choose-brand-name/">How To Choose A Brand Name For Your Business</a></li>
+<li><a href="https://research.chitika.com/cta-buttons/">Top 10 Tips To Create CTA Buttons</a></li>
+<li><a href="https://research.chitika.com/top-5-mistakes-with-concepts/">Top 5 Mistakes With Concepts</a></li>
+<li><a href="https://research.chitika.com/checkout-pages/">How To Create The Best Checkout Pages</a></li>
+<li><a href="https://research.chitika.com/conversion-funnels/">5 Rules To Follow When Creating A Conversion Funnel</a></li>
+</ul></div><div id="block-13" class="widget-item widget_block widget_search"><form role="search" method="get" action="https://research.chitika.com/" class="wp-block-search__button-outside wp-block-search__text-button wp-block-search"><label for="wp-block-search__input-1" class="wp-block-search__label">Search</label><div class="wp-block-search__inside-wrapper "><input type="search" id="wp-block-search__input-1" class="wp-block-search__input " name="s" value="" placeholder="" required=""><button type="submit" class="wp-block-search__button  ">Search</button></div></form></div><div id="block-14" class="widget-item widget_block widget_text">
+<p></p>
+</div><div id="block-15" class="widget-item widget_block widget_categories"><ul class="wp-block-categories-list wp-block-categories">	<li class="cat-item cat-item-762"><a href="https://research.chitika.com/category/archives/" title="Archived Content from Chitika">Archives</a>
+</li>
+	<li class="cat-item cat-item-3"><a href="https://research.chitika.com/category/blog/">Blog</a>
+</li>
+	<li class="cat-item cat-item-4"><a href="https://research.chitika.com/category/browser-2/">Browser</a>
+</li>
+	<li class="cat-item cat-item-770"><a href="https://research.chitika.com/category/cornerstone/">Cornerstone</a>
+</li>
+	<li class="cat-item cat-item-16"><a href="https://research.chitika.com/category/featured/">Featured</a>
+</li>
+	<li class="cat-item cat-item-18"><a href="https://research.chitika.com/category/hits/" title="Chitika Insights is recognized for our expertise in the online space, with our research regularly cited in major publications.">Hits</a>
+</li>
+	<li class="cat-item cat-item-21 current-cat"><a aria-current="page" href="https://research.chitika.com/category/insights/">Insights</a>
+</li>
+	<li class="cat-item cat-item-23"><a href="https://research.chitika.com/category/local/">Local</a>
+</li>
+	<li class="cat-item cat-item-24"><a href="https://research.chitika.com/category/market-share-breakdown/">Market Share Breakdown</a>
+</li>
+	<li class="cat-item cat-item-25"><a href="https://research.chitika.com/category/mobile/">Mobile</a>
+</li>
+	<li class="cat-item cat-item-26"><a href="https://research.chitika.com/category/market-share-breakdown/mobile-market-share-breakdown/">Mobile</a>
+</li>
+	<li class="cat-item cat-item-29"><a href="https://research.chitika.com/category/online-advertising-2/">Online Advertising</a>
+</li>
+	<li class="cat-item cat-item-30"><a href="https://research.chitika.com/category/operating-system-2/">Operating System</a>
+</li>
+	<li class="cat-item cat-item-31"><a href="https://research.chitika.com/category/market-share-breakdown/operating-system-market-share-breakdown/">Operating System</a>
+</li>
+	<li class="cat-item cat-item-38"><a href="https://research.chitika.com/category/research/">Research</a>
+</li>
+	<li class="cat-item cat-item-39"><a href="https://research.chitika.com/category/search-engines/">Search Engines</a>
+</li>
+	<li class="cat-item cat-item-40"><a href="https://research.chitika.com/category/market-share-breakdown/search-engines-market-share-breakdown/">Search Engines</a>
+</li>
+	<li class="cat-item cat-item-41"><a href="https://research.chitika.com/category/social-media-2/">Social Media</a>
+</li>
+	<li class="cat-item cat-item-44"><a href="https://research.chitika.com/category/mobile/tablets/">Tablets</a>
+</li>
+	<li class="cat-item cat-item-779"><a href="https://research.chitika.com/category/timeless/" title="Timeless Chitika Insights research reports. ">Timeless</a>
+</li>
+	<li class="cat-item cat-item-45"><a href="https://research.chitika.com/category/trending-topics/">Trending Topics</a>
+</li>
+	<li class="cat-item cat-item-1"><a href="https://research.chitika.com/category/uncategorized/">Uncategorized</a>
+</li>
+</ul></div><div id="block-16" class="widget-item widget_block widget_tag_cloud"><p class="wp-block-tag-cloud"><a href="https://research.chitika.com/tag/ab-testing/" class="tag-cloud-link tag-link-1298 tag-link-position-1" style="font-size: 15.68pt;" aria-label="AB Testing (35 items)">AB Testing</a>
+<a href="https://research.chitika.com/tag/adoption/" class="tag-cloud-link tag-link-64 tag-link-position-2" style="font-size: 10pt;" aria-label="adoption (6 items)">adoption</a>
+<a href="https://research.chitika.com/tag/android/" class="tag-cloud-link tag-link-81 tag-link-position-3" style="font-size: 14.8pt;" aria-label="android (27 items)">android</a>
+<a href="https://research.chitika.com/tag/aol/" class="tag-cloud-link tag-link-84 tag-link-position-4" style="font-size: 8.8pt;" aria-label="aol (4 items)">aol</a>
+<a href="https://research.chitika.com/tag/apple/" class="tag-cloud-link tag-link-87 tag-link-position-5" style="font-size: 14.48pt;" aria-label="Apple (25 items)">Apple</a>
+<a href="https://research.chitika.com/tag/ask/" class="tag-cloud-link tag-link-95 tag-link-position-6" style="font-size: 9.44pt;" aria-label="ask (5 items)">ask</a>
+<a href="https://research.chitika.com/tag/att/" class="tag-cloud-link tag-link-97 tag-link-position-7" style="font-size: 8.8pt;" aria-label="AT&amp;T (4 items)">AT&amp;T</a>
+<a href="https://research.chitika.com/tag/bing/" class="tag-cloud-link tag-link-105 tag-link-position-8" style="font-size: 12.08pt;" aria-label="Bing (12 items)">Bing</a>
+<a href="https://research.chitika.com/tag/blog/" class="tag-cloud-link tag-link-112 tag-link-position-9" style="font-size: 15.68pt;" aria-label="Blog (35 items)">Blog</a>
+<a href="https://research.chitika.com/tag/browser/" class="tag-cloud-link tag-link-114 tag-link-position-10" style="font-size: 10pt;" aria-label="browser (6 items)">browser</a>
+<a href="https://research.chitika.com/tag/chitika/" class="tag-cloud-link tag-link-126 tag-link-position-11" style="font-size: 11.2pt;" aria-label="chitika (9 items)">chitika</a>
+<a href="https://research.chitika.com/tag/chrome/" class="tag-cloud-link tag-link-146 tag-link-position-12" style="font-size: 10.4pt;" aria-label="chrome (7 items)">chrome</a>
+<a href="https://research.chitika.com/tag/ctr/" class="tag-cloud-link tag-link-167 tag-link-position-13" style="font-size: 9.44pt;" aria-label="CTR (5 items)">CTR</a>
+<a href="https://research.chitika.com/tag/firefox/" class="tag-cloud-link tag-link-219 tag-link-position-14" style="font-size: 10pt;" aria-label="firefox (6 items)">firefox</a>
+<a href="https://research.chitika.com/tag/google/" class="tag-cloud-link tag-link-239 tag-link-position-15" style="font-size: 15.04pt;" aria-label="Google (29 items)">Google</a>
+<a href="https://research.chitika.com/tag/htc/" class="tag-cloud-link tag-link-273 tag-link-position-16" style="font-size: 8pt;" aria-label="htc (3 items)">htc</a>
+<a href="https://research.chitika.com/tag/ie/" class="tag-cloud-link tag-link-282 tag-link-position-17" style="font-size: 10pt;" aria-label="ie (6 items)">ie</a>
+<a href="https://research.chitika.com/tag/insights/" class="tag-cloud-link tag-link-289 tag-link-position-18" style="font-size: 14.64pt;" aria-label="Insights (26 items)">Insights</a>
+<a href="https://research.chitika.com/tag/internet-explorer/" class="tag-cloud-link tag-link-292 tag-link-position-19" style="font-size: 10.8pt;" aria-label="internet explorer (8 items)">internet explorer</a>
+<a href="https://research.chitika.com/tag/ios/" class="tag-cloud-link tag-link-293 tag-link-position-20" style="font-size: 15.04pt;" aria-label="ios (29 items)">ios</a>
+<a href="https://research.chitika.com/tag/ios-6/" class="tag-cloud-link tag-link-295 tag-link-position-21" style="font-size: 8.8pt;" aria-label="ios 6 (4 items)">ios 6</a>
+<a href="https://research.chitika.com/tag/ipad/" class="tag-cloud-link tag-link-296 tag-link-position-22" style="font-size: 13.6pt;" aria-label="ipad (19 items)">ipad</a>
+<a href="https://research.chitika.com/tag/iphone/" class="tag-cloud-link tag-link-301 tag-link-position-23" style="font-size: 14.08pt;" aria-label="iphone (22 items)">iphone</a>
+<a href="https://research.chitika.com/tag/ipod/" class="tag-cloud-link tag-link-310 tag-link-position-24" style="font-size: 8.8pt;" aria-label="ipod (4 items)">ipod</a>
+<a href="https://research.chitika.com/tag/mac/" class="tag-cloud-link tag-link-342 tag-link-position-25" style="font-size: 9.44pt;" aria-label="mac (5 items)">mac</a>
+<a href="https://research.chitika.com/tag/market-share/" class="tag-cloud-link tag-link-351 tag-link-position-26" style="font-size: 13.28pt;" aria-label="market share (17 items)">market share</a>
+<a href="https://research.chitika.com/tag/microsoft/" class="tag-cloud-link tag-link-357 tag-link-position-27" style="font-size: 12.08pt;" aria-label="Microsoft (12 items)">Microsoft</a>
+<a href="https://research.chitika.com/tag/mobile/" class="tag-cloud-link tag-link-361 tag-link-position-28" style="font-size: 11.52pt;" aria-label="Mobile (10 items)">Mobile</a>
+<a href="https://research.chitika.com/tag/online-advertising/" class="tag-cloud-link tag-link-407 tag-link-position-29" style="font-size: 8.8pt;" aria-label="online advertising (4 items)">online advertising</a>
+<a href="https://research.chitika.com/tag/operating-system/" class="tag-cloud-link tag-link-415 tag-link-position-30" style="font-size: 8.8pt;" aria-label="Operating system (4 items)">Operating system</a>
+<a href="https://research.chitika.com/tag/poll-the-people/" class="tag-cloud-link tag-link-775 tag-link-position-31" style="font-size: 15.68pt;" aria-label="Poll the People (35 items)">Poll the People</a>
+<a href="https://research.chitika.com/tag/safari/" class="tag-cloud-link tag-link-485 tag-link-position-32" style="font-size: 8.8pt;" aria-label="safari (4 items)">safari</a>
+<a href="https://research.chitika.com/tag/samsung/" class="tag-cloud-link tag-link-487 tag-link-position-33" style="font-size: 11.84pt;" aria-label="samsung (11 items)">samsung</a>
+<a href="https://research.chitika.com/tag/search/" class="tag-cloud-link tag-link-491 tag-link-position-34" style="font-size: 8.8pt;" aria-label="Search (4 items)">Search</a>
+<a href="https://research.chitika.com/tag/search-engine/" class="tag-cloud-link tag-link-492 tag-link-position-35" style="font-size: 9.44pt;" aria-label="search engine (5 items)">search engine</a>
+<a href="https://research.chitika.com/tag/smartphone/" class="tag-cloud-link tag-link-515 tag-link-position-36" style="font-size: 10.4pt;" aria-label="smartphone (7 items)">smartphone</a>
+<a href="https://research.chitika.com/tag/social-media/" class="tag-cloud-link tag-link-520 tag-link-position-37" style="font-size: 9.44pt;" aria-label="social media (5 items)">social media</a>
+<a href="https://research.chitika.com/tag/tablet/" class="tag-cloud-link tag-link-544 tag-link-position-38" style="font-size: 12.64pt;" aria-label="tablet (14 items)">tablet</a>
+<a href="https://research.chitika.com/tag/timeless/" class="tag-cloud-link tag-link-763 tag-link-position-39" style="font-size: 13.28pt;" aria-label="timeless (17 items)">timeless</a>
+<a href="https://research.chitika.com/tag/twitter/" class="tag-cloud-link tag-link-571 tag-link-position-40" style="font-size: 8pt;" aria-label="twitter (3 items)">twitter</a>
+<a href="https://research.chitika.com/tag/updated/" class="tag-cloud-link tag-link-761 tag-link-position-41" style="font-size: 22pt;" aria-label="Updated (223 items)">Updated</a>
+<a href="https://research.chitika.com/tag/usability-testing/" class="tag-cloud-link tag-link-773 tag-link-position-42" style="font-size: 15.68pt;" aria-label="Usability Testing (35 items)">Usability Testing</a>
+<a href="https://research.chitika.com/tag/user-testing/" class="tag-cloud-link tag-link-774 tag-link-position-43" style="font-size: 15.68pt;" aria-label="User Testing (35 items)">User Testing</a>
+<a href="https://research.chitika.com/tag/windows/" class="tag-cloud-link tag-link-609 tag-link-position-44" style="font-size: 10pt;" aria-label="windows (6 items)">windows</a>
+<a href="https://research.chitika.com/tag/yahoo-11/" class="tag-cloud-link tag-link-632 tag-link-position-45" style="font-size: 11.2pt;" aria-label="yahoo (9 items)">yahoo</a></p></div>	</div>
+    			</div>
+    		    	</div>
+
+    
+
+					</div>
+				</div>
+
+		    
+    
+    
+	
+					
+				<footer class="sh-footer">
+					<div class="sh-footer-widgets">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 col-sm-6">
+                <div id="block-5" class="widget-item widget_block">
+<div class="wp-container-1 wp-block-group"><div class="wp-block-group__inner-container"><ul class="wp-block-latest-posts__list wp-block-latest-posts"><li><a href="https://research.chitika.com/ad-testing/">Ad Testing with Real People (Complete Guide)</a></li>
+<li><a href="https://research.chitika.com/headline-testing/">Ad Headline Testing with Real People (Complete Guide)</a></li>
+<li><a href="https://research.chitika.com/ads-testing/">Ads Description Testing with Real People (Ultimate Guide)</a></li>
+</ul></div></div>
+</div><div id="block-24" class="widget-item widget_block widget_search"><form role="search" method="get" action="https://research.chitika.com/" class="wp-block-search__button-outside wp-block-search__icon-button wp-block-search"><label for="wp-block-search__input-2" class="wp-block-search__label">Search</label><div class="wp-block-search__inside-wrapper "><input type="search" id="wp-block-search__input-2" class="wp-block-search__input " name="s" value="" placeholder="" required=""><button type="submit" class="wp-block-search__button   has-icon" aria-label="Search"><svg id="search-icon" class="search-icon" viewBox="0 0 24 24" width="24" height="24">
+					<path d="M13.5 6C10.5 6 8 8.5 8 11.5c0 1.1.3 2.1.9 3l-3.4 3 1 1.1 3.4-2.9c1 .9 2.2 1.4 3.6 1.4 3 0 5.5-2.5 5.5-5.5C19 8.5 16.5 6 13.5 6zm0 9.5c-2.2 0-4-1.8-4-4s1.8-4 4-4 4 1.8 4 4-1.8 4-4 4z"></path>
+				</svg></button></div></form></div>            </div>
+            <div class="col-md-4 col-sm-6">
+                <div id="block-22" class="widget-item widget_block widget_recent_entries"><ul class="wp-block-latest-posts__list wp-block-latest-posts"><li><a href="https://research.chitika.com/choose-brand-name/">How To Choose A Brand Name For Your Business</a></li>
+<li><a href="https://research.chitika.com/cta-buttons/">Top 10 Tips To Create CTA Buttons</a></li>
+<li><a href="https://research.chitika.com/top-5-mistakes-with-concepts/">Top 5 Mistakes With Concepts</a></li>
+<li><a href="https://research.chitika.com/checkout-pages/">How To Create The Best Checkout Pages</a></li>
+<li><a href="https://research.chitika.com/conversion-funnels/">5 Rules To Follow When Creating A Conversion Funnel</a></li>
+</ul></div>            </div>
+            <div class="col-md-4 col-sm-6">
+                <div id="block-21" class="widget-item widget_block widget_categories"><ul class="wp-block-categories-list wp-block-categories">	<li class="cat-item cat-item-762"><a href="https://research.chitika.com/category/archives/" title="Archived Content from Chitika">Archives</a>
+</li>
+	<li class="cat-item cat-item-3"><a href="https://research.chitika.com/category/blog/">Blog</a>
+</li>
+	<li class="cat-item cat-item-4"><a href="https://research.chitika.com/category/browser-2/">Browser</a>
+</li>
+	<li class="cat-item cat-item-770"><a href="https://research.chitika.com/category/cornerstone/">Cornerstone</a>
+</li>
+	<li class="cat-item cat-item-16"><a href="https://research.chitika.com/category/featured/">Featured</a>
+</li>
+	<li class="cat-item cat-item-18"><a href="https://research.chitika.com/category/hits/" title="Chitika Insights is recognized for our expertise in the online space, with our research regularly cited in major publications.">Hits</a>
+</li>
+	<li class="cat-item cat-item-21 current-cat"><a aria-current="page" href="https://research.chitika.com/category/insights/">Insights</a>
+</li>
+	<li class="cat-item cat-item-23"><a href="https://research.chitika.com/category/local/">Local</a>
+</li>
+	<li class="cat-item cat-item-24"><a href="https://research.chitika.com/category/market-share-breakdown/">Market Share Breakdown</a>
+</li>
+	<li class="cat-item cat-item-25"><a href="https://research.chitika.com/category/mobile/">Mobile</a>
+</li>
+	<li class="cat-item cat-item-26"><a href="https://research.chitika.com/category/market-share-breakdown/mobile-market-share-breakdown/">Mobile</a>
+</li>
+	<li class="cat-item cat-item-29"><a href="https://research.chitika.com/category/online-advertising-2/">Online Advertising</a>
+</li>
+	<li class="cat-item cat-item-30"><a href="https://research.chitika.com/category/operating-system-2/">Operating System</a>
+</li>
+	<li class="cat-item cat-item-31"><a href="https://research.chitika.com/category/market-share-breakdown/operating-system-market-share-breakdown/">Operating System</a>
+</li>
+	<li class="cat-item cat-item-38"><a href="https://research.chitika.com/category/research/">Research</a>
+</li>
+	<li class="cat-item cat-item-39"><a href="https://research.chitika.com/category/search-engines/">Search Engines</a>
+</li>
+	<li class="cat-item cat-item-40"><a href="https://research.chitika.com/category/market-share-breakdown/search-engines-market-share-breakdown/">Search Engines</a>
+</li>
+	<li class="cat-item cat-item-41"><a href="https://research.chitika.com/category/social-media-2/">Social Media</a>
+</li>
+	<li class="cat-item cat-item-44"><a href="https://research.chitika.com/category/mobile/tablets/">Tablets</a>
+</li>
+	<li class="cat-item cat-item-779"><a href="https://research.chitika.com/category/timeless/" title="Timeless Chitika Insights research reports. ">Timeless</a>
+</li>
+	<li class="cat-item cat-item-45"><a href="https://research.chitika.com/category/trending-topics/">Trending Topics</a>
+</li>
+	<li class="cat-item cat-item-1"><a href="https://research.chitika.com/category/uncategorized/">Uncategorized</a>
+</li>
+</ul></div>            </div>
+        </div>
+    </div>
+</div>
+	<div class="sh-copyrights sh-copyrights-align-left">
+		<div class="container container-padding">
+			<div class="sh-table">
+				<div class="sh-table-cell">
+
+					
+												<div class="sh-copyrights-info">
+							<span class="developer-copyrights  sh-hidden">
+		WordPress Theme built by <a href="https://shufflehound.com" target="blank"><strong>Shufflehound</strong>.</a>
+		</span>							<span>Copyright Chitika Insights 2022</span>
+						</div>
+
+					
+				</div>
+				<div class="sh-table-cell">
+
+					
+						<div class="sh-nav-container"><ul id="menu-social-menu" class="sh-nav"><li id="menu-item-12236" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-12236"><a href="https://research.chitika.com/yahoo-partnership/">Yahoo Partnership</a></li>
+<li id="menu-item-12307" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-privacy-policy menu-item-12307"><a href="https://research.chitika.com/privacy-policy/">Privacy Policy</a></li>
+<li id="menu-item-12230" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-12230"><a href="https://research.chitika.com/terms-conditions/">Terms &amp; Conditions</a></li>
+<li id="menu-item-3117" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-3117"><a href="https://www.facebook.com/chitika">Facebook</a></li>
+<li id="menu-item-3118" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-3118"><a href="https://www.twitter.com/chitika">Twitter</a></li>
+<li id="menu-item-3120" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-3120"><a href="http://www.linkedin.com/company/89252">Linkedin</a></li>
+<li id="menu-item-14106" class="menu-item menu-item-type-taxonomy menu-item-object-post_tag menu-item-14106"><a title="Timeless" href="https://research.chitika.com/tag/timeless/">timeless</a></li>
+</ul></div>
+					
+				</div>
+			</div>
+		</div>
+	</div>
+				</footer>
+
+					
+
+					</div>
+		
+
+		
+    <div id="login-register" style="display: none;">
+        <div class="sh-login-popup-tabs">
+            <ul class="nav nav-tabs">
+                <li class="active">
+                    <a data-target="#viens" data-toggle="tab">Login</a>
+                </li>
+                <li>
+                    <a data-target="#divi" data-toggle="tab">Register</a>
+                </li>
+            </ul>
+        </div>
+        <div class="tab-content">
+            <div class="tab-pane active" id="viens">
+
+                <div class="sh-login-popup-content sh-login-popup-content-login">
+                    <form name="loginform" id="loginform" action="https://research.chitika.com/wp-login.php" method="post"><p class="login-username">
+				<label for="user_login">Username or Email Address</label>
+				<input type="text" name="log" id="user_login" class="input" value="" size="20">
+			</p><p class="login-password">
+				<label for="user_pass">Password</label>
+				<input type="password" name="pwd" id="user_pass" class="input" value="" size="20">
+			</p><a href="/wp-login.php?action=lostpassword" class="login-forgot-password">Forgot Password</a><p class="login-remember"><label><input name="rememberme" type="checkbox" id="rememberme" value="forever"> Remember Me</label></p><p class="login-submit">
+				<input type="submit" name="wp-submit" id="wp-submit" class="button button-primary" value="Log In">
+				<input type="hidden" name="redirect_to" value="https://research.chitika.com/category/insights/">
+			</p></form>                </div>
+
+            </div>
+            <div class="tab-pane" id="divi">
+
+                <div class="sh-login-popup-content">
+                    
+                        <p id="reg_passmail">Registration is closed.</p>
+
+                                    </div>
+
+            </div>
+        </div>
+    </div>
+
+			</div>
+	
+	
+
+	<div class="sh-back-to-top sh-back-to-top1">
+		<i class="fa fa-angle-up"></i>
+	</div>
+
+<style>.wp-container-1 .alignleft { float: left; margin-right: 2em; }.wp-container-1 .alignright { float: right; margin-left: 2em; }</style>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" async="async" src="https://research.chitika.com/wp-includes/js/dist/vendor/regenerator-runtime.min.js?ver=0.13.9" id="regenerator-runtime-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" async="async" src="https://research.chitika.com/wp-includes/js/dist/vendor/wp-polyfill.min.js?ver=3.15.0" id="wp-polyfill-js"></script>
+<script type="text/javascript" id="contact-form-7-js-extra">
+/* <![CDATA[ */
+var wpcf7 = {"api":{"root":"https:\/\/research.chitika.com\/wp-json\/","namespace":"contact-form-7\/v1"},"cached":"1"};
+/* ]]> */
+</script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" async="async" src="https://research.chitika.com/wp-content/plugins/contact-form-7/includes/js/index.js?ver=5.6" id="contact-form-7-js"></script>
+<script type="text/javascript" id="wpil-frontend-script-js-extra">
+/* <![CDATA[ */
+var wpilFrontend = {"ajaxUrl":"\/wp-admin\/admin-ajax.php","postId":"1509","postType":"post","openInternalInNewTab":"0","openExternalInNewTab":"0","disableClicks":"0","openLinksWithJS":"0","trackAllElementClicks":"0","clicksI18n":{"imageNoText":"Image in link: No Text","imageText":"Image Title: ","noText":"No Anchor Text Found"}};
+/* ]]> */
+</script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" async="async" src="https://research.chitika.com/wp-content/plugins/link-whisper-premium/js/frontend.js?ver=1651171695" id="wpil-frontend-script-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" id="rocket-browser-checker-js-after">
+"use strict";var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||!1,descriptor.configurable=!0,"value"in descriptor&&(descriptor.writable=!0),Object.defineProperty(target,descriptor.key,descriptor)}}return function(Constructor,protoProps,staticProps){return protoProps&&defineProperties(Constructor.prototype,protoProps),staticProps&&defineProperties(Constructor,staticProps),Constructor}}();function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor))throw new TypeError("Cannot call a class as a function")}var RocketBrowserCompatibilityChecker=function(){function RocketBrowserCompatibilityChecker(options){_classCallCheck(this,RocketBrowserCompatibilityChecker),this.passiveSupported=!1,this._checkPassiveOption(this),this.options=!!this.passiveSupported&&options}return _createClass(RocketBrowserCompatibilityChecker,[{key:"_checkPassiveOption",value:function(self){try{var options={get passive(){return!(self.passiveSupported=!0)}};window.addEventListener("test",null,options),window.removeEventListener("test",null,options)}catch(err){self.passiveSupported=!1}}},{key:"initRequestIdleCallback",value:function(){!1 in window&&(window.requestIdleCallback=function(cb){var start=Date.now();return setTimeout(function(){cb({didTimeout:!1,timeRemaining:function(){return Math.max(0,50-(Date.now()-start))}})},1)}),!1 in window&&(window.cancelIdleCallback=function(id){return clearTimeout(id)})}},{key:"isDataSaverModeOn",value:function(){return"connection"in navigator&&!0===navigator.connection.saveData}},{key:"supportsLinkPrefetch",value:function(){var elem=document.createElement("link");return elem.relList&&elem.relList.supports&&elem.relList.supports("prefetch")&&window.IntersectionObserver&&"isIntersecting"in IntersectionObserverEntry.prototype}},{key:"isSlowConnection",value:function(){return"connection"in navigator&&"effectiveType"in navigator.connection&&("2g"===navigator.connection.effectiveType||"slow-2g"===navigator.connection.effectiveType)}}]),RocketBrowserCompatibilityChecker}();
+</script>
+<script type="text/javascript" id="rocket-preload-links-js-extra">
+/* <![CDATA[ */
+var RocketPreloadLinksConfig = {"excludeUris":"\/(?:.+\/)?feed(?:\/(?:.+\/?)?)?$|\/(?:.+\/)?embed\/|\/(index\\.php\/)?wp\\-json(\/.*|$)|\/wp-admin\/|\/logout\/|\/wp-login.php|\/refer\/|\/go\/|\/recommend\/|\/recommends\/","usesTrailingSlash":"1","imageExt":"jpg|jpeg|gif|png|tiff|bmp|webp|avif","fileExt":"jpg|jpeg|gif|png|tiff|bmp|webp|avif|php|pdf|html|htm","siteUrl":"https:\/\/research.chitika.com","onHoverDelay":"100","rateThrottle":"3"};
+/* ]]> */
+</script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" id="rocket-preload-links-js-after">
+(function() {
+"use strict";var r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},e=function(){function i(e,t){for(var n=0;n<t.length;n++){var i=t[n];i.enumerable=i.enumerable||!1,i.configurable=!0,"value"in i&&(i.writable=!0),Object.defineProperty(e,i.key,i)}}return function(e,t,n){return t&&i(e.prototype,t),n&&i(e,n),e}}();function i(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}var t=function(){function n(e,t){i(this,n),this.browser=e,this.config=t,this.options=this.browser.options,this.prefetched=new Set,this.eventTime=null,this.threshold=1111,this.numOnHover=0}return e(n,[{key:"init",value:function(){!this.browser.supportsLinkPrefetch()||this.browser.isDataSaverModeOn()||this.browser.isSlowConnection()||(this.regex={excludeUris:RegExp(this.config.excludeUris,"i"),images:RegExp(".("+this.config.imageExt+")$","i"),fileExt:RegExp(".("+this.config.fileExt+")$","i")},this._initListeners(this))}},{key:"_initListeners",value:function(e){-1<this.config.onHoverDelay&&document.addEventListener("mouseover",e.listener.bind(e),e.listenerOptions),document.addEventListener("mousedown",e.listener.bind(e),e.listenerOptions),document.addEventListener("touchstart",e.listener.bind(e),e.listenerOptions)}},{key:"listener",value:function(e){var t=e.target.closest("a"),n=this._prepareUrl(t);if(null!==n)switch(e.type){case"mousedown":case"touchstart":this._addPrefetchLink(n);break;case"mouseover":this._earlyPrefetch(t,n,"mouseout")}}},{key:"_earlyPrefetch",value:function(t,e,n){var i=this,r=setTimeout(function(){if(r=null,0===i.numOnHover)setTimeout(function(){return i.numOnHover=0},1e3);else if(i.numOnHover>i.config.rateThrottle)return;i.numOnHover++,i._addPrefetchLink(e)},this.config.onHoverDelay);t.addEventListener(n,function e(){t.removeEventListener(n,e,{passive:!0}),null!==r&&(clearTimeout(r),r=null)},{passive:!0})}},{key:"_addPrefetchLink",value:function(i){return this.prefetched.add(i.href),new Promise(function(e,t){var n=document.createElement("link");n.rel="prefetch",n.href=i.href,n.onload=e,n.onerror=t,document.head.appendChild(n)}).catch(function(){})}},{key:"_prepareUrl",value:function(e){if(null===e||"object"!==(void 0===e?"undefined":r(e))||!1 in e||-1===["http:","https:"].indexOf(e.protocol))return null;var t=e.href.substring(0,this.config.siteUrl.length),n=this._getPathname(e.href,t),i={original:e.href,protocol:e.protocol,origin:t,pathname:n,href:t+n};return this._isLinkOk(i)?i:null}},{key:"_getPathname",value:function(e,t){var n=t?e.substring(this.config.siteUrl.length):e;return n.startsWith("/")||(n="/"+n),this._shouldAddTrailingSlash(n)?n+"/":n}},{key:"_shouldAddTrailingSlash",value:function(e){return this.config.usesTrailingSlash&&!e.endsWith("/")&&!this.regex.fileExt.test(e)}},{key:"_isLinkOk",value:function(e){return null!==e&&"object"===(void 0===e?"undefined":r(e))&&(!this.prefetched.has(e.href)&&e.origin===this.config.siteUrl&&-1===e.href.indexOf("?")&&-1===e.href.indexOf("#")&&!this.regex.excludeUris.test(e.href)&&!this.regex.images.test(e.href))}}],[{key:"run",value:function(){"undefined"!=typeof RocketPreloadLinksConfig&&new n(new RocketBrowserCompatibilityChecker({capture:!0,passive:!0}),RocketPreloadLinksConfig).init()}}]),n}();t.run();
+}());
+</script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" async="async" src="https://research.chitika.com/wp-includes/js/jquery/ui/effect.min.js?ver=1.13.1" id="jquery-effects-core-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" async="async" src="https://research.chitika.com/wp-content/themes/gillion/js/plugins/bootstrap.min.js?ver=3.3.4" id="bootstrap-js"></script>
+<script type="text/javascript" async="async" src="https://research.chitika.com/wp-content/plugins/wp-smushit/app/assets/js/smush-lazy-load.min.js?ver=3.10.2" id="smush-lazy-load-js"></script>
+		<script type="rocketlazyloadscript" data-rocket-type="text/javascript">window.addEventListener('DOMContentLoaded', function() { jQuery(document).ready(function ($) { "use strict"; jQuery(document).ready( function($){}); }); var _gaq = _gaq || []; _gaq.push(['_setAccount', 'UA-54185446-1']); _gaq.push(['_trackPageview']); (function() { var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true; ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js'; var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s); })(); });</script>
+	<script>class RocketElementorAnimation{constructor(){this.deviceMode=document.createElement("span"),this.deviceMode.id="elementor-device-mode",this.deviceMode.setAttribute("class","elementor-screen-only"),document.body.appendChild(this.deviceMode)}_detectAnimations(){let t=getComputedStyle(this.deviceMode,":after").content.replace(/"/g,"");this.animationSettingKeys=this._listAnimationSettingsKeys(t),document.querySelectorAll(".elementor-invisible[data-settings]").forEach(t=>{const e=t.getBoundingClientRect();if(e.bottom>=0&&e.top<=window.innerHeight)try{this._animateElement(t)}catch(t){}})}_animateElement(t){const e=JSON.parse(t.dataset.settings),i=e._animation_delay||e.animation_delay||0,n=e[this.animationSettingKeys.find(t=>e[t])];if("none"===n)return void t.classList.remove("elementor-invisible");t.classList.remove(n),this.currentAnimation&&t.classList.remove(this.currentAnimation),this.currentAnimation=n;let s=setTimeout(()=>{t.classList.remove("elementor-invisible"),t.classList.add("animated",n),this._removeAnimationSettings(t,e)},i);window.addEventListener("rocket-startLoading",function(){clearTimeout(s)})}_listAnimationSettingsKeys(t="mobile"){const e=[""];switch(t){case"mobile":e.unshift("_mobile");case"tablet":e.unshift("_tablet");case"desktop":e.unshift("_desktop")}const i=[];return["animation","_animation"].forEach(t=>{e.forEach(e=>{i.push(t+e)})}),i}_removeAnimationSettings(t,e){this._listAnimationSettingsKeys().forEach(t=>delete e[t]),t.dataset.settings=JSON.stringify(e)}static run(){const t=new RocketElementorAnimation;requestAnimationFrame(t._detectAnimations.bind(t))}}document.addEventListener("DOMContentLoaded",RocketElementorAnimation.run);</script>
+
+
+<!-- This website is like a Rocket, isn't it? Performance optimized by WP Rocket. Learn more: https://wp-rocket.me --><span id="elementor-device-mode" class="elementor-screen-only"></span></body></html>

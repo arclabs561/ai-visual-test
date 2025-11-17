@@ -1,0 +1,515 @@
+<!DOCTYPE html><html lang="en-US"><!--<![endif]--><head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+	<title>
+		More about the Swift ABI postponement; The laws of ABI changes — Erica Sadun	</title>
+
+	<link rel="pingback" href="https://ericasadun.com/xmlrpc.php">
+
+		<meta name="robots" content="max-image-preview:large">
+<link rel="dns-prefetch" href="//secure.gravatar.com">
+<link rel="dns-prefetch" href="//s.w.org">
+<link rel="dns-prefetch" href="//v0.wordpress.com">
+<link rel="dns-prefetch" href="//i0.wp.com">
+<link rel="dns-prefetch" href="//i1.wp.com">
+<link rel="dns-prefetch" href="//i2.wp.com">
+<link rel="alternate" type="application/rss+xml" title="Erica Sadun » Feed" href="https://ericasadun.com/feed/">
+<link rel="alternate" type="application/rss+xml" title="Erica Sadun » Comments Feed" href="https://ericasadun.com/comments/feed/">
+<link rel="alternate" type="application/rss+xml" title="Erica Sadun » More about the Swift ABI postponement; The laws of ABI changes Comments Feed" href="https://ericasadun.com/2016/05/17/more-about-the-swift-abi-postponement-the-laws-of-abi-changes/feed/">
+<!-- This site uses the Google Analytics by MonsterInsights plugin v7.13.2 - Using Analytics tracking - https://www.monsterinsights.com/ -->
+<!-- Note: MonsterInsights is not currently configured on this site. The site owner needs to authenticate with Google Analytics in the MonsterInsights settings panel. -->
+<!-- No UA code set -->
+<!-- / Google Analytics by MonsterInsights -->
+<script type="text/javascript">
+window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/14.0.0\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/14.0.0\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/ericasadun.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=6.0"}};
+/*! This file is auto-generated */
+!function(e,a,t){var n,r,o,i=a.createElement("canvas"),p=i.getContext&&i.getContext("2d");function s(e,t){var a=String.fromCharCode,e=(p.clearRect(0,0,i.width,i.height),p.fillText(a.apply(this,e),0,0),i.toDataURL());return p.clearRect(0,0,i.width,i.height),p.fillText(a.apply(this,t),0,0),e===i.toDataURL()}function c(e){var t=a.createElement("script");t.src=e,t.defer=t.type="text/javascript",a.getElementsByTagName("head")[0].appendChild(t)}for(o=Array("flag","emoji"),t.supports={everything:!0,everythingExceptFlag:!0},r=0;r<o.length;r++)t.supports[o[r]]=function(e){if(!p||!p.fillText)return!1;switch(p.textBaseline="top",p.font="600 32px Arial",e){case"flag":return s([127987,65039,8205,9895,65039],[127987,65039,8203,9895,65039])?!1:!s([55356,56826,55356,56819],[55356,56826,8203,55356,56819])&&!s([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]);case"emoji":return!s([129777,127995,8205,129778,127999],[129777,127995,8203,129778,127999])}return!1}(o[r]),t.supports.everything=t.supports.everything&&t.supports[o[r]],"flag"!==o[r]&&(t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&t.supports[o[r]]);t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&!t.supports.flag,t.DOMReady=!1,t.readyCallback=function(){t.DOMReady=!0},t.supports.everything||(n=function(){t.readyCallback()},a.addEventListener?(a.addEventListener("DOMContentLoaded",n,!1),e.addEventListener("load",n,!1)):(e.attachEvent("onload",n),a.attachEvent("onreadystatechange",function(){"complete"===a.readyState&&t.readyCallback()})),(e=t.source||{}).concatemoji?c(e.concatemoji):e.wpemoji&&e.twemoji&&(c(e.twemoji),c(e.wpemoji)))}(window,document,window._wpemojiSettings);
+</script><script src="https://ericasadun.com/wp-includes/js/wp-emoji-release.min.js?ver=6.0" type="text/javascript" defer=""></script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 0.07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	<link rel="stylesheet" id="frank_stylesheet-css" href="https://ericasadun.com/wp-content/themes/Frank/style.css?ver=0.9" type="text/css" media="all">
+<!--[if IE]>
+<link rel='stylesheet' id='frank_stylesheet_ie-css'  href='https://ericasadun.com/wp-content/themes/Frank/ie.css?ver=0.9' type='text/css' media='all' />
+<![endif]-->
+<link rel="stylesheet" id="wp-block-library-css" href="https://ericasadun.com/wp-includes/css/dist/block-library/style.min.css?ver=6.0" type="text/css" media="all">
+<style id="wp-block-library-inline-css" type="text/css">
+.has-text-align-justify{text-align:justify;}
+</style>
+<style id="global-styles-inline-css" type="text/css">
+body{--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--duotone--dark-grayscale: url('#wp-duotone-dark-grayscale');--wp--preset--duotone--grayscale: url('#wp-duotone-grayscale');--wp--preset--duotone--purple-yellow: url('#wp-duotone-purple-yellow');--wp--preset--duotone--blue-red: url('#wp-duotone-blue-red');--wp--preset--duotone--midnight: url('#wp-duotone-midnight');--wp--preset--duotone--magenta-yellow: url('#wp-duotone-magenta-yellow');--wp--preset--duotone--purple-green: url('#wp-duotone-purple-green');--wp--preset--duotone--blue-orange: url('#wp-duotone-blue-orange');--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+</style>
+<link rel="stylesheet" id="wpt-twitter-feed-css" href="https://ericasadun.com/wp-content/plugins/wp-to-twitter/css/twitter-feed.css?ver=6.0" type="text/css" media="all">
+<link rel="stylesheet" id="monsterinsights-popular-posts-style-css" href="https://ericasadun.com/wp-content/plugins/google-analytics-for-wordpress/assets/css/frontend.min.css?ver=7.13.2" type="text/css" media="all">
+<link rel="stylesheet" id="social-logos-css" href="https://ericasadun.com/wp-content/plugins/jetpack/_inc/social-logos/social-logos.min.css?ver=9.2.2" type="text/css" media="all">
+<link rel="stylesheet" id="jetpack_css-css" href="https://ericasadun.com/wp-content/plugins/jetpack/css/jetpack.css?ver=9.2.2" type="text/css" media="all">
+<script type="text/javascript" src="https://ericasadun.com/wp-includes/js/jquery/jquery.min.js?ver=3.6.0" id="jquery-core-js"></script>
+<script type="text/javascript" src="https://ericasadun.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.3.2" id="jquery-migrate-js"></script>
+<script type="text/javascript" id="jetpack_related-posts-js-extra">
+/* <![CDATA[ */
+var related_posts_js_options = {"post_heading":"h4"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://ericasadun.com/wp-content/plugins/jetpack/_inc/build/related-posts/related-posts.min.js?ver=20191011" id="jetpack_related-posts-js"></script>
+<link rel="https://api.w.org/" href="https://ericasadun.com/wp-json/"><link rel="alternate" type="application/json" href="https://ericasadun.com/wp-json/wp/v2/posts/4202"><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://ericasadun.com/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://ericasadun.com/wp-includes/wlwmanifest.xml"> 
+<meta name="generator" content="WordPress 6.0">
+<link rel="canonical" href="https://ericasadun.com/2016/05/17/more-about-the-swift-abi-postponement-the-laws-of-abi-changes/">
+<link rel="shortlink" href="https://wp.me/p81rf-15M">
+<link rel="alternate" type="application/json+oembed" href="https://ericasadun.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fericasadun.com%2F2016%2F05%2F17%2Fmore-about-the-swift-abi-postponement-the-laws-of-abi-changes%2F">
+<link rel="alternate" type="text/xml+oembed" href="https://ericasadun.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fericasadun.com%2F2016%2F05%2F17%2Fmore-about-the-swift-abi-postponement-the-laws-of-abi-changes%2F&amp;format=xml">
+<style type="text/css">img#wpstats{display:none}</style><!--[if lt IE 9]><script src="https://ericasadun.com/wp-content/themes/Frank/javascripts/html5.js"></script><![endif]--><!--[if lt IE 7]><script src="https://ericasadun.com/wp-content/themes/Frank/javascripts/ie7.js"></script><![endif]--><style type="text/css">.recentcomments a{display:inline !important;padding:0 !important;margin:0 !important;}</style>
+<!-- Jetpack Open Graph Tags -->
+<meta property="og:type" content="article">
+<meta property="og:title" content="More about the Swift ABI postponement; The laws of ABI changes">
+<meta property="og:url" content="https://ericasadun.com/2016/05/17/more-about-the-swift-abi-postponement-the-laws-of-abi-changes/">
+<meta property="og:description" content="Via Greg Parker: We apologize for the inconvenience.&nbsp;The OS X and iOS architecture transitions demonstrate the two fundamental laws of ABI changes: Opportunities to break ABI compatibility are rare…">
+<meta property="article:published_time" content="2016-05-18T02:26:00+00:00">
+<meta property="article:modified_time" content="2016-05-18T02:26:00+00:00">
+<meta property="og:site_name" content="Erica Sadun">
+<meta property="og:image" content="https://s0.wp.com/i/blank.jpg">
+<meta property="og:locale" content="en_US">
+
+<!-- End Jetpack Open Graph Tags -->
+</head>
+<body data-rsssl="1" id="page" class="post-template-default single single-post postid-4202 single-format-standard">
+	<!--[if lt IE 9]>
+		<div class="chromeframe">Your browser is out of date. Please <a href="http://browsehappy.com/">upgrade your browser </a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a>.</div>
+	<![endif]-->
+<div class="container">
+	<header id="page-header" class="row">
+		<hgroup id="site-title-description">
+			<h1 id="site-title"><a href="https://ericasadun.com">Erica Sadun</a></h1>
+			<h2 id="site-description">Where technology meets something or other</h2>
+		</hgroup>
+
+				<nav id="site-nav">
+			<div id="search-2" class="widget-1 widget-first widget widget_search">
+<form method="get" id="searchform" action="https://ericasadun.com/" role="search">
+	<input type="text" placeholder="Type your query, hit enter" class="textinput" name="s" id="s">
+</form></div>
+		<div id="recent-posts-2" class="widget-2 widget widget_recent_entries">
+		<h3 class="widget-title">Recent Posts</h3>
+		<ul>
+											<li>
+					<a href="https://ericasadun.com/2021/08/19/piping-stdout-and-stderr-to-preview/">Piping stdout and stderr to Preview</a>
+									</li>
+											<li>
+					<a href="https://ericasadun.com/2021/06/08/xcode-vimpocalypse-now/">Xcode: Vimpocalypse Now</a>
+									</li>
+											<li>
+					<a href="https://ericasadun.com/2021/05/13/controlling-screen-sharing-from-the-command-line/">Controlling Screen Sharing from the command line</a>
+									</li>
+											<li>
+					<a href="https://ericasadun.com/2021/04/14/crafting-a-custom-word-count-service/">Crafting a custom word count service</a>
+									</li>
+											<li>
+					<a href="https://ericasadun.com/2020/07/20/pasting-quoted-code-perfectly/">Pasting quoted code perfectly</a>
+									</li>
+					</ul>
+
+		</div><div id="recent-comments-2" class="widget-3 widget widget_recent_comments"><h3 class="widget-title">Recent Comments</h3><ul id="recentcomments"><li class="recentcomments"><span class="comment-author-link">Paul</span> on <a href="https://ericasadun.com/2021/08/19/piping-stdout-and-stderr-to-preview/#comment-10794">Piping stdout and stderr to Preview</a></li><li class="recentcomments"><span class="comment-author-link">Bob Abramovitz</span> on <a href="https://ericasadun.com/2021/08/19/piping-stdout-and-stderr-to-preview/#comment-10792">Piping stdout and stderr to Preview</a></li><li class="recentcomments"><span class="comment-author-link"><a href="https://ericasadun.com" rel="external nofollow ugc" class="url">erica</a></span> on <a href="https://ericasadun.com/2021/08/19/piping-stdout-and-stderr-to-preview/#comment-10791">Piping stdout and stderr to Preview</a></li><li class="recentcomments"><span class="comment-author-link"><a href="https://ericasadun.com" rel="external nofollow ugc" class="url">erica</a></span> on <a href="https://ericasadun.com/2021/08/19/piping-stdout-and-stderr-to-preview/#comment-10790">Piping stdout and stderr to Preview</a></li><li class="recentcomments"><span class="comment-author-link"><a href="https://www.clamxav.com" rel="external nofollow ugc" class="url">Mark</a></span> on <a href="https://ericasadun.com/2021/08/19/piping-stdout-and-stderr-to-preview/#comment-10789">Piping stdout and stderr to Preview</a></li></ul></div><div id="archives-2" class="widget-4 widget widget_archive"><h3 class="widget-title">Archives</h3>
+			<ul>
+					<li><a href="https://ericasadun.com/2021/08/">August 2021</a></li>
+	<li><a href="https://ericasadun.com/2021/06/">June 2021</a></li>
+	<li><a href="https://ericasadun.com/2021/05/">May 2021</a></li>
+	<li><a href="https://ericasadun.com/2021/04/">April 2021</a></li>
+	<li><a href="https://ericasadun.com/2020/07/">July 2020</a></li>
+	<li><a href="https://ericasadun.com/2020/06/">June 2020</a></li>
+	<li><a href="https://ericasadun.com/2020/05/">May 2020</a></li>
+	<li><a href="https://ericasadun.com/2020/03/">March 2020</a></li>
+	<li><a href="https://ericasadun.com/2020/02/">February 2020</a></li>
+	<li><a href="https://ericasadun.com/2020/01/">January 2020</a></li>
+	<li><a href="https://ericasadun.com/2019/12/">December 2019</a></li>
+	<li><a href="https://ericasadun.com/2019/11/">November 2019</a></li>
+	<li><a href="https://ericasadun.com/2019/10/">October 2019</a></li>
+	<li><a href="https://ericasadun.com/2019/09/">September 2019</a></li>
+	<li><a href="https://ericasadun.com/2019/06/">June 2019</a></li>
+	<li><a href="https://ericasadun.com/2019/02/">February 2019</a></li>
+	<li><a href="https://ericasadun.com/2019/01/">January 2019</a></li>
+	<li><a href="https://ericasadun.com/2018/12/">December 2018</a></li>
+	<li><a href="https://ericasadun.com/2018/11/">November 2018</a></li>
+	<li><a href="https://ericasadun.com/2018/10/">October 2018</a></li>
+	<li><a href="https://ericasadun.com/2018/09/">September 2018</a></li>
+	<li><a href="https://ericasadun.com/2018/08/">August 2018</a></li>
+	<li><a href="https://ericasadun.com/2018/07/">July 2018</a></li>
+	<li><a href="https://ericasadun.com/2018/06/">June 2018</a></li>
+	<li><a href="https://ericasadun.com/2018/05/">May 2018</a></li>
+	<li><a href="https://ericasadun.com/2018/04/">April 2018</a></li>
+	<li><a href="https://ericasadun.com/2018/03/">March 2018</a></li>
+	<li><a href="https://ericasadun.com/2018/02/">February 2018</a></li>
+	<li><a href="https://ericasadun.com/2018/01/">January 2018</a></li>
+	<li><a href="https://ericasadun.com/2017/12/">December 2017</a></li>
+	<li><a href="https://ericasadun.com/2017/11/">November 2017</a></li>
+	<li><a href="https://ericasadun.com/2017/10/">October 2017</a></li>
+	<li><a href="https://ericasadun.com/2017/09/">September 2017</a></li>
+	<li><a href="https://ericasadun.com/2017/08/">August 2017</a></li>
+	<li><a href="https://ericasadun.com/2017/07/">July 2017</a></li>
+	<li><a href="https://ericasadun.com/2017/06/">June 2017</a></li>
+	<li><a href="https://ericasadun.com/2017/05/">May 2017</a></li>
+	<li><a href="https://ericasadun.com/2017/04/">April 2017</a></li>
+	<li><a href="https://ericasadun.com/2017/03/">March 2017</a></li>
+	<li><a href="https://ericasadun.com/2017/02/">February 2017</a></li>
+	<li><a href="https://ericasadun.com/2017/01/">January 2017</a></li>
+	<li><a href="https://ericasadun.com/2016/12/">December 2016</a></li>
+	<li><a href="https://ericasadun.com/2016/11/">November 2016</a></li>
+	<li><a href="https://ericasadun.com/2016/10/">October 2016</a></li>
+	<li><a href="https://ericasadun.com/2016/09/">September 2016</a></li>
+	<li><a href="https://ericasadun.com/2016/08/">August 2016</a></li>
+	<li><a href="https://ericasadun.com/2016/07/">July 2016</a></li>
+	<li><a href="https://ericasadun.com/2016/06/">June 2016</a></li>
+	<li><a href="https://ericasadun.com/2016/05/">May 2016</a></li>
+	<li><a href="https://ericasadun.com/2016/04/">April 2016</a></li>
+	<li><a href="https://ericasadun.com/2016/03/">March 2016</a></li>
+	<li><a href="https://ericasadun.com/2016/02/">February 2016</a></li>
+	<li><a href="https://ericasadun.com/2016/01/">January 2016</a></li>
+	<li><a href="https://ericasadun.com/2015/12/">December 2015</a></li>
+	<li><a href="https://ericasadun.com/2015/11/">November 2015</a></li>
+	<li><a href="https://ericasadun.com/2015/10/">October 2015</a></li>
+	<li><a href="https://ericasadun.com/2015/09/">September 2015</a></li>
+	<li><a href="https://ericasadun.com/2015/08/">August 2015</a></li>
+	<li><a href="https://ericasadun.com/2015/07/">July 2015</a></li>
+	<li><a href="https://ericasadun.com/2015/06/">June 2015</a></li>
+	<li><a href="https://ericasadun.com/2015/05/">May 2015</a></li>
+	<li><a href="https://ericasadun.com/2015/04/">April 2015</a></li>
+	<li><a href="https://ericasadun.com/2015/03/">March 2015</a></li>
+	<li><a href="https://ericasadun.com/2015/02/">February 2015</a></li>
+	<li><a href="https://ericasadun.com/2015/01/">January 2015</a></li>
+	<li><a href="https://ericasadun.com/2014/10/">October 2014</a></li>
+	<li><a href="https://ericasadun.com/2014/09/">September 2014</a></li>
+	<li><a href="https://ericasadun.com/2014/08/">August 2014</a></li>
+	<li><a href="https://ericasadun.com/2014/07/">July 2014</a></li>
+	<li><a href="https://ericasadun.com/2014/06/">June 2014</a></li>
+	<li><a href="https://ericasadun.com/2014/05/">May 2014</a></li>
+	<li><a href="https://ericasadun.com/2013/05/">May 2013</a></li>
+	<li><a href="https://ericasadun.com/2013/04/">April 2013</a></li>
+	<li><a href="https://ericasadun.com/2013/03/">March 2013</a></li>
+			</ul>
+
+			</div><div id="categories-2" class="widget-5 widget widget_categories"><h3 class="widget-title">Categories</h3>
+			<ul>
+					<li class="cat-item cat-item-36"><a href="https://ericasadun.com/category/accessories/">Accessories</a>
+</li>
+	<li class="cat-item cat-item-2"><a href="https://ericasadun.com/category/admin/">Admin</a>
+</li>
+	<li class="cat-item cat-item-25"><a href="https://ericasadun.com/category/announcements/">Announcements</a>
+</li>
+	<li class="cat-item cat-item-76"><a href="https://ericasadun.com/category/applescript/">Applescript</a>
+</li>
+	<li class="cat-item cat-item-5"><a href="https://ericasadun.com/category/apps/">Apps</a>
+</li>
+	<li class="cat-item cat-item-48"><a href="https://ericasadun.com/category/bluetooth/">Bluetooth</a>
+</li>
+	<li class="cat-item cat-item-4"><a href="https://ericasadun.com/category/books/">Books</a>
+</li>
+	<li class="cat-item cat-item-44"><a href="https://ericasadun.com/category/challenge/">Challenge</a>
+</li>
+	<li class="cat-item cat-item-74"><a href="https://ericasadun.com/category/command-line/">Command Line</a>
+</li>
+	<li class="cat-item cat-item-53"><a href="https://ericasadun.com/category/demoing-and-teaching/">Demoing and Teaching</a>
+</li>
+	<li class="cat-item cat-item-8"><a href="https://ericasadun.com/category/development/">Development</a>
+</li>
+	<li class="cat-item cat-item-17"><a href="https://ericasadun.com/category/euler/">Euler</a>
+</li>
+	<li class="cat-item cat-item-12"><a href="https://ericasadun.com/category/faq/">FAQ</a>
+</li>
+	<li class="cat-item cat-item-9"><a href="https://ericasadun.com/category/fun/">Fun</a>
+</li>
+	<li class="cat-item cat-item-40"><a href="https://ericasadun.com/category/git/">git</a>
+</li>
+	<li class="cat-item cat-item-10"><a href="https://ericasadun.com/category/github/">github</a>
+</li>
+	<li class="cat-item cat-item-51"><a href="https://ericasadun.com/category/grumpy-ux-feedback/">Grumpy UX Feedback</a>
+</li>
+	<li class="cat-item cat-item-31"><a href="https://ericasadun.com/category/hacking/">Hacking</a>
+</li>
+	<li class="cat-item cat-item-23"><a href="https://ericasadun.com/category/hardware/">Hardware</a>
+</li>
+	<li class="cat-item cat-item-22"><a href="https://ericasadun.com/category/how-to/">How To</a>
+</li>
+	<li class="cat-item cat-item-30"><a href="https://ericasadun.com/category/humor/">Humor</a>
+</li>
+	<li class="cat-item cat-item-6"><a href="https://ericasadun.com/category/ios/">iOS</a>
+</li>
+	<li class="cat-item cat-item-20"><a href="https://ericasadun.com/category/itunes/">iTunes</a>
+</li>
+	<li class="cat-item cat-item-49"><a href="https://ericasadun.com/category/kotlin/">Kotlin</a>
+</li>
+	<li class="cat-item cat-item-75"><a href="https://ericasadun.com/category/macos/">macOS</a>
+</li>
+	<li class="cat-item cat-item-21"><a href="https://ericasadun.com/category/misc/">Misc</a>
+</li>
+	<li class="cat-item cat-item-24"><a href="https://ericasadun.com/category/musings/">Musings</a>
+</li>
+	<li class="cat-item cat-item-38"><a href="https://ericasadun.com/category/news/">News</a>
+</li>
+	<li class="cat-item cat-item-7"><a href="https://ericasadun.com/category/os-x/">OS X</a>
+</li>
+	<li class="cat-item cat-item-77"><a href="https://ericasadun.com/category/osascript/">osascript</a>
+</li>
+	<li class="cat-item cat-item-70"><a href="https://ericasadun.com/category/playgrounds/">Playgrounds</a>
+</li>
+	<li class="cat-item cat-item-37"><a href="https://ericasadun.com/category/poll/">Poll</a>
+</li>
+	<li class="cat-item cat-item-3"><a href="https://ericasadun.com/category/posts/">Posts</a>
+</li>
+	<li class="cat-item cat-item-68"><a href="https://ericasadun.com/category/preview/">Preview</a>
+</li>
+	<li class="cat-item cat-item-47"><a href="https://ericasadun.com/category/python/">Python</a>
+</li>
+	<li class="cat-item cat-item-19"><a href="https://ericasadun.com/category/reviews/">Reviews</a>
+</li>
+	<li class="cat-item cat-item-18"><a href="https://ericasadun.com/category/siri/">Siri</a>
+</li>
+	<li class="cat-item cat-item-32"><a href="https://ericasadun.com/category/snippets/">Snippets</a>
+</li>
+	<li class="cat-item cat-item-11"><a href="https://ericasadun.com/category/software/">Software</a>
+</li>
+	<li class="cat-item cat-item-14"><a href="https://ericasadun.com/category/swift/">Swift</a>
+</li>
+	<li class="cat-item cat-item-63"><a href="https://ericasadun.com/category/swiftpm/">SwiftPM</a>
+</li>
+	<li class="cat-item cat-item-55"><a href="https://ericasadun.com/category/swiftui/">SwiftUI</a>
+</li>
+	<li class="cat-item cat-item-50"><a href="https://ericasadun.com/category/tim/">Tim</a>
+</li>
+	<li class="cat-item cat-item-52"><a href="https://ericasadun.com/category/tricks-of-the-trade/">Tricks of the Trade</a>
+</li>
+	<li class="cat-item cat-item-35"><a href="https://ericasadun.com/category/tvos/">tvOS</a>
+</li>
+	<li class="cat-item cat-item-1"><a href="https://ericasadun.com/category/uncategorized/">Uncategorized</a>
+</li>
+	<li class="cat-item cat-item-69"><a href="https://ericasadun.com/category/unix/">Unix</a>
+</li>
+	<li class="cat-item cat-item-15"><a href="https://ericasadun.com/category/various-frustrations/">Various Frustrations</a>
+</li>
+	<li class="cat-item cat-item-54"><a href="https://ericasadun.com/category/watchos/">watchOS</a>
+</li>
+	<li class="cat-item cat-item-41"><a href="https://ericasadun.com/category/wtf/">WTF</a>
+</li>
+	<li class="cat-item cat-item-33"><a href="https://ericasadun.com/category/wwdc/">WWDC</a>
+</li>
+	<li class="cat-item cat-item-16"><a href="https://ericasadun.com/category/xcode/">Xcode</a>
+</li>
+			</ul>
+
+			</div><div id="meta-2" class="widget-6 widget-last widget widget_meta"><h3 class="widget-title">Meta</h3>
+		<ul>
+						<li><a href="https://ericasadun.com/wp-login.php">Log in</a></li>
+			<li><a href="https://ericasadun.com/feed/">Entries feed</a></li>
+			<li><a href="https://ericasadun.com/comments/feed/">Comments feed</a></li>
+
+			<li><a href="https://wordpress.org/">WordPress.org</a></li>
+		</ul>
+
+		</div>		</nav>
+			</header>
+<div id="content" class="single">
+	<div class="row">
+		<main id="content-primary" role="main">
+									<article itemscope="" itemtype="http://schema.org/BlogPosting" class="post leftaside">
+				<header class="post-header">
+					<h1 class="post-title">More about the Swift ABI postponement; The laws of ABI changes</h1>
+				</header>
+								<div id="content-main" class="row">
+					<section class="post-content clearfix">
+												<p><a href="http://thread.gmane.org/gmane.comp.lang.swift.evolution/17276/focus=17334">Via Greg Parker</a>:</p>
+<blockquote><p>We apologize for the inconvenience.&nbsp;The OS X and iOS architecture transitions demonstrate the two fundamental laws of ABI changes:</p>
+<ol>
+<li>Opportunities to break ABI compatibility are rare.</li>
+<li>Any opportunity to break ABI compatibility will suffer from severe schedule pressure.</li>
+</ol>
+<p>The Objective-C ABIs have many problems that would have been improved with more time.</p>
+<ul>
+<li>We tried to get a “modern” ABI into i386, but the schedule was too tight and we lost time with some initial design ideas that didn’t pan out. x86_64 was also a tight schedule, but much of the work was already in place from the i386 attempt so we were able to get it done.</li>
+<li>Fixing BOOL was repeatedly not quite high enough priority.</li>
+<li>The 64-bit metadata structures have at least one field that is 64-bit by accident (protocol_list_t.count). There was miscommunication between the compiler and the runtime when the design was specified, and then it was never high enough priority to coordinate a fix later.</li>
+<li>armv7 uses setjmp-longjmp exceptions instead of “zero-cost” exceptions because that’s what GCC’s arm compiler used then and we didn’t have time to change it.</li>
+<li>The very first iPhone did not use a “modern” ABI. We knew we could break ABI compatibility at any time before 3rd party apps were supported, so we punted ABI modernization until after 1.0.</li>
+<li>Non-fragile ivars on iPhone had a fragility bug in the compiler. (You don’t see non-fragile ivars doing their thing until the *second* release, except for deliberate testing. We didn’t test enough.) Luckily the bad case was narrow and the miscompiled code was detectable by inspecting binaries in the App Store, so we were able to ask all of the affected apps to recompile with a fixed compiler before the next iPhoneOS version shipped.</li>
+</ul>
+<p>If we tried to rush Swift ABI stability out the door for Swift 3 we would certainly end up with deliberate or accidental flaws like the above. Being able to take the time to get it right is a rare luxury.</p></blockquote>
+<div class="sharedaddy sd-sharing-enabled"><div class="robots-nocontent sd-block sd-social sd-social-icon sd-sharing"><h3 class="sd-title">Share this:</h3><div class="sd-content"><ul><li class="share-twitter"><a rel="nofollow noopener noreferrer" data-shared="sharing-twitter-4202" class="share-twitter sd-button share-icon no-text" href="https://ericasadun.com/2016/05/17/more-about-the-swift-abi-postponement-the-laws-of-abi-changes/?share=twitter&amp;nb=1" target="_blank" title="Click to share on Twitter"><span></span><span class="sharing-screen-reader-text">Click to share on Twitter (Opens in new window)</span></a></li><li class="share-facebook"><a rel="nofollow noopener noreferrer" data-shared="sharing-facebook-4202" class="share-facebook sd-button share-icon no-text" href="https://ericasadun.com/2016/05/17/more-about-the-swift-abi-postponement-the-laws-of-abi-changes/?share=facebook&amp;nb=1" target="_blank" title="Click to share on Facebook"><span></span><span class="sharing-screen-reader-text">Click to share on Facebook (Opens in new window)</span></a></li><li class="share-end"></li></ul></div></div></div>
+<div id="jp-relatedposts" class="jp-relatedposts" style="display: block;">
+	<h3 class="jp-relatedposts-headline"><em>Related</em></h3>
+<div class="jp-relatedposts-items jp-relatedposts-items-minimal jp-relatedposts-grid "><p class="jp-relatedposts-post jp-relatedposts-post0" data-post-id="4738" data-post-format="false"><span class="jp-relatedposts-post-title"><a class="jp-relatedposts-post-a" href="https://ericasadun.com/2016/07/29/chris-lattner-on-wrapping-up-swift-3-starting-swift-4/" title="Chris Lattner on wrapping up Swift 3, starting Swift 4" data-origin="4202" data-position="0">Chris Lattner on wrapping up Swift 3, starting Swift 4</a></span><span class="jp-relatedposts-post-date">July 29, 2016</span><span class="jp-relatedposts-post-context">In "Announcements"</span></p><p class="jp-relatedposts-post jp-relatedposts-post1" data-post-id="5807" data-post-format="false"><span class="jp-relatedposts-post-title"><a class="jp-relatedposts-post-a" href="https://ericasadun.com/2017/08/08/swift-5-begins-new-evolution-rules-will-require-implementations-for-language-change-review/" title="Swift 5 begins: new evolution rules will require implementations for language change review" data-origin="4202" data-position="1">Swift 5 begins: new evolution rules will require implementations for language change review</a></span><span class="jp-relatedposts-post-date">August 8, 2017</span><span class="jp-relatedposts-post-context">In "Announcements"</span></p><p class="jp-relatedposts-post jp-relatedposts-post2" data-post-id="4200" data-post-format="false"><span class="jp-relatedposts-post-title"><a class="jp-relatedposts-post-a" href="https://ericasadun.com/2016/05/16/winding-down-swift-3-0-abi-stability-deferred/" title="Winding down Swift 3.0; ABI stability deferred" data-origin="4202" data-position="2">Winding down Swift 3.0; ABI stability deferred</a></span><span class="jp-relatedposts-post-date">May 16, 2016</span><span class="jp-relatedposts-post-context">In "Announcements"</span></p></div></div>											</section>
+					<div class="post-info">
+						<ul class="metadata vertical">
+	<li class="date"><time datetime="2016-05-17" itemprop="datePublished">May 17, 2016</time></li>
+	<li class="author">
+		By <a href="https://ericasadun.com" title="Visit erica’s website" rel="author external">erica</a>	</li>
+	<li class="categories"><a href="https://ericasadun.com/category/announcements/">Announcements</a>, <a href="https://ericasadun.com/category/development/">Development</a>, <a href="https://ericasadun.com/category/swift/">Swift</a></li>
+	<li class="tags"></li>
+	<li class="comments">
+		<a href="https://ericasadun.com/2016/05/17/more-about-the-swift-abi-postponement-the-laws-of-abi-changes/#comments">
+			4 Comments		</a>
+	</li> 
+	</ul>												<a id="post-tweet" class="button alt small" href="https://twitter.com/share?text=More%20about%20the%20Swift%20ABI%20postponement%3B%20The%20laws%20of%20ABI%20changes&amp;url=https://ericasadun.com/2016/05/17/more-about-the-swift-abi-postponement-the-laws-of-abi-changes/&amp;counturl=https://ericasadun.com/2016/05/17/more-about-the-swift-abi-postponement-the-laws-of-abi-changes/" target="_blank">
+						Tweet this Post						</a>
+												<div id="prev-post" class="clearfix">
+							<a href="https://ericasadun.com/2016/05/16/winding-down-swift-3-0-abi-stability-deferred/" rel="prev"><nav><span class="arrow">Winding down Swift 3.0; ABI stability deferred</span></nav><p>Winding down Swift 3.0; ABI stability deferred</p></a>						</div>
+																	</div>
+				</div>
+							</article>
+						
+<div id="comments-container">
+	
+
+	<header id="comments-header">
+		<h1 id="comments-title">
+		4 Comments		</h1>
+	</header>
+	<ul id="comments">
+	
+		<li id="comment-4741" class="comment">
+			<div class="row">
+				<div class="comment-content">
+					<p>They can take as long as they want, in order to get it right, as far as I’m concerned. There’s absolutely no need to rush this. Nobody is absolutely depending on Swift 3 or 4 for their work. We can, and are, using Objective-C and/or Swift 2 to do what we need right now.</p>
+<p>And really, I’d much prefer Apple spent a fraction of this effort back on Xcode, particularly IB. Or the Finder…  or the horrible mess that is iTunes. Or Swift as the Mac’s key scripting/automation language. Or modernising the entire API for adaptive view controllers on iOS (the Size Class system is just terrible in practice.)  etc.</p>
+					<div class="comment-reply">
+											</div>
+				</div>
+				<div class="comment-info">
+					<ul class="metadata vertical">
+						<li class="date"><time datetime="2016-05-17"><span class="date-date">May 17, 2016</span> <span class="date-time">9:35 PM</span></time></li>
+						<li class="author" id="vcard-4741">
+							By 								<a class="url fn" href="">David</a></li>
+						<li>
+													</li>
+					</ul>
+				</div>
+			</div>
+	<ul class="children">
+
+		<li id="comment-4744" class="comment">
+			<div class="row">
+				<div class="comment-content">
+					<p>This is not just about Apple any more though.</p>
+					<div class="comment-reply">
+											</div>
+				</div>
+				<div class="comment-info">
+					<ul class="metadata vertical">
+						<li class="date"><time datetime="2016-05-17"><span class="date-date">May 18, 2016</span> <span class="date-time">6:05 AM</span></time></li>
+						<li class="author" id="vcard-4744">
+							By 								<a class="url fn" href="https://plus.google.com/108324809568847362448">Jeremy Pereira</a></li>
+						<li>
+													</li>
+					</ul>
+				</div>
+			</div>
+	<ul class="children">
+
+		<li id="comment-4766" class="comment">
+			<div class="row">
+				<div class="comment-content">
+					<p>True, but it’s still 99% Apple. They are the agenda setter here, and what they say, goes.  It’s ironic that the primary development platform for iOS (the Mac) has lagged behind so far.  Going back to Cocoa development after iOS 9 is really painful, particularly when it comes to UI. Even the the web, with its hodgepodge of technologies, has advanced far beyond AppKit, in terms of time-to-build and versatility.</p>
+					<div class="comment-reply">
+											</div>
+				</div>
+				<div class="comment-info">
+					<ul class="metadata vertical">
+						<li class="date"><time datetime="2016-05-17"><span class="date-date">May 18, 2016</span> <span class="date-time">5:56 PM</span></time></li>
+						<li class="author" id="vcard-4766">
+							By 								<a class="url fn" href="">David</a></li>
+						<li>
+													</li>
+					</ul>
+				</div>
+			</div>
+	</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+
+		<li id="comment-4753" class="comment">
+			<div class="row">
+				<div class="comment-content">
+					<p>[…] Update (2016-05-18): Greg Parker: […]</p>
+					<div class="comment-reply">
+											</div>
+				</div>
+				<div class="comment-info">
+					<ul class="metadata vertical">
+						<li class="date"><time datetime="2016-05-17"><span class="date-date">May 18, 2016</span> <span class="date-time">1:11 PM</span></time></li>
+						<li class="author" id="vcard-4753">
+							By 								<a class="url fn" href="http://mjtsai.com/blog/2016/05/17/abi-stability-deferred-until-after-swift-3-0/">Michael Tsai – Blog – ABI Stability Deferred Until After Swift 3.0</a></li>
+						<li>
+													</li>
+					</ul>
+				</div>
+			</div>
+	</li><!-- #comment-## -->
+	</ul>
+
+	
+	
+
+</div>		</main>
+		 <aside id="sidebar" role="complementary"> 
+			<h3>
+			About This Site		</h3>
+		<p>Where technology meets something or other</p>
+		<h3>
+			Search		</h3>
+		
+<form method="get" id="searchform" action="https://ericasadun.com/" role="search">
+	<input type="text" placeholder="Type your query, hit enter" class="textinput" name="s" id="s">
+</form>	</aside>	</div>
+</div>
+</div>
+
+	<script type="text/javascript">
+		window.WPCOM_sharing_counts = {"https:\/\/ericasadun.com\/2016\/05\/17\/more-about-the-swift-abi-postponement-the-laws-of-abi-changes\/":4202};
+	</script>
+				<script type="text/javascript" src="https://ericasadun.com/wp-includes/js/comment-reply.min.js?ver=6.0" id="comment-reply-js"></script>
+<script type="text/javascript" src="https://ericasadun.com/wp-content/plugins/jetpack/_inc/build/photon/photon.min.js?ver=20191001" id="jetpack-photon-js"></script>
+<script type="text/javascript" id="sharing-js-js-extra">
+/* <![CDATA[ */
+var sharing_js_options = {"lang":"en","counts":"1","is_stats_active":"1"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://ericasadun.com/wp-content/plugins/jetpack/_inc/build/sharedaddy/sharing.min.js?ver=9.2.2" id="sharing-js-js"></script>
+<script type="text/javascript" id="sharing-js-js-after">
+var windowOpen;
+			jQuery( document.body ).on( 'click', 'a.share-twitter', function() {
+				// If there's another sharing window open, close it.
+				if ( 'undefined' !== typeof windowOpen ) {
+					windowOpen.close();
+				}
+				windowOpen = window.open( jQuery( this ).attr( 'href' ), 'wpcomtwitter', 'menubar=1,resizable=1,width=600,height=350' );
+				return false;
+			});
+var windowOpen;
+			jQuery( document.body ).on( 'click', 'a.share-facebook', function() {
+				// If there's another sharing window open, close it.
+				if ( 'undefined' !== typeof windowOpen ) {
+					windowOpen.close();
+				}
+				windowOpen = window.open( jQuery( this ).attr( 'href' ), 'wpcomfacebook', 'menubar=1,resizable=1,width=600,height=400' );
+				return false;
+			});
+</script>
+<script type="text/javascript" src="https://stats.wp.com/e-202225.js" async="async" defer="defer"></script>
+<script type="text/javascript">
+	_stq = window._stq || [];
+	_stq.push([ 'view', {v:'ext',j:'1:9.2.2',blog:'1912157',post:'4202',tz:'-6',srv:'ericasadun.com'} ]);
+	_stq.push([ 'clickTrackerInit', '1912157', '4202' ]);
+</script>
+
+<img src="https://pixel.wp.com/g.gif?v=ext&amp;j=1%3A9.2.2&amp;blog=1912157&amp;post=4202&amp;tz=-6&amp;srv=ericasadun.com&amp;host=ericasadun.com&amp;ref=&amp;fcp=0&amp;rand=0.36381596472711375" alt="" width="6" height="5" id="wpstats"></body></html>

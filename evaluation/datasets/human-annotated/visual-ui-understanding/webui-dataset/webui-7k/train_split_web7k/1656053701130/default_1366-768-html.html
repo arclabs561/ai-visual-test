@@ -1,0 +1,856 @@
+<!DOCTYPE html><html><head>
+  <meta charset="utf-8">
+  <meta content="IE=edge" http-equiv="X-UA-Compatible">
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1" name="viewport">
+  <link href="images/favicons/favicon.ico" rel="shortcut icon" type="image/x-icon">
+  <meta content="#ffffff" name="msapplication-TileColor">
+  <meta content="images/favicons/ms-icon-144x144.png" name="msapplication-TileImage">
+  <meta content="#ffffff" name="theme-color">
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu:400,500,300" rel="stylesheet" type="text/css">
+  <link href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css" rel="stylesheet" type="text/css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.default.min.css" rel="stylesheet" type="text/css">
+  <link href="styles/main.min.css" rel="stylesheet" type="text/css"><!-- toLocaleString support -->
+
+  <script async="" src="//www.google-analytics.com/analytics.js"></script><script src="https://cdn.polyfill.io/v2/polyfill.js?features=Intl.~locale.en-US|always&amp;gated=0"></script>
+  <link href="//www.seattle.gov/common/css/bootstrap_customNonCMS.min.css" media="all" rel="stylesheet" type="text/css">
+  <link href="//www.seattle.gov/assets/prebuilt/css/anda.css" media="all" rel="stylesheet" type="text/css">
+  <link href="//www.seattle.gov/common/css/shared2016_static.css" rel="stylesheet" type="text/css">
+  <style type="text/css">
+      /* 2016 GLOBAL FIXES */
+      #header nav .container,
+      #seaGovHeader .container,
+      #seaGovFooter .container {
+        max-width: 100%;
+      }
+
+      #seagovNavbar .navbar-brand {
+        display: block;
+        height: inherit;
+        padding: 5px 30px;
+      }
+
+      #header nav .container #seagovNavbar {
+        width: 100% !important;
+      }
+
+      #searchIcon {
+        display: block !important;
+      }
+
+      div#searchModal {
+        padding: 0px !important;
+      }
+
+      nav#slideMenuNav ul {
+        margin: 0px;
+      }
+
+      nav#slideMenuNav li {
+        text-align: left;
+      }
+
+      nav#slideMenuNav li a {
+        font-family: "Open Sans";
+      }
+
+      .footerBottom15Wrapper {
+        margin-top: 40px !important;
+      }
+
+      #footerBottom15 {
+        padding: 0px;
+        min-height: 40px;
+      }
+
+      #footerBottom15 .row {
+        margin: 0px;
+      }
+
+      .footerContainer {
+        padding: 0px !important;
+        width: initial !important;
+        float: left;
+        margin-right: 140px;
+      }
+
+      #footerBottom15,
+      #footerBottom15 a {
+        font-size: 14px !important;
+        padding-top: 22px;
+        font-family: "Open Sans";
+        font-weight: 700;
+      }
+
+      .footerContainer:last-child {
+        margin-right: 0px !important;
+      }
+
+      #seaGov_topNav_Container {
+        display: none;
+      }
+
+      div#deptTitle {
+        margin-top: 0px;
+        padding-bottom: 15px;
+        padding-top: 10px;
+        padding-left: 20px;
+        background-image: url(images/seattle-skyline.jpg);
+        background-repeat: no-repeat;
+        background-position-x: right;
+        background-size: contain;
+        background-color: #fff;
+      }
+      /* styles that apply to both tablet and mobile */
+      @media (max-width: 991px) {
+      }
+
+      @media (max-width: 767px) {
+        .main-container {
+          top: 15em;
+        }
+
+        div#deptTitle,
+        div#deptTitle a {
+          font-size: 22px;
+        }
+
+        div#deptTitle {
+          background-image: none;
+        }
+      }
+      /* desktops */
+
+      @media (min-width: 768px) {
+        .main-container {
+          top: 13.25em;
+        }
+
+        div#deptTitle,
+        div#deptTitle a {
+          font-size: 28px;
+        }
+      }
+
+      /* end min-width 768 */
+      @media (min-width: 1280px) {
+        .main-container {
+          top: 12em;
+        }
+
+        div#deptTitle,
+        div#deptTitle a {
+          font-size: 32px;
+        }
+      }
+      /* END 2016 GLOBAL FIXES */
+      @media print {
+        .noprint {
+          visibility: hidden !important;
+          display: none !important;
+        }
+      }
+
+  </style>
+  <title></title>
+<style></style><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="main" src="app/main.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="app" src="app/app.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="jquery" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="underscore" src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="backbone" src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.2.1/backbone-min.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="router" src="app/router.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="deparam" src="app/deparam.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="models/city" src="app/models/city.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="models/scorecard" src="app/models/scorecard.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="collections/city_buildings" src="app/collections/city_buildings.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="views/map/map" src="app/views/map/map.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="views/map/address_search_autocomplete" src="app/views/map/address_search_autocomplete.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="views/map/year_control" src="app/views/map/year_control.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="views/layout/activity_indicator" src="app/views/layout/activity_indicator.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="views/layout/building_counts" src="app/views/layout/building_counts.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="views/layout/compare_bar" src="app/views/layout/compare_bar.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="views/scorecards/controller" src="app/views/scorecards/controller.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="views/layout/button" src="app/views/layout/button.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="views/layout/mobile-alert" src="app/views/layout/mobile-alert.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="views/modals/modal-model" src="app/views/modals/modal-model.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="views/modals/modal" src="app/views/modals/modal.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="views/layout/footer" src="app/views/layout/footer.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="text" src="app/text.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="views/map/building_layer" src="app/views/map/building_layer.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="views/map/filter" src="app/views/map/filter.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="views/map/category" src="app/views/map/category.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="utils/threshold" src="app/utils/threshold.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="fusejs" src="//cdnjs.cloudflare.com/ajax/libs/fuse.js/2.5.0/fuse.min.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="autocomplete" src="app/../lib/autocomplete/autocomplete.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="selectize" src="//cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="toastr" src="app/../lib/toastr/toastr.min.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="d3" src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="views/scorecards/building_scorecard" src="app/views/scorecards/building_scorecard.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="views/scorecards/city_scorecard" src="app/views/scorecards/city_scorecard.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="views/scorecards/links" src="app/views/scorecards/links.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="store" src="//cdnjs.cloudflare.com/ajax/libs/store.js/1.3.20/store.min.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="models/building_color_bucket_calculator" src="app/models/building_color_bucket_calculator.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="models/building_bucket_calculator" src="app/models/building_bucket_calculator.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="views/charts/histogram" src="app/views/charts/histogram.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="utils/formatters" src="app/utils/formatters.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="ionrangeslider" src="app/../lib/range-slider/ion.rangeSlider.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="views/../../lib/wrap" src="app/views/../../lib/wrap.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="views/scorecards/charts/fueluse" src="app/views/scorecards/charts/fueluse.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="views/scorecards/charts/performance_standard" src="app/views/scorecards/charts/performance_standard.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="views/scorecards/charts/shift" src="app/views/scorecards/charts/shift.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="views/scorecards/charts/comments" src="app/views/scorecards/charts/comments.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="views/scorecards/charts/building_type_table" src="app/views/scorecards/charts/building_type_table.js"></script></head>
+<body class="">
+  <div id="mobile-failover"><div>
+  <a class="logo" href="http://cityenergyproject.github.io/seattle/" target="_blank">
+    <img alt="Seattle energy logo" src="images/seattle_ose_logo@2x.png">
+  </a>
+
+  <div class="hero">
+    <p>For best results, please view this site on a larger screen.</p>
+    <div>
+      <button id="continue-on">Continue on mobile</button>
+      <label><input id="remember-continue" type="checkbox"> Remember for next time</label>
+    </div>
+  </div>
+</div></div>
+  <div id="modals"></div>
+  <div id="seaGovHeader" role="banner" class="noprint">
+    <div id="header">
+      <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+          <div class="navbar-header" id="seagovNavbar">
+            <div class="navbar-brand">
+              <a class="logohome exec" href="//www.seattle.gov">Seattle.gov</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </div>
+  <div class="deptName noprint" id="deptTitle">
+    <a href="/" title="Office of Sustainability &amp; Environment Energy Benchmarking Application" class="noprint">Seattle Energy Benchmarking</a> <span class="director noprint"><a href="//www.seattle.gov/environment/" style="font-size: 18px">Office of Sustainability &amp; Environment</a></span>
+  </div>
+  <header id="title"></header>
+  <div class="toolbar" id="toolbar">
+    <div id="search"><div class="search-wrapper">
+  <input id="address-search" class="address-search" name="address-search" type="search" placeholder="Search building name, address, or ID" autocomplete="off">
+  <img class="address-search-icon" src="images/search.svg">
+</div>
+</div>
+    <div id="map-category-controls"><div class="map-category-control">
+  <input type="checkbox" id="category-neighborhood">
+  <label class="category-list-toggle" for="category-neighborhood">Neighborhood</label>
+  <div class="categories">
+    <div class="categories-wrapper">
+      <ul>
+        <li class="actions"><a href="" class="showAll">Show All</a> | <a href="" class="hideAll">Hide All</a></li>
+      
+        <li>
+          <input type="checkbox" id="filter-neighborhood-" name="filter-neighborhood" value="" checked="checked">
+          <label for="filter-neighborhood-">
+            <div class="content"><div class="check"></div></div>
+          </label>
+        </li>
+      
+        <li>
+          <input type="checkbox" id="filter-neighborhood-ballard" name="filter-neighborhood" value="BALLARD" checked="checked">
+          <label for="filter-neighborhood-ballard">
+            <div class="content"><div class="check"></div>BALLARD</div>
+          </label>
+        </li>
+      
+        <li>
+          <input type="checkbox" id="filter-neighborhood-central" name="filter-neighborhood" value="CENTRAL" checked="checked">
+          <label for="filter-neighborhood-central">
+            <div class="content"><div class="check"></div>CENTRAL</div>
+          </label>
+        </li>
+      
+        <li>
+          <input type="checkbox" id="filter-neighborhood-delridge-neighborhoods" name="filter-neighborhood" value="DELRIDGE NEIGHBORHOODS" checked="checked">
+          <label for="filter-neighborhood-delridge-neighborhoods">
+            <div class="content"><div class="check"></div>DELRIDGE NEIGHBORHOODS</div>
+          </label>
+        </li>
+      
+        <li>
+          <input type="checkbox" id="filter-neighborhood-downtown" name="filter-neighborhood" value="DOWNTOWN" checked="checked">
+          <label for="filter-neighborhood-downtown">
+            <div class="content"><div class="check"></div>DOWNTOWN</div>
+          </label>
+        </li>
+      
+        <li>
+          <input type="checkbox" id="filter-neighborhood-east" name="filter-neighborhood" value="EAST" checked="checked">
+          <label for="filter-neighborhood-east">
+            <div class="content"><div class="check"></div>EAST</div>
+          </label>
+        </li>
+      
+        <li>
+          <input type="checkbox" id="filter-neighborhood-greater-duwamish" name="filter-neighborhood" value="GREATER DUWAMISH" checked="checked">
+          <label for="filter-neighborhood-greater-duwamish">
+            <div class="content"><div class="check"></div>GREATER DUWAMISH</div>
+          </label>
+        </li>
+      
+        <li>
+          <input type="checkbox" id="filter-neighborhood-lake-union" name="filter-neighborhood" value="LAKE UNION" checked="checked">
+          <label for="filter-neighborhood-lake-union">
+            <div class="content"><div class="check"></div>LAKE UNION</div>
+          </label>
+        </li>
+      
+        <li>
+          <input type="checkbox" id="filter-neighborhood-magnolia-/-queen-anne" name="filter-neighborhood" value="MAGNOLIA / QUEEN ANNE" checked="checked">
+          <label for="filter-neighborhood-magnolia-/-queen-anne">
+            <div class="content"><div class="check"></div>MAGNOLIA / QUEEN ANNE</div>
+          </label>
+        </li>
+      
+        <li>
+          <input type="checkbox" id="filter-neighborhood-north" name="filter-neighborhood" value="NORTH" checked="checked">
+          <label for="filter-neighborhood-north">
+            <div class="content"><div class="check"></div>NORTH</div>
+          </label>
+        </li>
+      
+        <li>
+          <input type="checkbox" id="filter-neighborhood-northeast" name="filter-neighborhood" value="NORTHEAST" checked="checked">
+          <label for="filter-neighborhood-northeast">
+            <div class="content"><div class="check"></div>NORTHEAST</div>
+          </label>
+        </li>
+      
+        <li>
+          <input type="checkbox" id="filter-neighborhood-northwest" name="filter-neighborhood" value="NORTHWEST" checked="checked">
+          <label for="filter-neighborhood-northwest">
+            <div class="content"><div class="check"></div>NORTHWEST</div>
+          </label>
+        </li>
+      
+        <li>
+          <input type="checkbox" id="filter-neighborhood-southeast" name="filter-neighborhood" value="SOUTHEAST" checked="checked">
+          <label for="filter-neighborhood-southeast">
+            <div class="content"><div class="check"></div>SOUTHEAST</div>
+          </label>
+        </li>
+      
+        <li>
+          <input type="checkbox" id="filter-neighborhood-southwest" name="filter-neighborhood" value="SOUTHWEST" checked="checked">
+          <label for="filter-neighborhood-southwest">
+            <div class="content"><div class="check"></div>SOUTHWEST</div>
+          </label>
+        </li>
+      
+      </ul>
+    </div>
+  </div>
+</div><div class="map-category-control">
+  <input type="checkbox" id="category-councildistrict">
+  <label class="category-list-toggle" for="category-councildistrict">Council District</label>
+  <div class="categories">
+    <div class="categories-wrapper">
+      <ul>
+        <li class="actions"><a href="" class="showAll">Show All</a> | <a href="" class="hideAll">Hide All</a></li>
+      
+        <li>
+          <input type="checkbox" id="filter-councildistrict-1" name="filter-councildistrict" value="1" checked="checked">
+          <label for="filter-councildistrict-1">
+            <div class="content"><div class="check"></div>1</div>
+          </label>
+        </li>
+      
+        <li>
+          <input type="checkbox" id="filter-councildistrict-2" name="filter-councildistrict" value="2" checked="checked">
+          <label for="filter-councildistrict-2">
+            <div class="content"><div class="check"></div>2</div>
+          </label>
+        </li>
+      
+        <li>
+          <input type="checkbox" id="filter-councildistrict-3" name="filter-councildistrict" value="3" checked="checked">
+          <label for="filter-councildistrict-3">
+            <div class="content"><div class="check"></div>3</div>
+          </label>
+        </li>
+      
+        <li>
+          <input type="checkbox" id="filter-councildistrict-4" name="filter-councildistrict" value="4" checked="checked">
+          <label for="filter-councildistrict-4">
+            <div class="content"><div class="check"></div>4</div>
+          </label>
+        </li>
+      
+        <li>
+          <input type="checkbox" id="filter-councildistrict-5" name="filter-councildistrict" value="5" checked="checked">
+          <label for="filter-councildistrict-5">
+            <div class="content"><div class="check"></div>5</div>
+          </label>
+        </li>
+      
+        <li>
+          <input type="checkbox" id="filter-councildistrict-6" name="filter-councildistrict" value="6" checked="checked">
+          <label for="filter-councildistrict-6">
+            <div class="content"><div class="check"></div>6</div>
+          </label>
+        </li>
+      
+        <li>
+          <input type="checkbox" id="filter-councildistrict-7" name="filter-councildistrict" value="7" checked="checked">
+          <label for="filter-councildistrict-7">
+            <div class="content"><div class="check"></div>7</div>
+          </label>
+        </li>
+      
+        <li>
+          <input type="checkbox" id="filter-councildistrict-null" name="filter-councildistrict" value="null" checked="checked">
+          <label for="filter-councildistrict-null">
+            <div class="content"><div class="check"></div>null</div>
+          </label>
+        </li>
+      
+      </ul>
+    </div>
+  </div>
+</div></div>
+    <div class="tbar-right">
+      <div id="year-select-container"><div class="year-control"><ol>
+
+  <li><input type="radio" id="year-2015" value="2015" name="year"><label for="year-2015">2015</label></li>
+
+  <li><input type="radio" id="year-2016" value="2016" name="year"><label for="year-2016">2016</label></li>
+
+  <li><input type="radio" id="year-2017" value="2017" name="year"><label for="year-2017">2017</label></li>
+
+  <li><input type="radio" id="year-2018" value="2018" name="year"><label for="year-2018">2018</label></li>
+
+  <li><input type="radio" id="year-2019" value="2019" name="year"><label for="year-2019">2019</label></li>
+
+  <li><input type="radio" id="year-2020" value="2020" name="year" checked="checked"><label for="year-2020">2020</label></li>
+
+</ol></div></div>
+    </div>
+  </div>
+  <div class="main-container">
+    <div id="map-controls">
+      <div id="map-controls-bk"></div>
+      <div id="map-controls-header">
+        <div>
+          <h4>Metric Filters <button class="reset-all-filters">Reset all</button></h4>
+          <p>Select a metric to see filtered results on the map</p>
+          <div id="building-proptype-selector"><select tabindex="-1" class="selectized" style="display: none;"><option value="*" selected="selected">Show All Buildings</option></select><div class="selectize-control single"><div class="selectize-input items full has-options has-items"><div class="item" data-value="*">Show All Buildings</div><input type="text" autocomplete="off" tabindex="" style="width: 4px;"></div><div class="selectize-dropdown single" style="display: none;"><div class="selectize-dropdown-content"></div></div></div></div>
+        </div>
+      </div>
+      <div id="map-controls-content">
+        <div id="map-controls-content--inner"><div class="category current" id="greenhouse-gas-emissions">
+  <input type="checkbox" id="category-greenhouse-gas-emissions-expanded" name="category-greenhouse-gas-emissions-expanded">
+  <label for="category-greenhouse-gas-emissions-expanded"><h2>Greenhouse Gas Emissions</h2></label>
+  <div class="category-control-container"><div class="map-control current" id="total_ghg_emissions"><div class="control-cell left">
+  <div class="control-cell--inner ">
+    <div class="control-head">
+      <h3 class="show-layer">Total Seattle GHG Emissions</h3>
+      
+        <span class="more-info"><span class="more">More Info</span><span class="less">Less Info</span></span>
+      
+    </div>
+
+    <div class="chart"><div class="histogram"><svg viewBox="0 0 700 100" preserveAspectRatio="none" style="width: 100%; height: 100%; background: transparent;"><g><rect width="31.46067415730337" stroke-width="0" height="100" x="0" y="0" style="fill: rgb(144, 174, 96);"></rect><rect width="31.46067415730337" stroke-width="0" height="64.9500384319754" x="39.32584269662921" y="35.0499615680246" style="fill: rgb(239, 178, 74);"></rect><rect width="31.46067415730337" stroke-width="0" height="35.511145272867026" x="78.65168539325842" y="64.48885472713297" style="fill: rgb(222, 143, 65);"></rect><rect width="31.46067415730337" stroke-width="0" height="21.521906225980015" x="117.97752808988763" y="78.47809377401998" style="fill: rgb(202, 101, 55);"></rect><rect width="31.46067415730337" stroke-width="0" height="11.375864719446579" x="157.30337078651684" y="88.62413528055342" style="fill: rgb(202, 101, 55);"></rect><rect width="31.46067415730337" stroke-width="0" height="8.378170637970792" x="196.62921348314603" y="91.6218293620292" style="fill: rgb(192, 79, 50);"></rect><rect width="31.46067415730337" stroke-width="0" height="5.918524212144504" x="235.95505617977526" y="94.0814757878555" style="fill: rgb(192, 79, 50);"></rect><rect width="31.46067415730337" stroke-width="0" height="4.688700999231361" x="275.2808988764045" y="95.31129900076864" style="fill: rgb(181, 57, 45);"></rect><rect width="31.46067415730337" stroke-width="0" height="3.7663335895465027" x="314.6067415730337" y="96.2336664104535" style="fill: rgb(181, 57, 45);"></rect><rect width="31.46067415730337" stroke-width="0" height="3.3820138355111453" x="353.93258426966287" y="96.61798616448885" style="fill: rgb(181, 57, 45);"></rect><rect width="31.46067415730337" stroke-width="0" height="2.6133743274404306" x="393.25842696629206" y="97.38662567255957" style="fill: rgb(181, 57, 45);"></rect><rect width="31.46067415730337" stroke-width="0" height="1.5372790161414296" x="432.5842696629213" y="98.46272098385857" style="fill: rgb(181, 57, 45);"></rect><rect width="31.46067415730337" stroke-width="0" height="1.6141429669485012" x="471.9101123595505" y="98.3858570330515" style="fill: rgb(171, 35, 40);"></rect><rect width="31.46067415730337" stroke-width="0" height="1.3835511145272867" x="511.2359550561797" y="98.6164488854727" style="fill: rgb(171, 35, 40);"></rect><rect width="31.46067415730337" stroke-width="0" height="1.0760953112990008" x="550.561797752809" y="98.923904688701" style="fill: rgb(171, 35, 40);"></rect><rect width="31.46067415730337" stroke-width="0" height="1.3066871637202153" x="589.8876404494381" y="98.69331283627979" style="fill: rgb(171, 35, 40);"></rect><rect width="31.46067415730337" stroke-width="0" height="1.4604150653343582" x="629.2134831460673" y="98.53958493466564" style="fill: rgb(171, 35, 40);"></rect><rect width="31.46067415730337" stroke-width="0" height="8.378170637970792" x="668.5393258426966" y="91.6218293620292" style="fill: rgb(171, 35, 40);"></rect></g></svg></div></div>
+    <p class="no-threshold-proptype">Building EUI Quartiles cannot be calculated across building types. Select a building type above to view this metric.</p>
+    <div class="quartiles"></div>
+    <div class="filter-wrapper"><span class="irs js-irs-0"><span class="irs"><span class="irs-line" tabindex="0"><span class="irs-line-left"></span><span class="irs-line-mid"></span><span class="irs-line-right"></span></span><span class="irs-min" style="display: none; visibility: hidden;">0</span><span class="irs-max" style="display: none; visibility: hidden;">1</span><span class="irs-from" style="visibility: visible; left: 0.552486%;">0</span><span class="irs-to" style="visibility: visible; left: 90.3315%;">500+</span><span class="irs-single" style="visibility: hidden; left: 42.2652%;">0 — 500+</span></span><span class="irs-grid"></span><span class="irs-bar" style="left: 3.03867%; width: 93.9227%;"></span><span class="irs-shadow shadow-from" style="display: none;"></span><span class="irs-shadow shadow-to" style="display: none;"></span><span class="irs-slider from" style="left: 0%;"></span><span class="irs-slider to" style="left: 93.9227%;"></span></span><input type="text" class="range filter irs-hidden-input" id="filter-total_ghg_emissions" name="filter-total_ghg_emissions" value="" tabindex="-1" readonly="">
+</div>
+    <div class="proptype-median-wrapper">
+  <div class="proptype-median">Median for all buildings: <span>29.6</span></div>
+</div>
+
+    
+      <p class="description">Greenhouse Gas (GHG) Emissions are the carbon dioxide (CO2), methane (CH4), and nitrous oxide (N2O) gases released into the atmosphere as a result of energy consumption at the property. GHG emissions are expressed in Metric Tons of carbon dioxide equivalent (CO2e), a universal unit of measure that combines the quantity and global warming potential of each greenhouse gas. Total Emissions is the sum of Direct Emissions (emissions associated with onsite fuel combustion) and Indirect Emissions (emissions associated with purchases of electricity, district steam, district hot water, or district chilled water). These emissions estimates are calculated from site electricity, natural gas, and steam energy use using GHG emissions factors. The calculation includes a custom factor from Seattle City Light for electricity, a default natural gas factor from the EPA, and a custom emissions factor from Enwave for steam.</p>
+    
+  </div>
+</div>
+<div class="control-cell right">
+  <div class="compare-closer"></div>
+  <div class="control-cell--inner">
+    <table class="building-details"><tbody><tr>
+  
+    
+      <td>-</td>
+    
+  
+    
+      <td>-</td>
+    
+  
+    
+      <td>-</td>
+    
+  
+    
+      <td>-</td>
+    
+  
+    
+      <td>-</td>
+    
+  
+</tr></tbody></table>
+  </div>
+</div></div><div class="map-control" id="total_ghg_emissions_intensity"><div class="control-cell left">
+  <div class="control-cell--inner ">
+    <div class="control-head">
+      <h3 class="show-layer">Seattle GHG Intensity</h3>
+      
+        <span class="more-info"><span class="more">More Info</span><span class="less">Less Info</span></span>
+      
+    </div>
+
+    <div class="chart"><div class="histogram"><svg viewBox="0 0 700 100" preserveAspectRatio="none" style="width: 100%; height: 100%; background: transparent;"><g><rect width="31.46067415730337" stroke-width="0" height="100" x="0" y="0" style="fill: rgb(181, 187, 91);"></rect><rect width="31.46067415730337" stroke-width="0" height="76.31578947368422" x="39.32584269662921" y="23.68421052631578" style="fill: rgb(239, 178, 74);"></rect><rect width="31.46067415730337" stroke-width="0" height="44.58204334365325" x="78.65168539325842" y="55.41795665634675" style="fill: rgb(213, 123, 60);"></rect><rect width="31.46067415730337" stroke-width="0" height="21.74922600619195" x="117.97752808988763" y="78.25077399380805" style="fill: rgb(192, 79, 50);"></rect><rect width="31.46067415730337" stroke-width="0" height="12.616099071207431" x="157.30337078651684" y="87.38390092879257" style="fill: rgb(181, 57, 45);"></rect><rect width="31.46067415730337" stroke-width="0" height="6.578947368421052" x="196.62921348314603" y="93.42105263157895" style="fill: rgb(181, 57, 45);"></rect><rect width="31.46067415730337" stroke-width="0" height="5.108359133126935" x="235.95505617977526" y="94.89164086687306" style="fill: rgb(181, 57, 45);"></rect><rect width="31.46067415730337" stroke-width="0" height="3.4055727554179565" x="275.2808988764045" y="96.59442724458205" style="fill: rgb(171, 35, 40);"></rect><rect width="31.46067415730337" stroke-width="0" height="2.244582043343653" x="314.6067415730337" y="97.75541795665634" style="fill: rgb(171, 35, 40);"></rect><rect width="31.46067415730337" stroke-width="0" height="2.321981424148607" x="353.93258426966287" y="97.6780185758514" style="fill: rgb(171, 35, 40);"></rect><rect width="31.46067415730337" stroke-width="0" height="1.1609907120743035" x="393.25842696629206" y="98.83900928792569" style="fill: rgb(171, 35, 40);"></rect><rect width="31.46067415730337" stroke-width="0" height="0.38699690402476783" x="432.5842696629213" y="99.61300309597523" style="fill: rgb(171, 35, 40);"></rect><rect width="31.46067415730337" stroke-width="0" height="0.6191950464396285" x="471.9101123595505" y="99.38080495356037" style="fill: rgb(171, 35, 40);"></rect><rect width="31.46067415730337" stroke-width="0" height="0.38699690402476783" x="511.2359550561797" y="99.61300309597523" style="fill: rgb(171, 35, 40);"></rect><rect width="31.46067415730337" stroke-width="0" height="0.8513931888544891" x="550.561797752809" y="99.14860681114551" style="fill: rgb(171, 35, 40);"></rect><rect width="31.46067415730337" stroke-width="0" height="0.8513931888544891" x="589.8876404494381" y="99.14860681114551" style="fill: rgb(171, 35, 40);"></rect><rect width="31.46067415730337" stroke-width="0" height="0.38699690402476783" x="629.2134831460673" y="99.61300309597523" style="fill: rgb(171, 35, 40);"></rect><rect width="31.46067415730337" stroke-width="0" height="1.238390092879257" x="668.5393258426966" y="98.76160990712074" style="fill: rgb(171, 35, 40);"></rect></g></svg></div></div>
+    <p class="no-threshold-proptype">Building EUI Quartiles cannot be calculated across building types. Select a building type above to view this metric.</p>
+    <div class="quartiles"></div>
+    <div class="filter-wrapper"><span class="irs js-irs-1"><span class="irs"><span class="irs-line" tabindex="0"><span class="irs-line-left"></span><span class="irs-line-mid"></span><span class="irs-line-right"></span></span><span class="irs-min" style="display: none; visibility: hidden;">0</span><span class="irs-max" style="display: none; visibility: hidden;">1</span><span class="irs-from" style="visibility: visible; left: 0.552486%;">0</span><span class="irs-to" style="visibility: visible; left: 92.2652%;">10+</span><span class="irs-single" style="visibility: hidden; left: 43.232%;">0 — 10+</span></span><span class="irs-grid"></span><span class="irs-bar" style="left: 3.03867%; width: 93.9227%;"></span><span class="irs-shadow shadow-from" style="display: none;"></span><span class="irs-shadow shadow-to" style="display: none;"></span><span class="irs-slider from" style="left: 0%;"></span><span class="irs-slider to" style="left: 93.9227%;"></span></span><input type="text" class="range filter irs-hidden-input" id="filter-total_ghg_emissions_intensity" name="filter-total_ghg_emissions_intensity" value="" tabindex="-1" readonly="">
+</div>
+    <div class="proptype-median-wrapper">
+  <div class="proptype-median">Median for all buildings: <span>0.6</span></div>
+</div>
+
+    
+      <p class="description">The  total Greenhouse Gas (GHG) Emissions, divided by the floor area of the building, in kilograms of carbon dioxide equivalent (CO2e) per square foot.</p>
+    
+  </div>
+</div>
+<div class="control-cell right">
+  <div class="compare-closer"></div>
+  <div class="control-cell--inner">
+    <table class="building-details"><tbody><tr>
+  
+    
+      <td>-</td>
+    
+  
+    
+      <td>-</td>
+    
+  
+    
+      <td>-</td>
+    
+  
+    
+      <td>-</td>
+    
+  
+    
+      <td>-</td>
+    
+  
+</tr></tbody></table>
+  </div>
+</div></div></div>
+</div><div class="category" id="energy-performance-metrics">
+  <input type="checkbox" id="category-energy-performance-metrics-expanded" name="category-energy-performance-metrics-expanded">
+  <label for="category-energy-performance-metrics-expanded"><h2>Energy Performance Metrics</h2></label>
+  <div class="category-control-container"><div class="map-control" id="site_eui_quartiles"><div class="control-cell left">
+  <div class="control-cell--inner is-threshold no-thresholds">
+    <div class="control-head">
+      <h3 class="show-layer">Building EUI Quartiles</h3>
+      
+        <span class="more-info"><span class="more">More Info</span><span class="less">Less Info</span></span>
+      
+    </div>
+
+    <div class="chart"><div class="histogram"><svg viewBox="0 0 700 100" preserveAspectRatio="none" style="width: 100%; height: 100%; background: transparent;"><g><rect width="147.3684210526316" stroke-width="0" height="0" x="0" y="100" style="fill: rgb(31, 93, 190);"></rect><rect width="147.3684210526316" stroke-width="0" height="0" x="184.21052631578948" y="100" style="fill: rgb(31, 93, 190);"></rect><rect width="147.3684210526316" stroke-width="0" height="0" x="368.42105263157896" y="100" style="fill: rgb(31, 93, 190);"></rect><rect width="147.3684210526316" stroke-width="0" height="100" x="552.6315789473684" y="0" style="fill: rgb(31, 93, 190);"></rect></g></svg></div></div>
+    <p class="no-threshold-proptype">Building EUI Quartiles cannot be calculated across building types. Select a building type above to view this metric.</p>
+    <div class="quartiles"></div>
+    <div class="filter-wrapper"><span class="irs js-irs-2"><span class="irs"><span class="irs-line" tabindex="0"><span class="irs-line-left"></span><span class="irs-line-mid"></span><span class="irs-line-right"></span></span><span class="irs-min" style="display: none;">0</span><span class="irs-max" style="display: none;">1</span><span class="irs-from">0</span><span class="irs-to">0</span><span class="irs-single">0</span></span><span class="irs-grid"></span><span class="irs-bar"></span><span class="irs-shadow shadow-from"></span><span class="irs-shadow shadow-to"></span><span class="irs-slider from"></span><span class="irs-slider to"></span></span><input type="text" class="range filter irs-hidden-input" id="filter-site_eui_quartiles" name="filter-site_eui_quartiles" value="" tabindex="-1" readonly="">
+</div>
+    <div class="proptype-median-wrapper">
+  <div class="proptype-median">Median for all buildings: <span></span></div>
+</div>
+
+    
+      <p class="description">To better understand the reasonable range of site EUIs, each building type was broken into four energy use categories: lowest, medium-low, medium-high, and highest. These categories represent the four “quartiles” within the data for each building type. The first quartile represents the 25% of buildings with the lowest EUIs of that building type. The second quartile represents the range of EUIs for the next lowest 25%, and so on.</p>
+    
+  </div>
+</div>
+<div class="control-cell right">
+  <div class="compare-closer"></div>
+  <div class="control-cell--inner">
+    <table class="building-details"><tbody><tr>
+  
+    
+      <td>-</td>
+    
+  
+    
+      <td>-</td>
+    
+  
+    
+      <td>-</td>
+    
+  
+    
+      <td>-</td>
+    
+  
+    
+      <td>-</td>
+    
+  
+</tr></tbody></table>
+  </div>
+</div></div><div class="map-control" id="energy_star_score"><div class="control-cell left">
+  <div class="control-cell--inner ">
+    <div class="control-head">
+      <h3 class="show-layer">ENERGY STAR Score</h3>
+      
+        <span class="more-info"><span class="more">More Info</span><span class="less">Less Info</span></span>
+      
+    </div>
+
+    <div class="chart"><div class="histogram"><svg viewBox="0 0 700 100" preserveAspectRatio="none" style="width: 100%; height: 100%; background: transparent;"><g><rect width="31.46067415730337" stroke-width="0" height="5.336426914153132" x="0" y="94.66357308584686" style="fill: rgb(171, 35, 40);"></rect><rect width="31.46067415730337" stroke-width="0" height="6.2645011600928076" x="39.32584269662921" y="93.7354988399072" style="fill: rgb(171, 35, 40);"></rect><rect width="31.46067415730337" stroke-width="0" height="8.120649651972158" x="78.65168539325842" y="91.87935034802784" style="fill: rgb(171, 35, 40);"></rect><rect width="31.46067415730337" stroke-width="0" height="11.36890951276102" x="117.97752808988763" y="88.63109048723898" style="fill: rgb(171, 35, 40);"></rect><rect width="31.46067415730337" stroke-width="0" height="8.352668213457076" x="157.30337078651684" y="91.64733178654292" style="fill: rgb(184, 63, 47);"></rect><rect width="31.46067415730337" stroke-width="0" height="13.921113689095128" x="196.62921348314603" y="86.07888631090488" style="fill: rgb(184, 63, 47);"></rect><rect width="31.46067415730337" stroke-width="0" height="9.280742459396752" x="235.95505617977526" y="90.71925754060325" style="fill: rgb(184, 63, 47);"></rect><rect width="31.46067415730337" stroke-width="0" height="15.31322505800464" x="275.2808988764045" y="84.68677494199537" style="fill: rgb(198, 92, 53);"></rect><rect width="31.46067415730337" stroke-width="0" height="18.793503480278424" x="314.6067415730337" y="81.20649651972158" style="fill: rgb(198, 92, 53);"></rect><rect width="31.46067415730337" stroke-width="0" height="23.665893271461716" x="353.93258426966287" y="76.33410672853829" style="fill: rgb(211, 120, 60);"></rect><rect width="31.46067415730337" stroke-width="0" height="29.930394431554525" x="393.25842696629206" y="70.06960556844547" style="fill: rgb(211, 120, 60);"></rect><rect width="31.46067415730337" stroke-width="0" height="29.466357308584683" x="432.5842696629213" y="70.53364269141531" style="fill: rgb(222, 143, 65);"></rect><rect width="31.46067415730337" stroke-width="0" height="42.459396751740144" x="471.9101123595505" y="57.540603248259856" style="fill: rgb(230, 160, 69);"></rect><rect width="31.46067415730337" stroke-width="0" height="56.380510440835266" x="511.2359550561797" y="43.619489559164734" style="fill: rgb(247, 195, 78);"></rect><rect width="31.46067415730337" stroke-width="0" height="69.60556844547564" x="550.561797752809" y="30.39443155452436" style="fill: rgb(255, 213, 82);"></rect><rect width="31.46067415730337" stroke-width="0" height="82.5986078886311" x="589.8876404494381" y="17.401392111368907" style="fill: rgb(181, 187, 91);"></rect><rect width="31.46067415730337" stroke-width="0" height="100" x="629.2134831460673" y="0" style="fill: rgb(83, 148, 113);"></rect><rect width="31.46067415730337" stroke-width="0" height="79.11832946635731" x="668.5393258426966" y="20.88167053364269" style="fill: rgb(57, 121, 151);"></rect></g></svg></div></div>
+    <p class="no-threshold-proptype">Building EUI Quartiles cannot be calculated across building types. Select a building type above to view this metric.</p>
+    <div class="quartiles"></div>
+    <div class="filter-wrapper"><span class="irs js-irs-3"><span class="irs"><span class="irs-line" tabindex="0"><span class="irs-line-left"></span><span class="irs-line-mid"></span><span class="irs-line-right"></span></span><span class="irs-min" style="display: none;">0</span><span class="irs-max" style="display: none;">1</span><span class="irs-from">0</span><span class="irs-to">0</span><span class="irs-single">0</span></span><span class="irs-grid"></span><span class="irs-bar"></span><span class="irs-shadow shadow-from"></span><span class="irs-shadow shadow-to"></span><span class="irs-slider from"></span><span class="irs-slider to"></span></span><input type="text" class="range filter irs-hidden-input" id="filter-energy_star_score" name="filter-energy_star_score" value="" tabindex="-1" readonly="">
+</div>
+    <div class="proptype-median-wrapper">
+  <div class="proptype-median">Median for all buildings: <span>82</span></div>
+</div>
+
+    
+      <p class="description">The 1-100 score calculated by ENERGY STAR® Portfolio Manager® that measures how well the property is performing relative to similar properties, when normalized for climate and operational characteristics. The 1-100 scale is set so that 1 represents the worst performing buildings and 100 represents the best performing buildings. A score of 50 indicates that a building is performing at the national median, taking into account its size, location, and operating parameters. A score of 75 indicates that at a property is performing in the 75th percentile and may be eligible to earn ENERGY STAR® Certification.</p>
+    
+  </div>
+</div>
+<div class="control-cell right">
+  <div class="compare-closer"></div>
+  <div class="control-cell--inner">
+    <table class="building-details"><tbody><tr>
+  
+    
+      <td>-</td>
+    
+  
+    
+      <td>-</td>
+    
+  
+    
+      <td>-</td>
+    
+  
+    
+      <td>-</td>
+    
+  
+    
+      <td>-</td>
+    
+  
+</tr></tbody></table>
+  </div>
+</div></div><div class="map-control" id="total_kbtu"><div class="control-cell left">
+  <div class="control-cell--inner ">
+    <div class="control-head">
+      <h3 class="show-layer">Site Total Energy Use</h3>
+      
+        <span class="more-info"><span class="more">More Info</span><span class="less">Less Info</span></span>
+      
+    </div>
+
+    <div class="chart"><div class="histogram"><svg viewBox="0 0 700 100" preserveAspectRatio="none" style="width: 100%; height: 100%; background: transparent;"><g><rect width="31.46067415730337" stroke-width="0" height="0" x="0" y="100" style="fill: rgb(31, 93, 190);"></rect><rect width="31.46067415730337" stroke-width="0" height="1.761744966442953" x="39.32584269662921" y="98.23825503355705" style="fill: rgb(31, 93, 190);"></rect><rect width="31.46067415730337" stroke-width="0" height="5.7885906040268456" x="78.65168539325842" y="94.21140939597315" style="fill: rgb(31, 93, 190);"></rect><rect width="31.46067415730337" stroke-width="0" height="18.37248322147651" x="117.97752808988763" y="81.62751677852349" style="fill: rgb(48, 111, 165);"></rect><rect width="31.46067415730337" stroke-width="0" height="26.006711409395972" x="157.30337078651684" y="73.99328859060402" style="fill: rgb(64, 128, 140);"></rect><rect width="31.46067415730337" stroke-width="0" height="23.741610738255034" x="196.62921348314603" y="76.25838926174497" style="fill: rgb(107, 161, 101);"></rect><rect width="31.46067415730337" stroke-width="0" height="17.533557046979865" x="235.95505617977526" y="82.46644295302013" style="fill: rgb(144, 174, 96);"></rect><rect width="31.46067415730337" stroke-width="0" height="17.197986577181208" x="275.2808988764045" y="82.80201342281879" style="fill: rgb(181, 187, 91);"></rect><rect width="31.46067415730337" stroke-width="0" height="15.100671140939598" x="314.6067415730337" y="84.8993288590604" style="fill: rgb(218, 200, 87);"></rect><rect width="31.46067415730337" stroke-width="0" height="12.416107382550337" x="353.93258426966287" y="87.58389261744966" style="fill: rgb(255, 213, 82);"></rect><rect width="31.46067415730337" stroke-width="0" height="11.577181208053691" x="393.25842696629206" y="88.42281879194631" style="fill: rgb(255, 213, 82);"></rect><rect width="31.46067415730337" stroke-width="0" height="9.144295302013424" x="432.5842696629213" y="90.85570469798658" style="fill: rgb(247, 195, 78);"></rect><rect width="31.46067415730337" stroke-width="0" height="8.305369127516778" x="471.9101123595505" y="91.69463087248322" style="fill: rgb(247, 195, 78);"></rect><rect width="31.46067415730337" stroke-width="0" height="7.466442953020135" x="511.2359550561797" y="92.53355704697987" style="fill: rgb(239, 178, 74);"></rect><rect width="31.46067415730337" stroke-width="0" height="6.375838926174497" x="550.561797752809" y="93.6241610738255" style="fill: rgb(239, 178, 74);"></rect><rect width="31.46067415730337" stroke-width="0" height="7.130872483221476" x="589.8876404494381" y="92.86912751677852" style="fill: rgb(230, 160, 69);"></rect><rect width="31.46067415730337" stroke-width="0" height="5.201342281879195" x="629.2134831460673" y="94.79865771812081" style="fill: rgb(230, 160, 69);"></rect><rect width="31.46067415730337" stroke-width="0" height="100" x="668.5393258426966" y="0" style="fill: rgb(230, 160, 69);"></rect></g></svg></div></div>
+    <p class="no-threshold-proptype">Building EUI Quartiles cannot be calculated across building types. Select a building type above to view this metric.</p>
+    <div class="quartiles"></div>
+    <div class="filter-wrapper"><span class="irs js-irs-4"><span class="irs"><span class="irs-line" tabindex="0"><span class="irs-line-left"></span><span class="irs-line-mid"></span><span class="irs-line-right"></span></span><span class="irs-min" style="display: none;">0</span><span class="irs-max" style="display: none;">1</span><span class="irs-from">0</span><span class="irs-to">0</span><span class="irs-single">0</span></span><span class="irs-grid"></span><span class="irs-bar"></span><span class="irs-shadow shadow-from"></span><span class="irs-shadow shadow-to"></span><span class="irs-slider from"></span><span class="irs-slider to"></span></span><input type="text" class="range filter irs-hidden-input" id="filter-total_kbtu" name="filter-total_kbtu" value="" tabindex="-1" readonly="">
+</div>
+    <div class="proptype-median-wrapper">
+  <div class="proptype-median">Median for all buildings: <span>1,812,792.0</span></div>
+</div>
+
+    
+      <p class="description">Non-normalized site energy use is the total amount of all the energy a property consumes on-site annually, as reported on utility bills. Site energy use is measured in thousands of British thermal units (kBtu).</p>
+    
+  </div>
+</div>
+<div class="control-cell right">
+  <div class="compare-closer"></div>
+  <div class="control-cell--inner">
+    <table class="building-details"><tbody><tr>
+  
+    
+      <td>-</td>
+    
+  
+    
+      <td>-</td>
+    
+  
+    
+      <td>-</td>
+    
+  
+    
+      <td>-</td>
+    
+  
+    
+      <td>-</td>
+    
+  
+</tr></tbody></table>
+  </div>
+</div></div></div>
+</div><div class="category" id="property-information">
+  <input type="checkbox" id="category-property-information-expanded" name="category-property-information-expanded">
+  <label for="category-property-information-expanded"><h2>Property Information</h2></label>
+  <div class="category-control-container"><div class="map-control" id="reported_gross_floor_area"><div class="control-cell left">
+  <div class="control-cell--inner ">
+    <div class="control-head">
+      <h3 class="show-layer">Property Size</h3>
+      
+        <span class="more-info"><span class="more">More Info</span><span class="less">Less Info</span></span>
+      
+    </div>
+
+    <div class="chart"><div class="histogram"><svg viewBox="0 0 700 100" preserveAspectRatio="none" style="width: 100%; height: 100%; background: transparent;"><g><rect width="31.46067415730337" stroke-width="0" height="100" x="0" y="0" style="fill: rgb(141, 183, 146);"></rect><rect width="31.46067415730337" stroke-width="0" height="82.51864125932062" x="39.32584269662921" y="17.481358740679383" style="fill: rgb(76, 154, 113);"></rect><rect width="31.46067415730337" stroke-width="0" height="32.89146644573322" x="78.65168539325842" y="67.10853355426678" style="fill: rgb(54, 144, 101);"></rect><rect width="31.46067415730337" stroke-width="0" height="20.463960231980117" x="117.97752808988763" y="79.53603976801989" style="fill: rgb(43, 139, 96);"></rect><rect width="31.46067415730337" stroke-width="0" height="13.835956917978459" x="157.30337078651684" y="86.16404308202154" style="fill: rgb(32, 134, 90);"></rect><rect width="31.46067415730337" stroke-width="0" height="8.367854183927093" x="196.62921348314603" y="91.6321458160729" style="fill: rgb(22, 129, 84);"></rect><rect width="31.46067415730337" stroke-width="0" height="8.11930405965203" x="235.95505617977526" y="91.88069594034798" style="fill: rgb(22, 129, 84);"></rect><rect width="31.46067415730337" stroke-width="0" height="5.136702568351284" x="275.2808988764045" y="94.86329743164872" style="fill: rgb(11, 124, 79);"></rect><rect width="31.46067415730337" stroke-width="0" height="3.396851698425849" x="314.6067415730337" y="96.60314830157415" style="fill: rgb(11, 124, 79);"></rect><rect width="31.46067415730337" stroke-width="0" height="3.396851698425849" x="353.93258426966287" y="96.60314830157415" style="fill: rgb(11, 124, 79);"></rect><rect width="31.46067415730337" stroke-width="0" height="3.2311516155758078" x="393.25842696629206" y="96.76884838442419" style="fill: rgb(11, 124, 79);"></rect><rect width="31.46067415730337" stroke-width="0" height="2.9826014913007457" x="432.5842696629213" y="97.01739850869926" style="fill: rgb(11, 124, 79);"></rect><rect width="31.46067415730337" stroke-width="0" height="1.4913007456503728" x="471.9101123595505" y="98.50869925434962" style="fill: rgb(0, 119, 73);"></rect><rect width="31.46067415730337" stroke-width="0" height="2.31980115990058" x="511.2359550561797" y="97.68019884009942" style="fill: rgb(0, 119, 73);"></rect><rect width="31.46067415730337" stroke-width="0" height="1.3256006628003314" x="550.561797752809" y="98.67439933719967" style="fill: rgb(0, 119, 73);"></rect><rect width="31.46067415730337" stroke-width="0" height="1.6570008285004143" x="589.8876404494381" y="98.34299917149959" style="fill: rgb(0, 119, 73);"></rect><rect width="31.46067415730337" stroke-width="0" height="0.4971002485501243" x="629.2134831460673" y="99.50289975144987" style="fill: rgb(0, 119, 73);"></rect><rect width="31.46067415730337" stroke-width="0" height="8.947804473902236" x="668.5393258426966" y="91.05219552609776" style="fill: rgb(0, 119, 73);"></rect></g></svg></div></div>
+    <p class="no-threshold-proptype">Building EUI Quartiles cannot be calculated across building types. Select a building type above to view this metric.</p>
+    <div class="quartiles"></div>
+    <div class="filter-wrapper"><span class="irs js-irs-5"><span class="irs"><span class="irs-line" tabindex="0"><span class="irs-line-left"></span><span class="irs-line-mid"></span><span class="irs-line-right"></span></span><span class="irs-min" style="display: none;">0</span><span class="irs-max" style="display: none;">1</span><span class="irs-from">0</span><span class="irs-to">0</span><span class="irs-single">0</span></span><span class="irs-grid"></span><span class="irs-bar"></span><span class="irs-shadow shadow-from"></span><span class="irs-shadow shadow-to"></span><span class="irs-slider from"></span><span class="irs-slider to"></span></span><input type="text" class="range filter irs-hidden-input" id="filter-reported_gross_floor_area" name="filter-reported_gross_floor_area" value="" tabindex="-1" readonly="">
+</div>
+    <div class="proptype-median-wrapper">
+  <div class="proptype-median">Median for all buildings: <span>47,185</span></div>
+</div>
+
+    
+      <p class="description">The Gross Floor Area (GFA) is the total property square footage, measured between the outside surface of the exterior walls of the building(s). This includes all areas inside the building(s) including supporting areas. GFA is not the same as rentable space, but rather includes all area inside the building(s).</p>
+    
+  </div>
+</div>
+<div class="control-cell right">
+  <div class="compare-closer"></div>
+  <div class="control-cell--inner">
+    <table class="building-details"><tbody><tr>
+  
+    
+      <td>-</td>
+    
+  
+    
+      <td>-</td>
+    
+  
+    
+      <td>-</td>
+    
+  
+    
+      <td>-</td>
+    
+  
+    
+      <td>-</td>
+    
+  
+</tr></tbody></table>
+  </div>
+</div></div><div class="map-control" id="yearbuilt"><div class="control-cell left">
+  <div class="control-cell--inner ">
+    <div class="control-head">
+      <h3 class="show-layer">Year Built</h3>
+      
+        <span class="more-info"><span class="more">More Info</span><span class="less">Less Info</span></span>
+      
+    </div>
+
+    <div class="chart"><div class="histogram"><svg viewBox="0 0 700 100" preserveAspectRatio="none" style="width: 100%; height: 100%; background: transparent;"><g><rect width="31.46067415730337" stroke-width="0" height="0.26109660574412535" x="0" y="99.73890339425587" style="fill: rgb(184, 203, 169);"></rect><rect width="31.46067415730337" stroke-width="0" height="32.89817232375979" x="39.32584269662921" y="67.10182767624022" style="fill: rgb(184, 203, 169);"></rect><rect width="31.46067415730337" stroke-width="0" height="55.87467362924282" x="78.65168539325842" y="44.12532637075718" style="fill: rgb(173, 198, 163);"></rect><rect width="31.46067415730337" stroke-width="0" height="25.06527415143603" x="117.97752808988763" y="74.93472584856397" style="fill: rgb(173, 198, 163);"></rect><rect width="31.46067415730337" stroke-width="0" height="61.8798955613577" x="157.30337078651684" y="38.1201044386423" style="fill: rgb(162, 193, 158);"></rect><rect width="31.46067415730337" stroke-width="0" height="21.93211488250653" x="196.62921348314603" y="78.06788511749347" style="fill: rgb(152, 188, 152);"></rect><rect width="31.46067415730337" stroke-width="0" height="8.355091383812011" x="235.95505617977526" y="91.64490861618799" style="fill: rgb(152, 188, 152);"></rect><rect width="31.46067415730337" stroke-width="0" height="22.193211488250654" x="275.2808988764045" y="77.80678851174935" style="fill: rgb(141, 183, 146);"></rect><rect width="31.46067415730337" stroke-width="0" height="34.9869451697128" x="314.6067415730337" y="65.0130548302872" style="fill: rgb(141, 183, 146);"></rect><rect width="31.46067415730337" stroke-width="0" height="64.49086161879896" x="353.93258426966287" y="35.50913838120104" style="fill: rgb(130, 178, 141);"></rect><rect width="31.46067415730337" stroke-width="0" height="85.37859007832898" x="393.25842696629206" y="14.621409921671017" style="fill: rgb(119, 173, 135);"></rect><rect width="31.46067415730337" stroke-width="0" height="57.96344647519582" x="432.5842696629213" y="42.03655352480418" style="fill: rgb(97, 163, 124);"></rect><rect width="31.46067415730337" stroke-width="0" height="66.31853785900783" x="471.9101123595505" y="33.68146214099217" style="fill: rgb(87, 159, 118);"></rect><rect width="31.46067415730337" stroke-width="0" height="84.07310704960835" x="511.2359550561797" y="15.926892950391647" style="fill: rgb(76, 154, 113);"></rect><rect width="31.46067415730337" stroke-width="0" height="78.59007832898173" x="550.561797752809" y="21.409921671018267" style="fill: rgb(54, 144, 101);"></rect><rect width="31.46067415730337" stroke-width="0" height="100" x="589.8876404494381" y="0" style="fill: rgb(43, 139, 96);"></rect><rect width="31.46067415730337" stroke-width="0" height="77.02349869451697" x="629.2134831460673" y="22.976501305483026" style="fill: rgb(22, 129, 84);"></rect><rect width="31.46067415730337" stroke-width="0" height="69.9738903394256" x="668.5393258426966" y="30.026109660574406" style="fill: rgb(0, 119, 73);"></rect></g></svg></div></div>
+    <p class="no-threshold-proptype">Building EUI Quartiles cannot be calculated across building types. Select a building type above to view this metric.</p>
+    <div class="quartiles"></div>
+    <div class="filter-wrapper"><span class="irs js-irs-6"><span class="irs"><span class="irs-line" tabindex="0"><span class="irs-line-left"></span><span class="irs-line-mid"></span><span class="irs-line-right"></span></span><span class="irs-min" style="display: none;">0</span><span class="irs-max" style="display: none;">1</span><span class="irs-from">0</span><span class="irs-to">0</span><span class="irs-single">0</span></span><span class="irs-grid"></span><span class="irs-bar"></span><span class="irs-shadow shadow-from"></span><span class="irs-shadow shadow-to"></span><span class="irs-slider from"></span><span class="irs-slider to"></span></span><input type="text" class="range filter irs-hidden-input" id="filter-yearbuilt" name="filter-yearbuilt" value="" tabindex="-1" readonly="">
+</div>
+    <div class="proptype-median-wrapper">
+  <div class="proptype-median">Median for all buildings: <span>1980</span></div>
+</div>
+
+    
+      <p class="description">The year property was constructed, as reported by owner</p>
+    
+  </div>
+</div>
+<div class="control-cell right">
+  <div class="compare-closer"></div>
+  <div class="control-cell--inner">
+    <table class="building-details"><tbody><tr>
+  
+    
+      <td>-</td>
+    
+  
+    
+      <td>-</td>
+    
+  
+    
+      <td>-</td>
+    
+  
+    
+      <td>-</td>
+    
+  
+    
+      <td>-</td>
+    
+  
+</tr></tbody></table>
+  </div>
+</div></div></div>
+</div></div>
+      </div>
+    </div>
+    <div id="map-wrapper">
+      <div id="map" class="leaflet-container leaflet-fade-anim" tabindex="0" style="position: relative;"><div class="leaflet-map-pane" style="transform: translate3d(234px, 74px, 0px);"><div class="leaflet-tile-pane"><div class="leaflet-layer" style="z-index: 0;"><div class="leaflet-tile-container"></div><div class="leaflet-tile-container leaflet-zoom-animated"><img class="leaflet-tile leaflet-tile-loaded" src="https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/14/2624/5721.png" style="height: 256px; width: 256px; left: 109px; top: -24px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/14/2624/5722.png" style="height: 256px; width: 256px; left: 109px; top: 232px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://cartodb-basemaps-b.global.ssl.fastly.net/light_all/14/2623/5721.png" style="height: 256px; width: 256px; left: -147px; top: -24px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/14/2625/5721.png" style="height: 256px; width: 256px; left: 365px; top: -24px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/14/2623/5722.png" style="height: 256px; width: 256px; left: -147px; top: 232px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://cartodb-basemaps-b.global.ssl.fastly.net/light_all/14/2625/5722.png" style="height: 256px; width: 256px; left: 365px; top: 232px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://cartodb-basemaps-b.global.ssl.fastly.net/light_all/14/2624/5720.png" style="height: 256px; width: 256px; left: 109px; top: -280px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://cartodb-basemaps-b.global.ssl.fastly.net/light_all/14/2624/5723.png" style="height: 256px; width: 256px; left: 109px; top: 488px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/14/2623/5720.png" style="height: 256px; width: 256px; left: -147px; top: -280px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/14/2625/5720.png" style="height: 256px; width: 256px; left: 365px; top: -280px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/14/2623/5723.png" style="height: 256px; width: 256px; left: -147px; top: 488px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/14/2625/5723.png" style="height: 256px; width: 256px; left: 365px; top: 488px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/14/2622/5721.png" style="height: 256px; width: 256px; left: -403px; top: -24px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://cartodb-basemaps-b.global.ssl.fastly.net/light_all/14/2626/5721.png" style="height: 256px; width: 256px; left: 621px; top: -24px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://cartodb-basemaps-b.global.ssl.fastly.net/light_all/14/2622/5722.png" style="height: 256px; width: 256px; left: -403px; top: 232px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/14/2626/5722.png" style="height: 256px; width: 256px; left: 621px; top: 232px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/14/2622/5720.png" style="height: 256px; width: 256px; left: -403px; top: -280px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/14/2626/5720.png" style="height: 256px; width: 256px; left: 621px; top: -280px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/14/2622/5723.png" style="height: 256px; width: 256px; left: -403px; top: 488px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/14/2626/5723.png" style="height: 256px; width: 256px; left: 621px; top: 488px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/14/2621/5721.png" style="height: 256px; width: 256px; left: -659px; top: -24px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/14/2627/5721.png" style="height: 256px; width: 256px; left: 877px; top: -24px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/14/2621/5722.png" style="height: 256px; width: 256px; left: -659px; top: 232px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/14/2627/5722.png" style="height: 256px; width: 256px; left: 877px; top: 232px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://cartodb-basemaps-b.global.ssl.fastly.net/light_all/14/2621/5720.png" style="height: 256px; width: 256px; left: -659px; top: -280px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://cartodb-basemaps-b.global.ssl.fastly.net/light_all/14/2627/5720.png" style="height: 256px; width: 256px; left: 877px; top: -280px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://cartodb-basemaps-b.global.ssl.fastly.net/light_all/14/2621/5723.png" style="height: 256px; width: 256px; left: -659px; top: 488px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://cartodb-basemaps-b.global.ssl.fastly.net/light_all/14/2627/5723.png" style="height: 256px; width: 256px; left: 877px; top: 488px;"></div></div><div class="leaflet-layer" style="opacity: 0.99;"><div class="leaflet-tile-container"></div><div class="leaflet-tile-container leaflet-zoom-animated"><img class="leaflet-tile leaflet-tile-loaded" src="https://a.gusc.cartocdn.com/cityenergy-seattle/api/v1/map/e09cd97dac964b11705e722d89391f35:1640147629565/0/14/2624/5721.png" style="height: 256px; width: 256px; left: 109px; top: -24px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://a.gusc.cartocdn.com/cityenergy-seattle/api/v1/map/e09cd97dac964b11705e722d89391f35:1640147629565/0/14/2624/5722.png" style="height: 256px; width: 256px; left: 109px; top: 232px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://a.gusc.cartocdn.com/cityenergy-seattle/api/v1/map/e09cd97dac964b11705e722d89391f35:1640147629565/0/14/2623/5721.png" style="height: 256px; width: 256px; left: -147px; top: -24px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://a.gusc.cartocdn.com/cityenergy-seattle/api/v1/map/e09cd97dac964b11705e722d89391f35:1640147629565/0/14/2625/5721.png" style="height: 256px; width: 256px; left: 365px; top: -24px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://a.gusc.cartocdn.com/cityenergy-seattle/api/v1/map/e09cd97dac964b11705e722d89391f35:1640147629565/0/14/2623/5722.png" style="height: 256px; width: 256px; left: -147px; top: 232px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://a.gusc.cartocdn.com/cityenergy-seattle/api/v1/map/e09cd97dac964b11705e722d89391f35:1640147629565/0/14/2625/5722.png" style="height: 256px; width: 256px; left: 365px; top: 232px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://a.gusc.cartocdn.com/cityenergy-seattle/api/v1/map/e09cd97dac964b11705e722d89391f35:1640147629565/0/14/2624/5720.png" style="height: 256px; width: 256px; left: 109px; top: -280px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://a.gusc.cartocdn.com/cityenergy-seattle/api/v1/map/e09cd97dac964b11705e722d89391f35:1640147629565/0/14/2624/5723.png" style="height: 256px; width: 256px; left: 109px; top: 488px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://a.gusc.cartocdn.com/cityenergy-seattle/api/v1/map/e09cd97dac964b11705e722d89391f35:1640147629565/0/14/2623/5720.png" style="height: 256px; width: 256px; left: -147px; top: -280px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://a.gusc.cartocdn.com/cityenergy-seattle/api/v1/map/e09cd97dac964b11705e722d89391f35:1640147629565/0/14/2625/5720.png" style="height: 256px; width: 256px; left: 365px; top: -280px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://a.gusc.cartocdn.com/cityenergy-seattle/api/v1/map/e09cd97dac964b11705e722d89391f35:1640147629565/0/14/2623/5723.png" style="height: 256px; width: 256px; left: -147px; top: 488px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://a.gusc.cartocdn.com/cityenergy-seattle/api/v1/map/e09cd97dac964b11705e722d89391f35:1640147629565/0/14/2625/5723.png" style="height: 256px; width: 256px; left: 365px; top: 488px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://a.gusc.cartocdn.com/cityenergy-seattle/api/v1/map/e09cd97dac964b11705e722d89391f35:1640147629565/0/14/2622/5721.png" style="height: 256px; width: 256px; left: -403px; top: -24px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://a.gusc.cartocdn.com/cityenergy-seattle/api/v1/map/e09cd97dac964b11705e722d89391f35:1640147629565/0/14/2626/5721.png" style="height: 256px; width: 256px; left: 621px; top: -24px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://a.gusc.cartocdn.com/cityenergy-seattle/api/v1/map/e09cd97dac964b11705e722d89391f35:1640147629565/0/14/2622/5722.png" style="height: 256px; width: 256px; left: -403px; top: 232px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://a.gusc.cartocdn.com/cityenergy-seattle/api/v1/map/e09cd97dac964b11705e722d89391f35:1640147629565/0/14/2626/5722.png" style="height: 256px; width: 256px; left: 621px; top: 232px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://a.gusc.cartocdn.com/cityenergy-seattle/api/v1/map/e09cd97dac964b11705e722d89391f35:1640147629565/0/14/2622/5720.png" style="height: 256px; width: 256px; left: -403px; top: -280px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://a.gusc.cartocdn.com/cityenergy-seattle/api/v1/map/e09cd97dac964b11705e722d89391f35:1640147629565/0/14/2626/5720.png" style="height: 256px; width: 256px; left: 621px; top: -280px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://a.gusc.cartocdn.com/cityenergy-seattle/api/v1/map/e09cd97dac964b11705e722d89391f35:1640147629565/0/14/2622/5723.png" style="height: 256px; width: 256px; left: -403px; top: 488px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://a.gusc.cartocdn.com/cityenergy-seattle/api/v1/map/e09cd97dac964b11705e722d89391f35:1640147629565/0/14/2626/5723.png" style="height: 256px; width: 256px; left: 621px; top: 488px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://a.gusc.cartocdn.com/cityenergy-seattle/api/v1/map/e09cd97dac964b11705e722d89391f35:1640147629565/0/14/2621/5721.png" style="height: 256px; width: 256px; left: -659px; top: -24px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://a.gusc.cartocdn.com/cityenergy-seattle/api/v1/map/e09cd97dac964b11705e722d89391f35:1640147629565/0/14/2627/5721.png" style="height: 256px; width: 256px; left: 877px; top: -24px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://a.gusc.cartocdn.com/cityenergy-seattle/api/v1/map/e09cd97dac964b11705e722d89391f35:1640147629565/0/14/2621/5722.png" style="height: 256px; width: 256px; left: -659px; top: 232px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://a.gusc.cartocdn.com/cityenergy-seattle/api/v1/map/e09cd97dac964b11705e722d89391f35:1640147629565/0/14/2627/5722.png" style="height: 256px; width: 256px; left: 877px; top: 232px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://a.gusc.cartocdn.com/cityenergy-seattle/api/v1/map/e09cd97dac964b11705e722d89391f35:1640147629565/0/14/2621/5720.png" style="height: 256px; width: 256px; left: -659px; top: -280px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://a.gusc.cartocdn.com/cityenergy-seattle/api/v1/map/e09cd97dac964b11705e722d89391f35:1640147629565/0/14/2627/5720.png" style="height: 256px; width: 256px; left: 877px; top: -280px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://a.gusc.cartocdn.com/cityenergy-seattle/api/v1/map/e09cd97dac964b11705e722d89391f35:1640147629565/0/14/2621/5723.png" style="height: 256px; width: 256px; left: -659px; top: 488px;"><img class="leaflet-tile leaflet-tile-loaded" src="https://a.gusc.cartocdn.com/cityenergy-seattle/api/v1/map/e09cd97dac964b11705e722d89391f35:1640147629565/0/14/2627/5723.png" style="height: 256px; width: 256px; left: 877px; top: 488px;"></div></div></div><div class="leaflet-objects-pane"><div class="leaflet-shadow-pane"></div><div class="leaflet-overlay-pane"></div><div class="leaflet-marker-pane"></div><div class="leaflet-popup-pane"></div></div></div><div class="leaflet-control-container"><div class="leaflet-top leaflet-left"></div><div class="leaflet-top leaflet-right"><div class="leaflet-control-zoom leaflet-bar leaflet-control"><a class="leaflet-control-zoom-in" href="#" title="Zoom in">+</a><a class="leaflet-control-zoom-out" href="#" title="Zoom out">-</a></div></div><div class="leaflet-bottom leaflet-left"></div><div class="leaflet-bottom leaflet-right"><div class="leaflet-control-attribution leaflet-control">© <a href="https://carto.com/attributions" target="_blank">CARTO</a></div></div></div><div class="cartodb-legend-stack" style="display: none;"></div><div class="cartodb-logo" style="position:absolute; bottom:0; left:0; display:block; border:none; z-index:1000000;"><a href="http://www.carto.com" target="_blank"><img width="71" height="29" src="http://cartodb.s3.amazonaws.com/static/new_logo.png" style="position:absolute; bottom:8px; left:8px; display:block; width:71px!important; height:29px!important; border:none; outline:none;" alt="CARTO" title="CARTO"></a></div></div>
+    </div>
+    <div id="map-controls-counts"><p><span class="showing">3,628</span> out of<br>3,628 buildings</p></div>
+    <div id="map-controls-bar"><div class="compare-closer"></div>
+<table class="comparables">
+  <tbody><tr>
+  
+    
+      <td class="empty"><div></div></td>
+    
+  
+    
+      <td class="empty"><div></div></td>
+    
+  
+    
+      <td class="empty"><div></div></td>
+    
+  
+    
+      <td class="empty"><div></div></td>
+    
+  
+    
+      <td class="empty"><div></div></td>
+    
+  
+    <td>
+      <button class="toggle">Building Comparison 
+        <span class="toggle-close">×</span>
+      </button>
+    </td>
+  </tr>
+</tbody></table>
+</div>
+  </div>
+  <div id="footer"><div class="links-wrapper">
+  <div class="links">
+    <div class="footer-row">
+      <a href="http://www.seattle.gov/environment/climate-change/building-energy/energy-benchmarking" target="_blank" title="About benchmarking program" rel="noopener noreferrer">About the Program</a>
+      
+        <a href="#" class="modal-link" data-modal="faq">FAQ</a>
+      
+        <a href="#" class="modal-link" data-modal="glossary">Glossary</a>
+      
+      <a href="http://www.seattle.gov/environment/climate-change/building-energy/energy-benchmarking/why-benchmarking-is-required#dataanalysis" target="_blank" rel="noopener noreferrer">Download Data</a>
+    </div>
+  </div>
+</div></div>
+  <div id="scorecard"></div>
+  <script src="lib/polyfills.js"></script> 
+  <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script> 
+  <script data-main="app/main" src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.19/require.js"></script> 
+  <script>
+
+      (function (i, s, o, g, r, a, m) {
+        i["GoogleAnalyticsObject"] = r;
+        (i[r] =
+          i[r] ||
+          function () {
+            (i[r].q = i[r].q || []).push(arguments);
+          }),
+          (i[r].l = 1 * new Date());
+        (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m);
+      })(
+        window,
+        document,
+        "script",
+        "//www.google-analytics.com/analytics.js",
+        "ga"
+      );
+
+      ga("create", "UA-72562682-1", "auto");
+      ga("send", "pageview");
+  </script>
+
+
+<div id="ce-activity-indicator">
+  <p class="spinner-alt">Loading...</p>
+  <div class="spinner">
+    <div class="rect1"></div>
+    <div class="rect2"></div>
+    <div class="rect3"></div>
+    <div class="rect4"></div>
+    <div class="rect5"></div>
+  </div>
+</div>
+<div class="autocomplete-suggestions address-search-results" style="left: 33px; top: 182px; width: 276px;"><div class="autocomplete-suggestions-header">Nearby buildings...</div><div class="autocomplete-suggestions-wrapper"></div></div></body></html>

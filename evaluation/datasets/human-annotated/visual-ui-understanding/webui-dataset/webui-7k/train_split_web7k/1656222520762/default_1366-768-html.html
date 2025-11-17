@@ -1,0 +1,218 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="utf-8">
+    <title>IndieAuth Documentation - Sign in with your domain name</title>
+    
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/bootstrap-3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="redirect_uri" href="https://indieauth.com/auth/indieauth/redirect">
+      <script type="text/javascript" async="" src="https://ssl.google-analytics.com/ga.js"></script><script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-16359758-31']);
+        _gaq.push(['_trackPageview']);
+
+        (function() {
+          var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+          ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+      </script>
+    <script src="/js/jquery-3.2.1.min.js"></script>
+    <script src="/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="/js/mustache.js"></script>
+  </head>
+  <body class="webkit chrome osx mac  setup">
+
+    <nav class="navbar navbar-inverse navbar-static-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">IndieAuth.com</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="/setup">Setup</a></li>
+            <li><a href="/pgp">PGP</a></li>
+            <li><a href="/openid">OpenID</a></li>
+            <li><a href="/developers">Developers</a></li>
+            <li><a href="/faq">FAQ</a></li>
+            <li><a href="/history">History</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="hero-unit">
+  <h1>IndieAuth.com: Sign in with your domain name</h1>
+</div>
+
+
+<div class="container">
+
+  <div class="section">
+
+  <h2>Setup Instructions</h2>
+
+  <div class="row">
+    <div class="col-lg-8">
+      <h3>1. Link to your various social profiles on your home page</h3>
+
+      <p>On your home page, link to your profiles and add the <code>rel="me"</code> attribute to the links.</p>
+
+      <p>This may look something like the following:
+      </p><pre><code>&lt;ul&gt;
+  &lt;li&gt;&lt;a href="https://twitter.com/aaronpk" rel="me"&gt;@aaronpk on Twitter&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="https://github.com/aaronpk" rel="me"&gt;Github&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="mailto:me@example.com" rel="me"&gt;me@example.com&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;link rel="pgpkey" href="/key.txt"&gt;
+</code></pre>
+      <p></p>
+
+      <p>Note: If you don't want visible links on your home page, you can instead use <code>&lt;link&gt;</code> tags in your html head.</p>
+
+      <pre><code>&lt;link href="https://twitter.com/aaronpk" rel="me"&gt;</code></pre>
+
+      <p>You can also <a href="/pgp">sign in with a PGP key</a> if you don't wish to use a third party service.</p>
+
+    </div><!-- span -->
+    <div class="col-lg-4">
+      <a class="img-thumbnail" href="#"><img src="/img/social-profiles.png" width="214" height="256"></a>
+    </div>
+  </div><!-- row -->
+
+  <div class="row">
+    <div class="col-lg-8">
+      <h3>2. On each service, ensure there is a link back to your home page</h3>
+
+      <p>You'll need to verify that each service has a link back to your home page. For convenience the "edit profile" links for some supported services are below.</p>
+
+      <div style="float: right;"><img src="/img/twitter-website-settings.png" width="394" height="102"></div>
+
+      <ul>
+        <li><a href="https://twitter.com/settings/profile">Twitter</a></li>
+        <li><a href="https://github.com/settings/profile">Github</a></li>
+      </ul>
+
+      <p>For links such as Email and PGP keys, there is obviously no way to "link back" from those, so you will be presented with a challenge when you sign in.</p>
+
+    </div>
+  </div><!-- row -->
+
+  <div class="row">
+    <div class="col-lg-8">
+      <h3>3. You're done!</h3>
+      <p>That's it! You're done! Now you can use your domain to sign in to any sites that use IndieAuth.com!</p>
+
+      <h4>Try it now</h4>
+      <form action="/auth" method="get" class="well">
+        <div class="form-group">
+          <label for="indie_auth_url">Web Address:</label>
+          <input id="indie_auth_url" type="text" name="me" class="form-control" placeholder="yourdomain.com">
+        </div>
+        <p><button type="submit" class="btn">Sign In</button></p>
+        <input type="hidden" name="client_id" value="https://indieauth.com">
+        <input type="hidden" name="redirect_uri" value="https://indieauth.com/success">
+      </form>
+
+    </div>
+  </div><!-- row -->
+
+
+  </div><!-- section -->
+
+</div><!-- container -->
+
+<div class="footer">
+  <div class="fill">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-3">
+          <h5>Help</h5>
+          <ul class="unstyled">
+            <li><a href="/setup">Setup Instructions</a></li>
+            <li><a href="/pgp">Sign in with your PGP Key</a></li>
+            <li><a href="/openid">OpenID Provider</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-3">
+          <h5>IndieWeb</h5>
+          <ul class="unstyled">
+            <li><a href="https://indieweb.org/">IndieWeb.org</a></li>
+            <li><a href="https://indieweb.org/why">Why the Indie Web?</a></li>
+            <li><a href="https://indieweb.org/Getting_Started">Getting Started</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-3">
+          <h5>Microformats</h5>
+          <ul class="unstyled">
+            <li><a href="http://microformats.org/wiki/RelMeAuth">RelMeAuth</a></li>
+            <li><a href="http://microformats.org/wiki/web-sign-in">Web Sign-In</a></li>
+            <li><a href="http://microformats.org/wiki/rel-me">rel="me"</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-3">
+          <h5>Community</h5>
+          <ul class="unstyled">
+            <li><a href="https://indieweb.org/">IndieWeb Wiki</a></li>
+            <li><a href="http://microformats.org/wiki/">Microformats Wiki</a></li>
+            <li><a href="https://twitter.com/indiewebcamp">IndieWebCamp Twitter</a></li>
+            <li><a href="https://indieweb.org/discuss">#indieweb IRC</a></li>
+            <li><a href="http://webchat.freenode.net/?channels=microformats&amp;nick=webchat253">#microformats IRC</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!--
+<ul>
+  <li><a href="https://twitter.com/aaronpk" rel="me">
+    <img src="twitter.png" width="16" height="16" /> <span>@aaronpk on Twitter</span>
+  </a></li>
+  <li><a href="https://github.com/aaronpk" rel="me">
+    <img src="github.png" width="16" height="16" /> <span>Code on Github</span>
+  </a></li>
+  <li><a href="http://profiles.google.com/aaron.parecki" rel="me">
+    <img src="google.png" width="16" height="16" /> <span>Google Profile</span>
+  </a></li>
+  <li><a href="http://facebook.com/aaronpk" rel="me">
+    <img src="facebook.png" width="16" height="16" /> <span>Facebook Profile</span>
+  </a></li>
+  <li><a href="http://www.flickr.com/people/aaronpk/" rel="me">
+    <img src="flickr.png" width="16" height="16" /> <span>Flickr Photos</span>
+  </a></li>
+  <li><a href="http://foursquare.com/aaronpk" rel="me">
+    <img src="foursquare.png" width="16" height="16" /> <span>Foursquare Checkins</span>
+  </a></li>
+</ul>
+
+
+<ul>
+  <li><a href="https://twitter.com/aaronpk" rel="me">@aaronpk on Twitter</a></li>
+  <li><a href="https://github.com/aaronpk" rel="me">Github</a></li>
+  <li><a href="http://profiles.google.com/aaron.parecki" rel="me">Google</a></li>
+  <li><a href="http://facebook.com/aaronpk" rel="me">Facebook</a></li>
+  <li><a href="http://www.flickr.com/people/aaronpk/" rel="me">Flickr</a></li>
+</ul>
+
+
+
+
+ -->
+
+
+    <div class="tinyfooter">
+      This server is hosted by <a href="https://indieweb.org/sponsors">sponsors</a> of IndieWebCamp events. v17.207.1 2.4.3-p205
+    </div>
+  
+
+</body></html>

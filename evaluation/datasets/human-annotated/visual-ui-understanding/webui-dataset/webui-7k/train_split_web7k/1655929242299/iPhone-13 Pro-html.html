@@ -1,0 +1,519 @@
+<!DOCTYPE html><html xmlns:og="http://opengraphprotocol.org/schema/" xmlns:fb="http://www.facebook.com/2008/fbml" lang="en-US" class="touch-styles yui3-js-enabled js flexbox canvas canvastext webgl touch hashchange history draganddrop rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms no-csstransforms3d csstransitions video audio svg inlinesvg svgclippaths wf-proximanova-n4-active wf-proximanova-n5-active wf-proximanova-n6-active wf-proximanova-n7-active wf-proximanova-i6-active wf-proximanova-i7-active wf-adobegaramondpro-n4-active wf-adobegaramondpro-n6-active wf-adobegaramondpro-i4-active wf-active" style=""><div id="yui3-css-stamp" style="position: absolute !important; visibility: hidden !important"></div><head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- This is Squarespace. --><!-- pgmustard -->
+<base href="">
+<meta charset="utf-8">
+<title>Buffers Shared Dirtied - pgMustard</title>
+<link rel="shortcut icon" type="image/x-icon" href="https://images.squarespace-cdn.com/content/v1/5ac767d1e2ccd11e65939466/1565625738397-H8ZQFVNF18EYQCB75NI4/favicon.ico?format=100w">
+<link rel="canonical" href="https://www.pgmustard.com/docs/explain/buffers-shared-dirtied">
+<meta property="og:site_name" content="pgMustard">
+<meta property="og:title" content="Buffers Shared Dirtied - pgMustard">
+<meta property="og:url" content="https://www.pgmustard.com/docs/explain/buffers-shared-dirtied">
+<meta property="og:type" content="website">
+<meta property="og:description" content="PostgreSQL explain documentation: Buffers Shared Dirtied">
+<meta property="og:image" content="http://static1.squarespace.com/static/5ac767d1e2ccd11e65939466/t/5d518d1ce812e9000152afb6/1565625629224/pg_thumbnail_with_background.png?format=1500w">
+<meta property="og:image:width" content="400">
+<meta property="og:image:height" content="400">
+<meta itemprop="name" content="Buffers Shared Dirtied - pgMustard">
+<meta itemprop="url" content="https://www.pgmustard.com/docs/explain/buffers-shared-dirtied">
+<meta itemprop="description" content="PostgreSQL explain documentation: Buffers Shared Dirtied">
+<meta itemprop="thumbnailUrl" content="http://static1.squarespace.com/static/5ac767d1e2ccd11e65939466/t/5d518d1ce812e9000152afb6/1565625629224/pg_thumbnail_with_background.png?format=1500w">
+<link rel="image_src" href="http://static1.squarespace.com/static/5ac767d1e2ccd11e65939466/t/5d518d1ce812e9000152afb6/1565625629224/pg_thumbnail_with_background.png?format=1500w">
+<meta itemprop="image" content="http://static1.squarespace.com/static/5ac767d1e2ccd11e65939466/t/5d518d1ce812e9000152afb6/1565625629224/pg_thumbnail_with_background.png?format=1500w">
+<meta name="twitter:title" content="Buffers Shared Dirtied - pgMustard">
+<meta name="twitter:image" content="http://static1.squarespace.com/static/5ac767d1e2ccd11e65939466/t/5d518d1ce812e9000152afb6/1565625629224/pg_thumbnail_with_background.png?format=1500w">
+<meta name="twitter:url" content="https://www.pgmustard.com/docs/explain/buffers-shared-dirtied">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:description" content="PostgreSQL explain documentation: Buffers Shared Dirtied">
+<meta name="description" content="PostgreSQL explain documentation: Buffers Shared Dirtied">
+<link rel="preconnect" href="https://images.squarespace-cdn.com">
+<script src="https://apis.google.com/_/scs/abc-static/_/js/k=gapi.lb.en.dzXZWX9QTbE.O/m=gapi_iframes/rt=j/sv=1/d=1/ed=1/rs=AHpOoo_epIQDPHdjFr3MLkazUi2Jmy50dQ/cb=gapi.loaded_0?le=scs" async=""></script><script type="text/javascript" src="//use.typekit.net/ik/Kjz9Zpi6UUehY6bgilFc0dvPXhZBsLN6duD9lW5mRe3fe76IfFHN4UJLFRbh52jhWDmyjDShFhbUZQ4RjhbUwA9hFQqD5QbhFynDMKG0jAFu-WsoShFGZAsude80ZkoRdhXCHKoyjamTiY8Djhy8ZYmC-Ao1Oco8if37OcBDOcu8OfG0SeiliWFXjW4qO1FUiABkZWF3jAF8OcFzdP37O1FUiABkZWF3jAF8ShFGZAsude80ZkoRdhXCjAFu-WsoShFGZAsude80ZkoRdhXCjAFu-WsoShFGZAsude80Zko0ZWbCjWw0dA9CdeNRjAUGdaFXOYg1dWmDieBkZfoRdhXCSeiliWFXjW4qO1FUiABkZWF3jAF8OcFzdPUDSWmyScmDSeBRZWFR-emqiAUTdcS0jhNlOYiaikoyjamTiY8Djhy8ZYmC-Ao1OcFzdPUaiaS0jAFu-WsoShFGZAsude80Zko0ZWbCiaiaOcBDOcu8OYiaiko3ZhuuSasyScb0jhNlOYiaiko3ZhuuSasyScb0SaBujW48Sagyjh90jhNlOYiaikoDSWmyScmDSeBRZWFR-emqiAUTdcS0jhNlJ6U3ScNt-AuyOAozicIKIcBqdh48OAiyScBldhoqOWgkdkG4fHvgIMMjgfMfH6GJCwbgIMMjgPMfH6qJnbIbMg6eJMJ7fbKOMsMMeMS6MKG4fHtgIMMjIfMfH6qJRMIbMg6sJMJ7fbRDFgMgeMb6MKG4fVbXIMIjgKMfH6qJvRbbMs65JMHbMLr7kx6B.js"></script>
+<style type="text/css">@font-face{font-family:proxima-nova;src:url(https://use.typekit.net/af/efe4a5/00000000000000007735e609/30/l?subset_id=2&fvd=n4&v=3) format("woff2"),url(https://use.typekit.net/af/efe4a5/00000000000000007735e609/30/d?subset_id=2&fvd=n4&v=3) format("woff"),url(https://use.typekit.net/af/efe4a5/00000000000000007735e609/30/a?subset_id=2&fvd=n4&v=3) format("opentype");font-weight:400;font-style:normal;font-stretch:normal;font-display:auto;}@font-face{font-family:proxima-nova;src:url(https://use.typekit.net/af/23e139/00000000000000007735e605/30/l?subset_id=2&fvd=n5&v=3) format("woff2"),url(https://use.typekit.net/af/23e139/00000000000000007735e605/30/d?subset_id=2&fvd=n5&v=3) format("woff"),url(https://use.typekit.net/af/23e139/00000000000000007735e605/30/a?subset_id=2&fvd=n5&v=3) format("opentype");font-weight:500;font-style:normal;font-stretch:normal;font-display:auto;}@font-face{font-family:proxima-nova;src:url(https://use.typekit.net/af/78aca8/00000000000000007735e60d/30/l?subset_id=2&fvd=n6&v=3) format("woff2"),url(https://use.typekit.net/af/78aca8/00000000000000007735e60d/30/d?subset_id=2&fvd=n6&v=3) format("woff"),url(https://use.typekit.net/af/78aca8/00000000000000007735e60d/30/a?subset_id=2&fvd=n6&v=3) format("opentype");font-weight:600;font-style:normal;font-stretch:normal;font-display:auto;}@font-face{font-family:proxima-nova;src:url(https://use.typekit.net/af/2555e1/00000000000000007735e603/30/l?subset_id=2&fvd=n7&v=3) format("woff2"),url(https://use.typekit.net/af/2555e1/00000000000000007735e603/30/d?subset_id=2&fvd=n7&v=3) format("woff"),url(https://use.typekit.net/af/2555e1/00000000000000007735e603/30/a?subset_id=2&fvd=n7&v=3) format("opentype");font-weight:700;font-style:normal;font-stretch:normal;font-display:auto;}@font-face{font-family:proxima-nova;src:url(https://use.typekit.net/af/144da4/00000000000000007735e619/30/l?subset_id=2&fvd=i6&v=3) format("woff2"),url(https://use.typekit.net/af/144da4/00000000000000007735e619/30/d?subset_id=2&fvd=i6&v=3) format("woff"),url(https://use.typekit.net/af/144da4/00000000000000007735e619/30/a?subset_id=2&fvd=i6&v=3) format("opentype");font-weight:600;font-style:italic;font-stretch:normal;font-display:auto;}@font-face{font-family:proxima-nova;src:url(https://use.typekit.net/af/4de20a/00000000000000007735e604/30/l?subset_id=2&fvd=i7&v=3) format("woff2"),url(https://use.typekit.net/af/4de20a/00000000000000007735e604/30/d?subset_id=2&fvd=i7&v=3) format("woff"),url(https://use.typekit.net/af/4de20a/00000000000000007735e604/30/a?subset_id=2&fvd=i7&v=3) format("opentype");font-weight:700;font-style:italic;font-stretch:normal;font-display:auto;}@font-face{font-family:adobe-garamond-pro;src:url(https://use.typekit.net/af/2011b6/00000000000000003b9b00c1/27/l?subset_id=2&fvd=n4&v=3) format("woff2"),url(https://use.typekit.net/af/2011b6/00000000000000003b9b00c1/27/d?subset_id=2&fvd=n4&v=3) format("woff"),url(https://use.typekit.net/af/2011b6/00000000000000003b9b00c1/27/a?subset_id=2&fvd=n4&v=3) format("opentype");font-weight:400;font-style:normal;font-stretch:normal;font-display:auto;}@font-face{font-family:adobe-garamond-pro;src:url(https://use.typekit.net/af/fb3638/00000000000000003b9b00c3/27/l?subset_id=2&fvd=n6&v=3) format("woff2"),url(https://use.typekit.net/af/fb3638/00000000000000003b9b00c3/27/d?subset_id=2&fvd=n6&v=3) format("woff"),url(https://use.typekit.net/af/fb3638/00000000000000003b9b00c3/27/a?subset_id=2&fvd=n6&v=3) format("opentype");font-weight:600;font-style:normal;font-stretch:normal;font-display:auto;}@font-face{font-family:adobe-garamond-pro;src:url(https://use.typekit.net/af/5cace6/00000000000000003b9b00c2/27/l?subset_id=2&fvd=i4&v=3) format("woff2"),url(https://use.typekit.net/af/5cace6/00000000000000003b9b00c2/27/d?subset_id=2&fvd=i4&v=3) format("woff"),url(https://use.typekit.net/af/5cace6/00000000000000003b9b00c2/27/a?subset_id=2&fvd=i4&v=3) format("opentype");font-weight:400;font-style:italic;font-stretch:normal;font-display:auto;}</style><script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700">
+<script type="text/javascript" crossorigin="anonymous" nomodule="nomodule" src="//assets.squarespace.com/@sqs/polyfiller/1.2.2/legacy.js"></script>
+<script type="text/javascript" crossorigin="anonymous" src="//assets.squarespace.com/@sqs/polyfiller/1.2.2/modern.js"></script>
+<script type="text/javascript">SQUARESPACE_ROLLUPS = {};</script>
+<script>(function(rollups, name) { if (!rollups[name]) { rollups[name] = {}; } rollups[name].js = ["//assets.squarespace.com/universal/scripts-compressed/extract-css-runtime-df0bcb3fb161c9761a2a8-min.en-US.js"]; })(SQUARESPACE_ROLLUPS, 'squarespace-extract_css_runtime');</script>
+<script crossorigin="anonymous" src="//assets.squarespace.com/universal/scripts-compressed/extract-css-runtime-df0bcb3fb161c9761a2a8-min.en-US.js"></script><script>(function(rollups, name) { if (!rollups[name]) { rollups[name] = {}; } rollups[name].js = ["//assets.squarespace.com/universal/scripts-compressed/extract-css-moment-js-vendor-0c99b8bf7f3dd5358b2f5-min.en-US.js"]; })(SQUARESPACE_ROLLUPS, 'squarespace-extract_css_moment_js_vendor');</script>
+<script crossorigin="anonymous" src="//assets.squarespace.com/universal/scripts-compressed/extract-css-moment-js-vendor-0c99b8bf7f3dd5358b2f5-min.en-US.js"></script><script>(function(rollups, name) { if (!rollups[name]) { rollups[name] = {}; } rollups[name].js = ["//assets.squarespace.com/universal/scripts-compressed/cldr-resource-pack-51def4af8f210f9d1e4fa-min.en-US.js"]; })(SQUARESPACE_ROLLUPS, 'squarespace-cldr_resource_pack');</script>
+<script crossorigin="anonymous" src="//assets.squarespace.com/universal/scripts-compressed/cldr-resource-pack-51def4af8f210f9d1e4fa-min.en-US.js"></script><script>(function(rollups, name) { if (!rollups[name]) { rollups[name] = {}; } rollups[name].js = ["//assets.squarespace.com/universal/scripts-compressed/common-vendors-stable-1f7107f1c77c3d102a5a3-min.en-US.js"]; })(SQUARESPACE_ROLLUPS, 'squarespace-common_vendors_stable');</script>
+<script crossorigin="anonymous" src="//assets.squarespace.com/universal/scripts-compressed/common-vendors-stable-1f7107f1c77c3d102a5a3-min.en-US.js"></script><script>(function(rollups, name) { if (!rollups[name]) { rollups[name] = {}; } rollups[name].js = ["//assets.squarespace.com/universal/scripts-compressed/common-vendors-dae30d1b3ec6ab9fc7ef4-min.en-US.js"]; })(SQUARESPACE_ROLLUPS, 'squarespace-common_vendors');</script>
+<script crossorigin="anonymous" src="//assets.squarespace.com/universal/scripts-compressed/common-vendors-dae30d1b3ec6ab9fc7ef4-min.en-US.js"></script><script>(function(rollups, name) { if (!rollups[name]) { rollups[name] = {}; } rollups[name].js = ["//assets.squarespace.com/universal/scripts-compressed/common-d3706a7e08bf69eaac18d-min.en-US.js"]; })(SQUARESPACE_ROLLUPS, 'squarespace-common');</script>
+<script crossorigin="anonymous" src="//assets.squarespace.com/universal/scripts-compressed/common-d3706a7e08bf69eaac18d-min.en-US.js"></script><script>(function(rollups, name) { if (!rollups[name]) { rollups[name] = {}; } rollups[name].js = ["//assets.squarespace.com/universal/scripts-compressed/performance-27bdd9973d5746e78e9dc-min.en-US.js"]; })(SQUARESPACE_ROLLUPS, 'squarespace-performance');</script>
+<script crossorigin="anonymous" src="//assets.squarespace.com/universal/scripts-compressed/performance-27bdd9973d5746e78e9dc-min.en-US.js" defer=""></script><script data-name="static-context">Static = window.Static || {}; Static.SQUARESPACE_CONTEXT = {"facebookAppId":"314192535267336","facebookApiVersion":"v6.0","rollups":{"squarespace-announcement-bar":{"js":"//assets.squarespace.com/universal/scripts-compressed/announcement-bar-7903c8cefc83cf29e51e1-min.en-US.js"},"squarespace-audio-player":{"css":"//assets.squarespace.com/universal/styles-compressed/audio-player-1e22e8921146075637ce0-min.en-US.css","js":"//assets.squarespace.com/universal/scripts-compressed/audio-player-2c8a65b5ad6a192d90629-min.en-US.js"},"squarespace-blog-collection-list":{"css":"//assets.squarespace.com/universal/styles-compressed/blog-collection-list-3d55c64c25996c7633fc2-min.en-US.css","js":"//assets.squarespace.com/universal/scripts-compressed/blog-collection-list-3a11c75798160d66ee949-min.en-US.js"},"squarespace-calendar-block-renderer":{"css":"//assets.squarespace.com/universal/styles-compressed/calendar-block-renderer-49c4a5f3dae67a728e3f4-min.en-US.css","js":"//assets.squarespace.com/universal/scripts-compressed/calendar-block-renderer-76dd0324246b501dc3ca5-min.en-US.js"},"squarespace-chartjs-helpers":{"css":"//assets.squarespace.com/universal/styles-compressed/chartjs-helpers-53c004ac7d4bde1c92e38-min.en-US.css","js":"//assets.squarespace.com/universal/scripts-compressed/chartjs-helpers-f419c22eafdac3bb63dc3-min.en-US.js"},"squarespace-comments":{"css":"//assets.squarespace.com/universal/styles-compressed/comments-2474dc7bfa7d1cebae461-min.en-US.css","js":"//assets.squarespace.com/universal/scripts-compressed/comments-a6342949df3cb31f82d74-min.en-US.js"},"squarespace-dialog":{"css":"//assets.squarespace.com/universal/styles-compressed/dialog-eb293d03b967df9f7387d-min.en-US.css","js":"//assets.squarespace.com/universal/scripts-compressed/dialog-25214ce5c0f8e0bab7016-min.en-US.js"},"squarespace-events-collection":{"css":"//assets.squarespace.com/universal/styles-compressed/events-collection-49c4a5f3dae67a728e3f4-min.en-US.css","js":"//assets.squarespace.com/universal/scripts-compressed/events-collection-6168f72db8c437f8bf52d-min.en-US.js"},"squarespace-form-rendering-utils":{"js":"//assets.squarespace.com/universal/scripts-compressed/form-rendering-utils-54eaaa1783d5cc62d3965-min.en-US.js"},"squarespace-forms":{"css":"//assets.squarespace.com/universal/styles-compressed/forms-7bb2169a5edade4c08ca7-min.en-US.css","js":"//assets.squarespace.com/universal/scripts-compressed/forms-605a423df2f3e39105ee7-min.en-US.js"},"squarespace-gallery-collection-list":{"css":"//assets.squarespace.com/universal/styles-compressed/gallery-collection-list-3d55c64c25996c7633fc2-min.en-US.css","js":"//assets.squarespace.com/universal/scripts-compressed/gallery-collection-list-5c733ce28f15b61f41f05-min.en-US.js"},"squarespace-image-zoom":{"css":"//assets.squarespace.com/universal/styles-compressed/image-zoom-8804675084a3982b022e3-min.en-US.css","js":"//assets.squarespace.com/universal/scripts-compressed/image-zoom-52ff6d015f277f1dc0b39-min.en-US.js"},"squarespace-pinterest":{"css":"//assets.squarespace.com/universal/styles-compressed/pinterest-3d55c64c25996c7633fc2-min.en-US.css","js":"//assets.squarespace.com/universal/scripts-compressed/pinterest-1b25e6f61600744363640-min.en-US.js"},"squarespace-popup-overlay":{"css":"//assets.squarespace.com/universal/styles-compressed/popup-overlay-4d585c3ab0b56e73aacfb-min.en-US.css","js":"//assets.squarespace.com/universal/scripts-compressed/popup-overlay-115abc53c09abfeed5eb7-min.en-US.js"},"squarespace-product-quick-view":{"css":"//assets.squarespace.com/universal/styles-compressed/product-quick-view-9eabb37cb7ba1b1da783a-min.en-US.css","js":"//assets.squarespace.com/universal/scripts-compressed/product-quick-view-d8b36df814737b1fa4dad-min.en-US.js"},"squarespace-products-collection-item-v2":{"css":"//assets.squarespace.com/universal/styles-compressed/products-collection-item-v2-8804675084a3982b022e3-min.en-US.css","js":"//assets.squarespace.com/universal/scripts-compressed/products-collection-item-v2-deefbd4806db71789d052-min.en-US.js"},"squarespace-products-collection-list-v2":{"css":"//assets.squarespace.com/universal/styles-compressed/products-collection-list-v2-8804675084a3982b022e3-min.en-US.css","js":"//assets.squarespace.com/universal/scripts-compressed/products-collection-list-v2-4841d067770e76e3df99d-min.en-US.js"},"squarespace-search-page":{"css":"//assets.squarespace.com/universal/styles-compressed/search-page-9d0a55de1efafbb9218e1-min.en-US.css","js":"//assets.squarespace.com/universal/scripts-compressed/search-page-f8ac2341321c41dbebfee-min.en-US.js"},"squarespace-search-preview":{"js":"//assets.squarespace.com/universal/scripts-compressed/search-preview-1ba8fbb119237da52a76a-min.en-US.js"},"squarespace-simple-liking":{"css":"//assets.squarespace.com/universal/styles-compressed/simple-liking-ef94529873378652e6e86-min.en-US.css","js":"//assets.squarespace.com/universal/scripts-compressed/simple-liking-070ec54ea71807a20d622-min.en-US.js"},"squarespace-social-buttons":{"css":"//assets.squarespace.com/universal/styles-compressed/social-buttons-1f18e025ea682ade6293a-min.en-US.css","js":"//assets.squarespace.com/universal/scripts-compressed/social-buttons-2361838f5b3da99264cfb-min.en-US.js"},"squarespace-tourdates":{"css":"//assets.squarespace.com/universal/styles-compressed/tourdates-3d55c64c25996c7633fc2-min.en-US.css","js":"//assets.squarespace.com/universal/scripts-compressed/tourdates-99e2275ddbe4c62de6b49-min.en-US.js"},"squarespace-website-overlays-manager":{"css":"//assets.squarespace.com/universal/styles-compressed/website-overlays-manager-e02f37cb215feb91e3a3f-min.en-US.css","js":"//assets.squarespace.com/universal/scripts-compressed/website-overlays-manager-de0521bae32bdd31ad7ad-min.en-US.js"}},"pageType":2,"website":{"id":"5ac767d1e2ccd11e65939466","identifier":"pgmustard","websiteType":1,"contentModifiedOn":1655813438000,"cloneable":false,"hasBeenCloneable":false,"siteStatus":{},"language":"en-US","timeZone":"Europe/London","machineTimeZoneOffset":3600000,"timeZoneOffset":3600000,"timeZoneAbbr":"BST","siteTitle":"pgMustard","fullSiteTitle":"Buffers Shared Dirtied - pgMustard","siteTagLine":"Review Postgres query plans quickly","siteDescription":"<p>pgMustard - a performance tuner for PostgreSQL</p>","logoImageId":"60df37635c490213b75076e2","socialLogoImageId":"5d518d1ce812e9000152afb6","shareButtonOptions":{"2":true,"4":true,"6":true,"7":true,"3":true,"1":true,"8":true},"logoImageUrl":"//images.squarespace-cdn.com/content/v1/5ac767d1e2ccd11e65939466/95e80ef2-c492-48cc-89d5-2140bff61c14/pg_thumbnail.png","socialLogoImageUrl":"//images.squarespace-cdn.com/content/v1/5ac767d1e2ccd11e65939466/1565625628675-YQ45M1HA5EKJQAF7Q87O/pg_thumbnail_with_background.png","authenticUrl":"https://www.pgmustard.com","internalUrl":"https://pgmustard.squarespace.com","baseUrl":"https://www.pgmustard.com","primaryDomain":"www.pgmustard.com","sslSetting":3,"isHstsEnabled":true,"socialAccounts":[{"serviceId":62,"userId":"1035442572817256448","userName":"pgMustardApp","screenname":"Twitter","addedOn":1539331952504,"profileUrl":"https://twitter.com/pgMustard","iconUrl":"http://pbs.twimg.com/profile_images/1050659984227237888/lgbtl4ya_normal.jpg","collectionId":"5bc057709b7d1578c3ab9019","iconEnabled":true,"serviceName":"twitter-unauth"},{"serviceId":73,"screenname":"GitHub","addedOn":1635407231878,"profileUrl":"https://github.com/pgMustard/pgMustard/projects/1","iconEnabled":true,"serviceName":"github-unauth"},{"serviceId":69,"screenname":"YouTube","addedOn":1635407281248,"profileUrl":"https://www.youtube.com/channel/UCmyQKIBX0c_YFF2Lu5vQOSg/playlists","iconEnabled":true,"serviceName":"youtube-unauth"},{"serviceId":65,"screenname":"LinkedIn","addedOn":1635407286460,"profileUrl":"https://www.linkedin.com/company/pgmustard/","iconEnabled":true,"serviceName":"linkedin-unauth"}],"typekitId":"","statsMigrated":false,"imageMetadataProcessingEnabled":false,"screenshotId":"fb61d70a6146d6fa7d07fd0a738a65d528aba7c564e4049da4dc5495d7e2ab3a","captchaSettings":{"enabledForDonations":false},"showOwnerLogin":false},"websiteSettings":{"id":"5ac767d1e2ccd11e65939469","websiteId":"5ac767d1e2ccd11e65939466","type":"Business","subjects":[],"country":"GB","state":"ENG","simpleLikingEnabled":true,"mobileInfoBarSettings":{"isContactEmailEnabled":false,"isContactPhoneNumberEnabled":false,"isLocationEnabled":false,"isBusinessHoursEnabled":false},"announcementBarSettings":{"style":1,"text":"<p class=\"\" style=\"white-space:pre-wrap;\">Office hours call in progress \u2014 join Michael on Zoom</p>","clickthroughUrl":{"url":"/office-hours","newWindow":false}},"commentLikesAllowed":true,"commentAnonAllowed":true,"commentThreaded":true,"commentApprovalRequired":false,"commentAvatarsOn":true,"commentSortType":2,"commentFlagThreshold":0,"commentFlagsAllowed":true,"commentEnableByDefault":true,"commentDisableAfterDaysDefault":0,"disqusShortname":"","commentsEnabled":true,"storeSettings":{"returnPolicy":null,"termsOfService":null,"privacyPolicy":null,"expressCheckout":false,"continueShoppingLinkUrl":"/","useLightCart":false,"showNoteField":false,"shippingCountryDefaultValue":"US","billToShippingDefaultValue":false,"showShippingPhoneNumber":true,"isShippingPhoneRequired":false,"showBillingPhoneNumber":true,"isBillingPhoneRequired":false,"currenciesSupported":["CHF","HKD","MXN","EUR","DKK","USD","CAD","MYR","NOK","THB","AUD","SGD","ILS","PLN","GBP","CZK","SEK","NZD","PHP","RUB"],"defaultCurrency":"GBP","selectedCurrency":"EUR","measurementStandard":2,"showCustomCheckoutForm":false,"checkoutPageMarketingOptInEnabled":false,"enableMailingListOptInByDefault":false,"sameAsRetailLocation":false,"merchandisingSettings":{"scarcityEnabledOnProductItems":false,"scarcityEnabledOnProductBlocks":false,"scarcityMessageType":"DEFAULT_SCARCITY_MESSAGE","scarcityThreshold":10,"multipleQuantityAllowedForServices":true,"restockNotificationsEnabled":false,"restockNotificationsMailingListSignUpEnabled":false,"relatedProductsEnabled":false,"relatedProductsOrdering":"random","soldOutVariantsDropdownDisabled":false,"productComposerOptedIn":false,"productComposerABTestOptedOut":false,"productReviewsEnabled":false,"displayImportedProductReviewsEnabled":false,"hasOptedToCollectNativeReviews":false},"isLive":true,"multipleQuantityAllowedForServices":true},"useEscapeKeyToLogin":false,"ssBadgeType":1,"ssBadgePosition":4,"ssBadgeVisibility":1,"ssBadgeDevices":1,"pinterestOverlayOptions":{"mode":"disabled"},"ampEnabled":false},"cookieSettings":{"isCookieBannerEnabled":false,"isRestrictiveCookiePolicyEnabled":true,"isRestrictiveCookiePolicyAbsolute":false,"cookieBannerText":"By using this website, you agree to our use of cookies. We use cookies to provide you with a great experience and to help our website run effectively.","cookieBannerTheme":"DARK","cookieBannerVariant":"BAR","cookieBannerPosition":"BOTTOM","cookieBannerCtaVariant":"ICON","cookieBannerCtaText":"OK","cookieBannerAcceptType":"OPT_IN","cookieBannerOptOutCtaText":"Decline"},"websiteCloneable":false,"collection":{"title":"Buffers Shared Dirtied","id":"5ed7e5a92b54795ab95d597a","fullUrl":"/docs/explain/buffers-shared-dirtied","type":10,"permissionType":1},"subscribed":false,"appDomain":"squarespace.com","templateTweakable":true,"tweakJSON":{"aspect-ratio":"Auto","banner-slideshow-controls":"Arrows","gallery-arrow-style":"No Background","gallery-aspect-ratio":"3:2 Standard","gallery-auto-crop":"true","gallery-autoplay":"false","gallery-design":"Grid","gallery-info-overlay":"Show on Hover","gallery-loop":"false","gallery-navigation":"Bullets","gallery-show-arrows":"true","gallery-transitions":"Fade","galleryArrowBackground":"rgba(34,34,34,1)","galleryArrowColor":"rgba(255,255,255,1)","galleryAutoplaySpeed":"3","galleryCircleColor":"rgba(255,255,255,1)","galleryInfoBackground":"rgba(0, 0, 0, .7)","galleryThumbnailSize":"100px","gridSize":"280px","gridSpacing":"10px","logoContainerWidth":"80px","product-gallery-auto-crop":"false","product-image-auto-crop":"true","siteTitleContainerWidth":"220px","tweak-v1-related-products-title-spacing":"50px"},"templateId":"52a74dafe4b073a80cd253c5","templateVersion":"7","pageFeatures":[1,2,4],"gmRenderKey":"QUl6YVN5Q0JUUk9xNkx1dkZfSUUxcjQ2LVQ0QWVUU1YtMGQ3bXk4","templateScriptsRootUrl":"https://static1.squarespace.com/static/ta/52a74d9ae4b0253945d2aee9/1043/scripts/","betaFeatureFlags":["commerce_etsy_shipping_import","campaigns_content_editing_survey","send_local_pickup_ready_email","commerce_clearpay","campaigns_new_subscriber_search","commerce_restock_notifications","commerce_etsy_product_import","commerce_category_id_discounts_enabled","fluid_engine_onboarding_wizard","member_areas_spanish_interviews","member_areas_schedule_interview","campaigns_global_uc_ab","viewer-role-contributor-invites","commerce_site_visitor_metrics","asset_uploader_refactor","background_art_onboarding","product_composer_feedback_form_on_save","scheduling_block_schema_editor","nested_categories_migration_enabled","reduce_general_search_api_traffic","campaigns_thumbnail_layout","crm_show_subscriber_import_in_profiles","customer_account_creation_recaptcha"],"impersonatedSession":false,"tzData":{"zones":[[0,"EU","GMT/BST",null]],"rules":{"EU":[[1981,"max",null,"Mar","lastSun","1:00u","1:00","S"],[1996,"max",null,"Oct","lastSun","1:00u","0",null]]}},"showAnnouncementBar":false};</script><script type="text/javascript"> SquarespaceFonts.loadViaContext(); Squarespace.load(window);</script><script type="application/ld+json">{"url":"https://www.pgmustard.com","name":"pgMustard","description":"<p>pgMustard - a performance tuner for PostgreSQL</p>","image":"//images.squarespace-cdn.com/content/v1/5ac767d1e2ccd11e65939466/95e80ef2-c492-48cc-89d5-2140bff61c14/pg_thumbnail.png","@context":"http://schema.org","@type":"WebSite"}</script><link rel="stylesheet" type="text/css" href="https://static1.squarespace.com/static/sitecss/5ac767d1e2ccd11e65939466/122/52a74dafe4b073a80cd253c5/5ac767d1e2ccd11e6593947e/1043/site.css"><script async="" src="https://embed.small.chat/TEG6G1LH1C03ANE2UA6S.js"></script>
+<script async="" defer="" data-domain="pgmustard.com" src="https://plausible.pgmustard.com/js/plausible.js"></script><script>Static.COOKIE_BANNER_CAPABLE = true;</script>
+<!-- End of Squarespace Headers -->
+    <script>/* Must be below squarespace-headers */(function(){var e='ontouchstart'in window||navigator.msMaxTouchPoints;var t=document.documentElement;if(!e&&t){t.className=t.className.replace(/touch-styles/,'')}})()
+    </script>
+  <link rel="stylesheet" href="https://static.small.chat/messenger.css"><script type="text/javascript" charset="UTF-8" src="https://apis.google.com/js/api.js?onload=__iframefcb849119" gapi_processed="true"></script></head>
+  <body id="collection-5ed7e5a92b54795ab95d597a" class="enable-nav-button nav-button-style-outline nav-button-corner-style-pill banner-button-style-solid banner-button-corner-style-pill banner-slideshow-controls-arrows meta-priority-date   hide-list-entry-footer    hide-blog-sidebar center-navigation--info    event-show-past-events event-thumbnails event-thumbnail-size-32-standard event-date-label  event-list-show-cats event-list-date event-list-time event-list-address   event-icalgcal-links  event-excerpts      gallery-design-grid aspect-ratio-auto lightbox-style-light gallery-navigation-bullets gallery-info-overlay-show-on-hover gallery-aspect-ratio-32-standard gallery-arrow-style-no-background gallery-transitions-fade gallery-show-arrows gallery-auto-crop   product-list-titles-under product-list-alignment-center product-item-size-11-square product-image-auto-crop product-gallery-size-11-square  show-product-price show-product-item-nav product-social-sharing tweak-v1-related-products-image-aspect-ratio-11-square tweak-v1-related-products-details-alignment-center newsletter-style-light hide-opentable-icons opentable-style-dark small-button-style-solid small-button-shape-pill medium-button-style-solid medium-button-shape-rounded large-button-style-solid large-button-shape-pill image-block-poster-text-alignment-center image-block-card-dynamic-font-sizing image-block-card-content-position-center image-block-card-text-alignment-left image-block-overlap-dynamic-font-sizing image-block-overlap-content-position-center image-block-overlap-text-alignment-left image-block-collage-dynamic-font-sizing image-block-collage-content-position-top image-block-collage-text-alignment-left image-block-stack-dynamic-font-sizing image-block-stack-text-alignment-left button-style-solid button-corner-style-pill tweak-product-quick-view-button-style-floating tweak-product-quick-view-button-position-bottom tweak-product-quick-view-lightbox-excerpt-display-truncate tweak-product-quick-view-lightbox-show-arrows tweak-product-quick-view-lightbox-show-close-button tweak-product-quick-view-lightbox-controls-weight-light native-currency-code-eur collection-type-page collection-5ed7e5a92b54795ab95d597a collection-layout-default mobile-style-available">
+    <a href="#" class="body-overlay"></a>
+    <div class="sqs-announcement-bar-dropzone"></div>
+    <div id="sidecarNav">
+      
+
+  <div id="mobileNavWrapper" class="nav-wrapper" data-content-field="navigation-mobileNav">
+    <nav id="mobileNavigation">
+      
+
+      
+        
+          
+
+          
+
+            
+            <div class="collection">
+              <a href="/pricing">
+                Pricing
+              </a>
+            </div>
+            
+
+          
+        
+        
+
+      
+        
+          
+
+          
+
+            
+            <div class="collection">
+              <a href="/testimonials">
+                Testimonials
+              </a>
+            </div>
+            
+
+          
+        
+        
+
+      
+        
+          
+
+          
+
+            
+            <div class="collection">
+              <a href="/blog">
+                Blog   
+              </a>
+            </div>
+            
+
+          
+        
+        
+
+      
+        
+          
+
+          
+
+            
+            <div class="collection">
+              <a href="/newsletter">
+                Newsletter
+              </a>
+            </div>
+            
+
+          
+        
+        
+
+      
+        
+          
+          <div class="external">
+            <a href="https://app.pgmustard.com">
+              Sign in / Sign up
+            </a>
+          </div>
+          
+
+        
+
+      
+    </nav>
+  </div>
+
+
+
+    </div>
+    <div id="siteWrapper" class="clearfix">
+
+      <div class="sqs-cart-dropzone" style="top: 110px;"></div>
+
+      <header id="header" class="show-on-scroll" data-offset-el=".index-section" data-offset-behavior="bottom" role="banner">
+        <div class="header-inner">
+          <div id="logoWrapper" class="wrapper" data-content-field="site-title">
+            
+              <h1 id="logoImage"><a href="/"><img src="//images.squarespace-cdn.com/content/v1/5ac767d1e2ccd11e65939466/95e80ef2-c492-48cc-89d5-2140bff61c14/pg_thumbnail.png?format=1500w" alt="pgMustard"></a></h1>
+            
+          </div><!--
+          --><div class="mobile-nav-toggle"><div class="top-bar"></div><div class="middle-bar"></div><div class="bottom-bar"></div></div><div class="mobile-nav-toggle fixed-nav-toggle"><div class="top-bar"></div><div class="middle-bar"></div><div class="bottom-bar"></div></div><!--
+          --><div id="headerNav">
+
+  <div id="mainNavWrapper" class="nav-wrapper" data-content-field="navigation-mainNav">
+    <nav id="mainNavigation" data-content-field="navigation-mainNav">
+      
+
+      
+        
+          
+
+          
+
+            
+            <div class="collection">
+              <a href="/pricing">
+                Pricing
+              </a>
+            </div>
+            
+
+          
+        
+        
+
+      
+        
+          
+
+          
+
+            
+            <div class="collection">
+              <a href="/testimonials">
+                Testimonials
+              </a>
+            </div>
+            
+
+          
+        
+        
+
+      
+        
+          
+
+          
+
+            
+            <div class="collection">
+              <a href="/blog">
+                Blog   
+              </a>
+            </div>
+            
+
+          
+        
+        
+
+      
+        
+          
+
+          
+
+            
+            <div class="collection">
+              <a href="/newsletter">
+                Newsletter
+              </a>
+            </div>
+            
+
+          
+        
+        
+
+      
+        
+          
+          <div class="external">
+            <a href="https://app.pgmustard.com">
+              Sign in / Sign up
+            </a>
+          </div>
+          
+
+        
+
+      
+    </nav>
+  </div>
+  <!-- style below blocks out the mobile nav toggle only when nav is loaded -->
+  <style>.mobile-nav-toggle-label { display: inline-block !important; }</style>
+
+
+</div>
+        </div>
+      </header>
+
+      
+        
+          
+            
+              
+                <div id="promotedGalleryWrapper" class="sqs-layout promoted-gallery-wrapper"><div class="row"><div class="col"></div></div></div>
+                
+                  
+                
+              
+            
+          
+        
+      
+
+
+      
+      
+      
+
+      <main id="page" role="main">
+        
+        <!--
+        --><!--
+        --><!--
+        --><div id="content" class="main-content" data-content-field="main-content" data-collection-id="5ed7e5a92b54795ab95d597a" data-edit-main-image="">
+         <div class="sqs-layout sqs-grid-12 columns-12" data-type="page" data-updated-on="1623755383517" id="page-5ed7e5a92b54795ab95d597a"><div class="row sqs-row"><div class="col sqs-col-1 span-1"><div class="sqs-block spacer-block sqs-block-spacer sized vsize-1" data-block-type="21" id="block-476f87109edaa224a934"><div class="sqs-block-content">&nbsp;</div></div></div><div class="col sqs-col-10 span-10"><div class="sqs-block html-block sqs-block-html" data-block-type="2" id="block-4c73a70a8804f1d07b90"><div class="sqs-block-content"><p class="" style="white-space:pre-wrap;"><a href="/docs/explain"><span style="text-decoration:underline">↵ Back to EXPLAIN documentation</span></a></p><h1 style="white-space:pre-wrap;">Shared Dirtied</h1>
+
+
+</div></div><div class="row sqs-row"><div class="col sqs-col-8 span-8"><div class="sqs-block html-block sqs-block-html" data-block-type="2" id="block-47039bbcdab616c24e57"><div class="sqs-block-content"><p class="" style="white-space:pre-wrap;">The number of blocks from tables/indexes that were modified by the operation.</p><p class="" style="white-space:pre-wrap;">This <strong>includes</strong> values for child operations and is a <strong>total</strong> value (i.e. not per-loop).</p><p class="" style="white-space:pre-wrap;">A SELECT query can report shared dirtied blocks when setting hint bits on recently-committed rows.</p>
+
+
+</div></div></div><div class="col sqs-col-2 span-2"><div class="sqs-block spacer-block sqs-block-spacer sized vsize-1" data-block-type="21" id="block-8dbb57d29caa8a4157c9"><div class="sqs-block-content">&nbsp;</div></div></div></div><div class="sqs-block horizontalrule-block sqs-block-horizontalrule" data-block-type="47" id="block-4f7db2fb6f4c2ef1bfce"><div class="sqs-block-content"><hr></div></div><div class="row sqs-row"><div class="col sqs-col-6 span-6"><div class="sqs-block html-block sqs-block-html" data-block-type="2" id="block-16ecbd0de651e0bc8d13"><div class="sqs-block-content"><h3 style="white-space:pre-wrap;">Related fields</h3><ul data-rte-list="default"><li><p class="" style="white-space:pre-wrap;"><a href="/docs/explain/buffers-shared-hit"><span style="text-decoration:underline">Shared Hit</span></a></p></li><li><p class="" style="white-space:pre-wrap;"><a href="/docs/explain/buffers-shared-read"><span style="text-decoration:underline">Shared Read</span></a></p></li><li><p class="" style="white-space:pre-wrap;"><a href="/docs/explain/buffers-shared-written"><span style="text-decoration:underline">Shared Written</span></a></p></li></ul><h3 style="white-space:pre-wrap;">Required parameters</h3><ul data-rte-list="default"><li><p class="" style="white-space:pre-wrap;"><a href="/docs/explain/buffers"><span style="text-decoration:underline">BUFFERS</span></a></p></li></ul>
+
+
+</div></div></div><div class="col sqs-col-4 span-4"><div class="sqs-block html-block sqs-block-html" data-block-type="2" id="block-9d8949b922f43494f3c5"><div class="sqs-block-content"><h3 style="white-space:pre-wrap;">Related official docs</h3><ul data-rte-list="default"><li><p class="" style="white-space:pre-wrap;"><a href="https://www.postgresql.org/docs/current/runtime-config-resource.html"><span style="text-decoration:underline">Resource Consumption</span></a></p></li><li><p class="" style="white-space:pre-wrap;"><a href="https://www.postgresql.org/docs/current/using-explain.html#USING-EXPLAIN-ANALYZE"><span style="text-decoration:underline">Using EXPLAIN ANALYZE</span></a></p></li><li><p class="" style="white-space:pre-wrap;"><a href="https://www.postgresql.org/docs/current/storage-page-layout.html"><span style="text-decoration:underline">Database Page Layout</span></a></p></li></ul><h3 style="white-space:pre-wrap;">Further reading</h3><ul data-rte-list="default"><li><p class="" style="white-space:pre-wrap;"><a href="https://www.postgresql.org/message-id/flat/21a14f5f-b39c-3aa8-da2c-2112ee328b93%40gmail.com"><span style="text-decoration:underline">When can SELECT make pages dirty – Mailing List</span></a></p></li><li><p class="" style="white-space:pre-wrap;"><a href="https://wiki.postgresql.org/wiki/Hint_Bits"><span style="text-decoration:underline">Hint bits – PostgreSQL Wiki</span></a></p></li><li><p class="" style="white-space:pre-wrap;"><a href="https://www.pgmustard.com/blog/2019/9/17/postgres-execution-plans-field-glossary#buffers"><span style="text-decoration:underline">Buffers Fields – pgMustard</span></a></p></li></ul>
+
+
+</div></div></div></div><div class="sqs-block horizontalrule-block sqs-block-horizontalrule" data-block-type="47" id="block-03bd029299f9d8fccc71"><div class="sqs-block-content"><hr></div></div><div class="sqs-block html-block sqs-block-html" data-block-type="2" id="block-ad91247ddcda15884931"><div class="sqs-block-content"><p class="" style="white-space:pre-wrap;">If you’d like a fast way to review slow query plans, check out our product <a href="/"><span style="text-decoration:underline">pgMustard</span></a>.</p>
+
+
+</div></div><div class="sqs-block horizontalrule-block sqs-block-horizontalrule" data-block-type="47" id="block-b9aa6dd9c3a174484a81"><div class="sqs-block-content"><hr></div></div><div class="sqs-block html-block sqs-block-html" data-block-type="2" id="block-944707c4319a50ba85f8"><div class="sqs-block-content"><p class="" style="white-space:pre-wrap;">Last updated: June 2021</p><p class="" style="white-space:pre-wrap;">Issue reports and suggestions are welcome, please <a href="/contact"><span style="text-decoration:underline">get in touch</span></a>. </p>
+
+
+</div></div></div><div class="col sqs-col-1 span-1"><div class="sqs-block spacer-block sqs-block-spacer sized vsize-1" data-block-type="21" id="block-b118064254a3c8634330"><div class="sqs-block-content">&nbsp;</div></div></div></div></div>
+        </div><!--
+        -->
+        
+      </main>
+
+      <div id="preFooter">
+        <div class="pre-footer-inner">
+          <div class="sqs-layout sqs-grid-12 columns-12 empty" data-layout-label="Pre-Footer Content" data-type="block-field" data-updated-on="1595072916914" id="preFooterBlocks"><div class="row sqs-row"><div class="col sqs-col-12 span-12"></div></div></div>
+        </div>
+      </div>
+
+      <footer id="footer" role="contentinfo">
+        <div class="footer-inner">
+          <div class="nav-wrapper back-to-top-nav"><nav><div class="back-to-top"><a href="#header">Back to Top</a></div></nav></div>
+          <div id="secondaryNavWrapper" class="nav-wrapper" data-content-field="navigation-secondaryNav">
+  <nav id="secondaryNavigation" data-content-field="navigation-secondaryNav">
+    
+      
+        
+
+        
+
+          
+          <div class="collection" id="id5c2f4adf70a6ad1b09b4a912">
+            <a href="/docs">
+              <span>Docs</span>
+            </a>
+          </div>
+          
+
+        
+      
+      
+
+    
+      
+        
+
+        
+
+          
+          <div class="collection" id="id5ed4e7c7ad9dd324d1d6582c">
+            <a href="/docs/explain">
+              <span>EXPLAIN Glossary</span>
+            </a>
+          </div>
+          
+
+        
+      
+      
+
+    
+      
+        
+
+        
+
+          
+          <div class="collection" id="id5c5dddebeb39312915a1d99b">
+            <a href="/contact">
+              <span>Contact</span>
+            </a>
+          </div>
+          
+
+        
+      
+      
+
+    
+      
+        
+
+        
+
+          
+          <div class="collection" id="id5e8324cfe958d45ab151165f">
+            <a href="/changelog">
+              <span>Changelog</span>
+            </a>
+          </div>
+          
+
+        
+      
+      
+
+    
+      
+        
+        <div class="external">
+          <a href="https://github.com/pgMustard/pgMustard/issues">
+            <span>Issues</span>
+          </a>
+        </div>
+        
+
+      
+
+    
+      
+        
+
+        
+
+          
+          <div class="collection" id="id5d95e7fcb66302713d8d01c9">
+            <a href="/about">
+              <span>About</span>
+            </a>
+          </div>
+          
+
+        
+      
+      
+
+    
+      
+        
+
+        
+
+          
+          <div class="collection" id="id5c7fd6406e9a7f44b5ac8a87">
+            <a href="/eula">
+              <span>Terms</span>
+            </a>
+          </div>
+          
+
+        
+      
+      
+
+    
+      
+        
+
+        
+
+          
+          <div class="collection" id="id5f27f2ae3bef156ea333594d">
+            <a href="/privacy">
+              <span>Privacy</span>
+            </a>
+          </div>
+          
+
+        
+      
+      
+
+    
+  </nav>
+</div>
+
+
+          
+          <div class="sqs-layout sqs-grid-12 columns-12" data-layout-label="Footer Content" data-type="block-field" data-updated-on="1539332117862" id="footerBlocks"><div class="row sqs-row"><div class="col sqs-col-12 span-12"><div class="sqs-block socialaccountlinks-v2-block sqs-block-socialaccountlinks-v2" data-block-type="54" id="block-yui_3_17_2_1_1538759667323_13127"><div class="sqs-block-content">
+
+
+
+<div class="sqs-svg-icon--outer social-icon-alignment-center social-icons-color-black social-icons-size-large social-icons-shape-circle social-icons-style-border">
+  <nav class="sqs-svg-icon--list">
+    <a href="https://twitter.com/pgMustard" target="_blank" class="sqs-svg-icon--wrapper twitter-unauth" aria-label="Twitter">
+      <div>
+        <svg class="sqs-svg-icon--social" viewBox="0 0 64 64">
+          <use class="sqs-use--icon" xlink:href="#twitter-unauth-icon"></use>
+          <use class="sqs-use--mask" xlink:href="#twitter-unauth-mask"></use>
+        </svg>
+      </div>
+    </a><a href="https://github.com/pgMustard/pgMustard/projects/1" target="_blank" class="sqs-svg-icon--wrapper github-unauth" aria-label="GitHub">
+      <div>
+        <svg class="sqs-svg-icon--social" viewBox="0 0 64 64">
+          <use class="sqs-use--icon" xlink:href="#github-unauth-icon"></use>
+          <use class="sqs-use--mask" xlink:href="#github-unauth-mask"></use>
+        </svg>
+      </div>
+    </a><a href="https://www.youtube.com/channel/UCmyQKIBX0c_YFF2Lu5vQOSg/playlists" target="_blank" class="sqs-svg-icon--wrapper youtube-unauth" aria-label="YouTube">
+      <div>
+        <svg class="sqs-svg-icon--social" viewBox="0 0 64 64">
+          <use class="sqs-use--icon" xlink:href="#youtube-unauth-icon"></use>
+          <use class="sqs-use--mask" xlink:href="#youtube-unauth-mask"></use>
+        </svg>
+      </div>
+    </a><a href="https://www.linkedin.com/company/pgmustard/" target="_blank" class="sqs-svg-icon--wrapper linkedin-unauth" aria-label="LinkedIn">
+      <div>
+        <svg class="sqs-svg-icon--social" viewBox="0 0 64 64">
+          <use class="sqs-use--icon" xlink:href="#linkedin-unauth-icon"></use>
+          <use class="sqs-use--mask" xlink:href="#linkedin-unauth-mask"></use>
+        </svg>
+      </div>
+    </a>
+  </nav>
+</div>
+</div></div></div></div></div>
+        </div>
+      </footer>
+
+    </div>
+
+    <script src="https://static1.squarespace.com/static/ta/52a74d9ae4b0253945d2aee9/1043/scripts/site-bundle.js" type="text/javascript"></script>
+    <script type="text/javascript" data-sqs-type="imageloader-bootstrapper">(function() {if(window.ImageLoader) { window.ImageLoader.bootstrap({}, document); }})();</script><script>Squarespace.afterBodyLoad(Y);</script><svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="display:none" data-usage="social-icons-svg"><symbol id="twitter-unauth-icon" viewBox="0 0 64 64"><path d="M48,22.1c-1.2,0.5-2.4,0.9-3.8,1c1.4-0.8,2.4-2.1,2.9-3.6c-1.3,0.8-2.7,1.3-4.2,1.6 C41.7,19.8,40,19,38.2,19c-3.6,0-6.6,2.9-6.6,6.6c0,0.5,0.1,1,0.2,1.5c-5.5-0.3-10.3-2.9-13.5-6.9c-0.6,1-0.9,2.1-0.9,3.3 c0,2.3,1.2,4.3,2.9,5.5c-1.1,0-2.1-0.3-3-0.8c0,0,0,0.1,0,0.1c0,3.2,2.3,5.8,5.3,6.4c-0.6,0.1-1.1,0.2-1.7,0.2c-0.4,0-0.8,0-1.2-0.1 c0.8,2.6,3.3,4.5,6.1,4.6c-2.2,1.8-5.1,2.8-8.2,2.8c-0.5,0-1.1,0-1.6-0.1c2.9,1.9,6.4,2.9,10.1,2.9c12.1,0,18.7-10,18.7-18.7 c0-0.3,0-0.6,0-0.8C46,24.5,47.1,23.4,48,22.1z"></path></symbol><symbol id="twitter-unauth-mask" viewBox="0 0 64 64"><path d="M0,0v64h64V0H0z M44.7,25.5c0,0.3,0,0.6,0,0.8C44.7,35,38.1,45,26.1,45c-3.7,0-7.2-1.1-10.1-2.9 c0.5,0.1,1,0.1,1.6,0.1c3.1,0,5.9-1,8.2-2.8c-2.9-0.1-5.3-2-6.1-4.6c0.4,0.1,0.8,0.1,1.2,0.1c0.6,0,1.2-0.1,1.7-0.2 c-3-0.6-5.3-3.3-5.3-6.4c0,0,0-0.1,0-0.1c0.9,0.5,1.9,0.8,3,0.8c-1.8-1.2-2.9-3.2-2.9-5.5c0-1.2,0.3-2.3,0.9-3.3 c3.2,4,8.1,6.6,13.5,6.9c-0.1-0.5-0.2-1-0.2-1.5c0-3.6,2.9-6.6,6.6-6.6c1.9,0,3.6,0.8,4.8,2.1c1.5-0.3,2.9-0.8,4.2-1.6 c-0.5,1.5-1.5,2.8-2.9,3.6c1.3-0.2,2.6-0.5,3.8-1C47.1,23.4,46,24.5,44.7,25.5z"></path></symbol><symbol id="github-unauth-icon" viewBox="0 0 64 64"><path d="M32,16c-8.8,0-16,7.2-16,16c0,7.1,4.6,13.1,10.9,15.2 c0.8,0.1,1.1-0.3,1.1-0.8c0-0.4,0-1.4,0-2.7c-4.5,1-5.4-2.1-5.4-2.1c-0.7-1.8-1.8-2.3-1.8-2.3c-1.5-1,0.1-1,0.1-1 c1.6,0.1,2.5,1.6,2.5,1.6c1.4,2.4,3.7,1.7,4.7,1.3c0.1-1,0.6-1.7,1-2.1c-3.6-0.4-7.3-1.8-7.3-7.9c0-1.7,0.6-3.2,1.6-4.3 c-0.2-0.4-0.7-2,0.2-4.2c0,0,1.3-0.4,4.4,1.6c1.3-0.4,2.6-0.5,4-0.5c1.4,0,2.7,0.2,4,0.5c3.1-2.1,4.4-1.6,4.4-1.6 c0.9,2.2,0.3,3.8,0.2,4.2c1,1.1,1.6,2.5,1.6,4.3c0,6.1-3.7,7.5-7.3,7.9c0.6,0.5,1.1,1.5,1.1,3c0,2.1,0,3.9,0,4.4 c0,0.4,0.3,0.9,1.1,0.8C43.4,45.1,48,39.1,48,32C48,23.2,40.8,16,32,16z"></path></symbol><symbol id="github-unauth-mask" viewBox="0 0 64 64"><path d="M0,0v64h64V0H0z M37.1,47.2c-0.8,0.2-1.1-0.3-1.1-0.8c0-0.5,0-2.3,0-4.4c0-1.5-0.5-2.5-1.1-3 c3.6-0.4,7.3-1.7,7.3-7.9c0-1.7-0.6-3.2-1.6-4.3c0.2-0.4,0.7-2-0.2-4.2c0,0-1.3-0.4-4.4,1.6c-1.3-0.4-2.6-0.5-4-0.5 c-1.4,0-2.7,0.2-4,0.5c-3.1-2.1-4.4-1.6-4.4-1.6c-0.9,2.2-0.3,3.8-0.2,4.2c-1,1.1-1.6,2.5-1.6,4.3c0,6.1,3.7,7.5,7.3,7.9 c-0.5,0.4-0.9,1.1-1,2.1c-0.9,0.4-3.2,1.1-4.7-1.3c0,0-0.8-1.5-2.5-1.6c0,0-1.6,0-0.1,1c0,0,1,0.5,1.8,2.3c0,0,0.9,3.1,5.4,2.1 c0,1.3,0,2.3,0,2.7c0,0.4-0.3,0.9-1.1,0.8C20.6,45.1,16,39.1,16,32c0-8.8,7.2-16,16-16c8.8,0,16,7.2,16,16 C48,39.1,43.4,45.1,37.1,47.2z"></path></symbol><symbol id="youtube-unauth-icon" viewBox="0 0 64 64"><path d="M46.7,26c0,0-0.3-2.1-1.2-3c-1.1-1.2-2.4-1.2-3-1.3C38.3,21.4,32,21.4,32,21.4h0 c0,0-6.3,0-10.5,0.3c-0.6,0.1-1.9,0.1-3,1.3c-0.9,0.9-1.2,3-1.2,3S17,28.4,17,30.9v2.3c0,2.4,0.3,4.9,0.3,4.9s0.3,2.1,1.2,3 c1.1,1.2,2.6,1.2,3.3,1.3c2.4,0.2,10.2,0.3,10.2,0.3s6.3,0,10.5-0.3c0.6-0.1,1.9-0.1,3-1.3c0.9-0.9,1.2-3,1.2-3s0.3-2.4,0.3-4.9 v-2.3C47,28.4,46.7,26,46.7,26z M28.9,35.9l0-8.4l8.1,4.2L28.9,35.9z"></path></symbol><symbol id="youtube-unauth-mask" viewBox="0 0 64 64"><path d="M0,0v64h64V0H0z M47,33.1c0,2.4-0.3,4.9-0.3,4.9s-0.3,2.1-1.2,3c-1.1,1.2-2.4,1.2-3,1.3 C38.3,42.5,32,42.6,32,42.6s-7.8-0.1-10.2-0.3c-0.7-0.1-2.2-0.1-3.3-1.3c-0.9-0.9-1.2-3-1.2-3S17,35.6,17,33.1v-2.3 c0-2.4,0.3-4.9,0.3-4.9s0.3-2.1,1.2-3c1.1-1.2,2.4-1.2,3-1.3c4.2-0.3,10.5-0.3,10.5-0.3h0c0,0,6.3,0,10.5,0.3c0.6,0.1,1.9,0.1,3,1.3 c0.9,0.9,1.2,3,1.2,3s0.3,2.4,0.3,4.9V33.1z M28.9,35.9l8.1-4.2l-8.1-4.2L28.9,35.9z"></path></symbol><symbol id="linkedin-unauth-icon" viewBox="0 0 64 64"><path d="M20.4,44h5.4V26.6h-5.4V44z M23.1,18c-1.7,0-3.1,1.4-3.1,3.1c0,1.7,1.4,3.1,3.1,3.1 c1.7,0,3.1-1.4,3.1-3.1C26.2,19.4,24.8,18,23.1,18z M39.5,26.2c-2.6,0-4.4,1.4-5.1,2.8h-0.1v-2.4h-5.2V44h5.4v-8.6 c0-2.3,0.4-4.5,3.2-4.5c2.8,0,2.8,2.6,2.8,4.6V44H46v-9.5C46,29.8,45,26.2,39.5,26.2z"></path></symbol><symbol id="linkedin-unauth-mask" viewBox="0 0 64 64"><path d="M0,0v64h64V0H0z M25.8,44h-5.4V26.6h5.4V44z M23.1,24.3c-1.7,0-3.1-1.4-3.1-3.1c0-1.7,1.4-3.1,3.1-3.1 c1.7,0,3.1,1.4,3.1,3.1C26.2,22.9,24.8,24.3,23.1,24.3z M46,44h-5.4v-8.4c0-2,0-4.6-2.8-4.6c-2.8,0-3.2,2.2-3.2,4.5V44h-5.4V26.6 h5.2V29h0.1c0.7-1.4,2.5-2.8,5.1-2.8c5.5,0,6.5,3.6,6.5,8.3V44z"></path></symbol></svg>
+
+  
+
+<script async="" src="https://static.small.chat/messenger.js"></script><div id="Smallchat"><iframe data-reactroot="" style="width: 100px; height: 94px; z-index: 999999999; position: fixed; inset: auto 0px 0px auto; border: 0px; margin: 0px; padding: 0px; background: none; transition: width 200ms cubic-bezier(0.25, 0.25, 0.5, 1) 0s, height 200ms cubic-bezier(0.25, 0.25, 0.5, 1) 0s;"></iframe></div><iframe ng-non-bindable="" frameborder="0" hspace="0" marginheight="0" marginwidth="0" scrolling="no" tabindex="0" vspace="0" width="100%" id="I0_1655929356834" name="I0_1655929356834" src="https://slackchatv1.firebaseapp.com/__/auth/iframe?apiKey=AIzaSyC4SWpCB4z3jhs9i-KJ6X4Cy5A06ym8PZU&amp;appName=%5BDEFAULT%5D&amp;v=3.9.0&amp;usegapi=1&amp;jsh=m%3B%2F_%2Fscs%2Fabc-static%2F_%2Fjs%2Fk%3Dgapi.lb.en.dzXZWX9QTbE.O%2Fd%3D1%2Frs%3DAHpOoo_epIQDPHdjFr3MLkazUi2Jmy50dQ%2Fm%3D__features__#id=I0_1655929356834&amp;_gfid=I0_1655929356834&amp;parent=https%3A%2F%2Fwww.pgmustard.com&amp;pfname=&amp;rpctoken=35455810" style="position: absolute; top: -100px; width: 1px; height: 1px;"></iframe></body></html>

@@ -1,0 +1,412 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="utf-8">
+  <title>Comparing images and creating image diffs in Ruby</title>
+  <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+  <meta name="description" content="In this article, I’ll try to explain how an image diff could be built using pure Ruby and ChunkyPNG.">
+  <meta name="author" content="Jeff Kreeftmeijer">
+  <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgo=">
+  <link rel="alternate" type="application/atom+xml" href="/feed.xml">
+  <link rel="canonical" href="https://jeffkreeftmeijer.com/ruby-compare-images/">
+  <link rel="amphtml" href="https://jeffkreeftmeijer.com/ruby-compare-images/amp.html">
+  <style>
+    body {
+      font: 22px/1.6 system-ui, sans-serif;
+      margin: auto;
+      max-width: 35em;
+      padding: 0 1em
+    }
+
+    img,
+    video {
+      max-width: 100%;
+      height: auto
+    }
+
+    @media (max-width:1140px) {
+      body {
+        font-size: 20px
+      }
+    }
+
+    @media (max-width:740px) {
+      body {
+        font-size: 18px
+      }
+    }
+
+    @media (max-width:466px) {
+      body {
+        font-size: 16px
+      }
+    }
+
+    code,
+    kbd,
+    pre {
+      font-family: SF Mono, Monaco, monospace
+    }
+
+    pre {
+      background-color: #f8f8ff;
+      font-size: smaller;
+      overflow: auto;
+      padding: 1em
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%
+    }
+
+    td,
+    th {
+      padding: .5em;
+      border: 1px solid
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin: 1em 0
+    }
+
+    figure {
+      margin: 0
+    }
+
+    .byline,
+    .small,
+    figcaption {
+      font-size: smaller
+    }
+
+    dt {
+      font-weight: 600
+    }
+
+    dd {
+      margin-bottom: 1em
+    }
+
+    .image-block img {
+      display: block;
+      margin: auto
+    }
+
+    .admonition-block,
+    .sidebarblock {
+      border: 1px outset;
+      padding-left: 1em;
+      padding-right: 1em;
+      margin: 1em 0
+    }
+
+    .admonition-block h6 {
+      font-size: 1em;
+      margin: 1em 0
+    }
+
+    .warning {
+      background-color: ivory
+    }
+
+    .caution,
+    .important {
+      background-color: #fff0f5
+    }
+
+    .note,
+    .tip {
+      background-color: #f0f8ff
+    }
+
+    .warning h6:before {
+      content: "⚠️ "
+    }
+
+    .tip h6:before {
+      content: "💡 "
+    }
+
+    .note h6:before {
+      content: "ℹ️ "
+    }
+
+    .white {
+      color: #fff
+    }
+
+    .ad {
+      position: absolute;
+      top: 1.34em;
+      left: 50%;
+      width: 50%;
+      overflow: hidden;
+      z-index: -100
+    }
+
+    .ad div {
+      display: block;
+      width: 130px;
+      margin-left: 18.5em
+    }
+
+    .ad a {
+      text-decoration: none;
+      color: gray;
+      font-size: small;
+      display: block;
+      margin-bottom: 1em
+    }
+
+    .cf-powered-by {
+      font-style: italic
+    }
+
+    @media (max-width:1040px) {
+      .ad {
+        display: none
+      }
+    }
+  </style>
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@jkreeftmeijer">
+  <meta name="twitter:creator" content="@jkreeftmeijer">
+  <meta name="twitter:title" content="Comparing images and creating image diffs in Ruby">
+  <meta name="twitter:description" content="In this article, I’ll try to explain how an image diff could be built using pure Ruby and ChunkyPNG.">
+  <meta name="twitter:image" content="https://jeffkreeftmeijer.com/ruby-compare-images/compare.png">
+
+  <script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Article",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://jeffkreeftmeijer.com/ruby-compare-images/"
+  },
+  "headline": "Comparing images and creating image diffs in Ruby",
+  "image": ["https://jeffkreeftmeijer.com/ruby-compare-images/compare.png"],
+  "datePublished": "2011-04-18",
+  "dateModified": "2018-11-05T18:12:18Z",
+  "author": {
+    "@type": "Person",
+    "name": "Jeff Kreeftmeijer"
+  },
+  "description": "In this article, I’ll try to explain how an image diff could be built using pure Ruby and ChunkyPNG.",
+  "publisher": {
+    "@type": "Organization",
+    "name": "jeffkreeftmeijer.com",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://jeffkreeftmeijer.com/logo.png"
+    }
+  }
+}
+</script>
+</head>
+
+<body>
+  <h1>Comparing images and creating image diffs in Ruby</h1>
+  <p class="byline">
+    By <a href="/" rel="author">Jeff Kreeftmeijer</a> on <time datetime="2011-04-18">2011-04-18</time> (last updated on
+    <time datetime="2018-11-05T18:12:18Z">2018-11-05</time>)
+  </p>
+
+  <article>
+    <section id="preamble" aria-label="Preamble">
+      <p>I’m sure you’ve seen the <a href="https://github.com/blog/817-behold-image-view-modes">image view modes</a>
+        Github released last month. It’s a really nice way to see the differences between two versions of an image. In
+        this article, I’ll try to explain how an image diff could be built using pure Ruby and <a href="https://github.com/wvanbergen/chunky_png">ChunkyPNG</a>.</p>
+      <p>If you need a more basic introduction to working with pixel data in ChunkyPNG, check out <a href="http://jeffkreeftmeijer.com/2011/pure-ruby-colored-blob-detection">last week’s article</a>, which I did
+        some blob detection.</p>
+      <p>Finding differences in images works by looping over each pixel in the first image and checking if it’s the same
+        as the pixel in the same spot in the second image. An implementation might look like this:</p>
+      <div class="listing-block">
+        <pre class="highlight"><code class="language-ruby" data-lang="ruby">require 'chunky_png'
+
+images = [
+  ChunkyPNG::Image.from_file('1.png'),
+  ChunkyPNG::Image.from_file('2.png')
+]
+
+diff = []
+
+images.first.height.times do |y|
+  images.first.row(y).each_with_index do |pixel, x|
+    diff &lt;&lt; [x,y] unless pixel == images.last[x,y]
+  end
+end
+
+puts "pixels (total):     #{images.first.pixels.length}"
+puts "pixels changed:     #{diff.length}"
+puts "pixels changed (%): #{(diff.length.to_f / images.first.pixels.length) * 100}%"
+
+x, y = diff.map{ |xy| xy[0] }, diff.map{ |xy| xy[1] }
+
+images.last.rect(x.min, y.min, x.max, y.max, ChunkyPNG::Color.rgb(0,255,0))
+images.last.save('diff.png')</code></pre>
+      </div>
+      <p>Want the code? Here’s a <a href="https://gist.github.com/923894">Gist</a>.</p>
+      <p>After loading in the two images, we’ll loop over the pixels of the first one. If the pixel is the same as the
+        one in the second image, we’ll add it to the <code>diff</code> array. When we’re done, we’ll draw a bounding box
+        around the area that contains the changes:</p>
+      <p><img src="http://jeffkreeftmeijer.com/images/tapir.png" alt="" width="130" height="130">
+        <img src="http://jeffkreeftmeijer.com/images/tapir_hat.png" alt="" width="130" height="130">
+        <img src="http://jeffkreeftmeijer.com/images/tapir_diff_box.png" alt="" width="130" height="130">
+      </p>
+      <p>It worked! The result image has a bounding box around the hat we added to the image and the output tells us
+        that almost 9% of the pixels in the image changed, which seems about right.</p>
+      <div class="literal-block">
+        <pre>pixels (total):     16900
+pixels changed:     1502
+pixels changed (%): 8.887573964497042%</pre>
+      </div>
+      <p>A problem with this approach is that it only <em>detects</em> change, without <em>measuring</em> it. It
+        doesn’t care if the pixel it’s looking at is just a bit darker or a completely different color. If we use
+        this code to compare one image to a slightly darker version of itself, the result will look like this:</p>
+      <p><img src="http://jeffkreeftmeijer.com/images/tapir_hat.png" alt="" width="130" height="130">
+        <img src="http://jeffkreeftmeijer.com/images/tapir_hat_dark.png" alt="" width="130" height="130">
+        <img src="http://jeffkreeftmeijer.com/images/tapir_diff_dark_box.png" alt="" width="130" height="130">
+      </p>
+      <div class="literal-block">
+        <pre>pixels (total):     16900
+pixels changed:     16900
+pixels changed (%): 100.0%</pre>
+      </div>
+      <p>This would mean that the two images are completely different, while (from a human eye’s perspective) they’re
+        almost the same. To get a more accurate result, we’ll need to measure the difference in the pixels’ colors.</p>
+    </section>
+    <section class="doc-section level-1">
+      <h2 id="calculating-color-difference">Calculating color difference</h2>
+      <p>To calculate the color difference, we’ll use the the <a href="http://en.wikipedia.org/wiki/Color_difference">ΔE*</a> (“Delta E”) distance metric. There are a couple
+        of different versions of this metric, but we’ll take the first one (<a href="http://en.wikipedia.org/wiki/Color_difference#CIE76">CIE76</a>), since we don’t need anything too
+        fancy. The ΔE* metric was created for the <a href="http://en.wikipedia.org/wiki/Lab_color_space">LAB color
+          space</a>, which was designed to approximate human vision. In this example, we’re not going to worry about
+        converting to LAB so we’ll just use the RGB color space (note that this will mean our results will be less
+        accurate). If you want to know more about the difference, check out <a href="http://stevehanov.ca/blog/index.php?id=116">this demo</a>.</p>
+      <p>Again, we loop over every pixel in the images. If they’re different, we calculate how different they are using
+        the ΔE* metric and store that in the <code>diff</code> array. We also use that score to calculate a grayscale
+        color value we use on the result image:</p>
+      <div class="listing-block">
+        <pre class="highlight"><code class="language-ruby" data-lang="ruby">require 'chunky_png'
+include ChunkyPNG::Color
+
+
+images = [
+  ChunkyPNG::Image.from_file('1.png'),
+  ChunkyPNG::Image.from_file('2.png')
+]
+
+output = ChunkyPNG::Image.new(images.first.width, images.last.width, WHITE)
+
+diff = []
+
+images.first.height.times do |y|
+  images.first.row(y).each_with_index do |pixel, x|
+    unless pixel == images.last[x,y]
+      score = Math.sqrt(
+        (r(images.last[x,y]) - r(pixel)) ** 2 +
+        (g(images.last[x,y]) - g(pixel)) ** 2 +
+        (b(images.last[x,y]) - b(pixel)) ** 2
+      ) / Math.sqrt(MAX ** 2 * 3)
+
+      output[x,y] = grayscale(MAX - (score * 255).round)
+      diff &lt;&lt; score
+    end
+  end
+end
+
+puts "pixels (total):     #{images.first.pixels.length}"
+puts "pixels changed:     #{diff.length}"
+puts "image changed (%): #{(diff.inject {|sum, value| sum + value} / images.first.pixels.length) * 100}%"
+
+output.save('diff.png')</code></pre>
+      </div>
+      <p>Want the code? Here’s a <a href="https://gist.github.com/925244">Gist</a>.</p>
+      <p>Now we have a more accurate difference score. If we look at the output, we can see that less than 3% of the
+        image was changed:</p>
+      <div class="literal-block">
+        <pre>pixels (total):    16900
+pixels changed:    1502
+image changed (%): 2.882157784948056%</pre>
+      </div>
+      <p>Again, a diff image is saved. This time, it shows the differences using shades of gray. Bigger changes are
+        darker:</p>
+      <p><img src="http://jeffkreeftmeijer.com/images/tapir.png" alt="" width="130" height="130">
+        <img src="http://jeffkreeftmeijer.com/images/tapir_hat.png" alt="" width="130" height="130">
+        <img src="http://jeffkreeftmeijer.com/images/tapir_diff_delta_e.png" alt="" width="130" height="130">
+      </p>
+      <p>Now, let’s try the two images where the second one is slightly darker:</p>
+      <div class="literal-block">
+        <pre>pixels (total):    16900
+pixels changed:    16900
+image changed (%): 5.4418255392228945%</pre>
+      </div>
+      <p><img src="http://jeffkreeftmeijer.com/images/tapir_hat.png" alt="" width="130" height="130">
+        <img src="http://jeffkreeftmeijer.com/images/tapir_hat_dark.png" alt="" width="130" height="130">
+        <img src="http://jeffkreeftmeijer.com/images/tapir_diff_delta_e_dark.png" alt="" width="130" height="130">
+      </p>
+      <p>Great. Now our code knows that the images are only darker, not completely different. If you look closely, you
+        can see the difference in the result image.</p>
+    </section>
+    <section class="doc-section level-1">
+      <h2 id="what-about-github">What about Github?</h2>
+      <p>Github uses a <a href="http://en.wikipedia.org/wiki/Blend_modes#Difference">difference blend</a>, which might
+        be familiar if you’ve worked with image-editing software like Photoshop before. We loop over every pixel in the
+        two images and calculate their difference per RGB channel:</p>
+      <div class="listing-block">
+        <pre class="highlight"><code class="language-ruby" data-lang="ruby">require 'chunky_png'
+include ChunkyPNG::Color
+
+images = [
+  ChunkyPNG::Image.from_file('1.png'),
+  ChunkyPNG::Image.from_file('2.png')
+]
+
+images.first.height.times do |y|
+  images.first.row(y).each_with_index do |pixel, x|
+
+    images.last[x,y] = rgb(
+      r(pixel) + r(images.last[x,y]) - 2 * [r(pixel), r(images.last[x,y])].min,
+      g(pixel) + g(images.last[x,y]) - 2 * [g(pixel), g(images.last[x,y])].min,
+      b(pixel) + b(images.last[x,y]) - 2 * [b(pixel), b(images.last[x,y])].min
+    )
+  end
+
+end
+
+images.last.save('diff.png')</code></pre>
+      </div>
+      <p>Want the code? Here’s a <a href="https://gist.github.com/924996">Gist</a>.</p>
+      <p>Using that, comparing the two images to the left would result in the diff-image on the right, nicely showing
+        what changed:</p>
+      <p><img src="http://jeffkreeftmeijer.com/images/tapir.png" alt="" width="130" height="130">
+        <img src="http://jeffkreeftmeijer.com/images/tapir_hat.png" alt="" width="130" height="130">
+        <img src="http://jeffkreeftmeijer.com/images/tapir_diff_blend.png" alt="" width="130" height="130">
+      </p>
+      <p>Because the colors are compared by channel (R,G and B) instead of as one color, three scores are returned. This
+        means the output image is in color, but comparing the channels separately can make the result less accurate.</p>
+      <p>As always, if you used this idea to build something yourself, know of a way to improve the code or have some
+        questions or tips, be sure to let me know. If you want to know more about something I talked about, be sure to
+        suggest it as a next article.</p>
+    </section>
+
+
+  </article>
+
+  <hr>
+  <nav>
+    <a href="/" rel="author">Jeff Kreeftmeijer</a>
+    <a rel="nofollow" href="mailto:jeffkreeftmeijer@gmail.com">E-mail</a>
+    <a rel="me" href="https://twitter.com/jkreeftmeijer">Twitter</a>
+    <a rel="me" href="https://mastodon.social/@jkreeftmeijer">Mastodon</a>
+    <a rel="me" href="https://github.com/jeffkreeftmeijer">Github</a>
+    <a href="/feed.xml">RSS</a>
+  </nav>
+
+
+
+
+</body></html>

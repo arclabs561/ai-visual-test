@@ -1,0 +1,176 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta name="description" content="Set up GoAccess to parse CloudFront access logs and generate web analytics for static sites hosted on AWS">
+<meta name="author" content="Jeff Kreeftmeijer">
+<title>Web analytics from CloudFront access logs with GoAccess</title>
+<meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+<link rel="alternate" type="application/atom+xml" href="/feed.xml">
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgo=">
+<link rel="canonical" href="https://jeffkreeftmeijer.com/goaccess-cloudfront/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jeffkreeftmeijer.com/goaccess-cloudfront/3600x1800.png">
+<meta name="twitter:site" content="@jkreeftmeijer">
+<meta name="twitter:creator" content="@jkreeftmeijer">
+<meta name="twitter:title" content="Web analytics from CloudFront access logs with GoAccess">
+<meta name="twitter:description" content="Set up GoAccess to parse CloudFront access logs and generate web analytics for static sites hosted on AWS">
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Article",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://jeffkreeftmeijer.com/goaccess-cloudfront/"
+  },
+  "headline": "Web analytics from CloudFront access logs with GoAccess",
+  "image": ["https://jeffkreeftmeijer.com/goaccess-cloudfront/3600x1800.png"],
+  "datePublished": "2021-07-30",
+  "dateModified": "2021-08-08T12:52:57+02:00",
+  "author": {
+    "@type": "Person",
+    "name": "Jeff Kreeftmeijer"
+  },
+  "description": "Set up GoAccess to parse CloudFront access logs and generate web analytics for static sites hosted on AWS",
+  "publisher": {
+    "@type": "Organization",
+    "name": "jeffkreeftmeijer.com",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://jeffkreeftmeijer.com/logo.png"
+    }
+  }
+}
+</script>
+<style>html{font:1em/1.5 system-ui,sans-serif}body{margin:auto;max-width:40em;padding:0 1em}@media (min-width:485px){html{font-size:1.125em}}@media (min-width:840px){html{font-size:1.25em}}code,pre{font:1em/1.5 ui-monospace,SFMono-Regular,Monaco,monospace}pre{background-color:#f8f8ff;font-size:.87em;overflow:auto;padding:1em}.byline{font-size:smaller}nav{display:flex;flex-wrap:wrap;gap:1em;justify-content:space-between;margin:1em 0}.org-src-container+pre.example{font-style:italic;margin-top:-2em}div.footpara,div.footpara p:first-child{display:inline}.footdef{margin:1em 0}</style>
+</head>
+<body>
+<header>
+<h1>Web analytics from CloudFront access logs with GoAccess</h1>
+<p class="byline">By <a href="/" rel="author">Jeff Kreeftmeijer</a> on <time datetime="2021-07-30">2021-07-30</time></p>
+</header>
+<main>
+<p>
+First, turn on <a href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesLoggingOnOff">turn on logging</a> in your CloudFront Distribution settings to get logs written to an S3 bucket. Then, use the <a href="https://aws.amazon.com/cli/">AWS command line interface</a><sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup> to sync the logs to a local directory:<sup><a id="fnr.2" class="footref" href="#fn.2" role="doc-backlink">2</a></sup>
+</p>
+<div class="org-src-container">
+<label class="org-src-name"><span class="listing-number">Listing 1: </span><code>sync.sh</code></label><pre class="src src-shell">/usr/local/bin/aws s3 sync s3://jeffkreeftmeijer.com-log-cf logs
+</pre>
+</div>
+<p>
+With the logs downloaded, generate a report by passing the logs to <a href="https://goaccess.io">GoAccess</a> to produce a 28-day HTML<sup><a id="fnr.3" class="footref" href="#fn.3" role="doc-backlink">3</a></sup> report:
+</p>
+<div class="org-src-container">
+<label class="org-src-name"><span class="listing-number">Listing 2: </span><code>html.sh</code></label><pre class="src src-shell">find logs -name <span class="org-string">"*.gz"</span> | <span class="org-sh-escaped-newline">\</span>
+    xargs gzcat | <span class="org-sh-escaped-newline">\</span>
+    grep --invert-match --file=exclude.txt | <span class="org-sh-escaped-newline">\</span>
+    /usr/local/bin/goaccess <span class="org-sh-escaped-newline">\</span>
+        --log-format CLOUDFRONT <span class="org-sh-escaped-newline">\</span>
+        --date-format CLOUDFRONT <span class="org-sh-escaped-newline">\</span>
+        --time-format CLOUDFRONT <span class="org-sh-escaped-newline">\</span>
+        --ignore-crawlers <span class="org-sh-escaped-newline">\</span>
+        --ignore-status=301 <span class="org-sh-escaped-newline">\</span>
+        --ignore-status=302 <span class="org-sh-escaped-newline">\</span>
+        --keep-last=28 <span class="org-sh-escaped-newline">\</span>
+        --output index.html
+</pre>
+</div>
+<p>
+This command consists of four commands piped together:
+</p>
+<dl class="org-dl">
+<dt><code>find logs -name "*.gz"</code></dt><dd><p>
+Produce a list of all files in the <code>logs</code> directory. Because of the number of files in the logs directory, passing a directory glob to <code>gunzip</code> directly would result in an “argument list too long” error because the list of filenames exceeds the <code>ARG_MAX</code> configuration:
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">gunzip logs/*.gz
+</pre>
+</div>
+<pre class="example">zsh: argument list too long: gunzip
+</pre></dd>
+<dt><code>xargs gzcat</code></dt><dd><p>
+<code>xargs</code> takes the output from <code>find</code>—which outputs a stream of filenames delimited by newlines—and calls the <code>gzcat</code> utility for every line by appending it to the passed command. Essentially, this runs the <code>gzcat</code> command for every file in the <code>logs</code> directory.
+</p>
+<p>
+<code>gzcat</code> is an alias for <code>gzip --decompress --stdout</code>, which decompresses gzipped files and prints the output to the standard output stream.
+</p></dd>
+<dt><code>grep --invert-match --file=exclude.txt</code></dt><dd><code>grep</code> takes the input stream and filters out all log lines that match a line in the exclude file (<code>exclude.txt</code>). The exclude file is a list of words that are ignored when producing the report<sup><a id="fnr.4" class="footref" href="#fn.4" role="doc-backlink">4</a></sup>.</dd>
+</dl>
+<dl class="org-dl">
+<dt><code>goaccess --log-format CLOUDFRONT --date-format CLOUDFRONT --time-format CLOUDFRONT --ignore-crawlers --ignore-status=301 --ignore-status=302 --keep-last=28 --output index.html</code></dt><dd><code>goaccess</code> reads the decompressed logs to generate a report with the following options:
+<dl class="org-dl">
+<dt><code>--log-format CLOUDFRONT --date-format CLOUDFRONT --time-format CLOUDFRONT</code></dt><dd>Use CloudFront’s log, date and time formats to parse the log lines.</dd>
+<dt><code>--ignore-crawlers --ignore-status=301 --ignore-status=302</code></dt><dd>Ignore crawlers and redirects.</dd>
+<dt><code>--keep-last=28</code></dt><dd>Use the last 28 days to build the report.</dd>
+<dt><code>--output=index.html</code></dt><dd>Output an HTML report to a file named <code>index.html</code>.</dd>
+</dl></dd>
+</dl>
+<p>
+To sync the logs and generate a new report, run the <code>sync.sh</code> and <code>html.sh</code> scripts in a cron job every night at midnight:
+</p>
+<div class="org-src-container">
+<pre class="src src-shell"><span class="org-builtin">echo</span> <span class="org-string">'0 0 * * * ~/stats/sync.sh &amp;&amp; ~/stats/html.sh'</span> | crontab
+</pre>
+</div>
+<hr>
+<div class="footdef"><sup><a id="fn.1" class="footnum" href="#fnr.1" role="doc-backlink">1</a></sup><div class="footpara" role="doc-footnote"><p class="footpara">
+On a mac, use Homebrew:
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">brew install awscli
+</pre>
+</div></div></div>
+<div class="footdef"><sup><a id="fn.2" class="footnum" href="#fnr.2" role="doc-backlink">2</a></sup><div class="footpara" role="doc-footnote"><p class="footpara">
+Running the <code>aws s3 sync</code> command on an empty local directory took me two hours and produced a 2.1 GB directory of <code>.gz</code> files for roughly 3 years of logs. Updating the logs by running the same command takes about five minutes.
+</p>
+<p class="footpara">
+Since I’m only interested in the stats for the last 28 days, it would make sense to only download the last 28 days of logs to generate the report. However, AWS’s command line tool doesn’t support filters like that.
+</p>
+<p class="footpara">
+One thing that does work is using both the <code>--exclude</code> and <code>--include</code> options to include only the logs for the current month:
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">/usr/local/bin/aws s3 sync --exclude <span class="org-string">"*"</span> --include <span class="org-string">"*2021-07-*"</span> s3://jeffkreeftmeijer.com-log-cf ~/stats/logs
+</pre>
+</div>
+<p class="footpara">
+While this still loops over all files, it won’t download anything outside of the selected month.
+</p>
+<p class="footpara">
+The command accepts the <code>--include=</code> option multiple times, so it’s possible to select multiple months like this. One could, theoretically, write a script that finds the current year and month, then downloads that stats matching that month and the month before it to produce a 28-day report.
+</p></div></div>
+<div class="footdef"><sup><a id="fn.3" class="footnum" href="#fnr.3" role="doc-backlink">3</a></sup><div class="footpara" role="doc-footnote"><p class="footpara">
+GoAccess generates JSON and CSV files when passing a filename with a <code>.json</code> or <code>.csv</code> extension, respectively. To generate the 28-day report in CSV format:
+</p>
+<div class="org-src-container">
+<label class="org-src-name"><span class="listing-number">Listing 3: </span><code>csv.sh</code></label><pre class="src src-shell">find logs -name <span class="org-string">"*.gz"</span> | <span class="org-sh-escaped-newline">\</span>
+    xargs gzcat | <span class="org-sh-escaped-newline">\</span>
+    grep --invert-match --file=exclude.txt | <span class="org-sh-escaped-newline">\</span>
+    /usr/local/bin/goaccess <span class="org-sh-escaped-newline">\</span>
+        --log-format CLOUDFRONT <span class="org-sh-escaped-newline">\</span>
+        --date-format CLOUDFRONT <span class="org-sh-escaped-newline">\</span>
+        --time-format CLOUDFRONT <span class="org-sh-escaped-newline">\</span>
+        --ignore-crawlers <span class="org-sh-escaped-newline">\</span>
+        --ignore-status=301 <span class="org-sh-escaped-newline">\</span>
+        --ignore-status=302 <span class="org-sh-escaped-newline">\</span>
+        --keep-last=28 <span class="org-sh-escaped-newline">\</span>
+        --output stats.csv
+</pre>
+</div></div></div>
+<div class="footdef"><sup><a id="fn.4" class="footnum" href="#fnr.4" role="doc-backlink">4</a></sup><div class="footpara" role="doc-footnote"><p class="footpara">
+My <code>exclude.txt</code> currently consists of the <code>HEAD</code> HTTP request type and the path to the feed file:
+</p>
+<pre class="example">HEAD
+feed.xml
+</pre></div></div>
+</main>
+<hr>
+<nav>
+<a rel="author" href="/">Jeff Kreeftmeijer</a>
+<a rel="nofollow" href="mailto:jeffkreeftmeijer@gmail.com">E-mail</a>
+<a rel="me" href="https://twitter.com/jkreeftmeijer">Twitter</a>
+<a rel="me" href="https://mastodon.social/@jkreeftmeijer">Mastodon</a>
+<a rel="me" href="https://github.com/jeffkreeftmeijer">Github</a>
+<a href="/feed.xml">RSS</a>
+</nav>
+
+
+</body></html>

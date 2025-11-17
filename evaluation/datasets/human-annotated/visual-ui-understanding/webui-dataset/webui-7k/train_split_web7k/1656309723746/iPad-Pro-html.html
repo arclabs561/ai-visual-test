@@ -1,0 +1,127 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Dion Moult">
+    <meta name="description" content="The proposed Radiance Filesystem Hierarchy Standard (RFHS) is a proposed standard on how to organise files for 3D models, HDR textures, Radiance materials, IES lights, and so on in a Radiance project. This allows Radiance assets to be easily distributed and reused across different proejcts.">
+    <title>A proposed Radiance Filesystem Hierarchy Standard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>A proposed Radiance Filesystem Hierarchy Standard</h1>
+        <nav>
+            <ul>
+                <li><a href="https://thinkmoult.com/">Homepage</a></li>
+                <li><a href="https://thinkmoult.com/archive.html">Archive</a></li>
+                <li><a href="https://thinkmoult.com/atom-feed.html">Atom feed</a></li>
+            </ul>
+        </nav>
+                <p class="author">Dion Moult</p>
+                        <p class="date">2019-02-17</p>
+            </header>
+    <article>
+<p>Radiance projects do not usually have any form of enforced structure for organising your files. This is convenient, as Radiance is a whole suite of lighting analysis tools that can be tied together in any way. It is inappropriate to enforce one, as it would be akin to asking <code>imagemagick</code> to require your raster files be in a certain folder structure. However, this creates an issue when a scene grows to be rather complex, as Radiance scenes have many files. It also means that it can be hard to distribute or reuse assets across projects and across organisations, as everybody has their own way or organising files.</p>
+<p>To allow the easy maintenance of a complex scene and the reuse of assets, I would like to propose a Radiance Filesystem Hierarchy Standard, or RHFS. It is not strict, but I have found it useful in my works, and will use it to distribute Radiance assets online. If you are planning on using it to build something, please let me know!</p>
+<h2>Structure of a single asset</h2>
+<p>The following rules describe how to create a single, reusable asset. This may be an object, such as a chair, table, or lamp.</p>
+<ol type="1">
+<li>A single asset must be fully contained in a folder named after the asset. This folder should be distributed as an atomic package and have no other dependencies.</li>
+<li>The asset name must be all lowercase, and spaces should be represented by hyphens. This improves SEO and can be used in programming contexts.</li>
+<li>The asset must only contain the raw source in open formats. All other data that can be generated should be excluded. This minimises repository filesize.</li>
+<li>If data needs to be generated, the asset must contain a <code>Makefile</code> at its top level directory, providing a <code>make lib</code> target at a minimum to build all necessary data.</li>
+<li>The asset must have a <code>README.md</code> at its top level directory, describing the asset, and explaining how to use it in a project</li>
+<li>The asset must have a <code>LICENSE</code> at its top level directory, so that the license doesn’t get lost with asset transfer</li>
+<li>The asset may have zero or more of the following directories, to hold its data
+<ul>
+<li><code>obj/</code> - stores all “objects”, such as <code>.rad</code>, <code>.rtm</code>, <code>.obj</code>, <code>.oct</code>, and parametric source data such as <code>.blend</code>, <code>.rfa</code>, or <code>.3dm</code></li>
+<li><code>tex/</code> - stores all “textures” (in the CG sense), such as <code>.hdr</code>, and source data such as <code>.xcf</code>, <code>.svg</code>, or <code>.psd</code></li>
+<li><code>cal/</code> - stores all calculation files</li>
+<li><code>ies/</code> - stores all light files</li>
+<li><code>mat/</code> - stores all material definitions, such as <code>.mat</code> files</li>
+<li><code>pic/</code> - stores all example pictures</li>
+</ul></li>
+</ol>
+<p>This is an example of the asset <code>cool-chair</code>.</p>
+<pre><code>cool-chair/
+cool-chair/obj/
+cool-chair/obj/cool-chair.blend # the source file, if anybody wants to tweak
+cool-chair/obj/cool-chair.obj # the baked geometry
+cool-chair/obj/cool-chair.rad # radiance mesh primitive, in this case
+cool-chair/tex/
+cool-chair/tex/leather.hdr # an example texture
+cool-chair/tex/leather.xcf # the GIMP file used to paint the leather texture
+cool-chair/cal/
+cool-chair/cal/led-colour-customiser.cal # this leather chair has funky LED effects!
+cool-chair/ies/
+cool-chair/ies/led-strip.ies # an example ies file
+cool-chair/mat/
+cool-chair/mat/cool-chair.mat # material file
+cool-chair/Makefile
+cool-chair/README.md
+cool-chair/LICENSE</code></pre>
+<h2>Including an asset in your Radiance scene</h2>
+<p>The following rules describe how to use the asset in a scene that you are building. These are required as Radiance paths are relative to where the scene is compiled and rendered.</p>
+<ol type="1">
+<li>The project must have a <code>lib/</code> directory at its top level directory, which will be the working directory where the scene will be compiled and rendered.</li>
+<li>Each asset directory must be located in the <code>lib/</code> directory.</li>
+</ol>
+<p>In addition, to make it easier for others to view your scene, it is recommended that the following rules be followed when creating a Radiance scene:</p>
+<ol type="1">
+<li>The project should have a <code>README.md</code> at its top level directory, describing the scene</li>
+<li>The project should have a <code>LICENSE</code> at its top level directory</li>
+<li>The project should be a <code>pic/</code> directory which stores renders created with the scene</li>
+<li>The project should have a <code>Makefile</code> at its top level directory, providing the following targets:
+<ul>
+<li><code>make libs</code> - build all asset libs</li>
+<li><code>make view</code> - interactively view the scene</li>
+<li><code>make render</code> - render the scene</li>
+</ul></li>
+</ol>
+<p>When using an asset in your scene, the asset’s <code>README.md</code> file should explain how to include the asset in the scene. This could be anything, as Radiance can be quite complex. However, it is recommended that the asset provides a <code>.rad</code> or an <code>.oct</code> file. This is so that it can be simply included with <code>xform</code> or instanced in with a single line in the project. For example, a project can use our <code>cool-chair</code> asset by simply typing in one line:</p>
+<pre><code>!xform lib/cool-chair/obj/cool-chair.rad</code></pre>
+<p>This is an example project which follows the rules above:</p>
+<pre><code>lib/
+lib/cool-chair/*
+pic/
+pic/scene.hdr # some milestone render
+scene.rad # the above xform command lives here
+scene.rif
+Makefile
+README.md
+LICENSE</code></pre>
+<p>Here is an example <code>Makefile</code> that provides the expected targets. The details may be different, but if these targets exist as a convention it may make projects a little bit easier to run.</p>
+<pre><code>.PHONY : libs
+libs :
+    cd lib/cool-chair &amp;&amp; make lib
+
+.PHONY : view
+view :
+    make libs
+    rad -o x11 scene.rif
+
+.PHONY : render
+render :
+    make libs
+    rad scene.rif</code></pre>
+<h2>Other recommendations</h2>
+<ol type="1">
+<li>It should be assumed that all assets can be further customised. Provide source geometry in formats that FOSS software can open, such as <code>.blend</code>, <code>.xcf</code>, or <code>.svg</code>.</li>
+<li>If your asset has multiple variations, allow them to be built. For example, if <code>cool-chair</code> comes in different materials, describe its usage in <code>README.md</code> and provide convenience targets in <code>Makefile</code> to build things differently based on different materials in its <code>mat/</code> directory.</li>
+<li>Track the asset in a <code>git</code> repository and use <code>git lfs</code> for tracking large binary assets, such as <code>*.obj</code>, <code>*.blend</code> and <code>*.hdr</code></li>
+</ol>
+    </article>
+    <section>
+	<h2>Comments</h2>
+	<p>
+	    If you have any comments, please send them to <a href="mailto:dion@thinkmoult.com">dion@thinkmoult.com</a>.
+	</p>
+	    </section>
+    <footer>
+    	<h3>License</h3>
+    	<p>
+	    This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>, unless explicitly mentioned in the article.
+    	</p>
+    </footer>
+
+
+</body></html>

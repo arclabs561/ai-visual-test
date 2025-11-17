@@ -1,0 +1,363 @@
+<!DOCTYPE html><html class="writer-html5" lang="en"><head>
+  <meta charset="utf-8"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mailman Client — Mailman Client 3.3.3 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css">
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css">
+    <link rel="canonical" href="https://docs.mailman3.org/projects/mailmanclient/en/latest/index.html">
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script async="async" src="https://assets.readthedocs.org/static/javascript/readthedocs-doc-embed.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html">
+    <link rel="search" title="Search" href="search.html">
+    <link rel="next" title="NEWS for mailmanclient" href="src/mailmanclient/docs/NEWS.html"> 
+
+<!-- RTD Extra Head -->
+
+<link rel="stylesheet" href="https://assets.readthedocs.org/static/css/readthedocs-doc-embed.css" type="text/css">
+
+<script type="application/json" id="READTHEDOCS_DATA">{"ad_free": false, "api_host": "https://readthedocs.org", "build_date": "2022-04-18T02:49:56Z", "builder": "sphinx", "canonical_url": null, "commit": "2b57ce55", "docroot": "/", "features": {"docsearch_disabled": false}, "global_analytics_code": "UA-17997319-1", "language": "en", "page": "index", "programming_language": "py", "project": "mailmanclient", "proxied_api_host": "/_", "source_suffix": ".rst", "subprojects": {}, "theme": "sphinx_rtd_theme", "user_analytics_code": "", "version": "latest"}</script>
+
+<!--
+Using this variable directly instead of using `JSON.parse` is deprecated.
+The READTHEDOCS_DATA global variable will be removed in the future.
+-->
+<script type="text/javascript">
+READTHEDOCS_DATA = JSON.parse(document.getElementById('READTHEDOCS_DATA').innerHTML);
+</script>
+
+<script type="text/javascript" src="https://assets.readthedocs.org/static/javascript/readthedocs-analytics.js" async="async"></script>
+
+<!-- end RTD <extrahead> -->
+<script src="https://www.googletagmanager.com/gtag/js?id=UA-17997319-1" type="text/javascript" async=""></script><script src="https://media.ethicalads.io/media/client/beta/ethicalads.min.js" type="text/javascript" async="" id="ethicaladsjs"></script><style>[data-ea-publisher].loaded,[data-ea-type].loaded{font-size:14px;font-family:-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;font-weight:normal;font-style:normal;leter-spacing:0px;vertical-align:baseline;line-height:1.3em}[data-ea-publisher].loaded a,[data-ea-type].loaded a{text-decoration:none}[data-ea-publisher].loaded .ea-pixel,[data-ea-type].loaded .ea-pixel{display:none}[data-ea-publisher].loaded .ea-content,[data-ea-type].loaded .ea-content{margin:1em 1em 0.5em 1em;padding:1em;background:rgba(0,0,0,0.03);color:#505050}[data-ea-publisher].loaded .ea-content a:link,[data-ea-type].loaded .ea-content a:link{color:#505050}[data-ea-publisher].loaded .ea-content a:visited,[data-ea-type].loaded .ea-content a:visited{color:#505050}[data-ea-publisher].loaded .ea-content a:hover,[data-ea-type].loaded .ea-content a:hover{color:#373737}[data-ea-publisher].loaded .ea-content a:active,[data-ea-type].loaded .ea-content a:active{color:#373737}[data-ea-publisher].loaded .ea-content a strong,[data-ea-publisher].loaded .ea-content a b,[data-ea-type].loaded .ea-content a strong,[data-ea-type].loaded .ea-content a b{color:#088cdb}[data-ea-publisher].loaded .ea-callout a:link,[data-ea-type].loaded .ea-callout a:link{color:#6a6a6a}[data-ea-publisher].loaded .ea-callout a:visited,[data-ea-type].loaded .ea-callout a:visited{color:#6a6a6a}[data-ea-publisher].loaded .ea-callout a:hover,[data-ea-type].loaded .ea-callout a:hover{color:#505050}[data-ea-publisher].loaded .ea-callout a:active,[data-ea-type].loaded .ea-callout a:active{color:#505050}[data-ea-publisher].loaded .ea-callout a strong,[data-ea-publisher].loaded .ea-callout a b,[data-ea-type].loaded .ea-callout a strong,[data-ea-type].loaded .ea-callout a b{color:#088cdb}[data-ea-publisher].loaded .ea-callout a,[data-ea-type].loaded .ea-callout a{font-size:0.8em}[data-ea-publisher].loaded.dark .ea-content,[data-ea-type].loaded.dark .ea-content{background:rgba(255,255,255,0.05);color:#dcdcdc}[data-ea-publisher].loaded.dark .ea-content a:link,[data-ea-type].loaded.dark .ea-content a:link{color:#dcdcdc}[data-ea-publisher].loaded.dark .ea-content a:visited,[data-ea-type].loaded.dark .ea-content a:visited{color:#dcdcdc}[data-ea-publisher].loaded.dark .ea-content a:hover,[data-ea-type].loaded.dark .ea-content a:hover{color:#f6f6f6}[data-ea-publisher].loaded.dark .ea-content a:active,[data-ea-type].loaded.dark .ea-content a:active{color:#f6f6f6}[data-ea-publisher].loaded.dark .ea-content a strong,[data-ea-publisher].loaded.dark .ea-content a b,[data-ea-type].loaded.dark .ea-content a strong,[data-ea-type].loaded.dark .ea-content a b{color:#50baf9}[data-ea-publisher].loaded.dark .ea-callout a:link,[data-ea-type].loaded.dark .ea-callout a:link{color:#c3c3c3}[data-ea-publisher].loaded.dark .ea-callout a:visited,[data-ea-type].loaded.dark .ea-callout a:visited{color:#c3c3c3}[data-ea-publisher].loaded.dark .ea-callout a:hover,[data-ea-type].loaded.dark .ea-callout a:hover{color:#dcdcdc}[data-ea-publisher].loaded.dark .ea-callout a:active,[data-ea-type].loaded.dark .ea-callout a:active{color:#dcdcdc}[data-ea-publisher].loaded.dark .ea-callout a strong,[data-ea-publisher].loaded.dark .ea-callout a b,[data-ea-type].loaded.dark .ea-callout a strong,[data-ea-type].loaded.dark .ea-callout a b{color:#50baf9}@media (prefers-color-scheme: dark){[data-ea-publisher].loaded.adaptive .ea-content,[data-ea-type].loaded.adaptive .ea-content{background:rgba(255,255,255,0.05);color:#dcdcdc}[data-ea-publisher].loaded.adaptive .ea-content a:link,[data-ea-type].loaded.adaptive .ea-content a:link{color:#dcdcdc}[data-ea-publisher].loaded.adaptive .ea-content a:visited,[data-ea-type].loaded.adaptive .ea-content a:visited{color:#dcdcdc}[data-ea-publisher].loaded.adaptive .ea-content a:hover,[data-ea-type].loaded.adaptive .ea-content a:hover{color:#f6f6f6}[data-ea-publisher].loaded.adaptive .ea-content a:active,[data-ea-type].loaded.adaptive .ea-content a:active{color:#f6f6f6}[data-ea-publisher].loaded.adaptive .ea-content a strong,[data-ea-publisher].loaded.adaptive .ea-content a b,[data-ea-type].loaded.adaptive .ea-content a strong,[data-ea-type].loaded.adaptive .ea-content a b{color:#50baf9}[data-ea-publisher].loaded.adaptive .ea-callout a:link,[data-ea-type].loaded.adaptive .ea-callout a:link{color:#c3c3c3}[data-ea-publisher].loaded.adaptive .ea-callout a:visited,[data-ea-type].loaded.adaptive .ea-callout a:visited{color:#c3c3c3}[data-ea-publisher].loaded.adaptive .ea-callout a:hover,[data-ea-type].loaded.adaptive .ea-callout a:hover{color:#dcdcdc}[data-ea-publisher].loaded.adaptive .ea-callout a:active,[data-ea-type].loaded.adaptive .ea-callout a:active{color:#dcdcdc}[data-ea-publisher].loaded.adaptive .ea-callout a strong,[data-ea-publisher].loaded.adaptive .ea-callout a b,[data-ea-type].loaded.adaptive .ea-callout a strong,[data-ea-type].loaded.adaptive .ea-callout a b{color:#50baf9}}[data-ea-publisher].loaded .ea-content,[data-ea-type].loaded .ea-content{border:0px;border-radius:3px;box-shadow:0px 2px 3px rgba(0,0,0,0.15)}[data-ea-publisher].loaded.raised .ea-content,[data-ea-type].loaded.raised .ea-content{border:0px;border-radius:3px;box-shadow:0px 2px 3px rgba(0,0,0,0.15)}[data-ea-publisher].loaded.bordered .ea-content,[data-ea-type].loaded.bordered .ea-content{border:1px solid rgba(0,0,0,0.04);border-radius:3px;box-shadow:none}[data-ea-publisher].loaded.bordered.dark .ea-content,[data-ea-type].loaded.bordered.dark .ea-content{border:1px solid rgba(255,255,255,0.07)}@media (prefers-color-scheme: dark){[data-ea-publisher].loaded.bordered.adaptive .ea-content,[data-ea-type].loaded.bordered.adaptive .ea-content{border:1px solid rgba(255,255,255,0.07)}}[data-ea-publisher].loaded.flat .ea-content,[data-ea-type].loaded.flat .ea-content{border:0px;border-radius:3px;box-shadow:none}[data-ea-type="image"].loaded,[data-ea-publisher]:not([data-ea-type]).loaded,.ea-type-image{display:inline-block}[data-ea-type="image"].loaded .ea-content,[data-ea-publisher]:not([data-ea-type]).loaded .ea-content,.ea-type-image .ea-content{max-width:180px;overflow:auto;text-align:center}[data-ea-type="image"].loaded .ea-content>a>img,[data-ea-publisher]:not([data-ea-type]).loaded .ea-content>a>img,.ea-type-image .ea-content>a>img{width:120px;height:90px;display:inline-block}[data-ea-type="image"].loaded .ea-content>.ea-text,[data-ea-publisher]:not([data-ea-type]).loaded .ea-content>.ea-text,.ea-type-image .ea-content>.ea-text{margin-top:1em;font-size:1em;text-align:center}[data-ea-type="image"].loaded .ea-callout,[data-ea-publisher]:not([data-ea-type]).loaded .ea-callout,.ea-type-image .ea-callout{max-width:180px;margin:0em 1em 1em 1em;padding-left:1em;padding-right:1em;font-style:italic;text-align:right}[data-ea-type="image"].loaded.horizontal .ea-content,[data-ea-publisher]:not([data-ea-type]).loaded.horizontal .ea-content,.ea-type-image.horizontal .ea-content{max-width:320px}[data-ea-type="image"].loaded.horizontal .ea-content>a>img,[data-ea-publisher]:not([data-ea-type]).loaded.horizontal .ea-content>a>img,.ea-type-image.horizontal .ea-content>a>img{float:left;margin-right:1em}[data-ea-type="image"].loaded.horizontal .ea-content .ea-text,[data-ea-publisher]:not([data-ea-type]).loaded.horizontal .ea-content .ea-text,.ea-type-image.horizontal .ea-content .ea-text{margin-top:0em;text-align:left;overflow:auto}[data-ea-type="image"].loaded.horizontal .ea-callout,[data-ea-publisher]:not([data-ea-type]).loaded.horizontal .ea-callout,.ea-type-image.horizontal .ea-callout{max-width:320px;text-align:right}[data-ea-type="text"].loaded,.ea-type-text{font-size:14px}[data-ea-type="text"].loaded .ea-content,.ea-type-text .ea-content{text-align:left}[data-ea-type="text"].loaded .ea-callout,.ea-type-text .ea-callout{margin:0.5em 1em 1em 1em;padding-left:1em;padding-right:1em;text-align:right;font-style:italic}[data-ea-style="stickybox"].loaded .ea-type-image{z-index:10;position:fixed;bottom:20px;right:20px}[data-ea-style="stickybox"].loaded .ea-type-image .ea-stickybox-hide{cursor:pointer;position:absolute;top:0.75em;right:0.75em;background-color:#fefefe;border:1px solid #088cdb;border-radius:50%;color:#088cdb;font-size:1em;text-align:center;height:1.5em;width:1.5em;line-height:1.5em}@media (max-width: 1300px){[data-ea-style="stickybox"].loaded .ea-type-image{position:static;bottom:0;right:0;margin:auto;text-align:center}[data-ea-style="stickybox"].loaded .ea-type-image .ea-stickybox-hide{display:none}}@media (min-width: 1301px){[data-ea-style="stickybox"].loaded .ea-type-image .ea-content{background:#dcdcdc}[data-ea-style="stickybox"].loaded.dark .ea-type-image .ea-content{background:#505050}}@media (min-width: 1301px) and (prefers-color-scheme: dark){[data-ea-style="stickybox"].loaded.adaptive .ea-type-image .ea-content{background:#505050}}
+</style><script src="https://server.ethicalads.io/api/v1/decision/?publisher=readthedocs&amp;ad_types=readthedocs-sidebar&amp;div_ids=rtd-sidebar&amp;callback=ad_1655908328654_290311&amp;keywords=python%7Creadthedocs-project-24758%7Creadthedocs-project-mailmanclient%7Capi%7Cpython&amp;campaign_types=community%7Chouse%7Cpaid&amp;format=jsonp&amp;client_version=1.5.0&amp;url=https%3A%2F%2Fdocs.mailman3.org%2Fprojects%2Fmailmanclient%2Fen%2Flatest%2F" type="text/javascript" async=""></script></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+            <a href="#" class="icon icon-home"> Mailman Client
+          </a>
+              <div class="version">
+                latest
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs">
+    <input type="hidden" name="check_keywords" value="yes">
+    <input type="hidden" name="area" value="default">
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="src/mailmanclient/docs/NEWS.html">NEWS for mailmanclient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="src/mailmanclient/docs/async.html">Async API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="src/mailmanclient/docs/testing.html">Developing MailmanClient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="src/mailmanclient/docs/using.html">Example Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="src/mailmanclient/docs/api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      <div id="rtd-sidebar" data-ea-publisher="readthedocs" data-ea-type="readthedocs-sidebar" data-ea-manual="true" class="ethical-rtd ethical-dark-theme loaded" data-ea-keywords="python|readthedocs-project-24758|readthedocs-project-mailmanclient" data-ea-campaign-types="community|house|paid"><div class="ethical-sidebar"><div class="ethical-content"><a href="https://server.ethicalads.io/proxy/click/2725/99984fb8-bd45-46a4-a14e-15d8a273c3c8/" rel="nofollow noopener" target="_blank" class="ethical-image-link"><img src="https://media.ethicalads.io/media/images/2022/04/DO-AppPlatform.jpeg" alt="Sponsored: DigitalOcean"></a><div class="ethical-text"><a href="https://server.ethicalads.io/proxy/click/2725/99984fb8-bd45-46a4-a14e-15d8a273c3c8/" rel="nofollow noopener" target="_blank"><strong>Digital Ocean: </strong><span>Create your world-changing apps on the cloud developers love</span><strong> Try now with a $100 Credit</strong></a></div></div><div class="ethical-callout"><small><em><a rel="nofollow noopener" target="_blank" href="https://ethicalads.io?ref=rtd-sidebar">Ad by EthicalAds</a><span> &nbsp; · &nbsp; </span><a rel="nofollow noopener" target="_blank" href="https://www.ethicalads.io/publishers/?ref=rtd-sidebar-join">Monetize your site</a></em></small></div></div><img src="https://server.ethicalads.io/proxy/view/2725/99984fb8-bd45-46a4-a14e-15d8a273c3c8/" class="ea-pixel"></div></div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">Mailman Client</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home"></a> »</li>
+      <li>Mailman Client</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/mailman/mailmanclient/blob/master/index.rst" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="mailman-client">
+<h1>Mailman Client<a class="headerlink" href="#mailman-client" title="Permalink to this headline"></a></h1>
+<a class="reference external image-reference" href="https://gitlab.com/mailman/mailmanclient/commits/master"><img alt="https://gitlab.com/mailman/mailmanclient/badges/master/build.svg" src="https://gitlab.com/mailman/mailmanclient/badges/master/build.svg"></a>
+<a class="reference external image-reference" href="https://mailmanclient.readthedocs.io"><img alt="https://readthedocs.org/projects/mailmanclient/badge" src="https://readthedocs.org/projects/mailmanclient/badge"></a>
+<a class="reference external image-reference" href="https://pypi.python.org/pypi/mailmanclient"><img alt="http://img.shields.io/pypi/v/mailmanclient.svg" src="http://img.shields.io/pypi/v/mailmanclient.svg"></a>
+<a class="reference external image-reference" href="https://pypi.python.org/pypi/mailmanclient"><img alt="http://img.shields.io/pypi/dm/mailmanclient.svg" src="http://img.shields.io/pypi/dm/mailmanclient.svg"></a>
+<p>The <code class="docutils literal notranslate"><span class="pre">mailmanclient</span></code> library provides official Python bindings for the GNU
+Mailman 3 REST API.</p>
+<section id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">mailmanclient</span></code> requires Python 3.6 or newer.</p>
+</section>
+<section id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline"></a></h2>
+<p>A <a class="reference external" href="https://mailmanclient.readthedocs.io/en/latest/src/mailmanclient/docs/using.html">simple guide</a> to using the library is available within this package, in
+the form of doctests.   The manual is also available online at:</p>
+<blockquote>
+<div><p><a class="reference external" href="https://mailmanclient.readthedocs.io/en/latest/">https://mailmanclient.readthedocs.io/en/latest/</a></p>
+</div></blockquote>
+</section>
+<section id="project-details">
+<h2>Project details<a class="headerlink" href="#project-details" title="Permalink to this headline"></a></h2>
+<p>The project home page is:</p>
+<blockquote>
+<div><p><a class="reference external" href="https://gitlab.com/mailman/mailmanclient">https://gitlab.com/mailman/mailmanclient</a></p>
+</div></blockquote>
+<p>You should report bugs at:</p>
+<blockquote>
+<div><p><a class="reference external" href="https://gitlab.com/mailman/mailmanclient/issues">https://gitlab.com/mailman/mailmanclient/issues</a></p>
+</div></blockquote>
+<p>You can download the latest version of the package either from the <a class="reference external" href="https://pypi.org/project/mailmanclient">Cheese Shop</a>:</p>
+<blockquote>
+<div><p><a class="reference external" href="http://pypi.python.org/pypi/mailmanclient">http://pypi.python.org/pypi/mailmanclient</a></p>
+</div></blockquote>
+<p>or from the GitLab page above.  Of course you can also just install it with
+<code class="docutils literal notranslate"><span class="pre">pip</span></code> from the command line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install mailmanclient
+</pre></div>
+</div>
+<p>You can grab the latest development copy of the code using Git, from the Gitlab
+home page above. If you have Git installed, you can grab your own branch of
+the code like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://gitlab.com/mailman/mailmanclient.git
+</pre></div>
+</div>
+<p>You may contact the developers via <a class="reference external" href="mailto:mailman-developers%40python.org">mailman-developers<span>@</span>python<span>.</span>org</a></p>
+</section>
+<section id="acknowledgements">
+<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Permalink to this headline"></a></h2>
+<p>Many thanks to Florian Fuchs for his contribution of an initial REST
+client. Also thanks to all the contributors of Mailman Client who have
+contributed code, raised issues or devoted their time in any capacity!</p>
+</section>
+<section id="contents">
+<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="src/mailmanclient/docs/NEWS.html">NEWS for mailmanclient</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/mailmanclient/docs/NEWS.html#news-3-3-3">3.3.3 (2021-09-02)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/mailmanclient/docs/NEWS.html#news-3-3-2">3.3.2 (2021-01-10)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/mailmanclient/docs/NEWS.html#id3">3.3.1 (2020-06-01)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/mailmanclient/docs/NEWS.html#id4">3.3.0 (2019-09-03)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/mailmanclient/docs/NEWS.html#id5">3.2.2 (2019-02-09)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/mailmanclient/docs/NEWS.html#id6">3.2.1 (2019-01-04)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/mailmanclient/docs/NEWS.html#id7">3.2.0 (2018-07-10)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/mailmanclient/docs/NEWS.html#id8">3.1.1 (2017-10-07)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/mailmanclient/docs/NEWS.html#id9">3.1 (2017-05-25)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/mailmanclient/docs/NEWS.html#id10">1.0.1 (2015-11-14)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/mailmanclient/docs/NEWS.html#id11">1.0.0 (2015-04-17)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/mailmanclient/docs/NEWS.html#a1-2014-03-15">1.0.0a1 (2014-03-15)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src/mailmanclient/docs/async.html">Async API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="src/mailmanclient/docs/testing.html">Developing MailmanClient</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/mailmanclient/docs/testing.html#running-tests">Running Tests</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src/mailmanclient/docs/using.html">Example Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/mailmanclient/docs/using.html#domains">Domains</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/mailmanclient/docs/using.html#mailing-lists">Mailing lists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/mailmanclient/docs/using.html#membership">Membership</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/mailmanclient/docs/using.html#non-members">Non-Members</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/mailmanclient/docs/using.html#users">Users</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/mailmanclient/docs/using.html#addresses">Addresses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/mailmanclient/docs/using.html#list-settings">List Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/mailmanclient/docs/using.html#preferences">Preferences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/mailmanclient/docs/using.html#pipelines-and-chains">Pipelines and Chains</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/mailmanclient/docs/using.html#owners-and-moderators">Owners and Moderators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/mailmanclient/docs/using.html#moderation">Moderation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/mailmanclient/docs/using.html#archivers">Archivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/mailmanclient/docs/using.html#header-matches">Header matches</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/mailmanclient/docs/using.html#configuration">Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src/mailmanclient/docs/api/index.html">API Reference</a></li>
+</ul>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="src/mailmanclient/docs/NEWS.html" class="btn btn-neutral float-right" title="NEWS for mailmanclient" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr>
+
+  <div role="contentinfo">
+    <p>© Copyright 2012-2019, The Free Software Foundation.
+      <span class="commit">Revision <code>2b57ce55</code>.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="Versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      v: latest
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions"><!-- Inserted RTD Footer -->
+
+<div class="injected">
+
+  
+
+      
+      
+      
+      <dl>
+        <dt>Versions</dt>
+        
+        <dd class="rtd-current-item">
+          <a href="https://docs.mailman3.org/projects/mailmanclient/en/latest/">latest</a>
+        </dd>
+        
+        <dd>
+          <a href="https://docs.mailman3.org/projects/mailmanclient/en/stable/">stable</a>
+        </dd>
+        
+        <dd>
+          <a href="https://docs.mailman3.org/projects/mailmanclient/en/3.3.2/">3.3.2</a>
+        </dd>
+        
+        <dd>
+          <a href="https://docs.mailman3.org/projects/mailmanclient/en/3.3.1/">3.3.1</a>
+        </dd>
+        
+        <dd>
+          <a href="https://docs.mailman3.org/projects/mailmanclient/en/3.3.0/">3.3.0</a>
+        </dd>
+        
+        <dd>
+          <a href="https://docs.mailman3.org/projects/mailmanclient/en/3.2.2/">3.2.2</a>
+        </dd>
+        
+        <dd>
+          <a href="https://docs.mailman3.org/projects/mailmanclient/en/3.2.1/">3.2.1</a>
+        </dd>
+        
+        <dd>
+          <a href="https://docs.mailman3.org/projects/mailmanclient/en/3.2.0/">3.2.0</a>
+        </dd>
+        
+        <dd>
+          <a href="https://docs.mailman3.org/projects/mailmanclient/en/3.1.1/">3.1.1</a>
+        </dd>
+        
+        <dd>
+          <a href="https://docs.mailman3.org/projects/mailmanclient/en/3.1.0/">3.1.0</a>
+        </dd>
+        
+      </dl>
+      
+      
+
+      
+      
+      <dl>
+        <dt>Downloads</dt>
+        
+        <dd><a href="//docs.mailman3.org/_/downloads/mailmanclient/en/latest/pdf/">PDF</a></dd>
+        
+      </dl>
+      
+      
+
+      
+      <dl>
+        
+        <!-- These are kept as relative links for internal installs that are http -->
+        <dt>On Read the Docs</dt>
+        <dd>
+          <a href="//readthedocs.org/projects/mailmanclient/">Project Home</a>
+        </dd>
+        <dd>
+          <a href="//readthedocs.org/projects/mailmanclient/builds/">Builds</a>
+        </dd>
+        <dd>
+          <a href="//readthedocs.org/projects/mailmanclient/downloads/">Downloads</a>
+        </dd>
+      </dl>
+      
+
+      
+
+      
+      <dl>
+        <dt>On GitLab</dt>
+        <dd>
+          <a href="https://gitlab.com/mailman/mailmanclient/blob/master//index.rst">View</a>
+        </dd>
+        
+        <dd>
+          <a href="https://gitlab.com/mailman/mailmanclient/edit/master//index.rst">Edit</a>
+        </dd>
+        
+      </dl>
+      
+      
+
+      
+      <dl>
+        <dt>Search</dt>
+        <dd>
+          <div style="padding: 6px;">
+            
+            <form id="flyout-search-form" class="wy-form" target="_blank" action="//readthedocs.org/projects/mailmanclient/search/" method="get">
+              <input type="text" name="q" aria-label="Search docs" placeholder="Search docs">
+              </form>
+          </div>
+        </dd>
+      </dl>
+      
+
+      <hr>
+
+      
+        <small>
+          <span>Hosted by <a href="https://readthedocs.org">Read the Docs</a></span>
+          <span> · </span>
+          <a href="https://docs.readthedocs.io/page/privacy-policy.html">Privacy Policy</a>
+        </small>
+      
+
+      
+
+</div>
+</div>
+  </div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+
+</body></html>

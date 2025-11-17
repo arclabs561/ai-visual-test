@@ -1,0 +1,243 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html><head>
+<title>passwdqc for Windows (Active Directory) - password/passphrase policy enforcement</title>
+<link href="/style.css" type="text/css" rel="stylesheet">
+<meta name="keywords" content="passwdqc, passwdqc_win, Windows, Active Directory, AD, domain controller, domain, passwdqc for Windows, password strength, password checking, password policy, policy enforcement, password, policy, enforcement, proactive, pluggable, plugin, DLL, strength, strong, weak, passphrase, passphrases, random, generate, generated, generator, filter, blacklist, leak, leaked, breach, breached, compromised, security, infosec">
+<meta name="description" content="Password/passphrase strength checking and policy enforcement toolset for Windows">
+</head>
+
+<body bgcolor="#E0E0E0" text="black" link="blue" alink="red" vlink="navy">
+
+
+<table bgcolor="#ffffff" width="100%" border="0" cellspacing="0" cellpadding="0">
+<tbody><tr>
+
+<td>
+<a href="/"><img class="logo" src="/logo.png" border="0" width="182" height="80" alt="Openwall"></a>
+</td><td width="100%">
+<div class="nav">
+<ul>
+<li><a href="/">Products</a>
+<ul>
+<li><a href="/Owl/">Openwall GNU/*/Linux &nbsp; <i>server OS</i></a>
+</li><li><a href="/lkrg/">Linux Kernel Runtime Guard</a>
+</li><li><a href="/john/">John the Ripper &nbsp; <i>password cracker</i></a>
+<ul>
+<li><a href="/john/">Free &amp; Open Source for any platform</a>
+</li><li><a href="/john/cloud/">in the cloud</a>
+</li><li><a href="/john/pro/linux/">Pro for Linux</a>
+</li><li><a href="/john/pro/macosx/">Pro for macOS</a>
+</li></ul>
+</li><li><a href="/wordlists/">Wordlists &nbsp; <i>for password cracking</i></a>
+</li><li><a href="/passwdqc/">passwdqc &nbsp; <i>policy enforcement</i></a>
+<ul>
+<li><a href="/passwdqc/">Free &amp; Open Source for Unix</a>
+</li><li><a href="/passwdqc/windows/">Pro for Windows (Active Directory)</a>
+</li></ul>
+</li><li><a href="/yescrypt/">yescrypt &nbsp; <i>KDF &amp; password hashing</i></a>
+</li><li><a href="/yespower/">yespower &nbsp; <i>Proof-of-Work (PoW)</i></a>
+</li><li><a href="/crypt/">crypt_blowfish &nbsp; <i>password hashing</i></a>
+</li><li><a href="/phpass/">phpass &nbsp; <i>ditto in PHP</i></a>
+</li><li><a href="/tcb/">tcb &nbsp; <i>better password shadowing</i></a>
+</li><li><a href="/pam/">Pluggable Authentication Modules</a>
+</li><li><a href="/scanlogd/">scanlogd &nbsp; <i>port scan detector</i></a>
+</li><li><a href="/popa3d/">popa3d &nbsp; <i>tiny POP3 daemon</i></a>
+</li><li><a href="/blists/">blists &nbsp; <i>web interface to mailing lists</i></a>
+</li><li><a href="/msulogin/">msulogin &nbsp; <i>single user mode login</i></a>
+</li><li><a href="/php_mt_seed/">php_mt_seed &nbsp; <i>mt_rand() cracker</i></a>
+</li></ul>
+</li><li><a href="/services/">Services</a>
+</li><li id="narrow-li-1"><a>Publications</a>
+<ul>
+<li><a href="/articles/">Articles</a>
+</li><li><a href="/presentations/">Presentations</a>
+</li></ul>
+</li><li><a>Resources</a>
+<ul>
+<li><a href="/lists/">Mailing lists</a>
+</li><li><a href="https://openwall.info/wiki/">Community wiki</a>
+</li><li><a href="https://github.com/openwall">Source code repositories (GitHub)</a>
+</li><li><a href="https://cvsweb.openwall.com">Source code repositories (CVSweb)</a>
+</li><li><a href="/mirrors/">File archive &amp; mirrors</a>
+</li><li><a href="/signatures/">How to verify digital signatures</a>
+</li><li><a href="/ove/">OVE IDs</a>
+</li></ul>
+</li><li id="last-li"><a href="/news">What's new</a>
+</li></ul>
+</div>
+
+
+</td></tr></tbody></table>
+
+
+<table bgcolor="#B4D0DC" width="100%" border="0" cellspacing="0" cellpadding="1">
+<tbody><tr><td>
+<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<tbody><tr><td bgcolor="#ECF8FF">
+<a href="https://twitter.com/openwall">
+Follow @Openwall on Twitter for new release announcements and other news</a>
+
+</td></tr></tbody></table>
+</td></tr></tbody></table>
+
+<h1 align="center">passwdqc for Windows - password/passphrase policy enforcement</h1>
+<p>
+<a href="..">passwdqc</a> is a well-known <b>proactive</b> password and
+passphrase strength checking and policy enforcement toolset.
+It is available for (and included as part of)
+a variety of Unix-like systems since 2000 (with many updates),
+and is now also offered for Windows.
+Supported are both <b>domain controllers</b> and <b>end-user systems</b>.
+</p><p>
+Full <b>support for passphrases</b>,
+extensive <b>testing</b>
+<sup>
+<a href="https://www.slideshare.net/antondedov5/zn2013-testing-of-password-policy-abridged">[1]</a>
+<a href="http://password-policy-testing.wikidot.com/results">[2]</a>
+<a href="https://openwall.info/wiki/passwdqc/rockyou">[3]</a>
+</sup>
+<b>on real-world passwords</b>,
+being able to <b>exactly match the policy you use on Unix</b> (if applicable),
+bundled <b>end-user programs</b> (their use is optional),
+and simple <b>site-wide licensing</b> and pricing
+(not per-user, nor per-computer)
+differentiate this product from the competition.
+</p><p>
+The product, once installed, registers with the system a
+<b>password filter DLL</b>, which is where the policy is enforced.
+There are three GUI programs: <b>Configuration</b>, <b>Change Password</b>,
+and <b>Reset Password</b> -
+please see the <a href="#screenshots">screenshots</a>.
+The latter two programs may be used to easily duplicate the domain controller's
+password policy on end-user systems, so that the users are informed of the
+specific reason why their initial choice of new password did not meet policy
+and are offered randomly-generated passphrases.
+Finally, also included are three command-line programs: <b>pwqcheck</b>, <b>pwqfilter</b>, and <b>pwqgen</b>.
+These are non-essential for use of the Windows product, but might be handy for those readily familiar with <a href="..">passwdqc on Unix</a>.
+</p><p>
+We currently support Server 2008 or Vista and above (currently tested up through Windows 10), just like Microsoft does.
+</p><p>
+Download:
+</p><ul>
+<li><a href="passwdqc_win_x64-2.0.0.0.zip">passwdqc for Windows 2.0.0.0, 64-bit</a> and its <a href="passwdqc_win_x64-2.0.0.0.zip.sign">signature</a>
+</li><li><a href="passwdqc_win_x86-2.0.0.0.zip">passwdqc for Windows 2.0.0.0, 32-bit</a> and its <a href="passwdqc_win_x86-2.0.0.0.zip.sign">signature</a>
+</li></ul>
+<p>
+The free downloads offered above are for <b>pre-purchase evaluation only</b> (no more than 30 days of consecutive use),
+unless and until you <a href="/cgi/redirect.cgi?passwdqc_win-2">purchase</a> a <a href="LICENSE">license</a>.
+</p><p id="purchase">
+Purchase:
+</p><ul>
+<li><a href="/cgi/redirect.cgi?passwdqc_win-2">passwdqc for Windows 2.0.0.0 with upgrades</a> - $386.00<br>
+<a href="LICENSE">Site-wide or household license (at your option)</a>,<br>
+<b>Free upgrades to further 2.x releases for Windows</b>,<br>
+<b>Small static binary filters preventing reuse of 2+ or 14+ million of common passwords</b> (HIBP v7 100+ or 20+ hits, RockYou),<br>
+<b>Support and password security consulting</b> options (see purchase page):<br>
+Basic Support is $300.00 ($686.00 total),<br>
+Advanced Support is $1,500.00 ($1,886.00 total)
+</li><li><a href="/cgi/redirect.cgi?passwdqc_filter">passwdqc leaked password filter files</a> - $300.00 every 3 months (cancel any time)<br>
+<a href="LICENSE">Site-wide or household license (at your option)</a>,<br>
+<b>Large regularly updated binary filters preventing reuse of 613+ million of leaked or breached passwords</b> (full latest HIBP)
+</li></ul>
+<p>
+The links above allow you to pay online with a variety of payment methods, or to choose to pay offline.
+Your purchase will be from FastSpring, a trusted reseller of software products and services.
+</p><p>
+Your private download directory will be created and a link to it e-mailed to you <b>immediately</b> upon receipt of your payment.
+Your purchase is primarily of licenses (legal right) to use the software and of access to the binary filters.
+At a later time, your private download directory will also be the place to download any upgrades you're entitled to.
+</p><p>
+<font color="green"><b>Unconditional 7-day money back guarantee</b></font>
+for purely online payments (including credit card payments, but not including bank wire transfers):
+if you're for any reason or for no reason at all unsatisfied with the products or services,
+we will refund your payment on your request if the request arrives within 7 days after your payment date.
+</p><p>
+<font color="green"><b>Low price guarantee</b></font>:
+our prices on this product are the lowest you can find.
+If you find a better price on a commercial product with at least the same functionality, for the same operating system,
+with upgrades and support similar to those included with your purchase, and if you inform us within 30 days of your payment,
+we will gladly refund the price difference.
+Shop with confidence!
+</p><p>
+Please don't hesitate to e-mail us at <b>&lt;orders at openwall.com&gt;</b>
+if you experience any problems placing an order or completing your download, or to request a refund.
+</p><p>
+There are currently two recommended <b>common password filter files</b> included with a passwdqc license purchase:
+one preventing reuse of passwords that appeared 100+ times in leaks or breaches that the
+<a href="https://haveibeenpwned.com/Passwords">HIBP (Pwned Passwords)</a> database version 7 builds upon
+or 10+ times in the RockYou leak (the de-facto gold standard for password cracking),
+and another with these thresholds at 20+ for HIBP and 3+ for RockYou.
+These two files encode, respectively, 2+ million passwords in 9 MiB file size and 14+ million passwords in 58 MiB.
+Also included is a similar filter additionally encoding all of RockYou (no threshold),
+for a total of 25+ million passwords in 100 MiB,
+and mostly for research purposes a filter encoding only all of RockYou's (different) 14+ million passwords in 56 MiB (no HIBP).
+</p><p>
+The subscription to <b>leaked password filter files</b> provides regularly updated files preventing reuse of
+<i>all</i> passwords from the <i>latest</i> version of HIBP (also includes RockYou).
+Due to our extremely efficient encoding, the current 613+ million unique leaked or breached passwords (from billions of accounts)
+are represented in a 2.3 GiB (2.5 GB) file.
+This is many times smaller than a download of the original HIBP files, yet allows for instant lookup.
+Our setup and tools are ready for further growth of the unique password count, if necessary well into the billions.
+</p><p>
+This kind of checking of user-provided passwords against existing data breaches is recommended in the current
+<a href="https://www.nist.gov/itl/tig/projects/special-publication-800-63">NIST guidance</a>, specifically in
+publication 800-63B sections <a href="https://pages.nist.gov/800-63-3/sp800-63b.html#memsecret">5.1.1.2</a> and
+<a href="https://pages.nist.gov/800-63-3/sp800-63b.html#appA">A.3</a>.
+</p><p>
+For the curious, under the hood passwdqc binary filters are improved
+<a href="https://en.wikipedia.org/wiki/Cuckoo_filter">cuckoo filters</a>, a modern probabilistic data structure.
+They never produce false negatives (that is, all passwords that are meant to be denied will always be).
+They occasionally produce false positives (that is, a previously unseen password might be unintentionally denied),
+but with our settings and algorithm this probability is negligible (on average 1 occurrence per 1.15 billion attempted passwords).
+Looking up a password against a filter requires at most two tiny random disk reads,
+which is very quick and lightweight for the server.
+</p><h2 align="center" id="screenshots">passwdqc for Windows - screenshots made on Windows 8.1</h2>
+<p>
+</p><table border="0" cellspacing="0" cellpadding="0">
+<tbody><tr>
+<td width="620" valign="top">
+Configuration utility:<br>
+<img src="/passwdqc/screenshots/passwdqc_win-2.0.0.0-config.png" width="613" height="504" border="0" alt="passwdqc for Windows - Configuration utility">
+</td><td width="380" valign="top">
+Change Password utility:<br>
+<img src="/passwdqc/screenshots/passwdqc_win-2.0.0.0-change.png" width="368" height="290" border="0" alt="passwdqc for Windows - Change Password utility">
+<p>
+The generated passphrases have been confirmed to meet the expected statistical properties
+(no excessive repetitions among millions generated for testing purposes on Windows 8.1 64-bit).
+We use
+<a href="https://en.wikipedia.org/wiki/CryptGenRandom">CryptGenRandom</a>, an
+interface to Windows' cryptographically secure pseudorandom number generator.
+</p></td></tr><tr>
+<td valign="top">
+<p>
+Reset Password utility, user choice dialog:<br>
+<img src="/passwdqc/screenshots/passwdqc_win-2.0.0.0-reset-user.png" width="341" height="348" border="0" alt="passwdqc for Windows - Reset Password utility - user choice dialog">
+</p></td><td valign="top">
+<p>
+Reset Password utility, new password dialog:<br>
+<img src="/passwdqc/screenshots/passwdqc_win-2.0.0.0-reset-password.png" width="368" height="359" border="0" alt="passwdqc for Windows - Reset Password utility - new password dialog">
+</p></td></tr></tbody></table>
+
+<p>
+</p><form action="/cgi/qc-201501.cgi" method="POST">
+<input type="hidden" name="page" value="/passwdqc/windows/">
+Quick Comment:
+<input type="text" name="qc" size="64">
+<input type="submit" value="Send">
+</form>
+
+<p>
+</p><table width="100%" border="0" cellspacing="0" cellpadding="0">
+<tbody><tr><td>
+
+<p>
+<a href="/Owl/" title="Powered by Openwall GNU/*/Linux - security-enhanced &quot;Linux distribution&quot;"><img src="/Owl/artwork/buttons/80x15/Owl-80x15-4.png" width="80" height="15" border="0" alt="Powered by Openwall GNU/*/Linux"></a>
+<a href="https://openvz.org" title="Powered by OpenVZ - OS virtualization solution for Linux"><img src="/images/OpenVZ-80x15-cd.png" width="80" height="15" border="0" alt="Powered by OpenVZ"></a>
+
+</p></td><td>
+<p align="RIGHT">
+<font size="-2">127730</font>
+</p></td></tr></tbody></table>
+
+
+
+</body></html>

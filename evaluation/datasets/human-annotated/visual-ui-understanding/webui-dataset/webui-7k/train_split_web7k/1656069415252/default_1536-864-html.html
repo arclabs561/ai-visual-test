@@ -1,0 +1,116 @@
+<!DOCTYPE html><html><head>
+    <title>An Algorithmic Solution to Insomnia</title>
+    <link href="/stylesheets/main.css" rel="stylesheet" type="text/css" media="screen">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.8.3/katex.min.css">
+    <script type="text/javascript" async="" src="https://ssl.google-analytics.com/ga.js"></script><script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-3828328-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="description" content="I’ve struggled with insomnia for all of my adult life. It began in college and has waxed and waned in severity ever since, correlating with stress levels but not entirely.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@ilyasu">
+    <meta name="twitter:creator" content="@ilyasu">
+    <meta property="og:url" content="http://ilya.sukhar.com/blog/an-algorithmic-solution-to-insomnia.html">
+    <meta property="og:title" content="An Algorithmic Solution to Insomnia">
+    <meta property="og:description" content="I’ve struggled with insomnia for all of my adult life. It began in college and has waxed and waned in severity ever since, correlating with stress levels but not entirely.">
+    <meta property="og:image" content="http://ilya.sukhar.com/assets/insomnia.jpg">
+  </head>
+  <body>
+    <div id="blog-post">
+      <header>
+        <h2>Ilya Sukhar</h2>
+        <h1>An Algorithmic Solution to Insomnia</h1>
+      </header>
+      <p>I’ve struggled with insomnia for all of my adult life. It began in college and has waxed and waned in severity ever since, correlating with stress levels but not entirely.</p>
+      <p>My form of insomnia starts with an active mind some evening. Maybe it’s active because I’m thinking through a challenge at work. Or I’m replaying a lively dinner conversation. Or I’m on a trip and excited. So, not necessarily stressful thoughts, just engaging ones. I go to bed but my mind doesn’t quiet down. 30 minutes later, I realize I’m not asleep and I start to think, “I really need to get to sleep. I have a lot going on tomorrow.” That only exacerbates the problem. My thoughts turn entirely meta and self defeating, “What’s wrong with me? Ugh, tomorrow will be miserable. Ok, let’s try for real now.” Repeat ad nauseam, laying in bed for hours.</p>
+      <p>Then, as you might imagine, the next day is indeed terrible and the next evening my mind is primed with negative thoughts about my sleep habits. The cycle continues. At its worst, I would go entirely without sleep for a half a dozen nights out of a month. In the steady state, it’d be one or two nights a month. Needless to say, both the peaks and troughs were quite disruptive to my quality of life and work output.</p>
+      <p>Over the years I had come to just accept it and cope. I figured I’d been dealt a poor hand in the relevant genetic lottery and this was the cost of doing business. Sometimes I’d use Ambien or other aids to get through it but I was always wary of the side effects and addiction potential.</p>
+      <p>In early 2016, I got fed up. I was blissfully unemployed and thoroughly de-stressed from having traveled extensively after quitting my job. Yet, I was still having issues sleeping — still going almost entirely sleepless for a couple nights a month. This seemed ridiculous, so I resolved to fix it.</p>
+      <p>I tried to read up on the latest research about insomnia but I found the volume of academic literature overwhelming for a layman. And it was mostly pharmacologically-oriented which I was intent on avoiding. Outside of journals, the online information on sleep is largely terrible — a rehash of common wisdom or an attempt to sell you something.</p>
+      <p>So, I sought out a Stanford researcher with a private sleep-therapy practice. After disqualifying me of more serious mental health issues, she ran me through a variant of a program known as CBT-i or “Cognitive Behavioral Therapy for Insomnia”<sup id="fnref:1" role="doc-noteref"><a href="#fn:1" class="footnote" rel="footnote">1</a></sup>. It turned out to be extremely effective and I now have a playbook for good sleep even as my stress levels have rebounded.</p>
+      <p>I’m thrilled to have made this breakthrough. But it was time consuming and expensive to get there. And it struck me how it all boiled down to a fairly simple algorithm albeit one that requires a lot of willpower and would be hard to derive on your own.</p>
+      <p>I wish someone had told me to try this many years earlier. So I write this in hopes that it’ll help someone out there.</p>
+      <h3 id="common-wisdom-invariants">Common Wisdom Invariants</h3>
+      <p>If you have trouble sleeping, I’m sure you’ve heard these all before. In my experience they are necessary but not sufficient.</p>
+      <ul>
+        <li>Exercise regularly.</li>
+        <li>Limit caffeine and alcohol consumption.</li>
+        <li>Don’t eat late at night.</li>
+        <li>Don’t nap.</li>
+        <li>Wind down an hour before bed. <sup id="fnref:2" role="doc-noteref"><a href="#fn:2" class="footnote" rel="footnote">2</a></sup></li>
+        <li>Invest in your bed. Keep your bedroom dark and cool.</li>
+      </ul>
+      <h3 id="unintuitive-new-invariants">Unintuitive New Invariants</h3>
+      <p>The gist here is: “don’t force it and don’t hang out in bed.”</p>
+      <ol>
+        <li>Never get in bed and try to sleep because “it’s bedtime”. Only get in bed when you are dying to go to bed.</li>
+        <li>If you’re in bed for more than 20 minutes and haven’t fallen asleep yet, get out and do something else. <sup id="fnref:3" role="doc-noteref"><a href="#fn:3" class="footnote" rel="footnote">3</a></sup></li>
+        <li>Get out of bed right away when you wake up in the morning. Don’t linger and don’t try to sleep in.</li>
+        <li>Don’t change your day based on your quality of sleep. No matter how bad it was, don’t deviate from your normal routine — don’t cancel meetings, don’t skip a workout, don’t try to sleep earlier the following evening.</li>
+      </ol>
+      <h3 id="the-algorithm">The Algorithm</h3>
+      <p>The gist here is: “sleep a lot less before you can sleep more.”</p>
+      <ol>
+        <li>Start out by setting a wake up time that leaves you plenty of time in the morning. For me, this was 6 a.m.</li>
+        <li>Pick a target sleep time that leaves you with about two hours of sleep <em>less</em> than you think you need. For me, this was midnight.</li>
+        <li>Treat the target sleep time as a goalpost to get past. That is, don’t sleep, nap, or get in bed before it — no matter what. And make sure to strictly abide by all the invariants above.</li>
+        <li>When you wake up, jot down the following:
+          <ol>
+            <li>When you went to bed</li>
+            <li>When you fell asleep</li>
+            <li>How long you spent awake in the middle of the night</li>
+            <li>When you woke up</li>
+            <li>When you got out of bed</li>
+          </ol>
+        </li>
+        <li>
+          <p>At the end of every week, calculate the average of your time spent asleep divided by your time spent in bed each night. Like so <sup id="fnref:4" role="doc-noteref"><a href="#fn:4" class="footnote" rel="footnote">4</a></sup>: <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext>efficiency</mtext><mo>=</mo><mtext>average(</mtext><mfrac><mtext>time&nbsp;asleep</mtext><mtext>time&nbsp;in&nbsp;bed</mtext></mfrac><mtext>)</mtext><mo>=</mo><mfrac><mn>1</mn><mn>7</mn></mfrac><msubsup><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mn>7</mn></msubsup><mfrac><mrow><msub><mi>d</mi><mi>i</mi></msub><mo>−</mo><msub><mi>b</mi><mi>i</mi></msub><mo>−</mo><msub><mi>c</mi><mi>i</mi></msub></mrow><mrow><msub><mi>e</mi><mi>i</mi></msub><mo>−</mo><msub><mi>a</mi><mi>i</mi></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">\text{efficiency} = \text{average(}\frac{\text{time asleep}}{\text{time in bed}}\text{)} = \frac{1}{7}\sum_{i=1}^{7}\frac{d_i-b_i-c_i}{e_i-a_i}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord text"><span class="mord">efficiency</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.277216em;vertical-align:-0.345em;"></span><span class="mord text"><span class="mord">average(</span></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9322159999999999em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">time&nbsp;in&nbsp;bed</span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.446108em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">time&nbsp;asleep</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mord text"><span class="mord">)</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.399108em;vertical-align:-0.44509999999999994em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">7</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mop op-symbol small-op" style="position:relative;top:-0.0000050000000000050004em;">∑</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.954008em;"><span style="top:-2.40029em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.2029em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">7</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.29971000000000003em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8962079999999999em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathdefault mtight">e</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3280857142857143em;"><span style="top:-2.357em;margin-left:0em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span><span class="mbin mtight">−</span><span class="mord mtight"><span class="mord mathdefault mtight">a</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3280857142857143em;"><span style="top:-2.357em;margin-left:0em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.4101em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathdefault mtight">d</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3280857142857143em;"><span style="top:-2.357em;margin-left:0em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span><span class="mbin mtight">−</span><span class="mord mtight"><span class="mord mathdefault mtight">b</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3280857142857143em;"><span style="top:-2.357em;margin-left:0em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span><span class="mbin mtight">−</span><span class="mord mtight"><span class="mord mathdefault mtight">c</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3280857142857143em;"><span style="top:-2.357em;margin-left:0em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.44509999999999994em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></p>
+          <ol>
+            <li>If <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext>efficiency</mtext><mo>&lt;</mo><mi mathvariant="normal">.</mi><mn>8</mn></mrow><annotation encoding="application/x-tex">\text{efficiency} &lt; .8</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord text"><span class="mord">efficiency</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">.</span><span class="mord">8</span></span></span></span>, push your target sleep time back even later by 20 minutes.</li>
+            <li>If <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">.</mi><mn>9</mn><mo>≤</mo><mtext>efficiency</mtext><mo>&lt;</mo><mi mathvariant="normal">.</mi><mn>95</mn></mrow><annotation encoding="application/x-tex">.9 \leq \text{efficiency} &lt; .95</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.78041em;vertical-align:-0.13597em;"></span><span class="mord">.</span><span class="mord">9</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">≤</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord text"><span class="mord">efficiency</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">.</span><span class="mord">9</span><span class="mord">5</span></span></span></span>, push your target sleep time up earlier by 20 minutes.</li>
+            <li>Otherwise, stay the course.</li>
+          </ol>
+        </li>
+        <li>Go back to step #3. Repeat forever.</li>
+      </ol>
+      <p>What’s the point?</p>
+      <p>Well, it turns out that insomnia is largely a form of performance anxiety that accrues over years of episodic poor sleep due to stress, travel, environmental changes, etc. Your mind gradually loses confidence in the act of going to sleep and jumps quickly to counter-productive thoughts while you lay in bed. If you expect to sleep poorly, you will.</p>
+      <p>Drastically restricting your sleep with this regimen wrestles control away from your mind and puts it back into the rightful hands of your body and its circadian rhythm<sup id="fnref:5" role="doc-noteref"><a href="#fn:5" class="footnote" rel="footnote">5</a></sup>. If you stick to the rules, you’re effectively running a search algorithm to find your body’s optimal schedule.</p>
+      <p>The algorithm starts by finding an aggregate level of sleep low enough that your body’s need for it overpowers your mind’s obstructionism. Finding this lower bound is painful but it definitely exists. Once you’ve found it, you relax the constraint gradually as your mind builds confidence that it can indeed sleep well and that the bed is a relaxing oasis. <sup id="fnref:6" role="doc-noteref"><a href="#fn:6" class="footnote" rel="footnote">6</a></sup></p>
+      <p>Eventually the algorithm converges and you have a schedule that works without any of the bookkeeping. You still need to stick to the invariants so as not to trip up the rhythm you’ve locked in. If you do get knocked off track by a spike in stress or long term travel, just restart the algorithm.</p>
+      <p>Please let me know if this helps you!</p>
+      <p>Written December 2017</p>
+      <p><strong>Footnotes:</strong></p>
+      <div class="footnotes" role="doc-endnotes">
+        <ol>
+          <li id="fn:1" role="doc-endnote">
+            <p>There’s a lot of <a href="https://www.ncbi.nlm.nih.gov/pmc/?term=Cognitive+Behavioral+Treatment+for+Insomnia">literature</a> about it. The algorithm described later is a subset of CBT-i called “sleep restriction therapy.”&nbsp;<a href="#fnref:1" class="reversefootnote" role="doc-backlink">↩</a></p>
+          </li>
+          <li id="fn:2" role="doc-endnote">
+            <p>I expected the therapist to berate me for device usage in the evening but she considered the issue entirely overblown relative to the research.&nbsp;<a href="#fnref:2" class="reversefootnote" role="doc-backlink">↩</a></p>
+          </li>
+          <li id="fn:3" role="doc-endnote">
+            <p>It’s helpful to have a default activity you can jump to quickly and not leave any room for engaging with daytime thoughts. I either read or watch videos about chess.&nbsp;<a href="#fnref:3" class="reversefootnote" role="doc-backlink">↩</a></p>
+          </li>
+          <li id="fn:4" role="doc-endnote">
+            <p>There are some apps that will help you keep track of everything. I used one <a href="https://itunes.apple.com/us/app/cbt-i-coach/id655918660?mt=8">made by the VA</a>.&nbsp;<a href="#fnref:4" class="reversefootnote" role="doc-backlink">↩</a></p>
+          </li>
+          <li id="fn:5" role="doc-endnote">
+            <p>The modern model of sleep describes two related processes of which circadian rhythm is one. This regimen primarily acts by increasing “sleep pressure” in sleep-wake homeostasis, the other one. <a href="https://www.coursera.org/learn/sleep/lecture/AF3XU/03-02-two-process-model">This</a> is a good resource from Michigan.&nbsp;<a href="#fnref:5" class="reversefootnote" role="doc-backlink">↩</a></p>
+          </li>
+          <li id="fn:6" role="doc-endnote">
+            <p>I imagine that getting very good at evening-time meditation would also work but this seems easier and more direct.&nbsp;<a href="#fnref:6" class="reversefootnote" role="doc-backlink">↩</a></p>
+          </li>
+        </ol>
+      </div>
+    </div>
+  
+</body></html>

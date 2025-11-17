@@ -1,0 +1,606 @@
+<!DOCTYPE html><html lang="en" class="js sidebar-hidden light"><head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Home - hledger</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="plain text accounting, made easy">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="rgba(0, 0, 0, 0)">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css" disabled="">
+        <link rel="stylesheet" href="ayu-highlight.css" disabled="">
+
+        <style>
+        div.docversions {height: 3em;}
+        </style>
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="highslide/highslide.css">
+        <link rel="stylesheet" href="css/site.css">
+
+    <style type="text/css">.highslide img {cursor: url(highslide/graphics/zoomin.cur), pointer !important;}</style></head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            // var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+            var default_theme = "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <script type="text/javascript" src="js/jquery-1.11.0.min.js"></script>
+        <script type="text/javascript" src="js/site.js"></script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents" aria-hidden="true">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item affix "></li><li class="part-title">ABOUT</li><li class="chapter-item "><a href="index.html" class="active" tabindex="-1">Home</a></li><li class="chapter-item "><a href="faq.html" tabindex="-1">General FAQ</a></li><li class="chapter-item "><a href="why.html" tabindex="-1">Why hledger ?</a></li><li class="chapter-item "><a href="videos.html" tabindex="-1">Videos, Talks</a></li><li class="chapter-item "><a href="support.html" tabindex="-1">Support/Discussion</a></li><li class="chapter-item "><a href="sponsor.html" tabindex="-1">Sponsor</a></li><li class="chapter-item affix "></li><li class="part-title">USERS</li><li class="chapter-item "><a href="install.html" tabindex="-1">Install Guide</a></li><li class="chapter-item "><a href="start.html" tabindex="-1">Getting Started Guide</a></li><li class="chapter-item "><a href="1.26/hledger.html" tabindex="-1">hledger manual (1.26)</a></li><li class="chapter-item "><a href="1.26/hledger-ui.html" tabindex="-1">hledger-ui manual (1.26)</a></li><li class="chapter-item "><a href="1.26/hledger-web.html" tabindex="-1">hledger-web manual (1.26)</a></li><li class="chapter-item "><a href="addons.html" tabindex="-1">Add-ons &amp; scripts</a></li><li class="chapter-item "><a href="cookbook.html" tabindex="-1">Cookbook</a></li><li class="chapter-item "><a href="userfaq.html" tabindex="-1">User FAQ</a></li><li class="chapter-item affix "></li><li class="part-title">DEVELOPERS</li><li class="chapter-item "><a href="CONTRIBUTING.html" tabindex="-1">Contributor Guide</a></li><li class="chapter-item "><a href="dev.html" tabindex="-1">Developer docs</a></li><li class="chapter-item "><a href="CREDITS.html" tabindex="-1">CREDITS</a></li><li class="chapter-item affix "></li><li class="part-title" style="display: none;">ALL PAGES</li><li class="chapter-item " style="display: none;"><a href="accounting.html" tabindex="-1">Accounting concepts</a></li><li class="chapter-item " style="display: none;"><a href="addons.html" tabindex="-1">Add-ons &amp; scripts</a></li><li class="chapter-item " style="display: none;"><a href="balancing-the-accounting-equation.html" tabindex="-1">Balancing the accounting equation</a></li><li class="chapter-item " style="display: none;"><a href="loans.html" tabindex="-1">Borrowing and lending</a></li><li class="chapter-item " style="display: none;"><a href="budgeting-and-forecasting.html" tabindex="-1">Budgeting and Forecasting (2018)</a></li><li class="chapter-item " style="display: none;"><a href="budgeting.html" tabindex="-1">Budgeting</a></li><li class="chapter-item " style="display: none;"><a href="roi.html" tabindex="-1">Calculate return on investment</a></li><li class="chapter-item " style="display: none;"><a href="gain.html" tabindex="-1">Calculate unrealized gain</a></li><li class="chapter-item " style="display: none;"><a href="change-account-name-separator.html" tabindex="-1">Change account name separator</a></li><li class="chapter-item " style="display: none;"><a href="charts.html" tabindex="-1">Charts and Graphs</a></li><li class="chapter-item " style="display: none;"><a href="checking-for-errors.html" tabindex="-1">Checking for errors</a></li><li class="chapter-item " style="display: none;"><a href="command-line-completion.html" tabindex="-1">Command line completion</a></li><li class="chapter-item " style="display: none;"><a href="common-journal-entries.html" tabindex="-1">Common journal entries</a></li><li class="chapter-item " style="display: none;"><a href="create-a-journal.html" tabindex="-1">Create a journal</a></li><li class="chapter-item " style="display: none;"><a href="currency-conversion.html" tabindex="-1">Currency conversion</a></li><li class="chapter-item " style="display: none;"><a href="conversion2.html" tabindex="-1">Currency conversion 2</a></li><li class="chapter-item " style="display: none;"><a href="editors.html" tabindex="-1">Editor configuration</a></li><li class="chapter-item " style="display: none;"><a href="export.html" tabindex="-1">Exporting from hledger</a></li><li class="chapter-item " style="display: none;"><a href="forecasting.html" tabindex="-1">Forecasting</a></li><li class="chapter-item " style="display: none;"><a href="foreign-trip-expenses.html" tabindex="-1">Foreign trip expenses</a></li><li class="chapter-item expanded " style="display: none;"><a href="index.html" class="active" tabindex="-1">Home</a></li><li class="chapter-item " style="display: none;"><a href="import-csv.html" tabindex="-1">Importing CSV data</a></li><li class="chapter-item " style="display: none;"><a href="install.html" tabindex="-1">Install Guide</a></li><li class="chapter-item " style="display: none;"><a href="invoicing.html" tabindex="-1">Invoicing</a></li><li class="chapter-item " style="display: none;"><a href="mobile-apps.html" tabindex="-1">Mobile apps</a></li><li class="chapter-item " style="display: none;"><a href="mockups.html" tabindex="-1">Mockups</a></li><li class="chapter-item " style="display: none;"><a href="multicurrency-tutorial.html" tabindex="-1">Multicurrency tutorial (2018)</a></li><li class="chapter-item " style="display: none;"><a href="faq.html" tabindex="-1">Newcomer FAQ</a></li><li class="chapter-item " style="display: none;"><a href="project-accounting.html" tabindex="-1">Project accounting</a></li><li class="chapter-item " style="display: none;"><a href="quickstart.html" tabindex="-1">Quick Start</a></li><li class="chapter-item " style="display: none;"><a href="release-notes.html" tabindex="-1">Release notes</a></li><li class="chapter-item " style="display: none;"><a href="report-examples.html" tabindex="-1">Report examples</a></li><li class="chapter-item " style="display: none;"><a href="rewrite-account-names.html" tabindex="-1">Rewrite account names</a></li><li class="chapter-item " style="display: none;"><a href="rewrite-commodity-symbols.html" tabindex="-1">Rewrite commodity symbols</a></li><li class="chapter-item " style="display: none;"><a href="save-frequently-used-options.html" tabindex="-1">Save frequently used options</a></li><li class="chapter-item " style="display: none;"><a href="scripting.html" tabindex="-1">Scripting</a></li><li class="chapter-item " style="display: none;"><a href="simons-setup.html" tabindex="-1">Simon's setup notes</a></li><li class="chapter-item " style="display: none;"><a href="sponsor.html" tabindex="-1">Sponsor</a></li><li class="chapter-item " style="display: none;"><a href="tags-tutorial.html" tabindex="-1">Tags tutorial</a></li><li class="chapter-item " style="display: none;"><a href="time-planning.html" tabindex="-1">Time planning</a></li><li class="chapter-item " style="display: none;"><a href="track-changes-with-version-control.html" tabindex="-1">Track changes with version control</a></li><li class="chapter-item " style="display: none;"><a href="track-investments.html" tabindex="-1">Track investments (2017)</a></li><li class="chapter-item " style="display: none;"><a href="investments.html" tabindex="-1">Track investments (2020)</a></li><li class="chapter-item " style="display: none;"><a href="inventory.html" tabindex="-1">Tracking and selling inventory</a></li><li class="chapter-item " style="display: none;"><a href="add.html" tabindex="-1">Tutorial: hledger add</a></li><li class="chapter-item " style="display: none;"><a href="ui.html" tabindex="-1">Tutorial: hledger-ui</a></li><li class="chapter-item " style="display: none;"><a href="web.html" tabindex="-1">Tutorial: hledger-web</a></li><li class="chapter-item " style="display: none;"><a href="videos.html" tabindex="-1">Videos, Talks</a></li><li class="chapter-item " style="display: none;"><a href="beancount.html" tabindex="-1">hledger and Beancount</a></li><li class="chapter-item " style="display: none;"><a href="gnucash.html" tabindex="-1">hledger and GnuCash</a></li><li class="chapter-item " style="display: none;"><a href="ledger.html" tabindex="-1">hledger and Ledger</a></li><li class="chapter-item " style="display: none;"><a href="quicken.html" tabindex="-1">hledger and Quicken/Quickbooks</a></li><li class="chapter-item " style="display: none;"><a href="1.26/hledger.html" tabindex="-1">hledger manual (1.26)</a></li><li class="chapter-item " style="display: none;"><a href="1.26/hledger-ui.html" tabindex="-1">hledger-ui manual (1.26)</a></li><li class="chapter-item " style="display: none;"><a href="1.26/hledger-web.html" tabindex="-1">hledger-web manual (1.26)</a></li><li class="chapter-item " style="display: none;"><a href="hledger-web-tips.html" tabindex="-1">hledger-web tips</a></li><li class="chapter-item " style="display: none;"><a href="ACHIEVEMENTS.html" tabindex="-1">ACHIEVEMENTS</a></li><li class="chapter-item " style="display: none;"><a href="BACKLOG.html" tabindex="-1">BACKLOG</a></li><li class="chapter-item " style="display: none;"><a href="BENCHMARKS.html" tabindex="-1">BENCHMARKS</a></li><li class="chapter-item " style="display: none;"><a href="CHANGELOGS.html" tabindex="-1">CHANGELOGS</a></li><li class="chapter-item " style="display: none;"><a href="CODE.html" tabindex="-1">CODE</a></li><li class="chapter-item " style="display: none;"><a href="COMMITS.html" tabindex="-1">COMMITS</a></li><li class="chapter-item " style="display: none;"><a href="CREDITS.html" tabindex="-1">CREDITS</a></li><li class="chapter-item " style="display: none;"><a href="CONTRIBUTING.html" tabindex="-1">Contributor Guide</a></li><li class="chapter-item " style="display: none;"><a href="DOCS.html" tabindex="-1">DOCS</a></li><li class="chapter-item " style="display: none;"><a href="devfaq.html" tabindex="-1">Developer FAQ</a></li><li class="chapter-item " style="display: none;"><a href="EXAMPLES.html" tabindex="-1">EXAMPLES</a></li><li class="chapter-item " style="display: none;"><a href="FINANCE.html" tabindex="-1">FINANCE</a></li><li class="chapter-item " style="display: none;"><a href="ISSUES.html" tabindex="-1">ISSUES</a></li><li class="chapter-item " style="display: none;"><a href="MAKE.html" tabindex="-1">MAKE</a></li><li class="chapter-item " style="display: none;"><a href="mockups.html" tabindex="-1">Mockups</a></li><li class="chapter-item " style="display: none;"><a href="PULLREQUESTS.html" tabindex="-1">PULLREQUESTS</a></li><li class="chapter-item " style="display: none;"><a href="dev-README.html" tabindex="-1">README</a></li><li class="chapter-item " style="display: none;"><a href="RELEASING.html" tabindex="-1">RELEASING</a></li><li class="chapter-item " style="display: none;"><a href="ROADMAP.html" tabindex="-1">ROADMAP</a></li><li class="chapter-item " style="display: none;"><a href="SHAKE.html" tabindex="-1">SHAKE</a></li><li class="chapter-item " style="display: none;"><a href="TESTS.html" tabindex="-1">TESTS</a></li><li class="chapter-item " style="display: none;"><a href="VERSIONNUMBERS.html" tabindex="-1">VERSIONNUMBERS</a></li><li class="chapter-item " style="display: none;"><a href="WORKFLOWS.html" tabindex="-1">WORKFLOWS</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar" style="top: 0px;">
+                    <div class="left-buttons">
+                        <a href="https://github.com/simonmichael/hledger_site/commits/master" accesskey="2" title="what's new"></a>
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar" accesskey="s" aria-expanded="false">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list" accesskey="t">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar" accesskey="/">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">
+                        <a href="/" title="hledger home" accesskey="1" style="text-decoration:none; color:inherit;">hledger</a>
+                    </h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/simonmichael/hledger_site" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <!-- stylesheet at bottom -->
+<img id="coins" src="images/coins2-248.png" style="width:120px; margin:2em 1em; float:left;">
+<img id="coins" src="images/coins2-248.png" style="width:120px; margin:2em 1em; float:right;">
+<h1 id="hledger"><a class="header" href="#hledger">hledger</a></h1>
+<!-- 
+This page's verbosity continually oscillates. General plan:
+brief blurbs with links to more detail:
+- what (& examples)
+- why (& why not)
+- who (for)
+- how
+-->
+<!-- 
+Tagline
+https://www.stephendiehl.com/posts/marketing.html#persuasion-and-decision-makers :
+1. It is memorable
+2. It includes a key benefit
+3. It differentiates
+4. It imparts positivity
+-->
+<div id="tagline">
+Correct, fast, intuitive<br>
+plain text accounting.
+</div>
+<div class="pagetoc">
+<ul>
+<li><a href="#what-is-this">What is this?</a></li>
+<li><a href="#why-use-hledger">Why use hledger?</a></li>
+<li><a href="#how-to-get-started">How to get started?</a></li>
+<li><a href="#who-made-this">Who made this?</a></li>
+<li><a href="#where-to-go-next">Where to go next?</a></li>
+</ul>
+</div>
+<h2 id="what-is-this"><a class="header" href="#what-is-this">What is this?</a></h2>
+<p><em><strong>hledger</strong></em> is free, high quality <em><strong>Plain Text Accounting</strong></em> software:
+a fast and light multicurrency double-entry accounting system 
+that uses human-readable, version-controllable plain text files,
+and runs well on unix, mac and windows.</p>
+<p>With it you can track your money, investments, cryptocurrencies, time, inventory, or any other commodity, 
+with a complete history of changes, 
+a documented future-proof data format,
+and without needing any cloud service or vendor.</p>
+<!-- In other words, with privacy and peace of mind. -->
+<p>I'm Simon Michael, hledger project founder and PTA fan. Welcome! </p>
+<p><a href="https://github.com/simonmichael/hledger"><img src="https://img.shields.io/github/stars/simonmichael/hledger.svg?logo=GitHub&amp;label=Github" alt="github"></a></p>
+<h2 id="why-use-hledger"><a class="header" href="#why-use-hledger">Why use hledger?</a></h2>
+<p>The <a href="faq.html">General FAQ</a> or the <a href="https://plaintextaccounting.org">plaintextaccounting.org</a> site introduce Plain Text Accounting.</p>
+<p>Compared to <a href="https://plaintextaccounting.org/#software">other PTA apps</a>,
+hledger has a strong focus on ease of use and practicality for day-to-day accounting.
+It prioritises "just works" and accessible documentation,
+and is actively maintained, with a lively <a href="support.html">chat</a>.
+It supports most Ledger and Beancount features but omits some of the more complex ones
+(value expression language, implicit lot matching).</p>
+<p>Non-programmers will enjoy hledger's 
+built-in financial statements, 
+multi-period reports, 
+choice of user interfaces, 
+easy CSV import system
+and general robustness.</p>
+<p>Programmers may appreciate its
+speed (25k txn/s on a macbook air m1), 
+accuracy (up to 255 decimal places), 
+reliability (1100+ tests, $100 bounty for regressions), 
+powerful scriptability/embeddability
+and clean statically-typed Haskell implementation.</p>
+<p>Read more: <a href="why.html">Why hledger ?</a></p>
+<p>(And why might you <em>not</em> use hledger ?</p>
+<ul>
+<li>If you need a rich GUI above all, you might prefer GnuCash, KMyMoney, or Quickbooks.</li>
+<li>If you like spreadsheets and don't have a ton of data, you might find those quicker.</li>
+<li>If you do a lot of advanced trading, or want to hack a lot with Python, also look at Beancount.</li>
+<li>If you want to mix more code in your financial data, or hack on C++, evaluate Ledger.</li>
+<li>If you like minimalist unix tools and think all the above are bloat, see <a href="https://mandoc.bsd.lv/pta">pta</a>.</li>
+<li>If you are mobile-only and don't need version control or flexibility, maybe a phone app will do.</li>
+<li>If you don't need version control or privacy, but do need friction-free collaboration with financial professionals and institutions,
+you might prefer a commercial web-based system.)</li>
+</ul>
+<h2 id="how-to-get-started"><a class="header" href="#how-to-get-started">How to get started?</a></h2>
+<ul>
+<li><strong><a href="install.html">Install Guide</a></strong> lists the easy ways to install hledger on your system.</li>
+<li><a href="start.html">Getting Started Guide</a> is a good starting point/overview for our (many..) introductory docs.
+<a href="https://www.youtube.com/channel/UCZLxXTjOqLzq4z5Jy0AyWSQ/videos">hledger fan's beginner videos</a> might be complementary.</li>
+<li><a href="hledger.html">hledger manual</a> is where to go for the authoritative reference docs.</li>
+<li><a href="cookbook.html">Cookbook</a> and <a href="accounting.html">Accounting concepts</a> give additional practical tips and background.</li>
+<li>The <a href="support.html">#hledger chat room</a> is open 24/7. (At quiet times you might need to wait.)</li>
+<li>(See also <a href="#where-to-go-next">Where to go next?</a> below.)</li>
+</ul>
+<p>But in case you click no further, here is a series of (CLI-focussed) examples.
+If you follow these you have all the essentials,
+and you can consult the docs for more details and features when needed.</p>
+<pre><div class="buttons"><button class="fa fa-copy clip-button" title="Copy to clipboard" aria-label="Copy to clipboard"><i class="tooltiptext"></i></button></div><code class="language-shell hljs"><span class="hljs-meta">$</span><span class="bash"> brew install hledger    <span class="hljs-comment"># or apt, choco, but check Install for freshness</span></span>
+</code></pre>
+<pre><div class="buttons"><button class="fa fa-copy clip-button" title="Copy to clipboard" aria-label="Copy to clipboard"><i class="tooltiptext"></i></button></div><code class="language-shell hljs"><span class="hljs-meta">$</span><span class="bash"> cat &gt;main.journal    <span class="hljs-comment"># record a transaction manually from command line</span></span>
+2022-01-01 opening balances as of this date
+    assets:bank:checking                $1000
+    assets:bank:savings                 $2000
+    assets:cash                          $100
+    liabilities:creditcard               $-50
+    equity:opening/closing balances
+^D
+</code></pre>
+<pre><div class="buttons"><button class="fa fa-copy clip-button" title="Copy to clipboard" aria-label="Copy to clipboard"><i class="tooltiptext"></i></button></div><code class="language-shell hljs"><span class="hljs-meta">$</span><span class="bash"> <span class="hljs-built_in">export</span> LEDGER_FILE=main.journal    <span class="hljs-comment"># use this file by default</span></span>
+<span class="hljs-meta">$</span><span class="bash"> <span class="hljs-built_in">echo</span> <span class="hljs-string">'export LEDGER_FILE=main.journal'</span> &gt;&gt;~/.bashrc    <span class="hljs-comment"># and in future sessions</span></span>
+</code></pre>
+<pre><div class="buttons"><button class="fa fa-copy clip-button" title="Copy to clipboard" aria-label="Copy to clipboard"><i class="tooltiptext"></i></button></div><code class="language-shell hljs"><span class="hljs-meta">$</span><span class="bash"> hledger add    <span class="hljs-comment"># record a transaction interactively</span></span>
+Adding transactions to journal file main.journal
+Any command line arguments will be used as defaults.
+Use tab key to complete, readline keys to edit, enter to accept defaults.
+An optional (CODE) may follow transaction dates.
+An optional ; COMMENT may follow descriptions or amounts.
+If you make a mistake, enter &lt; at any prompt to go one step backward.
+To end a transaction, enter . when prompted.
+To quit, enter . at a date prompt or press control-d or control-c.
+Date [2022-02-08]: 2/15
+Description: market
+Account 1: expenses:food
+Amount  1: $50
+Account 2: assets:cash
+Amount  2 [$-50]: 
+Account 3 (or . or enter to finish this transaction): 
+2022-02-15 market
+    expenses:food             $50
+    assets:cash              $-50
+
+Save this transaction to the journal ? [y]: 
+Saved.
+Starting the next transaction (. or ctrl-D/ctrl-C to quit)
+Date [2022-02-15]: 
+</code></pre>
+<pre><div class="buttons"><button class="fa fa-copy clip-button" title="Copy to clipboard" aria-label="Copy to clipboard"><i class="tooltiptext"></i></button></div><code class="language-shell hljs"><span class="hljs-meta">$</span><span class="bash"> hledger stats    <span class="hljs-comment"># show journal statistics</span></span>
+Main file                : main.journal
+Included files           : 
+Transactions span        : 2022-01-01 to 2022-02-16 (46 days)
+Last transaction         : 2022-02-15 (7 days from now)
+Transactions             : 2 (0.0 per day)
+Transactions last 30 days: 0 (0.0 per day)
+Transactions last 7 days : 0 (0.0 per day)
+Payees/descriptions      : 1
+Accounts                 : 6 (depth 3)
+Commodities              : 1 ($)
+Market prices            : 0 ()
+
+Run time (throughput)    : 0.04s (47 txns/s)
+</code></pre>
+<pre><div class="buttons"><button class="fa fa-copy clip-button" title="Copy to clipboard" aria-label="Copy to clipboard"><i class="tooltiptext"></i></button></div><code class="language-shell hljs"><span class="hljs-meta">$</span><span class="bash"> hledger bal --monthly    <span class="hljs-comment"># show account balance changes each month</span></span>
+Balance changes in 2022-01-01..2022-02-28:
+
+                                 ||    Jan   Feb 
+=================================++==============
+ assets:bank:checking            ||  $1000     0 
+ assets:bank:savings             ||  $2000     0 
+ assets:cash                     ||   $100  $-50 
+ equity:opening/closing balances || $-3050     0 
+ expenses:food                   ||      0   $50 
+ liabilities:creditcard          ||   $-50     0 
+---------------------------------++--------------
+                                 ||      0     0 
+</code></pre>
+<pre><div class="buttons"><button class="fa fa-copy clip-button" title="Copy to clipboard" aria-label="Copy to clipboard"><i class="tooltiptext"></i></button></div><code class="language-shell hljs"><span class="hljs-meta">$</span><span class="bash"> cat &gt;checking.csv    <span class="hljs-comment"># make some CSV data, as if downloaded from a bank</span></span>
+"Date","Note","Amount"
+"2022/2/01","GOODWORKS CORP","-1000.00"
+"2022/2/22","PROPERTY MGMT CO","500.00"
+"2022/2/23","ATM WITHDRAWAL","-100.00"
+^D
+</code></pre>
+<pre><div class="buttons"><button class="fa fa-copy clip-button" title="Copy to clipboard" aria-label="Copy to clipboard"><i class="tooltiptext"></i></button></div><code class="language-shell hljs"><span class="hljs-meta">$</span><span class="bash"> cat &gt;checking.csv.rules    <span class="hljs-comment"># and a rules file to help hledger read it</span></span>
+skip 1
+fields date, description, amount
+account1 assets:bank:checking
+currency $
+amount   -%amount
+
+if GOODWORKS
+ account2 income:salary
+
+if PROPERTY
+ account2 expenses:rent
+
+if ATM WITHDRAWAL
+ account2 assets:cash
+^D
+</code></pre>
+<pre><div class="buttons"><button class="fa fa-copy clip-button" title="Copy to clipboard" aria-label="Copy to clipboard"><i class="tooltiptext"></i></button></div><code class="language-shell hljs"><span class="hljs-meta">$</span><span class="bash"> hledger import checking.csv    <span class="hljs-comment"># import CSV records as new journal entries</span></span>
+imported 2 new transactions from checking.csv
+<span class="hljs-meta">$</span><span class="bash"> hledger import checking.csv    <span class="hljs-comment"># records already seen are ignored; cf --dry-run</span></span>
+no new transactions found in checking.csv
+</code></pre>
+<pre><div class="buttons"><button class="fa fa-copy clip-button" title="Copy to clipboard" aria-label="Copy to clipboard"><i class="tooltiptext"></i></button></div><code class="language-shell hljs"><span class="hljs-meta">$</span><span class="bash"> hledger <span class="hljs-built_in">print</span> date:202202   <span class="hljs-comment"># show transactions in february</span></span>
+2022-02-01 GOODWORKS CORP
+    assets:bank:checking           $1000
+    income:salary                 $-1000
+
+2022-02-15 market
+    expenses:food             $50
+    assets:cash              $-50
+
+2022-02-22 PROPERTY MGMT CO
+    assets:bank:checking           $-500
+    expenses:rent                   $500
+
+2022-02-23 ATM WITHDRAWAL
+    assets:bank:checking           $-100
+    assets:cash                     $100
+
+</code></pre>
+<pre><div class="buttons"><button class="fa fa-copy clip-button" title="Copy to clipboard" aria-label="Copy to clipboard"><i class="tooltiptext"></i></button></div><code class="language-shell hljs"><span class="hljs-meta">$</span><span class="bash"> hledger is -M    <span class="hljs-comment"># show a monthly income statement (profit &amp; loss report)</span></span>
+Income Statement 2022-01-01..2022-02-28
+
+               || Jan    Feb 
+===============++============
+ Revenues      ||            
+---------------++------------
+ income:salary ||   0  $1000 
+---------------++------------
+               ||   0  $1000 
+===============++============
+ Expenses      ||            
+---------------++------------
+ expenses:food ||   0    $50 
+ expenses:rent ||   0   $500 
+---------------++------------
+               ||   0   $550 
+===============++============
+ Net:          ||   0   $450 
+</code></pre>
+<pre><div class="buttons"><button class="fa fa-copy clip-button" title="Copy to clipboard" aria-label="Copy to clipboard"><i class="tooltiptext"></i></button></div><code class="language-shell hljs"><span class="hljs-meta">$</span><span class="bash"> hledger bs -M --tree    <span class="hljs-comment"># show monthly asset and liability balances</span></span>
+Balance Sheet 2022-01-31..2022-02-28
+
+                        || 2022-01-31  2022-02-28 
+========================++========================
+ Assets                 ||                        
+------------------------++------------------------
+ assets                 ||      $3100       $3550 
+   bank                 ||      $3000       $3400 
+     checking           ||      $1000       $1400 
+     savings            ||      $2000       $2000 
+   cash                 ||       $100        $150 
+------------------------++------------------------
+                        ||      $3100       $3550 
+========================++========================
+ Liabilities            ||                        
+------------------------++------------------------
+ liabilities:creditcard ||        $50         $50 
+------------------------++------------------------
+                        ||        $50         $50 
+========================++========================
+ Net:                   ||      $3050       $3500 
+</code></pre>
+<pre><div class="buttons"><button class="fa fa-copy clip-button" title="Copy to clipboard" aria-label="Copy to clipboard"><i class="tooltiptext"></i></button></div><code class="language-shell hljs"><span class="hljs-meta">$</span><span class="bash"> hledger areg checking    <span class="hljs-comment"># show checking's transactions and running balance</span></span>
+Transactions in assets:bank:checking and subaccounts:
+2022-01-01 opening balances    as:ba:savings, as..         $1000         $1000
+2022-02-01 GOODWORKS CORP      in:salary                   $1000         $2000
+2022-02-22 PROPERTY MGMT CO    ex:rent                     $-500         $1500
+2022-02-23 ATM WITHDRAWAL      as:cash                     $-100         $1400
+</code></pre>
+<pre><div class="buttons"><button class="fa fa-copy clip-button" title="Copy to clipboard" aria-label="Copy to clipboard"><i class="tooltiptext"></i></button></div><code class="language-shell hljs"><span class="hljs-meta">$</span><span class="bash"> hledger-ui --forecast   <span class="hljs-comment"># start the terminal UI (except on Windows)</span></span>
+</code></pre>
+<p><img src="images/home-ui-1.png" alt="">
+<img src="images/home-ui-2.png" alt=""></p>
+<pre><div class="buttons"><button class="fa fa-copy clip-button" title="Copy to clipboard" aria-label="Copy to clipboard"><i class="tooltiptext"></i></button></div><code class="language-shell hljs"><span class="hljs-meta">$</span><span class="bash"> hledger-ui --tree -f examples/bcexample.hledger   <span class="hljs-comment"># a multicurrency journal</span></span>
+</code></pre>
+<p><img src="images/home-ui-3.png" alt=""></p>
+<pre><div class="buttons"><button class="fa fa-copy clip-button" title="Copy to clipboard" aria-label="Copy to clipboard"><i class="tooltiptext"></i></button></div><code class="language-shell hljs"><span class="hljs-meta">$</span><span class="bash"> hledger-web    <span class="hljs-comment"># start the web UI</span></span>
+</code></pre>
+<p><img src="images/home-web-1.png" alt="">
+<img src="images/home-web-2.png" alt=""></p>
+<pre><div class="buttons"><button class="fa fa-copy clip-button" title="Copy to clipboard" aria-label="Copy to clipboard"><i class="tooltiptext"></i></button></div><code class="language-shell hljs"><span class="hljs-meta">$</span><span class="bash"> hledger-web -f examples/bcexample.hledger    <span class="hljs-comment"># from data by Martin Blais</span></span>
+</code></pre>
+<p><img src="images/home-web-3.png" alt=""></p>
+<!--
+What is planned for hledger ?
+
+More support for investing,
+more support for correctness and accounting/business rules,
+more input/output formats,
+more speed,
+more GUI,
+charts,
+better getting started experience.
+See also [ROADMAP](ROADMAP.html).
+-->
+<h2 id="who-made-this"><a class="header" href="#who-made-this">Who made this?</a></h2>
+<p>hledger is brought to you by <a href="http://joyful.com">Simon Michael</a>,
+who has been building and relying on this project since 2007, 
+and by <a href="CREDITS.html">140+ contributors</a>.</p>
+<p>We hope you too will find hledger/PTA useful in transforming your relationship with money and time.
+After enjoying some personal or organisational success with it,
+you might want to become one of the generous <strong><a href="sponsor.html">sponsors</a></strong>
+to help sustain this work. </p>
+<p><a name="help"></a>
+<a name="help-feedback"></a></p>
+<h2 id="where-to-go-next"><a class="header" href="#where-to-go-next">Where to go next?</a></h2>
+<p>Next, you could:</p>
+<ul>
+<li>Scan through the docs listed in the sidebar to your left. 
+(If it's not visible, click/tap the horizontal-lines icon at top left, or press the <code class="hljs">s</code> <a href="https://en.wikipedia.org/wiki/Access_key#Access_in_different_browsers">access key</a>.)</li>
+<li>You can also search this site quickly by using the magnifying-glass icon at top left, or 
+the <code class="hljs">/</code> access key.
+(Other access keys on this site: <code class="hljs">t</code> change theme, <code class="hljs">1</code> home page, <code class="hljs">2</code> recent changes, <code class="hljs">&lt;</code> previous page, <code class="hljs">&gt;</code> next page.)</li>
+<li>Check the <a href="faq.html">FAQ</a>.</li>
+<li>Do a tutorial:
+<a href="quickstart.html">Quick Start</a>,
+<a href="accounting.html">Accounting concepts</a>, or
+<a href="add.html">Easy workflow #1</a>,
+<a href="web.html">#2</a>, or
+<a href="ui.html">#3</a>.</li>
+<li>Become an expert: read or skim the <a href="hledger.html">hledger</a> user manual.</li>
+<li>Or just the <a href="hledger.html#common-tasks">COMMON TASKS</a>.</li>
+<li>Check out the <a href="hledger-ui.html">hledger-ui</a> and <a href="hledger-web.html">hledger-web</a> manuals.</li>
+<li>Browse the <a href="https://plaintextaccounting.org/#articles-blog-posts">blog posts</a> on plaintextaccounting.org.</li>
+<li>Watch <a href="videos.html">videos</a>, such as hledger fan's beginner lessons.</li>
+<li>Look at lots of <a href="https://github.com/simonmichael/hledger/tree/master/examples">example files</a>.</li>
+<li>Ask questions/introduce yourself in #hledger chat via <a href="http://matrix.hledger.org">matrix</a> or <a href="http://irc.hledger.org">IRC</a>.</li>
+<li>Browse the <a href="http://list.hledger.org">mail list</a>.</li>
+<li>Explore the other <a href="support.html">Support/Discussion</a> fora.</li>
+</ul>
+<style>
+
+#grabber {
+  text-align:center;
+  padding:1em 1em 0 1em;
+/*  border:2px solid limegreen; */
+  border-radius:8px; 
+  margin:1em;
+}
+#grabber .heading {
+  /*font-style: italic; */
+  font-size:x-large;
+  font-weight:bold;
+}
+
+.content h1 { 
+  font-size: 5em;
+  font-style: italic;
+  text-align:center;
+  margin: 0.5em 0 0;
+  display:block;
+}
+/* 
+.content h2 { 
+  text-align:center;
+  font-size: 2em;
+  margin-top:2em; 
+}
+*/
+#tagline {
+  font-size:xx-large;
+  font-style:italic; 
+  text-align:center;
+  margin:0 0 0.5em;
+}
+
+#leadingword {
+  font-weight:bold;
+  font-style:italic;
+  font-size:x-large;
+}
+
+#screenshots td {
+  border: 0 !important;
+  padding: 0 2em 0 0;
+}
+
+code::first-line {
+  font-weight:bold;
+}
+</style>
+
+                    </main>
+<style>
+#footer {
+    margin-top: 4em;
+    padding-top: 1em;
+    border-top: thin solid hsl(197, 37%, 91%);
+    color: rgb(204, 204, 204);
+    font-style: italic; 
+    font-size:  small;
+}
+#footer a {
+    color: rgb(204, 204, 204);
+    font-weight: bold;
+    white-space: nowrap;
+}
+</style>
+                    <div id="footer">
+                        <div id="comments">
+                            Your questions and feedback make this project better! 
+                            Please join 
+                            <a href="http://matrix.hledger.org">#hledger:matrix.org</a> or 
+                            <a href="http://irc.hledger.org">#hledger:libera.chat</a>,
+                            paste this page's full URL, 
+                            write your comment 
+                            (and if you have time, watch for a reply).
+                            Or,
+                            <a href="https://github.com/simonmichael/hledger_site/edit/master/src/index.md">edit this page</a>.
+                        </div>
+                    </div>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="foreign-trip-expenses.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left" accesskey="<">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="faq.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right" accesskey=">">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="foreign-trip-expenses.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left" accesskey="<">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="faq.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right" accesskey=">">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        <script type="text/javascript" src="highslide/highslide.js"></script>
+        <script type="text/javascript" src="js/jquery-1.11.0.min.js"></script>
+        <script type="text/javascript" src="js/site.js"></script>
+
+
+    
+
+<div class="highslide-container" style="padding: 0px; border: none; margin: 0px; position: absolute; left: 0px; top: 0px; width: 100%; z-index: 1001; direction: ltr;"><a class="highslide-loading" title="Click to cancel" href="javascript:;" style="position: absolute; top: -9999px; opacity: 0.75; z-index: 1;">Loading...</a><div style="display: none;"></div><table cellspacing="0" style="padding: 0px; border: none; margin: 0px; visibility: hidden; position: absolute; border-collapse: collapse; width: 0px;"><tbody style="padding: 0px; border: none; margin: 0px;"><tr style="padding: 0px; border: none; margin: 0px; height: auto;"><td style="padding: 0px; border: none; margin: 0px; line-height: 0; font-size: 0px; background: url(&quot;https://hledger.org/highslide/graphics/outlines/drop-shadow.png&quot;) 0px 0px; height: 20px; width: 20px;"></td><td style="padding: 0px; border: none; margin: 0px; line-height: 0; font-size: 0px; background: url(&quot;https://hledger.org/highslide/graphics/outlines/drop-shadow.png&quot;) 0px -40px; height: 20px; width: 20px;"></td><td style="padding: 0px; border: none; margin: 0px; line-height: 0; font-size: 0px; background: url(&quot;https://hledger.org/highslide/graphics/outlines/drop-shadow.png&quot;) -20px 0px; height: 20px; width: 20px;"></td></tr><tr style="padding: 0px; border: none; margin: 0px; height: auto;"><td style="padding: 0px; border: none; margin: 0px; line-height: 0; font-size: 0px; background: url(&quot;https://hledger.org/highslide/graphics/outlines/drop-shadow.png&quot;) 0px -80px; height: 20px; width: 20px;"></td><td class="drop-shadow highslide-outline" style="padding: 0px; border: none; margin: 0px; position: relative;"></td><td style="padding: 0px; border: none; margin: 0px; line-height: 0; font-size: 0px; background: url(&quot;https://hledger.org/highslide/graphics/outlines/drop-shadow.png&quot;) -20px -80px; height: 20px; width: 20px;"></td></tr><tr style="padding: 0px; border: none; margin: 0px; height: auto;"><td style="padding: 0px; border: none; margin: 0px; line-height: 0; font-size: 0px; background: url(&quot;https://hledger.org/highslide/graphics/outlines/drop-shadow.png&quot;) 0px -20px; height: 20px; width: 20px;"></td><td style="padding: 0px; border: none; margin: 0px; line-height: 0; font-size: 0px; background: url(&quot;https://hledger.org/highslide/graphics/outlines/drop-shadow.png&quot;) 0px -60px; height: 20px; width: 20px;"></td><td style="padding: 0px; border: none; margin: 0px; line-height: 0; font-size: 0px; background: url(&quot;https://hledger.org/highslide/graphics/outlines/drop-shadow.png&quot;) -20px -20px; height: 20px; width: 20px;"></td></tr></tbody></table></div></body></html>

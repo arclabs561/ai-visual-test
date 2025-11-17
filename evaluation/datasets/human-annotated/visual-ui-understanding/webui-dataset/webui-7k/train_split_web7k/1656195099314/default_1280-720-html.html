@@ -1,0 +1,179 @@
+<!DOCTYPE html><html class="client-js" lang="en" dir="ltr"><head>
+<meta charset="UTF-8">
+<title>Using EXPLAIN - PostgreSQL wiki</title>
+<script>document.documentElement.className = document.documentElement.className.replace( /(^|\s)client-nojs(\s|$)/, "$1client-js$2" );</script>
+<script>(window.RLQ=window.RLQ||[]).push(function(){mw.config.set({"wgCanonicalNamespace":"","wgCanonicalSpecialPageName":false,"wgNamespaceNumber":0,"wgPageName":"Using_EXPLAIN","wgTitle":"Using EXPLAIN","wgCurRevisionId":36840,"wgRevisionId":36840,"wgArticleId":257,"wgIsArticle":true,"wgIsRedirect":false,"wgAction":"view","wgUserName":null,"wgUserGroups":["*"],"wgCategories":["FAQ","Performance","PGAdmin"],"wgBreakFrames":false,"wgPageContentLanguage":"en","wgPageContentModel":"wikitext","wgSeparatorTransformTable":["",""],"wgDigitTransformTable":["",""],"wgDefaultDateFormat":"dmy","wgMonthNames":["","January","February","March","April","May","June","July","August","September","October","November","December"],"wgMonthNamesShort":["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"wgRelevantPageName":"Using_EXPLAIN","wgRelevantArticleId":257,"wgRequestId":"27acd6a45873664ac3bb8080","wgIsProbablyEditable":false,"wgRelevantPageIsProbablyEditable":false,"wgRestrictionEdit":[],"wgRestrictionMove":[]});mw.loader.state({"site.styles":"ready","noscript":"ready","user.styles":"ready","user":"ready","site":"ready","user.options":"ready","user.tokens":"loading","mediawiki.legacy.shared":"ready","mediawiki.legacy.commonPrint":"ready","mediawiki.sectionAnchor":"ready","mediawiki.skinning.interface":"ready","mediawiki.skinning.content.externallinks":"ready","skins.postgresql.styles":"ready"});mw.loader.implement("user.tokens@1i9goa3",function($,jQuery,require,module){/*@nomin*/mw.user.tokens.set({"editToken":"+\\","patrolToken":"+\\","watchToken":"+\\","csrfToken":"+\\"});
+});mw.loader.load(["mediawiki.page.startup","mediawiki.user","mediawiki.hidpi","mediawiki.page.ready","mediawiki.searchSuggest"]);});</script>
+<link rel="stylesheet" href="/load.php?debug=false&amp;lang=en&amp;modules=mediawiki.legacy.commonPrint%2Cshared%7Cmediawiki.sectionAnchor%7Cmediawiki.skinning.content.externallinks%7Cmediawiki.skinning.interface%7Cskins.postgresql.styles&amp;only=styles&amp;skin=postgresql">
+<script async="" src="/load.php?debug=false&amp;lang=en&amp;modules=startup&amp;only=scripts&amp;skin=postgresql"></script>
+<!--[if IE 6]><link rel="stylesheet" href="/skins/PostgreSQL/IE60Fixes.css?303" media="screen"/><![endif]--><!--[if IE 7]><link rel="stylesheet" href="/skins/PostgreSQL/IE70Fixes.css?303" media="screen"/><![endif]-->
+<style>
+.suggestions{overflow:hidden;position:absolute;top:0;left:0;width:0;border:0;z-index:1099;padding:0;margin:-1px 0 0 0}.suggestions-special{position:relative;background-color:#fff;cursor:pointer;border:1px solid #a2a9b1;margin:0;margin-top:-2px;display:none;padding:0.25em 0.25em;line-height:1.25em}.suggestions-results{background-color:#fff;cursor:pointer;border:1px solid #a2a9b1;padding:0;margin:0}.suggestions-result{color:#000;margin:0;line-height:1.5em;padding:0.01em 0.25em;text-align:left; overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.suggestions-result-current{background-color:#2a4b8d;color:#fff}.suggestions-special .special-label{color:#72777d;text-align:left}.suggestions-special .special-query{color:#000;font-style:italic;text-align:left}.suggestions-special .special-hover{background-color:#c8ccd1}.suggestions-result-current .special-label,.suggestions-result-current .special-query{color:#fff}.highlight{font-weight:bold}</style><style>
+.suggestions a.mw-searchSuggest-link,.suggestions a.mw-searchSuggest-link:hover,.suggestions a.mw-searchSuggest-link:active,.suggestions a.mw-searchSuggest-link:focus{color:#000;text-decoration:none}.suggestions-result-current a.mw-searchSuggest-link,.suggestions-result-current a.mw-searchSuggest-link:hover,.suggestions-result-current a.mw-searchSuggest-link:active,.suggestions-result-current a.mw-searchSuggest-link:focus{color:#fff}.suggestions a.mw-searchSuggest-link .special-query{ overflow:hidden;text-overflow:ellipsis;white-space:nowrap}</style><meta name="ResourceLoaderDynamicStyles" content="">
+<link rel="stylesheet" href="/load.php?debug=false&amp;lang=en&amp;modules=site.styles&amp;only=styles&amp;skin=postgresql">
+<meta name="generator" content="MediaWiki 1.31.16">
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="search" type="application/opensearchdescription+xml" href="/opensearch_desc.php" title="PostgreSQL wiki (en)">
+<link rel="EditURI" type="application/rsd+xml" href="https://wiki.postgresql.org/api.php?action=rsd">
+<link rel="alternate" type="application/atom+xml" title="PostgreSQL wiki Atom feed" href="/index.php?title=Special:RecentChanges&amp;feed=atom">
+<!--[if lt IE 9]><script src="/load.php?debug=false&amp;lang=en&amp;modules=html5shiv&amp;only=scripts&amp;skin=postgresql&amp;sync=1"></script><![endif]-->
+<script src="/load.php?debug=false&amp;lang=en&amp;modules=jquery%2Cmediawiki&amp;only=scripts&amp;skin=postgresql&amp;version=11qkgg0"></script></head>
+<body class="mediawiki ltr sitedir-ltr mw-hide-empty-elt ns-0 ns-subject page-Using_EXPLAIN rootpage-Using_EXPLAIN skin-postgresql action-view"><div id="globalWrapper">
+		<div id="column-content">
+			<div id="content" class="mw-body" role="main">
+				<a id="top"></a>
+									<div id="siteNotice"><div id="localNotice" lang="en" dir="ltr"><div class="mw-parser-output"><p><b><a rel="nofollow" class="external text" href="https://wiki.postgresql.org/wiki/WikiEditing">Want to edit, but don't see an edit button when logged in?  Click here.</a></b>
+</p></div></div></div>
+				<div class="mw-indicators mw-body-content">
+</div>
+				<h1 id="firstHeading" class="firstHeading" lang="en">Using EXPLAIN</h1>
+				
+				<div id="bodyContent" class="mw-body-content">
+					<div id="siteSub">From PostgreSQL wiki</div>
+					<div id="contentSub"></div>
+										<div id="jump-to-nav" class="mw-jump">Jump to: <a href="#column-one">navigation</a>, <a href="#searchInput">search</a></div>
+
+					<!-- start content -->
+					<div id="mw-content-text" lang="en" dir="ltr" class="mw-content-ltr"><div class="mw-parser-output"><p>Figuring out why a statement is taking so long to execute is done with the <a rel="nofollow" class="external text" href="http://www.postgresql.org/docs/current/static/sql-explain.html">EXPLAIN</a> command.  You can run EXPLAIN multiple ways; if you use EXPLAIN ANALYZE, it will actually run the statement and let you compare what the planner thought was going to happen with what actually did.  Note that if the statement changes data, that will also happen when you run with EXPLAIN ANALYZE; if you just use EXPLAIN the statement doesn't do anything to the database.
+</p><p>There are some tools available to help interpret EXPLAIN output:
+</p>
+<ul><li>pgadmin includes a visual EXPLAIN tool that helps map out what's actually happening.  See <a rel="nofollow" class="external text" href="http://www.postgresonline.com/journal/index.php?/archives/27-Reading-PgAdmin-Graphical-Explain-Plans.html">Reading PgAdmin Graphical Explain Plans</a>.</li>
+<li>Visual Explain, originally a <a rel="nofollow" class="external text" href="http://sources.redhat.com/rhdb/visualexplain.html">RedHat component</a> that has been kept current and improved by EnterpriseDB, comes bundled with the EnterpriseDB Advanced Server package.  It can be built to run against other PostgreSQL installations using the source code to their <a rel="nofollow" class="external text" href="http://www.enterprisedb.com/products/download.do">Developer Studio</a> package.</li>
+<li><a rel="nofollow" class="external text" href="https://explain.dalibo.com/">PostgreSQL execution plan visualizer</a> displays a visual tree of the query plan with several details per node (<a rel="nofollow" class="external text" href="https://github.com/dalibo/pev2">GitHub repository</a>). An <a rel="nofollow" class="external text" href="http://tatiyants.com/pev/">older version</a> exists, but does not render plans with parallel workers correctly (<a rel="nofollow" class="external text" href="http://tatiyants.com/postgres-query-plan-visualization/">blog post</a>, <a rel="nofollow" class="external text" href="https://github.com/AlexTatiyants/pev">GitHub repository</a>).</li>
+<li><a rel="nofollow" class="external text" href="http://explain.depesz.com/">explain.depesz.com</a> shows explain plan with extracted summarized times, and highlights based on chosen criteria.</li>
+<li><a rel="nofollow" class="external text" href="https://www.pgmustard.com/">pgMustard</a> is a commercial tool (with a free trial) which visualizes EXPLAIN output, and gives tips to improve performance.</li></ul>
+<p>And there are a few tutorials on this subject, many of which are titled "Explaining Explain". While many deal with direct fundamentals, they are listed here chronologically:
+</p>
+<ul><li><a rel="nofollow" class="external text" href="http://www.gtsm.com/oscon2003/toc.html">Efficient SQL</a> by Greg Sabino Mullane (2003)</li>
+<li>Explaining Explain:  <a rel="nofollow" class="external text" href="https://www.slideshare.net/xzilla/explaining-explain-227529779">pdf</a> by Robert Treat (2005)</li>
+<li><a rel="nofollow" class="external text" href="http://pooteeweet.org/files/phpworkso6/exlaining_explain.pdf">Explaining Explain</a> by Lukas Smith (2006)</li>
+<li><a rel="nofollow" class="external text" href="http://wiki.postgresql.org/images/4/45/Explaining_EXPLAIN.pdf">Explaining Explain</a> by Greg Stark (2008)</li>
+<li><a rel="nofollow" class="external text" href="http://neilconway.org/talks/executor.pdf">Query Execution Techniques in PostgreSQL</a> by Neil Conway</li>
+<li><a href="/wiki/Introduction_to_VACUUM,_ANALYZE,_EXPLAIN,_and_COUNT" title="Introduction to VACUUM, ANALYZE, EXPLAIN, and COUNT">Introduction to VACUUM, ANALYZE, EXPLAIN, and COUNT</a> by Jim Nasby</li>
+<li><a rel="nofollow" class="external text" href="https://sites.google.com/site/robertmhaas/presentations">The PostgreSQL Query Planner</a> by Robert Haas (2010)</li>
+<li><a rel="nofollow" class="external text" href="http://www.2ndquadrant.com/books/postgresql-9-0-high-performance/">PostgreSQL 9.0 High Performance</a> (2010) is a book with a long discussion of how to use EXPLAIN, read the resulting query plans, and make changes to get different plans.</li>
+<li><a rel="nofollow" class="external text" href="https://public.dalibo.com/exports/conferences/_archives/_2012/201211_explain/understanding_explain.pdf">Understanding Explain</a> by Guillaume Lelarge (2012) is a 42 page guide</li>
+<li><a rel="nofollow" class="external text" href="https://www.youtube.com/watch?v=mCwwFAl1pBU">EXPLAIN Explained</a> is a talk by Josh Berkus (2016)</li>
+<li><a rel="nofollow" class="external text" href="https://momjian.us/main/writings/pgsql/optimizer.pdf">Explaining the query optimizer</a> by Bruce Momjian (<a rel="nofollow" class="external text" href="https://video.fosdem.org/2016/h1309/explaining-the-postgres-query-optimizer.webm">2016 video</a> -- skip to 1:24:00 or so)</li>
+<li><a rel="nofollow" class="external text" href="https://www.pgmustard.com/blog/2019/04/02/postgres-indexes-for-absolute-beginners/">Reading Postgres query plans for beginners</a> by David Conlin (2018)</li>
+<li><a rel="nofollow" class="external text" href="https://www.vividcortex.com/blog/postgres-explain-explained">Postgres EXPLAIN Explained</a> by Baron Schwartz (2019)</li>
+<li><a rel="nofollow" class="external text" href="https://www.pgmustard.com/docs/explain">EXPLAIN glossary</a> by Michael Christofides (2020)</li></ul>
+<p>There is also a section in the online documentation that discusses performance tips:
+</p>
+<ul><li><a rel="nofollow" class="external text" href="http://www.postgresql.org/docs/current/interactive/performance-tips.html">Performance Tips</a></li></ul>
+<p>A common problem that causes the planner to make bad decisions is not keeping <a href="/wiki/Planner_Statistics" title="Planner Statistics">Planner Statistics</a> updated.  Another is leaving the tuning parameters that let the server know how memory is available at the very small defaults.  For example, in the stock configuration, sorts that take more than 1MB are swapped to disk as being too big to process in memory.  <a href="/wiki/Tuning_Your_PostgreSQL_Server" title="Tuning Your PostgreSQL Server">Tuning Your PostgreSQL Server</a> covers good practices for sizing the memory and other tuning parameters that most impact query planning.
+</p><p>One thing you do when stumped by a plan is to submit the full EXPLAIN ANALYZE output, along with the schema of the involved queries, to the <a rel="nofollow" class="external text" href="http://archives.postgresql.org/pgsql-performance/">pgsql-performance</a> mailing list. To get a useful reply more quickly, please read <a href="/wiki/SlowQueryQuestions" class="mw-redirect" title="SlowQueryQuestions">SlowQueryQuestions</a> before posting. Note that if you're not running a relatively current version of PostgreSQL, it's quite possible the answer you'll get is that the problem is resolved in a later one.  It may save you some time to try at least the most current update to the version you're using (i.e. upgrade to 11.6 if that's the current latest rev and you're using 11.3) and see if that improves the plan you get. 
+</p><p>An advanced technique here is to save your explain plans over time and see how they change as the amount of data in the table grows.  This can give you an idea if you're collecting statistics aggressively enough.  A simple pl/pgsql example is at <a rel="nofollow" class="external text" href="http://archives.postgresql.org/message-id/9359.1243290777@sss.pgh.pa.us">generic options for explain</a>.
+</p>
+<!-- 
+NewPP limit report
+Cached time: 20220624151232
+Cache expiry: 86400
+Dynamic content: false
+CPU time usage: 0.013 seconds
+Real time usage: 0.016 seconds
+Preprocessor visited node count: 3/1000000
+Preprocessor generated node count: 18/1000000
+Post‐expand include size: 0/2097152 bytes
+Template argument size: 0/2097152 bytes
+Highest expansion depth: 2/40
+Expensive parser function count: 0/100
+Unstrip recursion depth: 0/20
+Unstrip post‐expand size: 0/5000000 bytes
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%    2.551      1 Template:Languages
+100.00%    2.551      1 -total
+-->
+</div>
+<!-- Saved in parser cache with key wikidb:pcache:idhash:257-0!canonical and timestamp 20220624151232 and revision id 36840
+ -->
+</div><div class="printfooter">
+Retrieved from "<a dir="ltr" href="https://wiki.postgresql.org/index.php?title=Using_EXPLAIN&amp;oldid=36840">https://wiki.postgresql.org/index.php?title=Using_EXPLAIN&amp;oldid=36840</a>"</div>
+					<div id="catlinks" class="catlinks" data-mw="interface"><div id="mw-normal-catlinks" class="mw-normal-catlinks"><a href="/wiki/Special:Categories" title="Special:Categories">Categories</a>: <ul><li><a href="/wiki/Category:FAQ" title="Category:FAQ">FAQ</a></li><li><a href="/wiki/Category:Performance" title="Category:Performance">Performance</a></li><li><a href="/wiki/Category:PGAdmin" title="Category:PGAdmin">PGAdmin</a></li></ul></div></div>					<!-- end content -->
+										<div class="visualClear"></div>
+				</div>
+			</div>
+		</div>
+		<div id="column-one">
+			<h2>Navigation menu</h2>
+					<div id="p-cactions" class="portlet" role="navigation">
+			<h3>Views</h3>
+
+			<div class="pBody">
+				<ul>
+				<li id="ca-nstab-main" class="selected"><a href="/wiki/Using_EXPLAIN" title="View the content page [alt-shift-c]" accesskey="c">Page</a></li>
+				<li id="ca-talk" class="new"><a href="/index.php?title=Talk:Using_EXPLAIN&amp;action=edit&amp;redlink=1" rel="discussion" title="Discussion about the content page (page does not exist) [alt-shift-t]" accesskey="t">Discussion</a></li>
+				<li id="ca-viewsource"><a href="/index.php?title=Using_EXPLAIN&amp;action=edit" title="This page is protected.
+You can view its source [alt-shift-e]" accesskey="e">View source</a></li>
+				<li id="ca-history"><a href="/index.php?title=Using_EXPLAIN&amp;action=history" title="Past revisions of this page [alt-shift-h]" accesskey="h">History</a></li>
+				</ul>
+							</div>
+		</div>
+				<div class="portlet" id="p-personal" role="navigation">
+				<h3>Personal tools</h3>
+
+				<div class="pBody">
+					<ul>
+													<li id="pt-login"><a href="/index.php?title=Special:UserLogin&amp;returnto=Using+EXPLAIN" title="You must log in to edit any pages on this site. [alt-shift-o]" accesskey="o">Log in</a></li>
+											</ul>
+				</div>
+			</div>
+			<div class="portlet" id="p-logo" role="banner">
+				<a href="/wiki/Main_Page" class="mw-wiki-logo" title="Visit the main page"></a>
+			</div>
+				<div class="generated-sidebar portlet" id="p-navigation" role="navigation">
+		<h3>Navigation</h3>
+		<div class="pBody">
+							<ul>
+											<li id="n-mainpage"><a href="/wiki/Main_Page" title="Visit the main page [alt-shift-z]" accesskey="z">Main Page</a></li>
+											<li id="n-randompage"><a href="/wiki/Special:Random" title="Load a random page [alt-shift-x]" accesskey="x">Random page</a></li>
+											<li id="n-recentchanges"><a href="/wiki/Special:RecentChanges" title="A list of recent changes in the wiki [alt-shift-r]" accesskey="r">Recent changes</a></li>
+											<li id="n-help"><a href="https://www.mediawiki.org/wiki/Special:MyLanguage/Help:Contents" title="The place to find out">Help</a></li>
+									</ul>
+					</div>
+		</div>
+			<div id="p-search" class="portlet" role="search">
+			<h3><label for="searchInput">Search</label></h3>
+
+			<div id="searchBody" class="pBody">
+				<form action="/index.php" id="searchform">
+					<input type="hidden" name="title" value="Special:Search">
+					<input type="search" name="search" placeholder="Search PostgreSQL wiki" title="Search PostgreSQL wiki [alt-shift-f]" accesskey="f" id="searchInput" autocomplete="off">
+					<input type="submit" name="go" value="Go" title="Go to a page with this exact name if it exists" id="searchGoButton" class="searchButton">&nbsp;
+						<input type="submit" name="fulltext" value="Search" title="Search the pages for this text" id="mw-searchButton" class="searchButton">
+				</form>
+
+							</div>
+		</div>
+			<div class="portlet" id="p-tb" role="navigation">
+			<h3>Tools</h3>
+
+			<div class="pBody">
+				<ul>
+											<li id="t-whatlinkshere"><a href="/wiki/Special:WhatLinksHere/Using_EXPLAIN" title="A list of all wiki pages that link here [alt-shift-j]" accesskey="j">What links here</a></li>
+											<li id="t-recentchangeslinked"><a href="/wiki/Special:RecentChangesLinked/Using_EXPLAIN" rel="nofollow" title="Recent changes in pages linked from this page [alt-shift-k]" accesskey="k">Related changes</a></li>
+											<li id="t-specialpages"><a href="/wiki/Special:SpecialPages" title="A list of all special pages [alt-shift-q]" accesskey="q">Special pages</a></li>
+											<li id="t-print"><a href="/index.php?title=Using_EXPLAIN&amp;printable=yes" rel="alternate" title="Printable version of this page [alt-shift-p]" accesskey="p">Printable version</a></li>
+											<li id="t-permalink"><a href="/index.php?title=Using_EXPLAIN&amp;oldid=36840" title="Permanent link to this revision of the page">Permanent link</a></li>
+											<li id="t-info"><a href="/index.php?title=Using_EXPLAIN&amp;action=info" title="More information about this page">Page information</a></li>
+									</ul>
+							</div>
+		</div>
+			</div><!-- end of the left (by default at least) column -->
+		<div class="visualClear"></div>
+					<div id="footer" role="contentinfo">
+						<div id="f-poweredbyico">
+									<a href="//www.mediawiki.org/"><img src="/resources/assets/poweredby_mediawiki_88x31.png" alt="Powered by MediaWiki" srcset="/resources/assets/poweredby_mediawiki_132x47.png 1.5x, /resources/assets/poweredby_mediawiki_176x62.png 2x" width="88" height="31"></a>
+							</div>
+					<ul id="f-list">
+									<li id="lastmod"> This page was last edited on 13 April 2022, at 12:16.</li>
+									<li id="privacy"><a href="/wiki/PostgreSQL_wiki:Privacy_policy" title="PostgreSQL wiki:Privacy policy">Privacy policy</a></li>
+									<li id="about"><a href="/wiki/PostgreSQL_wiki:About" title="PostgreSQL wiki:About">About PostgreSQL wiki</a></li>
+									<li id="disclaimer"><a href="/wiki/PostgreSQL_wiki:General_disclaimer" title="PostgreSQL wiki:General disclaimer">Disclaimers</a></li>
+							</ul>
+		</div>
+		</div>
+		<script>(window.RLQ=window.RLQ||[]).push(function(){mw.config.set({"wgPageParseReport":{"limitreport":{"cputime":"0.013","walltime":"0.016","ppvisitednodes":{"value":3,"limit":1000000},"ppgeneratednodes":{"value":18,"limit":1000000},"postexpandincludesize":{"value":0,"limit":2097152},"templateargumentsize":{"value":0,"limit":2097152},"expansiondepth":{"value":2,"limit":40},"expensivefunctioncount":{"value":0,"limit":100},"unstrip-depth":{"value":0,"limit":20},"unstrip-size":{"value":0,"limit":5000000},"timingprofile":["100.00%    2.551      1 Template:Languages","100.00%    2.551      1 -total"]},"cachereport":{"timestamp":"20220624151232","ttl":86400,"transientcontent":false}}});});</script><script>(window.RLQ=window.RLQ||[]).push(function(){mw.config.set({"wgBackendResponseTime":139});});</script>
+<div class="suggestions" style="display: none; font-size: 11.4617px;"><div class="suggestions-results"></div><div class="suggestions-special"></div></div></body></html>

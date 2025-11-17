@@ -1,0 +1,320 @@
+<!DOCTYPE html><html lang="en-US"><!--<![endif]--><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<title>Unhelpful abstractions | Dave Cheney</title>
+<link rel="profile" href="https://gmpg.org/xfn/11">
+<link rel="pingback" href="https://dave.cheney.net/xmlrpc.php">
+<!--[if lt IE 9]>
+<script src="https://dave.cheney.net/wp-content/themes/twentytwelve/js/html5.js?ver=3.7.0" type="text/javascript"></script>
+<![endif]-->
+<meta name="robots" content="max-image-preview:large">
+<link rel="dns-prefetch" href="//fonts.googleapis.com">
+<link rel="dns-prefetch" href="//s.w.org">
+<link href="https://fonts.gstatic.com" crossorigin="" rel="preconnect">
+<link rel="alternate" type="application/rss+xml" title="Dave Cheney » Feed" href="https://dave.cheney.net/feed">
+<link rel="alternate" type="application/rss+xml" title="Dave Cheney » Comments Feed" href="https://dave.cheney.net/comments/feed">
+		<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/13.1.0\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/13.1.0\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/dave.cheney.net\/wp-includes\/js\/wp-emoji-release.min.js?ver=5.8.4"}};
+			!function(e,a,t){var n,r,o,i=a.createElement("canvas"),p=i.getContext&&i.getContext("2d");function s(e,t){var a=String.fromCharCode;p.clearRect(0,0,i.width,i.height),p.fillText(a.apply(this,e),0,0);e=i.toDataURL();return p.clearRect(0,0,i.width,i.height),p.fillText(a.apply(this,t),0,0),e===i.toDataURL()}function c(e){var t=a.createElement("script");t.src=e,t.defer=t.type="text/javascript",a.getElementsByTagName("head")[0].appendChild(t)}for(o=Array("flag","emoji"),t.supports={everything:!0,everythingExceptFlag:!0},r=0;r<o.length;r++)t.supports[o[r]]=function(e){if(!p||!p.fillText)return!1;switch(p.textBaseline="top",p.font="600 32px Arial",e){case"flag":return s([127987,65039,8205,9895,65039],[127987,65039,8203,9895,65039])?!1:!s([55356,56826,55356,56819],[55356,56826,8203,55356,56819])&&!s([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]);case"emoji":return!s([10084,65039,8205,55357,56613],[10084,65039,8203,55357,56613])}return!1}(o[r]),t.supports.everything=t.supports.everything&&t.supports[o[r]],"flag"!==o[r]&&(t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&t.supports[o[r]]);t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&!t.supports.flag,t.DOMReady=!1,t.readyCallback=function(){t.DOMReady=!0},t.supports.everything||(n=function(){t.readyCallback()},a.addEventListener?(a.addEventListener("DOMContentLoaded",n,!1),e.addEventListener("load",n,!1)):(e.attachEvent("onload",n),a.attachEvent("onreadystatechange",function(){"complete"===a.readyState&&t.readyCallback()})),(n=t.source||{}).concatemoji?c(n.concatemoji):n.wpemoji&&n.twemoji&&(c(n.twemoji),c(n.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script><script src="https://dave.cheney.net/wp-includes/js/wp-emoji-release.min.js?ver=5.8.4" type="text/javascript" defer=""></script>
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	<link rel="stylesheet" id="wp-block-library-css" href="https://dave.cheney.net/wp-includes/css/dist/block-library/style.min.css?ver=5.8.4" type="text/css" media="all">
+<style id="wp-block-library-theme-inline-css" type="text/css">
+#start-resizable-editor-section{display:none}.wp-block-audio figcaption{color:#555;font-size:13px;text-align:center}.is-dark-theme .wp-block-audio figcaption{color:hsla(0,0%,100%,.65)}.wp-block-code{font-family:Menlo,Consolas,monaco,monospace;color:#1e1e1e;padding:.8em 1em;border:1px solid #ddd;border-radius:4px}.wp-block-embed figcaption{color:#555;font-size:13px;text-align:center}.is-dark-theme .wp-block-embed figcaption{color:hsla(0,0%,100%,.65)}.blocks-gallery-caption{color:#555;font-size:13px;text-align:center}.is-dark-theme .blocks-gallery-caption{color:hsla(0,0%,100%,.65)}.wp-block-image figcaption{color:#555;font-size:13px;text-align:center}.is-dark-theme .wp-block-image figcaption{color:hsla(0,0%,100%,.65)}.wp-block-pullquote{border-top:4px solid;border-bottom:4px solid;margin-bottom:1.75em;color:currentColor}.wp-block-pullquote__citation,.wp-block-pullquote cite,.wp-block-pullquote footer{color:currentColor;text-transform:uppercase;font-size:.8125em;font-style:normal}.wp-block-quote{border-left:.25em solid;margin:0 0 1.75em;padding-left:1em}.wp-block-quote cite,.wp-block-quote footer{color:currentColor;font-size:.8125em;position:relative;font-style:normal}.wp-block-quote.has-text-align-right{border-left:none;border-right:.25em solid;padding-left:0;padding-right:1em}.wp-block-quote.has-text-align-center{border:none;padding-left:0}.wp-block-quote.is-large,.wp-block-quote.is-style-large{border:none}.wp-block-search .wp-block-search__label{font-weight:700}.wp-block-group.has-background{padding:1.25em 2.375em;margin-top:0;margin-bottom:0}.wp-block-separator{border:none;border-bottom:2px solid;margin-left:auto;margin-right:auto;opacity:.4}.wp-block-separator:not(.is-style-wide):not(.is-style-dots){width:100px}.wp-block-separator.has-background:not(.is-style-dots){border-bottom:none;height:1px}.wp-block-separator.has-background:not(.is-style-wide):not(.is-style-dots){height:2px}.wp-block-table thead{border-bottom:3px solid}.wp-block-table tfoot{border-top:3px solid}.wp-block-table td,.wp-block-table th{padding:.5em;border:1px solid;word-break:normal}.wp-block-table figcaption{color:#555;font-size:13px;text-align:center}.is-dark-theme .wp-block-table figcaption{color:hsla(0,0%,100%,.65)}.wp-block-video figcaption{color:#555;font-size:13px;text-align:center}.is-dark-theme .wp-block-video figcaption{color:hsla(0,0%,100%,.65)}.wp-block-template-part.has-background{padding:1.25em 2.375em;margin-top:0;margin-bottom:0}#end-resizable-editor-section{display:none}
+</style>
+<link rel="stylesheet" id="twentytwelve-fonts-css" href="https://fonts.googleapis.com/css?family=Open+Sans%3A400italic%2C700italic%2C400%2C700&amp;subset=latin%2Clatin-ext&amp;display=fallback" type="text/css" media="all">
+<link rel="stylesheet" id="twentytwelve-style-css" href="https://dave.cheney.net/wp-content/themes/twentytwelve/style.css?ver=20190507" type="text/css" media="all">
+<link rel="stylesheet" id="twentytwelve-block-style-css" href="https://dave.cheney.net/wp-content/themes/twentytwelve/css/blocks.css?ver=20190406" type="text/css" media="all">
+<!--[if lt IE 9]>
+<link rel='stylesheet' id='twentytwelve-ie-css'  href='https://dave.cheney.net/wp-content/themes/twentytwelve/css/ie.css?ver=20150214' type='text/css' media='all' />
+<![endif]-->
+<script type="text/javascript" src="https://dave.cheney.net/wp-includes/js/jquery/jquery.min.js?ver=3.6.0" id="jquery-core-js"></script>
+<script type="text/javascript" src="https://dave.cheney.net/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.3.2" id="jquery-migrate-js"></script>
+<link rel="https://api.w.org/" href="https://dave.cheney.net/wp-json/"><link rel="alternate" type="application/json" href="https://dave.cheney.net/wp-json/wp/v2/posts/2167"><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://dave.cheney.net/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://dave.cheney.net/wp-includes/wlwmanifest.xml"> 
+<meta name="generator" content="WordPress 5.8.4">
+<link rel="canonical" href="https://dave.cheney.net/2016/02/06/unhelpful-abstractions">
+<link rel="shortlink" href="https://dave.cheney.net/?p=2167">
+<link rel="alternate" type="application/json+oembed" href="https://dave.cheney.net/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fdave.cheney.net%2F2016%2F02%2F06%2Funhelpful-abstractions">
+		<style type="text/css" id="wp-custom-css">
+			.wp-block-code code {
+    display: block;
+    white-space: pre;
+    overflow-wrap: break-word;
+}
+
+.wp-block-preformatted {
+    white-space: pre;
+}		</style>
+		</head>
+
+<body class="post-template-default single single-post postid-2167 single-format-standard wp-embed-responsive custom-font-enabled single-author">
+<div id="page" class="hfeed site">
+	<header id="masthead" class="site-header" role="banner">
+		<hgroup>
+			<h1 class="site-title"><a href="https://dave.cheney.net/" title="Dave Cheney" rel="home">Dave Cheney</a></h1>
+			<h2 class="site-description">The acme of foolishness</h2>
+		</hgroup>
+
+		<nav id="site-navigation" class="main-navigation" role="navigation">
+			<button class="menu-toggle">Menu</button>
+			<a class="assistive-text" href="#content" title="Skip to content">Skip to content</a>
+			<div class="menu-topnav-container"><ul id="menu-topnav" class="nav-menu"><li id="menu-item-3737" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3737"><a href="https://dave.cheney.net/high-performance-go">High Performance Go</a></li>
+<li id="menu-item-3652" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3652"><a href="https://dave.cheney.net/practical-go">Practical Go</a></li>
+<li id="menu-item-4312" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-4312"><a href="https://dave.cheney.net/internets-of-interest">Internets of Interest</a></li>
+<li id="menu-item-1818" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-1818"><a href="https://dave.cheney.net/about">About</a>
+<ul class="sub-menu">
+	<li id="menu-item-3744" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-3744"><a href="/feed/atom">RSS</a></li>
+</ul>
+</li>
+</ul></div>		</nav><!-- #site-navigation -->
+
+			</header><!-- #masthead -->
+
+	<div id="main" class="wrapper">
+
+	<div id="primary" class="site-content">
+		<div id="content" role="main">
+
+			
+				
+	<article id="post-2167" class="post-2167 post type-post status-publish format-standard hentry category-golang category-programming-2 tag-abstraction tag-design">
+				<header class="entry-header">
+			
+						<h1 class="entry-title">Unhelpful abstractions</h1>
+								</header><!-- .entry-header -->
+
+				<div class="entry-content">
+			<p><a href="http://www.sandimetz.com/blog/2016/1/20/the-wrong-abstraction">Sandi Metz’s post on abstraction</a> struck a chord with me recently. I was working with a piece of code which looked like this (in pseudo code):</p>
+<pre>func Start() {
+        const filename = "..."
+        createOuputFile(filename)
+        go run(filename)
+}</pre>
+<p>It turned out that <code>createOutputFile</code> was written in an obscure way which first caused me to look at it more closely.&nbsp;Why the code expected the file to exist before starting wasn’t immediately clear. It may have been because some other goroutine was expecting the file to exist on disk, even if nothing had been written yet (slight race smell), or more likely the necessary information was not available for the job itself to create the file with the correct permissions. This calls for a&nbsp;<em>refactoring!</em></p>
+<p>There is a well known UNIX utility that provides these semantics, <code>touch(1)</code>. So, I reasoned,&nbsp;<code>createOutputFile</code> is really <code>touch</code> plus the ability to set file permissions, which the former was hard coded to do implicitly. This was&nbsp;a job for <em>abstraction!</em></p>
+<p>How would you write the signature for <code>TouchFile</code>? Here is what I came up with:</p>
+<pre>// TouchFile ensures path exists, or creates it using
+// the supplied file mode.
+func TouchFile(path string, mode os.FileMode) error</pre>
+<p>This looked pretty reasonable, and was a nice generalisation over the previous function. <code>TouchFile</code> makes setting the file mode on creation, the primary reason why this code existed in the first place, explicit.</p>
+<p>However, this is&nbsp;<em>precisely</em> the train of thought that Metz warned of&nbsp;in her post. By generalising this function I had made its API <em>worse</em>.</p>
+<p>Specifically, now every caller to this function has to pass in a <code>mode</code> value, even if the file exists, even if they don’t really care and are happy with a default file mode.&nbsp;Worse still, <code>mode</code> is only applied <em>if the file is not already present</em>. Not only had I made this function harder to use in its default use case, I’d added a footgun to the API that someone might call this function expecting it to <em>update</em> the mode of an existing file.</p>
+<p>The second clue that I was heading in the wrong direction was the implementation of <code>TouchFile </code>itself:</p>
+<pre>func TouchFile(path string, mode os.FileMode) error {
+        f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, mode)
+        if err != nil {
+                return err
+        }
+        return f.Close()
+}</pre>
+<p><code>TouchFile</code> just calls <code>os.OpenFile</code> passing in the right flags to get the create-if-missing semantics it wants. You still have to pass in the mode, because <code>os.OpenFile</code> requires a mode,&nbsp;so the utility of <code>TouchFile</code> as a wrapper is undermined by the cognitive overhead of having to remember its quirks.</p>
+<p>Coming to my senses, I reverted my change and replaced <code>createOutputFile</code> with a direct call to <code>os.OpenFile</code>.</p>
+<p>Whereas someone reading this code&nbsp;and seeing a call to <code>TouchFile</code> may think that the goal is to ensure the file exists, will miss the subtle point that purpose of <code>Start</code> was to ensure that the file&nbsp;exists<em> with the right permission</em>. By making a direct call to the&nbsp;<code>os</code>&nbsp;package in body of the function it becomes explicit to the next reader, who already knows the <code>os</code> package, that the file is being created explicitly is to set the mode.</p>
+<p>I realised that I hadn’t made things simpler by adding this abstraction, instead I’d made them more opaque. Sometimes it’s better to be explicit than abstract.</p>
+<div class="yarpp yarpp-related yarpp-related-website yarpp-template-list">
+<!-- YARPP List -->
+<h3>Related posts:</h3><ol>
+<li><a href="https://dave.cheney.net/2013/01/19/what-is-the-zero-value-and-why-is-it-useful" rel="bookmark" title="What is the zero value, and why is it useful?">What is the zero value, and why is it useful? </a></li>
+<li><a href="https://dave.cheney.net/2016/06/12/stack-traces-and-the-errors-package" rel="bookmark" title="Stack traces and the errors package">Stack traces and the errors package </a></li>
+<li><a href="https://dave.cheney.net/2016/04/27/dont-just-check-errors-handle-them-gracefully" rel="bookmark" title="Don’t just check errors, handle them gracefully">Don’t just check errors, handle them gracefully </a></li>
+<li><a href="https://dave.cheney.net/2015/11/05/lets-talk-about-logging" rel="bookmark" title="Let’s talk about logging">Let’s talk about logging </a></li>
+</ol>
+</div>
+					</div><!-- .entry-content -->
+		
+		<footer class="entry-meta">
+			This entry was posted in <a href="https://dave.cheney.net/category/golang" rel="category tag">Go</a>, <a href="https://dave.cheney.net/category/programming-2" rel="category tag">Programming</a> and tagged <a href="https://dave.cheney.net/tag/abstraction" rel="tag">abstraction</a>, <a href="https://dave.cheney.net/tag/design" rel="tag">design</a> on <a href="https://dave.cheney.net/2016/02/06/unhelpful-abstractions" title="3:40 pm" rel="bookmark"><time class="entry-date" datetime="2016-02-06T15:40:06+11:00">February 6, 2016</time></a><span class="by-author"> by <span class="author vcard"><a class="url fn n" href="https://dave.cheney.net/author/davecheney" title="View all posts by Dave Cheney" rel="author">Dave Cheney</a></span></span>.								</footer><!-- .entry-meta -->
+	</article><!-- #post -->
+
+				<nav class="nav-single">
+					<h3 class="assistive-text">Post navigation</h3>
+					<span class="nav-previous"><a href="https://dave.cheney.net/2016/01/18/cgo-is-not-go" rel="prev"><span class="meta-nav">←</span> cgo is not Go</a></span>
+					<span class="nav-next"><a href="https://dave.cheney.net/2016/02/29/investigate-your-package-dependencies-with-prdeps-and-unix" rel="next">Investigate your package dependencies with prdeps and Unix <span class="meta-nav">→</span></a></span>
+				</nav><!-- .nav-single -->
+
+				
+<div id="comments" class="comments-area">
+
+	
+	
+	
+</div><!-- #comments .comments-area -->
+
+			
+		</div><!-- #content -->
+	</div><!-- #primary -->
+
+
+			<div id="secondary" class="widget-area" role="complementary">
+			<aside id="linkcat-30" class="widget widget_links"><h3 class="widget-title">Elsewhere</h3>
+	<ul class="xoxo blogroll">
+<li><a href="https://twitter.com/davecheney" rel="me"><img src="https://twitter.com/favicon.ico" alt="@davecheney"> @davecheney</a></li>
+<li><a href="https://www.linkedin.com/in/dave-cheney-672060205/" rel="me" target="_blank">LinkedIn</a></li>
+<li><a href="http://serverfault.com/users/301/dave-cheney" rel="me">Serverfault</a></li>
+<li><a href="http://stackoverflow.com/users/6449/dave-cheney" rel="me">Stackoverflow</a></li>
+
+	</ul>
+</aside>
+<aside id="categories-2" class="widget widget_categories"><h3 class="widget-title">Categories</h3>
+			<ul>
+					<li class="cat-item cat-item-43"><a href="https://dave.cheney.net/category/economy">Economy</a>
+</li>
+	<li class="cat-item cat-item-29"><a href="https://dave.cheney.net/category/golang">Go</a>
+</li>
+	<li class="cat-item cat-item-87"><a href="https://dave.cheney.net/category/hardware-hacking">Hardware Hacking</a>
+</li>
+	<li class="cat-item cat-item-46"><a href="https://dave.cheney.net/category/history">History</a>
+</li>
+	<li class="cat-item cat-item-257"><a href="https://dave.cheney.net/category/internets-of-interest" title="A short form potpourri of links of note.">Internets of interest</a>
+</li>
+	<li class="cat-item cat-item-44"><a href="https://dave.cheney.net/category/photography">Photography</a>
+</li>
+	<li class="cat-item cat-item-36"><a href="https://dave.cheney.net/category/programming-2">Programming</a>
+</li>
+	<li class="cat-item cat-item-165"><a href="https://dave.cheney.net/category/retrochallenge">Retrochallenge</a>
+</li>
+	<li class="cat-item cat-item-114"><a href="https://dave.cheney.net/category/small-ideas">Small ideas</a>
+</li>
+	<li class="cat-item cat-item-1"><a href="https://dave.cheney.net/category/uncategorized">Uncategorized</a>
+</li>
+	<li class="cat-item cat-item-28"><a href="https://dave.cheney.net/category/useless-trivia">Useless Trivia</a>
+</li>
+			</ul>
+
+			</aside><aside id="archives-4" class="widget widget_archive"><h3 class="widget-title">Archives</h3>
+			<ul>
+					<li><a href="https://dave.cheney.net/2021/01">January 2021</a></li>
+	<li><a href="https://dave.cheney.net/2020/12">December 2020</a></li>
+	<li><a href="https://dave.cheney.net/2020/06">June 2020</a></li>
+	<li><a href="https://dave.cheney.net/2020/05">May 2020</a></li>
+	<li><a href="https://dave.cheney.net/2020/04">April 2020</a></li>
+	<li><a href="https://dave.cheney.net/2020/03">March 2020</a></li>
+	<li><a href="https://dave.cheney.net/2020/02">February 2020</a></li>
+	<li><a href="https://dave.cheney.net/2019/12">December 2019</a></li>
+	<li><a href="https://dave.cheney.net/2019/11">November 2019</a></li>
+	<li><a href="https://dave.cheney.net/2019/10">October 2019</a></li>
+	<li><a href="https://dave.cheney.net/2019/09">September 2019</a></li>
+	<li><a href="https://dave.cheney.net/2019/08">August 2019</a></li>
+	<li><a href="https://dave.cheney.net/2019/07">July 2019</a></li>
+	<li><a href="https://dave.cheney.net/2019/06">June 2019</a></li>
+	<li><a href="https://dave.cheney.net/2019/05">May 2019</a></li>
+	<li><a href="https://dave.cheney.net/2019/04">April 2019</a></li>
+	<li><a href="https://dave.cheney.net/2019/02">February 2019</a></li>
+	<li><a href="https://dave.cheney.net/2019/01">January 2019</a></li>
+	<li><a href="https://dave.cheney.net/2018/12">December 2018</a></li>
+	<li><a href="https://dave.cheney.net/2018/11">November 2018</a></li>
+	<li><a href="https://dave.cheney.net/2018/10">October 2018</a></li>
+	<li><a href="https://dave.cheney.net/2018/09">September 2018</a></li>
+	<li><a href="https://dave.cheney.net/2018/08">August 2018</a></li>
+	<li><a href="https://dave.cheney.net/2018/07">July 2018</a></li>
+	<li><a href="https://dave.cheney.net/2018/05">May 2018</a></li>
+	<li><a href="https://dave.cheney.net/2018/01">January 2018</a></li>
+	<li><a href="https://dave.cheney.net/2017/12">December 2017</a></li>
+	<li><a href="https://dave.cheney.net/2017/11">November 2017</a></li>
+	<li><a href="https://dave.cheney.net/2017/09">September 2017</a></li>
+	<li><a href="https://dave.cheney.net/2017/08">August 2017</a></li>
+	<li><a href="https://dave.cheney.net/2017/07">July 2017</a></li>
+	<li><a href="https://dave.cheney.net/2017/06">June 2017</a></li>
+	<li><a href="https://dave.cheney.net/2017/04">April 2017</a></li>
+	<li><a href="https://dave.cheney.net/2017/03">March 2017</a></li>
+	<li><a href="https://dave.cheney.net/2017/02">February 2017</a></li>
+	<li><a href="https://dave.cheney.net/2017/01">January 2017</a></li>
+	<li><a href="https://dave.cheney.net/2016/12">December 2016</a></li>
+	<li><a href="https://dave.cheney.net/2016/11">November 2016</a></li>
+	<li><a href="https://dave.cheney.net/2016/10">October 2016</a></li>
+	<li><a href="https://dave.cheney.net/2016/09">September 2016</a></li>
+	<li><a href="https://dave.cheney.net/2016/08">August 2016</a></li>
+	<li><a href="https://dave.cheney.net/2016/06">June 2016</a></li>
+	<li><a href="https://dave.cheney.net/2016/05">May 2016</a></li>
+	<li><a href="https://dave.cheney.net/2016/04">April 2016</a></li>
+	<li><a href="https://dave.cheney.net/2016/03">March 2016</a></li>
+	<li><a href="https://dave.cheney.net/2016/02">February 2016</a></li>
+	<li><a href="https://dave.cheney.net/2016/01">January 2016</a></li>
+	<li><a href="https://dave.cheney.net/2015/12">December 2015</a></li>
+	<li><a href="https://dave.cheney.net/2015/11">November 2015</a></li>
+	<li><a href="https://dave.cheney.net/2015/10">October 2015</a></li>
+	<li><a href="https://dave.cheney.net/2015/09">September 2015</a></li>
+	<li><a href="https://dave.cheney.net/2015/08">August 2015</a></li>
+	<li><a href="https://dave.cheney.net/2015/07">July 2015</a></li>
+	<li><a href="https://dave.cheney.net/2015/06">June 2015</a></li>
+	<li><a href="https://dave.cheney.net/2015/05">May 2015</a></li>
+	<li><a href="https://dave.cheney.net/2015/03">March 2015</a></li>
+	<li><a href="https://dave.cheney.net/2015/02">February 2015</a></li>
+	<li><a href="https://dave.cheney.net/2015/01">January 2015</a></li>
+	<li><a href="https://dave.cheney.net/2014/12">December 2014</a></li>
+	<li><a href="https://dave.cheney.net/2014/11">November 2014</a></li>
+	<li><a href="https://dave.cheney.net/2014/10">October 2014</a></li>
+	<li><a href="https://dave.cheney.net/2014/09">September 2014</a></li>
+	<li><a href="https://dave.cheney.net/2014/08">August 2014</a></li>
+	<li><a href="https://dave.cheney.net/2014/07">July 2014</a></li>
+	<li><a href="https://dave.cheney.net/2014/06">June 2014</a></li>
+	<li><a href="https://dave.cheney.net/2014/05">May 2014</a></li>
+	<li><a href="https://dave.cheney.net/2014/04">April 2014</a></li>
+	<li><a href="https://dave.cheney.net/2014/03">March 2014</a></li>
+	<li><a href="https://dave.cheney.net/2014/02">February 2014</a></li>
+	<li><a href="https://dave.cheney.net/2014/01">January 2014</a></li>
+	<li><a href="https://dave.cheney.net/2013/12">December 2013</a></li>
+	<li><a href="https://dave.cheney.net/2013/11">November 2013</a></li>
+	<li><a href="https://dave.cheney.net/2013/10">October 2013</a></li>
+	<li><a href="https://dave.cheney.net/2013/09">September 2013</a></li>
+	<li><a href="https://dave.cheney.net/2013/08">August 2013</a></li>
+	<li><a href="https://dave.cheney.net/2013/07">July 2013</a></li>
+	<li><a href="https://dave.cheney.net/2013/06">June 2013</a></li>
+	<li><a href="https://dave.cheney.net/2013/05">May 2013</a></li>
+	<li><a href="https://dave.cheney.net/2013/04">April 2013</a></li>
+	<li><a href="https://dave.cheney.net/2013/01">January 2013</a></li>
+	<li><a href="https://dave.cheney.net/2012/12">December 2012</a></li>
+	<li><a href="https://dave.cheney.net/2012/11">November 2012</a></li>
+	<li><a href="https://dave.cheney.net/2012/10">October 2012</a></li>
+	<li><a href="https://dave.cheney.net/2012/09">September 2012</a></li>
+	<li><a href="https://dave.cheney.net/2012/08">August 2012</a></li>
+	<li><a href="https://dave.cheney.net/2012/02">February 2012</a></li>
+	<li><a href="https://dave.cheney.net/2012/01">January 2012</a></li>
+	<li><a href="https://dave.cheney.net/2011/11">November 2011</a></li>
+	<li><a href="https://dave.cheney.net/2011/10">October 2011</a></li>
+	<li><a href="https://dave.cheney.net/2011/08">August 2011</a></li>
+	<li><a href="https://dave.cheney.net/2011/07">July 2011</a></li>
+	<li><a href="https://dave.cheney.net/2011/06">June 2011</a></li>
+	<li><a href="https://dave.cheney.net/2011/05">May 2011</a></li>
+	<li><a href="https://dave.cheney.net/2011/04">April 2011</a></li>
+	<li><a href="https://dave.cheney.net/2011/03">March 2011</a></li>
+	<li><a href="https://dave.cheney.net/2011/02">February 2011</a></li>
+	<li><a href="https://dave.cheney.net/2010/11">November 2010</a></li>
+	<li><a href="https://dave.cheney.net/2010/10">October 2010</a></li>
+			</ul>
+
+			</aside><aside id="text-2" class="widget widget_text"><h3 class="widget-title">License</h3>			<div class="textwidget"><a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons Licence" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a><br>This work is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.</div>
+		</aside>		</div><!-- #secondary -->
+		</div><!-- #main .wrapper -->
+	<footer id="colophon" role="contentinfo">
+		<div class="site-info">
+									<a href="https://wordpress.org/" class="imprint" title="Semantic Personal Publishing Platform">
+				Proudly powered by WordPress			</a>
+		</div><!-- .site-info -->
+	</footer><!-- #colophon -->
+</div><!-- #page -->
+
+<link rel="stylesheet" id="yarppRelatedCss-css" href="https://dave.cheney.net/wp-content/plugins/yet-another-related-posts-plugin/style/related.css?ver=5.27.8" type="text/css" media="all">
+<script type="text/javascript" src="https://dave.cheney.net/wp-content/themes/twentytwelve/js/navigation.js?ver=20141205" id="twentytwelve-navigation-js"></script>
+<script type="text/javascript" src="https://dave.cheney.net/wp-includes/js/wp-embed.min.js?ver=5.8.4" id="wp-embed-js"></script>
+
+
+
+<!-- Dynamic page generated in 0.044 seconds. -->
+<!-- Cached page generated by WP-Super-Cache on 2022-06-23 03:22:20 -->
+
+<!-- super cache --></body></html>

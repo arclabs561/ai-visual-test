@@ -1,0 +1,325 @@
+<!DOCTYPE html><html id="page"><head><style>
+    .utterances {
+      position: relative;
+      box-sizing: border-box;
+      width: 100%;
+      max-width: 760px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .utterances-frame {
+      color-scheme: light;
+      position: absolute;
+      left: 0;
+      right: 0;
+      width: 1px;
+      min-width: 100%;
+      max-width: 100%;
+      height: 100%;
+      border: 0;
+    }
+  </style>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Source Maps in PHP7 - Haxe - The Cross-platform Toolkit</title>
+	<link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="/css/font-awesome.css">
+	<link rel="stylesheet" type="text/css" href="/css/style.css?v=2018-03-05">
+	<link rel="stylesheet" type="text/css" href="/css/haxe-nav.css">
+	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+	<link href="/css/open_sans.css" rel="stylesheet" type="text/css">
+
+	<link rel="alternate" type="application/atom+xml" title="RSS Feed haxe.org" href="https://haxe.org/blog/rss/">
+	<link rel="search" type="application/opensearchdescription+xml" title="Search haxe.org" href="https://haxe.org/opensearch.xml">
+
+	<!-- Google -->
+	<meta name="description" content="Haxe is an open source toolkit based on a modern, high level, strictly typed programming language.">
+
+	<!-- Twitter card -->
+	<meta name="twitter:card" content="summary">
+	<meta name="twitter:creator" content="@haxe_org">
+	<meta name="twitter:site" content="@haxe_org">
+	<meta name="twitter:title" content="Source Maps in PHP7 - Haxe - The Cross-platform Toolkit">
+	<meta name="twitter:description" value="Haxe is an open source toolkit based on a modern, high level, strictly typed programming language.">
+	<meta name="twitter:image" content="https://haxe.org/img/share.jpg">
+
+	<!-- OpenGraph -->
+	<meta property="og:title" content="Source Maps in PHP7 - Haxe - The Cross-platform Toolkit">
+	<meta property="og:type" content="article">
+	<meta property="og:image" content="https://haxe.org/img/share.jpg">
+	<meta property="og:description" content="Haxe is an open source toolkit based on a modern, high level, strictly typed programming language.">
+	<meta property="og:site_name" content="Haxe - The Cross-platform Toolkit">
+</head>
+
+<body>
+
+<nav class="section nav dark">
+	<div class="navbar navbar-fixed-top navbar-inverse">
+		<div class="navbar-inner">
+			<button class="btn btn-navbar" data-target=".nav-collapse" data-toggle="collapse" type="button"><span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span></button> <a class="brand haxe-logo" href="/"><img alt="Haxe" height="21" onerror="this.src='/img/haxe-logo-horizontal-on-dark.png'" src="/img/haxe-logo-horizontal-on-dark.svg" width="107"></a>
+
+
+			<div class="nav-collapse collapse">
+        		<ul class="nav pull-right search-link-menu">
+					<li>
+						<a href="/search/"><i class="fa fa-search"></i></a>
+					</li>
+				</ul>
+				<div class="container"><ul class="nav">
+					<li class=""><a href="/">Home</a></li><li class=""><a href="/download/">Download</a></li><li class=""><a href="/blog/">Blog</a></li><li class=" dropdown"><a href="/use-cases/" data-toggle="dropdown" class="dropdown-toggle">Use Cases <b class="caret"></b></a><ul class="dropdown-menu"><li class=""><a href="/use-cases/">Overview</a></li><li class=""><a href="/use-cases/games/">Games</a></li><li class=""><a href="/use-cases/web/">Web</a></li><li class=""><a href="/use-cases/mobile/">Mobile</a></li><li class=""><a href="/use-cases/desktop/">Desktop</a></li><li class=""><a href="/use-cases/cli/">Command Line</a></li><li class=""><a href="/use-cases/cross-platform-apis/">Cross Platform APIs</a></li><li class=" divider"></li><li class=""><a href="/use-cases/who-uses-haxe.html">Who Uses Haxe</a></li></ul></li><li class=" dropdown"><a href="/foundation/" data-toggle="dropdown" class="dropdown-toggle">Haxe Foundation <b class="caret"></b></a><ul class="dropdown-menu"><li class=""><a href="/foundation/">About The Foundation</a></li><li class=""><a href="/foundation/people.html">Who is who</a></li><li class=""><a href="/foundation/jobs.html">Jobs</a></li><li class=" divider"></li><li class=""><a href="/foundation/supported-projects.html">Supported Projects</a></li><li class=""><a href="/foundation/support-plans.html">Support Plans</a></li><li class=""><a href="/foundation/donate.html">Donate</a></li><li class=" divider"></li><li class=""><a href="/foundation/branding.html">Branding</a></li><li class=""><a href="/foundation/shop.html">Shop</a></li><li class=""><a href="/foundation/open-source.html">Open Source</a></li><li class=""><a href="/foundation/contact.html">Contact</a></li></ul></li><li class=""><a href="/foundation/support-plans.html">Support Plans</a></li><li class=" divider"></li><li class=" active dropdown"><a href="/documentation/introduction" data-toggle="dropdown" class="dropdown-toggle active">Learn Haxe <b class="caret"></b></a><ul class="dropdown-menu"><li class=" active"><a href="/documentation/introduction/">Introduction</a></li><li class=""><a href="/manual/">Manual</a></li><li class=""><a href="https://code.haxe.org/">Code Cookbook</a></li><li class=""><a href="https://api.haxe.org/">API Documentation</a></li><li class=" divider"></li><li class=""><a href="/videos/">Videos</a></li><li class=" divider"></li><li class=""><a href="https://try.haxe.org/">Try Haxe online</a></li><li class=""><a href="https://lib.haxe.org/">Haxelib</a></li></ul></li>
+					<li class=" dropdown">
+						<a href="/HaxeFoundation" data-toggle="dropdown" class="dropdown-toggle">Connect <b class="caret"></b></a>
+						<ul class="dropdown-menu">
+							<li><a href="https://github.com/HaxeFoundation" rel="external"><i class="fa fa-github"></i> GitHub</a></li>
+							<li><a href="https://github.com/HaxeFoundation/haxe/issues" rel="external"><i class="fa fa-github"></i> Bug reports</a></li>
+							<li><a href="https://stackoverflow.com/questions/tagged/haxe" rel="external"><i class="fa fa-stack-overflow"></i> Stack Overflow</a></li>
+							<li><a href="http://community.haxe.org/" rel="external"><i class="fa fa-envelope-o"></i> Forums</a></li>
+							<li><a href="https://discordapp.com/invite/0uEuWH3spjck73Lo" rel="external nofollow"><i class="fa fa-comments-o"></i> Discord</a></li>
+							<li><a href="https://gitter.im/HaxeFoundation/haxe" rel="external nofollow"><i class="fa fa-comments-o"></i> Gitter</a></li>
+							<li><a href="https://haxe.org/blog"><i class="fa fa-rss"></i> Blog</a></li>
+							<li class="divider"></li>
+							<li><a href="https://www.facebook.com/haxe.org/" rel="external"><i class="fa fa-facebook"></i> Facebook</a></li>
+							<li><a href="https://twitter.com/search?q=%23haxe" rel="external"><i class="fa fa-twitter"></i> #haxe</a></li>
+							<li><a href="https://twitter.com/haxelang" rel="external"><i class="fa fa-twitter"></i> @haxelang</a></li>
+							<li><a href="https://twitter.com/haxe_org" rel="external"><i class="fa fa-twitter"></i> @haxe_org</a></li>
+							<li class="divider"></li>
+							<li><a href="https://haxe.org/foundation/contact.html" rel="external">Contact</a></li>
+						</ul>
+					</li>
+				</ul></div>
+			</div>
+		</div>
+	</div>
+</nav>
+
+<div class="page-wrap">
+	<div class="section site-content">	
+	<div class="container">
+		
+			<div class="prev-next-links clearfix top">
+				<a href="/manual/debugging-source-map-javascript.html" class="prev-link">Source Maps in JavaScript</a></div>
+		<div class="row">
+
+			<div class="span4 tree-nav">
+				<ul><li class=" parent"><i class="fa"></i><a href="/manual/introduction.html">Introduction</a><ul><li class=""><i class="fa"></i><a href="/manual/introduction-what-is-haxe.html">What is Haxe?</a></li><li class=" parent"><i class="fa"></i><a href="/manual/introduction-about-this-document.html">About this Document</a><ul><li class=""><i class="fa"></i><a href="/manual/introduction-authors-and-contributions.html">Authors and contributions</a></li><li class=""><i class="fa"></i><a href="/manual/introduction-license.html">License</a></li></ul></li><li class=""><i class="fa"></i><a href="/manual/introduction-hello-world.html">Hello World</a></li><li class=""><i class="fa"></i><a href="/manual/introduction-haxe-history.html">History</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/types.html">Types</a><ul><li class=" parent"><i class="fa"></i><a href="/manual/types-basic-types.html">Basic Types</a><ul><li class=""><i class="fa"></i><a href="/manual/types-numeric-types.html">Numeric types</a></li><li class=""><i class="fa"></i><a href="/manual/types-overflow.html">Overflow</a></li><li class=""><i class="fa"></i><a href="/manual/types-bool.html">Bool</a></li><li class=""><i class="fa"></i><a href="/manual/types-void.html">Void</a></li><li class=""><i class="fa"></i><a href="/manual/types-nullability.html">Nullability</a></li><li class=""><i class="fa"></i><a href="/manual/types-nullability-optional-arguments.html">Optional Arguments and Nullability</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/types-class-instance.html">Class Instance</a><ul><li class=""><i class="fa"></i><a href="/manual/types-class-constructor.html">Class constructor</a></li><li class=""><i class="fa"></i><a href="/manual/types-class-inheritance.html">Inheritance</a></li><li class=""><i class="fa"></i><a href="/manual/types-interfaces.html">Interfaces</a></li><li class=""><i class="fa"></i><a href="/manual/types-abstract-class.html">Abstract Class</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/types-enum-instance.html">Enum Instance</a><ul><li class=""><i class="fa"></i><a href="/manual/types-enum-constructor.html">Enum Constructor</a></li><li class=""><i class="fa"></i><a href="/manual/types-enum-using.html">Using enums</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/types-anonymous-structure.html">Anonymous Structure</a><ul><li class=""><i class="fa"></i><a href="/manual/types-structure-json.html">JSON for Structure Values</a></li><li class=""><i class="fa"></i><a href="/manual/types-structure-class-notation.html">Class Notation for Structure Types</a></li><li class=""><i class="fa"></i><a href="/manual/types-structure-optional-fields.html">Optional Fields</a></li><li class=""><i class="fa"></i><a href="/manual/types-structure-performance.html">Impact on Performance</a></li><li class=""><i class="fa"></i><a href="/manual/types-structure-extensions.html">Extensions</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/types-function.html">Function Type</a><ul><li class=""><i class="fa"></i><a href="/manual/types-function-optional-arguments.html">Optional Arguments</a></li><li class=""><i class="fa"></i><a href="/manual/types-function-default-values.html">Default values</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/types-dynamic.html">Dynamic</a><ul><li class=""><i class="fa"></i><a href="/manual/types-dynamic-with-type-parameter.html">Dynamic with Type Parameter</a></li><li class=""><i class="fa"></i><a href="/manual/types-dynamic-access.html">Dynamic access</a></li><li class=""><i class="fa"></i><a href="/manual/types-dynamic-any.html">Any type</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/types-abstract.html">Abstract</a><ul><li class=""><i class="fa"></i><a href="/manual/types-abstract-implicit-casts.html">Implicit Casts</a></li><li class=""><i class="fa"></i><a href="/manual/types-abstract-operator-overloading.html">Operator Overloading</a></li><li class=""><i class="fa"></i><a href="/manual/types-abstract-array-access.html">Array Access</a></li><li class=""><i class="fa"></i><a href="/manual/types-abstract-enum.html">Enum abstracts</a></li><li class=""><i class="fa"></i><a href="/manual/types-abstract-forward.html">Forwarding abstract fields</a></li><li class=""><i class="fa"></i><a href="/manual/types-abstract-core-type.html">Core-type abstracts</a></li></ul></li><li class=""><i class="fa"></i><a href="/manual/types-monomorph.html">Monomorph</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/type-system.html">Type System</a><ul><li class=""><i class="fa"></i><a href="/manual/type-system-typedef.html">Typedef</a></li><li class=" parent"><i class="fa"></i><a href="/manual/type-system-type-parameters.html">Type Parameters</a><ul><li class=""><i class="fa"></i><a href="/manual/type-system-type-parameter-constraints.html">Constraints</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/type-system-generic.html">Generic</a><ul><li class=""><i class="fa"></i><a href="/manual/type-system-generic-type-parameter-construction.html">Construction of generic type parameters</a></li></ul></li><li class=""><i class="fa"></i><a href="/manual/type-system-variance.html">Variance</a></li><li class=" parent"><i class="fa"></i><a href="/manual/type-system-unification.html">Unification</a><ul><li class=""><i class="fa"></i><a href="/manual/type-system-unification-between-classes-and-interfaces.html">Between Class/Interface</a></li><li class=""><i class="fa"></i><a href="/manual/type-system-structural-subtyping.html">Structural Subtyping</a></li><li class=""><i class="fa"></i><a href="/manual/type-system-monomorphs.html">Monomorphs</a></li><li class=""><i class="fa"></i><a href="/manual/type-system-unification-function-return.html">Function Return</a></li><li class=""><i class="fa"></i><a href="/manual/type-system-unification-common-base-type.html">Common Base Type</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/type-system-type-inference.html">Type Inference</a><ul><li class=""><i class="fa"></i><a href="/manual/type-system-top-down-inference.html">Top-down Inference</a></li><li class=""><i class="fa"></i><a href="/manual/type-system-inference-limitations.html">Limitations</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/type-system-modules-and-paths.html">Modules and Paths</a><ul><li class=""><i class="fa"></i><a href="/manual/type-system-module-sub-types.html">Module Sub-Types</a></li><li class=""><i class="fa"></i><a href="/manual/type-system-import.html">Import</a></li><li class=""><i class="fa"></i><a href="/manual/type-system-import-defaults.html">Import defaults / import.hx</a></li><li class=""><i class="fa"></i><a href="/manual/type-system-resolution-order.html">Resolution Order</a></li></ul></li><li class=""><i class="fa"></i><a href="/manual/type-system-untyped.html">untyped</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/class-field.html">Class Fields</a><ul><li class=""><i class="fa"></i><a href="/manual/class-field-variable.html">Variable</a></li><li class=" parent"><i class="fa"></i><a href="/manual/class-field-property.html">Property</a><ul><li class=""><i class="fa"></i><a href="/manual/class-field-property-common-combinations.html">Common accessor identifier combinations</a></li><li class=""><i class="fa"></i><a href="/manual/class-field-property-type-system-impact.html">Impact on the type system</a></li><li class=""><i class="fa"></i><a href="/manual/class-field-property-rules.html">Rules for getter and setter</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/class-field-method.html">Method</a><ul><li class=""><i class="fa"></i><a href="/manual/class-field-overriding.html">Overriding Methods</a></li><li class=""><i class="fa"></i><a href="/manual/class-field-override-effects.html">Effects of variance and access modifiers</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/class-field-access-modifier.html">Access Modifier</a><ul><li class=""><i class="fa"></i><a href="/manual/class-field-visibility.html">Visibility</a></li><li class=""><i class="fa"></i><a href="/manual/class-field-inline.html">Inline</a></li><li class=""><i class="fa"></i><a href="/manual/class-field-dynamic.html">Dynamic</a></li><li class=""><i class="fa"></i><a href="/manual/class-field-override.html">Override</a></li><li class=""><i class="fa"></i><a href="/manual/class-field-static.html">Static</a></li><li class=""><i class="fa"></i><a href="/manual/class-field-extern.html">Extern</a></li><li class=""><i class="fa"></i><a href="/manual/class-field-final.html">Final</a></li></ul></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/expression.html">Expressions</a><ul><li class=""><i class="fa"></i><a href="/manual/expression-block.html">Blocks</a></li><li class=" parent"><i class="fa"></i><a href="/manual/expression-literals.html">Literals</a><ul><li class=""><i class="fa"></i><a href="/manual/expression-array-declaration.html">Array Declaration</a></li><li class=""><i class="fa"></i><a href="/manual/expression-map-declaration.html">Map Declaration</a></li><li class=""><i class="fa"></i><a href="/manual/expression-object-declaration.html">Object Declaration</a></li></ul></li><li class=""><i class="fa"></i><a href="/manual/expression-constants.html">Constants</a></li><li class=" parent"><i class="fa"></i><a href="/manual/expression-operators.html">Operators</a><ul><li class=""><i class="fa"></i><a href="/manual/expression-operators-unops.html">Unary Operators</a></li><li class=""><i class="fa"></i><a href="/manual/expression-operators-binops.html">Binary Operators</a></li><li class=""><i class="fa"></i><a href="/manual/expression-operators-ternary.html">Ternary Operator</a></li><li class=""><i class="fa"></i><a href="/manual/expression-operators-precedence.html">Precedence</a></li><li class=""><i class="fa"></i><a href="/manual/expression-operators-overloading.html">Overloading and macros</a></li></ul></li><li class=""><i class="fa"></i><a href="/manual/expression-field-access.html">Field Access</a></li><li class=""><i class="fa"></i><a href="/manual/expression-array-access.html">Array Access</a></li><li class=""><i class="fa"></i><a href="/manual/expression-function-call.html">Function Call</a></li><li class=""><i class="fa"></i><a href="/manual/expression-var.html">var and final</a></li><li class=""><i class="fa"></i><a href="/manual/expression-arrow-function.html">Local Functions</a></li><li class=""><i class="fa"></i><a href="/manual/expression-new.html">new</a></li><li class=""><i class="fa"></i><a href="/manual/expression-for.html">for</a></li><li class=""><i class="fa"></i><a href="/manual/expression-while.html">while</a></li><li class=""><i class="fa"></i><a href="/manual/expression-do-while.html">do-while</a></li><li class=""><i class="fa"></i><a href="/manual/expression-if.html">if</a></li><li class=""><i class="fa"></i><a href="/manual/expression-switch.html">switch</a></li><li class=""><i class="fa"></i><a href="/manual/expression-throw.html">throw</a></li><li class=""><i class="fa"></i><a href="/manual/expression-try-catch.html">try/catch</a></li><li class=""><i class="fa"></i><a href="/manual/expression-return.html">return</a></li><li class=""><i class="fa"></i><a href="/manual/expression-break.html">break</a></li><li class=""><i class="fa"></i><a href="/manual/expression-continue.html">continue</a></li><li class=" parent"><i class="fa"></i><a href="/manual/expression-cast.html">cast</a><ul><li class=""><i class="fa"></i><a href="/manual/expression-cast-unsafe.html">unsafe cast</a></li><li class=""><i class="fa"></i><a href="/manual/expression-cast-safe.html">safe cast</a></li></ul></li><li class=""><i class="fa"></i><a href="/manual/expression-type-check.html">type check</a></li><li class=""><i class="fa"></i><a href="/manual/expression-inline.html">inline</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/lf.html">Language Features</a><ul><li class=" parent"><i class="fa"></i><a href="/manual/lf-condition-compilation.html">Conditional Compilation</a><ul><li class=""><i class="fa"></i><a href="/manual/lf-target-defines.html">Target defines</a></li><li class=""><i class="fa"></i><a href="/manual/lf-target-specific-files.html">Target-Specific Files</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/lf-externs.html">Externs</a><ul><li class=""><i class="fa"></i><a href="/manual/lf-externs-native.html">Native Metadata</a></li><li class=""><i class="fa"></i><a href="/manual/types-dynamic-implemented.html">Implementing Dynamic</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/lf-static-extension.html">Static Extension</a><ul><li class=""><i class="fa"></i><a href="/manual/lf-static-extension-in-std.html">In the Haxe Standard Library</a></li><li class=""><i class="fa"></i><a href="/manual/lf-static-extension-metadata.html">Static Extension Metadata</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/lf-pattern-matching.html">Pattern Matching</a><ul><li class=""><i class="fa"></i><a href="/manual/lf-pattern-matching-introduction.html">Introduction</a></li><li class=""><i class="fa"></i><a href="/manual/lf-pattern-matching-enums.html">Enum matching</a></li><li class=""><i class="fa"></i><a href="/manual/lf-pattern-matching-variable-capture.html">Variable capture</a></li><li class=""><i class="fa"></i><a href="/manual/lf-pattern-matching-structure.html">Structure matching</a></li><li class=""><i class="fa"></i><a href="/manual/lf-pattern-matching-array.html">Array matching</a></li><li class=""><i class="fa"></i><a href="/manual/lf-pattern-matching-or.html">Or patterns</a></li><li class=""><i class="fa"></i><a href="/manual/lf-pattern-matching-guards.html">Guards</a></li><li class=""><i class="fa"></i><a href="/manual/lf-pattern-matching-tuples.html">Match on multiple values</a></li><li class=""><i class="fa"></i><a href="/manual/lf-pattern-matching-extractors.html">Extractors</a></li><li class=""><i class="fa"></i><a href="/manual/lf-pattern-matching-exhaustiveness.html">Exhaustiveness checks</a></li><li class=""><i class="fa"></i><a href="/manual/lf-pattern-matching-unused.html">Useless pattern checks</a></li><li class=""><i class="fa"></i><a href="/manual/lf-pattern-matching-single.html">Single pattern check</a></li></ul></li><li class=""><i class="fa"></i><a href="/manual/lf-string-interpolation.html">String Interpolation</a></li><li class=""><i class="fa"></i><a href="/manual/lf-array-comprehension.html">Array Comprehension</a></li><li class=""><i class="fa"></i><a href="/manual/lf-map-comprehension.html">Map Comprehension</a></li><li class=""><i class="fa"></i><a href="/manual/lf-iterators.html">Iterators</a></li><li class=""><i class="fa"></i><a href="/manual/lf-function-bindings.html">Function Bindings</a></li><li class=""><i class="fa"></i><a href="/manual/lf-metadata.html">Metadata</a></li><li class=""><i class="fa"></i><a href="/manual/lf-access-control.html">Access Control</a></li><li class=""><i class="fa"></i><a href="/manual/lf-inline-constructor.html">Inline Constructors</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/compiler-usage.html">Compiler Usage</a><ul><li class=""><i class="fa"></i><a href="/manual/compiler-usage-hxml.html">HXML</a></li><li class=""><i class="fa"></i><a href="/manual/compiler-usage-flags.html">Global Compiler Flags</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/cr-features.html">Compiler Features</a><ul><li class=""><i class="fa"></i><a href="/manual/cr-metadata.html">Built-in Compiler Metadata</a></li><li class=""><i class="fa"></i><a href="/manual/cr-dce.html">Dead Code Elimination</a></li><li class=" parent"><i class="fa"></i><a href="/manual/cr-completion.html">Compiler Services</a><ul><li class=""><i class="fa"></i><a href="/manual/cr-completion-overview.html">Overview</a></li><li class=""><i class="fa"></i><a href="/manual/cr-completion-field-access.html">Field access completion</a></li><li class=""><i class="fa"></i><a href="/manual/cr-completion-call-argument.html">Call argument completion</a></li><li class=""><i class="fa"></i><a href="/manual/cr-completion-type-path.html">Type path completion</a></li><li class=""><i class="fa"></i><a href="/manual/cr-completion-usage.html">Usage completion</a></li><li class=""><i class="fa"></i><a href="/manual/cr-completion-position.html">Position completion</a></li><li class=""><i class="fa"></i><a href="/manual/cr-completion-top-level.html">Top-level completion</a></li><li class=""><i class="fa"></i><a href="/manual/cr-completion-server.html">Completion server</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/cr-resources.html">Resources</a><ul><li class=""><i class="fa"></i><a href="/manual/cr-resources-embed.html">Embedding resources</a></li><li class=""><i class="fa"></i><a href="/manual/cr-resources-getString.html">Retrieving text resources</a></li><li class=""><i class="fa"></i><a href="/manual/cr-resources-getBytes.html">Retrieving binary resources</a></li><li class=""><i class="fa"></i><a href="/manual/cr-resources-impl.html">Implementation details</a></li></ul></li><li class=""><i class="fa"></i><a href="/manual/cr-rtti.html">Runtime Type Information</a></li><li class=""><i class="fa"></i><a href="/manual/cr-static-analyzer.html">Static Analyzer</a></li><li class=""><i class="fa"></i><a href="/manual/cr-loop-unrolling.html">Loop unrolling</a></li><li class=""><i class="fa"></i><a href="/manual/cr-tail-recursion-elimination.html">Tail Recursion Elimination (TRE)</a></li><li class=""><i class="fa"></i><a href="/manual/cr-null-safety.html">Null Safety</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/macro.html">Macros</a><ul><li class=""><i class="fa"></i><a href="/manual/macro-context.html">Macro Context</a></li><li class=" parent"><i class="fa"></i><a href="/manual/macro-arguments.html">Arguments</a><ul><li class=""><i class="fa"></i><a href="/manual/macro-ExprOf.html">ExprOf</a></li><li class=""><i class="fa"></i><a href="/manual/macro-constant-arguments.html">Constant Expressions</a></li><li class=""><i class="fa"></i><a href="/manual/macro-rest-argument.html">Rest Argument</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/macro-reification.html">Reification</a><ul><li class=""><i class="fa"></i><a href="/manual/macro-reification-expression.html">Expression Reification</a></li><li class=""><i class="fa"></i><a href="/manual/macro-reification-type.html">Type Reification</a></li><li class=""><i class="fa"></i><a href="/manual/macro-reification-class.html">Class Reification</a></li></ul></li><li class=""><i class="fa"></i><a href="/manual/macro-tools.html">Tools</a></li><li class=" parent"><i class="fa"></i><a href="/manual/macro-type-building.html">Type Building</a><ul><li class=""><i class="fa"></i><a href="/manual/macro-enum-building.html">Enum building</a></li><li class=""><i class="fa"></i><a href="/manual/macro-auto-build.html">@:autoBuild</a></li><li class=""><i class="fa"></i><a href="/manual/macro-generic-build.html">@:genericBuild</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/macro-limitations.html">Limitations</a><ul><li class=""><i class="fa"></i><a href="/manual/macro-limitations-macro-in-macro.html">Macro-in-Macro</a></li><li class=""><i class="fa"></i><a href="/manual/macro-limitations-static-extension.html">Static extension</a></li><li class=""><i class="fa"></i><a href="/manual/macro-limitations-build-order.html">Build Order</a></li><li class=""><i class="fa"></i><a href="/manual/macro-limitations-type-parameters.html">Type Parameters</a></li></ul></li><li class=""><i class="fa"></i><a href="/manual/macro-persistent-variables.html">Persistent Variables</a></li><li class=""><i class="fa"></i><a href="/manual/macro-initialization.html">Initialization Macros</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/std.html">Standard Library</a><ul><li class=" parent"><i class="fa"></i><a href="/manual/std-String.html">String</a><ul><li class=""><i class="fa"></i><a href="/manual/std-String-literals.html">String literals</a></li><li class=""><i class="fa"></i><a href="/manual/std-String-unicode.html">Unicode</a></li><li class=""><i class="fa"></i><a href="/manual/std-String-encoding.html">Encoding</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/std-ds.html">Data Structures</a><ul><li class=""><i class="fa"></i><a href="/manual/std-Array.html">Array</a></li><li class=""><i class="fa"></i><a href="/manual/std-vector.html">Vector</a></li><li class=""><i class="fa"></i><a href="/manual/std-List.html">List</a></li><li class=""><i class="fa"></i><a href="/manual/std-GenericStack.html">GenericStack</a></li><li class=""><i class="fa"></i><a href="/manual/std-Map.html">Map</a></li><li class=""><i class="fa"></i><a href="/manual/std-Option.html">Option</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/std-regex.html">Regular Expressions</a><ul><li class=""><i class="fa"></i><a href="/manual/std-regex-match.html">Matching</a></li><li class=""><i class="fa"></i><a href="/manual/std-regex-groups.html">Groups</a></li><li class=""><i class="fa"></i><a href="/manual/std-regex-replace.html">Replace</a></li><li class=""><i class="fa"></i><a href="/manual/std-regex-split.html">Split</a></li><li class=""><i class="fa"></i><a href="/manual/std-regex-map.html">Map</a></li><li class=""><i class="fa"></i><a href="/manual/std-regex-implementation-details.html">Implementation Details</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/std-math.html">Math</a><ul><li class=""><i class="fa"></i><a href="/manual/std-math-special-numbers.html">Special Numbers</a></li><li class=""><i class="fa"></i><a href="/manual/std-math-mathematical-errors.html">Mathematical Errors</a></li><li class=""><i class="fa"></i><a href="/manual/std-math-integer-math.html">Integer Math</a></li><li class=""><i class="fa"></i><a href="/manual/std-math-extensions.html">Extensions</a></li></ul></li><li class=""><i class="fa"></i><a href="/manual/std-Lambda.html">Lambda</a></li><li class=""><i class="fa"></i><a href="/manual/std-template.html">Template</a></li><li class=""><i class="fa"></i><a href="/manual/std-reflection.html">Reflection</a></li><li class=" parent"><i class="fa"></i><a href="/manual/std-serialization.html">Serialization</a><ul><li class=""><i class="fa"></i><a href="/manual/std-serialization-format.html">Serialization format</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/std-Xml.html">Xml</a><ul><li class=""><i class="fa"></i><a href="/manual/std-Xml-getting-started.html">Getting started with Xml</a></li><li class=""><i class="fa"></i><a href="/manual/std-Xml-parsing.html">Parsing Xml</a></li><li class=""><i class="fa"></i><a href="/manual/std-Xml-encoding.html">Encoding Xml</a></li><li class=""><i class="fa"></i><a href="/manual/std-Xml-simplified-access.html">Simplified Xml access</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/std-Json.html">Json</a><ul><li class=""><i class="fa"></i><a href="/manual/std-Json-parsing.html">Parsing JSON</a></li><li class=""><i class="fa"></i><a href="/manual/std-Json-encoding.html">Encoding JSON</a></li><li class=""><i class="fa"></i><a href="/manual/std-Json-implementation-details.html">Implementation details</a></li></ul></li><li class=""><i class="fa"></i><a href="/manual/std-input-output.html">Input/Output</a></li><li class=" parent"><i class="fa"></i><a href="/manual/std-sys.html">Sys</a><ul><li class=""><i class="fa"></i><a href="/manual/std-threading.html">Threading</a></li><li class=""><i class="fa"></i><a href="/manual/std-sys-standard-io-streams.html">Standard IO Streams</a></li><li class=""><i class="fa"></i><a href="/manual/std-input-output-process.html">Process</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/std-remoting.html">Remoting</a><ul><li class=""><i class="fa"></i><a href="/manual/std-remoting-connection.html">Remoting Connection</a></li><li class=""><i class="fa"></i><a href="/manual/std-remoting-implementation-details.html">Implementation details</a></li></ul></li><li class=""><i class="fa"></i><a href="/manual/std-unit-testing.html">Unit Testing</a></li><li class=""><i class="fa"></i><a href="/manual/std-hx3compat.html">Haxe 3 Compatibility</a></li></ul></li><li class=""><i class="fa"></i><a href="/manual/haxelib.html">Haxelib</a></li><li class=" parent"><i class="fa"></i><a href="/manual/target-details.html">Target Details</a><ul><li class=""><i class="fa"></i><a href="/manual/target-syntax.html">Accessing Target-specific Syntax</a></li><li class=" parent"><i class="fa"></i><a href="/manual/target-javascript.html">JavaScript</a><ul><li class=""><i class="fa"></i><a href="/manual/target-javascript-getting-started.html">Getting started with Haxe/JavaScript</a></li><li class=""><i class="fa"></i><a href="/manual/target-javascript-es6.html">ECMAScript 6 class generation</a></li><li class=""><i class="fa"></i><a href="/manual/target-javascript-external-libraries.html">Using external JavaScript libraries</a></li><li class=""><i class="fa"></i><a href="/manual/target-javascript-metadata.html">JavaScript target Metadata</a></li><li class=""><i class="fa"></i><a href="/manual/target-javascript-expose.html">Exposing Haxe classes for JavaScript</a></li><li class=""><i class="fa"></i><a href="/manual/target-javascript-require.html">Loading extern classes using "require" function</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/target-flash.html">Flash</a><ul><li class=""><i class="fa"></i><a href="/manual/target-flash-getting-started.html">Getting started with Haxe/Flash</a></li><li class=""><i class="fa"></i><a href="/manual/target-flash-resources.html">Embedding resources</a></li><li class=""><i class="fa"></i><a href="/manual/target-flash-external-libraries.html">Using external Flash libraries</a></li><li class=""><i class="fa"></i><a href="/manual/target-flash-metadata.html">Flash target Metadata</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/target-neko.html">Neko</a><ul><li class=""><i class="fa"></i><a href="/manual/target-neko-getting-started.html">Getting started with Haxe/Neko</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/target-php.html">PHP</a><ul><li class=""><i class="fa"></i><a href="/manual/target-php-getting-started.html">Getting started with Haxe/PHP</a></li><li class=""><i class="fa"></i><a href="/manual/target-php-defines.html">Defines</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/target-cpp.html">C++</a><ul><li class=""><i class="fa"></i><a href="/manual/target-cpp-getting-started.html">Getting started with Haxe/C++</a></li><li class=""><i class="fa"></i><a href="/manual/target-cpp-build-environment.html">The Hxcpp Build Environment</a></li><li class=" parent"><i class="fa"></i><a href="/manual/target-cpp-file-format.html">Build.xml</a><ul><li class=""><i class="fa"></i><a href="/manual/target-cpp-build_xml-TopLevel.html">Structure of the top-level</a></li><li class=""><i class="fa"></i><a href="/manual/target-cpp-build_xml-Files.html">Files</a></li><li class=""><i class="fa"></i><a href="/manual/target-cpp-build_xml-Tags.html">Tags</a></li><li class=""><i class="fa"></i><a href="/manual/target-cpp-build_xml-Targets.html">Targets</a></li><li class=""><i class="fa"></i><a href="/manual/target-cpp-build_xml-Compiler.html">Compiler</a></li><li class=""><i class="fa"></i><a href="/manual/target-cpp-build_xml-Linker.html">Linker</a></li><li class=""><i class="fa"></i><a href="/manual/target-cpp-build_xml-Stripper.html">Stripper</a></li><li class=""><i class="fa"></i><a href="/manual/target-cpp-build_xml-HaxeTarget.html">The Haxe Target</a></li><li class=""><i class="fa"></i><a href="/manual/target-cpp-build_xml-XmlInjection.html">Xml Injection</a></li></ul></li><li class=""><i class="fa"></i><a href="/manual/target-cpp-defines.html">Defines</a></li><li class=""><i class="fa"></i><a href="/manual/target-cpp-CompileCache.html">The Hxcpp Cache</a></li><li class=""><i class="fa"></i><a href="/manual/target-cpp-ThreadsAndStacks.html">Threads And Stacks</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/target-cppia.html">Cppia</a><ul><li class=""><i class="fa"></i><a href="/manual/target-cppia-getting-started.html">Getting started with Haxe/Cppia</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/target-java.html">Java</a><ul><li class=""><i class="fa"></i><a href="/manual/target-java-getting-started.html">Getting started with Haxe/Java</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/target-jvm.html">JVM</a><ul><li class=""><i class="fa"></i><a href="/manual/target-jvm-getting-started.html">Getting started with Haxe/JVM</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/target-cs.html">C#</a><ul><li class=""><i class="fa"></i><a href="/manual/target-cs-getting-started.html">Getting started with Haxe/C#</a></li><li class=""><i class="fa"></i><a href="/manual/target-cs-external-libraries.html">.NET version and external libraries</a></li><li class=""><i class="fa"></i><a href="/manual/target-cs-defines.html">Haxe/C# Defines</a></li><li class=""><i class="fa"></i><a href="/manual/target-cs-metadata.html">Haxe/C# Metadata</a></li><li class=""><i class="fa"></i><a href="/manual/target-cs-code-injection.html">Injecting raw C# code</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/target-python.html">Python</a><ul><li class=""><i class="fa"></i><a href="/manual/target-python-getting-started.html">Getting started with Haxe/Python</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/target-lua.html">Lua</a><ul><li class=""><i class="fa"></i><a href="/manual/target-lua-getting-started.html">Getting started with Haxe/Lua</a></li><li class=""><i class="fa"></i><a href="/manual/target-lua-external-libraries.html">Using external Lua libraries</a></li><li class=""><i class="fa"></i><a href="/manual/target-lua-flags.html">Version flags</a></li><li class=""><i class="fa"></i><a href="/manual/target-lua-multireturns.html">Multireturns</a></li></ul></li><li class=" parent"><i class="fa"></i><a href="/manual/target-hl.html">HashLink</a><ul><li class=""><i class="fa"></i><a href="/manual/target-hl-getting-started.html">Getting started with Haxe/HashLink</a></li><li class=""><i class="fa"></i><a href="/manual/target-hl-c-compilation.html">HashLink/C Compilation</a></li></ul></li></ul></li><li class="parent active"><i class="fa"></i><a href="/manual/debugging.html">Debugging</a><ul><li class=""><i class="fa"></i><a href="/manual/debugging-trace-log.html">Logging and Trace</a></li><li class=""><i class="fa"></i><a href="/manual/debugging-posinfos.html">Position Information Parameter</a></li><li class=""><i class="fa"></i><a href="/manual/debugging-type-function.html">Tracing Types</a></li><li class=""><i class="fa"></i><a href="/manual/debugging-ide-integration.html">IDE Integration</a></li><li class=""><i class="fa"></i><a href="/manual/debugging-javascript.html">Debugging in JavaScript</a></li><li class="parent active"><i class="fa"></i><a href="/manual/debugging-source-map.html">Source Maps</a><ul><li class=""><i class="fa"></i><a href="/manual/debugging-source-map-javascript.html">Source Maps in JavaScript</a></li><li class="active"><i class="fa"></i><a href="/manual/debugging-sourcemap-php7.html" class="active">Source Maps in PHP7</a></li></ul></li></ul></li></ul>
+			</div>
+
+			<div class="span8">
+				<h1><small>13.6.2</small> Source Maps in PHP7</h1>
+<p>Haxe source code positions in call stack and exception stack.</p>
+<p>Since 3.4.1, Haxe can generate source maps for the PHP target when compiling with the <code>-D php7</code> and <code>-D source_map</code> flags.
+Generated source maps can be utilized by the <a href="https://lib.haxe.org/p/jstack/">JStack</a> library to automatically transform <code>haxe.CallStack.callStack()</code>, <code>haxe.CallStack.exceptionStack()</code> and uncaught exceptions to make them point at Haxe sources instead of generated PHP files.</p>
+<pre class="highlighted"><span class="mtk5">class</span><span class="mtk1"> </span><span class="mtk9">Main</span><span class="mtk1"> {</span>
+<span class="mtk1">    </span><span class="mtk5">static</span><span class="mtk1"> </span><span class="mtk5">function</span><span class="mtk1"> </span><span class="mtk10">main</span><span class="mtk1">() {</span>
+<span class="mtk1">        </span><span class="mtk10">terribleError</span><span class="mtk1">();</span>
+<span class="mtk1">    }</span>
+
+<span class="mtk1">    </span><span class="mtk5">static</span><span class="mtk1"> </span><span class="mtk5">function</span><span class="mtk1"> </span><span class="mtk10">terribleError</span><span class="mtk1">() {</span>
+<span class="mtk1">        </span><span class="mtk14">throw</span><span class="mtk1"> </span><span class="mtk7">"Terrible error"</span><span class="mtk1">;</span>
+<span class="mtk1">    }</span>
+<span class="mtk1">}</span>
+</pre>
+<p>Building it with flags:</p>
+<pre class="highlighted"><span class="mtk5">--main</span><span class="mtk1"> </span><span class="mtk9">Main</span>
+<span class="mtk5">-D</span><span class="mtk1"> php7</span>
+<span class="mtk5">--php</span><span class="mtk1"> build</span>
+<span class="mtk5">--debug</span>
+</pre>
+<p>Running this build will trace the uncaught exception:</p>
+<pre><code>$ php build/index.php
+PHP Fatal error:  Uncaught php/_Boot/HxException: Terrible error in build/lib/Main.php:25
+Stack trace:
+#0 build/lib/Main.php(16): Main::terribleError()
+#1 build/index.php(13): Main::main()
+#2 {main}
+  thrown in build/lib/Main.php on line 25</code></pre>
+<p>Install JStack using <code>haxelib install jstack</code>. JStack automatically adds the <code>-D source_map</code> flag, so there is no need to add it manually.</p>
+<p>If JStack is installed, it can be added to the compilation process like so:</p>
+<pre class="highlighted"><span class="mtk5">--main</span><span class="mtk1"> </span><span class="mtk9">Main</span>
+<span class="mtk5">-D</span><span class="mtk1"> php7</span>
+<span class="mtk5">--php</span><span class="mtk1"> build</span>
+<span class="mtk5">--debug</span>
+<span class="mtk5">-L</span><span class="mtk1"> jstack</span>
+</pre>
+<p>The output will have a more informative stack trace for exceptions:</p>
+<pre><code>$ php build/index.php
+Terrible error
+Called from Main.terribleError (src/Main.hx line 7)
+Called from Main.main (src/Main.hx line 3)
+Called from build/index.php line 13</code></pre>
+				
+				
+				<div class="prev-next-links clearfix bottom">
+					<a href="/manual/debugging-source-map-javascript.html" class="prev-link">Source Maps in JavaScript</a><a href="https://github.com/HaxeFoundation/HaxeManual/tree/master/content/13-debugging.md#L139-L204" target="_blank">Contribute to this page</a></div>
+				
+				<hr>
+				<div class="utterances" style="height: 269px;">
+    <iframe class="utterances-frame" title="Comments" scrolling="no" src="https://utteranc.es/utterances.html?src=https%3A%2F%2Futteranc.es%2Fclient.js&amp;repo=HaxeFoundation%2Fhaxe.org-comments&amp;branch=master&amp;issue-term=%5Bhaxe.org%2Fmanual%5D+Source+Maps+in+PHP7&amp;async=async&amp;url=https%3A%2F%2Fhaxe.org%2Fmanual%2Fdebugging-sourcemap-php7.html&amp;origin=https%3A%2F%2Fhaxe.org&amp;pathname=manual%2Fdebugging-sourcemap-php7&amp;title=Source+Maps+in+PHP7+-+Haxe+-+The+Cross-platform+Toolkit&amp;description=Haxe+is+an+open+source+toolkit+based+on+a+modern%2C+high+level%2C+strictly+typed+programming+language.&amp;og%3Atitle=Source+Maps+in+PHP7+-+Haxe+-+The+Cross-platform+Toolkit&amp;session=" loading="lazy"></iframe>
+  </div>
+				</div>
+
+		</div>
+	</div>
+</div>
+
+</div>
+
+<footer class="section dark site-footer">
+	<div class="container">
+		<div class="sitemap clearfix">
+			<ul>
+	<li class="column">
+		
+			<h5><a href="/">Home</a></h5>
+		
+			<h5><a href="/download/">Download</a></h5>
+		
+			<h5><a href="/blog/">Blog</a></h5>
+		
+			<h5><a href="/foundation/support-plans.html">Support Plans</a></h5>
+		
+	</li>
+	
+	
+	<li class="column">
+		<h5><a href="/use-cases/">Use Cases</a></h5>
+		<ul>
+			
+				<li><a href="/use-cases/">Overview</a></li>
+			
+				<li><a href="/use-cases/games/">Games</a></li>
+			
+				<li><a href="/use-cases/web/">Web</a></li>
+			
+				<li><a href="/use-cases/mobile/">Mobile</a></li>
+			
+				<li><a href="/use-cases/desktop/">Desktop</a></li>
+			
+				<li><a href="/use-cases/cli/">Command Line</a></li>
+			
+				<li><a href="/use-cases/cross-platform-apis/">Cross Platform APIs</a></li>
+			
+				<li><a href="/use-cases/who-uses-haxe.html">Who Uses Haxe</a></li>
+			
+		</ul>
+	</li>
+	
+	<li class="column">
+		<h5><a href="/foundation/">Haxe Foundation</a></h5>
+		<ul>
+			
+				<li><a href="/foundation/">About The Foundation</a></li>
+			
+				<li><a href="/foundation/people.html">Who is who</a></li>
+			
+				<li><a href="/foundation/jobs.html">Jobs</a></li>
+			
+				<li><a href="/foundation/supported-projects.html">Supported Projects</a></li>
+			
+				<li><a href="/foundation/support-plans.html">Support Plans</a></li>
+			
+				<li><a href="/foundation/donate.html">Donate</a></li>
+			
+				<li><a href="/foundation/branding.html">Branding</a></li>
+			
+				<li><a href="/foundation/shop.html">Shop</a></li>
+			
+				<li><a href="/foundation/open-source.html">Open Source</a></li>
+			
+				<li><a href="/foundation/contact.html">Contact</a></li>
+			
+		</ul>
+	</li>
+	
+	<li class="column">
+		<h5><a href="/documentation/introduction">Learn Haxe</a></h5>
+		<ul>
+			
+				<li><a href="/documentation/introduction/">Introduction</a></li>
+			
+				<li><a href="/manual/">Manual</a></li>
+			
+				<li><a href="https://code.haxe.org/">Code Cookbook</a></li>
+			
+				<li><a href="https://api.haxe.org/">API Documentation</a></li>
+			
+				<li><a href="/videos/">Videos</a></li>
+			
+				<li><a href="https://try.haxe.org/">Try Haxe online</a></li>
+			
+				<li><a href="https://lib.haxe.org/">Haxelib</a></li>
+			
+		</ul>
+	</li>
+	
+</ul>
+
+		</div>
+		<div class="copyright">
+			<p>© 2022
+			<a href="/foundation/" title="Haxe Foundation Website" class="hf-link">Haxe Foundation</a>
+			
+			| <a href="https://github.com/HaxeFoundation/HaxeManual/tree/master/content/13-debugging.md#L139-L204" target="_blank" rel="external" class="edit-link" title="Use Github to suggest an edit to this page">Contribute to this page</a>
+			</p>
+		</div>
+	</div>
+</footer>
+
+<script src="https://connect.facebook.net/signals/config/335361176950894?v=2.9.62&amp;r=stable" async=""></script><script src="https://connect.facebook.net/signals/config/1947619682232701?v=2.9.62&amp;r=stable" async=""></script><script async="" src="https://connect.facebook.net/en_US/fbevents.js"></script><script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script><script async="" src="//www.googletagmanager.com/gtm.js?id=GTM-NXV3XR"></script><script src="/js/jquery.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/client.min.js"></script>
+<!-- Google Tag Manager -->
+<noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-NXV3XR" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&amp;l='+l:'';j.async=true;j.src=
+'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NXV3XR');</script>
+<!-- End Google Tag Manager -->
+
+
+<script type="application/ld+json">
+[{ 
+  "@context": "http://schema.org", 
+  "@type": "WebSite", 
+  "url": "http://www.haxe.org/", 
+  "potentialAction": { 
+    "@type": "SearchAction", 
+    "target": "http://www.haxe.org/search?s={search_term}", 
+    "query-input": "required name=search_term" } 
+  },
+  {
+  "@context": "http://schema.org",
+  "@type": "Product",
+  "audience": "programmers and developers",
+  "description": "Haxe is an open source toolkit based on a modern, high level, strictly typed programming language, a cross-compiler, a complete cross-platform standard library and ways to access each platform's native capabilities.",
+  "name": "Haxe Toolkit",
+  "url": "https://www.haxe.org",
+  "sameAs": [
+    "https://www.facebook.com/haxe.org",
+    "https://twitter.com/haxelang",
+    "https://plus.google.com/+HaxeOrg"]
+    
+  },
+  {
+     "@context" : "http://schema.org",
+        "@type" : "Organization",
+        "name" : "Haxe Foundation",
+        "url" : "http://haxe.org/foundation/",
+        "logo" : "http://www.haxe.org/favicon.ico",
+        "sameAs" : [
+            "https://twitter.com/haxe_org",
+            "https://github.com/HaxeFoundation"    
+        ]
+}
+]</div></script>
+<script type="text/javascript" id="">!function(b,e,f,g,a,c,d){b.fbq||(a=b.fbq=function(){a.callMethod?a.callMethod.apply(a,arguments):a.queue.push(arguments)},b._fbq||(b._fbq=a),a.push=a,a.loaded=!0,a.version="2.0",a.queue=[],c=e.createElement(f),c.async=!0,c.src=g,d=e.getElementsByTagName(f)[0],d.parentNode.insertBefore(c,d))}(window,document,"script","https://connect.facebook.net/en_US/fbevents.js");fbq("init","1947619682232701");fbq("track","PageView");</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1947619682232701&amp;ev=PageView&amp;noscript=1"></noscript>
+
+
+
+
+<script type="text/javascript" id="">!function(b,e,f,g,a,c,d){b.fbq||(a=b.fbq=function(){a.callMethod?a.callMethod.apply(a,arguments):a.queue.push(arguments)},b._fbq||(b._fbq=a),a.push=a,a.loaded=!0,a.version="2.0",a.queue=[],c=e.createElement(f),c.async=!0,c.src=g,d=e.getElementsByTagName(f)[0],d.parentNode.insertBefore(c,d))}(window,document,"script","https://connect.facebook.net/en_US/fbevents.js");fbq("init","335361176950894");fbq("track","PageView");</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=335361176950894&amp;ev=PageView&amp;noscript=1"></noscript>
+
+</body></html>

@@ -1,0 +1,519 @@
+<!DOCTYPE html><html><head>
+<meta charset="utf-8">
+<meta name="viewport" content="">
+<title></title>
+<style>
+body{margin: 0;padding: 0;}#load-wrap{display:none;width:100%;height:100%;z-index:999;position:absolute;top:0;left:0;background-size:100% 100%;background-repeat:no-repeat;background-image:url(data:image/png;base64,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)}#error-main{position:absolute;top:0;bottom:0;left:0;font-size:14px;text-align:center;width:100%;height:100%;overflow:hidden;box-sizing:border-box;z-index:1000;background-color:#fff}#error-main .middle{position:absolute;width:100%;top:50%;left:0;transform:translateY(-50%)}.tips-img{width:150px;height:93px;margin:auto auto 5px;background-image:url(data:image/png;base64,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);background-size:100% 100%}#tips-text{color:#a1a1a1;padding:10px 0;font-size:15px}.tips-top{position:fixed;left:0;top:0;width:100%;padding:5px 0;background:#cfebfd;color:#40a8ec;-webkit-animation:fadeInDown .5s linear;animation:fadeInDown .5s linear}@-webkit-keyframes fadeInDown{from{opacity:0;-webkit-transform:translate3d(0,-100%,0);transform:translate3d(0,-100%,0)}to{opacity:1;-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}}@keyframes fadeInDown{from{opacity:0;-webkit-transform:translate3d(0,-100%,0);transform:translate3d(0,-100%,0)}to{opacity:1;-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}}.err-count{color:red;display:none}
+</style>
+<script>
+(function(){
+//ver: 20220425-01
+// @log delete setDefault(headers, 'X-Requested-With', 'XMLHttpRequest')
+!function(t,e){function n(t){return t&&e.XDomainRequest&&!/MSIE 1/.test(navigator.userAgent)?new XDomainRequest:e.XMLHttpRequest?new XMLHttpRequest:void 0}function o(t,e,n){t[e]=t[e]||n}var r=["responseType","withCredentials","timeout","onprogress"];t.ajax=function(t,a){function s(t,e){return function(){c||(a(void 0===f.status?t:f.status,0===f.status?"Error":f.response||f.responseText||e,f),c=!0)}}var u=t.headers||{},i=t.body,d=t.method||(i?"POST":"GET"),c=!1,f=n(t.cors);f.open(d,t.url,!0);var l=f.onload=s(200);f.onreadystatechange=function(){4===f.readyState&&l()},f.onerror=s(null,"Error"),f.ontimeout=s(null,"Timeout"),f.onabort=s(null,"Abort"),i&&(e.FormData&&i instanceof e.FormData||o(u,"Content-Type","application/x-www-form-urlencoded"));for(var p,m=0,v=r.length;v>m;m++)p=r[m],void 0!==t[p]&&(f[p]=t[p]);for(var p in u)f.setRequestHeader(p,u[p]);return f.send(i),f},e.nanoajax=t}({},function(){return this}());
+/* 参考实现jQuery.param序列化方法 */
+(function(a){var b=a.Tools||{},toString={}.toString;b.stringify=function(f){var e=[];for(var c in f){d(c,f[c],function(h,g){var i=typeof g==="function"?g():g;e[e.length]=encodeURIComponent(h)+"="+encodeURIComponent(i==null?"":i)})}function d(g,k,j){if(toString.apply(k)==="[object Array]"){for(var h=0;h<k.length;h++){if(/\[\]$/.test(g)){j(g,k[h])}else{d(g+"["+(typeof k[h]==="object"&&k[h]!=null?h:"")+"]",k[h])}}}else{if(toString.apply(k)==="[object Object]"){for(name in k){d(g+"["+name+"]",k[name],j)}}else{j(g,k)}}}return e.join("&")};a.Tools=b})(window);
+(function(w){w.$_cookie={get:function(name,options){this.validateCookieName(name);if(typeof options==="function"){options={converter:options}}else{options=options||{}}var cookies=this.parseCookieString(document.cookie,!options["raw"]);return(options.converter||this.same)(cookies[name])},set:function(name,value,options){this.validateCookieName(name);options=options||{};var expires=options["expires"];var domain=options["domain"];var path=options["path"];if(!options["raw"]){value=encodeURIComponent(String(value))}var text=name+"="+value;var date=expires;if(typeof date==="number"){date=new Date();date.setDate(date.getDate()+expires)}if(date instanceof Date){text+="; expires="+date.toUTCString()}if(this.isNonEmptyString(domain)){text+="; domain="+domain}if(this.isNonEmptyString(path)){text+="; path="+path}if(options["secure"]){text+="; secure"}document.cookie=text;return text},remove:function(name,options){options=options||{};options["expires"]=new Date(0);return this.set(name,"",options)},parseCookieString:function(text,shouldDecode){var cookies={};if(this.isString(text)&&text.length>0){var decodeValue=shouldDecode?decodeURIComponent:this.same;var cookieParts=text.split(/;\s/g);var cookieName;var cookieValue;var cookieNameValue;for(var i=0,len=cookieParts.length;i<len;i++){cookieNameValue=cookieParts[i].match(/([^=]+)=/i);if(cookieNameValue instanceof Array){try{cookieName=decodeURIComponent(cookieNameValue[1]);cookieValue=decodeValue(cookieParts[i].substring(cookieNameValue[1].length+1))}catch(ex){}}else{cookieName=decodeURIComponent(cookieParts[i]);cookieValue=""}if(cookieName){cookies[cookieName]=cookieValue}}}return cookies},isString:function(o){return typeof o==="string"},isNonEmptyString:function(s){return this.isString(s)&&s!==""},validateCookieName:function(name){if(!this.isNonEmptyString(name)){throw new TypeError("Cookie name must be a non-empty string")}},same:function(s){return s}}})(window);
+
+var isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|OppoBrowser/i.test(navigator.userAgent);
+if (!isMobileDevice && (queryString('_m') == 1 || queryString('em') == 1)) isMobileDevice = true;
+if (isMobileDevice && queryString('_pc') == 1) isMobileDevice = false;
+if(!isMobileDevice) {
+  var viewport = document.querySelector("meta[name=viewport]");
+  if(viewport) viewport.setAttribute('content', '');
+}
+
+var ocsHttpsForce = 0;
+var timeout = 4000; //4秒
+var groupSize = 3;
+var ocsInfo = { //@配置-PRD
+    http: [
+	      "wssa-361.lldmotor8.com:1785",
+	      "wssa-351.hx8668.com:1685",
+	      "ocsapi1962.xuqtech.com",
+	      "ocsapi1962.ambandage.com",
+	      "ocsapi-aws.bakeddove.com",
+	      "ocsapi-aka.blackkhaki918.com",
+	      "ahd-ocsfp.foshanmsk.com"
+	    ],
+    https: [
+	      "wssa-361.lldmotor8.com:1786",
+	      "wssa-351.hx8668.com:1686",
+	      "ocsapi1962.xuqtech.com",
+	      "ocsapi1962.ambandage.com",
+	      "ocsapi-aws.bakeddove.com",
+	      "ocsapi-aka.blackkhaki918.com",
+	      "ahd-ocsfp.foshanmsk.com"
+	    ],
+  	path : '/ocs/zbw'
+}
+var ocsDict = {
+  'jb00': 'zbjb',
+  'dq00': 'zbaa',
+  'ox00': 'zbaa',
+  'uj08': 'zbaa',
+  'kt11': 'zbaa',
+}
+var ocsPathExt = ocsDict;
+var pageReload = false;
+var ocsProtocol = location.protocol;
+var commonProtocol = location.protocol; //cdn 和 api的
+window.INIT_MASK = true;
+window.IS_MOBILE = isMobileDevice;
+window.TIME_OUT = timeout;
+window.OCS_INFO = ocsInfo;
+
+var OCS_EXE = {
+    groupIndex: 0,
+    ocsTimeout: timeout,
+    done: false,
+    hostInfoDone: false,
+    ocsHandlerDone: false
+};
+
+function init() {
+    swapOCSDomainFromCache();
+    var ocsHost = location.protocol == 'http:' ? ocsInfo.http : ocsInfo.https;
+    if(ocsHttpsForce == 1) {
+        ocsProtocol = 'https:';
+        ocsHost = ocsInfo.https; //強制使用https
+    }
+    var ocsGroup = grouping(ocsHost);
+    OCS_EXE.domainGroup = ocsGroup;
+    getOCSCache();
+    groupPing(function(domain){
+        getOCSConfig(domain);
+    });
+}
+
+function getOCSCache() {
+    var ocsCache = jsonFromCache('ocsInfo');
+    if(ocsCache) ocsResultHandler(ocsCache);
+}
+
+function groupPing(callback) {
+    var domainList = OCS_EXE.domainGroup[OCS_EXE.groupIndex];
+    if(!domainList) { //所有組ocs失敗
+        errorHandler('网速缓慢，重试请点击');
+        return;
+    }
+    var errCount = 0,
+        done = false;
+    for (var i = 0; i < domainList.length; i++) {
+        (function(){
+            var domain = domainList[i];
+            var url = ocsProtocol + '//' + domain + '/cc.png?v=' + Math.ceil(Math.random() * Math.pow(10, 10));
+            window.nanoajax.ajax({
+              url: url,
+              method: 'get',
+              timeout: OCS_EXE.ocsTimeout
+            }, function(code) {
+              if(code == 200) {
+                if (done) return;
+                done = true;
+                callback(domain);
+              } else {
+                errCount++;
+                if (errCount == domainList.length) {
+                    console.error('all domian ping failed');
+                    OCS_EXE.groupIndex++;
+                    OCS_EXE.ocsTimeout = OCS_EXE.ocsTimeout * 2;
+                    groupPing(callback);
+                }
+              }
+            })
+        })()
+    }
+}
+
+function getOCSConfig(domain) {
+    if(OCS_EXE.done) return;
+    var snCache = getSNFromCache(),
+        path = ocsPathExt[snCache] ? '/ocs/' + ocsPathExt[snCache] : ocsInfo.path;
+    window.nanoajax.ajax({
+        url: ocsProtocol + '//' + domain + path + '?ts=' + Date.now(),
+        timeout: timeout
+    }, function(code, res, req) {
+        if (code == 200) {
+            OCS_EXE.done = true;
+            if(!OCS_EXE.ocsHandlerDone) ocsResultHandler(res);
+            localStorage.setItem('ocsInfo', res);
+            localStorage.setItem('ocs_fast_domain', domain);
+        } else {
+            OCS_EXE.groupIndex++;
+            OCS_EXE.ocsTimeout = OCS_EXE.ocsTimeout * 2;
+            groupPing(function(_domain) {
+                getOCSConfig(_domain);
+            });
+        }
+    })
+}
+
+function ocsResultHandler(res) {
+    OCS_EXE.ocsHandlerDone = true;
+    var respObj = JSON.parse(res);
+    var protocolKey = location.protocol.replace(':','');
+    var isHttpsForce = respObj.httpsForce == 1;
+    if(isHttpsForce) {
+        protocolKey = 'https';
+        commonProtocol = 'https:';
+    }
+    var domainConfig = respObj[protocolKey];
+    var versinConfig = respObj.versions;
+    var versionKey = isMobileDevice ? 'zb_m' : 'zb_pc';
+    var version = versinConfig[versionKey];
+    window.CURRENT_VERSION = version;
+    window.SKINS_VERSION = respObj.skin_versions;
+    window.COMMON_PROTOCOL = commonProtocol;
+    exportGlobal(respObj);
+    window.INIT_DONE = true;
+    setLocal(domainConfig.API_DOMAINS);
+    setPublicDomain(respObj.public_domain);
+    window.API_DOMIANS = randomArray(domainConfig.API_DOMAINS);
+    var apiDomainsGroup = grouping(domainConfig.API_DOMAINS);
+    window.API_DOMAINS_GROUP = apiDomainsGroup;
+    cdnPing(domainConfig.CDN_PATHS, function(cdn) {
+        var cdnPostfix = isMobileDevice ? '/m' : '/pc';
+        window.UPLOAD_HOST = commonProtocol + '//' + cdn; //@配置-PRD
+        window.CDN_PATH = commonProtocol + '//' + cdn + cdnPostfix;
+        doHostInfo(0);
+    })
+}
+
+function exportGlobal(Obj) {
+    for(var p in Obj){
+        if(p.substring(0,3) == 'gb_') {
+            var key = p.substring(3).toUpperCase();
+            window[key] = Obj[p];
+        }
+    }
+}
+
+function getSNFromCache() {
+    var dataCache = jsonFromCache('hostInfo') || jsonFromCache('com_hostInfo');
+    if(dataCache) {
+        var info = JSON.parse(dataCache);
+        return info.result.sn;
+    }
+}
+
+function setPublicDomain(domains) {
+    window.LOTTO_DOMAINS = domains;
+}
+
+function cdnPing(domainList, callback) {
+    if (domainList.length == 1) {
+        callback(domainList[0]);
+        return;
+    }
+    var errCount = 0,
+        done = false;
+    for (var i = 0; i < domainList.length; i++) {
+        (function(){
+            var cdn = domainList[i];
+            var url = commonProtocol + '//' + cdn + '/cc.png?v=' + Math.ceil(Math.random() * Math.pow(10, 10));
+            window.nanoajax.ajax({
+              url: url,
+              method: 'get',
+              timeout: timeout
+            }, function(code) {
+              if(code == 200) {
+                if (done) return;
+                done = true;
+                callback(cdn);
+              } else {
+                errCount++;
+                if (errCount == domainList.length) {
+                    console.error('all CDN domian can not be used!');
+                    errorHandler('加载网络资源失败, 重试请点击');
+                }
+              }
+            })
+        })()
+    }
+}
+
+function doHostInfo(index) {
+    var apiDomain = window.API_DOMIANS[index];
+    if(!apiDomain) {
+        errorHandler('页面加载失败，重试请点击');
+        return;
+    }
+    var apiHost = commonProtocol + '//' + apiDomain;
+    var currentDomian = window.DOMAIN_HARDCODE||queryString('domain')||document.domain;
+    var ran = new Date().getTime() + '_' + Math.random();
+    var param = {
+        pv: 'ajax',
+        pa: 'host.info',
+        domain: currentDomian,
+        terminal: isMobileDevice ? 8 : 1
+    }
+    var apiUrl = apiHost + '/zb-cloud/stat.do?' + Tools.stringify(param);
+    var dataCache = jsonFromCache('hostInfo') || jsonFromCache('com_hostInfo');
+    if (dataCache) {
+        window.API_HOST = apiHost;
+        hostInfoResultHandler(JSON.parse(wrapper(dataCache)));
+    }
+    window.nanoajax.ajax({
+        url: apiUrl,
+        method: 'get',
+        timeout: timeout * Math.pow(2, index)
+    }, function(code, res, req) {
+        if (code == 200) {
+            var resObj = JSON.parse(wrapper(res));
+            localStorage.setItem('hostInfo', JSON.stringify(resObj))
+            if (!dataCache) {
+                window.API_HOST = apiHost;
+                hostInfoResultHandler(resObj);
+            }
+        } else {
+            doHostInfo(++index);
+        }
+    });
+}
+
+function wrapper(jsonStr) {
+    var obj = JSON.parse(jsonStr);
+    return JSON.stringify(obj.hasOwnProperty('result') ? obj : {result : obj});
+}
+
+function httpsUrlHandler(url) {
+    let pattern = /^(http:)\/\/(.+):(\d+)(.*)+/
+    let result = pattern.exec(url)
+    if (!result) return /^https/.test(url) ? url : 'https' + url.substring(4);
+    let port = Number(result[3]) + 1
+    return url.replace(pattern, 'https://$2:' + port + '$4')
+}
+
+function hostInfoResultHandler(obj) {
+    if (!obj.result || OCS_EXE.hostInfoDone) return;
+    OCS_EXE.hostInfoDone = true;
+    if(!obj.result.webPath) {
+        errorHandler('网络页面不存在，请联系客服<br>' + document.domain, 120);
+        return;
+    }
+    var skin = obj.result.webPath;
+    var sn = obj.result.sn;
+    var isMaintain = obj.result.isMaintain; //是否全站維護
+    var isBlock = obj.result.isBlock; //IP限制
+    var currentVersion = isMobileDevice ? window.CURRENT_VERSION : window.SKINS_VERSION[skin]||window.CURRENT_VERSION;
+    var isHttps = obj.result.httpsSupport == 1;
+    if(isHttps && location.protocol == 'http:') {
+        location.href = httpsUrlHandler(location.href)
+        return;
+    }
+    window.SKIN = skin;
+    window.SN = sn;
+    window.FIRST_PAGE_FLAG = obj.result.firstPageFlag;
+    document.cookie = "p_skin=" + escape(skin) + ";path=/";
+    document.cookie = "skin=" + escape(skin) + ";path=/";
+    document.cookie = "p_sn=" + escape(sn) + ";path=/";
+    document.cookie = "sn=" + escape(sn) + ";path=/";
+    if (isBlock == 1) {
+        ipReject(obj.result.fromIp, obj.result.location);
+        return;
+    }
+
+    var appCss = document.createElement('link')
+    appCss.href = CDN_PATH + '/' + currentVersion + '/static/css/' + skin + '.css';
+    appCss.setAttribute('rel', 'stylesheet');
+    appCss.onload = function(){window.CSS_LOADED = true;};
+    document.head.appendChild(appCss);
+
+    var jsList = ['pc/lib/jquery.min-1.9.1', 'manifest', 'vendor', 'common', skin];
+    if(!isMobileDevice) jsList.unshift('pc/public/vendor.dll');
+    for (var i = 0; i < jsList.length; i++) {
+        var name = jsList[i];
+        var js = document.createElement('script')
+        js.async = false;
+        if (name.substr(0, 3) == 'pc/') {
+            js.src = UPLOAD_HOST + '/' + name + '.js'; //@配置-PRD
+        } else {
+            js.src = CDN_PATH + '/' + currentVersion + '/static/js/' + name + '.js';
+        }
+        document.body.appendChild(js)
+    }
+}
+
+function swapOCSDomainFromCache() {
+    var _http = jsonFromCache('com_configsHttp', true), _https = jsonFromCache('com_configsHttps', true);
+    if(_http) ocsInfo.http = _http;
+    if(_https) ocsInfo.https = _https;
+}
+
+function jsonFromCache(key, toObject) {
+    var value = localStorage.getItem(key), obj;
+    try {
+        obj = JSON.parse(value);
+    } catch(e) {
+        value = undefined;
+        localStorage.removeItem(key);
+    };
+    return toObject ? obj : value;
+}
+
+function grouping(arr) {
+    var result = [];
+    var groupCount = Math.ceil(arr.length/groupSize);
+    for(var g=1; g<=groupCount; g++){
+        var group = [];
+        for(var i=1; i<=groupSize; i++){
+            var index = g==1 ? i-1 : (g-1)*groupSize + i -1 ;
+            if(arr[index]) group.push(arr[index]);
+        }
+        result.push(group)
+    }
+    return result;
+}
+
+function setLocal(arr) {
+    for (var i = 0; i < arr.length; i++) {
+        var host = arr[i];
+        if(host == '.') {
+            var port = location.port;
+            arr[i] = document.domain + (port ? ':' + port : '');
+        }
+    }
+}
+
+function setCanvas(element,conf) {
+    if(!conf) return
+    var canvas = document.getElementById(element)
+    var context = canvas.getContext('2d')
+    var image = new Image();
+    image.onload = function() {
+        canvas.width = conf.imageWidth
+        canvas.height = conf.imageHeight
+        context.drawImage(image, 0, 0, canvas.width ,canvas.height);
+        for(var i=0; i < conf.fontConfig.length; i++){
+            var obj = conf.fontConfig[i];
+            context.font = (obj.fz ? obj.fz : "16px Verdana")
+            context.textAlign = (obj.textAlign ? obj.textAlign : 'left')
+            context.fillStyle = (obj.color ? obj.color : '#000')
+            obj.prefix = (obj.prefix ? obj.prefix : '')
+            obj.suffix = (obj.suffix ? obj.suffix : '')
+            context.fillText( obj.prefix + obj.text + obj.suffix, obj.x, obj.y);
+        }
+    }
+    image.src = conf.src;
+}
+
+function ipReject(_ip, _location) {
+    var imgPath = isMobileDevice ? '/image-m/ip-reject-m.jpg' : '/image-pc/ip-reject-pc.jpg'
+    if(isMobileDevice){
+        var _style = document.body.style;
+        _style.height = '100vh'
+    }
+    const canvas = document.createElement('canvas')
+    canvas.setAttribute("id", "canvasID");
+    canvas.style.width = '100%'
+    canvas.style.height = '100%'
+    document.body.appendChild(canvas)
+    if(isMobileDevice){
+        var loadWrap = document.getElementById('load-wrap');
+        if(loadWrap) loadWrap.style.display = 'none'
+        setCanvas('canvasID' ,{
+            imageWidth: 750,
+            imageHeight: 1334,
+            src: window.CDN_PATH + imgPath,
+            fontConfig: [
+                {x:375 ,y:570, fz: '25px Verdana' ,color: '#fff' ,textAlign: 'center' ,text: 'IP：' + _ip},
+                {x:375 ,y:620, fz: '25px Verdana' ,color: '#fff' ,textAlign: 'center' ,text: '地区：' + _location},
+            ]
+        })
+    }else{
+        setCanvas('canvasID' ,{
+            imageWidth: 1920,
+            imageHeight: 1000,
+            src: window.CDN_PATH + imgPath,
+            fontConfig: [
+                {x:950 ,y:460, fz: '25px Verdana' ,color: '#fff' ,textAlign: 'center' ,text: 'IP：' + _ip},
+                {x:950 ,y:510, fz: '25px Verdana' ,color: '#fff' ,textAlign: 'center' ,text: '地区：' + _location},
+            ]
+        })
+    }
+}
+
+function errorHandler(msg, seconds) {
+    if(pageReload) return;
+    pageReload = true;
+    seconds = seconds||5;
+    document.body.innerHTML = '<div id="error-main" onclick="location.reload(true)"><div class="tips-top">连接超时，稍后自动为您重试</div><div class="middle"><div class="tips-img"></div><div id="tips-text">' + msg + '<span class="err-count">(<span id="countdown">' + (seconds+1) + '</span>)</sapn></div></div></div>';
+    countdown();
+}
+
+function countdown() {
+    localStorage.removeItem('hostInfo');
+    localStorage.removeItem('ocsInfo');
+    var ele = document.getElementById('countdown');
+    var seconds = ele.innerText;
+    if(seconds == 0) {
+        location.reload(true);
+    } else {
+        ele.innerText = seconds - 1;
+        setTimeout(countdown, 1000);
+    }
+}
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function randomArray(arr) {
+    var getRanNum = function(len) {
+        var r = [];
+        while (true) {
+            var num = Math.ceil(Math.random() * len) - 1;
+            if (r.indexOf(num) == -1) r.push(num);
+            if (r.length >= len) break;
+        }
+        return r;
+    };
+    var result = [];
+    if (arr.length <= 3) {
+        var ranNums = getRanNum(arr.length);
+        for (var i = 0; i < ranNums.length; i++) {
+            var index = ranNums[i];
+            result.push(arr[index]);
+        }
+    } else {
+        var pre = arr.slice(0, 3),
+            post = arr.slice(3);
+        var ranNums = getRanNum(pre.length);
+        for (var i = 0; i < ranNums.length; i++) {
+            var index = ranNums[i];
+            result.push(pre[index]);
+        }
+        result = result.concat(post);
+    }
+    return result;
+}
+
+function completed() {
+    window.removeEventListener("load", completed)
+    init();
+}
+
+function queryString(key) {
+    var location = document.location.search;
+    return (location.match(new RegExp("(?:^\\?|&)" + key + "=(.*?)(?=&|$)")) || ['', null])[1];
+}
+
+window.addEventListener("load", completed, false)
+})();
+ </script>
+<link href="https://zb-ali.xrtcq.com/pc/220609-01/static/css/t3775.css" rel="stylesheet"></head>
+<body>
+<div id="app"></div>
+<div id="load-wrap"></div>
+<script>
+(function(){
+var isHomePage = window.location.hash === '' || window.location.hash === '#/' || /^#\/\?/.test(window.location.hash);
+if(window.IS_MOBILE && isHomePage) {
+    var loadWrap = document.getElementById('load-wrap');
+    if(loadWrap) loadWrap.style.display = 'block'
+}
+})()
+</script>
+
+
+<script src="https://zb-ali.xrtcq.com/pc/public/vendor.dll.js"></script><script src="https://zb-ali.xrtcq.com/pc/lib/jquery.min-1.9.1.js"></script><script src="https://zb-ali.xrtcq.com/pc/220609-01/static/js/manifest.js"></script><script src="https://zb-ali.xrtcq.com/pc/220609-01/static/js/vendor.js"></script><script src="https://zb-ali.xrtcq.com/pc/220609-01/static/js/common.js"></script><script src="https://zb-ali.xrtcq.com/pc/220609-01/static/js/t3775.js"></script></body></html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html><html><head>
+    <title>IPA Reader</title>
+
+    <meta charset="UTF-8">
+    <meta name="description" content="Read IPA notation">
+    <meta name="keywords" content="IPA,pronunciation,phonetic">
+    <meta name="author" content="Katie Russ">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Slab|Roboto+Mono" rel="stylesheet">
+    <link href="https://cdn.rawgit.com/necolas/normalize.css/master/normalize.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="box">
+        <div class="waves">
+            <div class="wave one"></div>
+            <div class="wave two"></div>
+            <div class="wave three"></div>
+        </div>
+
+        <div class="main">
+            <header>
+                <h1>IPA Reader</h1>
+                <a href="#about" class="info">What Is This?</a>
+            </header>
+
+            <form accept-charset="utf-8 8859-1">
+                <span class="error"></span>
+
+                <div class="input">
+                    <input type="text" id="ipa-text" placeholder="ˈpɪdʒən"><!-- ˈpɪdʒən -->
+                </div>
+
+                <div class="select">
+                    <select id="polly-voice" class="hidden"><option value="Ivy">Ivy [English - American]</option><option value="Joanna">Joanna [English - American]</option><option value="Joey">Joey [English - American]</option><option value="Justin">Justin [English - American]</option><option value="Kendra">Kendra [English - American]</option><option value="Kimberly">Kimberly [English - American]</option><option value="Salli">Salli [English - American]</option><option value="Nicole">Nicole [English - Australian]</option><option value="Russell">Russell [English - Australian]</option><option value="Emma">Emma [English - British]</option><option value="Brian">Brian [English - British]</option><option value="Amy">Amy [English - British]</option><option value="Raveena">Raveena [English - Indian]</option><option value="Geraint">Geraint [English - Welsh]</option><option value="Ricardo">Ricardo [Brazilian Portuguese]</option><option value="Vitoria">Vitoria [Brazilian Portuguese]</option><option value="Lotte">Lotte [Dutch]</option><option value="Ruben">Ruben [Dutch]</option><option value="Mathieu">Mathieu [French]</option><option value="Celine">Celine [French]</option><option value="Chantal">Chantal [Canadian French]</option><option value="Marlene">Marlene [German]</option><option value="Dora">Dora [Icelandic]</option><option value="Karl">Karl [Icelandic]</option><option value="Carla">Carla [Italian]</option><option value="Giorgio">Giorgio [Italian]</option><option value="Mizuki">Mizuki [Japanese]</option><option value="Liv">Liv [Norwegian]</option><option value="Maja">Maja [Polish]</option><option value="Jan">Jan [Polish]</option><option value="Ewa">Ewa [Polish]</option><option value="Cristiano">Cristiano [Portuquese]</option><option value="Ines">Ines [Portuquese]</option><option value="Carmen">Carmen [Romanian]</option><option value="Maxim">Maxim [Russian]</option><option value="Tatyana">Tatyana [Russian]</option><option value="Enrique">Miguel [US Spanish]</option><option value="Penelope">Penelope [US Spanish]</option><option value="Conchita">Conchita [Castilian Spanish]</option><option value="Astrid">Astrid [Swedish]</option><option value="Filiz">Filiz [Turkish]</option><option value="Gwyneth">Gwyneth [Welsh]</option></select><div class="select-styled">Salli [English - American]</div><ul class="select-options"><li rel="Ivy">Ivy [English - American]</li><li rel="Joanna">Joanna [English - American]</li><li rel="Joey">Joey [English - American]</li><li rel="Justin">Justin [English - American]</li><li rel="Kendra">Kendra [English - American]</li><li rel="Kimberly">Kimberly [English - American]</li><li rel="Salli">Salli [English - American]</li><li rel="Nicole">Nicole [English - Australian]</li><li rel="Russell">Russell [English - Australian]</li><li rel="Emma">Emma [English - British]</li><li rel="Brian">Brian [English - British]</li><li rel="Amy">Amy [English - British]</li><li rel="Raveena">Raveena [English - Indian]</li><li rel="Geraint">Geraint [English - Welsh]</li><li rel="Ricardo">Ricardo [Brazilian Portuguese]</li><li rel="Vitoria">Vitoria [Brazilian Portuguese]</li><li rel="Lotte">Lotte [Dutch]</li><li rel="Ruben">Ruben [Dutch]</li><li rel="Mathieu">Mathieu [French]</li><li rel="Celine">Celine [French]</li><li rel="Chantal">Chantal [Canadian French]</li><li rel="Marlene">Marlene [German]</li><li rel="Dora">Dora [Icelandic]</li><li rel="Karl">Karl [Icelandic]</li><li rel="Carla">Carla [Italian]</li><li rel="Giorgio">Giorgio [Italian]</li><li rel="Mizuki">Mizuki [Japanese]</li><li rel="Liv">Liv [Norwegian]</li><li rel="Maja">Maja [Polish]</li><li rel="Jan">Jan [Polish]</li><li rel="Ewa">Ewa [Polish]</li><li rel="Cristiano">Cristiano [Portuquese]</li><li rel="Ines">Ines [Portuquese]</li><li rel="Carmen">Carmen [Romanian]</li><li rel="Maxim">Maxim [Russian]</li><li rel="Tatyana">Tatyana [Russian]</li><li rel="Enrique">Miguel [US Spanish]</li><li rel="Penelope">Penelope [US Spanish]</li><li rel="Conchita">Conchita [Castilian Spanish]</li><li rel="Astrid">Astrid [Swedish]</li><li rel="Filiz">Filiz [Turkish]</li><li rel="Gwyneth">Gwyneth [Welsh]</li></ul>
+                </div>
+
+                <button id="submit" type="submit">Read</button>
+            </form>
+
+            <div class="audio">
+                <a href="http://ipa-reader.xyz/?text=%CB%88di%CB%90no%CA%8A" id="share" style="display: none;">Share</a>
+            </div>
+        </div>
+
+        <aside id="about" class="info" style="display: none;">
+            <h2>What Is This?</h2>
+
+            <p>
+                This is a tool for reading <a href="https://en.wikipedia.org/wiki/International_Phonetic_Alphabet" target="_blank">International Phonetic Alphabet (IPA)</a> notation aloud.</p>
+
+            <p>
+                It makes it easy to actually hear how words are pronounced based on their phonetic spelling, without
+                having to look up each character in <a href="https://upload.wikimedia.org/wikipedia/commons/8/8e/IPA_chart_2018.pdf" target="_blank">the IPA chart</a> and string the sounds together yourself.
+            </p>
+
+            <p>
+                For example, "budgerigar" (AKA the <a href="https://en.wikipedia.org/wiki/Budgerigar" target="_blank">common parakeet</a>) can be pronounced according to its IPA notation
+                <code>/ˈbʌdʒərɪɡɑːr/</code>.
+            </p>
+
+            <h2>How Do You Use It?</h2>
+
+            <p>
+                Find a word you would like to hear pronounced, grab the IPA notation (if you don't already have it,
+                <a href="https://en.wiktionary.org/" target="_blank">Wiktionary</a> is a great place to look),
+                toss it in the form, and hit the "Read" button.
+            </p>
+
+            <p>
+                For example, <code>/ˈpɪdʒən/</code> will be read as "pigeon."
+            </p>
+
+            <h2>How Does It Work?</h2>
+
+            <p>
+                I had fun making this, so I wrote about how it was built <a href="https://www.cuttlesoft.com/pronouncing-things-with-amazons-polly/" target="_blank">here</a>!
+            </p>
+
+            <h2>Who Am I?</h2>
+
+            <p>
+                I'm nobody! Who are you?
+
+                </p><ul class="social">
+                    <li>
+                        <a href="https://github.com/katie7r" target="_blank">
+                            <svg height="32" width="32" viewBox="0 0 16 16" version="1.1" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/katie_k7r" target="_blank">
+                            <svg width="32" height="32" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M67.812 16.141a26.246 26.246 0 0 1-7.519 2.06 13.134 13.134 0 0 0 5.756-7.244 26.127 26.127 0 0 1-8.313 3.176A13.075 13.075 0 0 0 48.182 10c-7.229 0-13.092 5.861-13.092 13.093 0 1.026.118 2.021.338 2.981-10.885-.548-20.528-5.757-26.987-13.679a13.048 13.048 0 0 0-1.771 6.581c0 4.542 2.312 8.551 5.824 10.898a13.048 13.048 0 0 1-5.93-1.638c-.002.055-.002.11-.002.162 0 6.345 4.513 11.638 10.504 12.84a13.177 13.177 0 0 1-3.449.457c-.846 0-1.667-.078-2.465-.231 1.667 5.2 6.499 8.986 12.23 9.09a26.276 26.276 0 0 1-16.26 5.606A26.21 26.21 0 0 1 4 55.976a37.036 37.036 0 0 0 20.067 5.882c24.083 0 37.251-19.949 37.251-37.249 0-.566-.014-1.134-.039-1.694a26.597 26.597 0 0 0 6.533-6.774z"></path></svg>
+                        </a>
+                    </li>
+                </ul>
+
+            <p></p>
+        <span class="close">×</span></aside>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="scripts.js"></script>
+
+
+</body></html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en" dir="LTR"><head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Higher-Dimensional Types in the Mechanization of Homotopy Theory</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="css/github.css">
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Higher-Dimensional Types in the Mechanization of Homotopy Theory</h1>
+</header>
+<h2 id="abstract">Abstract</h2>
+<h3 id="english">English</h3>
+<p>Mechanized reasoning has proved effective in avoiding serious mistakes in software and hardware, and yet remains unpopular in the practice of mathematics. My thesis is aimed at making mechanization easier so that more mathematicians can benefit from this technology. Particularly, I experimented with <em>higher-dimensional types,</em> an extension of ordinary types with a hierarchy of stacked relations, and managed to mechanize many important results from classical homotopy theory in the proof assistant Agda. My work thus suggests higher-dimensional types may help mechanize mathematical concepts.</p>
+<h3 id="tâibân-tai-min">Tâibân (Tai-Min)</h3>
+<p><em>The language is also known as <a href="https://en.wikipedia.org/wiki/Taiwanese_Hokkien">Tâiuân’uē (Taiwanese)</a>. See the thesis appendix for more details on the typesetting of its writing.</em></p>
+<p>Ki’hâihuà thuilí í’king ē’tàng pībián nńgthé kap ngē’thé tiong giâmtiōng ê tshò’ngōo, tsóng–sī tī sòoha̍k giánkiù si̍tbū iáu hántit iōng. Pún lūnbûn ê tsongtsí sī beh sú ki’hâihuà khah khuài hōo sòoha̍kka sú’iōng. Siôngsè lâi kóng, guá sú’iōng ko’uî luīhîng (higher-dimensional types), iā tsiūsī tī itpuann ê luīhîng tíngkuân ka’thiam to’kai’tsân ê kuanhē, tsiong kóotián tônglûn lílūn (classical homotopy theory) ê kuí’nā hāng tiōng’iàu ê sîngkó, tī tsìngbîng hú’tsōo kangkhū Agda lāi’té sūnlī ki’hâihuà. Guá ê giánkiù sîngkó hiánsī ko’uî luīhîng kiámtshái ē’tàng pangtsōo sòoha̍k khàiliām ê ki’hâihuà.</p>
+<h2 id="thesis">Thesis</h2>
+<h3 id="text">Text</h3>
+<ul>
+<li>The <a href="files/thesis.pdf">most updated PDF</a> (recommended).</li>
+<li>The <a href="files/thesis-submitted.pdf">submitted, official PDF</a> (containing more bugs).</li>
+</ul>
+<h4 id="important-notes-on-lack-of-attribution">Important Notes on (Lack of) Attribution</h4>
+<ol type="1">
+<li>Many fundamental concepts, such as <em>h-levels</em>, should have been more explicitly attributed to Professor Vladimir Voevodsky. One should be aware that Voevodsky’s contribution is much greater than the impression given by the text.</li>
+<li>The English translation of the Diamond Sūtra cited in Appendix B should have been explicitly attributed to Professor Paul Harrison.</li>
+</ol>
+<h3 id="agda-code">Agda Code</h3>
+<ul>
+<li>The <a href="https://github.com/HoTT/HoTT-Agda/">latest code on GitHub</a>. This may deviate from the text.</li>
+<li>The <a href="https://doi.org/10.6084/m9.figshare.4763251.v1">archived code on figshare</a> which matches the text.</li>
+</ul>
+<h3 id="biberbibtex">Biber/Bibtex</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="va">@phdthesis</span>{<span class="ot">favonia</span>-<span class="ot">as:thesis</span>,</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">author</span> = {Kuen-Bang {Hou (Favonia)}},</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">title</span> = {Higher-Dimensional Types in the Mechanization of Homotopy Theory},</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">school</span> = {Carnegie Mellon University},</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">year</span> = 2017,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">month</span> = <span class="st">feb</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">url</span> = {https://favonia.org/thesis}</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h2 id="errata">Errata</h2>
+<h3 id="known-bugs">Known Bugs</h3>
+<p>These bugs were present even in the most updated PDF:</p>
+<ul>
+<li><p>On page 18, the sentence “this principle can be traced back to the universe extension for the groupoid model constructed by Martin Hofmann and Thomas Streicher” turned out to be a historic accident. In <a href="https://groups.google.com/d/msg/homotopytypetheory/K_4bAZEDRvE/VbYjok7bAAAJ">a now-public private exchange</a>, Vladimir Voevodsky stated “I was not inspired by it. In fact I tried several times to understand what they are saying and never could.” (Clarified on 2019/01/27 by me.)</p></li>
+<li><p>On page 45, Lemma 3.1.3, <span class="math inline"><em>A</em></span> is <span class="math inline"><em>m</em></span>-connected, not <span class="math inline"><em>m</em></span>-type, and similarly for <span class="math inline"><em>B</em></span>. In the type of <span class="math inline"><em>α</em></span>, “<span class="math inline"><em>f</em>(<em>b</em><sub>0</sub>)</span>” should be replaced by “<span class="math inline"><em>g</em>(<em>b</em><sub>0</sub>)</span>”. (Reported on 2018/08/26 by Tim Baumann.)</p></li>
+<li><p>On page 49, in the formula after “constancy condition is given by applying identification elimination”, the “<span class="math inline">fst(<em>s</em><sub>0</sub>)</span>” at the end of the first line should have been “<span class="math inline">fst(<em>s</em><sub>1</sub>)</span>”, and the “<span class="math inline">snd(<em>s</em><sub>0</sub>)</span>” on the second line should be “<span class="math inline">snd(<em>s</em><sub>1</sub>)</span>.” (Reported on 2021/02/11 by Perry Hart.)</p></li>
+<li><p>On page 52, Line -5, “<span class="math inline"><em>F</em>(<em>a</em>)</span>” should have been “<span class="math inline"><em>F</em>’(<em>a</em>)</span>”. (Reported on 2021/02/11 by Perry Hart.)</p></li>
+<li><p>On page 53, Line 1, “<span class="math inline"><em>F</em>(<em>a</em>)</span>” should have been “<span class="math inline"><em>F</em>’(<em>a</em>)</span>”. (Reported on 2021/02/11 by Perry Hart.)</p></li>
+<li><p>On page 60, the “<span class="math inline"><em>p</em><em>c</em></span>” at the end of the type of “<span class="math inline">refl − refl<sub><em>A</em><em>A</em></sub></span>” should have been “<span class="math inline"><em>α</em></span>”. Similarly, the “<span class="math inline"><em>p</em><em>c</em></span>” at the end of the type of “<span class="math inline">refl − refl<sub><em>A</em><em>B</em></sub></span>” should have been “<span class="math inline"><em>β</em></span>”. (Reported on 2021/02/11 by Perry Hart.)</p></li>
+<li><p>On page 67, line 5, the pushout type is messed up. It is the same type described above but typeset badly. (Reported on 2018/09/04 by Tim Baumann.)</p></li>
+<li><p>On page 68, Equation (3.3), “<span class="math inline">left(<em>b</em><sub>1</sub>)</span>” should be replace by “<span class="math inline">right(<em>b</em><sub>1</sub>)</span>” on both sides. (Reported on 2018/08/26 by Tim Baumann.)</p></li>
+<li><p>On page 101, line -2, <code>(a : A) → X a</code> should have been <code>(a : A) → X a → …</code> (Reported before 2021/02 by Perry Hart.)</p></li>
+<li><p>On page 112, line -6 (the last Agda code snippet), <code>(r : bmleft a₀ == bmright b₀)</code> in the type of <code>blackers-massey</code> should be removed. The correct type is</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode agda"><code class="sourceCode agda"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>blakers-massey <span class="ot">:</span> <span class="ot">∀</span> <span class="ot">{</span>a₀ b₀<span class="ot">}</span> <span class="ot">→</span> has-conn-fibers <span class="ot">(</span>m +2+ n<span class="ot">)</span> <span class="ot">(</span>bmglue <span class="ot">{</span>a₀<span class="ot">}</span> <span class="ot">{</span>b₀<span class="ot">})</span></span></code></pre></div>
+<p>(Reported on 2021/02/07 by Perry Hart.)</p></li>
+<li><p>On page 121, Section A.2, “a great varieties of” should be “a great variety of.” (Reported before 2019/08 by Carlo Angiuli.)</p></li>
+</ul>
+<h3 id="fixed-bugs">Fixed Bugs</h3>
+<p>These errata were fixed in the updated PDF but not in the submitted (official) version:</p>
+<ul>
+<li>On page 7 of the text, remark 1.5.2 has been rewritten for clarity. The old text is correct but confusing. (Fixed on 2017/10/25 and 2017/11/24.)</li>
+<li>On page 38 of the text, “diagram” was misspelled as “dimagram”. (Fixed on 2017/06/29.)</li>
+<li>On page 48 of the text, “Because I proved this lemma,” should be completely removed. To clarify, people had been working on these factorization problems before I proved it. (Fixed on 2017/04/02.)</li>
+<li>On page 83 of the text, two “<span class="math inline"><em>h</em><sup>0</sup>2</span>” should be “<span class="math inline"><em>h</em><sup>0</sup>(2)</span>”. Parentheses were missing. (Fixed on 2017/04/01.)</li>
+</ul>
+<hr>
+<p><a href="index.html">Homepage</a></p>
+<p>This page was made with <a href="https://gist.github.com/dashed/6714393">GitHub-like CSS</a> (licensed under MIT and modified by me).</p>
+
+
+</body></html>

@@ -1,0 +1,1096 @@
+<html><head><meta name="color-scheme" content="light dark"></head><body><pre style="word-wrap: break-word; white-space: pre-wrap;">
+# stack32 out_stack
+
+# int32 out
+
+# stack32 u_stack
+
+# int32 u
+
+# int32 eax
+
+# int32 ebx
+
+# int32 esi
+
+# int32 edi
+
+# int32 ebp
+
+# stack32 ebp_stack
+
+# float80 d0
+
+# float80 d1
+
+# float80 d2
+
+# float80 d3
+
+# float80 d4
+
+# float80 e0
+
+# float80 e1
+
+# float80 e2
+
+# float80 e3
+
+# float80 e4
+
+# float80 f0
+
+# float80 f1
+
+# float80 f2
+
+# float80 f3
+
+# float80 f4
+
+# float80 g0
+
+# float80 g1
+
+# float80 g2
+
+# float80 g3
+
+# float80 g4
+
+# float80 h0
+
+# float80 h1
+
+# float80 h2
+
+# float80 h3
+
+# float80 h4
+
+# float80 i0
+
+# float80 i1
+
+# float80 i2
+
+# float80 i3
+
+# float80 i4
+
+# float80 j0
+
+# float80 j1
+
+# float80 j2
+
+# float80 j3
+
+# float80 j4
+
+# float80 k0
+
+# float80 k1
+
+# float80 k2
+
+# float80 k3
+
+# float80 k4
+
+# enter gaudry_pm_hadamard
+.text
+.p2align 5
+.globl _gaudry_pm_hadamard
+.globl gaudry_pm_hadamard
+_gaudry_pm_hadamard:
+gaudry_pm_hadamard:
+mov %esp,%eax
+and $31,%eax
+add $0,%eax
+sub %eax,%esp
+
+# input out_stack
+
+# input u_stack
+
+# caller eax
+
+# caller ebx
+
+# caller esi
+
+# caller edi
+
+# caller ebp
+
+#   u = u_stack
+# movl &lt;u_stack=stack32#-2,&gt;u=int32#3
+# movl &lt;u_stack=8(%esp,%eax),&gt;u=%edx
+movl 8(%esp,%eax),%edx
+
+#   out = out_stack
+# movl &lt;out_stack=stack32#-1,&gt;out=int32#2
+# movl &lt;out_stack=4(%esp,%eax),&gt;out=%ecx
+movl 4(%esp,%eax),%ecx
+
+#   f0 = *(float64 *) (u + 0)
+# fldl 0(&lt;u=int32#3)
+# fldl 0(&lt;u=%edx)
+fldl 0(%edx)
+
+#   d0 = *(float64 *) (u + 40)
+# fldl 40(&lt;u=int32#3)
+# fldl 40(&lt;u=%edx)
+fldl 40(%edx)
+
+#   g0 = *(float64 *) (u + 80)
+# fldl 80(&lt;u=int32#3)
+# fldl 80(&lt;u=%edx)
+fldl 80(%edx)
+
+#   e0 = *(float64 *) (u + 120)
+# fldl 120(&lt;u=int32#3)
+# fldl 120(&lt;u=%edx)
+fldl 120(%edx)
+
+# stacktop f0
+# fxch &lt;f0=float80#4
+# fxch &lt;f0=%st(3)
+fxch %st(3)
+
+#   d0 += f0
+# fadd &lt;f0=float80#1,&lt;d0=float80#3
+# fadd &lt;f0=%st(0),&lt;d0=%st(2)
+fadd %st(0),%st(2)
+
+# stacktop g0
+# fxch &lt;g0=float80#2
+# fxch &lt;g0=%st(1)
+fxch %st(1)
+
+#   e0 += g0
+# fadd &lt;g0=float80#1,&lt;e0=float80#4
+# fadd &lt;g0=%st(0),&lt;e0=%st(3)
+fadd %st(0),%st(3)
+
+# stacktop f0
+# fxch &lt;f0=float80#2
+# fxch &lt;f0=%st(1)
+fxch %st(1)
+
+#   f0 -= *(float64 *) (u + 40)
+# fsubl 40(&lt;u=int32#3)
+# fsubl 40(&lt;u=%edx)
+fsubl 40(%edx)
+
+# stacktop g0
+# fxch &lt;g0=float80#2
+# fxch &lt;g0=%st(1)
+fxch %st(1)
+
+#   g0 -= *(float64 *) (u + 120)
+# fsubl 120(&lt;u=int32#3)
+# fsubl 120(&lt;u=%edx)
+fsubl 120(%edx)
+
+#     f1 = *(float64 *) (u + 8)
+# fldl 8(&lt;u=int32#3)
+# fldl 8(&lt;u=%edx)
+fldl 8(%edx)
+
+#     d1 = *(float64 *) (u + 48)
+# fldl 48(&lt;u=int32#3)
+# fldl 48(&lt;u=%edx)
+fldl 48(%edx)
+
+#     g1 = *(float64 *) (u + 88)
+# fldl 88(&lt;u=int32#3)
+# fldl 88(&lt;u=%edx)
+fldl 88(%edx)
+
+#     e1 = *(float64 *) (u + 128)
+# fldl 128(&lt;u=int32#3)
+# fldl 128(&lt;u=%edx)
+fldl 128(%edx)
+
+# stacktop f1
+# fxch &lt;f1=float80#4
+# fxch &lt;f1=%st(3)
+fxch %st(3)
+
+#     d1 += f1
+# fadd &lt;f1=float80#1,&lt;d1=float80#3
+# fadd &lt;f1=%st(0),&lt;d1=%st(2)
+fadd %st(0),%st(2)
+
+# stacktop g1
+# fxch &lt;g1=float80#2
+# fxch &lt;g1=%st(1)
+fxch %st(1)
+
+#     e1 += g1
+# fadd &lt;g1=float80#1,&lt;e1=float80#4
+# fadd &lt;g1=%st(0),&lt;e1=%st(3)
+fadd %st(0),%st(3)
+
+# stacktop f1
+# fxch &lt;f1=float80#2
+# fxch &lt;f1=%st(1)
+fxch %st(1)
+
+#     f1 -= *(float64 *) (u + 48)
+# fsubl 48(&lt;u=int32#3)
+# fsubl 48(&lt;u=%edx)
+fsubl 48(%edx)
+
+# stacktop g1
+# fxch &lt;g1=float80#2
+# fxch &lt;g1=%st(1)
+fxch %st(1)
+
+#     g1 -= *(float64 *) (u + 128)
+# fsubl 128(&lt;u=int32#3)
+# fsubl 128(&lt;u=%edx)
+fsubl 128(%edx)
+
+# stacktop d0
+# fxch &lt;d0=float80#7
+# fxch &lt;d0=%st(6)
+fxch %st(6)
+
+#   *(float64 *) (out + 0) = d0
+# fstpl 0(&lt;out=int32#2)
+# fstpl 0(&lt;out=%ecx)
+fstpl 0(%ecx)
+
+# stacktop e0
+# fxch &lt;e0=float80#7
+# fxch &lt;e0=%st(6)
+fxch %st(6)
+
+#   *(float64 *) (out + 40) = e0
+# fstpl 40(&lt;out=int32#2)
+# fstpl 40(&lt;out=%ecx)
+fstpl 40(%ecx)
+
+# stacktop f0
+# fxch &lt;f0=float80#4
+# fxch &lt;f0=%st(3)
+fxch %st(3)
+
+#   *(float64 *) (out + 80) = f0
+# fstpl 80(&lt;out=int32#2)
+# fstpl 80(&lt;out=%ecx)
+fstpl 80(%ecx)
+
+# stacktop g0
+# fxch &lt;g0=float80#2
+# fxch &lt;g0=%st(1)
+fxch %st(1)
+
+#   *(float64 *) (out + 120) = g0
+# fstpl 120(&lt;out=int32#2)
+# fstpl 120(&lt;out=%ecx)
+fstpl 120(%ecx)
+
+# stacktop d1
+# fxch &lt;d1=float80#2
+# fxch &lt;d1=%st(1)
+fxch %st(1)
+
+#     *(float64 *) (out + 8) = d1
+# fstpl 8(&lt;out=int32#2)
+# fstpl 8(&lt;out=%ecx)
+fstpl 8(%ecx)
+
+#     *(float64 *) (out + 48) = e1
+# fstpl 48(&lt;out=int32#2)
+# fstpl 48(&lt;out=%ecx)
+fstpl 48(%ecx)
+
+# stacktop f1
+# fxch &lt;f1=float80#2
+# fxch &lt;f1=%st(1)
+fxch %st(1)
+
+#     *(float64 *) (out + 88) = f1
+# fstpl 88(&lt;out=int32#2)
+# fstpl 88(&lt;out=%ecx)
+fstpl 88(%ecx)
+
+#     *(float64 *) (out + 128) = g1
+# fstpl 128(&lt;out=int32#2)
+# fstpl 128(&lt;out=%ecx)
+fstpl 128(%ecx)
+
+#       f2 = *(float64 *) (u + 16)
+# fldl 16(&lt;u=int32#3)
+# fldl 16(&lt;u=%edx)
+fldl 16(%edx)
+
+#       d2 = *(float64 *) (u + 56)
+# fldl 56(&lt;u=int32#3)
+# fldl 56(&lt;u=%edx)
+fldl 56(%edx)
+
+#       g2 = *(float64 *) (u + 96)
+# fldl 96(&lt;u=int32#3)
+# fldl 96(&lt;u=%edx)
+fldl 96(%edx)
+
+#       e2 = *(float64 *) (u + 136)
+# fldl 136(&lt;u=int32#3)
+# fldl 136(&lt;u=%edx)
+fldl 136(%edx)
+
+# stacktop f2
+# fxch &lt;f2=float80#4
+# fxch &lt;f2=%st(3)
+fxch %st(3)
+
+#       d2 += f2
+# fadd &lt;f2=float80#1,&lt;d2=float80#3
+# fadd &lt;f2=%st(0),&lt;d2=%st(2)
+fadd %st(0),%st(2)
+
+# stacktop g2
+# fxch &lt;g2=float80#2
+# fxch &lt;g2=%st(1)
+fxch %st(1)
+
+#       e2 += g2
+# fadd &lt;g2=float80#1,&lt;e2=float80#4
+# fadd &lt;g2=%st(0),&lt;e2=%st(3)
+fadd %st(0),%st(3)
+
+# stacktop f2
+# fxch &lt;f2=float80#2
+# fxch &lt;f2=%st(1)
+fxch %st(1)
+
+#       f2 -= *(float64 *) (u + 56)
+# fsubl 56(&lt;u=int32#3)
+# fsubl 56(&lt;u=%edx)
+fsubl 56(%edx)
+
+# stacktop g2
+# fxch &lt;g2=float80#2
+# fxch &lt;g2=%st(1)
+fxch %st(1)
+
+#       g2 -= *(float64 *) (u + 136)
+# fsubl 136(&lt;u=int32#3)
+# fsubl 136(&lt;u=%edx)
+fsubl 136(%edx)
+
+#         f3 = *(float64 *) (u + 24)
+# fldl 24(&lt;u=int32#3)
+# fldl 24(&lt;u=%edx)
+fldl 24(%edx)
+
+#         d3 = *(float64 *) (u + 64)
+# fldl 64(&lt;u=int32#3)
+# fldl 64(&lt;u=%edx)
+fldl 64(%edx)
+
+#         g3 = *(float64 *) (u + 104)
+# fldl 104(&lt;u=int32#3)
+# fldl 104(&lt;u=%edx)
+fldl 104(%edx)
+
+#         e3 = *(float64 *) (u + 144)
+# fldl 144(&lt;u=int32#3)
+# fldl 144(&lt;u=%edx)
+fldl 144(%edx)
+
+# stacktop f3
+# fxch &lt;f3=float80#4
+# fxch &lt;f3=%st(3)
+fxch %st(3)
+
+#         d3 += f3
+# fadd &lt;f3=float80#1,&lt;d3=float80#3
+# fadd &lt;f3=%st(0),&lt;d3=%st(2)
+fadd %st(0),%st(2)
+
+# stacktop g3
+# fxch &lt;g3=float80#2
+# fxch &lt;g3=%st(1)
+fxch %st(1)
+
+#         e3 += g3
+# fadd &lt;g3=float80#1,&lt;e3=float80#4
+# fadd &lt;g3=%st(0),&lt;e3=%st(3)
+fadd %st(0),%st(3)
+
+# stacktop f3
+# fxch &lt;f3=float80#2
+# fxch &lt;f3=%st(1)
+fxch %st(1)
+
+#         f3 -= *(float64 *) (u + 64)
+# fsubl 64(&lt;u=int32#3)
+# fsubl 64(&lt;u=%edx)
+fsubl 64(%edx)
+
+# stacktop g3
+# fxch &lt;g3=float80#2
+# fxch &lt;g3=%st(1)
+fxch %st(1)
+
+#         g3 -= *(float64 *) (u + 144)
+# fsubl 144(&lt;u=int32#3)
+# fsubl 144(&lt;u=%edx)
+fsubl 144(%edx)
+
+# stacktop d2
+# fxch &lt;d2=float80#7
+# fxch &lt;d2=%st(6)
+fxch %st(6)
+
+#       *(float64 *) (out + 16) = d2
+# fstpl 16(&lt;out=int32#2)
+# fstpl 16(&lt;out=%ecx)
+fstpl 16(%ecx)
+
+# stacktop e2
+# fxch &lt;e2=float80#7
+# fxch &lt;e2=%st(6)
+fxch %st(6)
+
+#       *(float64 *) (out + 56) = e2
+# fstpl 56(&lt;out=int32#2)
+# fstpl 56(&lt;out=%ecx)
+fstpl 56(%ecx)
+
+# stacktop f2
+# fxch &lt;f2=float80#4
+# fxch &lt;f2=%st(3)
+fxch %st(3)
+
+#       *(float64 *) (out + 96) = f2
+# fstpl 96(&lt;out=int32#2)
+# fstpl 96(&lt;out=%ecx)
+fstpl 96(%ecx)
+
+# stacktop g2
+# fxch &lt;g2=float80#2
+# fxch &lt;g2=%st(1)
+fxch %st(1)
+
+#       *(float64 *) (out + 136) = g2
+# fstpl 136(&lt;out=int32#2)
+# fstpl 136(&lt;out=%ecx)
+fstpl 136(%ecx)
+
+# stacktop d3
+# fxch &lt;d3=float80#2
+# fxch &lt;d3=%st(1)
+fxch %st(1)
+
+#         *(float64 *) (out + 24) = d3
+# fstpl 24(&lt;out=int32#2)
+# fstpl 24(&lt;out=%ecx)
+fstpl 24(%ecx)
+
+#         *(float64 *) (out + 64) = e3
+# fstpl 64(&lt;out=int32#2)
+# fstpl 64(&lt;out=%ecx)
+fstpl 64(%ecx)
+
+# stacktop f3
+# fxch &lt;f3=float80#2
+# fxch &lt;f3=%st(1)
+fxch %st(1)
+
+#         *(float64 *) (out + 104) = f3
+# fstpl 104(&lt;out=int32#2)
+# fstpl 104(&lt;out=%ecx)
+fstpl 104(%ecx)
+
+#         *(float64 *) (out + 144) = g3
+# fstpl 144(&lt;out=int32#2)
+# fstpl 144(&lt;out=%ecx)
+fstpl 144(%ecx)
+
+#           f4 = *(float64 *) (u + 32)
+# fldl 32(&lt;u=int32#3)
+# fldl 32(&lt;u=%edx)
+fldl 32(%edx)
+
+#           d4 = *(float64 *) (u + 72)
+# fldl 72(&lt;u=int32#3)
+# fldl 72(&lt;u=%edx)
+fldl 72(%edx)
+
+#           g4 = *(float64 *) (u + 112)
+# fldl 112(&lt;u=int32#3)
+# fldl 112(&lt;u=%edx)
+fldl 112(%edx)
+
+#           e4 = *(float64 *) (u + 152)
+# fldl 152(&lt;u=int32#3)
+# fldl 152(&lt;u=%edx)
+fldl 152(%edx)
+
+# stacktop f4
+# fxch &lt;f4=float80#4
+# fxch &lt;f4=%st(3)
+fxch %st(3)
+
+#           d4 += f4
+# fadd &lt;f4=float80#1,&lt;d4=float80#3
+# fadd &lt;f4=%st(0),&lt;d4=%st(2)
+fadd %st(0),%st(2)
+
+# stacktop g4
+# fxch &lt;g4=float80#2
+# fxch &lt;g4=%st(1)
+fxch %st(1)
+
+#           e4 += g4
+# fadd &lt;g4=float80#1,&lt;e4=float80#4
+# fadd &lt;g4=%st(0),&lt;e4=%st(3)
+fadd %st(0),%st(3)
+
+# stacktop f4
+# fxch &lt;f4=float80#2
+# fxch &lt;f4=%st(1)
+fxch %st(1)
+
+#           f4 -= *(float64 *) (u + 72)
+# fsubl 72(&lt;u=int32#3)
+# fsubl 72(&lt;u=%edx)
+fsubl 72(%edx)
+
+# stacktop g4
+# fxch &lt;g4=float80#2
+# fxch &lt;g4=%st(1)
+fxch %st(1)
+
+#           g4 -= *(float64 *) (u + 152)
+# fsubl 152(&lt;u=int32#3)
+# fsubl 152(&lt;u=%edx)
+fsubl 152(%edx)
+
+#   j0 = *(float64 *) (out + 0)
+# fldl 0(&lt;out=int32#2)
+# fldl 0(&lt;out=%ecx)
+fldl 0(%ecx)
+
+#   h0 = *(float64 *) (out + 40)
+# fldl 40(&lt;out=int32#2)
+# fldl 40(&lt;out=%ecx)
+fldl 40(%ecx)
+
+#   k0 = *(float64 *) (out + 80)
+# fldl 80(&lt;out=int32#2)
+# fldl 80(&lt;out=%ecx)
+fldl 80(%ecx)
+
+#   i0 = *(float64 *) (out + 120)
+# fldl 120(&lt;out=int32#2)
+# fldl 120(&lt;out=%ecx)
+fldl 120(%ecx)
+
+# stacktop j0
+# fxch &lt;j0=float80#4
+# fxch &lt;j0=%st(3)
+fxch %st(3)
+
+#   h0 += j0
+# fadd &lt;j0=float80#1,&lt;h0=float80#3
+# fadd &lt;j0=%st(0),&lt;h0=%st(2)
+fadd %st(0),%st(2)
+
+# stacktop k0
+# fxch &lt;k0=float80#2
+# fxch &lt;k0=%st(1)
+fxch %st(1)
+
+#   i0 += k0
+# fadd &lt;k0=float80#1,&lt;i0=float80#4
+# fadd &lt;k0=%st(0),&lt;i0=%st(3)
+fadd %st(0),%st(3)
+
+# stacktop j0
+# fxch &lt;j0=float80#2
+# fxch &lt;j0=%st(1)
+fxch %st(1)
+
+#   j0 -= *(float64 *) (out + 40)
+# fsubl 40(&lt;out=int32#2)
+# fsubl 40(&lt;out=%ecx)
+fsubl 40(%ecx)
+
+# stacktop k0
+# fxch &lt;k0=float80#2
+# fxch &lt;k0=%st(1)
+fxch %st(1)
+
+#   k0 -= *(float64 *) (out + 120)
+# fsubl 120(&lt;out=int32#2)
+# fsubl 120(&lt;out=%ecx)
+fsubl 120(%ecx)
+
+# stacktop d4
+# fxch &lt;d4=float80#7
+# fxch &lt;d4=%st(6)
+fxch %st(6)
+
+#           *(float64 *) (out + 32) = d4
+# fstpl 32(&lt;out=int32#2)
+# fstpl 32(&lt;out=%ecx)
+fstpl 32(%ecx)
+
+# stacktop e4
+# fxch &lt;e4=float80#7
+# fxch &lt;e4=%st(6)
+fxch %st(6)
+
+#           *(float64 *) (out + 72) = e4
+# fstpl 72(&lt;out=int32#2)
+# fstpl 72(&lt;out=%ecx)
+fstpl 72(%ecx)
+
+# stacktop f4
+# fxch &lt;f4=float80#4
+# fxch &lt;f4=%st(3)
+fxch %st(3)
+
+#           *(float64 *) (out + 112) = f4
+# fstpl 112(&lt;out=int32#2)
+# fstpl 112(&lt;out=%ecx)
+fstpl 112(%ecx)
+
+# stacktop g4
+# fxch &lt;g4=float80#2
+# fxch &lt;g4=%st(1)
+fxch %st(1)
+
+#           *(float64 *) (out + 152) = g4
+# fstpl 152(&lt;out=int32#2)
+# fstpl 152(&lt;out=%ecx)
+fstpl 152(%ecx)
+
+# stacktop h0
+# fxch &lt;h0=float80#2
+# fxch &lt;h0=%st(1)
+fxch %st(1)
+
+#   *(float64 *) (out + 0) = h0
+# fstpl 0(&lt;out=int32#2)
+# fstpl 0(&lt;out=%ecx)
+fstpl 0(%ecx)
+
+# stacktop j0
+# fxch &lt;j0=float80#3
+# fxch &lt;j0=%st(2)
+fxch %st(2)
+
+#   *(float64 *) (out + 40) = j0
+# fstpl 40(&lt;out=int32#2)
+# fstpl 40(&lt;out=%ecx)
+fstpl 40(%ecx)
+
+# stacktop i0
+# fxch &lt;i0=float80#2
+# fxch &lt;i0=%st(1)
+fxch %st(1)
+
+#   *(float64 *) (out + 80) = i0
+# fstpl 80(&lt;out=int32#2)
+# fstpl 80(&lt;out=%ecx)
+fstpl 80(%ecx)
+
+#   *(float64 *) (out + 120) = k0
+# fstpl 120(&lt;out=int32#2)
+# fstpl 120(&lt;out=%ecx)
+fstpl 120(%ecx)
+
+#     j1 = *(float64 *) (out + 8)
+# fldl 8(&lt;out=int32#2)
+# fldl 8(&lt;out=%ecx)
+fldl 8(%ecx)
+
+#     h1 = *(float64 *) (out + 48)
+# fldl 48(&lt;out=int32#2)
+# fldl 48(&lt;out=%ecx)
+fldl 48(%ecx)
+
+#     k1 = *(float64 *) (out + 88)
+# fldl 88(&lt;out=int32#2)
+# fldl 88(&lt;out=%ecx)
+fldl 88(%ecx)
+
+#     i1 = *(float64 *) (out + 128)
+# fldl 128(&lt;out=int32#2)
+# fldl 128(&lt;out=%ecx)
+fldl 128(%ecx)
+
+# stacktop j1
+# fxch &lt;j1=float80#4
+# fxch &lt;j1=%st(3)
+fxch %st(3)
+
+#     h1 += j1
+# fadd &lt;j1=float80#1,&lt;h1=float80#3
+# fadd &lt;j1=%st(0),&lt;h1=%st(2)
+fadd %st(0),%st(2)
+
+# stacktop k1
+# fxch &lt;k1=float80#2
+# fxch &lt;k1=%st(1)
+fxch %st(1)
+
+#     i1 += k1
+# fadd &lt;k1=float80#1,&lt;i1=float80#4
+# fadd &lt;k1=%st(0),&lt;i1=%st(3)
+fadd %st(0),%st(3)
+
+# stacktop j1
+# fxch &lt;j1=float80#2
+# fxch &lt;j1=%st(1)
+fxch %st(1)
+
+#     j1 -= *(float64 *) (out + 48)
+# fsubl 48(&lt;out=int32#2)
+# fsubl 48(&lt;out=%ecx)
+fsubl 48(%ecx)
+
+# stacktop k1
+# fxch &lt;k1=float80#2
+# fxch &lt;k1=%st(1)
+fxch %st(1)
+
+#     k1 -= *(float64 *) (out + 128)
+# fsubl 128(&lt;out=int32#2)
+# fsubl 128(&lt;out=%ecx)
+fsubl 128(%ecx)
+
+#       j2 = *(float64 *) (out + 16)
+# fldl 16(&lt;out=int32#2)
+# fldl 16(&lt;out=%ecx)
+fldl 16(%ecx)
+
+#       h2 = *(float64 *) (out + 56)
+# fldl 56(&lt;out=int32#2)
+# fldl 56(&lt;out=%ecx)
+fldl 56(%ecx)
+
+#       k2 = *(float64 *) (out + 96)
+# fldl 96(&lt;out=int32#2)
+# fldl 96(&lt;out=%ecx)
+fldl 96(%ecx)
+
+#       i2 = *(float64 *) (out + 136)
+# fldl 136(&lt;out=int32#2)
+# fldl 136(&lt;out=%ecx)
+fldl 136(%ecx)
+
+# stacktop j2
+# fxch &lt;j2=float80#4
+# fxch &lt;j2=%st(3)
+fxch %st(3)
+
+#       h2 += j2
+# fadd &lt;j2=float80#1,&lt;h2=float80#3
+# fadd &lt;j2=%st(0),&lt;h2=%st(2)
+fadd %st(0),%st(2)
+
+# stacktop k2
+# fxch &lt;k2=float80#2
+# fxch &lt;k2=%st(1)
+fxch %st(1)
+
+#       i2 += k2
+# fadd &lt;k2=float80#1,&lt;i2=float80#4
+# fadd &lt;k2=%st(0),&lt;i2=%st(3)
+fadd %st(0),%st(3)
+
+# stacktop j2
+# fxch &lt;j2=float80#2
+# fxch &lt;j2=%st(1)
+fxch %st(1)
+
+#       j2 -= *(float64 *) (out + 56)
+# fsubl 56(&lt;out=int32#2)
+# fsubl 56(&lt;out=%ecx)
+fsubl 56(%ecx)
+
+# stacktop k2
+# fxch &lt;k2=float80#2
+# fxch &lt;k2=%st(1)
+fxch %st(1)
+
+#       k2 -= *(float64 *) (out + 136)
+# fsubl 136(&lt;out=int32#2)
+# fsubl 136(&lt;out=%ecx)
+fsubl 136(%ecx)
+
+# stacktop h1
+# fxch &lt;h1=float80#7
+# fxch &lt;h1=%st(6)
+fxch %st(6)
+
+#     *(float64 *) (out + 8) = h1
+# fstpl 8(&lt;out=int32#2)
+# fstpl 8(&lt;out=%ecx)
+fstpl 8(%ecx)
+
+# stacktop j1
+# fxch &lt;j1=float80#5
+# fxch &lt;j1=%st(4)
+fxch %st(4)
+
+#     *(float64 *) (out + 48) = j1
+# fstpl 48(&lt;out=int32#2)
+# fstpl 48(&lt;out=%ecx)
+fstpl 48(%ecx)
+
+# stacktop i1
+# fxch &lt;i1=float80#6
+# fxch &lt;i1=%st(5)
+fxch %st(5)
+
+#     *(float64 *) (out + 88) = i1
+# fstpl 88(&lt;out=int32#2)
+# fstpl 88(&lt;out=%ecx)
+fstpl 88(%ecx)
+
+# stacktop k1
+# fxch &lt;k1=float80#2
+# fxch &lt;k1=%st(1)
+fxch %st(1)
+
+#     *(float64 *) (out + 128) = k1
+# fstpl 128(&lt;out=int32#2)
+# fstpl 128(&lt;out=%ecx)
+fstpl 128(%ecx)
+
+# stacktop h2
+# fxch &lt;h2=float80#4
+# fxch &lt;h2=%st(3)
+fxch %st(3)
+
+#       *(float64 *) (out + 16) = h2
+# fstpl 16(&lt;out=int32#2)
+# fstpl 16(&lt;out=%ecx)
+fstpl 16(%ecx)
+
+#       *(float64 *) (out + 56) = j2
+# fstpl 56(&lt;out=int32#2)
+# fstpl 56(&lt;out=%ecx)
+fstpl 56(%ecx)
+
+# stacktop i2
+# fxch &lt;i2=float80#2
+# fxch &lt;i2=%st(1)
+fxch %st(1)
+
+#       *(float64 *) (out + 96) = i2
+# fstpl 96(&lt;out=int32#2)
+# fstpl 96(&lt;out=%ecx)
+fstpl 96(%ecx)
+
+#       *(float64 *) (out + 136) = k2
+# fstpl 136(&lt;out=int32#2)
+# fstpl 136(&lt;out=%ecx)
+fstpl 136(%ecx)
+
+#         j3 = *(float64 *) (out + 24)
+# fldl 24(&lt;out=int32#2)
+# fldl 24(&lt;out=%ecx)
+fldl 24(%ecx)
+
+#         h3 = *(float64 *) (out + 64)
+# fldl 64(&lt;out=int32#2)
+# fldl 64(&lt;out=%ecx)
+fldl 64(%ecx)
+
+#         k3 = *(float64 *) (out + 104)
+# fldl 104(&lt;out=int32#2)
+# fldl 104(&lt;out=%ecx)
+fldl 104(%ecx)
+
+#         i3 = *(float64 *) (out + 144)
+# fldl 144(&lt;out=int32#2)
+# fldl 144(&lt;out=%ecx)
+fldl 144(%ecx)
+
+# stacktop j3
+# fxch &lt;j3=float80#4
+# fxch &lt;j3=%st(3)
+fxch %st(3)
+
+#         h3 += j3
+# fadd &lt;j3=float80#1,&lt;h3=float80#3
+# fadd &lt;j3=%st(0),&lt;h3=%st(2)
+fadd %st(0),%st(2)
+
+# stacktop k3
+# fxch &lt;k3=float80#2
+# fxch &lt;k3=%st(1)
+fxch %st(1)
+
+#         i3 += k3
+# fadd &lt;k3=float80#1,&lt;i3=float80#4
+# fadd &lt;k3=%st(0),&lt;i3=%st(3)
+fadd %st(0),%st(3)
+
+# stacktop j3
+# fxch &lt;j3=float80#2
+# fxch &lt;j3=%st(1)
+fxch %st(1)
+
+#         j3 -= *(float64 *) (out + 64)
+# fsubl 64(&lt;out=int32#2)
+# fsubl 64(&lt;out=%ecx)
+fsubl 64(%ecx)
+
+# stacktop k3
+# fxch &lt;k3=float80#2
+# fxch &lt;k3=%st(1)
+fxch %st(1)
+
+#         k3 -= *(float64 *) (out + 144)
+# fsubl 144(&lt;out=int32#2)
+# fsubl 144(&lt;out=%ecx)
+fsubl 144(%ecx)
+
+#           j4 = *(float64 *) (out + 32)
+# fldl 32(&lt;out=int32#2)
+# fldl 32(&lt;out=%ecx)
+fldl 32(%ecx)
+
+#           h4 = *(float64 *) (out + 72)
+# fldl 72(&lt;out=int32#2)
+# fldl 72(&lt;out=%ecx)
+fldl 72(%ecx)
+
+#           k4 = *(float64 *) (out + 112)
+# fldl 112(&lt;out=int32#2)
+# fldl 112(&lt;out=%ecx)
+fldl 112(%ecx)
+
+#           i4 = *(float64 *) (out + 152)
+# fldl 152(&lt;out=int32#2)
+# fldl 152(&lt;out=%ecx)
+fldl 152(%ecx)
+
+# stacktop j4
+# fxch &lt;j4=float80#4
+# fxch &lt;j4=%st(3)
+fxch %st(3)
+
+#           h4 += j4
+# fadd &lt;j4=float80#1,&lt;h4=float80#3
+# fadd &lt;j4=%st(0),&lt;h4=%st(2)
+fadd %st(0),%st(2)
+
+# stacktop k4
+# fxch &lt;k4=float80#2
+# fxch &lt;k4=%st(1)
+fxch %st(1)
+
+#           i4 += k4
+# fadd &lt;k4=float80#1,&lt;i4=float80#4
+# fadd &lt;k4=%st(0),&lt;i4=%st(3)
+fadd %st(0),%st(3)
+
+# stacktop j4
+# fxch &lt;j4=float80#2
+# fxch &lt;j4=%st(1)
+fxch %st(1)
+
+#           j4 -= *(float64 *) (out + 72)
+# fsubl 72(&lt;out=int32#2)
+# fsubl 72(&lt;out=%ecx)
+fsubl 72(%ecx)
+
+# stacktop k4
+# fxch &lt;k4=float80#2
+# fxch &lt;k4=%st(1)
+fxch %st(1)
+
+#           k4 -= *(float64 *) (out + 152)
+# fsubl 152(&lt;out=int32#2)
+# fsubl 152(&lt;out=%ecx)
+fsubl 152(%ecx)
+
+# stacktop h3
+# fxch &lt;h3=float80#7
+# fxch &lt;h3=%st(6)
+fxch %st(6)
+
+#         *(float64 *) (out + 24) = h3
+# fstpl 24(&lt;out=int32#2)
+# fstpl 24(&lt;out=%ecx)
+fstpl 24(%ecx)
+
+# stacktop j3
+# fxch &lt;j3=float80#5
+# fxch &lt;j3=%st(4)
+fxch %st(4)
+
+#         *(float64 *) (out + 64) = j3
+# fstpl 64(&lt;out=int32#2)
+# fstpl 64(&lt;out=%ecx)
+fstpl 64(%ecx)
+
+# stacktop i3
+# fxch &lt;i3=float80#6
+# fxch &lt;i3=%st(5)
+fxch %st(5)
+
+#         *(float64 *) (out + 104) = i3
+# fstpl 104(&lt;out=int32#2)
+# fstpl 104(&lt;out=%ecx)
+fstpl 104(%ecx)
+
+# stacktop k3
+# fxch &lt;k3=float80#2
+# fxch &lt;k3=%st(1)
+fxch %st(1)
+
+#         *(float64 *) (out + 144) = k3
+# fstpl 144(&lt;out=int32#2)
+# fstpl 144(&lt;out=%ecx)
+fstpl 144(%ecx)
+
+# stacktop h4
+# fxch &lt;h4=float80#4
+# fxch &lt;h4=%st(3)
+fxch %st(3)
+
+#           *(float64 *) (out + 32) = h4
+# fstpl 32(&lt;out=int32#2)
+# fstpl 32(&lt;out=%ecx)
+fstpl 32(%ecx)
+
+#           *(float64 *) (out + 72) = j4
+# fstpl 72(&lt;out=int32#2)
+# fstpl 72(&lt;out=%ecx)
+fstpl 72(%ecx)
+
+# stacktop i4
+# fxch &lt;i4=float80#2
+# fxch &lt;i4=%st(1)
+fxch %st(1)
+
+#           *(float64 *) (out + 112) = i4
+# fstpl 112(&lt;out=int32#2)
+# fstpl 112(&lt;out=%ecx)
+fstpl 112(%ecx)
+
+#           *(float64 *) (out + 152) = k4
+# fstpl 152(&lt;out=int32#2)
+# fstpl 152(&lt;out=%ecx)
+fstpl 152(%ecx)
+
+# leave
+add %eax,%esp
+ret
+</pre></body></html>

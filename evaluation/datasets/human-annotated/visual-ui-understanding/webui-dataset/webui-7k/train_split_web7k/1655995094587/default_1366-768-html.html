@@ -1,0 +1,1681 @@
+<!DOCTYPE html><html lang="en" prefix="og: http://ogp.me/ns#"><head>
+  <meta charset="utf-8">
+  <title>Labs Projects - Open Knowledge Labs</title>
+
+  <!-- Open Graph Protocol http://ogp.me/ -->
+  <meta property="og:title" content="Open Knowledge Labs">
+  <meta property="og:description" content="We're a community of civic hackers, data wranglers and ordinary citizens intrigued and excited by the possibilities of combining technology and information for good – making government more accountable, culture more accessible and science more efficient.">
+  <meta property="og:url" content="http://okfnlabs.org">
+  <meta property="og:image" content="http://assets.okfn.org/p/labs/img/icon-512.png">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <!-- styles -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/bootstrap-responsive.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/syntax.css" type="text/css">
+  <link rel="stylesheet" href="/css/labs.css">
+  
+  <link rel="stylesheet" href="https://okfnlabs.org/githubActivity.js/githubActivity.css">
+  <link rel="stylesheet" href="/css/chosen.min.css">
+  <!-- must have these at the top of the page so we can do scripts in content of specific pages -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
+  <script src="/js/underscore.js"></script>
+  <script src="https://okfnlabs.org/githubActivity.js/githubActivity.js"></script>
+  
+  <link rel="alternate" type="application/atom+xml" title="Open Knowledge Labs Feed" href="https://okfnlabs.org/blog/feed.xml">
+  <link rel="shortcut icon" href="https://d22739b8qd5enr.cloudfront.net/assets/favicon.ico">
+  <script defer="" data-domain="okfnlabs.org" src="https://plausible.io/js/plausible.js"></script>
+</head>
+
+<body class="body-code">
+  <!-- OKF Panel -->
+  <div class="absolute-okf-panel">
+    <div id="okf-panel" class="collapse">
+      <iframe src="https://assets.okfn.org/themes/okfn/okf-panel.html" scrolling="no"></iframe>
+    </div>
+    <div class="container">
+      <div class="okfn-ribbon">
+        <a href="https://okfn.org/" data-toggle="collapse" data-target="#okf-panel" title="Part of the Open Knowledge Network">An Open Knowledge Site</a>
+      </div>
+    </div>
+  </div>
+  <!-- End OKF Panel -->
+	<div class="navbar">
+    <div class="navbar-inner">
+      <div class="container">
+        <a href="/" class="brand"><img src="https://assets.okfn.org/p/labs/img/logo-s.png" alt="Open Knowledge Labs" style="height:62px;"></a>
+        <ul class="nav pull-right">
+          <li><a class="nav-join" href="/join">Join</a></li>
+          <li><a class="nav-blog" href="/blog">Blog</a></li>
+          <li><a class="nav-forum" href="https://discuss.okfn.org/c/open-knowledge-labs">Forum</a></li>
+          <li><a class="nav-code" href="/projects/#priority=true">Projects</a></li>
+          <li><a class="nav-events" href="/events">Events</a></li>
+          <li><a class="nav-about" href="/about">About</a></li>
+          <li><a class="nav-newsletter" href="/newsletter">Newsletter</a></li>
+          <li><a class="nav-members" href="/members">Members</a></li>
+          <li><a class="nav-contact" href="/contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="content">
+      <div class="page-header">
+  <h1>
+    <div style="float: right; font-size: 75%;">
+      [<a href="/projects/add/">Add a Project</a>]
+    </div>
+    Labs Projects
+  </h1>
+</div>
+
+<form class="form-inline" id="filters">
+  <select data-placeholder="Filter projects..." style="width: 500px; display: none;" class="form-control chosen-select" multiple="">
+    <option value=""></option>
+    <optgroup label="Featured">
+      <option value="[data-featured*=true]">Featured</option>
+    </optgroup>    
+    <optgroup label="Priority">
+      <option value="[data-priority*=true]">Priority</option>
+    </optgroup>    
+    <optgroup label="Help wanted">
+      <option value="[data-helpwanted*=true]">Help wanted</option>
+    </optgroup>
+  <optgroup label="Category"><option value="[data-category*=Data Tools and Services]">Data Tools and Services</option><option value="[data-category*=Database]">Database</option><option value="[data-category*=Other]">Other</option><option value="[data-category*=Data Infrastructure]">Data Infrastructure</option><option value="[data-category*=Civic Tech]">Civic Tech</option><option value="[data-category*=Datatools and Services]">Datatools and Services</option></optgroup><optgroup label="Activity status"><option value="[data-activity_status*=active]">active</option><option value="[data-activity_status*=semi-active]">semi-active</option><option value="[data-activity_status*=dormant]">dormant</option><option value="[data-activity_status*=running]">running</option><option value="[data-activity_status*=retired]">retired</option><option value="[data-activity_status*=graduated]">graduated</option></optgroup><optgroup label="Stage"><option value="[data-stage*=developing]">developing</option><option value="[data-stage*=very mature]">very mature</option><option value="[data-stage*=mature]">mature</option><option value="[data-stage*=dormant]">dormant</option><option value="[data-stage*=finished]">finished</option></optgroup><optgroup label="Language"><option value="[data-language*=Ruby]">Ruby</option><option value="[data-language*=php, javascript, python, nodejs]">php, javascript, python, nodejs</option><option value="[data-language*=python, javascript, html, css]">python, javascript, html, css</option><option value="[data-language*=Java, Dockerfile]">Java, Dockerfile</option><option value="[data-language*=python, javascript, html]">python, javascript, html</option><option value="[data-language*=JavaScript]">JavaScript</option><option value="[data-language*=Java, Objective-C, Python, PHP, CSS]">Java, Objective-C, Python, PHP, CSS</option><option value="[data-language*=JavaScript, Python]">JavaScript, Python</option><option value="[data-language*=Python, JavaScript]">Python, JavaScript</option><option value="[data-language*=html, markdown, css, javascript]">html, markdown, css, javascript</option><option value="[data-language*=javascript, css]">javascript, css</option><option value="[data-language*=javascript, php]">javascript, php</option><option value="[data-language*=clojure]">clojure</option><option value="[data-language*=python]">python</option><option value="[data-language*=javascript, coffeescript, css, shell]">javascript, coffeescript, css, shell</option><option value="[data-language*=python, javascript, css, shell]">python, javascript, css, shell</option><option value="[data-language*=python, javascript, css, html]">python, javascript, css, html</option><option value="[data-language*=python, javascript, css]">python, javascript, css</option><option value="[data-language*=ruby, javascript, perl, css]">ruby, javascript, perl, css</option><option value="[data-language*=markdown]">markdown</option><option value="[data-language*=ruby, css, javascript, shell]">ruby, css, javascript, shell</option><option value="[data-language*=javascript, python, css]">javascript, python, css</option><option value="[data-language*=python, css]">python, css</option></optgroup><optgroup label="Title"><option value="[data-title*=Data Patterns]">Data Patterns</option><option value="[data-title*=CKAN]">CKAN</option><option value="[data-title*=OpenSpending]">OpenSpending</option><option value="[data-title*=OpenTrials]">OpenTrials</option><option value="[data-title*=Core Datasets]">Core Datasets</option><option value="[data-title*=DataHub.io]">DataHub.io</option><option value="[data-title*=OpenLiterature]">OpenLiterature</option><option value="[data-title*=Mira]">Mira</option><option value="[data-title*=Puppycide Database Project]">Puppycide Database Project</option><option value="[data-title*=Good Tables]">Good Tables</option><option value="[data-title*=Public Tika Server including OCR Service]">Public Tika Server including OCR Service</option><option value="[data-title*=2030 Watch]">2030 Watch</option><option value="[data-title*=DataPortals.org]">DataPortals.org</option><option value="[data-title*=Product Open Data]">Product Open Data</option><option value="[data-title*=Webshot]">Webshot</option><option value="[data-title*=Public Bodies]">Public Bodies</option><option value="[data-title*=FacetView]">FacetView</option><option value="[data-title*=BibServer]">BibServer</option><option value="[data-title*=BibJSON]">BibJSON</option><option value="[data-title*=Bad Data]">Bad Data</option><option value="[data-title*=Data Package Manager]">Data Package Manager</option><option value="[data-title*=Recline Mozilla CSV Viewer]">Recline Mozilla CSV Viewer</option><option value="[data-title*=Open Knowledge Labs website]">Open Knowledge Labs website</option><option value="[data-title*=Head Start]">Head Start</option><option value="[data-title*=Ivo of Chartres]">Ivo of Chartres</option><option value="[data-title*=CSV.js]">CSV.js</option><option value="[data-title*=Data Pipes]">Data Pipes</option><option value="[data-title*=reconcile-csv]">reconcile-csv</option><option value="[data-title*=Open Correspondence]">Open Correspondence</option><option value="[data-title*=ElasticSearch.JS]">ElasticSearch.JS</option><option value="[data-title*=Data Explorer]">Data Explorer</option><option value="[data-title*=Frictionless Data]">Frictionless Data</option><option value="[data-title*=ReclineJS]">ReclineJS</option><option value="[data-title*=Bubble Tree Library]">Bubble Tree Library</option><option value="[data-title*=Nomenklatura]">Nomenklatura</option><option value="[data-title*=CrowdCrafting &amp; PyBossa]">CrowdCrafting &amp; PyBossa</option><option value="[data-title*=Froide]">Froide</option><option value="[data-title*=Frag Den Staat]">Frag Den Staat</option><option value="[data-title*=Annotator]">Annotator</option><option value="[data-title*=Retrato da Violência]">Retrato da Violência</option><option value="[data-title*=Textus]">Textus</option><option value="[data-title*=IATI Tools]">IATI Tools</option><option value="[data-title*=Listify]">Listify</option><option value="[data-title*=TimeMapper]">TimeMapper</option><option value="[data-title*=BundesGit]">BundesGit</option><option value="[data-title*=Recline Chrome CSV Viewer]">Recline Chrome CSV Viewer</option><option value="[data-title*=Kartograph]">Kartograph</option><option value="[data-title*=MessyTables]">MessyTables</option><option value="[data-title*=Data Converters]">Data Converters</option><option value="[data-title*=WikipediaJS]">WikipediaJS</option><option value="[data-title*=For Your Information]">For Your Information</option><option value="[data-title*=OffenesParlement]">OffenesParlement</option><option value="[data-title*=ActivityAPI]">ActivityAPI</option><option value="[data-title*=MicroFacts]">MicroFacts</option><option value="[data-title*=Knowledgeforge]">Knowledgeforge</option><option value="[data-title*=IsItOpenData]">IsItOpenData</option><option value="[data-title*=OpenShakespeare]">OpenShakespeare</option><option value="[data-title*=OpenEconomics]">OpenEconomics</option><option value="[data-title*=Yourtopia]">Yourtopia</option></optgroup></select><div class="chosen-container chosen-container-multi" style="width: 500px;" title=""><ul class="chosen-choices"><li class="search-field"><input type="text" value="Filter projects..." class="default" autocomplete="off" style="width: 125px;"></li></ul><div class="chosen-drop"><ul class="chosen-results"></ul></div></div>
+  <button type="submit" class="btn btn-primary">Filter</button>
+</form>
+
+<div class="projects" style="position: relative; height: 4720px;">
+  
+
+    
+
+    <div class="record expand" data-title="Data Patterns" data-priority="true" data-featured="false" data-helpwanted="" data-activity_status="active" data-stage="developing" data-language="" data-type="" data-category="Data Tools and Services" data-url="/projects/datapatterns/" style="position: absolute; left: 0px; top: 0px;">
+      <h2>
+        <a href="/projects/datapatterns/">Data Patterns
+        </a>
+
+        
+          <div class="author">by Open Knowledge Foundation</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-datapatterns.jpg" alt="Data Patterns">
+      
+
+      <p class="description"></p><p>A collection of tips, tricks and patterns for data work</p>
+<p></p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/okfn/datapatterns">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="CKAN" data-priority="false" data-featured="true" data-helpwanted="" data-activity_status="active" data-stage="very mature" data-language="" data-type="" data-category="Data Tools and Services" data-url="/projects/ckan/" style="position: absolute; left: 285px; top: 0px;">
+      <h2>
+        <a href="/projects/ckan/">CKAN
+        </a>
+
+        
+          <div class="author">by CKAN</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-ckan.png" alt="CKAN">
+      
+
+      <p class="description"></p><p>CKAN is a powerful data management system that makes data accessible – by providing tools
+to streamline publishing, sharing, finding and using data. CKAN is aimed at data publishers
+(national and regional governments, companies and organizations) wanting to make their data
+open and available.</p>
+<p></p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/ckan/ckan">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="OpenSpending" data-priority="true" data-featured="true" data-helpwanted="" data-activity_status="active" data-stage="very mature" data-language="" data-type="" data-category="Database" data-url="/projects/openspending/" style="position: absolute; left: 570px; top: 0px;">
+      <h2>
+        <a href="/projects/openspending/">OpenSpending
+        </a>
+
+        
+          <div class="author">by Open Knowledge Foundation</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-openspending.png" alt="OpenSpending">
+      
+
+      <p class="description"></p><p>OpenSpending exists to map the money worldwide – that is, to track and analyse public financial
+information globally. It is meant to be a resource for individuals and groups who wish to discuss
+and investigate public financial information, including journalists, academics, campaigners, and more.</p>
+<p></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="OpenTrials" data-priority="true" data-featured="true" data-helpwanted="" data-activity_status="active" data-stage="developing" data-language="" data-type="" data-category="Database" data-url="/projects/opentrials/" style="position: absolute; left: 0px; top: 236px;">
+      <h2>
+        <a href="/projects/opentrials/">OpenTrials
+        </a>
+
+        
+          <div class="author">by Open Knowledge Foundation</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-opentrials.png" alt="OpenTrials">
+      
+
+      <p class="description"></p><p>OpenTrials, a collaboration between Open Knowledge and Ben Goldacre (Senior Clinical
+Research Fellow in the Centre for Evidence Based Medicine at the University of Oxford),
+will aggregate information from a wide variety of existing sources, and aims to provide
+a comprehensive picture of the data and documents on all trials conducted on medicines
+and other treatments around the world.</p>
+<p></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="Core Datasets" data-priority="true" data-featured="false" data-helpwanted="" data-activity_status="active" data-stage="mature" data-language="" data-type="" data-category="Database" data-url="/projects/core-datasets/" style="position: absolute; left: 285px; top: 236px;">
+      <h2>
+        <a href="/projects/core-datasets/">Core Datasets
+        </a>
+
+        
+          <div class="author">by Open Knowledge Foundation</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-core-datasets.png" alt="Core Datasets">
+      
+
+      <p class="description"></p><p>Important, commonly-used datasets in high quality, easy-to-use &amp; open form</p>
+<p></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="DataHub.io" data-priority="true" data-featured="true" data-helpwanted="" data-activity_status="semi-active" data-stage="very mature" data-language="" data-type="" data-category="Database" data-url="/projects/datahub/" style="position: absolute; left: 570px; top: 236px;">
+      <h2>
+        <a href="/projects/datahub/">DataHub.io
+        </a>
+
+        
+          <div class="author">by Open Knowledge Foundation</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-datahub.png" alt="DataHub.io">
+      
+
+      <p class="description"></p><p>Datahub is a free, powerful data management platform from the Open Knowledge
+Foundation, based on the CKAN data management system.</p>
+<p></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="OpenLiterature" data-priority="false" data-featured="false" data-helpwanted="" data-activity_status="dormant" data-stage="developing" data-language="" data-type="" data-category="Other" data-url="/projects/openliterature/" style="position: absolute; left: 0px; top: 472px;">
+      <h2>
+        <a href="/projects/openliterature/">OpenLiterature
+        </a>
+
+        
+          <div class="author">by Open Knowledge Foundation</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-openliterature.png" alt="OpenLiterature">
+      
+
+      <p class="description"></p><p>Open Literature combines literary criticism and the internet to produce a platform for appreciating great literature.</p>
+<p></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="Mira" data-priority="false" data-featured="false" data-helpwanted="" data-activity_status="semi-active" data-stage="developing" data-language="Ruby" data-type="webapp, tool" data-category="Data Tools and Services" data-url="/projects/mira/" style="position: absolute; left: 285px; top: 472px;">
+      <h2>
+        <a href="/projects/mira/">Mira
+        </a>
+
+        
+          <div class="author">by David Brennan</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-mira.png" alt="Mira">
+      
+
+      <p class="description">This is a small application developed using Ruby-on-Rails. You upload a
+datapackage.json file to it along with the corresponding CSV files and it gives
+you a read-only HTTP API. It's pretty simple - it uses the metadata in the
+datapackage.json file to import each CSV file into its own database table. Once
+imported, various API endpoints become available for metadata and data. You can
+perform simple queries on the data, controlling the ordering, paging and
+variable selection. It also talks to the DataTables jQuery plug-in.
+</p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/davbre/mira">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="Puppycide Database Project" data-priority="false" data-featured="false" data-helpwanted="true" data-activity_status="active" data-stage="developing" data-language="php, javascript, python, nodejs" data-type="data, webapp, running service" data-category="Database" data-url="/projects/puppycidedb/" style="position: absolute; left: 570px; top: 472px;">
+      <h2>
+        <a href="/projects/puppycidedb/">Puppycide Database Project
+        </a>
+
+        
+          <div class="author">by Puppycide Database Project</div>
+        
+      </h2>
+      
+        <img src="https://pbs.twimg.com/profile_images/512989733039792131/lVEJbvP__200x200.jpeg" alt="Puppycide Database Project">
+      
+
+      <p class="description"></p><p><code class="language-plaintext highlighter-rouge">Puppycide Database Project</code> is the largest public compilation of records related to killings of animals by police in the United States. The failure of US law enforcement to make records of lethal force available to the public has become a widely documented issue over the last few years. Despite the publicity, the issue remains unresolved at all levels of government - state, municipal and federal - leaving a small number of private, non-profit organizations to provide such basic information as human fatalities to researchers and journalists. The <code class="language-plaintext highlighter-rouge">Puppycide Database Project</code> is one such organization.</p>
+
+<p>At present, the project relies on crowd-sourcing, and has developed several forms to record data and allow volunteers to encode existing database records for the purpose of Krippendorff’s alpha calculation. New records get announced via social media. We also provide a <a href="https://puppycidedb.com/datasets.html">rapidly-growing library of legal documents &amp; research</a> related to police use of force issues - everything from lawsuit decisions to CDC emergency room admissions.</p>
+
+<p>All of the core functionality for our project relies on open source applications. Some examples:</p>
+
+<ul>
+  <li>Full text search capability using <a href="https://github.com/sphinxsearch/sphinx">Sphinx</a></li>
+  <li>Blog platform using <a href="https://github.com/TryGhost/Ghost">ghost/nodejs</a></li>
+  <li>Twitter connectivity using <a href="https://github.com/jublonet/codebird-php">Codebird</a></li>
+</ul>
+
+<p>Our biggest upcoming code project is the customization and implementation of a web crawler in order to accelerate the growth of our database. The crawler will seek and retrieve pages related to police use of force. In addition to adding more puppycide records, we will use the resulting information to study how news organizations report on issues of lethal force. This upcoming project could really use the input and advice of skilled developers and admins. Our biggest challenge is how to most effectively use the (very small) amount of resources available to us.</p>
+<p></p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/puppycidedb/pdb-database">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="Good Tables" data-priority="true" data-featured="true" data-helpwanted="true" data-activity_status="active" data-stage="developing" data-language="python, javascript, html, css" data-type="library, service" data-category="Data Tools and Services" data-url="/projects/goodtables/" style="position: absolute; left: 0px; top: 708px;">
+      <h2>
+        <a href="/projects/goodtables/">Good Tables
+        </a>
+
+        
+          <div class="author">by Paul Walsh</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-goodtables.png" alt="Good Tables">
+      
+
+      <p class="description"></p><p>The Good Tables web service provides an API and UI for processing and validating tabular data,
+providing an http layer around the <a href="https://github.com/okfn/goodtables">Good Tables Python library</a>.</p>
+
+<p>Currently, this means data can be provided in CSV or Excel format, and the file will
+be validated for well-formedness (for example, no empty rows or columns, no duplicate
+rows, all rows have valid dimensions, and so on), and conformance to a schema
+(if a <a href="http://dataprotocols.org/table-schema/">JSON Table Schema</a> is supplied).</p>
+
+<p><a href="https://okfnlabs.org/blog/2015/03/06/goodtables-web-service.html">Read more in the Open Knowledge Labs announcement</a>.</p>
+<p></p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/frictionlessdata/goodtables.io">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="Public Tika Server including OCR Service" data-priority="false" data-featured="true" data-helpwanted="true" data-activity_status="running" data-stage="dormant" data-language="Java, Dockerfile" data-type="service" data-category="Data Tools and Services" data-url="/projects/tika-server/" style="position: absolute; left: 285px; top: 708px;">
+      <h2>
+        <a href="/projects/tika-server/">Public Tika Server including OCR Service
+        </a>
+
+        
+          <div class="author">by Matt Fullerton</div>
+        
+      </h2>
+      
+
+      <p class="description"></p><p>This is a web service available for converting a multitude of document types to simple text. It is a public facing instance of the Apache Tika server (developer version). It lives at:</p>
+
+<p>http://beta.offenedaten.de:9998/tika</p>
+
+<p>To test it, just throw some images with text in them at it. For example, on a terminal on Mac or Linux:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl -T tiff_example.tif http://beta.offenedaten.de:9998/tika
+</code></pre></div></div>
+
+<p>More details at http://okfnlabs.org/blog/2015/02/21/documents-to-text.html. Please note that Matt is not the author of the software, just the developer for the Dockerfile that makes setting up an instance of what is quite a large piece of software very straightforward.</p>
+<p></p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/mattfullerton/tika-tesseract-docker">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="2030 Watch" data-priority="false" data-featured="false" data-helpwanted="true" data-activity_status="active" data-stage="developing" data-language="python, javascript, html" data-type="webapp" data-category="" data-url="/projects/2030-watch/" style="position: absolute; left: 570px; top: 708px;">
+      <h2>
+        <a href="/projects/2030-watch/">2030 Watch
+        </a>
+
+        
+          <div class="author">by Matt Fullerton</div>
+        
+      </h2>
+      
+        <img src="https://2030-watch.de/static/img/2030watch_logo.png" alt="2030 Watch">
+      
+
+      <p class="description"></p><p>2030 Watch monitors progress towards the sustainable development goals (SDGs) from an independent, civil society-led perspective. Check it out at https://2030-watch.de/en/</p>
+<p></p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/okfde/2030-watch.de">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="DataPortals.org" data-priority="true" data-featured="true" data-helpwanted="true" data-activity_status="active" data-stage="mature" data-language="JavaScript" data-type="webapp" data-category="Database" data-url="/projects/dataportals-org/" style="position: absolute; left: 0px; top: 944px;">
+      <h2>
+        <a href="/projects/dataportals-org/">DataPortals.org
+        </a>
+
+        
+          <div class="author">by Rufus Pollock</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-dataportals.png" alt="DataPortals.org">
+      
+
+      <p class="description"></p><p>DataPortals.org is the most comprehensive list of open data portals in the world. It is curated by a group of leading open data experts from around the world - including representatives from local, regional and national governments, international organisations such as the World Bank, and numerous NGOs.</p>
+<p></p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/okfn/dataportals.org">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="Product Open Data" data-priority="true" data-featured="true" data-helpwanted="true" data-activity_status="active" data-stage="mature" data-language="Java, Objective-C, Python, PHP, CSS" data-type="data, webapp, running service" data-category="Database" data-url="/projects/product-open-data/" style="position: absolute; left: 285px; top: 944px;">
+      <h2>
+        <a href="/projects/product-open-data/">Product Open Data
+        </a>
+
+        
+          <div class="author">by Philippe Plagnol</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-product-open-data.png" alt="Product Open Data">
+      
+
+      <p class="description"></p><p>The goal of this project is to build the largest open product database
+in the world.  Such a database would allow consumers to get
+information about a given product in real time by simply scanning its
+barcode with their mobile phone.  It would also allow consumers to
+publish their opinions about products in an easily accessible way.</p>
+
+<p>We are currently rebooting this project and are looking for
+contributors.  An
+<a href="https://play.google.com/store/apps/details?id=org.okfn.pod">Android client</a>
+(<a href="https://github.com/okfn/product-browser-android">source</a>) is
+available, and work has started on an
+<a href="https://github.com/okfn/product-browser-ios">iOS client</a>.  If you’d
+like to contribute or find out more, you can join the working group
+<a href="http://lists.okfn.org/mailman/listinfo/product">mailing list</a>, follow
+the project on <a href="https://twitter.com/openproductdata">Twitter</a>, and
+join the discussion on the
+<a href="http://discuss.okfn.org/category/open-knowledge-labs/open-product-data">Open Knowledge forum</a>.</p>
+<p></p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/okfn/opd-product-browser-web">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="Webshot" data-priority="false" data-featured="false" data-helpwanted="false" data-activity_status="dormant" data-stage="developing" data-language="JavaScript" data-type="webapp, running service, tool" data-category="Other" data-url="/projects/webshot/" style="position: absolute; left: 570px; top: 944px;">
+      <h2>
+        <a href="/projects/webshot/">Webshot
+        </a>
+
+        
+          <div class="author">by Simon Gaeremynck</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-webshot.png" alt="Webshot">
+      
+
+      <p class="description"></p><p>Webshot is a <a href="https://nodejs.org/">Node.js</a>-based webservice provided
+by Open Knowledge Labs for taking automated screenshots of webpages
+using <a href="https://github.com/brenden/node-webshot">node-webshot</a>.  It is
+available for anyone to use.  As always, contributions are welcome.</p>
+<p></p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/okfn/webshot">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="Public Bodies" data-priority="false" data-featured="true" data-helpwanted="true" data-activity_status="active" data-stage="mature" data-language="JavaScript, Python" data-type="running service" data-category="Database" data-url="/projects/publicbodies/" style="position: absolute; left: 0px; top: 1180px;">
+      <h2>
+        <a href="/projects/publicbodies/">Public Bodies
+        </a>
+
+        
+          <div class="author">by Labs</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-publicbodies.png" alt="Public Bodies">
+      
+
+      <p class="description"></p><p>PublicBodies.org is a website hosting a database of so-called <em>public
+bodies</em>—that is government-run or -controlled organizations (which
+may or may not have a distinct corporate existence). Examples include
+government ministries or departments, as well as state-run
+organizations such as libraries, police and fire departments.</p>
+
+<p>Contributions of additional data and better descriptions for new and
+existing jurisdictions are very welcome.  Please add a CSV file <a href="https://github.com/okfn/publicbodies#contribute-data">via a
+pull request</a> or
+take a look project’s <a href="https://github.com/okfn/publicbodies/issues">issue queue</a>.</p>
+<p></p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/okfn/publicbodies">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="FacetView" data-priority="false" data-featured="false" data-helpwanted="false" data-activity_status="dormant" data-stage="mature" data-language="JavaScript" data-type="webapp" data-category="Data Tools and Services" data-url="/projects/facetview/" style="position: absolute; left: 285px; top: 1180px;">
+      <h2>
+        <a href="/projects/facetview/">FacetView
+        </a>
+
+        
+          <div class="author">by Mark MacGillivray</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-facetview.png" alt="FacetView">
+      
+
+      <p class="description"></p><p>FacetView is a pure JavaScript frontend for
+<a href="http://www.elasticsearch.org/">ElasticSearch</a> search indices.  It
+lets you easily embed a faceted browser and search frontend into any
+web page. It also provides a micro-framework you can build on when
+creating user interfaces to
+<a href="http://www.elasticsearch.org/">ElasticSearch</a>.  It is currently used
+in the Open Knowledge Labs <a href="/projects/bibserver/">BibServer</a> project.</p>
+<p></p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/okfn/facetview">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="BibServer" data-priority="false" data-featured="false" data-helpwanted="false" data-activity_status="dormant" data-stage="developing" data-language="Python, JavaScript" data-type="webapp" data-category="Data Tools and Services" data-url="/projects/bibserver/" style="position: absolute; left: 570px; top: 1180px;">
+      <h2>
+        <a href="/projects/bibserver/">BibServer
+        </a>
+
+        
+          <div class="author">by Mark MacGillivray and Jim Pitman</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-bibserver.png" alt="BibServer">
+      
+
+      <p class="description"></p><p>BibServer is an open-source RESTful bibliographic data
+server. BibServer makes it easy to create and manage collections of
+bibliographic records such as reading lists, publication lists and
+even complete library catalogs.  <a href="/projects/facetview/">FacetView</a> is
+included to provide a rich interface for complex search queries.
+BibServer supports <a href="http://www.bibtex.org/">bibtex</a>,
+<a href="https://www.loc.gov/marc/">MARC</a>,
+<a href="https://en.wikipedia.org/wiki/RIS_%28file_format%29">RIS</a>,
+<a href="/projects/bibjson/">BibJSON</a>, <a href="https://www.w3.org/RDF/">RDF</a> and other
+bibliographic formats.</p>
+<p></p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/okfn/bibserver">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="BibJSON" data-priority="false" data-featured="false" data-helpwanted="false" data-activity_status="dormant" data-stage="finished" data-language="" data-type="specification" data-category="Data Tools and Services" data-url="/projects/bibjson/" style="position: absolute; left: 0px; top: 1416px;">
+      <h2>
+        <a href="/projects/bibjson/">BibJSON
+        </a>
+
+        
+          <div class="author">by Mark MacGillivray and Jim Pitman</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-bibjson.png" alt="BibJSON">
+      
+
+      <p class="description"></p><p>BibJSON is a convention for representing bibliographic metadata in
+<a href="https://www.json.org/">JSON</a>.  It is intended as a specification for
+developers of web applications that generate or accept bibliographic
+metadata.  It is currently used in the Open Knowledge Labs
+<a href="/projects/bibserver/">BibServer</a> project.</p>
+<p></p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/okfn/bibjson">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="Bad Data" data-priority="false" data-featured="false" data-helpwanted="true" data-activity_status="dormant" data-stage="mature" data-language="html, markdown, css, javascript" data-type="running service" data-category="Other" data-url="/projects/bad-data/" style="position: absolute; left: 285px; top: 1416px;">
+      <h2>
+        <a href="/projects/bad-data/">Bad Data
+        </a>
+
+        
+          <div class="author">by Rufus Pollock</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-bad-data.png" alt="Bad Data">
+      
+
+      <p class="description"></p><p>Bad Data is a site detailing real-world examples of how <strong>not</strong> to
+prepare or provide data. It showcases poorly structured, misformatted,
+or just plain ugly datasets and what they get wrong.</p>
+
+<p>While its primary purpose is to serve as an educational tool for
+governments and other organizations, it is also a good source of
+practice material for budding data wranglers—those tasked with
+cleaning and transforming data.  The project began as a place to keep
+practice data for <a href="/projects/data-explorer/">Data Explorer</a>, another
+project of Open Knowledge Labs.</p>
+<p></p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/okfn/bad-data">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="Data Package Manager" data-priority="false" data-featured="false" data-helpwanted="true" data-activity_status="semi-active" data-stage="developing" data-language="javascript" data-type="library, tool" data-category="Data Tools and Services" data-url="/projects/dpm/" style="position: absolute; left: 570px; top: 1416px;">
+      <h2>
+        <a href="/projects/dpm/">Data Package Manager
+        </a>
+
+        
+          <div class="author">by Rufus Pollock</div>
+        
+      </h2>
+      
+        <img src="/img/projects/dpm.png" alt="Data Package Manager">
+      
+
+      <p class="description"></p><p>
+  <code>dpm</code> (data package manager) is a library and
+  command-line tool for installing and
+  managing <a href="http://dataprotocols.org/data-packages/">data
+  packages</a>.  Inspired by software package management tools
+  like <code>apt</code> for Debian, <code>dpm</code> aims
+  to <a href="http://data.okfn.org/vision">reduce the friction</a> of
+  sharing and working with data.
+</p>
+<p></p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/okfn/dpm">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="Recline Mozilla CSV Viewer" data-priority="false" data-featured="false" data-helpwanted="" data-activity_status="dormant" data-stage="developing" data-language="javascript, css" data-type="tool" data-category="Data Tools and Services" data-url="/projects/recline-mozilla-csv-viewer/" style="position: absolute; left: 0px; top: 1652px;">
+      <h2>
+        <a href="/projects/recline-mozilla-csv-viewer/">Recline Mozilla CSV Viewer
+        </a>
+
+        
+      </h2>
+      
+        <img src="/img/projects/project-recline-mozilla-csv-viewer.png" alt="Recline Mozilla CSV Viewer">
+      
+
+      <p class="description">A FireFox extension which allows you to view, search, graph and map CSV files in the browser (built using Recline).
+This is an port of the great Rufus Pollock's chrome-csv-viewer on FireFox.
+</p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/aliounedia/mozilla-csv-viewer">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="Open Knowledge Labs website" data-priority="true" data-featured="false" data-helpwanted="true" data-activity_status="active" data-stage="" data-language="html, markdown, css, javascript" data-type="website" data-category="Other" data-url="/projects/open-knowledge-labs-website/" style="position: absolute; left: 285px; top: 1652px;">
+      <h2>
+        <a href="/projects/open-knowledge-labs-website/">Open Knowledge Labs website
+        </a>
+
+        
+          <div class="author">by Andy Lulham and Rufus Pollock</div>
+        
+      </h2>
+      
+        <img src="/img/open-knowledge-labs-website.png" alt="Open Knowledge Labs website">
+      
+
+      <p class="description"></p><p>The Open Knowledge Labs website (i.e. the site you’re looking at right now) is itself a collaborative project of Open Knowledge.  It is built using <a href="https://jekyllrb.com">Jekyll</a>, a static site generator, and hosted on GitHub Pages.  You can contribute by addressing some of the items on the project’s GitHub <a href="https://github.com/okfn/okfn.github.com/issues">issue queue</a> (hint: you can start with the <a href="https://github.com/okfn/okfn.github.com/labels/Easy">easy ones</a>).</p>
+<p></p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/okfn/okfn.github.com">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="Head Start" data-priority="false" data-featured="false" data-helpwanted="true" data-activity_status="retired" data-stage="finished" data-language="javascript, php" data-type="visualization, webapp" data-category="Other" data-url="/projects/headstart/" style="position: absolute; left: 570px; top: 1652px;">
+      <h2>
+        <a href="/projects/headstart/">Head Start
+        </a>
+
+        
+          <div class="author">by Peter Kraker, Philipp Weißensteiner, Fabian Dablander, Christopher Kittel</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-headstart.png" alt="Head Start">
+      
+
+      <p class="description">Head Start is intended for scholars who want to get an overview of a research field. They could be young PhDs getting into a new field, or established scholars who venture into a neighboring field. The idea is that you can see the main areas and papers in a field at a glance without having to do weeks of searching and reading.
+
+A prototypical implementation for the field of educational technology can be found on <a href="http://labs.mendeley.com/headstart" target="_blank">Mendeley Labs</a>. The visualization is also used in <a href="http://halley.exp.sis.pitt.edu/cn3/visualization.php?conferenceID=131" target="_blank">Conference Navigator 3</a> and in the <a href="http://organic-edunet.eu/en/#/recommended" target="_blank">Organic Edunet portal</a>.
+</p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/pkraker/Headstart">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="Ivo of Chartres" data-priority="false" data-featured="false" data-helpwanted="" data-activity_status="semi-active" data-stage="very mature" data-language="" data-type="data" data-category="Other" data-url="/projects/ivo-of-chartres/" style="position: absolute; left: 0px; top: 1888px;">
+      <h2>
+        <a href="/projects/ivo-of-chartres/">Ivo of Chartres
+        </a>
+
+        
+          <div class="author">by Bruce Brasington, Martin Brett, Przemyslaw Nowak, Christof Rolker</div>
+        
+      </h2>
+      
+
+      <p class="description"></p><p>A collection of the works of Ivo, bishop of Chartres.</p>
+
+<p>This site has four elements</p>
+
+<ul>
+  <li>draft texts and some concordances for the three collections traditionally
+associated with Ivo of Chartres:
+    <ul>
+      <li>the Collectio Tripartita</li>
+      <li>the Decretum and</li>
+      <li>the Panormia</li>
+    </ul>
+  </li>
+  <li>a draft list of manuscripts which contain a significant number of Ivo’s
+letters.</li>
+</ul>
+<p></p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/ivo-of-chartres/ivo-of-chartres.github.com">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="CSV.js" data-priority="false" data-featured="false" data-helpwanted="false" data-activity_status="semi-active" data-stage="very mature" data-language="javascript" data-type="library" data-category="Data Infrastructure" data-url="/projects/csv-js/" style="position: absolute; left: 285px; top: 1888px;">
+      <h2>
+        <a href="/projects/csv-js/">CSV.js
+        </a>
+
+        
+          <div class="author">by Rufus Pollock</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-csv.js.png" alt="CSV.js">
+      
+
+      <p class="description"></p><p>Simple javascript CSV library focused on the browser with <strong>zero
+dependencies</strong>. Supports both parsing and serializing CSV.</p>
+
+<p>Originally developed as part of ReclineJS but now fully standalone.</p>
+<p></p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/okfn/csv.js">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="Data Pipes" data-priority="false" data-featured="true" data-helpwanted="true" data-activity_status="dormant" data-stage="developing" data-language="javascript" data-type="webapp, running service" data-category="Data Tools and Services" data-url="/projects/data-pipes/" style="position: absolute; left: 570px; top: 1888px;">
+      <h2>
+        <a href="/projects/data-pipes/">Data Pipes
+        </a>
+
+        
+          <div class="author">by Andy Lulham, Rufus Pollock and David Miller</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-data-pipes.png" alt="Data Pipes">
+      
+
+      <p class="description">Data Pipes is a service to provide streaming, "pipe-like" data transformations on the web – things like deleting rows or columns, find and replace, head, grep etc.
+</p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/okfn/datapipes">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="reconcile-csv" data-priority="false" data-featured="false" data-helpwanted="" data-activity_status="dormant" data-stage="developing" data-language="clojure" data-type="webapp" data-category="Data Tools and Services" data-url="/projects/reconcile-csv/" style="position: absolute; left: 0px; top: 2124px;">
+      <h2>
+        <a href="/projects/reconcile-csv/">reconcile-csv
+        </a>
+
+        
+          <div class="author">by Michael Bauer</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-reconcile-csv.png" alt="reconcile-csv">
+      
+
+      <p class="description">Reconcile-CSV is an OpenRefine reconciliation
+service running on top of a CSV file. It uses fuzzy matching to find the
+most likely candidates for matching.
+
+If you ever needed to join two datasets that didn't have unique identifiers
+and where things are written slightly different: this is a way to go.
+</p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/okfn/reconcile-csv">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="Open Correspondence" data-priority="false" data-featured="false" data-helpwanted="" data-activity_status="retired" data-stage="developing" data-language="python" data-type="webapp" data-category="Other" data-url="/projects/opencorrespondence/" style="position: absolute; left: 285px; top: 2124px;">
+      <h2>
+        <a href="/projects/opencorrespondence/">Open Correspondence
+        </a>
+
+        
+          <div class="author">by Iain Emsley</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-opencorrespondence.png" alt="Open Correspondence">
+      
+
+      <p class="description">Open Correspondence is an attempt to explore the letters network of the nineteenth century.
+
+At the moment, the project contains some of the letters of Charles Dickens, but we're working to expand to it include many other authors such as Jane Austen, George Eliot and Byron.
+</p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/okfn/openletters">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="ElasticSearch.JS" data-priority="false" data-featured="false" data-helpwanted="" data-activity_status="retired" data-stage="developing" data-language="javascript" data-type="library" data-category="Data Tools and Services" data-url="/projects/elasticsearch-js/" style="position: absolute; left: 570px; top: 2124px;">
+      <h2>
+        <a href="/projects/elasticsearch-js/">ElasticSearch.JS
+        </a>
+
+        
+          <div class="author">by Rufus Pollock</div>
+        
+      </h2>
+      
+
+      <p class="description"></p><p>A simple javascript library for working with <a href="http://www.elasticsearch.org/">ElasticSearch</a>.</p>
+
+<p>It also provides a backend interface to ElasticSearch suitable for use with
+the <a href="https://okfnlabs.org/recline/">Recline</a> suite of data
+libraries.</p>
+
+<p></p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/okfn/elasticsearch.js">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="Data Explorer" data-priority="false" data-featured="false" data-helpwanted="true" data-activity_status="dormant" data-stage="developing" data-language="javascript, css" data-type="webapp, running service, tool" data-category="Data Tools and Services" data-url="/projects/data-explorer/" style="position: absolute; left: 0px; top: 2360px;">
+      <h2>
+        <a href="/projects/data-explorer/">Data Explorer
+        </a>
+
+        
+          <div class="author">by Rufus Pollock, Dan Wilson &amp; others</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-data-explorer.jpg" alt="Data Explorer">
+      
+
+      <p class="description">Data Explorer is an in-browser data cleaning and visualization app. Load tabular data, process it with JavaScript, and graph the results, all in the comfort of your browser. Gist-based persistence enables simple versioning and sharing of projects.
+</p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/okfn/dataexplorer">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="Frictionless Data" data-priority="true" data-featured="false" data-helpwanted="true" data-activity_status="active" data-stage="mature" data-language="javascript, css" data-type="webapp, running service, tool" data-category="Data Tools and Services" data-url="/projects/frictionless-data/" style="position: absolute; left: 285px; top: 2360px;">
+      <h2>
+        <a href="/projects/frictionless-data/">Frictionless Data
+        </a>
+
+        
+          <div class="author">by Labs</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-frictionless-data.png" alt="Frictionless Data">
+      
+
+      <p class="description"></p><p>There’s too much friction working with data - friction getting data, friction
+processing data, friction sharing data.</p>
+
+<p>This friction stops people doing stuff: stops them creating, sharing,
+collaborating, and using data - especially amongst more distributed
+communities. It kills the cycles of find, improve, share that would make for a dynamic,
+productive and attractive (open) data ecosystem.</p>
+
+<p>We need to make an ecosystem that, like open-source for software, is useful and
+attractive to those without any principled interest, the vast majority who
+simply want the best tool for the job, the easiest route to their goal.</p>
+
+<p>We think that by getting a few key pieces in place we can reduce friction
+enough to revolutionize how the (open) data ecosystem operates with massively
+improved data quality, utilization and sharing.</p>
+
+<p>We’re creating:</p>
+
+<ul>
+  <li>Standards: A small set of lightweight ‘data package’ standards and patterns
+providing a base structure on which tooling and integration can build.</li>
+  <li>Tooling and Integration: Making it easy to use and publish data packages from
+your existing apps and workflows whether that’s Excel, R, or Hadoop!</li>
+  <li>Outreach and Community: Engaging and evangelizing around the concepts,
+standards and tooling and building a community of users and contributors.</li>
+</ul>
+<p></p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/okfn/data.okfn.org">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="ReclineJS" data-priority="false" data-featured="true" data-helpwanted="true" data-activity_status="dormant" data-stage="mature" data-language="javascript, css" data-type="library, tool" data-category="Data Tools and Services" data-url="/projects/reclinejs/" style="position: absolute; left: 570px; top: 2360px;">
+      <h2>
+        <a href="/projects/reclinejs/">ReclineJS
+        </a>
+
+        
+          <div class="author">by Rufus Pollock, Max Ogden &amp; others</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-reclinejs.png" alt="ReclineJS">
+      
+
+      <p class="description">Recline is a simple but powerful library for building data applications in pure Javascript and HTML. Building on Backbone, Recline supplies components and structure to data-heavy applications by providing a set of models (Dataset, Record/Row, Field) and views (Grid, Map, Graph etc).
+</p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/okfn/recline">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="Bubble Tree Library" data-priority="false" data-featured="true" data-helpwanted="" data-activity_status="dormant" data-stage="finished" data-language="javascript, coffeescript, css, shell" data-type="library, tool" data-category="Data Tools and Services" data-url="/projects/bubble-tree-library/" style="position: absolute; left: 0px; top: 2596px;">
+      <h2>
+        <a href="/projects/bubble-tree-library/">Bubble Tree Library
+        </a>
+
+        
+          <div class="author">by Gregor Aisch &amp; David McCandless</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-bubble-tree-library.png" alt="Bubble Tree Library">
+      
+
+      <p class="description">The BubbleTree can be used to display hierarchical (spending) data in an interactive visualization. The setup is easy and independent from the OpenSpending platform. However, there is an optional integration module to connect with data from the OpenSpending API.
+</p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/okfn/bubbletree">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="Nomenklatura" data-priority="false" data-featured="false" data-helpwanted="" data-activity_status="dormant" data-stage="developing" data-language="python, javascript, css, shell" data-type="webapp, running service, tool" data-category="Data Tools and Services" data-url="/projects/nomenklatura/" style="position: absolute; left: 285px; top: 2596px;">
+      <h2>
+        <a href="/projects/nomenklatura/">Nomenklatura
+        </a>
+
+        
+          <div class="author">by Friedrich Lindenberg</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-nomenklatura.png" alt="Nomenklatura">
+      
+
+      <p class="description">Nomenklatura de-duplicates and integrates different names for entities - people, organisations or public bodies - to help you clean up messy data and to find links between different datasets.
+
+The service will create references for all entities mentioned in a source dataset. It then helps you to define which of these entities are duplicates and what the canonical name for a given entity should be. This information is available in data cleaning tools like OpenRefine or in custom data processing scripts, so that you can automatically apply existing mappings in the future.
+
+The focus of nomenklatura is on data integration, it does not provide further functionality with regards to the people and organisations that it helps to keep track of.
+
+</p><p>Nomenklatura is a simple service that makes it easy to maintain a canonical list of entities such as persons, companies or event streets and to match messy input, such as their names against that canonical list – for example, matching Acme Widgets, Acme Widgets Inc and Acme Widgets Incorporated to the canonical "Acme Widgets".</p>
+
+<p>With Nomenklatura its a matters of minutes to set up your own set of master data to match against and it provides a simple user interface and API which you can then use do matching (the API is compatible with Open Refine's reconciliation function).</p>
+
+<p>Nomenklatura can not only store the master set of entities you want to match against but also will learn and record the various aliases for a given entity - such as a person, organisation or place - may have in various datasets.</p>
+<p></p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/pudo/nomenklatura">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="CrowdCrafting &amp; PyBossa" data-priority="false" data-featured="false" data-helpwanted="" data-activity_status="graduated" data-stage="very mature" data-language="python, javascript, css, html" data-type="webapp, running service, tool" data-category="Data Tools and Services" data-url="/projects/crowdcrafting-and-pybossa/" style="position: absolute; left: 570px; top: 2596px;">
+      <h2>
+        <a href="/projects/crowdcrafting-and-pybossa/">CrowdCrafting &amp; PyBossa
+        </a>
+
+        
+          <div class="author">by Daniel Lombraña González</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-crowdcrafting-and-pybossa.png" alt="CrowdCrafting &amp; PyBossa">
+      
+
+      <p class="description">CrowdCrafting is a free, open-source crowd-sourcing and micro-tasking platform powered by the <a href="http://dev.pybossa.com">PyBossa</a> software. This platform enables people to <strong>create and run projects that utilize on-line assistance in performing tasks that require human cognition</strong> such as <em>image classification, transcription, geocoding and more</em>. CrowdCrafting is there to help researchers, civic hackers and developers to create projects where anyone around the world with some time, interest and an Internet connection can contribute.
+</p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/pybossa/pybossa">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="Froide" data-priority="false" data-featured="false" data-helpwanted="" data-activity_status="semi-active" data-stage="mature" data-language="python" data-type="webapp" data-category="Civic Tech" data-url="/projects/froide/" style="position: absolute; left: 0px; top: 2832px;">
+      <h2>
+        <a href="/projects/froide/">Froide
+        </a>
+
+        
+          <div class="author">by Stefan Wehrmeyer</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-froide.jpg" alt="Froide">
+      
+
+      <p class="description"></p><p>Froide is a Freedom of Information portal written in Python using the Django
+Web framework. It manages contactable entities, requests and much more. Users
+can send emails to these entities and receive public answers via the
+platform.</p>
+
+<p>It was developed to power <a class="reference external" href="https://fragdenstaat.de">Frag den Staat</a> – the German Freedom of
+Information Portal, but is internationalized, localized and themable and has
+deployed in several different countries.</p>
+
+<h4>Read more</h4>
+
+<ul>
+  <li><a href="http://blog.okfn.org/2013/03/15/announcing-v3-0-of-froide-the-open-source-python-based-freedom-of-information-platform/">Announcing v3.0 of Froide – the Open-Source Python-Based Freedom of Information Platform</a></li>
+</ul>
+<p></p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/stefanw/froide">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="Frag Den Staat" data-priority="false" data-featured="false" data-helpwanted="" data-activity_status="semi-active" data-stage="mature" data-language="python, javascript, css" data-type="webapp, running service" data-category="Civic Tech" data-url="/projects/frag-den-staat/" style="position: absolute; left: 285px; top: 2832px;">
+      <h2>
+        <a href="/projects/frag-den-staat/">Frag Den Staat
+        </a>
+
+        
+          <div class="author">by Stefan Wehrmeyer</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-frag-den-staat.jpg" alt="Frag Den Staat">
+      
+
+      <p class="description">Germany Freedom of Information portal powered by the <a href="/projects/froide/">Froide platform</a>. Responsible for managing over a 1/3 of
+all Freedom of Information request in Germany.
+</p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/stefanw/froide">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="Annotator" data-priority="false" data-featured="false" data-helpwanted="" data-activity_status="graduated" data-stage="very mature" data-language="javascript, css" data-type="library" data-category="Other" data-url="/projects/annotator/" style="position: absolute; left: 570px; top: 2832px;">
+      <h2>
+        <a href="/projects/annotator/">Annotator
+        </a>
+
+        
+          <div class="author">by Nick Stenning &amp; Aron Carroll</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-annotator.png" alt="Annotator">
+      
+
+      <p class="description">The Annotator is an open-source JavaScript library and tool that can be added to any webpage to make it annotatable.
+
+Annotations can have comments, tags, users and more. Morever, the Annotator is designed for easy extensibility so its a cinch to add a new feature or behaviour.
+</p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/openannotation/annotator">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="Retrato da Violência" data-priority="false" data-featured="false" data-helpwanted="" data-activity_status="retired" data-stage="finished" data-language="ruby, javascript, perl, css" data-type="data, tool" data-category="Other" data-url="/projects/retrato-da-violencia/" style="position: absolute; left: 0px; top: 3068px;">
+      <h2>
+        <a href="/projects/retrato-da-violencia/">Retrato da Violência
+        </a>
+
+        
+          <div class="author">by Vitor Baptista, Leo Tartari, Thiago Bueno</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-retrato-da-violencia.jpg" alt="Retrato da Violência">
+      
+
+      <p class="description">Visualization on violence against women in the brazilian state Rio Grande do Sul.
+</p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/dataviz/retrato-da-violencia">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="Textus" data-priority="false" data-featured="false" data-helpwanted="" data-activity_status="dormant" data-stage="developing" data-language="javascript, css" data-type="webapp, running service, tool" data-category="Other" data-url="/projects/textus/" style="position: absolute; left: 285px; top: 3068px;">
+      <h2>
+        <a href="/projects/textus/">Textus
+        </a>
+
+        
+          <div class="author">by Tom Oinn and Rufus Pollock</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-textus.jpg" alt="Textus">
+      
+
+      <p class="description">In a nutshell it is an open source platform for working with collections of texts. It enables students, researchers and teachers to share and collaborate around texts using a simple and intuitive interface.
+</p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/okfn/textus">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="IATI Tools" data-priority="false" data-featured="false" data-helpwanted="" data-activity_status="retired" data-stage="developing" data-language="python, javascript" data-type="library, tool" data-category="Data Tools and Services" data-url="/projects/iati-tools/" style="position: absolute; left: 570px; top: 3068px;">
+      <h2>
+        <a href="/projects/iati-tools/">IATI Tools
+        </a>
+
+        
+          <div class="author">by Mark Brough</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-iati-tools.png" alt="IATI Tools">
+      
+
+      <p class="description">Library for working with IATI data and converting it into a relational database. http://blog.okfn.org/2012/06/05/from-xml-to-visualisations-iati/
+</p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/okfn/iatitools">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="Listify" data-priority="false" data-featured="false" data-helpwanted="" data-activity_status="retired" data-stage="finished" data-language="javascript, css" data-type="webapp, running service, tool" data-category="Data Tools and Services" data-url="/projects/listify/" style="position: absolute; left: 0px; top: 3304px;">
+      <h2>
+        <a href="/projects/listify/">Listify
+        </a>
+
+        
+          <div class="author">by Rufus Pollock</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-listify.png" alt="Listify">
+      
+
+      <p class="description">Turn a Google spreadsheet into a beautiful, searchable listing in seconds
+</p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/okfn/listify">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="TimeMapper" data-priority="false" data-featured="true" data-helpwanted="true" data-activity_status="semi-active" data-stage="mature" data-language="javascript, css" data-type="webapp, running service, tool" data-category="Other" data-url="/projects/timemapper/" style="position: absolute; left: 285px; top: 3304px;">
+      <h2>
+        <a href="/projects/timemapper/">TimeMapper
+        </a>
+
+        
+          <div class="author">by Rufus Pollock</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-timemapper.jpg" alt="TimeMapper">
+      
+
+      <p class="description">Make timelines &amp; maps from a Google Spreadsheet in seconds
+</p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/okfn/timemapper">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="BundesGit" data-priority="false" data-featured="false" data-helpwanted="false" data-activity_status="retired" data-stage="mature" data-language="markdown" data-type="data" data-category="Civic Tech" data-url="/projects/bundesgit/" style="position: absolute; left: 570px; top: 3304px;">
+      <h2>
+        <a href="/projects/bundesgit/">BundesGit
+        </a>
+
+        
+          <div class="author">by Stefan Wehrmeyer</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-bundesgit.png" alt="BundesGit">
+      
+
+      <p class="description"></p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/bundestag/gesetze">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="Recline Chrome CSV Viewer" data-priority="false" data-featured="false" data-helpwanted="" data-activity_status="dormant" data-stage="mature" data-language="javascript, css" data-type="tool" data-category="Data Tools and Services" data-url="/projects/recline-chrome-csv-viewer/" style="position: absolute; left: 0px; top: 3540px;">
+      <h2>
+        <a href="/projects/recline-chrome-csv-viewer/">Recline Chrome CSV Viewer
+        </a>
+
+        
+      </h2>
+      
+        <img src="/img/projects/project-recline-chrome-csv-viewer.png" alt="Recline Chrome CSV Viewer">
+      
+
+      <p class="description">A chrome extension which allows you to view, search, graph and map CSV files in the browser (built using Recline)
+</p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/rgrp/chrome-csv-viewer">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="Kartograph" data-priority="false" data-featured="false" data-helpwanted="" data-activity_status="graduated" data-stage="very mature" data-language="javascript, coffeescript, css, shell" data-type="library" data-category="Data Tools and Services" data-url="/projects/kartograph/" style="position: absolute; left: 285px; top: 3540px;">
+      <h2>
+        <a href="/projects/kartograph/">Kartograph
+        </a>
+
+        
+          <div class="author">by Gregor Aisch</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-kartograph.png" alt="Kartograph">
+      
+
+      <p class="description">Kartograph is a simple and lightweight framework for building interactive map applications without Google Maps or any other mapping service. It was created with the needs of designers and data journalists in mind.
+</p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/kartograph/kartograph.js">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="MessyTables" data-priority="false" data-featured="false" data-helpwanted="" data-activity_status="semi-active" data-stage="very mature" data-language="python" data-type="library, tool" data-category="Data Tools and Services" data-url="/projects/messytables/" style="position: absolute; left: 570px; top: 3540px;">
+      <h2>
+        <a href="/projects/messytables/">MessyTables
+        </a>
+
+        
+          <div class="author">by David Raznick, Friedrich Lindenberg, Dominik Moritz</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-messytables.png" alt="MessyTables">
+      
+
+      <p class="description">Tools for parsing messy tabular data.
+
+http://okfnlabs.org/blog/2012/10/22/messytables.html
+</p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/okfn/messytables">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="Data Converters" data-priority="false" data-featured="false" data-helpwanted="" data-activity_status="dormant" data-stage="developing" data-language="python" data-type="library, tool" data-category="Data Tools and Services" data-url="/projects/data-converters/" style="position: absolute; left: 0px; top: 3776px;">
+      <h2>
+        <a href="/projects/data-converters/">Data Converters
+        </a>
+
+        
+          <div class="author">by Nigel Babu, Rufus Pollock</div>
+        
+      </h2>
+      
+
+      <p class="description">Python library and command line tool for converting data from one format to another. It builds on messytables, GDAL and many more great open-source libraries for processing data, and provides one easy to use standard API.
+
+</p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/okfn/dataconverters">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="WikipediaJS" data-priority="false" data-featured="false" data-helpwanted="" data-activity_status="retired" data-stage="finished" data-language="javascript, css" data-type="library, webapp, running service" data-category="Data Tools and Services" data-url="/projects/wikipediajs/" style="position: absolute; left: 285px; top: 3776px;">
+      <h2>
+        <a href="/projects/wikipediajs/">WikipediaJS
+        </a>
+
+        
+          <div class="author">by Rufus Pollock</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-wikipediajs.png" alt="WikipediaJS">
+      
+
+      <p class="description">WikipediaJS is a simple JS library for accessing information in Wikipedia articles such as dates, places, abstracts etc.
+
+The library is the work of Labs member Rufus Pollock. In essence, it is a small wrapper around the data and APIs of the DBPedia project and it is they who have done all the heavy lifting of extracting structured data from Wikipedia - huge credit and thanks to DBPedia folks!
+</p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/okfn/wikipediajs">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="For Your Information" data-priority="false" data-featured="false" data-helpwanted="false" data-activity_status="graduated" data-stage="mature" data-language="ruby, css, javascript, shell" data-type="webapp, running service, tool" data-category="Data Tools and Services" data-url="/projects/fyi-org-nz/" style="position: absolute; left: 570px; top: 3776px;">
+      <h2>
+        <a href="/projects/fyi-org-nz/">For Your Information
+        </a>
+
+        
+          <div class="author">by Rowan Crawford</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-fyi-org-nz.png" alt="For Your Information">
+      
+
+      <p class="description">Make Official Information Act requests in New Zealand
+</p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/wombleton/alaveteli">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="OffenesParlement" data-priority="false" data-featured="false" data-helpwanted="" data-activity_status="active" data-stage="mature" data-language="javascript, python, css" data-type="webapp, running service, tool" data-category="Civic Tech" data-url="/projects/offenesparlement/" style="position: absolute; left: 0px; top: 4012px;">
+      <h2>
+        <a href="/projects/offenesparlement/">OffenesParlement
+        </a>
+
+        
+          <div class="author">by Friedrich Lindenberg</div>
+        
+      </h2>
+      
+        <img src="/img/projects/project-offenesparlament.png" alt="OffenesParlement">
+      
+
+      <p class="description">OffenesParlement is a site (and open-source codebase) for gathering and presenting information about the work of the Bundestag and Bundesrat.
+</p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/pudo/offenesparlament">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="ActivityAPI" data-priority="false" data-featured="false" data-helpwanted="" data-activity_status="retired" data-stage="mature" data-language="python, css" data-type="webapp, running service, tool" data-category="Data Tools and Services" data-url="/projects/activityapi/" style="position: absolute; left: 285px; top: 4012px;">
+      <h2>
+        <a href="/projects/activityapi/">ActivityAPI
+        </a>
+
+        
+          <div class="author">by Tom Rees</div>
+        
+      </h2>
+      
+
+      <p class="description">A web service for aggregating and querying online activity
+
+</p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/okfn/activityapi">Github</a></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="MicroFacts" data-priority="false" data-featured="false" data-helpwanted="" data-activity_status="retired" data-stage="developing" data-language="" data-type="" data-category="" data-url="/projects/microfacts/" style="position: absolute; left: 570px; top: 4012px;">
+      <h2>
+        <a href="/projects/microfacts/">MicroFacts
+        </a>
+
+        
+      </h2>
+      
+
+      <p class="description"></p><p>A web application to allow people to string together ‘factlets’ into narratives organized by theme, time and space.</p>
+<p></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="Knowledgeforge" data-priority="false" data-featured="false" data-helpwanted="" data-activity_status="retired" data-stage="very mature" data-language="" data-type="" data-category="" data-url="/projects/knowledgeforge/" style="position: absolute; left: 0px; top: 4248px;">
+      <h2>
+        <a href="/projects/knowledgeforge/">Knowledgeforge
+        </a>
+
+        
+      </h2>
+      
+
+      <p class="description"></p><p>Create software tools to manage the collaborative development of open knowledge by different communities and individuals.</p>
+<p></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="IsItOpenData" data-priority="false" data-featured="false" data-helpwanted="" data-activity_status="retired" data-stage="finished" data-language="" data-type="" data-category="" data-url="/projects/isitopendata/" style="position: absolute; left: 285px; top: 4248px;">
+      <h2>
+        <a href="/projects/isitopendata/">IsItOpenData
+        </a>
+
+        
+      </h2>
+      
+
+      <p class="description"></p><p>We aim to make it easy for people – like you – to make enquires of data holders, about the openness
+of the data they hold — and to record publicly the results of those efforts. We’re especially focused
+on scientific data but anyone can use this service.</p>
+<p></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="OpenShakespeare" data-priority="false" data-featured="false" data-helpwanted="" data-activity_status="retired" data-stage="very mature" data-language="" data-type="" data-category="" data-url="/projects/openshakespeare/" style="position: absolute; left: 570px; top: 4248px;">
+      <h2>
+        <a href="/projects/openshakespeare/">OpenShakespeare
+        </a>
+
+        
+      </h2>
+      
+
+      <p class="description"></p><p>Open Source Shakespeare attempts to be the best free Web site containing Shakespeare’s complete works.</p>
+<p></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="OpenEconomics" data-priority="false" data-featured="false" data-helpwanted="" data-activity_status="retired" data-stage="very mature" data-language="" data-type="" data-category="Database" data-url="/projects/openeconomics/" style="position: absolute; left: 0px; top: 4484px;">
+      <h2>
+        <a href="/projects/openeconomics/">OpenEconomics
+        </a>
+
+        
+          <div class="author">by Open Knowledge Foundation</div>
+        
+      </h2>
+      
+
+      <p class="description"></p><p>The Open Economics Working Group is run by the Open Knowledge Foundation in association
+with the Centre for Intellectual and Property Law (CIPIL) at the University of Cambridge.
+Its membership consists of leading academics and researchers, public and private sector
+economists, representatives from national and international public bodies and other experts
+from around the world. We want economics to be built on sound, transparent foundations,
+wherever possible. In particular, it is important that the data and associated analysis
+(particularly as represented in runnable code) be openly available to all members of society
+— not just other economists.</p>
+
+<p>This working group therefore exists to:</p>
+
+<ul>
+  <li>Act as a central point of reference and support for those interested in open economic data:
+that is, economic data which can be freely used, reused, and redistributed for any purpose
+(www.opendefinition.org).</li>
+  <li>Identify best practice as well as legal, regulatory and technical standards for open economic
+data.</li>
+  <li>Act as a hub for the development and maintenance of low-cost, community driven projects
+related to open material in economics.</li>
+</ul>
+<p></p>
+      
+    </div>
+  
+
+    
+
+    <div class="record expand" data-title="Yourtopia" data-priority="false" data-featured="true" data-helpwanted="coding, testing, documenting" data-activity_status="dormant" data-stage="" data-language="JavaScript, Python" data-type="webapp" data-category="Datatools and Services" data-url="/projects/yourtopia/" style="position: absolute; left: 285px; top: 4484px;">
+      <h2>
+        <a href="/projects/yourtopia/">Yourtopia
+        </a>
+
+        
+          <div class="author">by Open Knowledge Foundation</div>
+        
+      </h2>
+      
+        <img src="/img/projects/yourtopia.jpg" alt="Yourtopia">
+      
+
+      <p class="description">Yourtopia is a web app for crowdsourcing preferences about index weighting such as the Human Development Index.
+</p>
+      
+        <p><img src="/img/github.png"> <a href="https://github.com/okfn/yourtopia">Github</a></p>
+      
+    </div>
+  
+</div>
+
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/chosen/1.0/chosen.jquery.min.js"></script>
+
+<script type="text/javascript" src="../js/isotope.pkgd.js"></script>
+
+<script type="text/javascript" src="../js/imagesloaded.pkgd.js"></script>
+
+<script type="text/javascript" src="../js/projects.js"></script>
+
+
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <div class="row logorow">
+        <div class="span6">
+          <a href="http://www.shuttleworthfoundation.org/"><img src="/img/shuttleworth_small.png" alt="Funded by the Shuttleworth Foundation"></a>
+        </div>
+        <div class="span6 text-right">
+          <a href="https://okfn.org" class="okf-logo" title="Part of Open Knowledge International">
+	    <img src="//a.okfn.org/img/oki/landscape-grey-165x43.png" alt="Open Knowledge International">
+	  </a>
+        </div>
+      </div>
+      <div class="row">
+        <div class="span12 text-right">
+          <ul class="flatmenu">
+            <li><a href="/about/">About Us</a></li>
+            <li><a href="https://okfn.org/opendata/">Open Data</a></li>
+            <li><a href="https://github.com/okfn/okfn.github.com">Source Code</a></li>
+            <li><a href="https://okfn.org/terms-of-use/">Terms of Use</a></li>
+            <li><a href="https://okfn.org/privacy-policy/">Privacy Policy</a></li>
+            <li><a href="https://okfn.org/ip-policy/">IP Policy</a></li>
+            <li><a href="https://github.com/okfn/okfn.github.com/blob/master/projects/index.md" target="_blank">Improve This Page</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="row">
+        <div class="span12 text-right">
+          <p class="projects" style="position: relative; height: 0px;">
+            <a href="http://schoolofdata.org/" title="School of Data - Learn Data Skills">
+              <img src="https://assets.okfn.org/p/schoolofdata/img/logo-s.png" alt="School of Data"></a>
+            <a href="https://okfnlabs.org/" title="Open Knowledge Foundation Labs">
+              <img src="https://assets.okfn.org/p/labs/img/logo-s.png" alt=""></a>
+            <a href="https://datahub.io/" title="DataHub - Publish, Find and Share Data Easily">
+              <img src="https://assets.okfn.org/p/datahub/img/logo-full-s.png" alt="DataHub"></a>
+            <a href="http://openspending.org/" title="OpenSpending">
+              <img src="https://assets.okfn.org/p/openspending/img/openspending-logo-s.png" alt="OpenSpending"></a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  
+<script src="https://assets.okfn.org/themes/okfn/collapse.min.js" type="text/javascript"></script>
+<script src="https://assets.okfn.org/themes/okfn/okf-panel.js" type="text/javascript"></script>
+
+
+</body></html>

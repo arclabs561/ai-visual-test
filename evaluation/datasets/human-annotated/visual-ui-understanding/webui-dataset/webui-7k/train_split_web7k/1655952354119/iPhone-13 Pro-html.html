@@ -1,0 +1,213 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us" class="wf-firasans-n4-active wf-active"><head>
+  <link href="https://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  
+
+  <title> Intro to BoltDB: Painless Performant Persistence  · npf.io </title>
+
+  
+  <link rel="stylesheet" href="https://npf.io/css/poole.css">
+  <link rel="stylesheet" href="https://npf.io/css/syntax.css">
+  <link rel="stylesheet" href="https://npf.io/css/hyde.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="theme-color" content="#ffffff">
+
+  
+  <link href="" rel="alternate" type="application/rss+xml" title="npf.io">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+  <link href="https://fonts.googleapis.com/css?family=Fira+Sans:400,300" rel="stylesheet" type="text/css">
+
+  <script src="//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Sans"><script>
+    WebFont.load({
+      google: {
+        families: ['Fira Sans']
+      }
+    });
+  </script>
+
+<script type="text/javascript" async="" src="//npfio.disqus.com/embed.js"></script><link rel="prefetch" as="style" href="https://c.disquscdn.com/next/embed/styles/lounge.63860eb743c7d9d2adf0fa435788abe7.css"><link rel="prefetch" as="script" href="https://c.disquscdn.com/next/embed/common.bundle.33bc87b2c4f9324203cc85b7dd1d0492.js"><link rel="prefetch" as="script" href="https://c.disquscdn.com/next/embed/lounge.bundle.39ef974e33e97bdc315c595632f05d3c.js"><link rel="prefetch" as="script" href="https://disqus.com/next/config.js"><script async="" id="dsq_recs_scr" src="https://npfio.disqus.com/recommendations.js"></script><link rel="prefetch" as="style" href="https://c.disquscdn.com/next/recommendations/styles/recommendations.10022a97346f1c6e3798931bbd8e4bb5.css"><link rel="prefetch" as="script" href="https://c.disquscdn.com/next/recommendations/common.bundle.a59fbd11efae764ccd959d61e4925fee.js"><link rel="prefetch" as="script" href="https://c.disquscdn.com/next/recommendations/recommendations.bundle.926bc472e4859a48daa346b4ba2ab4f4.js"><link rel="prefetch" as="script" href="https://disqus.com/next/config.js"><script src="https://c.disquscdn.com/next/embed/alfie_v4.63f1ab6d6b9d5807dc0c94ef3fe0b851.js" async="" charset="UTF-8"></script></head>
+
+<body>
+
+  <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about" align="center">
+      <h1 class="brand"><a href="https://npf.io">npf.io</a></h1>
+      <img src="/moose.svg" width="50%">
+      <p class="lead">
+         code by Nate Finch 
+      </p>
+    </div>
+    <ul class="sidebar-nav">
+      <li><a href="https://npf.io/blog">Posts</a></li>
+      
+      <li><a href="/about/">About </a></li>
+      
+      <br> 
+      <li>Code:</li>
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+      <li><a href="https://github.com/gnormal/gnorm">Gnorm </a></li>
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+      <li><a href="https://github.com/natefinch/gorram">Gorram </a></li>
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+      <li><a href="https://github.com/natefinch/lumberjack">Lumberjack </a></li>
+       
+      <li><a href="https://github.com/magefile/mage">Mage </a></li>
+       
+       
+       
+       
+      <li><a href="https://github.com/natefinch/npipe">NPipe </a></li>
+       
+       
+       
+       
+      <li><a href="https://github.com/natefinch/pie">Pie </a></li>
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+      <li><a href="https://github.com/starlight-go/starlight">Starlight </a></li>
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+      
+    </ul>
+    <a href="https://twitter.com/natethefinch"><i class="fa fa-twitter-square"></i></a>&nbsp;&nbsp; 
+    
+    
+     <a href="https://github.com/natefinch"><i class="fa fa-github-square"></i></a>&nbsp;&nbsp; 
+    
+    <a href="https://plus.google.com/+NateFinch"><i class="fa fa-google-plus"></i></a> 
+
+    <p class="footnote">powered by <a href="http://gohugo.io">Hugo</a> <br> © 2022 Nate Finch. All rights reserved.</p>
+
+  </div>
+</div>
+
+  <div class="content container">
+    <div class="post">
+    <h1 class="post-title">Intro to BoltDB: Painless Performant Persistence</h1>
+    <span class="post-date">Jul 7, 2014</span>
+    
+    <p><a href="http://github.com/boltdb/bolt" target="_blank">BoltDB</a> is a pure Go persistence solution that saves data to a memory mapped file.  I call it a persistence solution and not a database, because the word database has a lot of baggage associated with it that doesn’t apply to bolt. And that lack of baggage is what makes bolt so awesome.<br><br>Bolt is just a Go package.  There’s nothing you need to install on the system, no configuration to figure out before you can start coding, nothing.  You just go get <a class="vglnk" href="http://github.com/boltdb/bolt" rel="nofollow"><span>github</span><span>.</span><span>com</span><span>/</span><span>boltdb</span><span>/</span><span>bolt</span></a> and then import “<a class="vglnk" href="http://github.com/boltdb/bolt”" rel="nofollow"><span>github</span><span>.</span><span>com</span><span>/</span><span>boltdb</span><span>/</span><span>bolt</span><span>”</span></a>. <br><br>All you need to fully use bolt as storage is a file name.  This is fantastic from both a developer’s point of view, and a user’s point of view.  I don’t know about you, but I’ve spent months of work time over my career configuring and setting up databases and debugging configuration problems, users and permissions and all the other crap you get from more traditional databases like Postgres and Mongo.  There’s none of that with bolt.  No users, no setup, just a file name.  This is also a boon for users of your application, because <em>they</em> don’t have to futz with all that crap either.<br><br>Bolt is not a relational database.  It’s not even a document store, though you can sort of use it that way.  It’s really just a key/value store… but don’t worry if you don’t really know what that means or how you’d use that for storage.  It’s super simple and it’s incredibly flexible.  Let’s take a look.<br><br>Storage in bolt is divided into buckets.  A bucket is simply a named collection of key/value pairs, just like Go’s map.  The name of the bucket, the keys, and the values are all of type []byte.  Buckets can contain other buckets, also keyed by a []byte name. <br><br>… that’s it.  No, really, that’s it.  Bolt is basically a bunch of nested maps.  And this simplicity is what makes it so easy to use.  There’s no tables to set up, no schemas, no complex querying language to struggle with.  Let’s look at a bolt hello world:<br><br></p><pre>package main<br><br>import (<br>    “fmt”<br>    “log”<br><br>    “<a class="vglnk" href="http://github.com/boltdb/bolt”" rel="nofollow"><span>github</span><span>.</span><span>com</span><span>/</span><span>boltdb</span><span>/</span><span>bolt</span><span>”</span></a><br>)<br><br>var world = []byte(“world”)<br><br>func main() {<br>    db, err := bolt.Open(“/home/nate/foo/bolt.db”, 0644, nil)<br>    if err != nil {<br>        log.Fatal(err)<br>    }<br>    defer db.Close()<br><br>    key := []byte(“hello”)<br>    value := []byte(“Hello World!”)<br><br>    // store some data<br>    err = db.Update(func(tx *bolt.Tx) error {<br>        bucket, err := tx.CreateBucketIfNotExists(world)<br>        if err != nil {<br>            return err<br>        }<br><br>        err = bucket.Put(key, value)<br>        if err != nil {<br>            return err<br>        }<br>        return nil<br>    })<br><br>    if err != nil {<br>        log.Fatal(err)<br>    }<br><br>    // retrieve the data<br>    err = db.View(func(tx *bolt.Tx) error {<br>        bucket := tx.Bucket(world)<br>        if bucket == nil {<br>            return fmt.Errorf(“Bucket %q not found!”, world)<br>        }<br><br>        val := bucket.Get(key)<br>        fmt.Println(string(val))<br><br>        return nil<br>    })<br><br>    if err != nil {<br>        log.Fatal(err)<br>    }<br>}<br><br>// output:<br>// Hello World!</pre><div></div>I know what you’re thinking - that seems kinda long.  But keep in mind, I fully handled all errors in at least a semi-proper way, and we’re doing all this:<br><br>1.) creating a database <br>2.) creating some structure (the “world” bucket)<br>3.) storing data to the structure<br>4.) retrieving data from the structure.<br><br>I think that’s not too bad in 54 lines of code.<br><br>So let’s look at what that example is really doing.  First we call bolt.Open to get the database.  This will create the file if necessary, or open it if it exists.<br><br>All reads from or writes to the bolt database must be done within a transaction. You can have as many Readers in read-only transactions at the same time as you want, but only one Writer in a writable transaction at a time (readers maintain a consistent view of the DB while writers are writing).<br><br>To begin, we call db.Update, which takes a function to which it’ll pass a bolt.Tx - bolt’s transaction object.  We then create a Bucket (since all data in bolt lives in buckets), and add our key/value pair to it.  After the write transaction finishes, we start a read- only transaction with DB.View, and get the values back out.<br><br>What’s great about bolt’s transaction mechanism is that it’s super simple - the scope of the function is the scope of the transaction.  If the function passed to Update returns nil, all updates from the transaction are atomically stored to the database.  If the function passed to Update returns an error, the transaction is rolled back.  This makes bolt’s transactions completely intuitive from a Go developer’s point of view.  You just exit early out of your function by returning an error as usual, and bolt Does The Right Thing.  No need to worry about manually rolling back updates or anything, just return an error.<br><br>The only other basic thing you may need is to iterate over key/value pairs in a Bucket, in which case, you just call bucket.Cursor(), which returns a Cursor value, which has functions like Next(), Prev() etc that return a key/value pair and work like you’d expect.<br><br>There’s a lot more to the bolt API, but most of the rest of it is more about database statistics and some stuff for more advanced usage scenarios… but the above is all you really need to know to start storing data in a bolt database.<br><br>For a more complex application, just storing strings in the database may not be sufficient, but that’s ok, Go has your back there, too.  You can easily use encoding/json or encoding/gob to serialize structs into the database, keyed by a unique name or id.  This is what makes it easy for bolt to go from a key/value store to a document store - just have one bucket per document type.  Again, the benefit of bolt is low barrier of entry.  You don’t have to figure out a whole database schema or install anything to be able to just start dumping data to disk in a performant and manageable way.<br><br>The main drawback of bolt is that there are no queries.  You can’t say “give me all foo objects with a name that starts with bar”.  You <i>could</i> make your own index in the database and keep it up to date manually.  This could be as easy as a slice of IDs serialized into an “indices” bucket for a particular query. Obviously, this is where you start getting into the realm of developing your own relational database, but if you don’t go overboard, it can be nice that all this code is just that - code.  It’s not queries in some external DSL, it’s just code like you’d write for an in-memory data store.<br><br>Bolt is not for every application.  You must understand your application’s needs and if bolt’s key/value style will be sufficient to fulfill those needs.  If it is, I think you’ll be very happy to use such a simple data store with so little mental overhead.<br><br>[edited to clarify reader/writer relationship]   Bonus Gob vs. Json benchmark for storing structs in Bolt: <pre><br>BenchmarkGobEncode  1000000       2191 ns/op<br>BenchmarkJsonEncode   500000       4738 ns/op<br>BenchmarkGobDecode  1000000       2019 ns/op<br>BenchmarkJsonDecode   200000      12993 ns/op<br></pre>Code: <a href="http://play.golang.org/p/IvfDUGBpJ6">http://play.golang.org/p/IvfDUGBpJ6</a><p></p>
+
+    
+
+     
+	
+    <div id="disqus_recommendations" style="margin-bottom: 12px;"><iframe id="dsq-app9581" name="dsq-app9581" allowtransparency="true" frameborder="0" scrolling="no" tabindex="0" title="Disqus" width="100%" src="https://disqus.com/recommendations/?base=default&amp;f=npfio&amp;t_u=https%3A%2F%2Fnpf.io%2F2014%2F07%2Fintro-to-boltdb-painless-performant-persistence%2F&amp;t_d=Intro%20to%20BoltDB%3A%20Painless%20Performant%20Persistence&amp;t_t=Intro%20to%20BoltDB%3A%20Painless%20Performant%20Persistence#version=9d352c9674ae8172f8669d3aa3a905e9" style="width: 100% !important; border: none !important; overflow: hidden !important; height: 268px !important; display: inline !important; box-sizing: border-box !important;" horizontalscrolling="no" verticalscrolling="no"></iframe></div><div id="disqus_thread"><iframe id="dsq-app1849" name="dsq-app1849" allowtransparency="true" frameborder="0" scrolling="no" tabindex="0" title="Disqus" sandbox="allow-forms allow-popups allow-same-origin allow-scripts" width="100%" style="width: 1px !important; min-width: 100% !important; border: none !important; overflow: hidden !important; height: 2345px !important;"></iframe><iframe id="dsq-app1846" name="dsq-app1846" allowtransparency="true" frameborder="0" scrolling="no" tabindex="0" title="Disqus" width="100%" src="https://disqus.com/embed/comments/?base=default&amp;f=npfio&amp;t_u=https%3A%2F%2Fnpf.io%2F2014%2F07%2Fintro-to-boltdb-painless-performant-persistence%2F&amp;t_d=Intro%20to%20BoltDB%3A%20Painless%20Performant%20Persistence&amp;t_t=Intro%20to%20BoltDB%3A%20Painless%20Performant%20Persistence&amp;s_o=default#version=cfefa856cbcd7efb87102e7242c9a829" style="width: 1px !important; min-width: 100% !important; border: none !important; overflow: hidden !important; height: 1739px !important;" horizontalscrolling="no" verticalscrolling="no"></iframe><iframe id="dsq-app1851" name="dsq-app1851" allowtransparency="true" frameborder="0" scrolling="no" tabindex="0" title="Disqus" sandbox="allow-forms allow-popups allow-same-origin allow-scripts" width="100%" style="width: 1px !important; min-width: 100% !important; border: none !important; overflow: hidden !important; height: 1322px !important;"></iframe></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost") 
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'npfio';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the comments powered by <a href="http://disqus.com/?ref_noscript">Disqus.</a></noscript>
+</div>
+</div> 
+
+w
+
+<iframe style="display: none;"></iframe><iframe style="display: none;"></iframe></body></html>

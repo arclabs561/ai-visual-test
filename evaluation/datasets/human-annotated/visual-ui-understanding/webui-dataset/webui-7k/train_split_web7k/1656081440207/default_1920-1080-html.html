@@ -1,0 +1,1594 @@
+<!DOCTYPE html><html lang="en" color-theme="system"><head>
+    <meta charset="utf-8">
+    <title>Error Handling - Laravel - The PHP Framework For Web Artisans</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+        <link rel="canonical" href="https://laravel.com/docs/9.x/errors">
+    
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="Laravel - The PHP Framework For Web Artisans">
+    <meta name="description" content="Laravel is a PHP web application framework with expressive, elegant syntax. We’ve already laid the foundation — freeing you to create without sweating the small things.">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://laravel.com/">
+    <meta property="og:title" content="Laravel - The PHP Framework For Web Artisans">
+    <meta property="og:description" content="Laravel is a PHP web application framework with expressive, elegant syntax. We’ve already laid the foundation — freeing you to create without sweating the small things.">
+    <meta property="og:image" content="https://laravel.com/img/og-image.jpg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://laravel.com/">
+    <meta property="twitter:title" content="Laravel - The PHP Framework For Web Artisans">
+    <meta property="twitter:description" content="Laravel is a PHP web application framework with expressive, elegant syntax. We’ve already laid the foundation — freeing you to create without sweating the small things.">
+    <meta property="twitter:image" content="https://laravel.com/img/og-image.jpg">
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/img/favicon/site.webmanifest">
+    <link rel="mask-icon" href="/img/favicon/safari-pinned-tab.svg" color="#ff2d20">
+    <link rel="shortcut icon" href="/img/favicon/favicon.ico">
+    <meta name="msapplication-TileColor" content="#ff2d20">
+    <meta name="msapplication-config" content="/img/favicon/browserconfig.xml">
+    <meta name="theme-color" content="#ffffff">
+
+    <link rel="stylesheet" href="https://use.typekit.net/ins2wgm.css">
+    <link rel="stylesheet" type="text/css" href="/css/app.css?id=3652ad0fdcd9a8bd254126af01e32f9d">
+
+            <!-- Fathom - beautiful, simple website analytics -->
+        <script src="//ssl.google-analytics.com/ga.js"></script><script src="https://cdn.usefathom.com/script.js" data-site="DVMEKBYF" defer=""></script>
+        <!-- / Fathom -->
+    
+    <script>
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+        if (localStorage.theme === 'system') {
+            if (e.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        }
+    });
+
+    function updateTheme() {
+        if (!('theme' in localStorage)) {
+            localStorage.theme = 'system';
+        }
+
+        switch (localStorage.theme) {
+            case 'system':
+                if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+                document.documentElement.setAttribute('color-theme', 'system');
+                break;
+
+            case 'dark':
+                document.documentElement.classList.add('dark');
+                document.documentElement.setAttribute('color-theme', 'dark');
+                break;
+
+            case 'light':
+                document.documentElement.classList.remove('dark');
+                document.documentElement.setAttribute('color-theme', 'light');
+                break;
+        }
+    }
+
+    updateTheme();
+</script>
+<script id="_carbonads_projs" type="text/javascript" src="https://srv.carbonads.net/ads/CKYILK3E.json?segment=placement:laravelcom&amp;callback=_carbonads_go"></script></head>
+<body x-data="{
+        navIsOpen: false,
+        searchIsOpen: false,
+        search: '',
+    }" class="language-php h-full w-full font-sans text-gray-900 antialiased">
+
+    <a id="skip-to-content-link" href="#main-content" class="absolute bg-gray-100 px-4 py-2 top-3 left-3 text-gray-700 shadow-xl">
+    Skip to content
+</a>
+
+    <div class="relative overflow-auto dark:bg-dark-700" id="docsScreen">
+        <div class="relative lg:flex lg:items-start">
+            <aside x-data="{
+                    navIsOpen: false,
+                    init() {
+                        this.$watch('navIsOpen', (val) => {
+                            if (val) {
+                                document.body.classList.add('overflow-hidden');
+                            } else {
+                                document.body.classList.remove('overflow-hidden');
+                            }
+                        });
+                    }
+                }" class="hidden fixed top-0 bottom-0 left-0 z-20 h-full w-16 bg-gradient-to-b from-gray-100 to-white transition-all duration-300 overflow-hidden lg:sticky lg:w-80 lg:shrink-0 lg:flex lg:flex-col lg:justify-end lg:items-end 2xl:max-w-lg 2xl:w-full dark:from-dark-800 dark:to-dark-700" :class="{ 'w-64': navIsOpen }" @click.away="navIsOpen = false" @keydown.window.escape="navIsOpen = false">
+                <div class="relative min-h-0 flex-1 flex flex-col xl:w-80">
+                    <a href="/" class="flex items-center py-8 px-4 lg:px-8 xl:px-16">
+                        <img class="w-8 h-8 shrink-0 transition-all duration-300 lg:w-12 lg:h-12" :class="{ 'w-12 h-12': navIsOpen }" src="/img/logomark.min.svg" alt="Laravel" width="50" height="52">
+                        <img x-show="navIsOpen" class="ml-4 transition-all duration-300 lg:hidden" x-transition:enter="duration-250 ease-out" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="duration-250 ease-in" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" src="/img/logotype.min.svg" alt="Laravel" width="114" height="29" style="display: none;">
+                        <img src="/img/logotype.min.svg" alt="Laravel" class="hidden ml-4 lg:block" width="114" height="29">
+                    </a>
+                    <div class="overflow-y-auto overflow-x-hidden px-4 lg:overflow-hidden lg:px-8 xl:px-16">
+                        <nav x-show="navIsOpen" class="mt-4 lg:hidden" style="display: none;">
+                            <div class="docs_sidebar">
+                                <ul>
+<li>
+<h2>Prologue</h2>
+<ul>
+<li>
+<a href="/docs/8.x/releases">Release Notes</a>
+</li>
+<li>
+<a href="/docs/8.x/upgrade">Upgrade Guide</a>
+</li>
+<li>
+<a href="/docs/8.x/contributions">Contribution Guide</a>
+</li>
+</ul>
+</li>
+<li>
+<h2>Getting Started</h2>
+<ul>
+<li>
+<a href="/docs/8.x/installation">Installation</a>
+</li>
+<li>
+<a href="/docs/8.x/configuration">Configuration</a>
+</li>
+<li>
+<a href="/docs/8.x/structure">Directory Structure</a>
+</li>
+<li>
+<a href="/docs/8.x/starter-kits">Starter Kits</a>
+</li>
+<li>
+<a href="/docs/8.x/deployment">Deployment</a>
+</li>
+</ul>
+</li>
+<li>
+<h2>Architecture Concepts</h2>
+<ul>
+<li>
+<a href="/docs/8.x/lifecycle">Request Lifecycle</a>
+</li>
+<li>
+<a href="/docs/8.x/container">Service Container</a>
+</li>
+<li>
+<a href="/docs/8.x/providers">Service Providers</a>
+</li>
+<li>
+<a href="/docs/8.x/facades">Facades</a>
+</li>
+</ul>
+</li>
+<li class="sub--on">
+<h2>The Basics</h2>
+<ul>
+<li>
+<a href="/docs/8.x/routing">Routing</a>
+</li>
+<li>
+<a href="/docs/8.x/middleware">Middleware</a>
+</li>
+<li>
+<a href="/docs/8.x/csrf">CSRF Protection</a>
+</li>
+<li>
+<a href="/docs/8.x/controllers">Controllers</a>
+</li>
+<li>
+<a href="/docs/8.x/requests">Requests</a>
+</li>
+<li>
+<a href="/docs/8.x/responses">Responses</a>
+</li>
+<li>
+<a href="/docs/8.x/views">Views</a>
+</li>
+<li>
+<a href="/docs/8.x/blade">Blade Templates</a>
+</li>
+<li>
+<a href="/docs/8.x/urls">URL Generation</a>
+</li>
+<li>
+<a href="/docs/8.x/session">Session</a>
+</li>
+<li>
+<a href="/docs/8.x/validation">Validation</a>
+</li>
+<li class="active">
+<a href="/docs/8.x/errors">Error Handling</a>
+</li>
+<li>
+<a href="/docs/8.x/logging">Logging</a>
+</li>
+</ul>
+</li>
+<li>
+<h2>Digging Deeper</h2>
+<ul>
+<li>
+<a href="/docs/8.x/artisan">Artisan Console</a>
+</li>
+<li>
+<a href="/docs/8.x/broadcasting">Broadcasting</a>
+</li>
+<li>
+<a href="/docs/8.x/cache">Cache</a>
+</li>
+<li>
+<a href="/docs/8.x/collections">Collections</a>
+</li>
+<li>
+<a href="/docs/8.x/mix">Compiling Assets</a>
+</li>
+<li>
+<a href="/docs/8.x/contracts">Contracts</a>
+</li>
+<li>
+<a href="/docs/8.x/events">Events</a>
+</li>
+<li>
+<a href="/docs/8.x/filesystem">File Storage</a>
+</li>
+<li>
+<a href="/docs/8.x/helpers">Helpers</a>
+</li>
+<li>
+<a href="/docs/8.x/http-client">HTTP Client</a>
+</li>
+<li>
+<a href="/docs/8.x/localization">Localization</a>
+</li>
+<li>
+<a href="/docs/8.x/mail">Mail</a>
+</li>
+<li>
+<a href="/docs/8.x/notifications">Notifications</a>
+</li>
+<li>
+<a href="/docs/8.x/packages">Package Development</a>
+</li>
+<li>
+<a href="/docs/8.x/queues">Queues</a>
+</li>
+<li>
+<a href="/docs/8.x/rate-limiting">Rate Limiting</a>
+</li>
+<li>
+<a href="/docs/8.x/scheduling">Task Scheduling</a>
+</li>
+</ul>
+</li>
+<li>
+<h2>Security</h2>
+<ul>
+<li>
+<a href="/docs/8.x/authentication">Authentication</a>
+</li>
+<li>
+<a href="/docs/8.x/authorization">Authorization</a>
+</li>
+<li>
+<a href="/docs/8.x/verification">Email Verification</a>
+</li>
+<li>
+<a href="/docs/8.x/encryption">Encryption</a>
+</li>
+<li>
+<a href="/docs/8.x/hashing">Hashing</a>
+</li>
+<li>
+<a href="/docs/8.x/passwords">Password Reset</a>
+</li>
+</ul>
+</li>
+<li>
+<h2>Database</h2>
+<ul>
+<li>
+<a href="/docs/8.x/database">Getting Started</a>
+</li>
+<li>
+<a href="/docs/8.x/queries">Query Builder</a>
+</li>
+<li>
+<a href="/docs/8.x/pagination">Pagination</a>
+</li>
+<li>
+<a href="/docs/8.x/migrations">Migrations</a>
+</li>
+<li>
+<a href="/docs/8.x/seeding">Seeding</a>
+</li>
+<li>
+<a href="/docs/8.x/redis">Redis</a>
+</li>
+</ul>
+</li>
+<li>
+<h2>Eloquent ORM</h2>
+<ul>
+<li>
+<a href="/docs/8.x/eloquent">Getting Started</a>
+</li>
+<li>
+<a href="/docs/8.x/eloquent-relationships">Relationships</a>
+</li>
+<li>
+<a href="/docs/8.x/eloquent-collections">Collections</a>
+</li>
+<li>
+<a href="/docs/8.x/eloquent-mutators">Mutators / Casts</a>
+</li>
+<li>
+<a href="/docs/8.x/eloquent-resources">API Resources</a>
+</li>
+<li>
+<a href="/docs/8.x/eloquent-serialization">Serialization</a>
+</li>
+</ul>
+</li>
+<li>
+<h2>Testing</h2>
+<ul>
+<li>
+<a href="/docs/8.x/testing">Getting Started</a>
+</li>
+<li>
+<a href="/docs/8.x/http-tests">HTTP Tests</a>
+</li>
+<li>
+<a href="/docs/8.x/console-tests">Console Tests</a>
+</li>
+<li>
+<a href="/docs/8.x/dusk">Browser Tests</a>
+</li>
+<li>
+<a href="/docs/8.x/database-testing">Database</a>
+</li>
+<li>
+<a href="/docs/8.x/mocking">Mocking</a>
+</li>
+</ul>
+</li>
+<li>
+<h2>Packages</h2>
+<ul>
+<li>
+<a href="/docs/8.x/starter-kits#laravel-breeze">Breeze</a>
+</li>
+<li>
+<a href="/docs/8.x/billing">Cashier (Stripe)</a>
+</li>
+<li>
+<a href="/docs/8.x/cashier-paddle">Cashier (Paddle)</a>
+</li>
+<li>
+<a href="/docs/8.x/dusk">Dusk</a>
+</li>
+<li>
+<a href="/docs/8.x/envoy">Envoy</a>
+</li>
+<li>
+<a href="/docs/8.x/fortify">Fortify</a>
+</li>
+<li>
+<a href="/docs/8.x/homestead">Homestead</a>
+</li>
+<li>
+<a href="/docs/8.x/horizon">Horizon</a>
+</li>
+<li>
+<a href="https://jetstream.laravel.com">Jetstream</a>
+</li>
+<li>
+<a href="/docs/8.x/octane">Octane</a>
+</li>
+<li>
+<a href="/docs/8.x/passport">Passport</a>
+</li>
+<li>
+<a href="/docs/8.x/sail">Sail</a>
+</li>
+<li>
+<a href="/docs/8.x/sanctum">Sanctum</a>
+</li>
+<li>
+<a href="/docs/8.x/scout">Scout</a>
+</li>
+<li>
+<a href="/docs/8.x/socialite">Socialite</a>
+</li>
+<li>
+<a href="/docs/8.x/telescope">Telescope</a>
+</li>
+<li>
+<a href="/docs/8.x/valet">Valet</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="/api/8.x">API Documentation</a>
+</li>
+</ul>
+
+                            </div>
+                        </nav>
+                        <nav id="indexed-nav" class="hidden lg:block lg:mt-4">
+                            <div class="docs_sidebar">
+                                <ul>
+<li>
+<h2>Prologue</h2>
+<ul>
+<li>
+<a href="/docs/8.x/releases">Release Notes</a>
+</li>
+<li>
+<a href="/docs/8.x/upgrade">Upgrade Guide</a>
+</li>
+<li>
+<a href="/docs/8.x/contributions">Contribution Guide</a>
+</li>
+</ul>
+</li>
+<li>
+<h2>Getting Started</h2>
+<ul>
+<li>
+<a href="/docs/8.x/installation">Installation</a>
+</li>
+<li>
+<a href="/docs/8.x/configuration">Configuration</a>
+</li>
+<li>
+<a href="/docs/8.x/structure">Directory Structure</a>
+</li>
+<li>
+<a href="/docs/8.x/starter-kits">Starter Kits</a>
+</li>
+<li>
+<a href="/docs/8.x/deployment">Deployment</a>
+</li>
+</ul>
+</li>
+<li>
+<h2>Architecture Concepts</h2>
+<ul>
+<li>
+<a href="/docs/8.x/lifecycle">Request Lifecycle</a>
+</li>
+<li>
+<a href="/docs/8.x/container">Service Container</a>
+</li>
+<li>
+<a href="/docs/8.x/providers">Service Providers</a>
+</li>
+<li>
+<a href="/docs/8.x/facades">Facades</a>
+</li>
+</ul>
+</li>
+<li class="sub--on">
+<h2>The Basics</h2>
+<ul>
+<li>
+<a href="/docs/8.x/routing">Routing</a>
+</li>
+<li>
+<a href="/docs/8.x/middleware">Middleware</a>
+</li>
+<li>
+<a href="/docs/8.x/csrf">CSRF Protection</a>
+</li>
+<li>
+<a href="/docs/8.x/controllers">Controllers</a>
+</li>
+<li>
+<a href="/docs/8.x/requests">Requests</a>
+</li>
+<li>
+<a href="/docs/8.x/responses">Responses</a>
+</li>
+<li>
+<a href="/docs/8.x/views">Views</a>
+</li>
+<li>
+<a href="/docs/8.x/blade">Blade Templates</a>
+</li>
+<li>
+<a href="/docs/8.x/urls">URL Generation</a>
+</li>
+<li>
+<a href="/docs/8.x/session">Session</a>
+</li>
+<li>
+<a href="/docs/8.x/validation">Validation</a>
+</li>
+<li class="active">
+<a href="/docs/8.x/errors">Error Handling</a>
+</li>
+<li>
+<a href="/docs/8.x/logging">Logging</a>
+</li>
+</ul>
+</li>
+<li>
+<h2>Digging Deeper</h2>
+<ul>
+<li>
+<a href="/docs/8.x/artisan">Artisan Console</a>
+</li>
+<li>
+<a href="/docs/8.x/broadcasting">Broadcasting</a>
+</li>
+<li>
+<a href="/docs/8.x/cache">Cache</a>
+</li>
+<li>
+<a href="/docs/8.x/collections">Collections</a>
+</li>
+<li>
+<a href="/docs/8.x/mix">Compiling Assets</a>
+</li>
+<li>
+<a href="/docs/8.x/contracts">Contracts</a>
+</li>
+<li>
+<a href="/docs/8.x/events">Events</a>
+</li>
+<li>
+<a href="/docs/8.x/filesystem">File Storage</a>
+</li>
+<li>
+<a href="/docs/8.x/helpers">Helpers</a>
+</li>
+<li>
+<a href="/docs/8.x/http-client">HTTP Client</a>
+</li>
+<li>
+<a href="/docs/8.x/localization">Localization</a>
+</li>
+<li>
+<a href="/docs/8.x/mail">Mail</a>
+</li>
+<li>
+<a href="/docs/8.x/notifications">Notifications</a>
+</li>
+<li>
+<a href="/docs/8.x/packages">Package Development</a>
+</li>
+<li>
+<a href="/docs/8.x/queues">Queues</a>
+</li>
+<li>
+<a href="/docs/8.x/rate-limiting">Rate Limiting</a>
+</li>
+<li>
+<a href="/docs/8.x/scheduling">Task Scheduling</a>
+</li>
+</ul>
+</li>
+<li>
+<h2>Security</h2>
+<ul>
+<li>
+<a href="/docs/8.x/authentication">Authentication</a>
+</li>
+<li>
+<a href="/docs/8.x/authorization">Authorization</a>
+</li>
+<li>
+<a href="/docs/8.x/verification">Email Verification</a>
+</li>
+<li>
+<a href="/docs/8.x/encryption">Encryption</a>
+</li>
+<li>
+<a href="/docs/8.x/hashing">Hashing</a>
+</li>
+<li>
+<a href="/docs/8.x/passwords">Password Reset</a>
+</li>
+</ul>
+</li>
+<li>
+<h2>Database</h2>
+<ul>
+<li>
+<a href="/docs/8.x/database">Getting Started</a>
+</li>
+<li>
+<a href="/docs/8.x/queries">Query Builder</a>
+</li>
+<li>
+<a href="/docs/8.x/pagination">Pagination</a>
+</li>
+<li>
+<a href="/docs/8.x/migrations">Migrations</a>
+</li>
+<li>
+<a href="/docs/8.x/seeding">Seeding</a>
+</li>
+<li>
+<a href="/docs/8.x/redis">Redis</a>
+</li>
+</ul>
+</li>
+<li>
+<h2>Eloquent ORM</h2>
+<ul>
+<li>
+<a href="/docs/8.x/eloquent">Getting Started</a>
+</li>
+<li>
+<a href="/docs/8.x/eloquent-relationships">Relationships</a>
+</li>
+<li>
+<a href="/docs/8.x/eloquent-collections">Collections</a>
+</li>
+<li>
+<a href="/docs/8.x/eloquent-mutators">Mutators / Casts</a>
+</li>
+<li>
+<a href="/docs/8.x/eloquent-resources">API Resources</a>
+</li>
+<li>
+<a href="/docs/8.x/eloquent-serialization">Serialization</a>
+</li>
+</ul>
+</li>
+<li>
+<h2>Testing</h2>
+<ul>
+<li>
+<a href="/docs/8.x/testing">Getting Started</a>
+</li>
+<li>
+<a href="/docs/8.x/http-tests">HTTP Tests</a>
+</li>
+<li>
+<a href="/docs/8.x/console-tests">Console Tests</a>
+</li>
+<li>
+<a href="/docs/8.x/dusk">Browser Tests</a>
+</li>
+<li>
+<a href="/docs/8.x/database-testing">Database</a>
+</li>
+<li>
+<a href="/docs/8.x/mocking">Mocking</a>
+</li>
+</ul>
+</li>
+<li>
+<h2>Packages</h2>
+<ul>
+<li>
+<a href="/docs/8.x/starter-kits#laravel-breeze">Breeze</a>
+</li>
+<li>
+<a href="/docs/8.x/billing">Cashier (Stripe)</a>
+</li>
+<li>
+<a href="/docs/8.x/cashier-paddle">Cashier (Paddle)</a>
+</li>
+<li>
+<a href="/docs/8.x/dusk">Dusk</a>
+</li>
+<li>
+<a href="/docs/8.x/envoy">Envoy</a>
+</li>
+<li>
+<a href="/docs/8.x/fortify">Fortify</a>
+</li>
+<li>
+<a href="/docs/8.x/homestead">Homestead</a>
+</li>
+<li>
+<a href="/docs/8.x/horizon">Horizon</a>
+</li>
+<li>
+<a href="https://jetstream.laravel.com">Jetstream</a>
+</li>
+<li>
+<a href="/docs/8.x/octane">Octane</a>
+</li>
+<li>
+<a href="/docs/8.x/passport">Passport</a>
+</li>
+<li>
+<a href="/docs/8.x/sail">Sail</a>
+</li>
+<li>
+<a href="/docs/8.x/sanctum">Sanctum</a>
+</li>
+<li>
+<a href="/docs/8.x/scout">Scout</a>
+</li>
+<li>
+<a href="/docs/8.x/socialite">Socialite</a>
+</li>
+<li>
+<a href="/docs/8.x/telescope">Telescope</a>
+</li>
+<li>
+<a href="/docs/8.x/valet">Valet</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="/api/8.x">API Documentation</a>
+</li>
+</ul>
+
+                            </div>
+                        </nav>
+
+                        
+                        
+                                                    <div :class="{ 'hidden': !navIsOpen }" class="mt-4 px-3 py-2 border-dashed border-gray-200 border rounded-lg text-xs leading-loose text-gray-700 lg:block dark:border-gray-400 dark:text-gray-200 hidden">
+                                <span class="font-medium">Laravel Vapor:</span> experience extreme scale on a dedicated serverless platform for Laravel. <a class="underline text-red-600" href="https://vapor.laravel.com">Sign up now!</a>.
+                            </div>
+                        
+                                            </div>
+                    <div class="sticky bottom-0 flex-1 flex flex-col justify-end lg:hidden">
+                        <div class="py-4 px-4 bg-white">
+                            <button class="relative ml-1 w-6 h-6 text-red-600 lg:hidden focus:outline-none focus:shadow-outline" aria-label="Menu" @click.prevent="navIsOpen = !navIsOpen">
+                                <svg x-show="! navIsOpen" x-transition.opacity="" class="absolute inset-0 w-6 h-6" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                                <svg x-show="navIsOpen" x-transition.opacity="" class="absolute inset-0 w-6 h-6" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: none;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <header class="lg:hidden" @keydown.window.escape="navIsOpen = false" @click.away="navIsOpen = false">
+                <div class="relative mx-auto w-full py-10 bg-white transition duration-200 dark:bg-dark-700">
+                    <div class="mx-auto px-8 sm:px-16 flex items-center justify-between">
+                        <a href="/" class="flex items-center">
+                            <img class="" src="/img/logomark.min.svg" alt="Laravel">
+                            <img class="hidden ml-5 sm:block" src="/img/logotype.min.svg" alt="Laravel">
+                        </a>
+                        <div class="flex-1 flex items-center justify-end">
+                            <button id="header__sun" onclick="toSystemMode()" title="Switch to system theme" class="relative w-10 h-10 focus:outline-none focus:shadow-outline text-gray-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <circle cx="12" cy="12" r="4"></circle>
+                                    <path d="M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+                                 </svg>
+                            </button>
+                            <button id="header__moon" onclick="toLightMode()" title="Switch to light mode" class="relative w-10 h-10 focus:outline-none focus:shadow-outline text-gray-500">
+                                <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+                                    <path fill="currentColor" d="M17.75,4.09L15.22,6.03L16.13,9.09L13.5,7.28L10.87,9.09L11.78,6.03L9.25,4.09L12.44,4L13.5,1L14.56,4L17.75,4.09M21.25,11L19.61,12.25L20.2,14.23L18.5,13.06L16.8,14.23L17.39,12.25L15.75,11L17.81,10.95L18.5,9L19.19,10.95L21.25,11M18.97,15.95C19.8,15.87 20.69,17.05 20.16,17.8C19.84,18.25 19.5,18.67 19.08,19.07C15.17,23 8.84,23 4.94,19.07C1.03,15.17 1.03,8.83 4.94,4.93C5.34,4.53 5.76,4.17 6.21,3.85C6.96,3.32 8.14,4.21 8.06,5.04C7.79,7.9 8.75,10.87 10.95,13.06C13.14,15.26 16.1,16.22 18.97,15.95M17.33,17.97C14.5,17.81 11.7,16.64 9.53,14.5C7.36,12.31 6.2,9.5 6.04,6.68C3.23,9.82 3.34,14.64 6.35,17.66C9.37,20.67 14.19,20.78 17.33,17.97Z"></path>
+                                </svg>
+                            </button>
+                            <button id="header__indeterminate" onclick="toDarkMode()" title="Switch to dark mode" class="relative w-10 h-10 focus:outline-none focus:shadow-outline text-gray-500">
+                                <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+                                    <path fill="currentColor" d="M12 2A10 10 0 0 0 2 12A10 10 0 0 0 12 22A10 10 0 0 0 22 12A10 10 0 0 0 12 2M12 4A8 8 0 0 1 20 12A8 8 0 0 1 12 20V4Z"></path>
+                                </svg>
+                            </button>
+                            <button class="ml-2 relative w-10 h-10 p-2 text-red-600 lg:hidden focus:outline-none focus:shadow-outline" aria-label="Menu" @click.prevent="navIsOpen = !navIsOpen">
+                                <svg x-show="! navIsOpen" x-transition.opacity="" class="absolute inset-0 mt-2 ml-2 w-6 h-6" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                                <svg x-show="navIsOpen" x-transition.opacity="" class="absolute inset-0 mt-2 ml-2 w-6 h-6" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: none;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <span :class="{ 'shadow-sm': navIsOpen }" class="absolute inset-0 z-20 pointer-events-none"></span>
+                </div>
+                <div x-show="navIsOpen" x-transition:enter="duration-150" x-transition:leave="duration-100 ease-in" style="display: none;">
+                    <nav x-show="navIsOpen" class="absolute w-full transform origin-top shadow-sm z-10" x-transition:enter="duration-150 ease-out" x-transition:enter-start="opacity-0 -translate-y-8 scale-75" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="duration-100 ease-in" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 -translate-y-8 scale-75" style="display: none;">
+                        <div class="relative p-8 bg-white docs_sidebar dark:bg-dark-600">
+                            <ul>
+<li>
+<h2>Prologue</h2>
+<ul>
+<li>
+<a href="/docs/8.x/releases">Release Notes</a>
+</li>
+<li>
+<a href="/docs/8.x/upgrade">Upgrade Guide</a>
+</li>
+<li>
+<a href="/docs/8.x/contributions">Contribution Guide</a>
+</li>
+</ul>
+</li>
+<li>
+<h2>Getting Started</h2>
+<ul>
+<li>
+<a href="/docs/8.x/installation">Installation</a>
+</li>
+<li>
+<a href="/docs/8.x/configuration">Configuration</a>
+</li>
+<li>
+<a href="/docs/8.x/structure">Directory Structure</a>
+</li>
+<li>
+<a href="/docs/8.x/starter-kits">Starter Kits</a>
+</li>
+<li>
+<a href="/docs/8.x/deployment">Deployment</a>
+</li>
+</ul>
+</li>
+<li>
+<h2>Architecture Concepts</h2>
+<ul>
+<li>
+<a href="/docs/8.x/lifecycle">Request Lifecycle</a>
+</li>
+<li>
+<a href="/docs/8.x/container">Service Container</a>
+</li>
+<li>
+<a href="/docs/8.x/providers">Service Providers</a>
+</li>
+<li>
+<a href="/docs/8.x/facades">Facades</a>
+</li>
+</ul>
+</li>
+<li class="sub--on">
+<h2>The Basics</h2>
+<ul>
+<li>
+<a href="/docs/8.x/routing">Routing</a>
+</li>
+<li>
+<a href="/docs/8.x/middleware">Middleware</a>
+</li>
+<li>
+<a href="/docs/8.x/csrf">CSRF Protection</a>
+</li>
+<li>
+<a href="/docs/8.x/controllers">Controllers</a>
+</li>
+<li>
+<a href="/docs/8.x/requests">Requests</a>
+</li>
+<li>
+<a href="/docs/8.x/responses">Responses</a>
+</li>
+<li>
+<a href="/docs/8.x/views">Views</a>
+</li>
+<li>
+<a href="/docs/8.x/blade">Blade Templates</a>
+</li>
+<li>
+<a href="/docs/8.x/urls">URL Generation</a>
+</li>
+<li>
+<a href="/docs/8.x/session">Session</a>
+</li>
+<li>
+<a href="/docs/8.x/validation">Validation</a>
+</li>
+<li class="active">
+<a href="/docs/8.x/errors">Error Handling</a>
+</li>
+<li>
+<a href="/docs/8.x/logging">Logging</a>
+</li>
+</ul>
+</li>
+<li>
+<h2>Digging Deeper</h2>
+<ul>
+<li>
+<a href="/docs/8.x/artisan">Artisan Console</a>
+</li>
+<li>
+<a href="/docs/8.x/broadcasting">Broadcasting</a>
+</li>
+<li>
+<a href="/docs/8.x/cache">Cache</a>
+</li>
+<li>
+<a href="/docs/8.x/collections">Collections</a>
+</li>
+<li>
+<a href="/docs/8.x/mix">Compiling Assets</a>
+</li>
+<li>
+<a href="/docs/8.x/contracts">Contracts</a>
+</li>
+<li>
+<a href="/docs/8.x/events">Events</a>
+</li>
+<li>
+<a href="/docs/8.x/filesystem">File Storage</a>
+</li>
+<li>
+<a href="/docs/8.x/helpers">Helpers</a>
+</li>
+<li>
+<a href="/docs/8.x/http-client">HTTP Client</a>
+</li>
+<li>
+<a href="/docs/8.x/localization">Localization</a>
+</li>
+<li>
+<a href="/docs/8.x/mail">Mail</a>
+</li>
+<li>
+<a href="/docs/8.x/notifications">Notifications</a>
+</li>
+<li>
+<a href="/docs/8.x/packages">Package Development</a>
+</li>
+<li>
+<a href="/docs/8.x/queues">Queues</a>
+</li>
+<li>
+<a href="/docs/8.x/rate-limiting">Rate Limiting</a>
+</li>
+<li>
+<a href="/docs/8.x/scheduling">Task Scheduling</a>
+</li>
+</ul>
+</li>
+<li>
+<h2>Security</h2>
+<ul>
+<li>
+<a href="/docs/8.x/authentication">Authentication</a>
+</li>
+<li>
+<a href="/docs/8.x/authorization">Authorization</a>
+</li>
+<li>
+<a href="/docs/8.x/verification">Email Verification</a>
+</li>
+<li>
+<a href="/docs/8.x/encryption">Encryption</a>
+</li>
+<li>
+<a href="/docs/8.x/hashing">Hashing</a>
+</li>
+<li>
+<a href="/docs/8.x/passwords">Password Reset</a>
+</li>
+</ul>
+</li>
+<li>
+<h2>Database</h2>
+<ul>
+<li>
+<a href="/docs/8.x/database">Getting Started</a>
+</li>
+<li>
+<a href="/docs/8.x/queries">Query Builder</a>
+</li>
+<li>
+<a href="/docs/8.x/pagination">Pagination</a>
+</li>
+<li>
+<a href="/docs/8.x/migrations">Migrations</a>
+</li>
+<li>
+<a href="/docs/8.x/seeding">Seeding</a>
+</li>
+<li>
+<a href="/docs/8.x/redis">Redis</a>
+</li>
+</ul>
+</li>
+<li>
+<h2>Eloquent ORM</h2>
+<ul>
+<li>
+<a href="/docs/8.x/eloquent">Getting Started</a>
+</li>
+<li>
+<a href="/docs/8.x/eloquent-relationships">Relationships</a>
+</li>
+<li>
+<a href="/docs/8.x/eloquent-collections">Collections</a>
+</li>
+<li>
+<a href="/docs/8.x/eloquent-mutators">Mutators / Casts</a>
+</li>
+<li>
+<a href="/docs/8.x/eloquent-resources">API Resources</a>
+</li>
+<li>
+<a href="/docs/8.x/eloquent-serialization">Serialization</a>
+</li>
+</ul>
+</li>
+<li>
+<h2>Testing</h2>
+<ul>
+<li>
+<a href="/docs/8.x/testing">Getting Started</a>
+</li>
+<li>
+<a href="/docs/8.x/http-tests">HTTP Tests</a>
+</li>
+<li>
+<a href="/docs/8.x/console-tests">Console Tests</a>
+</li>
+<li>
+<a href="/docs/8.x/dusk">Browser Tests</a>
+</li>
+<li>
+<a href="/docs/8.x/database-testing">Database</a>
+</li>
+<li>
+<a href="/docs/8.x/mocking">Mocking</a>
+</li>
+</ul>
+</li>
+<li>
+<h2>Packages</h2>
+<ul>
+<li>
+<a href="/docs/8.x/starter-kits#laravel-breeze">Breeze</a>
+</li>
+<li>
+<a href="/docs/8.x/billing">Cashier (Stripe)</a>
+</li>
+<li>
+<a href="/docs/8.x/cashier-paddle">Cashier (Paddle)</a>
+</li>
+<li>
+<a href="/docs/8.x/dusk">Dusk</a>
+</li>
+<li>
+<a href="/docs/8.x/envoy">Envoy</a>
+</li>
+<li>
+<a href="/docs/8.x/fortify">Fortify</a>
+</li>
+<li>
+<a href="/docs/8.x/homestead">Homestead</a>
+</li>
+<li>
+<a href="/docs/8.x/horizon">Horizon</a>
+</li>
+<li>
+<a href="https://jetstream.laravel.com">Jetstream</a>
+</li>
+<li>
+<a href="/docs/8.x/octane">Octane</a>
+</li>
+<li>
+<a href="/docs/8.x/passport">Passport</a>
+</li>
+<li>
+<a href="/docs/8.x/sail">Sail</a>
+</li>
+<li>
+<a href="/docs/8.x/sanctum">Sanctum</a>
+</li>
+<li>
+<a href="/docs/8.x/scout">Scout</a>
+</li>
+<li>
+<a href="/docs/8.x/socialite">Socialite</a>
+</li>
+<li>
+<a href="/docs/8.x/telescope">Telescope</a>
+</li>
+<li>
+<a href="/docs/8.x/valet">Valet</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="/api/8.x">API Documentation</a>
+</li>
+</ul>
+
+                        </div>
+                    </nav>
+                </div>
+            </header>
+
+            <section class="flex-1 dark:bg-dark-700">
+                <div class="max-w-screen-lg px-8 sm:px-16 lg:px-24">
+                    <div class="flex flex-col items-end border-b border-gray-200 py-1 transition-colors dark:border-gray-700 lg:mt-8 lg:flex-row-reverse">
+                        <div class="hidden lg:flex items-center justify-center ml-8">
+                            <button id="header__sun" onclick="toSystemMode()" title="Switch to system theme" class="relative w-10 h-10 focus:outline-none focus:shadow-outline text-gray-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <circle cx="12" cy="12" r="4"></circle>
+                                    <path d="M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+                                 </svg>
+                            </button>
+                            <button id="header__moon" onclick="toLightMode()" title="Switch to light mode" class="relative w-10 h-10 focus:outline-none focus:shadow-outline text-gray-500">
+                                <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+                                    <path fill="currentColor" d="M17.75,4.09L15.22,6.03L16.13,9.09L13.5,7.28L10.87,9.09L11.78,6.03L9.25,4.09L12.44,4L13.5,1L14.56,4L17.75,4.09M21.25,11L19.61,12.25L20.2,14.23L18.5,13.06L16.8,14.23L17.39,12.25L15.75,11L17.81,10.95L18.5,9L19.19,10.95L21.25,11M18.97,15.95C19.8,15.87 20.69,17.05 20.16,17.8C19.84,18.25 19.5,18.67 19.08,19.07C15.17,23 8.84,23 4.94,19.07C1.03,15.17 1.03,8.83 4.94,4.93C5.34,4.53 5.76,4.17 6.21,3.85C6.96,3.32 8.14,4.21 8.06,5.04C7.79,7.9 8.75,10.87 10.95,13.06C13.14,15.26 16.1,16.22 18.97,15.95M17.33,17.97C14.5,17.81 11.7,16.64 9.53,14.5C7.36,12.31 6.2,9.5 6.04,6.68C3.23,9.82 3.34,14.64 6.35,17.66C9.37,20.67 14.19,20.78 17.33,17.97Z"></path>
+                                </svg>
+                            </button>
+                            <button id="header__indeterminate" onclick="toDarkMode()" title="Switch to dark mode" class="relative w-10 h-10 focus:outline-none focus:shadow-outline text-gray-500">
+                                <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+                                    <path fill="currentColor" d="M12 2A10 10 0 0 0 2 12A10 10 0 0 0 12 22A10 10 0 0 0 22 12A10 10 0 0 0 12 2M12 4A8 8 0 0 1 20 12A8 8 0 0 1 12 20V4Z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="w-full lg:w-40 lg:pl-12">
+                            <div>
+                                <label class="text-gray-600 text-xs tracking-widest uppercase dark:text-gray-500" for="version-switcher">Version</label>
+                                <div x-data="" class="relative w-full bg-white transition-all duration-500 focus-within:border-gray-600 dark:bg-gray-800">
+                                    <select id="version-switcher" aria-label="Laravel version" class="appearance-none flex-1 w-full px-0 py-1 placeholder-gray-900 tracking-wide bg-white focus:outline-none dark:bg-dark-700 dark:text-gray-400 dark:placeholder-gray-500" @change="window.location = $event.target.value">
+                                                                                    <option value="https://laravel.com/docs/master/errors">Master</option>
+                                                                                    <option value="https://laravel.com/docs/9.x/errors">9.x</option>
+                                                                                    <option selected="" value="https://laravel.com/docs/8.x/errors">8.x</option>
+                                                                                    <option value="https://laravel.com/docs/7.x/errors">7.x</option>
+                                                                                    <option value="https://laravel.com/docs/6.x/errors">6.x</option>
+                                                                                    <option value="https://laravel.com/docs/5.8/errors">5.8</option>
+                                                                                    <option value="https://laravel.com/docs/5.7/errors">5.7</option>
+                                                                                    <option value="https://laravel.com/docs/5.6/errors">5.6</option>
+                                                                                    <option value="https://laravel.com/docs/5.5/errors">5.5</option>
+                                                                                    <option value="https://laravel.com/docs/5.4/errors">5.4</option>
+                                                                                    <option value="https://laravel.com/docs/5.3/errors">5.3</option>
+                                                                                    <option value="https://laravel.com/docs/5.2/errors">5.2</option>
+                                                                                    <option value="https://laravel.com/docs/5.1/errors">5.1</option>
+                                                                                    <option value="https://laravel.com/docs/5.0/errors">5.0</option>
+                                                                                    <option value="https://laravel.com/docs/4.2/errors">4.2</option>
+                                                                            </select>
+                                    <img class="absolute inset-y-0 right-0 mt-2.5 w-2.5 h-2.5 text-gray-900 pointer-events-none" id="docs_search__version_arrow" src="/img/icons/drop_arrow.min.svg" alt="">
+                                    <img class="absolute inset-y-0 right-0 mt-2.5 w-2.5 h-2.5 text-gray-900 pointer-events-none" id="docs_search__version_arrow_dark" src="/img/icons/drop_arrow.dark.min.svg" alt="">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="relative mt-8 flex items-center justify-end w-full h-10 lg:mt-0">
+                            <div class="flex-1 flex items-center">
+                                <button class="relative inline-flex items-center text-gray-800 transition-colors dark:text-gray-400 w-full" @click.prevent="$dispatch('toggle-search-modal')">
+                                    <svg class="w-5 h-5 text-gray-700 pointer-events-none transition-colors dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                    <span class="ml-3">Search</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <section class="mt-8 md:mt-16">
+                        <section class="docs_main max-w-prose">
+                                                            <blockquote>
+                                    <div class="mb-10 max-w-2xl mx-auto px-4 py-8 shadow-lg dark:bg-dark-600 lg:flex lg:items-center">
+                                        <div class="w-20 h-20 mb-6 flex items-center justify-center shrink-0 bg-orange-600 lg:mb-0">
+                                            <img src="https://laravel.com/img/callouts/exclamation.min.svg" alt="Icon" class="opacity-75">
+                                        </div>
+
+                                        <p class="mb-0 lg:ml-4">
+                                            <strong>WARNING</strong> You're browsing the documentation for an old version of Laravel.
+                                            Consider upgrading your project to <a href="https://laravel.com/docs/9.x">Laravel 9.x</a>.
+                                        </p>
+                                    </div>
+                                </blockquote>
+                            
+                            
+                            <div id="main-content">
+    <h1>Error Handling</h1>
+<ul>
+<li>
+<a href="#introduction">Introduction</a>
+</li>
+<li>
+<a href="#configuration">Configuration</a>
+</li>
+<li>
+<a href="#the-exception-handler">The Exception Handler</a>
+<ul>
+<li>
+<a href="#reporting-exceptions">Reporting Exceptions</a>
+</li>
+<li>
+<a href="#ignoring-exceptions-by-type">Ignoring Exceptions By Type</a>
+</li>
+<li>
+<a href="#rendering-exceptions">Rendering Exceptions</a>
+</li>
+<li>
+<a href="#renderable-exceptions">Reportable &amp; Renderable Exceptions</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#http-exceptions">HTTP Exceptions</a>
+<ul>
+<li>
+<a href="#custom-http-error-pages">Custom HTTP Error Pages</a>
+</li>
+</ul>
+</li>
+</ul>
+<p></p>
+<h2 id="introduction"><a href="#introduction">Introduction</a></h2>
+<p>When you start a new Laravel project, error and exception handling is already configured for you. The <code>App\Exceptions\Handler</code> class is where all exceptions thrown by your application are logged and then rendered to the user. We'll dive deeper into this class throughout this documentation.</p>
+<p></p>
+<h2 id="configuration"><a href="#configuration">Configuration</a></h2>
+<p>The <code>debug</code> option in your <code>config/app.php</code> configuration file determines how much information about an error is actually displayed to the user. By default, this option is set to respect the value of the <code>APP_DEBUG</code> environment variable, which is stored in your <code>.env</code> file.</p>
+<p>During local development, you should set the <code>APP_DEBUG</code> environment variable to <code>true</code>. <strong>In your production environment, this value should always be <code>false</code>. If the value is set to <code>true</code> in production, you risk exposing sensitive configuration values to your application's end users.</strong></p>
+<p></p>
+<h2 id="the-exception-handler"><a href="#the-exception-handler">The Exception Handler</a></h2>
+<p></p>
+<h3 id="reporting-exceptions"><a href="#reporting-exceptions">Reporting Exceptions</a></h3>
+<p>All exceptions are handled by the <code>App\Exceptions\Handler</code> class. This class contains a <code>register</code> method where you may register custom exception reporting and rendering callbacks. We'll examine each of these concepts in detail. Exception reporting is used to log exceptions or send them to an external service like <a href="https://flareapp.io">Flare</a>, <a href="https://bugsnag.com">Bugsnag</a> or <a href="https://github.com/getsentry/sentry-laravel">Sentry</a>. By default, exceptions will be logged based on your <a href="/docs/8.x/logging">logging</a> configuration. However, you are free to log exceptions however you wish.</p>
+<p>For example, if you need to report different types of exceptions in different ways, you may use the <code>reportable</code> method to register a closure that should be executed when an exception of a given type needs to be reported. Laravel will deduce what type of exception the closure reports by examining the type-hint of the closure:</p>
+<div class="relative code-block-wrapper"><pre><code data-theme="olaolu-palenight" data-lang="php" class="torchlight" style="background-color: #292D3E; --theme-selection-background: #7580B850;" id="clipText-0"><!-- Syntax highlighted by torchlight.dev --><div class="line"><span style="color: #C792EA;">use</span><span style="color: #BFC7D5;"> App\Exceptions\</span><span style="color: #FFCB8B;">InvalidOrderException</span><span style="color: #BFC7D5;">;</span></div><div class="line">&nbsp;</div><div class="line"><span style="color: #697098;">/**</span></div><div class="line"><span style="color: #697098;"> * Register the exception handling callbacks for the application.</span></div><div class="line"><span style="color: #697098;"> *</span></div><div class="line"><span style="color: #697098;"> * </span><span style="color: #C792EA;">@return</span><span style="color: #697098;"> </span><span style="color: #C792EA;">void</span></div><div class="line"><span style="color: #697098;"> </span><span style="color: #697098;">*/</span></div><div class="line"><span style="color: #C792EA;">public</span><span style="color: #BFC7D5;"> </span><span style="color: #C792EA;">function</span><span style="color: #BFC7D5;"> </span><span style="color: #82AAFF;">register</span><span style="color: #D9F5DD;">()</span></div><div class="line"><span style="color: #BFC7D5;">{</span></div><div class="line"><span style="color: #BFC7D5;">    </span><span style="color: #FF5572;">$this</span><span style="color: #89DDFF;">-&gt;</span><span style="color: #82AAFF;">reportable</span><span style="color: #BFC7D5;">(</span><span style="color: #C792EA;">function</span><span style="color: #BFC7D5;"> </span><span style="color: #D9F5DD;">(</span><span style="color: #FFCB8B;">InvalidOrderException</span><span style="color: #BFC7D5;"> </span><span style="color: #BEC5D4;">$e</span><span style="color: #D9F5DD;">)</span><span style="color: #BFC7D5;"> {</span></div><div class="line"><span style="color: #BFC7D5;">        </span><span style="color: #697098;">//</span></div><div class="line"><span style="color: #BFC7D5;">    });</span></div><div class="line"><span style="color: #BFC7D5;">}</span></div></code></pre><button id="clipButton-0" class="md:block hidden copyBtn" aria-label="Copy to Clipboard" title="Copy to Clipboard" data-clipboard-target="#clipText-0"><svg class="fill-current h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg></button></div>
+<p>When you register a custom exception reporting callback using the <code>reportable</code> method, Laravel will still log the exception using the default logging configuration for the application. If you wish to stop the propagation of the exception to the default logging stack, you may use the <code>stop</code> method when defining your reporting callback or return <code>false</code> from the callback:</p>
+<div class="relative code-block-wrapper"><pre><code data-theme="olaolu-palenight" data-lang="php" class="torchlight" style="background-color: #292D3E; --theme-selection-background: #7580B850;" id="clipText-1"><!-- Syntax highlighted by torchlight.dev --><div class="line"><span style="color: #FF5572;">$this</span><span style="color: #89DDFF;">-&gt;</span><span style="color: #82AAFF;">reportable</span><span style="color: #BFC7D5;">(</span><span style="color: #C792EA;">function</span><span style="color: #BFC7D5;"> </span><span style="color: #D9F5DD;">(</span><span style="color: #FFCB8B;">InvalidOrderException</span><span style="color: #BFC7D5;"> </span><span style="color: #BEC5D4;">$e</span><span style="color: #D9F5DD;">)</span><span style="color: #BFC7D5;"> {</span></div><div class="line"><span style="color: #BFC7D5;">    </span><span style="color: #697098;">//</span></div><div class="line"><span style="color: #BFC7D5;">})</span><span style="color: #89DDFF;">-&gt;</span><span style="color: #82AAFF;">stop</span><span style="color: #BFC7D5;">();</span></div><div class="line">&nbsp;</div><div class="line"><span style="color: #FF5572;">$this</span><span style="color: #89DDFF;">-&gt;</span><span style="color: #82AAFF;">reportable</span><span style="color: #BFC7D5;">(</span><span style="color: #C792EA;">function</span><span style="color: #BFC7D5;"> </span><span style="color: #D9F5DD;">(</span><span style="color: #FFCB8B;">InvalidOrderException</span><span style="color: #BFC7D5;"> </span><span style="color: #BEC5D4;">$e</span><span style="color: #D9F5DD;">)</span><span style="color: #BFC7D5;"> {</span></div><div class="line"><span style="color: #BFC7D5;">    </span><span style="color: #C792EA;">return</span><span style="color: #BFC7D5;"> </span><span style="color: #82AAFF;">false</span><span style="color: #BFC7D5;">;</span></div><div class="line"><span style="color: #BFC7D5;">});</span></div></code></pre><button id="clipButton-1" class="md:block hidden copyBtn" aria-label="Copy to Clipboard" title="Copy to Clipboard" data-clipboard-target="#clipText-1"><svg class="fill-current h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg></button></div>
+<blockquote>
+<div class="mb-10 max-w-2xl mx-auto px-4 py-8 shadow-lg lg:flex lg:items-center callout"><div class="w-20 h-20 mb-6 flex items-center justify-center shrink-0 bg-purple-600 lg:mb-0"><img src="/img/callouts/lightbulb.min.svg" class="opacity-75"></div><p class="mb-0 lg:ml-6"><p> To customize the exception reporting for a given exception, you may also utilize <a href="/docs/8.x/errors#renderable-exceptions">reportable exceptions</a>.</p></p></div>
+</blockquote>
+<p></p>
+<h4 id="global-log-context"><a href="#global-log-context">Global Log Context</a></h4>
+<p>If available, Laravel automatically adds the current user's ID to every exception's log message as contextual data. You may define your own global contextual data by overriding the <code>context</code> method of your application's <code>App\Exceptions\Handler</code> class. This information will be included in every exception's log message written by your application:</p>
+<div class="relative code-block-wrapper"><pre><code data-theme="olaolu-palenight" data-lang="php" class="torchlight" style="background-color: #292D3E; --theme-selection-background: #7580B850;" id="clipText-2"><!-- Syntax highlighted by torchlight.dev --><div class="line"><span style="color: #697098;">/**</span></div><div class="line"><span style="color: #697098;"> * Get the default context variables for logging.</span></div><div class="line"><span style="color: #697098;"> *</span></div><div class="line"><span style="color: #697098;"> * </span><span style="color: #C792EA;">@return</span><span style="color: #697098;"> </span><span style="color: #C792EA;">array</span></div><div class="line"><span style="color: #697098;"> </span><span style="color: #697098;">*/</span></div><div class="line"><span style="color: #C792EA;">protected</span><span style="color: #BFC7D5;"> </span><span style="color: #C792EA;">function</span><span style="color: #BFC7D5;"> </span><span style="color: #82AAFF;">context</span><span style="color: #D9F5DD;">()</span></div><div class="line"><span style="color: #BFC7D5;">{</span></div><div class="line"><span style="color: #BFC7D5;">    </span><span style="color: #C792EA;">return</span><span style="color: #BFC7D5;"> </span><span style="color: #89DDFF;">array_merge</span><span style="color: #BFC7D5;">(</span><span style="color: #C792EA;">parent</span><span style="color: #89DDFF;">::</span><span style="color: #82AAFF;">context</span><span style="color: #BFC7D5;">(),</span><span style="color: #82AAFF;"> </span><span style="color: #BFC7D5;">[</span></div><div class="line"><span style="color: #82AAFF;">        </span><span style="color: #D9F5DD;">'</span><span style="color: #C3E88D;">foo</span><span style="color: #D9F5DD;">'</span><span style="color: #82AAFF;"> </span><span style="color: #89DDFF;">=&gt;</span><span style="color: #82AAFF;"> </span><span style="color: #D9F5DD;">'</span><span style="color: #C3E88D;">bar</span><span style="color: #D9F5DD;">'</span><span style="color: #BFC7D5;">,</span></div><div class="line"><span style="color: #82AAFF;">    </span><span style="color: #BFC7D5;">]);</span></div><div class="line"><span style="color: #BFC7D5;">}</span></div></code></pre><button id="clipButton-2" class="md:block hidden copyBtn" aria-label="Copy to Clipboard" title="Copy to Clipboard" data-clipboard-target="#clipText-2"><svg class="fill-current h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg></button></div>
+<p></p>
+<h4 id="exception-log-context"><a href="#exception-log-context">Exception Log Context</a></h4>
+<p>While adding context to every log message can be useful, sometimes a particular exception may have unique context that you would like to include in your logs. By defining a <code>context</code> method on one of your application's custom exceptions, you may specify any data relevant to that exception that should be added to the exception's log entry:</p>
+<div class="relative code-block-wrapper"><pre><code data-theme="olaolu-palenight" data-lang="php" class="torchlight" style="background-color: #292D3E; --theme-selection-background: #7580B850;" id="clipText-3"><!-- Syntax highlighted by torchlight.dev --><div class="line"><span style="color: #D3423E;">&lt;?php</span></div><div class="line">&nbsp;</div><div class="line"><span style="color: #C792EA;">namespace</span><span style="color: #BFC7D5;"> App\Exceptions;</span></div><div class="line">&nbsp;</div><div class="line"><span style="color: #C792EA;">use</span><span style="color: #BFC7D5;"> </span><span style="color: #FFCB6B;">Exception</span><span style="color: #BFC7D5;">;</span></div><div class="line">&nbsp;</div><div class="line"><span style="color: #C792EA;">class</span><span style="color: #BFC7D5;"> </span><span style="color: #FFCB6B;">InvalidOrderException</span><span style="color: #BFC7D5;"> </span><span style="color: #C792EA;">extends</span><span style="color: #BFC7D5;"> </span><span style="color: #FFCB6B;">Exception</span></div><div class="line"><span style="color: #BFC7D5;">{</span></div><div class="line"><span style="color: #BFC7D5;">    </span><span style="color: #697098;">//</span><span style="color: #697098;"> ...</span></div><div class="line">&nbsp;</div><div class="line"><span style="color: #BFC7D5;">    </span><span style="color: #697098;">/**</span></div><div class="line"><span style="color: #697098;">     * Get the exception's context information.</span></div><div class="line"><span style="color: #697098;">     *</span></div><div class="line"><span style="color: #697098;">     * </span><span style="color: #C792EA;">@return</span><span style="color: #697098;"> </span><span style="color: #C792EA;">array</span></div><div class="line"><span style="color: #697098;">     </span><span style="color: #697098;">*/</span></div><div class="line"><span style="color: #BFC7D5;">    </span><span style="color: #C792EA;">public</span><span style="color: #BFC7D5;"> </span><span style="color: #C792EA;">function</span><span style="color: #BFC7D5;"> </span><span style="color: #82AAFF;">context</span><span style="color: #D9F5DD;">()</span></div><div class="line"><span style="color: #BFC7D5;">    {</span></div><div class="line"><span style="color: #BFC7D5;">        </span><span style="color: #C792EA;">return</span><span style="color: #BFC7D5;"> [</span><span style="color: #D9F5DD;">'</span><span style="color: #C3E88D;">order_id</span><span style="color: #D9F5DD;">'</span><span style="color: #BFC7D5;"> </span><span style="color: #89DDFF;">=&gt;</span><span style="color: #BFC7D5;"> </span><span style="color: #FF5572;">$this</span><span style="color: #89DDFF;">-&gt;orderId</span><span style="color: #BFC7D5;">];</span></div><div class="line"><span style="color: #BFC7D5;">    }</span></div><div class="line"><span style="color: #BFC7D5;">}</span></div></code></pre><button id="clipButton-3" class="md:block hidden copyBtn" aria-label="Copy to Clipboard" title="Copy to Clipboard" data-clipboard-target="#clipText-3"><svg class="fill-current h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg></button></div>
+<p></p>
+<h4 id="the-report-helper"><a href="#the-report-helper">The <code>report</code> Helper</a></h4>
+<p>Sometimes you may need to report an exception but continue handling the current request. The <code>report</code> helper function allows you to quickly report an exception via the exception handler without rendering an error page to the user:</p>
+<div class="relative code-block-wrapper"><pre><code data-theme="olaolu-palenight" data-lang="php" class="torchlight" style="background-color: #292D3E; --theme-selection-background: #7580B850;" id="clipText-4"><!-- Syntax highlighted by torchlight.dev --><div class="line"><span style="color: #C792EA;">public</span><span style="color: #BFC7D5;"> </span><span style="color: #C792EA;">function</span><span style="color: #BFC7D5;"> </span><span style="color: #82AAFF;">isValid</span><span style="color: #D9F5DD;">(</span><span style="color: #BEC5D4;">$value</span><span style="color: #D9F5DD;">)</span></div><div class="line"><span style="color: #BFC7D5;">{</span></div><div class="line"><span style="color: #BFC7D5;">    </span><span style="color: #C792EA;">try</span><span style="color: #BFC7D5;"> {</span></div><div class="line"><span style="color: #BFC7D5;">        </span><span style="color: #697098;">//</span><span style="color: #697098;"> Validate the value...</span></div><div class="line"><span style="color: #BFC7D5;">    } </span><span style="color: #C792EA;">catch</span><span style="color: #BFC7D5;"> </span><span style="color: #D9F5DD;">(</span><span style="color: #FFCB6B;">Throwable</span><span style="color: #BFC7D5;"> </span><span style="color: #BEC5D4;">$e</span><span style="color: #D9F5DD;">)</span><span style="color: #BFC7D5;"> {</span></div><div class="line"><span style="color: #BFC7D5;">        </span><span style="color: #82AAFF;">report</span><span style="color: #BFC7D5;">($</span><span style="color: #BEC5D4;">e</span><span style="color: #BFC7D5;">);</span></div><div class="line">&nbsp;</div><div class="line"><span style="color: #BFC7D5;">        </span><span style="color: #C792EA;">return</span><span style="color: #BFC7D5;"> </span><span style="color: #82AAFF;">false</span><span style="color: #BFC7D5;">;</span></div><div class="line"><span style="color: #BFC7D5;">    }</span></div><div class="line"><span style="color: #BFC7D5;">}</span></div></code></pre><button id="clipButton-4" class="md:block hidden copyBtn" aria-label="Copy to Clipboard" title="Copy to Clipboard" data-clipboard-target="#clipText-4"><svg class="fill-current h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg></button></div>
+<p></p>
+<h3 id="ignoring-exceptions-by-type"><a href="#ignoring-exceptions-by-type">Ignoring Exceptions By Type</a></h3>
+<p>When building your application, there will be some types of exceptions you simply want to ignore and never report. Your application's exception handler contains a <code>$dontReport</code> property which is initialized to an empty array. Any classes that you add to this property will never be reported; however, they may still have custom rendering logic:</p>
+<div class="relative code-block-wrapper"><pre><code data-theme="olaolu-palenight" data-lang="php" class="torchlight" style="background-color: #292D3E; --theme-selection-background: #7580B850;" id="clipText-5"><!-- Syntax highlighted by torchlight.dev --><div class="line"><span style="color: #C792EA;">use</span><span style="color: #BFC7D5;"> App\Exceptions\</span><span style="color: #FFCB8B;">InvalidOrderException</span><span style="color: #BFC7D5;">;</span></div><div class="line">&nbsp;</div><div class="line"><span style="color: #697098;">/**</span></div><div class="line"><span style="color: #697098;"> * A list of the exception types that should not be reported.</span></div><div class="line"><span style="color: #697098;"> *</span></div><div class="line"><span style="color: #697098;"> * </span><span style="color: #C792EA;">@var</span><span style="color: #697098;"> </span><span style="color: #C792EA;">array</span></div><div class="line"><span style="color: #697098;"> </span><span style="color: #697098;">*/</span></div><div class="line"><span style="color: #C792EA;">protected</span><span style="color: #BFC7D5;"> </span><span style="color: #BEC5D4;">$dontReport</span><span style="color: #BFC7D5;"> </span><span style="color: #C792EA;">=</span><span style="color: #BFC7D5;"> [</span></div><div class="line"><span style="color: #BFC7D5;">    </span><span style="color: #FFCB8B;">InvalidOrderException</span><span style="color: #89DDFF;">::</span><span style="color: #C792EA;">class</span><span style="color: #BFC7D5;">,</span></div><div class="line"><span style="color: #BFC7D5;">];</span></div></code></pre><button id="clipButton-5" class="md:block hidden copyBtn" aria-label="Copy to Clipboard" title="Copy to Clipboard" data-clipboard-target="#clipText-5"><svg class="fill-current h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg></button></div>
+<blockquote>
+<div class="mb-10 max-w-2xl mx-auto px-4 py-8 shadow-lg lg:flex lg:items-center callout"><div class="w-20 h-20 mb-6 flex items-center justify-center shrink-0 bg-purple-600 lg:mb-0"><img src="/img/callouts/lightbulb.min.svg" class="opacity-75"></div><p class="mb-0 lg:ml-6"><p> Behind the scenes, Laravel already ignores some types of errors for you, such as exceptions resulting from 404 HTTP "not found" errors or 419 HTTP responses generated by invalid CSRF tokens.</p></p></div>
+</blockquote>
+<p></p>
+<h3 id="rendering-exceptions"><a href="#rendering-exceptions">Rendering Exceptions</a></h3>
+<p>By default, the Laravel exception handler will convert exceptions into an HTTP response for you. However, you are free to register a custom rendering closure for exceptions of a given type. You may accomplish this via the <code>renderable</code> method of your exception handler.</p>
+<p>The closure passed to the <code>renderable</code> method should return an instance of <code>Illuminate\Http\Response</code>, which may be generated via the <code>response</code> helper. Laravel will deduce what type of exception the closure renders by examining the type-hint of the closure:</p>
+<div class="relative code-block-wrapper"><pre><code data-theme="olaolu-palenight" data-lang="php" class="torchlight" style="background-color: #292D3E; --theme-selection-background: #7580B850;" id="clipText-6"><!-- Syntax highlighted by torchlight.dev --><div class="line"><span style="color: #C792EA;">use</span><span style="color: #BFC7D5;"> App\Exceptions\</span><span style="color: #FFCB8B;">InvalidOrderException</span><span style="color: #BFC7D5;">;</span></div><div class="line">&nbsp;</div><div class="line"><span style="color: #697098;">/**</span></div><div class="line"><span style="color: #697098;"> * Register the exception handling callbacks for the application.</span></div><div class="line"><span style="color: #697098;"> *</span></div><div class="line"><span style="color: #697098;"> * </span><span style="color: #C792EA;">@return</span><span style="color: #697098;"> </span><span style="color: #C792EA;">void</span></div><div class="line"><span style="color: #697098;"> </span><span style="color: #697098;">*/</span></div><div class="line"><span style="color: #C792EA;">public</span><span style="color: #BFC7D5;"> </span><span style="color: #C792EA;">function</span><span style="color: #BFC7D5;"> </span><span style="color: #82AAFF;">register</span><span style="color: #D9F5DD;">()</span></div><div class="line"><span style="color: #BFC7D5;">{</span></div><div class="line"><span style="color: #BFC7D5;">    </span><span style="color: #FF5572;">$this</span><span style="color: #89DDFF;">-&gt;</span><span style="color: #82AAFF;">renderable</span><span style="color: #BFC7D5;">(</span><span style="color: #C792EA;">function</span><span style="color: #BFC7D5;"> </span><span style="color: #D9F5DD;">(</span><span style="color: #FFCB8B;">InvalidOrderException</span><span style="color: #BFC7D5;"> </span><span style="color: #BEC5D4;">$e</span><span style="color: #BFC7D5;">, </span><span style="color: #BEC5D4;">$request</span><span style="color: #D9F5DD;">)</span><span style="color: #BFC7D5;"> {</span></div><div class="line"><span style="color: #BFC7D5;">        </span><span style="color: #C792EA;">return</span><span style="color: #BFC7D5;"> </span><span style="color: #82AAFF;">response</span><span style="color: #BFC7D5;">()</span><span style="color: #89DDFF;">-&gt;</span><span style="color: #82AAFF;">view</span><span style="color: #BFC7D5;">(</span><span style="color: #D9F5DD;">'</span><span style="color: #C3E88D;">errors.invalid-order</span><span style="color: #D9F5DD;">'</span><span style="color: #BFC7D5;">, [], </span><span style="color: #F78C6C;">500</span><span style="color: #BFC7D5;">);</span></div><div class="line"><span style="color: #BFC7D5;">    });</span></div><div class="line"><span style="color: #BFC7D5;">}</span></div></code></pre><button id="clipButton-6" class="md:block hidden copyBtn" aria-label="Copy to Clipboard" title="Copy to Clipboard" data-clipboard-target="#clipText-6"><svg class="fill-current h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg></button></div>
+<p>You may also use the <code>renderable</code> method to override the rendering behavior for built-in Laravel or Symfony exceptions such as <code>NotFoundHttpException</code>. If the closure given to the <code>renderable</code> method does not return a value, Laravel's default exception rendering will be utilized:</p>
+<div class="relative code-block-wrapper"><pre><code data-theme="olaolu-palenight" data-lang="php" class="torchlight" style="background-color: #292D3E; --theme-selection-background: #7580B850;" id="clipText-7"><!-- Syntax highlighted by torchlight.dev --><div class="line"><span style="color: #C792EA;">use</span><span style="color: #BFC7D5;"> Symfony\Component\HttpKernel\Exception\</span><span style="color: #FFCB8B;">NotFoundHttpException</span><span style="color: #BFC7D5;">;</span></div><div class="line">&nbsp;</div><div class="line"><span style="color: #697098;">/**</span></div><div class="line"><span style="color: #697098;"> * Register the exception handling callbacks for the application.</span></div><div class="line"><span style="color: #697098;"> *</span></div><div class="line"><span style="color: #697098;"> * </span><span style="color: #C792EA;">@return</span><span style="color: #697098;"> </span><span style="color: #C792EA;">void</span></div><div class="line"><span style="color: #697098;"> </span><span style="color: #697098;">*/</span></div><div class="line"><span style="color: #C792EA;">public</span><span style="color: #BFC7D5;"> </span><span style="color: #C792EA;">function</span><span style="color: #BFC7D5;"> </span><span style="color: #82AAFF;">register</span><span style="color: #D9F5DD;">()</span></div><div class="line"><span style="color: #BFC7D5;">{</span></div><div class="line"><span style="color: #BFC7D5;">    </span><span style="color: #FF5572;">$this</span><span style="color: #89DDFF;">-&gt;</span><span style="color: #82AAFF;">renderable</span><span style="color: #BFC7D5;">(</span><span style="color: #C792EA;">function</span><span style="color: #BFC7D5;"> </span><span style="color: #D9F5DD;">(</span><span style="color: #FFCB8B;">NotFoundHttpException</span><span style="color: #BFC7D5;"> </span><span style="color: #BEC5D4;">$e</span><span style="color: #BFC7D5;">, </span><span style="color: #BEC5D4;">$request</span><span style="color: #D9F5DD;">)</span><span style="color: #BFC7D5;"> {</span></div><div class="line"><span style="color: #BFC7D5;">        </span><span style="color: #C792EA;">if</span><span style="color: #BFC7D5;"> (</span><span style="color: #BEC5D4;">$request</span><span style="color: #89DDFF;">-&gt;</span><span style="color: #82AAFF;">is</span><span style="color: #BFC7D5;">(</span><span style="color: #D9F5DD;">'</span><span style="color: #C3E88D;">api/*</span><span style="color: #D9F5DD;">'</span><span style="color: #BFC7D5;">)) {</span></div><div class="line"><span style="color: #BFC7D5;">            </span><span style="color: #C792EA;">return</span><span style="color: #BFC7D5;"> </span><span style="color: #82AAFF;">response</span><span style="color: #BFC7D5;">()</span><span style="color: #89DDFF;">-&gt;</span><span style="color: #82AAFF;">json</span><span style="color: #BFC7D5;">([</span></div><div class="line"><span style="color: #BFC7D5;">                </span><span style="color: #D9F5DD;">'</span><span style="color: #C3E88D;">message</span><span style="color: #D9F5DD;">'</span><span style="color: #BFC7D5;"> </span><span style="color: #89DDFF;">=&gt;</span><span style="color: #BFC7D5;"> </span><span style="color: #D9F5DD;">'</span><span style="color: #C3E88D;">Record not found.</span><span style="color: #D9F5DD;">'</span></div><div class="line"><span style="color: #BFC7D5;">            ], </span><span style="color: #F78C6C;">404</span><span style="color: #BFC7D5;">);</span></div><div class="line"><span style="color: #BFC7D5;">        }</span></div><div class="line"><span style="color: #BFC7D5;">    });</span></div><div class="line"><span style="color: #BFC7D5;">}</span></div></code></pre><button id="clipButton-7" class="md:block hidden copyBtn" aria-label="Copy to Clipboard" title="Copy to Clipboard" data-clipboard-target="#clipText-7"><svg class="fill-current h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg></button></div>
+<p></p>
+<h3 id="renderable-exceptions"><a href="#renderable-exceptions">Reportable &amp; Renderable Exceptions</a></h3>
+<p>Instead of type-checking exceptions in the exception handler's <code>register</code> method, you may define <code>report</code> and <code>render</code> methods directly on your custom exceptions. When these methods exist, they will be automatically called by the framework:</p>
+<div class="relative code-block-wrapper"><pre><code data-theme="olaolu-palenight" data-lang="php" class="torchlight" style="background-color: #292D3E; --theme-selection-background: #7580B850;" id="clipText-8"><!-- Syntax highlighted by torchlight.dev --><div class="line"><span style="color: #D3423E;">&lt;?php</span></div><div class="line">&nbsp;</div><div class="line"><span style="color: #C792EA;">namespace</span><span style="color: #BFC7D5;"> App\Exceptions;</span></div><div class="line">&nbsp;</div><div class="line"><span style="color: #C792EA;">use</span><span style="color: #BFC7D5;"> </span><span style="color: #FFCB6B;">Exception</span><span style="color: #BFC7D5;">;</span></div><div class="line">&nbsp;</div><div class="line"><span style="color: #C792EA;">class</span><span style="color: #BFC7D5;"> </span><span style="color: #FFCB6B;">InvalidOrderException</span><span style="color: #BFC7D5;"> </span><span style="color: #C792EA;">extends</span><span style="color: #BFC7D5;"> </span><span style="color: #FFCB6B;">Exception</span></div><div class="line"><span style="color: #BFC7D5;">{</span></div><div class="line"><span style="color: #BFC7D5;">    </span><span style="color: #697098;">/**</span></div><div class="line"><span style="color: #697098;">     * Report the exception.</span></div><div class="line"><span style="color: #697098;">     *</span></div><div class="line"><span style="color: #697098;">     * </span><span style="color: #C792EA;">@return</span><span style="color: #697098;"> </span><span style="color: #C792EA;">bool</span><span style="color: #697098;">|</span><span style="color: #C792EA;">null</span></div><div class="line"><span style="color: #697098;">     </span><span style="color: #697098;">*/</span></div><div class="line"><span style="color: #BFC7D5;">    </span><span style="color: #C792EA;">public</span><span style="color: #BFC7D5;"> </span><span style="color: #C792EA;">function</span><span style="color: #BFC7D5;"> </span><span style="color: #82AAFF;">report</span><span style="color: #D9F5DD;">()</span></div><div class="line"><span style="color: #BFC7D5;">    {</span></div><div class="line"><span style="color: #BFC7D5;">        </span><span style="color: #697098;">//</span></div><div class="line"><span style="color: #BFC7D5;">    }</span></div><div class="line">&nbsp;</div><div class="line"><span style="color: #BFC7D5;">    </span><span style="color: #697098;">/**</span></div><div class="line"><span style="color: #697098;">     * Render the exception into an HTTP response.</span></div><div class="line"><span style="color: #697098;">     *</span></div><div class="line"><span style="color: #697098;">     * </span><span style="color: #C792EA;">@param</span><span style="color: #697098;">  </span><span style="color: #697098;">\</span><span style="color: #697098;">Illuminate</span><span style="color: #697098;">\</span><span style="color: #697098;">Http</span><span style="color: #697098;">\</span><span style="color: #FFCB8B;">Request</span><span style="color: #697098;">  $request</span></div><div class="line"><span style="color: #697098;">     * </span><span style="color: #C792EA;">@return</span><span style="color: #697098;"> </span><span style="color: #697098;">\</span><span style="color: #697098;">Illuminate</span><span style="color: #697098;">\</span><span style="color: #697098;">Http</span><span style="color: #697098;">\</span><span style="color: #FFCB8B;">Response</span></div><div class="line"><span style="color: #697098;">     </span><span style="color: #697098;">*/</span></div><div class="line"><span style="color: #BFC7D5;">    </span><span style="color: #C792EA;">public</span><span style="color: #BFC7D5;"> </span><span style="color: #C792EA;">function</span><span style="color: #BFC7D5;"> </span><span style="color: #82AAFF;">render</span><span style="color: #D9F5DD;">(</span><span style="color: #BEC5D4;">$request</span><span style="color: #D9F5DD;">)</span></div><div class="line"><span style="color: #BFC7D5;">    {</span></div><div class="line"><span style="color: #BFC7D5;">        </span><span style="color: #C792EA;">return</span><span style="color: #BFC7D5;"> </span><span style="color: #82AAFF;">response</span><span style="color: #BFC7D5;">(</span><span style="color: #89DDFF;">...</span><span style="color: #BFC7D5;">);</span></div><div class="line"><span style="color: #BFC7D5;">    }</span></div><div class="line"><span style="color: #BFC7D5;">}</span></div></code></pre><button id="clipButton-8" class="md:block hidden copyBtn" aria-label="Copy to Clipboard" title="Copy to Clipboard" data-clipboard-target="#clipText-8"><svg class="fill-current h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg></button></div>
+<p>If your exception extends an exception that is already renderable, such as a built-in Laravel or Symfony exception, you may return <code>false</code> from the exception's <code>render</code> method to render the exception's default HTTP response:</p>
+<div class="relative code-block-wrapper"><pre><code data-theme="olaolu-palenight" data-lang="php" class="torchlight" style="background-color: #292D3E; --theme-selection-background: #7580B850;" id="clipText-9"><!-- Syntax highlighted by torchlight.dev --><div class="line"><span style="color: #697098;">/**</span></div><div class="line"><span style="color: #697098;"> * Render the exception into an HTTP response.</span></div><div class="line"><span style="color: #697098;"> *</span></div><div class="line"><span style="color: #697098;"> * </span><span style="color: #C792EA;">@param</span><span style="color: #697098;">  </span><span style="color: #697098;">\</span><span style="color: #697098;">Illuminate</span><span style="color: #697098;">\</span><span style="color: #697098;">Http</span><span style="color: #697098;">\</span><span style="color: #FFCB8B;">Request</span><span style="color: #697098;">  $request</span></div><div class="line"><span style="color: #697098;"> * </span><span style="color: #C792EA;">@return</span><span style="color: #697098;"> </span><span style="color: #697098;">\</span><span style="color: #697098;">Illuminate</span><span style="color: #697098;">\</span><span style="color: #697098;">Http</span><span style="color: #697098;">\</span><span style="color: #FFCB8B;">Response</span></div><div class="line"><span style="color: #697098;"> </span><span style="color: #697098;">*/</span></div><div class="line"><span style="color: #C792EA;">public</span><span style="color: #BFC7D5;"> </span><span style="color: #C792EA;">function</span><span style="color: #BFC7D5;"> </span><span style="color: #82AAFF;">render</span><span style="color: #D9F5DD;">(</span><span style="color: #BEC5D4;">$request</span><span style="color: #D9F5DD;">)</span></div><div class="line"><span style="color: #BFC7D5;">{</span></div><div class="line"><span style="color: #BFC7D5;">    </span><span style="color: #697098;">//</span><span style="color: #697098;"> Determine if the exception needs custom rendering...</span></div><div class="line">&nbsp;</div><div class="line"><span style="color: #BFC7D5;">    </span><span style="color: #C792EA;">return</span><span style="color: #BFC7D5;"> </span><span style="color: #82AAFF;">false</span><span style="color: #BFC7D5;">;</span></div><div class="line"><span style="color: #BFC7D5;">}</span></div></code></pre><button id="clipButton-9" class="md:block hidden copyBtn" aria-label="Copy to Clipboard" title="Copy to Clipboard" data-clipboard-target="#clipText-9"><svg class="fill-current h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg></button></div>
+<p>If your exception contains custom reporting logic that is only necessary when certain conditions are met, you may need to instruct Laravel to sometimes report the exception using the default exception handling configuration. To accomplish this, you may return <code>false</code> from the exception's <code>report</code> method:</p>
+<div class="relative code-block-wrapper"><pre><code data-theme="olaolu-palenight" data-lang="php" class="torchlight" style="background-color: #292D3E; --theme-selection-background: #7580B850;" id="clipText-10"><!-- Syntax highlighted by torchlight.dev --><div class="line"><span style="color: #697098;">/**</span></div><div class="line"><span style="color: #697098;"> * Report the exception.</span></div><div class="line"><span style="color: #697098;"> *</span></div><div class="line"><span style="color: #697098;"> * </span><span style="color: #C792EA;">@return</span><span style="color: #697098;"> </span><span style="color: #C792EA;">bool</span><span style="color: #697098;">|</span><span style="color: #C792EA;">null</span></div><div class="line"><span style="color: #697098;"> </span><span style="color: #697098;">*/</span></div><div class="line"><span style="color: #C792EA;">public</span><span style="color: #BFC7D5;"> </span><span style="color: #C792EA;">function</span><span style="color: #BFC7D5;"> </span><span style="color: #82AAFF;">report</span><span style="color: #D9F5DD;">()</span></div><div class="line"><span style="color: #BFC7D5;">{</span></div><div class="line"><span style="color: #BFC7D5;">    </span><span style="color: #697098;">//</span><span style="color: #697098;"> Determine if the exception needs custom reporting...</span></div><div class="line">&nbsp;</div><div class="line"><span style="color: #BFC7D5;">    </span><span style="color: #C792EA;">return</span><span style="color: #BFC7D5;"> </span><span style="color: #82AAFF;">false</span><span style="color: #BFC7D5;">;</span></div><div class="line"><span style="color: #BFC7D5;">}</span></div></code></pre><button id="clipButton-10" class="md:block hidden copyBtn" aria-label="Copy to Clipboard" title="Copy to Clipboard" data-clipboard-target="#clipText-10"><svg class="fill-current h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg></button></div>
+<blockquote>
+<div class="mb-10 max-w-2xl mx-auto px-4 py-8 shadow-lg lg:flex lg:items-center callout"><div class="w-20 h-20 mb-6 flex items-center justify-center shrink-0 bg-purple-600 lg:mb-0"><img src="/img/callouts/lightbulb.min.svg" class="opacity-75"></div><p class="mb-0 lg:ml-6"><p> You may type-hint any required dependencies of the <code>report</code> method and they will automatically be injected into the method by Laravel's <a href="/docs/8.x/container">service container</a>.</p></p></div>
+</blockquote>
+<p></p>
+<h2 id="http-exceptions"><a href="#http-exceptions">HTTP Exceptions</a></h2>
+<p>Some exceptions describe HTTP error codes from the server. For example, this may be a "page not found" error (404), an "unauthorized error" (401) or even a developer generated 500 error. In order to generate such a response from anywhere in your application, you may use the <code>abort</code> helper:</p>
+<div class="relative code-block-wrapper"><pre><code data-theme="olaolu-palenight" data-lang="php" class="torchlight" style="background-color: #292D3E; --theme-selection-background: #7580B850;" id="clipText-11"><!-- Syntax highlighted by torchlight.dev --><div class="line"><span style="color: #82AAFF;">abort</span><span style="color: #BFC7D5;">(</span><span style="color: #F78C6C;">404</span><span style="color: #BFC7D5;">);</span></div></code></pre><button id="clipButton-11" class="md:block hidden copyBtn" aria-label="Copy to Clipboard" title="Copy to Clipboard" data-clipboard-target="#clipText-11"><svg class="fill-current h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg></button></div>
+<p></p>
+<h3 id="custom-http-error-pages"><a href="#custom-http-error-pages">Custom HTTP Error Pages</a></h3>
+<p>Laravel makes it easy to display custom error pages for various HTTP status codes. For example, if you wish to customize the error page for 404 HTTP status codes, create a <code>resources/views/errors/404.blade.php</code> view template. This view will be rendered on all 404 errors generated by your application. The views within this directory should be named to match the HTTP status code they correspond to. The <code>Symfony\Component\HttpKernel\Exception\HttpException</code> instance raised by the <code>abort</code> function will be passed to the view as an <code>$exception</code> variable:</p>
+<div class="relative code-block-wrapper"><pre><code data-theme="olaolu-palenight" data-lang="php" class="torchlight" style="background-color: #292D3E; --theme-selection-background: #7580B850;" id="clipText-12"><!-- Syntax highlighted by torchlight.dev --><div class="line"><span style="color: #C792EA;">&lt;</span><span style="color: #82AAFF;">h2</span><span style="color: #C792EA;">&gt;</span><span style="color: #BFC7D5;">{{ </span><span style="color: #BEC5D4;">$exception</span><span style="color: #89DDFF;">-&gt;</span><span style="color: #82AAFF;">getMessage</span><span style="color: #BFC7D5;">() }}</span><span style="color: #C792EA;">&lt;</span><span style="color: #89DDFF;">/</span><span style="color: #82AAFF;">h2</span><span style="color: #C792EA;">&gt;</span></div></code></pre><button id="clipButton-12" class="md:block hidden copyBtn" aria-label="Copy to Clipboard" title="Copy to Clipboard" data-clipboard-target="#clipText-12"><svg class="fill-current h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg></button></div>
+<p>You may publish Laravel's default error page templates using the <code>vendor:publish</code> Artisan command. Once the templates have been published, you may customize them to your liking:</p>
+<div class="relative code-block-wrapper"><pre><code data-theme="olaolu-palenight" data-lang="php" class="torchlight" style="background-color: #292D3E; --theme-selection-background: #7580B850;" id="clipText-13"><!-- Syntax highlighted by torchlight.dev --><div class="line"><span style="color: #82AAFF;">php</span><span style="color: #BFC7D5;"> </span><span style="color: #82AAFF;">artisan</span><span style="color: #BFC7D5;"> </span><span style="color: #82AAFF;">vendor</span><span style="color: #BFC7D5;">:</span><span style="color: #82AAFF;">publish</span><span style="color: #BFC7D5;"> </span><span style="color: #89DDFF;">--</span><span style="color: #82AAFF;">tag</span><span style="color: #C792EA;">=</span><span style="color: #82AAFF;">laravel</span><span style="color: #89DDFF;">-</span><span style="color: #82AAFF;">errors</span></div></code></pre><button id="clipButton-13" class="md:block hidden copyBtn" aria-label="Copy to Clipboard" title="Copy to Clipboard" data-clipboard-target="#clipText-13"><svg class="fill-current h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg></button></div>
+
+                                <script async="" type="text/javascript" src="//cdn.carbonads.com/carbon.js?serve=CKYILK3E&amp;placement=laravelcom" id="_carbonads_js"></script><div id="carbonads"><span><span class="carbon-wrap"><a href="https://srv.carbonads.net/ads/click/x/GTND42JMCYYD553ICK74YKQNCWBILKQICKAI4Z3JCYBIP53IF6ADCK7KC67IC27NCTSD5K7ECE7D623LCK7IKKJKC6SDP2JECAAI6K3EHJNCLSIZ?segment=placement:laravelcom;" class="carbon-img" target="_blank" rel="noopener sponsored"><img src="https://cdn4.buysellads.net/uu/1/116476/1650993264-eBook_JWT_Handbook.jpg" alt="ads via Carbon" border="0" height="100" width="130" style="max-width: 130px;"></a><a href="https://srv.carbonads.net/ads/click/x/GTND42JMCYYD553ICK74YKQNCWBILKQICKAI4Z3JCYBIP53IF6ADCK7KC67IC27NCTSD5K7ECE7D623LCK7IKKJKC6SDP2JECAAI6K3EHJNCLSIZ?segment=placement:laravelcom;" class="carbon-text" target="_blank" rel="noopener sponsored">Ever wonder how JWT came to be? What problems it was designed to tackle? Auth0's got you covered.</a></span><a href="http://carbonads.net/?utm_source=laravelcom&amp;utm_medium=ad_via_link&amp;utm_campaign=in_unit&amp;utm_term=carbon" class="carbon-poweredby" target="_blank" rel="noopener sponsored">ads via Carbon</a></span></div>
+</div>
+                        </section>
+                    </section>
+                </div>
+            </section>
+        </div>
+    </div>
+
+<footer class="relative pt-12 dark:bg-dark-700">
+    <div class="max-w-screen-2xl mx-auto w-full px-8">
+        <div>
+            <a href="/" class="inline-flex">
+                <img class="w-16 h-16" src="/img/logomark.min.svg" alt="Laravel" loading="lazy">
+            </a>
+        </div>
+
+        <div class="mt-6 grid grid-cols-12 md:gap-x-8 gap-y-12 sm:mt-12">
+            <div class="col-span-12 lg:col-span-4">
+                <p class="max-w-sm text-xs text-gray-700 sm:text-sm dark:text-gray-500">Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel attempts to take the pain out of development by easing common tasks used in most web projects.</p>
+                <ul class="mt-6 flex items-center space-x-3">
+                    <li>
+                        <a href="https://twitter.com/laravelphp">
+                            <img id="footer__twitter_dark" class="hidden dark:inline-block w-6 h-6" src="/img/social/twitter.dark.min.svg" alt="Twitter" width="24" height="20" loading="lazy">
+                            <img id="footer__twitter" class="inline-block dark:hidden w-6 h-6" src="/img/social/twitter.min.svg" alt="Twitter" width="24" height="20" loading="lazy">
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/laravel">
+                            <img id="footer__github_dark" class="hidden dark:inline-block w-6 h-6" src="/img/social/github.dark.min.svg" alt="GitHub" width="24" height="24" loading="lazy">
+                            <img id="footer__github" class="inline-block dark:hidden w-6 h-6" src="/img/social/github.min.svg" alt="GitHub" width="24" height="24" loading="lazy">
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://discord.gg/mPZNm7A">
+                            <img id="footer__discord_dark" class="hidden dark:inline-block w-6 h-6" src="/img/social/discord.dark.min.svg" alt="Discord" width="21" height="24" loading="lazy">
+                            <img id="footer__discord" class="inline-block dark:hidden w-6 h-6" src="/img/social/discord.min.svg" alt="Discord" width="21" height="24" loading="lazy">
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.youtube.com/laravelphp">
+                            <img id="footer__youtube_dark" class="hidden dark:inline-block w-6 h-6" src="/img/social/youtube.dark.min.svg" alt="YouTube" width="169" height="150" loading="lazy">
+                            <img id="footer__youtube" class="inline-block dark:hidden w-6 h-6" src="/img/social/youtube.min.svg" alt="YouTube" width="169" height="150" loading="lazy">
+                        </a>
+                    </li>
+                </ul>
+            </div>
+                            <div class="text-xs col-span-6 md:col-span-3 lg:col-span-2">
+                    <span class="uppercase dark:text-gray-200">Highlights</span>
+                    <div class="mt-5">
+                        <ul class="space-y-3 text-gray-700 dark:text-gray-500">
+                                                            <li>
+                                    <a href="/team" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Our Team</a>
+                                </li>
+                                                            <li>
+                                    <a href="/docs/9.x/releases" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Release Notes</a>
+                                </li>
+                                                            <li>
+                                    <a href="/docs/9.x/installation" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Getting Started</a>
+                                </li>
+                                                            <li>
+                                    <a href="/docs/9.x/routing" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Routing</a>
+                                </li>
+                                                            <li>
+                                    <a href="/docs/9.x/blade" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Blade Templates</a>
+                                </li>
+                                                            <li>
+                                    <a href="/docs/9.x/authentication" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Authentication</a>
+                                </li>
+                                                            <li>
+                                    <a href="/docs/9.x/authorization" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Authorization</a>
+                                </li>
+                                                            <li>
+                                    <a href="/docs/9.x/artisan" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Artisan Console</a>
+                                </li>
+                                                            <li>
+                                    <a href="/docs/9.x/database" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Database</a>
+                                </li>
+                                                            <li>
+                                    <a href="/docs/9.x/eloquent" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Eloquent ORM</a>
+                                </li>
+                                                            <li>
+                                    <a href="/docs/9.x/testing" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Testing</a>
+                                </li>
+                                                    </ul>
+                    </div>
+                </div>
+                            <div class="text-xs col-span-6 md:col-span-3 lg:col-span-2">
+                    <span class="uppercase dark:text-gray-200">Resources</span>
+                    <div class="mt-5">
+                        <ul class="space-y-3 text-gray-700 dark:text-gray-500">
+                                                            <li>
+                                    <a href="https://laracasts.com" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Laracasts</a>
+                                </li>
+                                                            <li>
+                                    <a href="https://laravel-news.com" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Laravel News</a>
+                                </li>
+                                                            <li>
+                                    <a href="https://laracon.us" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Laracon</a>
+                                </li>
+                                                            <li>
+                                    <a href="https://laracon.eu/" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Laracon EU</a>
+                                </li>
+                                                            <li>
+                                    <a href="https://larajobs.com" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Jobs</a>
+                                </li>
+                                                            <li>
+                                    <a href="https://laracasts.com/discuss" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Forums</a>
+                                </li>
+                                                    </ul>
+                    </div>
+                </div>
+                            <div class="text-xs col-span-6 md:col-span-3 lg:col-span-2">
+                    <span class="uppercase dark:text-gray-200">Partners</span>
+                    <div class="mt-5">
+                        <ul class="space-y-3 text-gray-700 dark:text-gray-500">
+                                                            <li>
+                                    <a href="https://vehikl.com" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Vehikl</a>
+                                </li>
+                                                            <li>
+                                    <a href="https://tighten.co" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Tighten</a>
+                                </li>
+                                                            <li>
+                                    <a href="https://64robots.com/" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">64 Robots</a>
+                                </li>
+                                                            <li>
+                                    <a href="https://kirschbaumdevelopment.com/" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Kirschbaum</a>
+                                </li>
+                                                            <li>
+                                    <a href="https://www.curotec.com/services/technologies/laravel/" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Curotec</a>
+                                </li>
+                                                            <li>
+                                    <a href="https://jump24.co.uk/" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Jump24</a>
+                                </li>
+                                                            <li>
+                                    <a href="https://www.a2design.biz/" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">A2 Design</a>
+                                </li>
+                                                            <li>
+                                    <a href="https://corporate.aboutyou.de/app/uploads/2019/08/INTRO-Pitch-I-AY-Tech.pdf?utm_source=laravelpartnersfindoutmore&amp;utm_medium=socialgroups&amp;utm_campaign=tech" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">ABOUT YOU</a>
+                                </li>
+                                                            <li>
+                                    <a href="https://www.byte5.net/" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Byte 5</a>
+                                </li>
+                                                            <li>
+                                    <a href="https://cubettech.com/" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Cubet</a>
+                                </li>
+                                                            <li>
+                                    <a href="https://www.cyber-duck.co.uk/how-we-work/technology/laravel?utm_source=Laravel%20Partner&amp;utm_medium=Sponsorship" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Cyber-Duck</a>
+                                </li>
+                                                            <li>
+                                    <a href="https://devsquad.com/" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">DevSquad</a>
+                                </li>
+                                                            <li>
+                                    <a href="https://www.ideil.com/" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Ideil</a>
+                                </li>
+                                                            <li>
+                                    <a href="https://romegadigital.com/" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Romega Software</a>
+                                </li>
+                                                            <li>
+                                    <a href="https://www.worksome.com/" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Worksome</a>
+                                </li>
+                                                            <li>
+                                    <a href="https://webreinvent.com/?utm_source=laravel&amp;utm_medium=laravel.com&amp;utm_campaign=patreon-sponsors" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">WebReinvent</a>
+                                </li>
+                                                    </ul>
+                    </div>
+                </div>
+                            <div class="text-xs col-span-6 md:col-span-3 lg:col-span-2">
+                    <span class="uppercase dark:text-gray-200">Ecosystem</span>
+                    <div class="mt-5">
+                        <ul class="space-y-3 text-gray-700 dark:text-gray-500">
+                                                            <li>
+                                    <a href="/docs/9.x/billing" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Cashier</a>
+                                </li>
+                                                            <li>
+                                    <a href="/docs/9.x/dusk" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Dusk</a>
+                                </li>
+                                                            <li>
+                                    <a href="/docs/9.x/broadcasting" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Echo</a>
+                                </li>
+                                                            <li>
+                                    <a href="https://envoyer.io" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Envoyer</a>
+                                </li>
+                                                            <li>
+                                    <a href="https://forge.laravel.com" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Forge</a>
+                                </li>
+                                                            <li>
+                                    <a href="/docs/9.x/homestead" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Homestead</a>
+                                </li>
+                                                            <li>
+                                    <a href="/docs/9.x/horizon" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Horizon</a>
+                                </li>
+                                                            <li>
+                                    <a href="/docs/9.x/mix" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Mix</a>
+                                </li>
+                                                            <li>
+                                    <a href="https://nova.laravel.com" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Nova</a>
+                                </li>
+                                                            <li>
+                                    <a href="/docs/9.x/passport" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Passport</a>
+                                </li>
+                                                            <li>
+                                    <a href="/docs/9.x/scout" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Scout</a>
+                                </li>
+                                                            <li>
+                                    <a href="/docs/9.x/socialite" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Socialite</a>
+                                </li>
+                                                            <li>
+                                    <a href="https://spark.laravel.com" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Spark</a>
+                                </li>
+                                                            <li>
+                                    <a href="/docs/9.x/telescope" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Telescope</a>
+                                </li>
+                                                            <li>
+                                    <a href="/docs/9.x/valet" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Valet</a>
+                                </li>
+                                                            <li>
+                                    <a href="https://vapor.laravel.com" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">Vapor</a>
+                                </li>
+                                                    </ul>
+                    </div>
+                </div>
+                    </div>
+        <div class="mt-10 border-t pt-6 pb-16 border-gray-200 dark:border-dark-500">
+            <p class="text-xs text-gray-700 dark:text-gray-400">
+                Laravel is a Trademark of Taylor Otwell. Copyright © 2011-2022 Laravel LLC.
+            </p>
+            <p class="mt-6 text-xs text-gray-700 dark:text-gray-400">
+                Code highlighting provided by <a href="https://torchlight.dev">Torchlight</a>
+            </p>
+        </div>
+    </div>
+</footer>
+
+<div x-data="searchComponent()" @toggle-search-modal.window="open = !open" @keydown.window.escape="close" @keydown.window="handleKeydown" @keydown.escape.prevent.stop="close" x-show="open" x-trap.noscroll.inert="open" role="dialog" aria-modal="true" x-id="['search-modal']" :aria-labelledby="$id('search-modal')" class="fixed inset-0 z-50 text-gray-400 overflow-y-auto" aria-labelledby="search-modal-1" style="display: none;">
+    <div x-show="open" x-transition.opacity="" class="fixed inset-0 bg-dark-900 bg-opacity-80" style="display: none;"></div>
+
+    <div x-show="open" x-transition="" @click="close()" class="relative min-h-screen flex items-start justify-center p-4 lg:py-20" style="display: none;">
+        <div @click.stop="" class="relative max-w-2xl w-full bg-dark-700 pt-8 px-8 pb-16">
+            <div class="relative w-full border-b border-gray-600 border-opacity-50 overflow-hidden transition-all duration-500 focus-within:border-gray-600">
+                <svg class="absolute inset-y-0 left-0 mt-1 w-5 h-5 text-gray-500 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <input x-model.debouce.200ms="search" x-ref="searchInput" class="flex-1 w-full pl-8 pr-4 py-1 tracking-wide text-gray-400 placeholder-gray-500 bg-transparent focus:outline-none" placeholder="Search Docs (Press '/')" aria-label="Search in the documentation" @keydown.arrow-up.prevent="focusPreviousResult()" @keydown.arrow-down.prevent="focusNextResult()">
+            </div>
+
+            <div x-show="search" style="display: none;">
+                <div x-show="hits.length" class="mt-5 divide-y divide-gray-700 z-30" style="display: none;">
+                    <template x-for="(hit, index) in hits" :key="index" hidden="">
+                        <div>
+                            <a :id="'search-result-' + index" :href="hit.url" class="search-result -mx-2 block p-3 text-gray-400 transition-colors duration-200 focus:outline-none focus:bg-dark-800 focus:text-gray-200 hover:text-gray-200" @keydown.arrow-up.prevent="focusPreviousResult(index)" @keydown.arrow-down.prevent="focusNextResult(index)">
+                                <div x-show="hit._highlightResult.hierarchy.lvl0" class="text-sm font-medium" x-html="hit._highlightResult.hierarchy.lvl0 ? hit._highlightResult.hierarchy.lvl0.value : ''"></div>
+                                <div class="mt-2">
+                                    <div x-show="hit._highlightResult.hierarchy.lvl1" class="text-sm">
+                                        <span class="text-red-600 opacity-75">#</span> <span x-html="hit._highlightResult.hierarchy.lvl1 ? hit._highlightResult.hierarchy.lvl1.value : ''"></span>
+                                    </div>
+
+                                    <div x-show="hit._highlightResult.hierarchy.lvl2" class="text-sm">
+                                        &gt; <span x-html="hit._highlightResult.hierarchy.lvl2 ? hit._highlightResult.hierarchy.lvl2.value : ''"></span>
+                                    </div>
+
+                                    <div x-show="hit._highlightResult.hierarchy.lvl3" class="text-sm">
+                                        &gt; <span x-html="hit._highlightResult.hierarchy.lvl3 ? hit._highlightResult.hierarchy.lvl3.value : ''"></span>
+                                    </div>
+
+                                    <div x-show="hit._highlightResult.hierarchy.lvl4" class="text-sm">
+                                        &gt; <span x-html="hit._highlightResult.hierarchy.lvl4 ? hit._highlightResult.hierarchy.lvl4.value : ''"></span>
+                                    </div>
+
+                                    <div x-show="hit._highlightResult.hierarchy.lvl5" class="text-sm">
+                                        &gt; <span x-html="hit._highlightResult.hierarchy.lvl5 ? hit._highlightResult.hierarchy.lvl5.value : ''"></span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </template>
+                </div>
+
+                <div x-show="! hits.length" class="mt-8 pb-32">
+                    <div x-text="`We didn't find any result for '${search}'. Sorry!`">We didn't find any result for ''. Sorry!</div>
+                </div>
+            </div>
+
+            <div x-show="! search" class="mt-8 pb-32">
+                <p>Enter a search term to find results in the documentation.</p>
+            </div>
+
+            <div class="absolute bottom-0 inset-x-0 border-t border-dark-800 text-gray-400 flex justify-end">
+                <a class="px-4 py-2 inline-block" target="_blank" href="https://www.algolia.com/?utm_source=laravel&amp;utm_medium=link&amp;utm_campaign=laravel_documentation_search">
+                    <img width="105" src="/img/icons/algolia.dark.min.svg" id="docs_search__algolia_dark" alt="Algolia">
+                </a>
+            </div>
+        </div>
+
+        <button x-show="open" x-transition.opacity="" class="absolute top-8 right-8 text-gray-400" @click.prevent="close" style="display: none;">
+            <span class="sr-only">Close search</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+    </div>
+</div>
+
+<script>
+    var algolia_app_id = 'E3MIRNPJH5';
+    var algolia_search_key = '1fa3a8fec06eb1858d6ca137211225c0';
+    var version = '8.x';
+</script>
+
+<script src="/js/app.js?id=dbbc444eaa3d5b8443ecfc5b698f3d0d"></script>
+
+<script>
+    var _gaq=[['_setAccount','UA-23865777-1'],['_trackPageview']];
+    (function(d,t){
+        var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+        g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+        s.parentNode.insertBefore(g,s)
+    }(document,'script'));
+</script>
+
+
+</body></html>

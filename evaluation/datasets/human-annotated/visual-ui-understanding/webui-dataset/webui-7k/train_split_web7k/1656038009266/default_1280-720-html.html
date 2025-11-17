@@ -1,0 +1,68 @@
+<!DOCTYPE html><html class="no-js" lang="en"><head>
+  <meta charset="utf-8">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="index, follow">
+  <meta name="description" content="Michele Titolo builds applications and tooling for the cloud">
+  <meta name="keywords" content="michele titolo, infrastructure engineer, cloud engineer, aws developer, microservices, architecture, serverless engineer">
+  <title>Running Linux Tools in Lambda Containers · Michele Titolo</title>
+  <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://michele.io/css/grid.css">
+  <link rel="stylesheet" href="https://michele.io/css/theme.css">
+
+
+    
+  
+</head>
+<body>
+  <div class="pure-g">
+    <div class="pure-u-sm-1-1" id="mobile-nav">
+      <b>Michele Titolo</b> | <a href="https://michele.io/" alt="blog">Blog</a> | <a href="https://michele.io/speaking" alt="Speaking page">Speaking</a>
+    </div>
+  <div class="content pure-u-1 pure-u-lg-4-5">
+<div class="row">
+  <div class="entry">
+    <h1 class="entry-title">Running Linux Tools in Lambda Containers</h1>
+    <p class="entry-meta">Posted on <span class="date"> May 28, 2021</span></p>
+    <p>AWS released the ability for Lambda Functions to use containers in <a href="https://aws.amazon.com/about-aws/whats-new/2020/12/aws-lambda-now-supports-container-images-as-a-packaging-format/">December 2020</a>. This opened up a whole set of new use cases for lambda functions, since now we developers have better control of the runtime environment. I’ve found they are a great fit for performing tasks that require elevated privileges, especially if AWS IAM can control access. Running tasks with elevated privileges in an ephemeral manner is great for security, since there’s nothing constantly running with that access. However, lambda containers are still lambdas and this post shares some gotchas I encountered trying to run Linux command line tools inside a lambda function container.</p>
+<h2 id="lambda-containers-do-not-set-home">Lambda Containers do not set $HOME</h2>
+<p>Since containers include their own operating system, the underlying lambda function runtime doesn’t know anything about what that is. If you are running a tool that expects certain environment variables to be set, like <code>$HOME</code>, you need to set them on the lambda function. For <code>$HOME</code> in particular, I found <code>/tmp</code> a good substitute, since often tools will need to both read and write to that directory.</p>
+<h2 id="only-path-can-be-executed">Only <code>$PATH</code> can be executed</h2>
+<p>The <code>$PATH</code> environment variable has always been set by the underlying lambda runtime, and with containers that is no different. If you need to install a tool, make sure it’s in <code>$PATH</code> — otherwise nothing you do will let it be executed, even a <code>chmod 777</code>. Since the <code>WORKDIR</code> of the container needs to include the function, that is a good default place to put these executables.</p>
+<h2 id="only-tmp-is-writable">Only <code>/tmp</code> is writable</h2>
+<p>A lambda container is still a lambda function, so the restriction to only write to <code>/tmp</code> is enforced when running containers. If something needs to be written to that is included in the container, move it to <code>/tmp</code> in the lambda function initialization as a workaround. An example of this is the <code>known_hosts</code> file for <code>ssh</code>, where including one can help speed up execution, but the <code>ssh</code> command also will write to it occasionally.</p>
+<h2 id="container-images-must-be-region-and-account-local-to-a-lambda-function">Container images must be region and account local to a lambda function</h2>
+<p>As of today, in order to use a container with a lambda function, it must be in an Elastic Container Registry (ECR) in the same region and account as the lambda function. Last year AWS did announce <a href="https://aws.amazon.com/about-aws/whats-new/2020/12/amazon-ecr-announces-cross-region-replication-of-images/">cross-region replication</a> for containers.</p>
+<h2 id="re-using-container-tags-does-not-update-a-lambda-function">Re-using container tags does not update a lambda function</h2>
+<p>If you set your lambda function to pull from a tag like <code>latest</code> and then move that tag to a new image, the lambda function will not automatically update to the newest tagged container. That change still needs to be done explicitly with a call to <code>update-function-code</code>. I ended up scripting this so that from my local laptop there’s one command I call that does both <code>docker push</code> and <code>aws lambda update-function-code</code>.</p>
+<h1 id="conclusion">Conclusion</h1>
+<p>Many of these gotchas come from the fact that lambda containers are first and foremost lambda functions. If something is behaving oddly, chances are it’s because of something lambda function related vs something linux or container related. Figuring that out was key to getting some tools working. I hope this post is a useful reference for any lambda container work you do.</p>
+
+  </div>
+
+    
+    <div class="entry-meta">Categories: <a href="https://michele.io/categories/aws" rel="category tag">aws</a>, <a href="https://michele.io/categories/lambda" rel="category tag">lambda</a>, <a href="https://michele.io/categories/cloud" rel="category tag">cloud</a></div>
+    
+
+    
+
+</div>
+<div class="row copy">
+  <p>© 2021 Michele Titolo</p>
+</div>
+</div>
+
+<div class="sidebar pure-u-lg-1-5 pure-u-sm-1-1 pure-u-md-1-1">
+    <div class="header">
+    <h1>Hello!</h1>
+<p>I'm Michele Titolo and I build applications and tooling for the cloud. </p>
+<p id="main-nav">Navigate to: <a href="https://michele.io/" alt="blog">Blog</a> | <a href="https://michele.io/speaking" alt="Speaking page">Speaking</a></p>
+<p>Get in touch on <a href="http://twitter.com/micheletitolo" alt="Twitter">Twitter</a> or <a href="mailto:hi@michele.io">via email</a>.</p>
+  </div>
+</div>
+</div>
+
+
+
+</body></html>

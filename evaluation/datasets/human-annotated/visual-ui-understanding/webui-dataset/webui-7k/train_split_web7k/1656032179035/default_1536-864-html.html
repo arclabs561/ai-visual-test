@@ -1,0 +1,215 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8">
+    
+    <title>SayThanks.io ☀ Say Thank You </title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+
+    <!-- Mobile Specific Metas
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+     <!-- FONT
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Annie+Use+Your+Telescope" rel="stylesheet">
+
+    <!-- CSS
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <link rel="stylesheet" href="/static/css/normalize.css">
+    <link rel="stylesheet" href="/static/css/skeleton.css">
+    <link rel="stylesheet" href="/static/css/saythanks.css">
+    <link rel="stylesheet" href="/static/css/carbonads.css">
+    <link rel="stylesheet" href="/static/css/jquery.modal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css">
+     <!-- Favicon
+     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+     <link rel="icon" type="image/x-icon" href="/static/images/owly.ico">
+     <link rel="mask-icon" href="/static/images/owly.svg" color="green">
+
+     <!-- jQuery!
+     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+     <script type="text/javascript" async="" id="gauges-tracker" data-site-id="583360704b2ffa35480003fd" data-track-path="https://track.gaug.es/track.gif" src="https://d36ee2fcip1434.cloudfront.net/track.js"></script><script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+     <script src="/static/js/jquery.autogrowtextarea.min.js"></script>
+     <script src="/static/js/jquery.simplyCountable.js"></script>
+     <script src="/static/js/jquery.modal.min.js"></script>
+     <script src="/static/js/main.js"></script>
+     <script src="https://platform.twitter.com/widgets.js" type="text/javascript"></script>
+
+    
+    
+
+</head>
+<body onload="setSelectedFont();">
+
+<div class="container">
+<h1><a href="/"><img id="eve" src="/static/images/owly.svg" alt="Eve the Owl"></a> The <strong>‘</strong><a href="/">Say Thanks</a><strong>’</strong> Project<span class="green"><strong>.</strong></span></h1>
+<hr>
+
+<div class="content">
+
+
+<form action="../logout" method="POST">
+<button type="submit" class="logoutLblPos">Log Out</button>
+</form>
+
+<h4>Send a <strong class="green">Thank You</strong> note to <strong>lifebalance</strong>!</h4>
+
+
+<form class="form-horizontal" action="./lifebalance/submit" method="post">
+<table>
+<tbody><tr>
+<td>
+<label for="Font Style"> Font Style : </label>
+</td>
+<td>
+<select name="Font Style" id="fontstyle" onchange="fontforinbox(this);">
+    <option value="0">Regular</option>
+    <option value="1">Times New Roman</option>
+    <option value="2">Verdana</option>
+    <option value="3">Tahoma</option>
+    <option value="4">Georgia</option>  
+    <option value="5">Trebuchet MS</option>
+ </select>
+ </td>
+ <td>
+<label for="content-type"> Content Type: </label>
+</td>
+ <td>
+ <input type="radio" name="content-type" id="option1" value="plaintext" checked=""> Plain Text<br>
+ </td>
+ <td>
+<input type="radio" name="content-type" id="option2" value="html"> HTML<br>
+</td>
+ </tr>
+ </tbody></table>
+
+<fieldset>
+
+<!-- Form Name -->
+<legend>❝ THANK YOU ❞ </legend>
+
+<!-- Textarea -->
+<div class="form-group">
+  <div class="col-md-4">
+    <textarea class="form-control u-full-width notebodyfont noteinput" id="body" name="body" autofocus="" placeholder="Dear lifebalance,
+Thank you for..." required="" style="overflow: hidden; min-height: 2em; height: 89.1875px;"></textarea><div class="autogrow-textarea-mirror" style="display: none; overflow-wrap: break-word; white-space: pre-wrap; padding: 6px 10px; border-style: solid; border-width: 1px; width: 636px; font-family: &quot;Annie Use Your Telescope&quot;, SerendityFont, cursive; font-size: 23.5px; line-height: 37.6px; letter-spacing: 0px;">.<br>.</div>
+  </div>
+</div>
+
+<h6>You have written <strong><span id="counter" class="safe">0</span></strong> thoughtful words, so far… (shoot for 42!)</h6>
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="byline">Sincerely, </label>
+  <div class="col-md-4">
+  <input class="notebodyfont" id="byline" name="byline" type="text" placeholder="Eva Moore">
+
+  </div>
+</div>
+
+<!-- Button -->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="submit"></label>
+  <div class="col-md-4">
+    <button id="submit" name="submit" class="btn button-primary" type="submit">Send Note <img id="eve-send" src="/static/images/owly.svg" alt="Eve the Owl"> </button>
+  </div>
+</div>
+<h2>🝐</h2>
+</fieldset>
+</form>
+
+
+<script>
+  $("#body").autoGrow();
+  $('#body').simplyCountable({
+  counter: '#counter',
+  countType: 'words',
+  countDirection: 'up'
+});
+
+input = document.getElementById("byline");
+
+input.addEventListener("keyup", function(event) {
+   if (event.keyCode === 13 && event.ctrlKey) {    
+    event.preventDefault();
+    document.getElementById("submit").click();
+  }
+});
+textArea = document.getElementById("body");
+textArea.addEventListener("keyup", function(event) {
+   if (event.keyCode === 39 && event.ctrlKey) {      
+    event.preventDefault();
+    placeHolderArr = textArea.placeholder.split(',');
+    placeHolderText = `${placeHolderArr[0]},                                                                                                                                  ${placeHolderArr[1]}`;
+    textArea.innerText = placeHolderText
+    textArea.setSelectionRange(placeHolderText.length, placeHolderText.length);
+  }
+});
+</script>
+
+
+</div>
+
+<div id="footer">
+      
+      © 2021. To create a new github issue, click <a href="https://github.com/BlitzKraft/saythanks.io/issues/new" target="_blank" rel="noopener noreferrer">here</a>.
+ A <a href="https://kennethreitz.org/">Kenneth Reitz</a> Project.
+      
+    </div>
+
+</div>
+
+
+
+  <a href="https://github.com/BlitzKraft/saythanks.io" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true">
+      <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+      <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+      <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path>
+    </svg></a>
+
+    <a class="github-fork-ribbon" href="https://github.com/BlitzKraft/saythanks.io/issues" data-ribbon="FeedBack" title="FeedBack">FeedBack</a>
+  
+
+<script type="text/javascript">
+  var _gauges = _gauges || [];
+  (function() {
+    var t   = document.createElement('script');
+    t.type  = 'text/javascript';
+    t.async = true;
+    t.id    = 'gauges-tracker';
+    t.setAttribute('data-site-id', '583360704b2ffa35480003fd');
+    t.setAttribute('data-track-path', 'https://track.gaug.es/track.gif');
+    t.src = 'https://d36ee2fcip1434.cloudfront.net/track.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(t, s);
+  })();
+
+  function fontforinbox(selectBox) {
+   var op = selectBox.options[selectBox.selectedIndex];
+   var r = document.querySelector(':root');
+   localStorage.setItem("selectedFont",op.text);
+   localStorage.setItem("selectedIndex", selectBox.selectedIndex);
+   var localFont = localStorage.getItem("selectedFont"); 
+   if( localFont === 'Regular'){
+     r.style.setProperty('--customfont', "'Annie Use Your Telescope', 'SerendityFont', cursive");
+   }
+   else{
+     r.style.setProperty('--customfont', localFont);	
+   }
+}
+function setSelectedFont() {
+  selectBox = document.getElementById('fontstyle');
+   var r = document.querySelector(':root');
+   var localFont = localStorage.getItem("selectedFont");
+   selectBox.selectedIndex = localStorage.getItem("selectedIndex");
+   if( localFont === 'Regular'){
+     r.style.setProperty('--customfont', "'Annie Use Your Telescope', 'SerendityFont', cursive");
+   }
+   else{
+     r.style.setProperty('--customfont', localFont);	
+   }
+}
+</script>
+
+<iframe scrolling="no" frameborder="0" allowtransparency="true" src="https://platform.twitter.com/widgets/widget_iframe.d7fc2fc075c61f6fa34d79a0cbbf1e34.html?origin=https%3A%2F%2Fsaythanks.io" title="Twitter settings iframe" style="display: none;"></iframe><iframe id="rufous-sandbox" scrolling="no" frameborder="0" allowtransparency="true" allowfullscreen="true" style="position: absolute; visibility: hidden; display: none; width: 0px; height: 0px; padding: 0px; border: none;" title="Twitter analytics iframe"></iframe></body></html>

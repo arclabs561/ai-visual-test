@@ -1,0 +1,2677 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr"><head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="keywords" content="uzbl, browser, open source">
+	<meta name="description" content="Uzbl is a lightweight webkit browser following the UNIX philosophy - to do one thing and do it well.">
+	<meta name="author" content="Michael Walker">
+	<meta name="robots" content="FOLLOW,INDEX">
+   
+	<title>Uzbl - web interface tools which adhere to the unix philosophy.</title>
+
+	<link rel="stylesheet" href="/style.css" type="text/css">
+    <link rel="alternate" type="application/atom+xml" title="Uzbl News" href="/atom.xml">
+	<link rel="shortcut icon" type="image/png" href="/favicon.png">
+	<base href="https://www.uzbl.org/">
+  </head>
+
+  <body>
+    <div id="page">
+      <div id="header">
+        <img src="img/uzbl-logo.png" alt="Uzbl">
+        <p>Uzbl - web interface tools which adhere to the unix philosophy.</p>
+      </div>
+      
+<div id="navigation">
+   <ul>
+     <li><a href="https://github.com/uzbl/uzbl/issues">Bugs</a></li>
+<li><a href="contribute.php">Contribute</a></li>
+<li><a href="community.php">Community</a></li>
+<li><a href="get.php">Get</a></li>
+<li><a href="readme.php">Readme</a></li>
+<li><a href="faq.php">FAQ</a></li>
+<li id="selected"><a href="/">Home</a></li>
+   </ul>
+</div>
+
+<div id="main">
+  <h3>INTRODUCTION</h3>
+
+<p>Any program can only be really useful if it complies with the Unix
+philosophy. Web browsers (and other tools that work with HTML, such as feed
+readers) are frequent violators of this principle:</p>
+
+<ul>
+<li>They build in way too much things into one (complex) program, dramatically
+decreasing the options to do things the way you want.</li>
+<li>They store things in way too fancy formats (XML, RDF, SQLite, etc.) which are
+hard to store under version control, reuse in other scripts, and so on.</li>
+</ul>
+
+<p>The Uzbl project was started as an attempt to resolve this.</p>
+
+<h3>EDITIONS</h3>
+
+<p>"Uzbl" is an umbrella project consisting of different flavors. In the future
+more things may come, but for now:</p>
+
+<h4>uzbl-core</h4>
+
+<p>Main component meant for integration with other tools and scripts.</p>
+
+<ul>
+<li>Uses WebKitGtk+ for rendering and network interaction (libsoup). CSS,
+JavaScript, and plugin support come for free.</li>
+<li>Provides interfaces to get data in (commands/configuration) and out (events):
+stdin/stdout/fifo/Unix sockets.</li>
+<li>You see a WebKit view and (optionally) a status bar which gets populated
+externally.</li>
+<li>No built-in means for URL changing, loading/saving of bookmarks, saving
+history, keybindings, downloads, etc.</li>
+<li>Extra functionality: many sample scripts come with it. More are available on
+the <a href="http://www.uzbl.org/wiki/scripts">Uzbl wiki</a> or you can write them
+yourself.</li>
+<li>Entire configuration/state can be changed at runtime.</li>
+<li>Uzbl keeps it simple, and puts <strong>you</strong> in charge.</li>
+</ul>
+
+<h4>uzbl-browser</h4>
+
+<p>A minimal browser which encompasses a default configuration file, event manager
+and a selection of scripts which gives a comparable browsing experience to the
+more common browsers.</p>
+
+<ul>
+<li>Uses a set of scripts (mostly Python) that will fit most people, so things
+work out of the box; yet plenty of room for customization.</li>
+<li>Brings everything you expect: URL changing, history, downloads, form filling,
+link navigation, cookies, event management, etc.</li>
+<li>Advanced, customizable keyboard interface with support for modes, modkeys,
+multichars, variables (keywords) etc. (e.g., you can tweak the interface to
+be Vi-like, Emacs-like or any-other-program-like).</li>
+<li>Adequate default configuration.</li>
+<li>Focus on plaintext storage for your data and configuration files in simple,
+easy-to-parse formats and adherence to the <a href="http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html">XDG basedir
+spec</a>.</li>
+<li>Visually, similar to <code>uzbl-core</code> except that the status bar contains useful
+information.</li>
+<li>One window per page.</li>
+</ul>
+
+<h4>uzbl-tabbed</h4>
+
+<p>A flavor of <code>uzbl</code> built on top of <code>uzbl-browser</code> which adds tabbed browsing.</p>
+
+<ul>
+<li>Spawns one window containing multiple tabs, each tab containing a full
+embedded <code>uzbl-browser</code>.</li>
+<li>Ideal as a quick and simple solution to manage multiple <code>uzbl-browser</code>
+instances without getting lost.</li>
+</ul>
+
+<p>Throughout the documentation, when referring to <code>uzbl</code> we mean <code>uzbl-core</code>,
+unless otherwise specified.</p>
+
+<h3>CONFIGURATION / CONTROL:</h3>
+
+<p>The general idea is that Uzbl by default is very bare bones. You can send it
+commands to update settings and perform actions, through various
+interfaces. There is a limited, built-in default configuration. It sets a basic
+status bar, title format, and network connection settings. By default, there
+are <em>no</em> keybindings defined at all (default keybindings would be
+counterproductive when you try to customize). For examples of the possibilities
+what you can do, please see the sample configurations, and <a href="http://www.uzbl.org/wiki/config">wiki
+page</a>.</p>
+
+<p>There are several interfaces to interact with Uzbl:</p>
+
+<ul>
+<li><code>uzbl --config &lt;filename&gt;</code>: <code>&lt;filename&gt;</code> will be read line by line, and the
+commands in it will be executed. Useful to configure Uzbl at startup. If you
+have a file in <code>$XDG_CONFIG_HOME/uzbl/config</code> (this expands to
+<code>~/.config/uzbl/config</code> on most systems), it will be automatically recognized.</li>
+<li><code>stdin</code>: to write commands into <code>stdin</code>, use <code>--config -</code> (or <code>-c -</code>).</li>
+<li><p>Interactive: you can enter commands (and bind them to shortcuts, even at
+runtime). By default, the behaviour is modal (vi-like):</p>
+
+<ul>
+<li>command mode: every keystroke is interpreted to run commands</li>
+<li>insert mode: keystrokes are not interpreted so you can enter text into html
+forms</li>
+</ul>
+
+<p>There is also support for "chained" commands (multiple characters long), and
+keyworded commands. Also you can trigger incremental matching on commands and
+variables after pressing return. See the sample configuration file for more
+information.</p>
+
+<p>By default, copy and paste works when typing commands:</p>
+
+<ul>
+<li><code>insert</code> (paste X cliboard)</li>
+<li><code>shift insert</code> (paste primary selection buffer)</li>
+</ul></li>
+<li><p>FIFO &amp; socket files: If enabled by setting their paths through one of the
+above means, you can have socket and FIFO files available which are very
+useful to control <code>uzbl</code> using external programs.</p>
+
+<ul>
+<li>The advantage of the FIFO is you can write directly to it, but it's half
+duplex only (<code>uzbl</code> cannot send a response to you).</li>
+<li><p>The socket is full duplex but a socket-compatible wrapper such as <code>socat</code>
+is needed to work with it. For example:</p>
+
+<p>echo <command></command> | socat - unix-connect:<socketfile></socketfile></p></li>
+</ul></li>
+</ul>
+
+<p>When <code>uzbl</code> forks a new instance (e.g., "open in new window") it will use the
+same command line arguments (e.g., the same <code>--config &lt;file&gt;</code>), except for
+<code>--named</code>. If you made changes to the configuration at runtime, these are not
+passed on to the child.</p>
+
+<h4>WebKit1 vs. WebKit2</h4>
+
+<p>WebKit2 changes many things compared to WebKit1, some of which impact <code>uzbl</code>
+greatly. This version of <code>uzbl</code> only supports WebKit1 while older version tried
+to support both at the same time.</p>
+
+<p>For a <code>uzbl</code> built on WebKit2 check out the
+<a href="https://github.com/uzbl/uzbl/tree/next">next</a> branch</p>
+
+<h3>COMMAND SYNTAX</h3>
+
+<p><code>Uzbl</code> will read commands via standard input, named FIFO pipe (once <code>fifo_dir</code>
+is set) and Unix socket (once <code>socket_dir</code> is set). For convenience, <code>uzbl</code> can
+also be instructed to read commands from a file on startup by using the
+<code>--config</code> option. Indeed, the config file is nothing more than a list of
+commands with support for comments (using the <code>#</code> character).</p>
+
+<p>Each command starts with the name of a command or a <code>uzbl</code> variable that expands
+to it. A command is terminated by a newline. Empty lines and lines that start
+with the hash sign (ignoring leading whitespace) are ignored by the parser.
+Command names are always written in lowercase.</p>
+
+<p>A list of commands supported by <code>uzbl</code> is given here. Optional arguments are
+given in square brackets (<code>[]</code>) with literal strings options in lowercase
+separated by a pipe (<code>|</code>) character. <code>N</code> indicates an integer value and other
+uppercase values are placeholders describing what the value should be. Required
+options are given in angle brackets (<code>&lt;&gt;</code>). Arguments on which argument
+splitting is not performed are given in curly braces (<code>{}</code>). Variable arguments
+are indicated with ellipses (<code>...</code>). As an example:</p>
+
+<pre><code>`example1 &lt;a|b&gt; &lt;N&gt; [URI...]`
+</code></pre>
+
+<p>means that the command <code>example</code> requires its first argument which must either
+be a literal <code>a</code> or <code>b</code>, a second argument which is an integer, and any
+remaining arguments are treated as URIs. Another example:</p>
+
+<pre><code>`example2 &lt;KEY&gt; {VALUE}`
+</code></pre>
+
+<p>means that the first argument is split off used as a key and the remaining
+string is used verbatim. The command <code>example2 key many args</code> would have <code>key</code>
+as <code>KEY</code> and <code>many args</code> as <code>VALUE</code>.</p>
+
+<h4>Navigation</h4>
+
+<ul>
+<li><code>back [N]</code>
+
+<ul>
+<li>Navigate to the Nth (default: 1) previous URI in the instance history.</li>
+</ul></li>
+<li><code>forward [N]</code>
+
+<ul>
+<li>Navigate to the Nth (default: 1) next URI in the instance history.</li>
+</ul></li>
+<li><code>reload [cached|full]</code>
+
+<ul>
+<li>Reload the current page. If <code>cached</code> is given (the default), the cache is
+used. If <code>full</code> is given, the cache is ignored.</li>
+</ul></li>
+<li><code>stop</code>
+
+<ul>
+<li>Stop loading the current page. This usually means that no new network
+requests are made, but JavaScript can still run.</li>
+</ul></li>
+<li><code>uri {URI}</code>
+
+<ul>
+<li>Tell <code>uzbl</code> to navigate to the given URI.</li>
+</ul></li>
+<li><code>download &lt;URI&gt; [DESTINATION]</code>
+
+<ul>
+<li>Tell WebKit to download a URI.</li>
+</ul></li>
+</ul>
+
+<h4>Page</h4>
+
+<ul>
+<li><code>load &lt;COMMAND&gt;</code>
+
+<ul>
+<li>Load content into the page. Supported subcommands include:</li>
+<li><code>html &lt;URI&gt; &lt;CONTENT&gt;</code>
+
+<ul>
+<li>Load content as HTML relative to a URI.</li>
+</ul></li>
+<li><code>text &lt;CONTENT&gt;</code>
+
+<ul>
+<li>Load content as plain text.</li>
+</ul></li>
+<li><code>error_html &lt;URI&gt; &lt;BASE_URI&gt; &lt;CONTENT&gt;</code>
+
+<ul>
+<li>Load content an error page (which does not appear in the forward/back
+list) at the given URI with the given</li>
+</ul></li>
+</ul></li>
+<li><code>frame &lt;list|focus|reload|stop|dump|inject|get|set&gt; [NAME]</code>
+
+<ul>
+<li>Operate on frames in the current page. If not name is given, the <code>_current</code>
+frame is used. Supported subcommands include:</li>
+<li><code>list</code> (Unimplemented)
+
+<ul>
+<li>Returns a JSON object representing the of frames in the frame.</li>
+</ul></li>
+<li><code>focus</code> (Unimplemented)
+
+<ul>
+<li>Give focus to the frame.</li>
+</ul></li>
+<li><code>reload</code>
+
+<ul>
+<li>Reload the frame.</li>
+</ul></li>
+<li><code>stop</code>
+
+<ul>
+<li>Stop loading the frame.</li>
+</ul></li>
+<li><code>save</code> (Unimplemented)
+
+<ul>
+<li>Save the content frame.</li>
+</ul></li>
+<li><code>load</code> (Unimplemented)
+
+<ul>
+<li>Load content into the frame.</li>
+</ul></li>
+<li><code>get &lt;VARIABLE&gt;</code> (Unimplemented)
+
+<ul>
+<li>Get information about a frame.</li>
+</ul></li>
+<li><code>set &lt;VARIABLE&gt; &lt;VALUE&gt;</code> (Unimplemented)
+
+<ul>
+<li>Set information about a frame.</li>
+</ul></li>
+</ul></li>
+</ul>
+
+<h4>Cookie</h4>
+
+<ul>
+<li><code>cookie &lt;add|delete|clear&gt;</code>
+
+<ul>
+<li>Manage cookies in <code>uzbl</code>. The subcommands work as follows:</li>
+<li><code>add &lt;HOST&gt; &lt;PATH&gt; &lt;NAME&gt; &lt;VALUE&gt; &lt;SCHEME&gt; &lt;EXPIRATION&gt;</code>
+
+<ul>
+<li>Manually add a cookie.</li>
+</ul></li>
+<li><code>delete &lt;DOMAIN&gt; &lt;PATH&gt; &lt;NAME&gt; &lt;VALUE&gt;</code>
+
+<ul>
+<li>Delete a cookie from the cookie jar.</li>
+</ul></li>
+<li><code>clear all</code>
+
+<ul>
+<li>Delete all cookies.</li>
+</ul></li>
+<li><code>clear domain [DOMAIN...]</code>
+
+<ul>
+<li>Delete all cookies matching the given domains.</li>
+</ul></li>
+</ul></li>
+</ul>
+
+<h4>Display</h4>
+
+<ul>
+<li><code>scroll &lt;horizontal|vertical&gt; &lt;VALUE&gt;</code>
+
+<ul>
+<li>Scroll either the horizontal or vertical scrollbar for the page. The value
+may be one of:</li>
+<li><code>begin</code>
+
+<ul>
+<li>Scrolls to the beginning of the page (either left or up).</li>
+</ul></li>
+<li><code>end</code>
+
+<ul>
+<li>Scrolls to the end of the page (either right or down).</li>
+</ul></li>
+<li><code>[-]N</code>
+
+<ul>
+<li>Scrolls N "units" as defined by the scrollbar (seems to be pixels).</li>
+</ul></li>
+<li><code>[-]N%</code>
+
+<ul>
+<li>Scrolls N% of a single page.</li>
+</ul></li>
+<li><code>N!</code>
+
+<ul>
+<li>Scrolls to position N on the scrollbar (also in "units").</li>
+</ul></li>
+<li><code>N%!</code>
+
+<ul>
+<li>Scrolls to position N% on the scrollbar.</li>
+</ul></li>
+</ul></li>
+<li><code>zoom &lt;in|out|set&gt; [VALUE]</code>
+
+<ul>
+<li>Zoom either in or out by the given amount. When setting, the value is
+required. If no value is given, the variable <code>zoom_step</code> is used.</li>
+</ul></li>
+<li><code>hardcopy [REGION]</code>
+
+<ul>
+<li>Print the given region. Supported regions include:</li>
+<li><code>page</code> (the default)
+
+<ul>
+<li>Prints the entire page.</li>
+</ul></li>
+<li><code>frame [NAME]</code>
+
+<ul>
+<li>Prints the frame with the given name or the current frame if no name is
+given.</li>
+</ul></li>
+</ul></li>
+<li><code>geometry &lt;SIZE&gt;</code>
+
+<ul>
+<li>Set the size of the <code>uzbl</code> window. This is subject to window manager
+policy. If the size is <code>maximized</code>, the <code>uzbl</code> window will try to maximize
+itself. Otherwise, the size is parsed using the
+<code>WIDTHxHEIGHT±XOFFSET±YOFFSET</code> pattern.</li>
+</ul></li>
+<li><code>snapshot &lt;PATH&gt; &lt;FORMAT&gt; &lt;REGION&gt; [FLAG...]</code> (WebKit1 &gt;= 1.9.6)
+
+<ul>
+<li>Saves the current page as an image to the given path. Currently supported
+formats include: <code>png</code>. Acceptable regions include:</li>
+<li><code>visible</code>
+
+<ul>
+<li>Only includes the regions of the page which are currently visible.</li>
+</ul></li>
+</ul></li>
+</ul>
+
+<h4>Content</h4>
+
+<ul>
+<li><code>plugin &lt;COMMAND&gt;</code>
+
+<ul>
+<li>Exposes control of plugin-related information. Supported subcommands include:</li>
+<li><code>refresh</code>
+
+<ul>
+<li>Refresh the plugin database.</li>
+</ul></li>
+<li><code>toggle [NAME...]</code>
+
+<ul>
+<li>Toggle whether the given plugins are enabled (or all if none are given).</li>
+</ul></li>
+</ul></li>
+<li><code>remove_all_db</code>
+
+<ul>
+<li>Remove all web databases.</li>
+</ul></li>
+<li><code>spell &lt;COMMAND&gt;</code> (WebKit1 &gt;= 1.5.1)
+
+<ul>
+<li>Use WebKit's spell check logic. Supported subcommands include:</li>
+<li><code>ignore [WORD...]</code>
+
+<ul>
+<li>Add the given words to the list of words to ignore.</li>
+</ul></li>
+<li><code>learn [WORD...]</code>
+
+<ul>
+<li>Teaches that the given words are spelled correctly.</li>
+</ul></li>
+<li><code>autocorrect &lt;WORD&gt;</code>
+
+<ul>
+<li>Returns the word as autocorrected by the checker.</li>
+</ul></li>
+<li><code>guesses &lt;WORD&gt;</code>
+
+<ul>
+<li>Returns the guesses for the word given by the checker as a JSON list.</li>
+</ul></li>
+</ul></li>
+<li><code>favicon &lt;COMMAND&gt;</code>
+
+<ul>
+<li>Controls the favicon database. Supported subcommands include:</li>
+<li><code>clear</code>
+
+<ul>
+<li>Clears all cached favicons.</li>
+</ul></li>
+<li><code>uri &lt;URI&gt;</code>
+
+<ul>
+<li>Returns the URI of the favicon for the given URI.</li>
+</ul></li>
+<li><code>save &lt;URI&gt; &lt;PATH&gt;</code> (Unimplemented)
+
+<ul>
+<li>Saves the favicon for the given URI to a path.</li>
+</ul></li>
+</ul></li>
+<li><code>css &lt;COMMAND&gt;</code>
+
+<ul>
+<li>Controls CSS settings in web pages. Supported subcommands include:</li>
+<li><code>add &lt;URI&gt;</code>
+
+<ul>
+<li>Adds a CSS file to pages when loaded. Despite the name, subsequent calls
+replace any previous invocation. Meaning that only one single stylesheet
+may be activated with this command.</li>
+</ul></li>
+<li><code>clear</code>
+Clears all user-supplied stylesheets.</li>
+</ul></li>
+<li><code>scheme &lt;SCHEME&gt; {COMMAND}</code>
+
+<ul>
+<li>Registers a custom scheme handler for <code>uzbl</code>. The handler should accept a
+single argument for the URI to load and return HTML. When run, the output
+is interpreted as content at the URL with a leading line with the MIME
+type.</li>
+</ul></li>
+<li><code>menu &lt;COMMAND&gt;</code>
+
+<ul>
+<li>Controls the context menu shown in <code>uzbl</code>. Supported subcommands include:</li>
+<li><code>add &lt;OBJECT&gt; &lt;NAME&gt; &lt;COMMAND&gt;</code>
+
+<ul>
+<li>Appends a new entry to the menu with the given name and runs the given
+command when used.</li>
+</ul></li>
+<li><code>add_separator &lt;OBJECT&gt; &lt;NAME&gt;</code>
+
+<ul>
+<li>Appends a new separator to the menu with the given name.</li>
+</ul></li>
+<li><code>remove &lt;NAME&gt;</code>
+
+<ul>
+<li>Remove items which have the given name.</li>
+</ul></li>
+<li><code>query &lt;NAME&gt;</code>
+
+<ul>
+<li>Returns the command for the item with the given name.</li>
+</ul></li>
+<li><code>list</code>
+
+<ul>
+<li>Returns the names of items in the menu as a JSON list.
+The list of supported objects is:</li>
+</ul></li>
+<li><code>document</code></li>
+<li><code>link</code></li>
+<li><code>image</code></li>
+<li><code>media</code></li>
+</ul></li>
+</ul>
+
+<h4>Search</h4>
+
+<ul>
+<li><code>search &lt;COMMAND&gt;</code>
+
+<ul>
+<li>Controls WebKit's search mechanisms. Supported subcommands include:</li>
+<li><code>option &lt;OPTION...&gt;</code>
+
+<ul>
+<li>Manage options for searching. Options may be prefixed with <code>+</code> to set,
+<code>-</code> to unset, <code>!</code> to toggle, and <code>~</code> to reset to its default. The
+default options have <code>wrap</code> enabled. Recognized options include:</li>
+<li><code>wrap</code>
+
+<ul>
+<li>If set, searches will wrap around when the start or end of the
+document is reached.</li>
+</ul></li>
+<li><code>case_insensitive</code>
+
+<ul>
+<li>If set, searches are case-insensitive.</li>
+</ul></li>
+</ul></li>
+<li><code>options</code>
+
+<ul>
+<li>Returns the current options as a JSON list.</li>
+</ul></li>
+<li><code>clear</code>
+
+<ul>
+<li>Turn off searching. The current options and search string are
+preserved.</li>
+</ul></li>
+<li><code>reset</code>
+
+<ul>
+<li>Turn off searching, setting the options back to the default and
+forgetting the search string.</li>
+</ul></li>
+<li><code>find {STRING}</code>
+
+<ul>
+<li>Search forward in the document for the string. If no string is given,
+the previous search string is used.</li>
+</ul></li>
+<li><code>rfind {STRING}</code>
+
+<ul>
+<li>As <code>find</code>, but searches backwards in the document.</li>
+</ul></li>
+<li><code>next</code>
+
+<ul>
+<li>Jumps to the next instance of the search string in the document in the
+same direction as the last <code>find</code> or <code>rfind</code> command.</li>
+</ul></li>
+<li><code>prev</code>
+
+<ul>
+<li>As <code>next</code>, but searches in the opposite direction from the last <code>find</code>
+or <code>rfind</code> command.</li>
+</ul></li>
+</ul></li>
+<li><p><code>security &lt;SCHEME&gt; &lt;COMMAND&gt; &lt;OPTION&gt;</code></p>
+
+<ul>
+<li>Controls security options for a scheme. Recognized commands include:</li>
+<li><code>get</code>
+
+<ul>
+<li>Returns <code>true</code> if the option is set for the scheme, <code>false</code> otherwise.</li>
+</ul></li>
+<li><code>set</code>
+
+<ul>
+<li>Sets the option for the scheme.</li>
+</ul></li>
+<li><code>unset</code> (WebKit1 only)
+
+<ul>
+<li>Unsets the option for the scheme.</li>
+</ul></li>
+</ul>
+
+<p>Supported options include ("scheme" here is used as "content referenced
+with this scheme"):</p>
+
+<ul>
+<li><code>local</code>
+
+<ul>
+<li>If set, non-local schemes cannot link or access pages this scheme.</li>
+</ul></li>
+<li><code>no_access</code>
+
+<ul>
+<li>If set, the scheme cannot access other schemes.</li>
+</ul></li>
+<li><code>display_isolated</code>
+
+<ul>
+<li>If set, the scheme can only be displayed in the same scheme.</li>
+</ul></li>
+<li><code>secure</code>
+
+<ul>
+<li>If set, the scheme is considered "secure" and will not generate
+warnings when referenced by an HTTPS page.</li>
+</ul></li>
+<li><code>cors_enabled</code>
+
+<ul>
+<li>If set, the scheme is allowed to make cross-origin resource sharing.</li>
+</ul></li>
+<li><code>empty_document</code>
+
+<ul>
+<li>If set, the scheme is allowed to be committed synchronously.</li>
+</ul></li>
+</ul></li>
+<li><code>inspector &lt;COMMAND&gt;</code>
+
+<ul>
+<li>Control the web inspector. Supported subcommands include:</li>
+<li><code>show</code>
+
+<ul>
+<li>Show the web inspector.</li>
+</ul></li>
+<li><code>close</code>
+
+<ul>
+<li>Close the web inspector.</li>
+</ul></li>
+<li><code>coord &lt;X&gt; &lt;Y&gt;</code>
+
+<ul>
+<li>Inspect the page at the given coordinate. The coordinate is relative to
+the current viewport.</li>
+</ul></li>
+<li><code>node &lt;NODE&gt;</code> (WebKit1 &gt;= 1.3.17) (Unimplemented)
+
+<ul>
+<li>Inspect the node which matches the given CSS selector string. If
+multiple nodes match, the first one is used.</li>
+</ul></li>
+</ul></li>
+</ul>
+
+<h4>Execution</h4>
+
+<ul>
+<li><code>js &lt;CONTEXT&gt; &lt;file|string&gt; &lt;VALUE&gt;</code>
+
+<ul>
+<li>Run JavaScript code. If <code>file</code> is given, the value is interpreted as a path
+to a file to run, otherwise the value is executed as JavaScript code.
+Currently supported contexts include:</li>
+<li><code>uzbl</code>
+
+<ul>
+<li>Run the code in the <code>uzbl</code> context. This context does not (currently)
+have access to the page's contents.</li>
+</ul></li>
+<li><code>clean</code>
+
+<ul>
+<li>Create a new context just for this command. This is the most secure
+option and should be preferred where possible.</li>
+</ul></li>
+<li><code>frame</code>
+
+<ul>
+<li>Run the code in the current frame's context.</li>
+</ul></li>
+<li><code>page</code>
+
+<ul>
+<li>Run the code in the current page's context. Be careful putting code
+into this context since anything in here may be hijacked by a malicious
+webpage. The context is cleared on each page load.</li>
+</ul></li>
+</ul></li>
+<li><p><code>spawn &lt;COMMAND&gt; [ARGUMENT...]</code> (WILL CHANGE)</p>
+
+<ul>
+<li><p>Spawn a command on the system with the given arguments. This ignore the
+stdout of the command. Will become <code>spawn async</code> in the future. The first
+argument command may use the following format to support fallback
+directories:</p>
+
+<p>dir1:dir2:dir3:subpath</p></li>
+</ul>
+
+<p>This will try <code>@{dir1}@{subpath}</code> followed by @{dir2}@{subpath}<code>and so on.
+The first file which exists is used. If none of them exist, it is used as
+the command verbatim and the</code>PATH` environment variable is used.</p></li>
+<li><code>spawn_sync &lt;COMMAND&gt; [ARGUMENT...]</code> (DEPRECATED)
+
+<ul>
+<li>Spawn a command on the system synchronously with the given arguments and
+return its stdout. Will become <code>spawn async</code> in the future.</li>
+</ul></li>
+<li><code>spawn_sync_exec &lt;COMMAND&gt; [ARGUMENT...]</code> (DEPRECATED)
+
+<ul>
+<li>Spawn a command synchronously and then execute the output as <code>uzbl</code>
+commands. This will disappear in the future and the command should
+communicate to <code>uzbl</code> over either the FIFO or the socket.</li>
+</ul></li>
+<li><code>spawn_sh &lt;COMMAND&gt; [ARGUMENT...]</code> (DEPRECATED)
+
+<ul>
+<li>Spawn a command using the default shell. This is deprecated for <code>spawn
+@shell_cmd ...</code>.</li>
+</ul></li>
+<li><code>spawn_sh_sync &lt;COMMAND&gt; [ARGUMENT...]</code> (DEPRECATED)
+
+<ul>
+<li>Spawn a command using the default shell. This is deprecated for <code>spawn_sync
+@shell_cmd ...</code>.</li>
+</ul></li>
+</ul>
+
+<h4>Uzbl</h4>
+
+<ul>
+<li><code>chain &lt;COMMAND...&gt;</code>
+
+<ul>
+<li>Execute a chain of commands. This is useful for commands which should not
+have any interruption between them.</li>
+</ul></li>
+<li><code>include {PATH}</code>
+
+<ul>
+<li>Execute a file as a list of uzbl commands.</li>
+</ul></li>
+<li><code>exit</code>
+
+<ul>
+<li>Closes <code>uzbl</code>.</li>
+</ul></li>
+</ul>
+
+<h4>Variable</h4>
+
+<ul>
+<li><code>set &lt;NAME&gt; {VALUE}</code>
+
+<ul>
+<li>Set a variable to the given value. Unsetting a variable is not possible
+(currently). Set it to the empty string (behavior is the same).</li>
+</ul></li>
+<li><code>toggle &lt;VARIABLE&gt; [OPTION...]</code>
+
+<ul>
+<li>Toggles a variable. If any options are given, a value is chosen from the
+list, the option following the current value is used, defaulting to the
+first value if the current value is not found. Without any options,
+non-strings are toggled between 0 and 1 (if it is neither of these values,
+0 is set). User values are set to the empty string unless they are <code>0</code> or
+<code>1</code> in which case the other is set. If the variable does not exist, it is
+set to <code>1</code>.</li>
+</ul></li>
+<li><code>print {STRING}</code>
+
+<ul>
+<li>Performs variable expansion on the string and returns the value.</li>
+</ul></li>
+<li><code>dump_config</code>
+
+<ul>
+<li>Dumps the current config (which may have been changed at runtime) to
+stdout. Uses a format which can be piped into <code>uzbl</code> again or saved as a
+config file.</li>
+</ul></li>
+<li><code>dump_config_as_events</code>
+
+<ul>
+<li>Dump the current config as a series of <code>VARIABLE_SET</code> events, which can be
+handled by an event manager.</li>
+</ul></li>
+<li><code>event &lt;NAME&gt; [ARGUMENTS...]</code>
+
+<ul>
+<li>Send a custom event.</li>
+</ul></li>
+<li><code>request &lt;NAME&gt; &lt;COOKIE&gt; [ARGUMENTS...]</code>
+
+<ul>
+<li>Send a synchronous request and returns the result of the request. This is
+meant to be used for synchronous communication between the event manager
+and <code>uzbl</code> since <code>spawn_sync</code> is not usable to talk to the event manager.</li>
+</ul></li>
+<li><code>choose &lt;NAME&gt; &lt;COOKIE&gt; [ARGUMENTS...]</code>
+
+<ul>
+<li>Send a synchronous choose and returns the result of the request. This is
+meant to implement the <code>file_chooser_handler</code> and <code>color_chooser_handler</code>
+where a result should be waited upon indefinitely. <strong>This will hang uzbl if
+it is not replied to.</strong></li>
+</ul></li>
+</ul>
+
+<h3>VARIABLES AND CONSTANTS</h3>
+
+<p><code>Uzbl</code> has a lot of internal variables and constants. You can get the values
+(see the <code>print</code> command), and for variables you can also change the value at
+runtime. Some of the values can be passed at start up through command line
+arguments, others need to be set by using commands (e.g., in the configuration
+file).</p>
+
+<ul>
+<li>Some variables have callback functions which will get called after setting
+the variable to perform some additional logic (see below).</li>
+<li>Besides the builtin variables you can also define your own ones and use them
+in the exact same way as the builtin ones.</li>
+</ul>
+
+<p>Integer variables may be negative, boolean values should be either <code>0</code> or <code>1</code>.
+Commands are variables intended to be executed as uzbl commands. All user
+variables are treated as strings.</p>
+
+<h4>Uzbl</h4>
+
+<ul>
+<li><code>verbose</code> (integer) (default: 0)
+
+<ul>
+<li>Controls the verbosity of <code>uzbl</code> as it runs.</li>
+</ul></li>
+<li><code>frozen</code> (boolean) (default: 0)
+
+<ul>
+<li>If non-zero, all network requests and navigation are blocked. This is
+useful for blocking pages from redirecting or loading any content after the
+core content is loaded. Network connections which have already started will
+still complete.</li>
+</ul></li>
+<li><code>print_events</code> (boolean) (default: 0)
+
+<ul>
+<li>If non-zero, events will be printed to stdout.</li>
+</ul></li>
+<li><code>handle_multi_button</code> (boolean) (default: 0)
+
+<ul>
+<li>If non-zero, <code>uzbl</code> will intercept all double and triple clicks and the
+page will not see them.</li>
+</ul></li>
+</ul>
+
+<h4>Communication</h4>
+
+<ul>
+<li><code>fifo_dir</code> (string) (no default)
+
+<ul>
+<li>Sets the directory for the FIFO. If set previously, the old FIFO is
+removed.</li>
+</ul></li>
+<li><code>socket_dir</code> (string) (no default)
+
+<ul>
+<li>Sets the directory for the socket. If set previously, the old socket is
+removed.</li>
+</ul></li>
+</ul>
+
+<h4>Handler</h4>
+
+<ul>
+<li><code>navigation_handler</code> (command) (no default)
+
+<ul>
+<li>The command to use when determining what to do when navigating to a new
+URI. It is passed the URI as an extra argument. If the command returns a
+string with the first line containing only the word <code>USED</code>, the navigation
+is ignored.</li>
+</ul></li>
+<li><code>request_handler</code> (command) (no default)
+
+<ul>
+<li>The command to use when a new network request is about to be initiated. The
+URI is passed as an argument. If the command returns a non-empty string,
+the first line of the result is used as the new URI. To cancel a request,
+use the URI <code>about:blank</code>.</li>
+<li>NOTE: Do <em>not</em> use <code>request</code> in WebKit1 as this is called synchronously and
+will just pause <code>uzbl-core</code> until the <code>request</code> timeout occurs.</li>
+</ul></li>
+<li><code>download_handler</code> (command) (no default) (synchronous in WebKit1)
+
+<ul>
+<li>The command to use when determining where to save a downloaded file. It is
+passed the URI, suggested filename, content type, and total size as
+arguments. If a destination is known, it is passed as well. The result is
+used as the final destination. If it is empty, the download is cancelled.</li>
+<li>NOTE: Do <em>not</em> use <code>request</code> in WebKit1 as this is called synchronously and
+will just pause <code>uzbl-core</code> until the <code>request</code> timeout occurs.</li>
+</ul></li>
+<li><code>mime_handler</code> (command) (no default) (WebKit1 only)
+
+<ul>
+<li>The command to use when determining what to do with content based on its
+mime type. It is passed the mime type and disposition as arguments.</li>
+</ul></li>
+<li><code>authentication_handler</code> (command) (no default) (WebKit1 only)
+
+<ul>
+<li>The command to use when requesting authentication.</li>
+</ul></li>
+<li><code>permission_handler</code> (command) (no default)
+
+<ul>
+<li>The command to use when WebKit requesting permission for an action.</li>
+</ul></li>
+<li><code>file_chooser_handler</code> (command) (no default) (WebKit &gt;= 1.9.4)
+
+<ul>
+<li>The command to use when a web page requests a file. By default, the GTK
+widget file dialog.</li>
+</ul></li>
+<li><code>shell_cmd</code> (string) (default: <code>sh -c</code>)
+
+<ul>
+<li>The command to use as a shell. This is used in the <code>spawn_sh</code> and <code>sync_sh</code>
+commands as well as <code>@()@</code> expansion.</li>
+</ul></li>
+<li><code>enable_builtin_auth</code> (boolean) (default: 0)
+
+<ul>
+<li>If non-zero, WebKit will handle HTTP authentication dialogs.</li>
+</ul></li>
+</ul>
+
+<h4>Window</h4>
+
+<ul>
+<li><code>icon</code> (string) (no default)
+
+<ul>
+<li>The path to an image to use as an icon for <code>uzbl</code>. Overrides <code>icon_name</code>
+when set.</li>
+</ul></li>
+<li><code>icon_name</code> (string) (no default)
+
+<ul>
+<li>The name of an icon use as an icon for <code>uzbl</code>. Overrides <code>icon</code> when set.</li>
+</ul></li>
+<li><code>window_role</code> (string) (no default)
+
+<ul>
+<li>Sets the role of the window. This is used to hint to the window manager how
+to handle the window.</li>
+</ul></li>
+<li><code>auto_resize_window</code> (boolean) (default: 0) (WebKit1 only)
+
+<ul>
+<li>If non-zero, WebKit will try to honor JavaScript moving the window. May
+still be blocked by window manager policy.</li>
+</ul></li>
+</ul>
+
+<h4>UI</h4>
+
+<ul>
+<li><code>show_status</code> (boolean) (default: 1)
+
+<ul>
+<li>If non-zero, the status bar is shown.</li>
+</ul></li>
+<li><code>status_top</code> (boolean) (default: 0)
+
+<ul>
+<li>If non-zero, the status bar is placed above the page, otherwise it is
+placed below.</li>
+</ul></li>
+<li><code>status_format</code> (string) (default: <code>&lt;b&gt;@[@TITLE]@&lt;/b&gt; - @[@uri]@ - &lt;span foreground="#bbb"&gt;@NAME&lt;/span&gt;</code>)
+
+<ul>
+<li>The format string of the content in the status bar.</li>
+</ul></li>
+<li><code>status_format_right</code> (string) (no default)
+
+<ul>
+<li>The format string of the content in right side of the status bar. The right
+side is elided if the left side overflows.</li>
+</ul></li>
+<li><code>status_background</code> (string) (no default)
+
+<ul>
+<li>The background color of the status bar. Most common formats supported.</li>
+</ul></li>
+<li><code>title_format_long</code> (string (default: <code>@keycmd @TITLE - Uzbl browser &lt;@NAME&gt; &gt; @SELECTED_URI</code>)
+
+<ul>
+<li>`The title to use when no status bar is shown.</li>
+</ul></li>
+<li><code>title_format_short</code> (string (default: <code>@TITLE - Uzbl browser &lt;@NAME&gt;</code>)
+
+<ul>
+<li>`The title to use when the status bar is shown.</li>
+</ul></li>
+</ul>
+
+<h4>Customization</h4>
+
+<ul>
+<li><code>default_context_menu</code> (boolean) (default: 0)
+
+<ul>
+<li>If non-zero, display the default context menu, ignoring any custom menu
+items.</li>
+</ul></li>
+</ul>
+
+<h4>Printing</h4>
+
+<ul>
+<li><code>print_backgrounds</code> (boolean) (default: 1)
+
+<ul>
+<li>If non-zero, print backgrounds when printing pages.</li>
+</ul></li>
+</ul>
+
+<h4>Network</h4>
+
+<ul>
+<li><code>proxy_url</code> (string) (no default) (WebKit1 only)
+
+<ul>
+<li>If set, the value is used as a network proxy.</li>
+</ul></li>
+<li><code>max_conns</code> (integer) (default: 100) (WebKit1 only)
+
+<ul>
+<li>The maximum number of connections to initialize total.</li>
+</ul></li>
+<li><code>max_conns_host</code> (integer) (default: 6) (WebKit1 only)
+
+<ul>
+<li>The maximum number of connections to use per host.</li>
+</ul></li>
+<li><code>http_debug</code> (enumeration) (default: <code>none</code>) (WebKit1 only)
+
+<ul>
+<li>Debugging level for HTTP connections. Acceptable values include:</li>
+<li><code>none</code></li>
+<li><code>minimal</code></li>
+<li><code>headers</code></li>
+<li><code>body</code></li>
+</ul></li>
+<li><code>ssl_ca_file</code> (string) (no default) (WebKit1 only)
+
+<ul>
+<li>The path to the CA certificate file in PEM format to use for trusting SSL
+certificates. By default, the system store is used.</li>
+</ul></li>
+<li><code>ssl_policy</code> (enumeration) (default: <code>fail</code>)
+
+<ul>
+<li>The policy to use for handling SSL failures. Acceptable values include:</li>
+<li><code>ignore</code></li>
+<li><code>fail</code></li>
+</ul></li>
+<li><code>cache_model</code> (enumeration) (default: <code>unknown</code>)
+
+<ul>
+<li>The model to use for caching content. Acceptable values include:</li>
+<li><code>document_viewer</code>
+
+<ul>
+<li>Disables all caching.</li>
+</ul></li>
+<li><code>web_browser</code>
+
+<ul>
+<li>Caches heavily to attempt to minimize network usage.</li>
+</ul></li>
+<li><code>document_browser</code>
+
+<ul>
+<li>Caches moderately. This is optimized for navigation of local resources.</li>
+</ul></li>
+</ul></li>
+</ul>
+
+<h4>Security</h4>
+
+<ul>
+<li><code>enable_private</code> (boolean) (default: 0)
+
+<ul>
+<li>If non-zero, enables WebKit's private browsing mode. Also sets the
+<code>UZBL_PRIVATE</code> environment variable for external plugins. DNS prefetching
+is separate from this; see the <code>enable_dns_prefetch</code> variable. It is
+currently experimental in WebKitGtk itself.</li>
+</ul></li>
+<li><code>permissive</code> (boolean) (default: 0)
+
+<ul>
+<li>If non-zero, permission will be granted by default (if <code>enable_private</code> is
+0) if <code>permission_handler</code> is either not set or returns an invalid value.</li>
+</ul></li>
+<li><code>enable_universal_file_access</code> (boolean) (default: 0) (WebKit1 only)
+
+<ul>
+<li>If non-zero, content accessed via the <code>file</code> scheme will be allowed to
+access all other content.</li>
+</ul></li>
+<li><code>enable_cross_file_access</code> (boolean) (default: 0) (WebKit1 only)
+
+<ul>
+<li>If non-zero, content accessed via the <code>file</code> scheme will be allowed to
+access other <code>file</code> content.</li>
+</ul></li>
+<li><code>enable_hyperlink_auditing</code> (boolean) (default: 0)
+
+<ul>
+<li>If non-zero, <code>&lt;a ping&gt;</code> will be allowed in WebKit.</li>
+</ul></li>
+<li><code>cookie_policy</code> (enumeration) (default: <code>always</code>)
+
+<ul>
+<li>Sets the cookie policy for WebKit. Acceptable values include:</li>
+<li><code>always</code></li>
+<li><code>never</code></li>
+<li><code>first_party</code>
+
+<ul>
+<li>Blocks third-party cookies.</li>
+</ul></li>
+</ul></li>
+<li><code>enable_dns_prefetch</code> (boolean) (default: 1) (WebKit &gt;= 1.3.13)
+
+<ul>
+<li>If non-zero, WebKit will prefetch domain names while browsing.</li>
+</ul></li>
+<li><code>display_insecure_content</code> (boolean) (default: 1) (WebKit1 &gt;= 1.11.2)
+
+<ul>
+<li>If non-zero, HTTPS content will be allowed to display content served over
+HTTP.</li>
+</ul></li>
+<li><code>run_insecure_content</code> (boolean) (default: 1) (WebKit1 &gt;= 1.11.2)
+
+<ul>
+<li>If non-zero, HTTPS content will be allowed to run content served over HTTP.</li>
+</ul></li>
+<li><code>maintain_history</code> (boolean) (default: 1) (WebKit1 only)
+
+<ul>
+<li>If non-zero, WebKit will maintain a back/forward list.</li>
+</ul></li>
+</ul>
+
+<h4>Inspector</h4>
+
+<ul>
+<li><code>profile_js</code> (boolean) (default: 0) (WebKit1 only)
+
+<ul>
+<li>If non-zero, the inspector will profile running JavaScript. Profiles are
+available as the <code>Console.profiles</code> variable in JavaScript.</li>
+</ul></li>
+<li><code>profile_timeline</code> (boolean) (default: 0) (WebKit1 only)
+
+<ul>
+<li>If non-zero, the inspector will profile network activity.</li>
+</ul></li>
+</ul>
+
+<h4>Page</h4>
+
+<ul>
+<li><code>forward_keys</code> (boolean) (default: 0)
+
+<ul>
+<li>If non-zero, <code>uzbl</code> will pass keypresses to WebKit.</li>
+</ul></li>
+<li><code>useragent</code> (string) (no default)
+
+<ul>
+<li>The string to send as the <code>User-Agent</code> HTTP header. Setting this variable
+does not update the useragent in JavaScript as seen by the
+<code>navigator.userAgent</code> variable.</li>
+</ul></li>
+<li><code>accept_languages</code> (string) (no default)
+
+<ul>
+<li>The list of languages to send with the <code>Accept-Language</code> HTTP header. In
+WebKit1, if set to <code>auto</code>, the list will be constructed from the system.</li>
+</ul></li>
+<li><code>zoom_level</code> (double) (default: 1.0)
+
+<ul>
+<li>The current zoom level of the page.</li>
+</ul></li>
+<li><code>zoom_step</code> (double) (default: 0.1)
+
+<ul>
+<li>The amount to step by default with the <code>zoom in</code> and <code>zoom out</code> commands.
+Must be greater than 0.</li>
+</ul></li>
+<li><code>zoom_text_only</code> (boolean) (default: 0)
+
+<ul>
+<li>If non-zero, only text will be zoomed on a page.</li>
+</ul></li>
+<li><code>caret_browsing</code> (boolean) (default: 0)
+
+<ul>
+<li>If non-zero, pages may be navigated using the arrows to move a cursor
+(similar to a word processor).</li>
+</ul></li>
+<li><code>enable_frame_flattening</code> (boolean) (default: 0) (WebKit &gt;= 1.3.5)
+
+<ul>
+<li>If non-zero, frames will be expanded and collapsed into a single scrollable
+area.</li>
+</ul></li>
+<li><code>enable_smooth_scrolling</code> (boolean) (default: 0) (WebKit &gt;= 1.9.0)
+
+<ul>
+<li>If non-zero, scrolling the page will be smoothed.</li>
+</ul></li>
+<li><code>page_view_mode</code> (enumeration) (default: <code>web</code>)
+
+<ul>
+<li>How to render content on a page. Acceptable values include:</li>
+<li><code>web</code>
+
+<ul>
+<li>Render content as a web page.</li>
+</ul></li>
+<li><code>source</code>
+
+<ul>
+<li>Display the source of a page as plain text.</li>
+</ul></li>
+</ul></li>
+<li><code>transparent</code> (boolean) (default: 0) (WebKit1 only)
+
+<ul>
+<li>If non-zero, the web page will have a transparent background rather than a
+solid color.</li>
+</ul></li>
+<li><code>window_view_mode</code> (enumeration) (default: <code>windowed</code>) (WebKit1 &gt;= 1.3.4)
+
+<ul>
+<li>Sets the value web pages will see for how the content is presented to the
+user. Acceptable values include:</li>
+<li><code>windowed</code></li>
+<li><code>floating</code></li>
+<li><code>fullscreen</code></li>
+<li><code>maximized</code></li>
+<li><code>minimized</code></li>
+</ul></li>
+<li><code>enable_fullscreen</code> (boolean) (default: 0) (WebKit &gt;= 1.3.4)
+
+<ul>
+<li>If non-zero, Mozilla-style JavaScript APIs will be enabled for JavaScript.</li>
+</ul></li>
+<li><code>editable</code> (boolean) (default: 0)
+
+<ul>
+<li>If non-zero, web pages will be editable similar to a WYSIWYG editor.</li>
+</ul></li>
+</ul>
+
+<h4>JavaScript</h4>
+
+<ul>
+<li><code>enable_scripts</code> (boolean) (default: 1)
+
+<ul>
+<li>If non-zero, JavaScript will be allowed to execute on web pages.</li>
+</ul></li>
+<li><code>javascript_windows</code> (boolean) (default: 0)
+
+<ul>
+<li>If non-zero, JavaScript in a page will be allowed to open windows without
+user intervention.</li>
+</ul></li>
+<li><code>javascript_dom_paste</code> (boolean) (default: 0) (WebKit1 only)
+
+<ul>
+<li>If non-zero, JavaScript in a page will be able to paste content from the
+system clipboard.</li>
+</ul></li>
+<li><code>javascript_clipboard</code> (boolean) (default: 0) (WebKit &gt;= 1.3.0)
+
+<ul>
+<li>If non-zero, JavaScript in a page will be able to access content in the
+system clipboard directly.</li>
+</ul></li>
+</ul>
+
+<h4>Image</h4>
+
+<ul>
+<li><code>autoload_images</code> (boolean) (default: 1)
+
+<ul>
+<li>If non-zero, images will automatically be loaded.</li>
+</ul></li>
+<li><code>autoshrink_images</code> (boolean) (default: 1) (WebKit1 only)
+
+<ul>
+<li>If non-zero, stand-alone images will be resized to fit within the window.</li>
+</ul></li>
+<li><code>use_image_orientation</code> (boolean) (default: 0) (WebKit1 only)
+
+<ul>
+<li>If non-zero, image orientation tags will be used to reorient images once
+loaded.</li>
+</ul></li>
+</ul>
+
+<h4>Spell checking</h4>
+
+<ul>
+<li><code>enable_spellcheck</code> (boolean) (default: 0)
+
+<ul>
+<li>If non-zero, spell checking will be enabled in text entries.</li>
+</ul></li>
+<li><code>spellcheck_languages</code> (string) (no default)
+
+<ul>
+<li>A comma-separated list of languages to use for spell checking. Must be set
+for <code>enable_spellcheck</code> to actually mean anything.</li>
+</ul></li>
+</ul>
+
+<h4>Form</h4>
+
+<ul>
+<li><code>resizable_text_areas</code> (boolean) (default: 1)
+
+<ul>
+<li>If non-zero, text area form elements will be resizable with a drag handle.</li>
+</ul></li>
+<li><code>enable_spatial_navigation</code> (boolean) (default: 0)
+
+<ul>
+<li>If non-zero, the arrow keys will navigate between form elements.</li>
+</ul></li>
+<li><code>editing_behavior</code> (enumeration) (default: <code>unix</code>) (WebKit1 only)
+
+<ul>
+<li>Sets the behavior of text area elements to behave closer to native widgets
+on different platforms. Acceptable values include:</li>
+<li><code>mac</code></li>
+<li><code>unix</code></li>
+<li><code>windows</code></li>
+</ul></li>
+<li><code>enable_tab_cycle</code> (boolean) (default: 1)
+
+<ul>
+<li>If non-zero, the tab key will navigate between form elements, otherwise it
+will always be interpreted as an insertion of a tab character.</li>
+</ul></li>
+</ul>
+
+<h4>Text</h4>
+
+<ul>
+<li><code>default_encoding</code> (string) (default: <code>iso-8859-1</code>)
+
+<ul>
+<li>The encoding to assume pages use if not indicated in HTTP headers.</li>
+</ul></li>
+<li><code>custom_encoding</code> (string) (no default)
+
+<ul>
+<li>If non-empty, the value is used to override any other encoding used for the
+page. Causes the page to be reloaded. Set to the empty string to clear any
+custom encoding.</li>
+</ul></li>
+<li><code>enforce_96_dpi</code> (boolean) (default: 0) (WebKit1 only)
+
+<ul>
+<li>If non-zero, the display will be assumed to be 96-dpi.</li>
+</ul></li>
+</ul>
+
+<h4>Font</h4>
+
+<ul>
+<li><code>default_font_family</code> (string) (default: <code>sans-serif</code>)
+
+<ul>
+<li>The font family to use by default for all text.</li>
+</ul></li>
+<li><code>monospace_font_family</code> (string) (default: <code>monospace</code>)
+
+<ul>
+<li>The font family to use by default for monospace text.</li>
+</ul></li>
+<li><code>sans_serif_font_family</code> (string) (default: <code>sans-serif</code>)
+
+<ul>
+<li>The font family to use by default for sans serif text.</li>
+</ul></li>
+<li><code>serif_font_family</code> (string) (default: <code>serif</code>)
+
+<ul>
+<li>The font family to use by default for serif text.</li>
+</ul></li>
+<li><code>cursive_font_family</code> (string) (default: <code>serif</code>)
+
+<ul>
+<li>The font family to use by default for any cursive text.</li>
+</ul></li>
+<li><code>fantasy_font_family</code> (string) (default: <code>serif</code>)
+
+<ul>
+<li>The font family to use by default for any fantasy text.</li>
+</ul></li>
+</ul>
+
+<h4>Font size</h4>
+
+<p>Note: font sizes are in points.</p>
+
+<ul>
+<li><code>minimum_font_size</code> (integer) (default: 5)
+
+<ul>
+<li>The minimum font size to use for text.</li>
+</ul></li>
+<li><code>minimum_logical_font_size</code> (integer) (default: 5)
+
+<ul>
+<li>The minimum logical font size to use for text. This is the size after any
+transforms or "smaller" CSS specifications.</li>
+</ul></li>
+<li><code>font_size</code> (integer) (default: 12)
+
+<ul>
+<li>The default font size for text.</li>
+</ul></li>
+<li><code>monospace_size</code> (integer) (default: 10)
+
+<ul>
+<li>The default font size for monospace text.</li>
+</ul></li>
+</ul>
+
+<h4>Features</h4>
+
+<ul>
+<li><code>enable_plugins</code> (boolean) (default: 1)
+
+<ul>
+<li>If non-zero, plugins will be enabled on the page.</li>
+</ul></li>
+<li><code>enable_java_applet</code> (boolean) (default: 1)
+
+<ul>
+<li>If non-zero, Java will be enabled for the page. This includes the <code>applet</code>
+HTML tag which is not controlled by the <code>enable_plugins</code> variable.</li>
+</ul></li>
+<li><code>enable_webgl</code> (boolean) (default: 0) (WebKit &gt;= 1.3.14)
+
+<ul>
+<li>If non-zero, WebGL will be enabled.</li>
+</ul></li>
+<li><code>enable_webaudio</code> (boolean) (default: 0) (WebKit &gt;= 1.7.5)
+
+<ul>
+<li>If non-zero, the WebAudio API will be enabled.</li>
+</ul></li>
+<li><code>enable_3d_acceleration</code> (boolean) (default: 0) (WebKit1 &gt;= 1.7.90)
+
+<ul>
+<li>If non-zero, the GPU will be used to render animations and 3D CSS
+transforms.</li>
+</ul></li>
+<li><code>enable_inline_media</code> (boolean) (default: 1) (WebKit &gt;= 1.9.3)
+
+<ul>
+<li>If non-zero, media playback within a page will be enabled, otherwise, only
+fullscreen playback is allowed.</li>
+</ul></li>
+<li><code>require_click_to_play</code> (boolean) (default: 0) (WebKit &gt;= 1.9.3)
+
+<ul>
+<li>If non-zero, media may automatically play on a page, otherwise a user
+interaction is required to even load the media.</li>
+</ul></li>
+<li><code>enable_css_shaders</code> (boolean) (default: 0) (WebKit1 &gt;= 1.11.1 and &lt; 2.3.5)
+
+<ul>
+<li>If non-zero, CSS shaders will be enabled.</li>
+</ul></li>
+<li><code>enable_media_stream</code> (boolean) (default: 0) (WebKit1 &gt;= 1.11.1)
+
+<ul>
+<li>If non-zero, the Media Stream API will be enabled.</li>
+</ul></li>
+<li><code>enable_media_source</code> (boolean) (default: 0) (WebKit &gt;= 2.3.3)
+
+<ul>
+<li>If non-zero, the MediaSource API will be enabled.</li>
+</ul></li>
+</ul>
+
+<h4>HTML5 Database</h4>
+
+<ul>
+<li><code>enable_database</code> (boolean) (default: 1)
+
+<ul>
+<li>If non-zero, the HTML5 client-side SQL API for JavaScript is enabled.</li>
+</ul></li>
+<li><code>enable_local_storage</code> (boolean) (default: 1)
+
+<ul>
+<li>If non-zero, the HTML5 local storage API is enabled.</li>
+</ul></li>
+<li><code>enable_pagecache</code> (boolean) (default: 0)
+
+<ul>
+<li>If non-zero, WebKit will "freeze" pages when navigating to optimize
+back/forward navigation. See
+<a href="http://webkit.org/blog/427/webkit-page-cache-i-the-basics/">this article</a>
+for more information.</li>
+</ul></li>
+<li><code>enable_offline_app_cache</code> (boolean) (default: 1)
+
+<ul>
+<li>If non-zero, HTML5 web application cache support will be enabled. This
+allows web applications to run locally without a network connection.</li>
+</ul></li>
+<li><code>app_cache_size</code> (size) (default: [no quota]) (WebKit1 &gt;= 1.3.13)
+
+<ul>
+<li>The maximum size (in bytes) of the local application cache.</li>
+</ul></li>
+<li><code>web_database_directory</code> (string) (default: <code>$XDG_DATA_HOME/webkit/databases</code>) (WebKit1 only)
+
+<ul>
+<li>Where to store web databases.</li>
+</ul></li>
+<li><code>web_database_quota</code> (size) (default: 5242880) (WebKit1 only)
+
+<ul>
+<li>The maximum size (in bytes) of web databases. (Note: It is unclear if this
+is a total quota or per-database quota.)</li>
+</ul></li>
+<li><code>local_storage_path</code> (string) (default: <code>$XDG_DATA_HOME/webkit/databases</code>) (WebKit1 &gt;= 1.5.2)
+
+<ul>
+<li>Where to store HTML5 <code>localStorage</code> data.</li>
+</ul></li>
+</ul>
+
+<h4>Hacks</h4>
+
+<ul>
+<li><code>enable_site_workarounds</code> (boolean) (default: 0)
+
+<ul>
+<li>If non-zero, WebKit will use site-specific rules to workaround known broken
+behavior.</li>
+</ul></li>
+</ul>
+
+<h4>Constants</h4>
+
+<p>Constants may not be assigned to. When dumping variables using <code>dump_config</code>,
+they are written as comments.</p>
+
+<ul>
+<li><code>inspected_uri</code> (string) (WebKit &gt;= 1.3.17)
+
+<ul>
+<li>The URI which the inspector is currently focusing on.</li>
+</ul></li>
+<li><code>current_encoding</code> (string) (WebKit1 only)
+
+<ul>
+<li>The encoding of the current page.</li>
+</ul></li>
+<li><code>geometry</code> (string)
+
+<ul>
+<li>A string giving the current window geometry of <code>uzbl</code> in
+<code>&lt;width&gt;x&lt;height&gt;+&lt;xoffset&gt;+&lt;yoffset&gt;</code> format.</li>
+</ul></li>
+<li><code>plugin_list</code> (string) (WebKit1 &gt;= 1.3.8)
+
+<ul>
+<li>A JSON-formatted list describing loaded plugins.</li>
+</ul></li>
+<li><code>is_online</code> (boolean)
+
+<ul>
+<li>If non-zero, a network is available (not necessarily the Internet).</li>
+</ul></li>
+<li><code>is_playing_audio</code> (boolean)
+
+<ul>
+<li>If non-zero, audio is playing.</li>
+</ul></li>
+<li><code>uri</code> (string)
+
+<ul>
+<li>The current top-level URI of the view.</li>
+</ul></li>
+<li><code>embedded</code> (boolean)
+
+<ul>
+<li>If non-zero, <code>uzbl</code> is embedded in another window, otherwise it is
+stand-alone.</li>
+</ul></li>
+<li><code>WEBKIT_MAJOR</code> (integer)
+
+<ul>
+<li>The major version of WebKit at runtime.</li>
+</ul></li>
+<li><code>WEBKIT_MINOR</code> (integer)
+
+<ul>
+<li>The minor version of WebKit at runtime.</li>
+</ul></li>
+<li><code>WEBKIT_MICRO</code> (integer)
+
+<ul>
+<li>The micro version of WebKit at runtime.</li>
+</ul></li>
+<li><code>WEBKIT_UA_MAJOR</code> (integer)
+
+<ul>
+<li>The major useragent version of WebKit at compile time.</li>
+</ul></li>
+<li><code>WEBKIT_UA_MINOR</code> (integer)
+
+<ul>
+<li>The minor useragent version of WebKit at compile time.</li>
+</ul></li>
+<li><code>HAS_WEBKIT2</code> (boolean)
+
+<ul>
+<li>If non-zero, <code>uzbl</code> is using WebKit2.</li>
+</ul></li>
+<li><code>ARCH_UZBL</code> (string)
+
+<ul>
+<li>The architecture <code>uzbl</code> is compiled for.</li>
+</ul></li>
+<li><code>COMMIT</code> (string)
+
+<ul>
+<li>The commit string of <code>uzbl</code> at compiled time.</li>
+</ul></li>
+<li><code>TITLE</code> (string)
+
+<ul>
+<li>The title of the current page.</li>
+</ul></li>
+<li><code>SELECTED_URI</code> (string)
+
+<ul>
+<li>The URI of the link is hovering over; empty if there is no link.</li>
+</ul></li>
+<li><code>NAME</code> (string)
+
+<ul>
+<li>The name of the <code>uzbl</code> instance (defaults to the pid).</li>
+</ul></li>
+<li><code>PID</code> (integer)
+
+<ul>
+<li>The process ID of <code>uzbl</code>.</li>
+</ul></li>
+<li><code>_</code> (string)
+
+<ul>
+<li>The last result from a command.</li>
+</ul></li>
+</ul>
+
+<h3>VARIABLE EXPANSION</h3>
+
+<p>Variable expansion works similarly to shell interpreters (sh, bash, etc.). This
+means you can construct strings with uzbl variables in them and have uzbl
+replace the variable name with its contents.</p>
+
+<p>In order to let uzbl know what to expand you'll need to prepend @ to the
+variable name:</p>
+
+<pre><code>print The variable \@show_status contains @show_status
+</code></pre>
+
+<p>The above example demonstrates two things:</p>
+
+<ul>
+<li><code>\</code> is treated as escape character and will use the character immediately
+following it literally this means <code>\@show_status</code> will not expand to the
+variable content but be rather printed as <code>@show_status</code></li>
+<li>prepending the variable with <code>@</code> will expand to its contents</li>
+</ul>
+
+<p>As in the shell you can use <code>@{uzbl_var}</code> to denote the beginning/end of the
+variable name in cases where it is not obvious what belongs to the name and
+what not, e.g., <code>print @{show_status}foobar</code></p>
+
+<p>There are multiple constructs for more complex expansion.</p>
+
+<h4>Shell expansion</h4>
+
+<ul>
+<li><code>@(+command arg1 arg2)@</code>
+
+<ul>
+<li>This is equivalent to running <code>spawn_sync command arg1 arg2</code> and is
+replaced by the first line of its stdout.</li>
+</ul></li>
+<li><code>@(command arg1 arg2)@</code>
+
+<ul>
+<li>This is equivalent to running <code>spawn_sh_sync command arg1 arg2</code> and is
+replaced by the first line of its stdout.</li>
+</ul></li>
+</ul>
+
+<h4>Uzbl command expansion</h4>
+
+<ul>
+<li><code>@/+file/@</code>
+
+<ul>
+<li>This is equivalent to running <code>include file</code> and is replaced by its result.</li>
+</ul></li>
+<li><code>@/command arg1 arg2/@</code>
+
+<ul>
+<li>This is equivalent to running <code>command arg1 arg2</code> and is replaced by its
+result.</li>
+</ul></li>
+</ul>
+
+<h4>JavaScript expansion</h4>
+
+<ul>
+<li><code>@*+javascript_file*@</code>
+
+<ul>
+<li>This is equivalent to running <code>js uzbl file javascript_file</code> and is
+replaced by its result.</li>
+</ul></li>
+<li><code>@*javascript*@</code>
+
+<ul>
+<li>This is equivalent to running <code>js uzbl string javascript</code> and is replaced
+by its result.</li>
+</ul></li>
+<li><code>@&lt;+javascript_file&gt;@</code>
+
+<ul>
+<li>This is equivalent to running <code>js page file javascript_file</code> and is
+replaced by its result.</li>
+</ul></li>
+<li><code>@&lt;javascript&gt;@</code>
+
+<ul>
+<li>This is equivalent to running <code>js page string javascript</code> and is replaced
+by its result.</li>
+</ul></li>
+<li><code>@-+javascript_file-@</code>
+
+<ul>
+<li>This is equivalent to running <code>js clean file javascript_file</code> and is
+replaced by its result.</li>
+</ul></li>
+<li><code>@-javascript-@</code>
+
+<ul>
+<li>This is equivalent to running <code>js clean string javascript</code> and is replaced
+by its result.</li>
+</ul></li>
+</ul>
+
+<h4>XML escaping</h4>
+
+<ul>
+<li><code>@[string]@</code>
+
+<ul>
+<li>This escapes <code>string</code> for XML entities. This is most useful when using
+page-defined strings in the <code>status_bar</code> variable.</li>
+</ul></li>
+</ul>
+
+<h3>JavaScript API</h3>
+
+<p>Uzbl has a JavaScript API available via the <code>js uzbl</code> command. There is a
+global <code>uzbl</code> object can control <code>uzbl</code> through two properties: <code>variables</code> and
+<code>commands</code>. For example, to set the <code>verbose</code> variable:</p>
+
+<pre><code>uzbl.variables.verbose = 1
+</code></pre>
+
+<p>To call the <code>back</code> command:</p>
+
+<pre><code>uzbl.commands.back()
+</code></pre>
+
+<p>All arguments to commands be converted to strings, so <code>{}</code> will appear to
+commands as <code>[object Object]</code>, not JavaScript objects.</p>
+
+<h4>Accessing the web page</h4>
+
+<p>Currently, access to the webpage is not available through the <code>uzbl</code> context.
+This is currently impossible with WebKit2 (since even <code>uzbl</code> does not have
+access to the page's JavaScript context) and crashes WebKit1.</p>
+
+<h3>TITLE AND STATUS BAR EVALUATION</h3>
+
+<p>The contents of the status bar can be customized by setting the <code>status_format</code>
+variable. The contents of the window title can be customized by setting the
+<code>title_format_short</code> variable (which is used when the status bar is displayed)
+and the <code>title_format_long</code> variable (which is used when the status bar is not
+displayed). Their values can be set using the expansion and substitution
+techniques described above.</p>
+
+<p>These variables are expanded in multiple stages; once when the variable is set,
+and again every time that the status bar or window title are updated. Expansions
+that should be evaluated on every update need to be escaped:</p>
+
+<pre><code>set title_format_short = @(date)@
+# this expansion will be evaluated when the variable is set.
+# the title will stay constant with the date that the variable was set.
+
+set title_format_short = \@(date)\@
+# this expansion will be evaluated when the window title is updated.
+# the date in the title will change when you change pages, for example.
+
+set title_format_short = \\\@(date)\\\@
+# the title will stay constant as a literal "@(date)@"
+</code></pre>
+
+<p>The <code>status_format</code> and <code>status_format_right</code> variables can contain
+<a href="http://library.gnome.org/devel/pango/stable/PangoMarkupFormat.html">Pango</a>
+markup . In these variables, expansions that might produce the characters <code>&lt;</code>,
+<code>&amp;</code> or <code>&gt;</code> should be wrapped in <code>@[]@</code> substitutions so that they don't
+interfere with the status bar's markup; see the sample config for examples.</p>
+
+<h3>EXTERNAL SCRIPTS</h3>
+
+<p>You can use external scripts with Uzbl the following ways:</p>
+
+<ul>
+<li>Let <code>uzbl</code> call them. These scripts are called "handlers" in the <code>uzbl</code>
+config. These are typically used for policy requests so that behavior can be
+controlled with external logic.</li>
+<li>Call them yourself from inside <code>uzbl</code>. You can bind keys with this. Examples:
+add new bookmark, load new URL.</li>
+<li>You could also use <code>xbindkeys</code> or your WM config to trigger scripts if <code>uzbl</code>
+does not have focus.</li>
+</ul>
+
+<p>Scripts called by <code>uzbl</code> (the commands starting with <code>spawn</code>) have access to
+the following environment variables:</p>
+
+<ul>
+<li><code>$UZBL_CONFIG</code>
+
+<ul>
+<li>The configuration file loaded by this <code>uzbl</code> instance.</li>
+</ul></li>
+<li><code>$UZBL_PID</code>
+
+<ul>
+<li>The process ID of this <code>uzbl</code> instance.</li>
+</ul></li>
+<li><code>$UZBL_XID</code>
+
+<ul>
+<li>The X Windows ID of the process.</li>
+</ul></li>
+<li><code>$UZBL_FIFO</code>
+
+<ul>
+<li>The filename of the FIFO being used, if any.</li>
+</ul></li>
+<li><code>$UZBL_SOCKET</code>
+
+<ul>
+<li>The filename of the Unix socket being used, if any.</li>
+</ul></li>
+<li><code>$UZBL_URI</code>
+
+<ul>
+<li>The URI of the current page.</li>
+</ul></li>
+<li><code>$UZBL_TITLE</code>
+
+<ul>
+<li>The current page title.</li>
+</ul></li>
+<li><code>$UZBL_PRIVATE</code>
+
+<ul>
+<li>Set if the <code>enable_private</code> variable is non-zero, unset otherwise.</li>
+</ul></li>
+</ul>
+
+<p>Handler scripts (<code>download_handler</code>, <code>navigation_handler</code>, <code>request_handler</code>,
+<code>mime_handler</code>, <code>authentication_handler</code>, <code>permission_handler</code>,
+<code>tls_error_handler</code>, <code>file_chooser_handler</code>, and <code>color_chooser_handler</code>) are
+called with special arguments:</p>
+
+<ul>
+<li><p>download handler</p>
+
+<ol>
+<li><code>url</code></li>
+</ol>
+
+<ul>
+<li>The URL of the item to be downloaded.
+
+<ol>
+<li><code>suggested_filename</code></li>
+</ol></li>
+<li>A filename suggested by the server or based on the URL.
+
+<ol>
+<li><code>content_type</code></li>
+</ol></li>
+<li>The mimetype of the file to be downloaded.
+
+<ol>
+<li><code>total_size</code></li>
+</ol></li>
+<li>The size of the file to be downloaded in bytes. This may be inaccurate.
+
+<ol>
+<li><code>destination_path</code></li>
+</ol></li>
+<li>This is only present if the download was started explicitly using the
+<code>download</code> command. If it is present, this is the path that the file
+should be saved to. A download handler using WebKit's internal downloader
+can just echo this path and exit when this argument is present.</li>
+</ul></li>
+<li><p>navigation handler</p>
+
+<ol>
+<li><code>uri</code></li>
+</ol>
+
+<ul>
+<li>The URI of the page to be navigated to.
+
+<ol>
+<li><code>src_frame</code></li>
+</ol></li>
+<li>The name of the frame which is targeted for the navigation.
+
+<ol>
+<li><code>dest_frame</code></li>
+</ol></li>
+<li>The name of the frame which is targeted for the navigation.
+
+<ol>
+<li><code>type</code></li>
+</ol></li>
+<li>The type of navigation that triggered the request. Known values include:
+
+<ul>
+<li><code>link</code></li>
+<li><code>form_submission</code></li>
+<li><code>back_forward</code></li>
+<li><code>reload</code></li>
+<li><code>form_resubmission</code></li>
+<li><code>other</code></li>
+<li><code>unknown</code>
+
+<ol>
+<li><code>button</code></li>
+</ol></li>
+</ul></li>
+<li>The mouse button used for the navigation (or 0 if a mouse was not used).
+
+<ol>
+<li><code>modifiers</code></li>
+</ol></li>
+<li>The modifiers used for the navigation. This uses the same format as the
+<code>KEY_PRESS</code> and <code>KEY_RELEASE</code> events.
+
+<ol>
+<li><code>is_gesture</code></li>
+</ol></li>
+<li><code>true</code> if the action was triggered by a gesture, <code>false</code> otherwise.</li>
+</ul></li>
+<li><p>request handler</p>
+
+<ol>
+<li><code>uri</code></li>
+</ol>
+
+<ul>
+<li>The URI of the resource which is being requested.
+
+<ol>
+<li><code>can_display</code></li>
+</ol></li>
+<li>One of <code>can_display</code>, <code>cant_display</code>, or <code>unknown</code> to indicate whether
+WebKit knows how to display the data given its MIME type (<code>unknown</code> means
+that <code>uzbl</code> was unable to determine the answer).
+
+<ol>
+<li><code>frame</code></li>
+</ol></li>
+<li>The name of the frame requesting the resource.
+
+<ol>
+<li><code>redirect</code></li>
+</ol></li>
+<li>Whether the request is a redirect or not</li>
+</ul></li>
+<li><p>mime handler</p>
+
+<ol>
+<li><code>mime_type</code></li>
+</ol>
+
+<ul>
+<li>The mime type of the resource.
+
+<ol>
+<li><code>disposition</code></li>
+</ol></li>
+<li>The disposition of the resource. Empty if unknown.</li>
+</ul></li>
+<li><p>authentication handler</p>
+
+<ol>
+<li><code>host</code></li>
+</ol>
+
+<ul>
+<li>The host requesting authentication.
+
+<ol>
+<li><code>realm</code></li>
+</ol></li>
+<li>The realm requesting authentication.
+
+<ol>
+<li><code>retry</code></li>
+</ol></li>
+<li>Either <code>retrying</code> or <code>initial</code> depending on whether this request is a
+retrial of a previous request.
+
+<ol>
+<li><code>scheme</code></li>
+</ol></li>
+<li>The authentication scheme being used. Known values include:
+
+<ul>
+<li><code>default</code></li>
+<li><code>http_basic</code></li>
+<li><code>http_digest</code></li>
+<li><code>html_form</code></li>
+<li><code>ntlm</code></li>
+<li><code>negotiate</code></li>
+<li><code>client_certificate_requested</code></li>
+<li><code>server_trust_evaluation_requested</code>
+
+<ol>
+<li><code>proxy</code></li>
+</ol></li>
+</ul></li>
+<li>Either <code>proxy</code> if a proxy is requesting authentication or <code>origin</code> if a
+remote server is.
+
+<ol>
+<li><code>port</code></li>
+</ol></li>
+<li>The port connected to.
+
+<ol>
+<li><code>save</code></li>
+</ol></li>
+<li>Either <code>can_save</code> or <code>cant_save</code> depending on whether WebKit itself can
+save the credentials.</li>
+</ul></li>
+<li><p>permission handler</p>
+
+<ol>
+<li><code>uri</code></li>
+</ol>
+
+<ul>
+<li>The URI requesting permission.
+
+<ol>
+<li><code>action</code></li>
+</ol></li>
+<li>The data or action WebKit is requesting permission for. Known values
+include:
+
+<ul>
+<li><code>geolocation</code></li>
+<li><code>unknown</code>
+
+<ol>
+<li><code>description</code></li>
+</ol></li>
+</ul></li>
+<li>A description for the request (if available).</li>
+</ul></li>
+<li><p>tls error handler</p>
+
+<ol>
+<li><code>host</code></li>
+</ol>
+
+<ul>
+<li>The host which failed TLS verification.
+
+<ol>
+<li><code>flags</code></li>
+</ol></li>
+<li>A comma-separated list of the reasons the host failed TLS verification.
+Known flags include:
+
+<ul>
+<li><code>unknown_ca</code></li>
+<li><code>bad_identity</code></li>
+<li><code>not_activated</code></li>
+<li><code>expired</code></li>
+<li><code>revoked</code></li>
+<li><code>insecure</code></li>
+<li><code>error</code>
+
+<ol>
+<li><code>cert_info</code></li>
+</ol></li>
+</ul></li>
+<li>A JSON object with information describing the certificate.</li>
+</ul></li>
+<li><p>file chooser handler</p>
+
+<ol>
+<li><code>mode</code></li>
+</ol>
+
+<ul>
+<li>Either <code>multiple</code> or <code>single</code> for whether a single file or multiple files
+were requested.
+
+<ol>
+<li><code>mimetypes</code></li>
+</ol></li>
+<li>A comma-separated list of mimetypes requested.</li>
+</ul></li>
+<li><p>color chooser handler</p>
+
+<ol>
+<li><code>region</code></li>
+</ol>
+
+<ul>
+<li>The region of the element requesting a color in the <code>WIDTHxHEIGHT+X+Y</code>
+format.</li>
+</ul></li>
+</ul>
+
+<h3>WINDOW MANAGER INTEGRATION</h3>
+
+<p>As mentined before, the contents of the window title can be customized by
+setting the <code>title_format_short</code> variable and the <code>title_format_long</code> variable
+(see above to figure out when each of them is used). You can also set <code>icon</code>
+variable to path of the icon file. Some advanced window managers can also take
+<code>WM_WINDOW_ROLE</code> in account, which can be set by modifying <code>window_role</code>
+variable.</p>
+
+<p>Uzbl does not automatically use the current page's favicon as its icon. This
+can, however, be done with external scripts.</p>
+
+<p>Uzbl sets the <code>UZBL_URI</code> property on its window which is always the uri of the
+page loaded into uzbl, except for web inspector windows which does not have the
+property.</p>
+
+<h3>EVENTS</h3>
+
+<p>Unlike commands, events are not handled in <code>uzbl</code> itself, but are dispatched
+asynchronously through a text stream on <code>stdout</code> and/or through a socket.
+You'll usually use <code>uzbl</code> by connecting it to a so-called "event manager" (EM).</p>
+
+<p>An EM is a privileged communicator with <code>uzbl</code>. EM sockets are given on the
+command line via the <code>--connect-socket</code> argument. EM sockets receive requests
+in addition to events. All sockets receive event output. Please be aware that
+events contain sensitive information such as cookie data and keystrokes
+(e.g., passwords).</p>
+
+<p>An example EM is shipped with <code>uzbl</code> called <code>uzbl-event-manager</code>. See <a href="README.event-manager.md">its
+documentation</a> for more.</p>
+
+<p>Many of the features of larger browsers are intended to be implemented via an
+EM. The EM receives all events and requests from <code>uzbl</code> and can implement
+history, keybindings, cookie management, and more. For more on the EM shipped
+with <code>uzbl</code>, see <a href="README.event-manager.md">its documentation</a></p>
+
+<h4>Format</h4>
+
+<p>Events are reported in the following format.</p>
+
+<pre><code> EVENT &lt;NAME&gt; &lt;EVENT_NAME&gt; {DETAILS}
+</code></pre>
+
+<p>Events are line-oriented, so newlines are not supported within events.</p>
+
+<p>Requests use the following format:</p>
+
+<pre><code>REQUEST-&lt;COOKIE&gt; &lt;REQUEST_NAME&gt; [ARGUMENTS...]
+</code></pre>
+
+<p>Only EM sockets receive REQUEST lines. Currently, if a reply is not received
+within one second from <code>uzbl</code> sending a request, <code>uzbl</code> will continue without a
+reply. This is because the request blocks the GUI thread. Replies to a request
+use the following format:</p>
+
+<pre><code>REPLY-&lt;COOKIE&gt; &lt;REPLY&gt;
+</code></pre>
+
+<p>If the cookie does not match the cookie from the request, <code>uzbl</code> will ignore it.</p>
+
+<h4>Built-in events</h4>
+
+<p>Uzbl will report various events by default. All of these events are part of
+uzbl itself and will be emitted based on what is happening within uzbl-core.</p>
+
+<h5>Navigation</h5>
+
+<ul>
+<li><code>NAVIGATION_STARTING &lt;URI&gt; &lt;SRCFRAME&gt; &lt;DESTFRAME&gt; &lt;TYPE&gt;</code>
+
+<ul>
+<li>Sent when a main navigation is requested for a frame. See <code>navigation_handler</code>
+for the types available.</li>
+</ul></li>
+<li><code>LOAD_START</code>
+
+<ul>
+<li>Sent when a main page navigation is started. This is before WebKit even
+looks at the URI, so the name, protocol, or port may still be invalid.</li>
+</ul></li>
+<li><code>LOAD_REDIRECTED &lt;URI&gt;</code>
+
+<ul>
+<li>Sent when the main page navigation has been redirected to a new URI.</li>
+</ul></li>
+<li><code>LOAD_COMMIT &lt;URI&gt;</code>
+
+<ul>
+<li>Sent when the main page navigation has been committed and the network
+request has been sent to the server.</li>
+</ul></li>
+<li><code>LOAD_PROGRESS &lt;PROGRESS&gt;</code>
+
+<ul>
+<li>Sent when the load percentage changes. The progress is in percentage.</li>
+</ul></li>
+<li><code>LOAD_CANCELLED &lt;URI&gt;</code>
+
+<ul>
+<li>Sent when the user has cancelled a load (e.g., by setting the URI in the
+middle of another load).</li>
+</ul></li>
+<li><code>LOAD_ERROR &lt;URI&gt; &lt;CODE&gt; &lt;MESSAGE&gt;</code>
+
+<ul>
+<li>Sent when WebKit has failed to load a page.</li>
+</ul></li>
+<li><code>LOAD_FINISH &lt;URI&gt;</code>
+
+<ul>
+<li>Sent when a page navigation is complete. All of the top-level resources
+have been retrieved by this point.</li>
+</ul></li>
+<li><code>REQUEST_QUEUED &lt;URI&gt;</code> (WebKit1 only)
+
+<ul>
+<li>Sent when a request is queued for the network.</li>
+</ul></li>
+<li><code>REQUEST_STARTING &lt;URI&gt;</code>
+
+<ul>
+<li>Sent when a request has been sent to the server.</li>
+</ul></li>
+<li><code>REQUEST_FINISHED &lt;URI&gt;</code>
+
+<ul>
+<li>Sent when a request has completed.</li>
+</ul></li>
+</ul>
+
+<h5>Input</h5>
+
+<ul>
+<li><code>KEY_PRESS &lt;MODIFIERS&gt; &lt;KEY&gt;</code>
+
+<ul>
+<li>Sent when a key (e.g., Shift, Ctrl, etc.) is pressed. The key is in UTF-8.
+This event is also used for mouse clicks which use the format
+<code>&lt;REP&gt;Button&lt;VALUE&gt;</code> which would be <code>2Button1</code> for a double click of the
+main mouse button (rep is empty for single clicks). Multiple clicks usually
+only show as a <code>KEY_RELEASE</code> event due to GDK implementation details.</li>
+</ul></li>
+<li><code>KEY_RELEASE &lt;MODIFIERS&gt; &lt;KEY&gt;</code>
+
+<ul>
+<li>Sent when a key (e.g., Shift, Ctrl, etc.) is released. The key is in UTF-8.</li>
+</ul></li>
+<li><code>MOD_PRESS &lt;MODIFIERS&gt; &lt;MODIFIER&gt;</code>
+
+<ul>
+<li>Sent when a modifier (e.g., Shift, Ctrl, etc.) is pressed.</li>
+</ul></li>
+<li><code>MOD_RELEASE &lt;MODIFIERS&gt; &lt;MODIFIER&gt;</code>
+
+<ul>
+<li>Sent when a modifier (e.g., Shift, Ctrl, etc.) is released.</li>
+</ul></li>
+</ul>
+
+<h5>Commands</h5>
+
+<ul>
+<li><code>BUILTINS &lt;COMMANDS&gt;</code>
+
+<ul>
+<li>On startup, <code>uzbl</code> will emit this event with a JSON list of the names of
+all commands it understands.</li>
+</ul></li>
+<li><code>COMMAND_ERROR &lt;REASON&gt;</code>
+
+<ul>
+<li>Sent when <code>uzbl</code> cannot execute a command.</li>
+</ul></li>
+<li><code>COMMAND_EXECUTED &lt;NAME&gt; [ARGS...]</code>
+
+<ul>
+<li>Sent after a command has executed.</li>
+</ul></li>
+<li><code>FILE_INCLUDED &lt;PATH&gt;</code>
+
+<ul>
+<li>Sent <em>after</em> a file is included.</li>
+</ul></li>
+</ul>
+
+<h5>Uzbl</h5>
+
+<ul>
+<li><code>FIFO_SET</code>
+
+<ul>
+<li>Sent <code>uzbl</code> opens a communication FIFO.</li>
+</ul></li>
+<li><code>SOCKET_SET &lt;PATH&gt;</code>
+
+<ul>
+<li>Sent <code>uzbl</code> opens a communication socket.</li>
+</ul></li>
+<li><code>INSTANCE_START &lt;PID&gt;</code>
+
+<ul>
+<li>Sent on startup.</li>
+</ul></li>
+<li><code>PLUG_CREATED &lt;ID&gt;</code>
+
+<ul>
+<li>Sent if <code>uzbl</code> is started in plug mode. The ID is for the Xembed socket.</li>
+</ul></li>
+<li><code>INSTANCE_EXIT &lt;PID&gt;</code>
+
+<ul>
+<li>Sent before <code>uzbl</code> quits. When this is sent, <code>uzbl</code> has already stopped
+listening on all sockets.</li>
+</ul></li>
+<li><code>VARIABLE_SET &lt;NAME&gt; &lt;str|int|ull|double&gt; {VALUE}</code>
+
+<ul>
+<li>Sent when a variable has been set. Not all variable changes cause a
+<code>VARIABLE_SET</code> event to occur (e.g., any variable managed by WebKit behind
+the scenes does not trigger this event).</li>
+</ul></li>
+</ul>
+
+<h5>Page</h5>
+
+<ul>
+<li><code>BLUR_ELEMENT &lt;NAME&gt;</code> (WebKit1 only)
+
+<ul>
+<li>Sent when an element loses focus.</li>
+</ul></li>
+<li><code>FOCUS_ELEMENT &lt;NAME&gt;</code> (WebKit1 only)
+
+<ul>
+<li>Sent when an element gains focus.</li>
+</ul></li>
+<li><code>LINK_HOVER &lt;URI&gt; &lt;TITLE&gt;</code>
+
+<ul>
+<li>Sent when a link is hovered over using the mouse.</li>
+</ul></li>
+<li><code>LINK_UNHOVER &lt;URI&gt;</code>
+
+<ul>
+<li>Sent when a link is hovered over using the mouse. The URI is the
+previously hovered link URI.</li>
+</ul></li>
+<li><code>FORM_ACTIVE &lt;BUTTON&gt;</code>
+
+<ul>
+<li>Sent when a form element has gained focus because of a mouse click.</li>
+</ul></li>
+<li><code>ROOT_ACTIVE &lt;BUTTON&gt;</code>
+
+<ul>
+<li>Sent when the background page has been clicked.</li>
+</ul></li>
+<li><code>SCROLL_HORIZ &lt;VALUE&gt; &lt;MIN&gt; &lt;MAX&gt; &lt;PAGE&gt;</code>
+
+<ul>
+<li>Sent when the page horizontal scroll bar changes. The min and max values
+are the bounds for scrolling, page is the size that fits in the viewport
+and the value is the current position of the scrollbar.</li>
+</ul></li>
+<li><code>SCROLL_VERT &lt;VALUE&gt; &lt;MIN&gt; &lt;MAX&gt; &lt;PAGE&gt;</code>
+
+<ul>
+<li>Similar to <code>SCROLL_HORIZ</code>, but for the vertical scrollbar.</li>
+</ul></li>
+<li><code>TITLE_CHANGED &lt;TITLE&gt;</code>
+
+<ul>
+<li>Sent when the page title changes.</li>
+</ul></li>
+</ul>
+
+<h5>Window</h5>
+
+<ul>
+<li><code>GEOMETRY_CHANGED &lt;GEOMETRY&gt;</code>
+
+<ul>
+<li>Sent when the geometry changes.</li>
+</ul></li>
+<li><code>WEBINSPECTOR &lt;open|close&gt;</code>
+
+<ul>
+<li>Sent when the web inspector window is opened or closed.</li>
+</ul></li>
+<li><code>REQ_NEW_WINDOW &lt;URI&gt;</code>
+
+<ul>
+<li>Sent when a new window is being requested.</li>
+</ul></li>
+<li><code>CLOSE_WINDOW</code>
+
+<ul>
+<li>Sent when <code>uzbl</code> is closing its window.</li>
+</ul></li>
+<li><code>FOCUS_LOST</code>
+
+<ul>
+<li>Sent when <code>uzbl</code> loses the keyboard focus.</li>
+</ul></li>
+<li><code>FOCUS_GAINED</code>
+
+<ul>
+<li>Sent when <code>uzbl</code> gains the keyboard focus.</li>
+</ul></li>
+</ul>
+
+<h5>Download</h5>
+
+<ul>
+<li><code>DOWNLOAD_STARTED &lt;DESTINATION&gt;</code>
+
+<ul>
+<li>Sent when a download to the given URI has started.</li>
+</ul></li>
+<li><code>DOWNLOAD_PROGRESS &lt;DESTINATION&gt; &lt;PROGRESS&gt;</code>
+
+<ul>
+<li>Sent when progress for a download has been updated. The progress is a value
+between 0 and 1.</li>
+</ul></li>
+<li><code>DOWNLOAD_ERROR &lt;DESTINATION&gt; &lt;REASON&gt; &lt;CODE&gt; &lt;MESSAGE&gt;</code>
+
+<ul>
+<li>Sent when a download has an error.</li>
+</ul></li>
+<li><code>DOWNLOAD_COMPLETE &lt;DESTINATION&gt;</code>
+
+<ul>
+<li>Sent when a download has completed.</li>
+</ul></li>
+</ul>
+
+<h5>Cookie</h5>
+
+<ul>
+<li><code>ADD_COOKIE &lt;DOMAIN&gt; &lt;PATH&gt; &lt;NAME&gt; &lt;VALUE&gt; &lt;SCHEME&gt; &lt;EXPIRATION&gt;</code>
+
+<ul>
+<li>Sent when a cookie is added.</li>
+</ul></li>
+<li><code>DELETE_COOKIE &lt;DOMAIN&gt; &lt;PATH&gt; &lt;NAME&gt; &lt;VALUE&gt; &lt;SCHEME&gt; &lt;EXPIRATION&gt;</code>
+
+<ul>
+<li>Sent when a cookie is deleted.</li>
+</ul></li>
+</ul>
+
+<h3>COMMAND LINE ARGUMENTS</h3>
+
+<p><code>uzbl</code> is invoked as</p>
+
+<pre><code>uzbl-core [ARGUMENTS] [URI]
+</code></pre>
+
+<p>where <code>arguments</code> and <code>uri</code> are both optional. <code>arguments</code> can be:</p>
+
+<ul>
+<li><code>-v</code>, <code>--verbose</code>
+
+<ul>
+<li>Sets <code>verbose</code> to be non-zero.</li>
+</ul></li>
+<li><code>-n</code>, <code>--named=NAME</code>
+
+<ul>
+<li>Name of the current instance (defaults to Xorg window id or random for
+GtkSocket mode).</li>
+</ul></li>
+<li><code>-c</code>, <code>--config=FILE</code>
+
+<ul>
+<li>Path to config file or <code>-</code> for stdin.</li>
+</ul></li>
+<li><code>-s</code>, <code>--xembed-socket=SOCKETID</code>
+
+<ul>
+<li>Xembed socket ID.</li>
+</ul></li>
+<li><code>--connect-socket=CSOCKET</code>
+
+<ul>
+<li>Connect to server socket for event managing.</li>
+</ul></li>
+<li><code>-p</code>, <code>--print-events</code>
+
+<ul>
+<li>Sets <code>print_events</code> to be non-zero.</li>
+</ul></li>
+<li><code>-g</code>, <code>--geometry=GEOMETRY</code>
+
+<ul>
+<li>Runs <code>geometry GEOMETRY</code> with the given value on startup. Ignored if <code>uzbl</code> is
+embedded.</li>
+</ul></li>
+<li><code>-V</code>, <code>--version</code>
+
+<ul>
+<li>Print the version and exit.</li>
+</ul></li>
+<li><code>--web-extensions-dir</code>
+
+<ul>
+<li>Directory that will be searched for webkit extensions</li>
+</ul></li>
+<li><code>--display=DISPLAY</code>
+
+<ul>
+<li>X display to use.</li>
+</ul></li>
+<li><code>--help</code>
+
+<ul>
+<li>Display help.</li>
+</ul></li>
+</ul>
+
+<p><code>uzbl-core scheme://address</code> will work as you expect. If you don't provide the
+<code>scheme://</code> part, it will check if the argument is an existing file in the
+filesystem, if it is, it will prepend <code>file://</code>, if not, it will prepend
+<code>http://</code>.</p>
+
+<h3>BUGS</h3>
+
+<p>Please report new issues to <a href="https://github.com/uzbl/uzbl/issues">Uzbl's issues page on github</a></p>
+</div>
+
+    </div>
+  
+
+</body></html>

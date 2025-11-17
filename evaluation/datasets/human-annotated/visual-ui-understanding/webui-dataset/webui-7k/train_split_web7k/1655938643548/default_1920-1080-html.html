@@ -1,0 +1,218 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A canvas Clock.js - Cr;Lf;</title>
+<meta name="author" content="Cristi Constantin">
+<link rel="author" href="https://crlf.link/author/">
+<link rel="canonical" href="https://crlf.link/log/entries/220210-clock/">
+<link rel="publisher" href="https://crlf.link">
+<link rel="shortcut icon" href="/logo/favicon.ico">
+<link rel="apple-touch-icon" sizes="114x114" href="/logo/favicon-114-precomposed.png">
+<link rel="apple-touch-icon" sizes="120x120" href="/logo/favicon-120-precomposed.png">
+<link rel="apple-touch-icon" sizes="72x72" href="/logo/favicon-72-precomposed.png">
+<link rel="icon" type="image/x-icon" sizes="16x16 32x32" href="/logo/favicon.ico">
+<meta property="og:locale" content="en_GB">
+<meta property="og:title" content="A canvas Clock.js - Cr;Lf;">
+<meta property="og:url" content="https://crlf.link/log/entries/220210-clock/">
+<meta property="og:site_name" content="Cr;Lf;">
+<meta property="og:type" content="article">
+<link rel="webmention" href="https://webmention.io/crlf.link_author_/webmention">
+<link rel="pingback" href="https://webmention.io/crlf.link_author_/xmlrpc">
+<link rel="preload" as="font" href="/fonts/Inter/Inter-upright-var.woff2" type="font/woff2" crossorigin="anonymous">
+<style>@font-face{font-family:'Inter var';font-weight:100 900;font-display:swap;font-style:normal;font-named-instance:Regular;src:url(/fonts/Inter/Inter-upright-var.woff2) format("woff2");font-display:swap}@font-face{font-family:'Inter var';font-weight:100 900;font-display:swap;font-style:italic;font-named-instance:Italic;src:url(/fonts/Inter/Inter-italic-var.woff2) format("woff2");font-display:swap}@font-face{font-family:Triunfo;font-style:normal;font-weight:400;src:url(/fonts/Triunfo/Triunfo-Regular-Cond.otf) format("opentype");font-display:swap}</style>
+<link href="/css/styles.css" rel="stylesheet">
+<script src="https://comment.crlf.link/web/embed.js" defer=""></script></head>
+<body class="flex flex-col bg-terra-white">
+<header class="bg-terra-light">
+<nav role="navigation" class="flex shadow-md items-center bg-abisso p-1 md:p-2">
+<div class="w-full flex flex-grow items-center text-sm md:text-base w-auto">
+<div class="flex-grow leading-none text-terra-light">
+<a href="/notes/" class="inline-block rounded px-4 py-2 hover:bg-acqua-dark">
+Notes
+</a>
+<a href="/topics/" title="Categories / Tags" class="inline-block px-2 py-2 rounded border-l border-r font-medium text-orange-200 hover:text-terra hover:bg-acqua-dark">
+&amp;;&amp;;
+</a>
+<a href="/about/" class="inline-block rounded px-4 py-2 hover:bg-acqua-dark">
+About
+</a>
+</div>
+<a href="https://webring.xxiivv.com/#random" class="rounded px-2 py-1 hover:bg-acqua-dark" target="_blank" rel="noopener noreferrer">
+<img id="webring" src="https://webring.xxiivv.com/icon.white.svg">
+</a>
+<a href="/feed.xml" class="rounded leading-none px-2 py-2 text-white hover:bg-acqua-dark">
+RSS</a>
+</div>
+</nav>
+</header>
+<section class="flex mt-4 mb-6 px-6" style="flex:1 0 auto">
+<article id="article" class="ml-auto mr-auto h-entry notes" style="width:64ch">
+<h1 class="text-abisso p-name">A canvas Clock.js</h1>
+<section class="date text-gray-800 pt-2 entry-meta grid grid-cols-2">
+<span title="Created at">
+<span class="ico ico-calendar"></span>
+<time class="dt-published" datetime="2022-02-10T00:00:00Z">
+2022 Feb 10, Thu</time>
+</span>
+</section>
+<section class="e-content">
+<p>I made a quick clock app, for the browser, with my 7 year old boy.<br>
+He is really obsessed about clocks right now, so he was really excited about us building our own clock.<br>
+This version below doesn’t have numbers, but I’ll make more versions.<br>
+I used the Canvas reference from W3 Schools: <a href="https://w3schools.com/graphics/canvas_reference.asp" rel="noopener" target="_blank">https://w3schools.com/graphics/canvas_reference.asp</a></p>
+<p><canvas class="canvas" id="clock" width="660" height="660" style="width:58ch;height:58ch;margin-left:-15px"></canvas></p>
+<script type="text/javascript" async="async">
+window.addEventListener('load', function() {
+  const c = document.getElementById('clock');
+  const ctx = c.getContext('2d');
+  ctx.lineCap = 'round';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  const CX = c.width / 2 - 1;
+  const CY = c.height / 2 - 1;
+  const OUTER = c.width / 2 - 20;
+  const LONG = OUTER - 20;
+
+  function toRadians(angle) {
+    return angle * (Math.PI / 180);
+  }
+  function round(num) {
+    return ((num * 10) << 0) * 0.1;
+  }
+  function drawHours(dt) {
+      ctx.lineWidth = 9;
+      // middle dot
+      ctx.beginPath();
+      ctx.arc(CX, CY, 4, 0, 2 * Math.PI);
+      ctx.stroke();
+      const len = LONG / 1.6;
+      let hr = dt.getHours();
+      // calc hour from 0 to 60
+      hr = (hr < 12 ? hr : hr - 12) * 5;
+      // add minute from 0 to 5
+      hr = hr + round(dt.getMinutes() / 12);
+      const hrAngle = Math.PI - toRadians(hr * 6);
+      // draw hour hand
+      ctx.beginPath();
+      ctx.moveTo(CX - Math.sin(hrAngle) * 10, CY - Math.cos(hrAngle) * 10);
+      ctx.lineTo(CX + Math.sin(hrAngle) * len, CY + Math.cos(hrAngle) * len);
+      ctx.stroke();
+  }
+  function drawMinutes(dt) {
+      // draw minutes hand
+      ctx.lineWidth = 6;
+      const len = LONG / 1.2;
+      const minAngle = Math.PI - toRadians(dt.getMinutes() * 6);
+      ctx.beginPath();
+      ctx.moveTo(CX - Math.sin(minAngle) * 20, CY - Math.cos(minAngle) * 20);
+      ctx.lineTo(CX + Math.sin(minAngle) * len, CY + Math.cos(minAngle) * len);
+      ctx.stroke();
+  }
+  function drawSeconds(dt) {
+      // draw seconds hand
+      ctx.lineWidth = 3;
+      // middle dot
+      ctx.beginPath();
+      ctx.arc(CX, CY, 3, 0, 2 * Math.PI);
+      ctx.stroke();
+      const secAngle = Math.PI - toRadians(dt.getSeconds() * 6);
+      ctx.beginPath();
+      ctx.lineTo(CX - Math.sin(secAngle) * 30, CY - Math.cos(secAngle) * 30);
+      ctx.lineTo(CX + Math.sin(secAngle) * LONG, CY + Math.cos(secAngle) * LONG);
+      ctx.stroke();
+      // small dot at the end
+      ctx.beginPath();
+      ctx.arc(CX - Math.sin(secAngle) * 30, CY - Math.cos(secAngle) * 30, 2, 0, 2 * Math.PI);
+      ctx.stroke();
+  }
+
+  function tick() {
+    ctx.clearRect(10, 10, c.width - 10, c.height - 10);
+    ctx.fillStyle = '#ddd';
+
+    // outer circle
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(CX, CY, OUTER, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = '#111';
+    // 12 thick outer markers
+    for (let i = 0; i < 12; i++) {
+        const p = toRadians(i*30);
+        ctx.beginPath();
+        ctx.moveTo(CX + Math.sin(p) * (OUTER - 6), CY + Math.cos(p) * (OUTER - 6));
+        ctx.lineTo(CX + Math.sin(p) * (OUTER + 3), CY + Math.cos(p) * (OUTER + 3));
+        ctx.stroke();
+    }
+    // 60 small markers
+    ctx.lineWidth = 2;
+    for (let i = 0; i < 60; i++) {
+        const p = toRadians(i*6);
+        ctx.beginPath();
+        ctx.moveTo(CX + Math.sin(p) * (OUTER - 3), CY + Math.cos(p) * (OUTER - 3));
+        ctx.lineTo(CX + Math.sin(p) * (OUTER + 2), CY + Math.cos(p) * (OUTER + 2));
+        ctx.stroke();
+    }
+
+    ctx.strokeStyle = '#191f4590';
+    const dt = new Date();
+    // draw hands in the right order
+    drawHours(dt);
+    drawMinutes(dt);
+    ctx.strokeStyle = '#191f45';
+    drawSeconds(dt);
+  }
+  tick();
+  setInterval(tick, 1000);
+})
+</script>
+</section>
+<section class="tags text-sm leading-loose py-2">
+<span title="Tagged as"><span class="ico ico-tags"></span></span>
+<span class="bg-terra-light rounded font-medium px-2 py-1 my-1 mr-1 p-category">
+<a href="/notes">@notes</a>
+</span>
+<span class="bg-terra-light rounded px-2 py-1 my-1 mr-1">
+<a href="/tags/js">#js</a>
+</span>
+</section>
+</article>
+</section>
+<hr>
+<section class="flex mt-4" style="flex:1 0 auto">
+<div class="w-full ml-auto mr-auto" id="remark42" style="max-width:64ch"><iframe src="https://comment.crlf.link/web/iframe.html?host=https%3A%2F%2Fcomment.crlf.link&amp;url=%2Flog%2Fentries%2F220210-clock%2F&amp;site_id=crlf" name="{}" frameborder="0" allowtransparency="true" scrolling="no" tabindex="0" title="Comments | Remark42" horizontalscrolling="no" verticalscrolling="no" style="height: 255px; width: 100%; border: none; padding: 0px; margin: 0px; overflow: hidden;"></iframe></div>
+</section>
+<script defer="defer">
+remark_config = {
+    host: 'https://comment.crlf.link',
+    url: '/log/entries/220210-clock/',
+    site_id: 'crlf',
+  };
+  (function(d) {
+    const s = d.createElement('script')
+    s.src = remark_config.host + '/web/embed.js'
+    s.defer = true;
+    (d.head || d.body).appendChild(s)
+  })(document);
+</script>
+<footer id="footer" role="contentinfo" class="bg-terra-light text-center shadow-md p-2 md:p-4 w-full -mt-px">
+<div class="h-card">
+<p class="text-sm md:text-base leading-relaxed text-abisso">
+© 2007-2022
+<a rel="me" class="p-name u-url" href="/author/">Cristi Constantin</a>.
+</p>
+<p class="text-xs md:text-sm leading-relaxed text-acqua">
+Except where otherwise noted, the text content on this site is licensed under
+<a rel="license noopener" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" title="Attribution-NonCommercial-ShareAlike 4.0 International License">
+CC BY NC SA 4.0</a>.
+</p>
+</div>
+</footer>
+<noscript><img src="https://stat.crlf.link/ingress/4b5f890a-6f2c-40fe-8080-928c84cbc945/pixel.gif"></noscript>
+<script src="https://stat.crlf.link/ingress/4b5f890a-6f2c-40fe-8080-928c84cbc945/script.js" defer="defer"></script>
+
+
+</body></html>

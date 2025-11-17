@@ -1,0 +1,211 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Documenting Django Design Systems with Storybook | Lincoln Loop</title>
+<meta name="description" content="Storybook and Django can play nicely together, but there are some tradeoffs.">
+<meta property="og:site_name" content="Lincoln Loop">
+<meta property="og:image" content="https://lincolnloop.com/static/assets/img/ll-social.0fd68b1b6e2e.png">
+<meta property="og:url" content="https://lincolnloop.com/blog/documenting-django-design-systems-storybook/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Documenting Django Design Systems with Storybook | Lincoln Loop">
+<link rel="apple-touch-icon" sizes="180x180" href="/static/assets/favicon/apple-touch-icon.5a11d882a1c9.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/static/assets/favicon/favicon-32x32.d9e4bd740101.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/static/assets/favicon/favicon-16x16.6c1e9feede38.png">
+<link rel="manifest" href="/static/assets/favicon/site.daa36dd9e757.webmanifest">
+<link rel="mask-icon" href="/static/assets/favicon/safari-pinned-tab.fb3a706108e4.svg" color="#75cdd6">
+<link rel="shortcut icon" href="/static/assets/favicon/favicon.7671b574be1a.ico">
+<meta name="msapplication-TileColor" content="#ffffff">
+<meta name="msapplication-config" content="/static/assets/favicon/browserconfig.cac6404b3c63.xml">
+<meta name="theme-color" content="#75cdd6">
+<link rel="alternate" type="application/rss+xml" title="Lincoln Loop Blog" href="/blog/feed/">
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com/">
+<link rel="dns-prefetch" href="https://media.lincolnloop.com/">
+<link rel="stylesheet" type="text/css" href="/static/css/site.007507d452c3.css">
+<script async="" defer="" data-domain="lincolnloop.com" src="https://plausible.io/js/plausible.js" type="text/javascript"></script>
+<meta property="og:description" content="Storybook and Django can play nicely together, but there are some tradeoffs.">
+</head>
+<body class="blog-post">
+<div class="container">
+<header id="Site-Header" class="SiteHeader animated is-top">
+<div class="container-inner">
+<div class="SiteHeader-minBar">
+<a href="#Primary-Nav" class="SiteHeader-menuToggle">Menu</a>
+<a href="/" class="site-logo">
+<img src="/static/assets/img/logo/lincolnloop-logo-full-color.b247c6db93b2.svg" height="55" alt="Lincoln Loop turquoise circle logo with two Ls inside, followed by lincoln loop in dark gray text">
+</a>
+</div>
+<nav id="Primary-Nav" class="PrimaryNav animated">
+<a href="/blog/" class="is-active">Blog</a><a href="/about/">About</a><a href="/services/">Services</a><a href="/portfolio/">Portfolio</a><a href="/careers/">Jobs</a><a href="/contact/">Contact</a>
+</nav>
+</div>
+</header>
+<main id="Main" class="main">
+<header class="block post-header">
+<div class="container-inner">
+<h1 class="headline post-title">Documenting Django Design Systems with Storybook</h1>
+<div class="post-categories">
+<h6 class="headline-lead">Posted in</h6>
+<a href="/blog/categories/design/" class="category">Design</a>,
+<a href="/blog/categories/javascript/" class="category">Javascript</a>
+</div>
+<time datetime="2021-02-05T12:13:01" class="timestamp">Feb 05, 2021</time>
+</div>
+</header>
+<div class="post-full">
+<div class="post-body">
+<div class="post-content">
+<p>Our clients come to us with a variety of existing internal teams. Sometimes we work with UI designers or brand-focused graphic designers who deliver pixel-perfect mockups. Other times the stakeholders will describe what their goals are, and we’ll be responsible for more of the design process. In either case, it’s our responsibility to document our work well. This is important both during the course of the project and after our engagement with the client ends. </p>
+<p>Component Libraries or Design Systems provide a lean way to deliver documentation alongside project deliverables at every stage of a project. Often, the frontend tooling that we set up for these systems allows us to get client approval on design or UI deliverables in a much more accurate and reusable way than a high-fidelity Figma or Sketch file would. Once approved, the HTML/CSS is already done and ready for integration within the application code.</p>
+<p>In the past, we have kept this tooling simple, using a static site generator compiled from SASS comments. It provided some minor features to build well-designed documentation, and allowed us to build complicated HTML mockups quickly in a component-driven way. </p>
+<h2>Why switch to Storybook?</h2>
+<p>Depending on the project or the day, I switch between UI/UX tasks and frontend development. That means when I’m doing one task, I’m thinking about the other. For example, when I’m working on frontend, I’ll often form opinions on how best to structure the UI of the CMS for a given component. This is where our static-file-handoff process could use some improvement. </p>
+<p>Let's take a standard “hero component” as an example. </p>
+<p><img src="https://media.lincolnloop.com/uploads/hero-component.png" alt="Hero Component Example"></p>
+<p>If I’m handing off static files to the backend team, I’ll also include a list of modifier classes for various color choices (light or dark text, and an overlay color option for the photo). Then, I’d provide a different list of modifiers to change the position of the text on the photo. If I have opinions on the CMS UI, I’d provide those notes as well. (Toggle the <code data-syntax="text-only">knockout-text</code> class, add this helper text, and use a dropdown for text alignment.)</p>
+<p>The Django developers will implement the work. This works well enough for us internally. For client approval, the backend team will push the component to a QA server, stand up an example page, and then we’ll start the feedback loop on the component frontend and the CMS UI at the same time. By necessity, that means the frontend team and backend team both need to be on standby for changes. </p>
+<p>This is where Storybook allows us to improve both our internal workflow and our client feedback process. I can work CMS-like UI controls directly into our documentation. The storybook file contains some minor configurations: </p>
+<pre class="highlight"><code data-syntax="javascript"><span class="k">import</span> <span class="nx">Masthead</span> <span class="nx">from</span>  <span class="s1">'../app/styleguide-examples/masthead.njk'</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="p">{</span>
+  <span class="nx">title</span><span class="o">:</span> <span class="s1">'Components/Hero'</span><span class="p">,</span>
+  <span class="nx">argTypes</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">knockout</span><span class="o">:</span> <span class="p">{</span> <span class="nx">control</span><span class="o">:</span> <span class="s1">'boolean'</span><span class="p">},</span>
+    <span class="nx">modifier_class</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">control</span><span class="o">:</span> <span class="p">{</span>
+        <span class="nx">type</span><span class="o">:</span> <span class="s1">'select'</span><span class="p">,</span>
+        <span class="nx">options</span><span class="o">:</span> <span class="p">[</span>
+          <span class="s1">''</span><span class="p">,</span>
+          <span class="s1">'top-right'</span><span class="p">,</span>
+          <span class="s1">'Top-left'</span><span class="p">,</span>
+          <span class="s1">'bottom-right'</span><span class="p">,</span>
+          <span class="s1">'bottom-left'</span>
+        <span class="p">]</span>
+      <span class="p">}</span>
+    <span class="p">}</span>  
+  <span class="p">}</span>
+<span class="p">};</span></code></pre>
+<p>Which compiles to a nice UI in Storybook that live-updates the component example: </p>
+<p><img src="https://media.lincolnloop.com/uploads/storybook-example.png" alt="Storybook Django example"></p>
+<p>Once the frontend and documentation are built, I can push a copy to a static server. The client can give feedback on the component and tinker with some form of the CMS UI before involving the backend team. This improves the fidelity of the initial feedback and allows me to provide instructions to the backend team with more confidence.</p>
+<p>Then at the end of the project, the client will own this interactive documentation. It acts as a catalog of the components of their site, complete with inline instructions on best-practices and use-cases for each component. When we work in collaboration with the client on these systems, they help us shape them into a tool that can be used to onboard new content creators, designers, or developers. Sections can be added for editorial style guides, social media assets, or branding guidelines for print, depending on the client needs.</p>
+<h2>Technical considerations</h2>
+<p>Storybook is a React app at its core, but it is compatible with any frontend. If a project will live in React or Vue, then the app components can be used with no duplication. The “story” files will add a bit of context and mock data to your existing components. For the sake of this “basic Django” experiment, I used the Storybook HTML starter and piped in a nunjucks loader. Nunjucks templates feel very similar to Django or Jinja templates, which makes handoff to the backend team easy. However there are enough minor differences that I can’t recommend trying to use them together. <a href="https://mozilla.github.io/nunjucks/faq.html">Here are some more details</a> on the problems that you might encounter. </p>
+<h2>The Verdict</h2>
+<p>Every tool has its strengths and tradeoffs. Storybook is certainly more complicated to set up and maintain than a static site, but its benefits and baked-in interactivity add more than enough value to make it an essential part of new projects.</p>
+</div>
+<div class="discuss-twitter">
+<img src="/static/assets/img/bubbles.2b69beffca19.svg" alt="Speech bubbles" height="60">
+<p>
+Have a question or comment about&nbsp;this&nbsp;post?
+</p>
+<a href="https://twitter.com/intent/tweet?text=https://lincolnloop.com/blog/documenting-django-design-systems-storybook/" class="btn btn-ghost">
+<i class="icon icon-twitter"></i>
+<span>Discuss on Twitter</span>
+</a>
+</div>
+<div class="author-card">
+<section class="team-member">
+<a href="/blog/by-author/kasey-kelly/" class="avatar-wrap">
+<img src="https://media.lincolnloop.com/thumbs/mugshots/KK_2020.jpg.132x132_q85_crop.jpg" class="avatar" alt="Kasey Kelly">
+</a>
+<div class="member-bio">
+<h5 class="headline">About <strong class="author-name">Kasey Kelly</strong></h5>
+<div class="biography">
+Kasey joined Lincoln Loop in 2016, and has since built or refactored CSS architecture for some of our most ambitious software products and design systems. He is a frontend developer and UI designer with a work …
+</div>
+<a href="/about/kasey-kelly/" class="more-cta">
+View Kasey's profile
+</a>
+</div>
+</section>
+</div>
+</div>
+</div>
+</main>
+<footer id="Site-Footer" class="site-footer">
+<div class="primary-footer">
+<div class="container-inner">
+<div class="footer-col">
+<nav class="footer-nav">
+<h4 class="headline">Learn More</h4>
+<ul class="footer-nav-list">
+<li><a href="/blog/">Blog</a></li>
+<li><a href="/about/">About</a></li>
+<li><a href="/services/">Services</a></li>
+<li><a href="/portfolio/">Portfolio</a></li>
+<li><a href="/careers/">Jobs</a></li>
+<li><a href="/contact/">Contact</a></li>
+</ul>
+</nav>
+</div>
+<div class="footer-col">
+<h4 class="headline">Get In Touch</h4>
+<nav class="primary-contact">
+<ul class="traditional-methods">
+<li>
+<a href="tel:19708798810" class="contact-method">
+<span class="label">+1 (970) 879-8810</span>
+</a>
+</li>
+<li>
+<a href="mailto:info@lincolnloop.com" class="contact-method">
+<span class="label">info@lincolnloop.com</span>
+</a>
+</li>
+</ul>
+</nav>
+<div class="secondary-contact">
+<a href="https://twitter.com/lincolnloop" rel="external" class="btn contact-method method-twitter" title="Say hello to us on Twitter">
+<span class="label">Twitter
+</span></a>
+<a href="https://github.com/lincolnloop" class="btn contact-method method-github" rel="external" title="View our open source projects and experiments on Github">
+<span class="label">Github</span>
+</a>
+<a href="/blog/feed/" class="btn contact-method method-rss" title="Subscribe to our news feed">
+<span class="label">RSS</span>
+</a>
+</div>
+</div>
+<div class="footer-col">
+<h5 class="headline">Member Organizations</h5>
+<ul class="member-logos">
+<li>
+<a href="https://www.djangoproject.com/fundraising/" rel="external" class="dsf-logo" title="Django Software Foundation">
+<img src="/static/assets/img/member-orgs/django-silver.c3cfe6d0c706.svg" alt="Django Software Foundation Silver member logo">
+</a>
+</li>
+<li>
+<a href="https://www.python.org/psf/" rel="external" class="psf-logo" title="Python Software Foundation">
+<img src="/static/assets/img/member-orgs/PSF-sponsor-button-copper.c8c23c0d574f.svg" height="80" alt="Python Software Foundation Copper Sponsor logo">
+</a>
+</li>
+<li>
+<a href="https://bureauofdigital.com/" rel="external" class="bod-logo" title="Bureau of Digital">
+<img src="/static/assets/img/member-orgs/bureau-of-digital.a917be470b5e.svg" height="80" alt="Bureau of Digital member logo">
+</a>
+</li>
+<li>
+<a href="https://www.django-cms.org/en/our-members/" rel="external" class="dcms-logo" title="Django CMS Association Gold Member">
+<img src="/static/assets/img/member-orgs/DCA-Badge-Gold.0745a3952081.svg" height="67" alt="Django CMS Association Gold member logo">
+</a>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="final-footer">
+<div class="container-inner">
+<small class="copyright">
+© Copyright 2007 - 2022
+<span class="legal-name">Lincoln Loop, LLC.</span>
+</small>
+</div>
+</div>
+</footer>
+</div>
+<script src="/static/js/site.4b126b68f3d6.js" type="text/javascript"></script>
+
+
+</body></html>

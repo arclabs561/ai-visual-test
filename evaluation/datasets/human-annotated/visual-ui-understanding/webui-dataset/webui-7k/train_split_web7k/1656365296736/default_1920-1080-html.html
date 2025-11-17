@@ -1,0 +1,315 @@
+<html><head>
+ <title>Firefox Quantum: Fixing Ctrl W (or other key bindings) (Shallow Thoughts)</title>
+
+ <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+ <link rel="alternate" type="application/rss+xml" title="Shallow Thoughts Feed" href="https://shallowsky.com/blog/index.rss20">
+
+ <link rel="stylesheet" type="text/css" title="Blue" href="/blog/css/blue.css">
+ <link rel="alternate stylesheet" type="text/css" title="Tan" href="/blog/css/tan.css">
+
+ <!-- Google insists on this for "mobile friendly" sites: -->
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script type="text/javascript" async="" src="https://shallowsky.disqus.com/embed.js"></script><link rel="prefetch" as="style" href="https://c.disquscdn.com/next/embed/styles/lounge.63860eb743c7d9d2adf0fa435788abe7.css"><link rel="prefetch" as="script" href="https://c.disquscdn.com/next/embed/common.bundle.33bc87b2c4f9324203cc85b7dd1d0492.js"><link rel="prefetch" as="script" href="https://c.disquscdn.com/next/embed/lounge.bundle.db7e8c74903585d3044b7b20f03a66f2.js"><link rel="prefetch" as="script" href="https://disqus.com/next/config.js"></head>
+
+<body bgcolor="#ffffff">
+<div id="content">
+<a class="title" href="https://shallowsky.com/blog/">
+<div id="blogtitle">
+<h1 class="title">Firefox Quantum: Fixing Ctrl W (or other key bindings) (Shallow Thoughts)</h1>
+<span class="description">Akkana's Musings on Open Source Computing and Technology, Science, and Nature.</span>
+</div>
+</a>
+
+<h2>Thu, 14 Jun 2018</h2>
+<div class="story">
+<p>
+</p><h2 class="story"><a name="firefox-quantum-fixing-ctrl-w" href="https://shallowsky.com/blog/tech/web/firefox-quantum-fixing-ctrl-w.html">Firefox Quantum: Fixing Ctrl W (or other key bindings)</a></h2>
+<p>
+When I first tried switching to Firefox Quantum,
+the regression that bothered me most was
+Ctrl-W, which I use everywhere as word erase (try it -- you'll get
+addicted, like I am).  Ctrl-W deletes words in the URL bar;
+but if you type Ctrl-W in a text field on a  website,
+like when editing a bug report or a "Contact" form,
+it closes the current tab, losing everything you've just typed.
+It's always worked in Firefox in the past; this is a new problem
+with Quantum, and after losing a page of typing for about the
+20th time, I was ready to give up and find another browser.
+</p><p>
+A web search found plenty of people online asking about key bindings
+like Ctrl-W, but apparently since the deprecation of XUL and XBL
+extensions, Quantum no longer offers any way to change or even
+just to disable its built-in key bindings.
+
+</p><p>
+I wasted a few days chasing a solution inspired by this
+<a href="https://github.com/sasawat/firefox-ctrl-q-workaround">clever way
+of remapping keys only for certain windows</a> using
+<code>xdotool getactivewindow</code>; I even went so far as to
+write a Python script that intercepts keystrokes, determines the
+application for the window where the key was typed, and remaps it if
+the application and keystroke match a list of keys to be remapped.
+So if Ctrl-W is typed in a Firefox window, Firefox will instead
+receive Alt-Backspace. (Why not just type Alt-Backspace, you ask?
+Because it's much harder to type, can't be typed from the home
+position, and isn't in the same place on every keyboard the way
+W is.)
+</p><p>
+But sadly, that approach didn't work because it turned out my window
+manager, Openbox, acts on programmatically-generated key bindings as
+well as ones that are actually typed. If I type a Ctrl-W and it's in
+Firefox, that's fine: my Python program sees it, generates an
+Alt-Backspace and everything is groovy.
+But if I type a Ctrl-W in any other application, the program
+doesn't need to change it, so it generates a Ctrl-W, which Openbox
+sees and calls the program again, and you have an infinite loop.
+I couldn't find any way around this. And admittedly, it's a horrible
+hack having a program intercept every keystroke. So I needed to fix
+Firefox somehow.
+
+</p><p>
+But after spending days searching for a way to customize Firefox's
+keys, to no avail, I came to the conclusion that the only way was to
+modify the source code and
+<a href="http://shallowsky.com/blog/tech/web/building-firefox.quantum.html">rebuild
+Firefox from source</a>.
+
+</p><p>
+Ironically, one of the snags I hit in building it was that
+I'd named my key remapper "pykey.py", and it was still in my
+PYTHONPATH; it turns out the Firefox build also has a module called
+pykey.py and mine was interfering. But eventually I got the build working.
+
+</p><h3>Firefox Key Bindings</h3>
+<p>
+I was lucky: building was the only hard part, because
+a very helpful person on Mozilla's <i>#introduction</i> IRC channel
+pointed me toward the solution, saving me hours of debugging. Edit
+<a href="https://searchfox.org/mozilla-central/source/browser/base/content/browser-sets.inc#240">browser/base/content/browser-sets.inc
+around line 240</a>
+and remove <code>reserved="true"</code> from <i>key_closeWindow</i>.
+It turned out I needed to remove <code>reserved="true"</code> from
+the adjacent <i>key_close</i> line as well.
+</p><p>
+Another file that's related, but more general, is
+<a href="https://searchfox.org/mozilla-central/source/dom/xbl/nsXBLWindowKeyHandler.cpp#832">nsXBLWindowKeyHandler.cpp
+around line 832</a>; but I didn't need that since the simpler fix worked.
+
+</p><h3>Transferring <i>omni.ja</i> -- or Not</h3>
+<p>
+In theory, since <i>browser-sets.inc</i> isn't compiled C++, it seems
+like you should be able to make this fix without building the whole
+source tree. In an actual Firefox release,
+<i>browser-sets.inc</i> is part of <i>omni.ja</i>, and indeed if
+you unpack <i>omni.ja</i> you'll see the <i>key_closeWindow</i> and
+<i>key_close</i> lines. So it seems like you ought to be able to
+regenerate <i>omni.ja</i> without rebuilding all the C++ code.
+</p><p>
+Unfortunately, in practice <i>omni.ja</i> is more complicated than that.
+Although you can unzip it and edit the files, if you zip it back up,
+Firefox doesn't see it as valid. I guess that's why they renamed it
+<i>.ja</i>: long ago it used to be <i>omni.jar</i> and, like other
+<i>.jar</i> files, was a standard zip archive that you could edit.
+But the new <i>.ja</i> file isn't documented anywhere I could find,
+and all the web discussions I found on how to re-create it amounted
+to "it's complicated, you probably don't want to try".
+</p><p>
+And you'd think that I could take the <i>omni.ja</i> file from my
+desktop machine, where I built Firefox, and copy it to my laptop,
+replacing the <i>omni.ja</i> file from a released copy of Firefox.
+But no -- somehow, it isn't seen, and the old key bindings are still
+active. They must be duplicated somewhere else, and I haven't figured
+out where.
+</p><p>
+It sure would be nice to have a way to transfer an <i>omni.ja</i>.
+Building Firefox on my laptop takes nearly a full day (though
+hopefully rebuilding after pulling minor security updates won't be
+quite so bad). If anyone knows of a way, please let me know!
+
+</p>
+<span class="tags">Tags:  <a href="https://shallowsky.com/blog/tags/firefox" rel="tag">firefox</a>, <a href="https://shallowsky.com/blog/tags/build" rel="tag">build</a>, <a href="https://shallowsky.com/blog/tags/programming" rel="tag">programming</a> </span><br>
+[ <i>16:45 Jun 14, 2018&nbsp; &nbsp;
+ <a href="https://shallowsky.com/blog/tech/web" title="Category">More tech/web</a> |
+ <a href="https://shallowsky.com/blog/tech/web/firefox-quantum-fixing-ctrl-w.html" title="Permalink">permalink to this entry</a> |
+ <!-- <a href="https://shallowsky.com/blog/tech/web/firefox-quantum-fixing-ctrl-w.html#disqus_thread" title="comments">comments</a> -->
+</i> ]
+</div>
+
+
+
+<h3>Comments via Disqus:</h3>
+
+    <div id="disqus_thread"><iframe id="dsq-app2926" name="dsq-app2926" allowtransparency="true" frameborder="0" scrolling="no" tabindex="0" title="Disqus" sandbox="allow-forms allow-popups allow-same-origin allow-scripts" width="100%" style="width: 1px !important; min-width: 100% !important; border: none !important; overflow: hidden !important; height: 743px !important;"></iframe><iframe id="dsq-app2923" name="dsq-app2923" allowtransparency="true" frameborder="0" scrolling="no" tabindex="0" title="Disqus" width="100%" src="https://disqus.com/embed/comments/?base=default&amp;f=shallowsky&amp;t_i=%26%23x2F%3Btech%26%23x2F%3Bweb%26%23x2F%3Bfirefox-quantum-fixing-ctrl-w&amp;t_u=https%3A%2F%2Fshallowsky.com%2Fblog%2Ftech%2Fweb%2Ffirefox-quantum-fixing-ctrl-w.html&amp;t_e=Firefox%20Quantum%3A%20Fixing%20Ctrl%20W%20(or%20other%20key%20bindings)&amp;t_d=Firefox%20Quantum%3A%20Fixing%20Ctrl%20W%20(or%20other%20key%20bindings)%20(Shallow%20Thoughts)&amp;t_t=Firefox%20Quantum%3A%20Fixing%20Ctrl%20W%20(or%20other%20key%20bindings)&amp;s_o=default#version=2a4653c15abd393c26761482f6c9ec3e" style="width: 1px !important; min-width: 100% !important; border: none !important; overflow: hidden !important; height: 1904px !important;" horizontalscrolling="no" verticalscrolling="no"></iframe><iframe id="dsq-app2928" name="dsq-app2928" allowtransparency="true" frameborder="0" scrolling="no" tabindex="0" title="Disqus" sandbox="allow-forms allow-popups allow-same-origin allow-scripts" width="100%" style="width: 1px !important; min-width: 100% !important; border: none !important; overflow: hidden !important; height: 639px !important;"></iframe></div>
+    <script type="text/javascript">
+      var disqus_shortname = 'shallowsky';
+      var disqus_identifier = '&#x2F;tech&#x2F;web&#x2F;firefox-quantum-fixing-ctrl-w';
+      var disqus_title = 'Firefox Quantum: Fixing Ctrl W (or other key bindings)';
+
+      /* * * DON'T EDIT BELOW THIS LINE * * */
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+    </noscript>
+    
+
+</div> <!-- close content div from head.html -->
+<div id="rightsidebar">
+
+<div id="searchbox">
+<form method="GET" action="https://www.google.com/search">
+Google this blog:
+<input type="text" name="q" maxlength="255" value="" "="">
+<input type="submit" name="btnG" value="Search">
+<input type="radio" name="sitesearch" value="shallowsky.com/blog" checked="" style="display: none">
+</form>
+</div>
+
+<table class="blosxomCalendar">
+<tbody><tr>
+<td align="left"><a href="https://shallowsky.com/blog/2018/May">&lt;</a></td>
+<td colspan="5" align="center" class="blosxomCalendarHead">June 2018</td>
+<td align="right"><a href="https://shallowsky.com/blog/2018/Jul">&gt;</a></td>
+</tr>
+<tr><td class="blosxomCalendarWeekHeader">Su</td><td class="blosxomCalendarWeekHeader">Mo</td><td class="blosxomCalendarWeekHeader">Tu</td><td class="blosxomCalendarWeekHeader">We</td><td class="blosxomCalendarWeekHeader">Th</td><td class="blosxomCalendarWeekHeader">Fr</td><td class="blosxomCalendarWeekHeader">Sa</td></tr>
+<tr><td class="blosxomCalendarEmpty">&nbsp;</td><td class="blosxomCalendarEmpty">&nbsp;</td><td class="blosxomCalendarEmpty">&nbsp;</td><td class="blosxomCalendarEmpty">&nbsp;</td><td class="blosxomCalendarEmpty">&nbsp;</td><td class="blosxomCalendarCell"> 1</td><td class="blosxomCalendarCell"> 2</td></tr>
+<tr><td class="blosxomCalendarBlogged"><a href="https://shallowsky.com/blog/2018/Jun/03"> 3</a></td><td class="blosxomCalendarCell"> 4</td><td class="blosxomCalendarCell"> 5</td><td class="blosxomCalendarCell"> 6</td><td class="blosxomCalendarCell"> 7</td><td class="blosxomCalendarCell"> 8</td><td class="blosxomCalendarBlogged"><a href="https://shallowsky.com/blog/2018/Jun/09"> 9</a></td></tr>
+<tr><td class="blosxomCalendarCell">10</td><td class="blosxomCalendarCell">11</td><td class="blosxomCalendarCell">12</td><td class="blosxomCalendarCell">13</td><td class="blosxomCalendarBlogged"><a href="https://shallowsky.com/blog/2018/Jun/14">14</a></td><td class="blosxomCalendarCell">15</td><td class="blosxomCalendarCell">16</td></tr>
+<tr><td class="blosxomCalendarCell">17</td><td class="blosxomCalendarCell">18</td><td class="blosxomCalendarCell">19</td><td class="blosxomCalendarCell">20</td><td class="blosxomCalendarCell">21</td><td class="blosxomCalendarCell">22</td><td class="blosxomCalendarBlogged"><a href="https://shallowsky.com/blog/2018/Jun/23">23</a></td></tr>
+<tr><td class="blosxomCalendarCell">24</td><td class="blosxomCalendarCell">25</td><td class="blosxomCalendarCell">26</td><td class="blosxomCalendarCell">27</td><td class="blosxomCalendarCell">28</td><td class="blosxomCalendarCell">29</td><td class="blosxomCalendarCell">30</td></tr>
+</tbody></table>
+<p>
+<b><a href="/blog/">Shallow Thoughts</a> blog</b>
+<br>
+<!-- 
+<b>Categories:</b>
+<ul class="categorygroup">
+<li><a href="https://shallowsky.com/blog/index.html">/</a> (1230)</li>
+<li><ul class="categorygroup">
+<li><a href="https://shallowsky.com/blog/art/index.html">art/</a> (3)</li>
+<li><a href="https://shallowsky.com/blog/blogging/index.html">blogging/</a> (14)</li>
+<li><a href="https://shallowsky.com/blog/conferences/index.html">conferences/</a> (26)</li>
+<li><ul class="categorygroup">
+<li><a href="https://shallowsky.com/blog/conferences/lca2008/index.html">lca2008/</a> (5)</li>
+<li><a href="https://shallowsky.com/blog/conferences/lca2009/index.html">lca2009/</a> (6)</li>
+</ul></li>
+<li><a href="https://shallowsky.com/blog/education/index.html">education/</a> (23)</li>
+<li><a href="https://shallowsky.com/blog/gimp/index.html">gimp/</a> (47)</li>
+<li><a href="https://shallowsky.com/blog/hardware/index.html">hardware/</a> (51)</li>
+<li><a href="https://shallowsky.com/blog/headlines/index.html">headlines/</a> (20)</li>
+<li><a href="https://shallowsky.com/blog/humor/index.html">humor/</a> (58)</li>
+<li><a href="https://shallowsky.com/blog/linux/index.html">linux/</a> (279)</li>
+<li><ul class="categorygroup">
+<li><a href="https://shallowsky.com/blog/linux/cmdline/index.html">cmdline/</a> (20)</li>
+<li><a href="https://shallowsky.com/blog/linux/editors/index.html">editors/</a> (36)</li>
+<li><a href="https://shallowsky.com/blog/linux/install/index.html">install/</a> (24)</li>
+<li><a href="https://shallowsky.com/blog/linux/kernel/index.html">kernel/</a> (12)</li>
+<li><a href="https://shallowsky.com/blog/linux/laptop/index.html">laptop/</a> (10)</li>
+</ul></li>
+<li><a href="https://shallowsky.com/blog/mapping/index.html">mapping/</a> (20)</li>
+<li><a href="https://shallowsky.com/blog/misc/index.html">misc/</a> (66)</li>
+<li><a href="https://shallowsky.com/blog/nature/index.html">nature/</a> (144)</li>
+<li><ul class="categorygroup">
+<li><a href="https://shallowsky.com/blog/nature/birds/index.html">birds/</a> (40)</li>
+<li><a href="https://shallowsky.com/blog/nature/squirrels/index.html">squirrels/</a> (15)</li>
+<li><a href="https://shallowsky.com/blog/nature/trails/index.html">trails/</a> (3)</li>
+</ul></li>
+<li><a href="https://shallowsky.com/blog/photo/index.html">photo/</a> (12)</li>
+<li><a href="https://shallowsky.com/blog/politics/index.html">politics/</a> (37)</li>
+<li><ul class="categorygroup">
+<li><a href="https://shallowsky.com/blog/politics/election04/index.html">election04/</a> (17)</li>
+<li><a href="https://shallowsky.com/blog/politics/rights/index.html">rights/</a> (3)</li>
+</ul></li>
+<li><a href="https://shallowsky.com/blog/programming/index.html">programming/</a> (124)</li>
+<li><a href="https://shallowsky.com/blog/recipes/index.html">recipes/</a> (4)</li>
+<li><a href="https://shallowsky.com/blog/science/index.html">science/</a> (60)</li>
+<li><ul class="categorygroup">
+<li><a href="https://shallowsky.com/blog/science/astro/index.html">astro/</a> (48)</li>
+<li><a href="https://shallowsky.com/blog/science/geology/index.html">geology/</a> (6)</li>
+</ul></li>
+<li><a href="https://shallowsky.com/blog/speaking/index.html">speaking/</a> (9)</li>
+<li><a href="https://shallowsky.com/blog/tech/index.html">tech/</a> (134)</li>
+<li><ul class="categorygroup">
+<li><a href="https://shallowsky.com/blog/tech/email/index.html">email/</a> (7)</li>
+<li><a href="https://shallowsky.com/blog/tech/hardware/index.html">hardware/</a> (1)</li>
+<li><a href="https://shallowsky.com/blog/tech/security/index.html">security/</a> (2)</li>
+<li><a href="https://shallowsky.com/blog/tech/web/index.html">web/</a> (73)</li>
+</ul></li>
+<li><a href="https://shallowsky.com/blog/travel/index.html">travel/</a> (49)</li>
+<li><ul class="categorygroup">
+<li><a href="https://shallowsky.com/blog/travel/anasazi/index.html">anasazi/</a> (9)</li>
+<li><a href="https://shallowsky.com/blog/travel/melbourne08/index.html">melbourne08/</a> (6)</li>
+<li><a href="https://shallowsky.com/blog/travel/mojave/index.html">mojave/</a> (8)</li>
+<li><a href="https://shallowsky.com/blog/travel/southpark/index.html">southpark/</a> (11)</li>
+<li><a href="https://shallowsky.com/blog/travel/sydney/index.html">sydney/</a> (1)</li>
+<li><a href="https://shallowsky.com/blog/travel/tasmania/index.html">tasmania/</a> (3)</li>
+</ul></li>
+<li><a href="https://shallowsky.com/blog/writing/index.html">writing/</a> (50)</li>
+</ul></li>
+</ul>
+<br />
+ -->
+<b><a href="/blog/topics.html">Shallow Thoughts Archives</a></b>
+(all entries, by category)<br>
+<br>
+<b><a href="/blog/tags/">Entries by Tag</a></b>
+</p><p>
+
+<b>About:</b><br>
+<table>
+<tbody><tr>
+<td>
+<a href="https://shallowsky.com/blog/index.rss"><img border="0" src="https://shallowsky.com/images/logos/rssicon-25x25.png" align="left" width="25" height="25" alt="[RSS feed]"></a>
+</td><td>
+Feeds:
+<a href="https://shallowsky.com/blog/index.rss20">RSS 2.0</a>
+| <a href="https://shallowsky.com/blog/index.atom">Atom</a>
+<br>
+</td></tr>
+<tr>
+<td>
+<a href="http://twitter.com/akkakk">
+ <img border="0" align="left" width="25" height="25" alt="[Twitter]" src="https://shallowsky.com/images/logos/twitter-bird-white-on-blue-25x25.png"></a>
+</td><td>
+<a href="http://twitter.com/akkakk">Follow  @akkakk on Twitter</a><br>
+</td></tr>
+<tr>
+<td>
+<a href="https://shallowsky.com">
+<img src="https://shallowsky.com/favicon.ico" align="left" width="25" height="25" alt="[Saturn icon]"></a>
+</td><td>
+<a href="https://shallowsky.com">Shallow Sky Home</a><br>
+</td></tr><tr>
+<td>
+<a href="https://shallowsky.com/mailme.html">
+<img src="https://shallowsky.com/images/logos/envelope-25x25.png" align="left" width="25" height="25" alt="[envelope]"></a>
+</td><td>
+<a href="https://shallowsky.com/mailme.html">Contact Akkana</a><br>
+</td></tr></tbody></table>
+
+</p><p>
+<b>Syndicated on:</b><br>
+• <a href="http://live.linuxchix.org/">LinuxChix Live</a><br>
+• <a href="http://planet.ubuntu-women.org/">Ubuntu Women</a><br>
+• <a href="http://planeteria.org/wfs/">Women in Free Software</a><br>
+• <a href="http://www.graphicsplanet.org/">Graphics Planet</a><br>
+• <a href="http://planet.ubuntu-california.org/">Ubuntu California</a><br>
+<br>
+
+</p><p>
+Powered by <a href="http://pyblosxom.sourceforge.net/">PyBlosxom</a>.
+</p></div> <!-- end #rightsidebar -->
+
+
+
+
+<iframe style="display: none;"></iframe></body></html>

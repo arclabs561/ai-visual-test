@@ -1,0 +1,362 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cass.si
+     — JAMstack FTP, electric boogaloo
+      
+    </title>
+    <link href="https://d33wubrfki0l68.cloudfront.net/css/bc4ec0f211576d607f8281afadb580e074d3ee19/assets/css/style.css" rel="stylesheet">
+    
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🪴</text></svg>">
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="sidebar">
+        <img src="https://ftp.cass.si/w60txb3v..JPEG">
+
+        <div class="about">
+          
+          <h2><a href="/">🪴🇳🇴👩‍💻🌊🐄</a></h2>
+<p>22 y/o senior full-stack norgeboo, working at a carbon-offsetting startup
+<code>(♥_♥)</code><br>
+you can contact me via:</p>
+<ul>
+<li>m (at) cass (dot) si</li>
+<li>cass#3882</li>
+<li><a href="https://gitlab.com/cxss">gitlab.com/cxss</a></li>
+<li><a href="https://www.last.fm/user/cwqt">last.fm/user/cwqt</a></li>
+</ul>
+<p>site written with <a href="https://www.11ty.dev/">11ty</a> &amp;
+<a href="https://foambubble.github.io/">foam</a> - hosted by <a href="https://netlify.com">netlify</a>
+— <a href="https://gitlab.com/cxss/site">source</a></p>
+<p><code>curl https://ftp.cass.si/k.txt | gpg --import</code></p>
+
+        </div>
+      </div>
+
+      <div class="content">
+        
+<h1>JAMstack FTP, electric boogaloo</h1>
+<span class="post-date">created at: Thu Dec 05 2019 23:10:00 GMT+0000 (Coordinated Universal Time)</span>
+
+
+
+<article><p>Its been a couple of years since I made my post on using JAMstack to make a sort
+of <a href="https://cass.si/posts/jam-stack-ftp-file-uploader">file hosting service</a>
+using Netlify, since then I've made mostly small modifications - re-wrote the
+auth to use GitLab and had two instances of it running at ftp.cass.si &amp;
+cass.si/ftp.</p>
+<p>And after those two years I have come to a conclusion:</p>
+<p><em>It kind of sucks.</em></p>
+<p>Standing out to me are a few major issues and just generally shoddy programming
+out of incompetence at the time. But hey! Years have passed and I'm an
+infinitely better programmer<sup>†</sup> now, and as a better programmer I shall
+rectify this thing into a better thing :)</p>
+<p>The main glaring issues with the current implementation:</p>
+<ul>
+<li>Using GitLab Access Token as a form of authentication only allows one user to
+access the service</li>
+<li>Site UI lacking</li>
+<li>Managing files is super time consuming</li>
+<li>Uploading multiple files results in mutlitple commits being made</li>
+<li>Files are roughly 1/3 larger due to blob -&gt; Data URI conversion</li>
+<li>.b64 files don't contain any sort of meta-data like creation date, uploader
+name etc.</li>
+<li>Code is callback hell incarnate</li>
+</ul>
+<p>After spending all of an hour thinking about possible improvements, I came up
+with these solutions:</p>
+<ul>
+<li>Use Netlify Identities®™ to allow multiple users to access the service and
+store GitLab API tokens</li>
+<li>Use <a href="http://harpjs.com/">Harp.js</a> to pre-render a site skeleton into which we
+load API-grabbed stuff</li>
+<li>Use action hashes with
+<a href="https://docs.gitlab.com/ee/api/commits.html#create-a-commit-with-multiple-files-and-actions">this</a>
+route to send all files in one commit</li>
+<li>Use an external image compression service to make files smaller before
+converting</li>
+<li>Package files into yaml and include some metadata like creation time &amp; who
+uploaded it</li>
+<li>Use async/await</li>
+</ul>
+<br>
+<p>The result:</p>
+<iframe width="800" height="400" src="https://www.youtube.com/embed/kdhSb6QyI5Y" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+<br>
+<p>Pretty cool hey?</p>
+<h2>What even is JAMstack?</h2>
+<p>I never actually explained this in the previous post - that's because in 2017 I
+didn't even know the word existed, and the JAMstack community was in it's
+infancy. So let's take a little time to understand what it is.</p>
+<p>JAM means JavaScript, APIs and Markup - a bit inspecific right? Basically
+there's no server involved, sites are pre-compiled via a continous deployment
+pipeline (Netlify, ZEIT Now) into static content by a generator (Gatsby,
+Jekyll... Harp) and served to the end user via a CDN.</p>
+<p><img src="https://ftp.cass.si/=MDM1QDO5k.jpeg" alt=""></p>
+<p>Now you might just be thinking: "Cass, what's the big deal with just spinning up
+some static html, we did that that 10 years ago" - and yes, that's sort of true,
+but misses out the <strong>A</strong> part of this whole thing, re-usable APIs that can be
+accessed over https with JS opens up a world of possibilities - you no longer
+require a monolithic server on some VPS to handle complex operations and dynamic
+content (...like authentification).</p>
+<p>There are currently a tonne of applications for JAMstack sites, from blogs to ,
+heck even things like <a href="https://snipcart.com/">SnipCart</a> exist for making
+e-commerce sites! There's a nice book on JAMstack
+<a href="https://www.netlify.com/pdf/oreilly-modern-web-development-on-the-jamstack.pdf">here</a>.</p>
+<h2>Why JAMstack?</h2>
+<ul>
+<li><strong>Better performance</strong>, sending static pre-made html files is fast as fuq
+compared to a server generating html on the fly.</li>
+<li><strong>Higher security</strong>, reduced attack surface, can't really do any SQL
+injections or XSS scripting if what you're serving is static.</li>
+<li><strong>Cheaper, scaliability</strong>: When your deployment is simply a stack of files,
+with more demand the CDN simply picks up the slack like nothing ever happened</li>
+<li><strong>Easier development</strong>: Loose coupling and separation of controls allow for
+more targeted development and debugging.</li>
+</ul>
+<p>Those are just some generic reasons I peeled off the
+interwebs(<a href="https://jamstack.org/">*</a>) - but here's a small anecdote from when I
+was interviewing at a small web dev. firm.</p>
+<p>They brought me in for some test day, learning their stack and whatnot. They
+weren't really doing anything that involved, mostly just websites for buisnesses
+with a CMS. And wow, let me tell you, that stack was a giant pile of shit. I
+wish I was joking - for the entire 3 hours I was there every second was pain, I
+genuinely felt like I was in a time capsule from 10 years ago the way it was all
+set up.</p>
+<p>Their stack consisted of some buggy in-browser text-editor/CMS all mashed into
+one, you couldn't edit more than one file at a time, no version control, no
+macros/multicursor/simple keybindings, it took 4 seconds to save a change, and
+then another 5 to propogate the change into a live preview.</p>
+<p>All their templates are built using some strange templating system in a language
+called XSLT, which wikipedia describes as "a language for transforming XML
+documents into other XML documents", so that's fun. There's also no watcher for
+compiling SASS to CSS making the entire "SASS is required" part of the job
+application form pointless, I was literally copy-pasting CSS from Sassmeister
+into the CSS files the whole time. Interestingly the lead dev. agreed with me on
+a few of these issues on the code review.</p>
+<p>After I'd gone home I started thinking about how their <em>entire</em> system could be
+replaced with a Forestry.io &amp; Gatsby/Jekyll/whatever set-up in under a day and
+be <em>leagues</em> better than what they currently had - that just really brought home
+how powerful JAMstack truly is. Part of me wishes I'd brought home the point a
+bit more about how bad it all was - but understandably they had something that
+worked... and just never seemed to want to change.</p>
+<p>Anyway, onwards with development!</p>
+<hr>
+<h2>Architecture</h2>
+<p>Here's a flow-chart of what goes down when the user uploads a file.</p>
+<p><img src="https://ftp.cass.si/==AN4ATMwA.jpeg" alt=""></p>
+<p>There is a short delay of about 30 seconds between a file uploaded and it being
+accessible because of the compilation time on Netlify's end.</p>
+<p>There are a lot of strings like <code>CREATED_AT</code>, <code>FILE_COUNT</code> &amp; <code>INSERT_LIST_HERE</code>,
+these are simply regexable terms used during compile time to replace with
+html/some value. For example, <a href="https://ftp.cass.si/list">https://ftp.cass.si/list</a> shows a list of all
+files in order of upload date, this is generated during compilation using the
+file data - imagine if this were generated every page load - a lot of overhead.</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">getListFileMarkup</span><span class="token punctuation">(</span><span class="token parameter">files</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>  files<span class="token punctuation">.</span><span class="token function">sort</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">a<span class="token punctuation">,</span> b</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>    <span class="token keyword">return</span> b<span class="token punctuation">.</span>creationDate <span class="token operator">-</span> a<span class="token punctuation">.</span>creationDate<span class="token punctuation">;</span><br>  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br>  <span class="token keyword">var</span> listString <span class="token operator">=</span> <span class="token string">""</span><span class="token punctuation">;</span><br>  files<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">file<span class="token punctuation">,</span> i</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span><br>    <span class="token keyword">var</span> dateString <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string"> (</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>timeago<span class="token punctuation">.</span><span class="token function">format</span><span class="token punctuation">(</span>file<span class="token punctuation">.</span>creationDate<span class="token punctuation">)</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">)</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span><br>    <span class="token keyword">var</span> fullFilename <span class="token operator">=</span> file<span class="token punctuation">.</span>name <span class="token operator">+</span> <span class="token string">"."</span> <span class="token operator">+</span> file<span class="token punctuation">.</span>extension<span class="token punctuation">;</span><br>    <span class="token keyword">var</span> markup <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string"><br>      &lt;div class="file-item"&gt;<br>        &lt;p&gt;</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>fullFilename<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">&lt;/p&gt;<br>        &lt;span&gt;</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token function">getFileSizeFromB64</span><span class="token punctuation">(</span>file<span class="token punctuation">.</span>data<span class="token punctuation">)</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">kb </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>dateString<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">&lt;/span&gt;<br>        &lt;a href="https://ftp.cass.si/</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>fullFilename<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">"&gt;&amp;nbsp;&amp;rsaquo;&amp;nbsp;&lt;/a&gt;<br>      &lt;/div&gt;<br>    </span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span><br>    listString <span class="token operator">=</span> listString <span class="token operator">+</span> markup<span class="token punctuation">;</span><br>  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token keyword">return</span> listString<span class="token punctuation">;</span><br><span class="token punctuation">}</span><br><span class="token comment">//then INSERT_LIST_HERE replaced with listString</span></code></pre>
+<hr>
+<h2>async/await vs callbacks</h2>
+<p>First there were callbacks, then Promises and now... async/await 🙏</p>
+<p>Ever since ES6 dropped and async/await came with it I've gone from being
+somewhat distasteful of JS to pretty much loving it, over the last 2 years I've
+really learned a lot about the language, including stuff like React, Redux etc.
+Promises are pretty awesome and now I really enjoy writing async code.</p>
+<p>So what is async/await? Sounds like a load of technobabble me thinks...
+Essentially it's syntax sugar for the new Promises object-thingy.</p>
+<p>May I present, callback hell:</p>
+<pre class="language-js"><code class="language-js"><span class="token function">someFunkyFunc</span><span class="token punctuation">(</span>input<span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">result</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>  <span class="token function">otherLessFunkyFunc</span><span class="token punctuation">(</span>result<span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">dear_lord</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>    <span class="token function">thisIsSoNotFunky</span><span class="token punctuation">(</span>dear_lord<span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">kill_me</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>      <span class="token comment">//yeah you can see where this is going...</span><br>    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>Promises were made to solve this! Instead of having a callback function,
+functions would return a Promise... this was okay for a bit:</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">var</span> awsumPromise <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">resolve<span class="token punctuation">,</span> reject</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span><br>  <span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>    <span class="token function">resolve</span><span class="token punctuation">(</span><span class="token string">"foo"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token number">300</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br>awsumPromise<span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">result</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span><br>  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">that's a really nice </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>result<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> you have there</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>But then the old problems came back...</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">var</span> promise1 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">resolve<span class="token punctuation">,</span> reject</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token operator">...</span> <span class="token function">resolve</span><span class="token punctuation">(</span><span class="token string">"foo"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><br><span class="token keyword">var</span> promise2 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">resolve<span class="token punctuation">,</span> reject</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token operator">...</span> <span class="token function">resolve</span><span class="token punctuation">(</span><span class="token string">"bar"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><br><span class="token keyword">var</span> promise3 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">resolve<span class="token punctuation">,</span> reject</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token operator">...</span> <span class="token function">resolve</span><span class="token punctuation">(</span><span class="token string">"baz"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><br><br>promise1<span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token parameter">oh_no</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span><br>  promise2<span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token parameter">what_are_you_doing</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span><br>    promise3<span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token parameter">aaaaaAAAAAAAAA</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span><br>        <span class="token comment">//and so it goes</span><br>      <span class="token punctuation">}</span><span class="token punctuation">)</span><br>    <span class="token punctuation">}</span><span class="token punctuation">)</span><br>  <span class="token punctuation">}</span><span class="token punctuation">)</span></code></pre>
+<p>The main issue here is that promise chains are composed from callback functions,
+and functions introduce new scopes - if we didn't have these sibling scopes we
+could share access to previous results.</p>
+<p>The promised lands: async/await! 🎉</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">var</span> promise1 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">resolve<span class="token punctuation">,</span> reject</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token operator">...</span> <span class="token function">resolve</span><span class="token punctuation">(</span><span class="token string">"foo"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><br><span class="token keyword">var</span> promise2 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">resolve<span class="token punctuation">,</span> reject</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token operator">...</span> <span class="token function">resolve</span><span class="token punctuation">(</span><span class="token string">"bar"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><br><span class="token keyword">var</span> promise3 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">resolve<span class="token punctuation">,</span> reject</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token operator">...</span> <span class="token function">resolve</span><span class="token punctuation">(</span><span class="token string">"baz"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><br><br><span class="token keyword">var</span> foo <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">promise1</span><span class="token punctuation">(</span><span class="token punctuation">)</span><br><span class="token keyword">var</span> bar <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">promise2</span><span class="token punctuation">(</span><span class="token punctuation">)</span><br><span class="token keyword">var</span> baz <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">promise3</span><span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<p>It's like writing synchronous code, but it's async, awsum. There's so much less
+noise, very pretty looking, totally no excuse not to write clean code with this
+super nice syntax in place - one must remember that await can only be in async
+functions, or wrapped in an AIIFE: Async Immediately Invoked Function Execution:</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">var</span> doesnt_work <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">pwomise</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">async</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span><br>  <span class="token keyword">var</span> happy_days <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">pwomise</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<hr>
+<h2>Netlify Identities</h2>
+<p>Previously I had been using a straight GitLab Access Token to authenticate and
+upload files, but this seemed a bit hacky &amp; I wasn't overly comfortable dishing
+out keys to friends so they could use my service.</p>
+<p>Netlify Identities allows you to authenticate users for things like gated
+content, site administration etc, and is backed by the
+<a href="https://github.com/netlify/gotrue-js">GoTrue</a> API. It's basically an
+authentication microservice with a database - the only part of interest to the
+developer is the user-facing API.</p>
+<p><img src="https://ftp.cass.si/=YTO1ADMwA.png" alt=""></p>
+<p>Setting it up is as simple as adding a user on Netlify, downloading the minified
+<a href="https://github.com/netlify/gotrue-js/blob/master/browser/gotrue.js">gotrue.js</a>
+file from the gotrue-js repo and setting up an auth object.</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">var</span> auth <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">GoTrue</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  APIUrl<span class="token operator">:</span> <span class="token string">"https://cass.si/.netlify/identity"</span><span class="token punctuation">,</span><br>  setCookie<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>Unfortunately the Netlify UI has much to be desired and is sort of awkward to
+set up a user from after this point. I had to get a recovery token and use that
+to get access to the user object, using that I could set a password via the
+<code>.update</code> function, like so:</p>
+<pre class="language-js"><code class="language-js">auth<span class="token punctuation">.</span><span class="token function">recover</span><span class="token punctuation">(</span>recoveryKey<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">user</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span><br>  user<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span><span class="token punctuation">{</span> password<span class="token operator">:</span> password <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>As for actual logging in part, it's as easy as:</p>
+<pre class="language-js"><code class="language-js"><span class="token comment">//wrap auth in a promise for async/await goodness</span><br><span class="token keyword">async</span> <span class="token keyword">function</span> <span class="token function">authUser</span><span class="token punctuation">(</span><span class="token parameter">username<span class="token punctuation">,</span> password</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>  <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">resolve<span class="token punctuation">,</span> reject</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span><br>    auth<br>      <span class="token punctuation">.</span><span class="token function">login</span><span class="token punctuation">(</span>username<span class="token punctuation">,</span> password<span class="token punctuation">)</span><br>      <span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">user</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span><br>        <span class="token function">resolve</span><span class="token punctuation">(</span>user<span class="token punctuation">)</span><span class="token punctuation">;</span><br>      <span class="token punctuation">}</span><span class="token punctuation">)</span><br>      <span class="token punctuation">.</span><span class="token function">catch</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">err</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token function">reject</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token punctuation">}</span><br><br><span class="token comment">//Immediately Invoked Async Arrow Function Expression to allow await at top-level</span><br><span class="token punctuation">(</span><span class="token keyword">async</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span><br>  user <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">authUser</span><span class="token punctuation">(</span><span class="token string">"someuser"</span><span class="token punctuation">,</span> <span class="token string">"somepath"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// returns User object</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>This is probably the <em>easiest</em> user login I've ever created, it has a super nice
+and condense API, can definitely see myself doing this more often. (also
+IIAAFE's are freaking noice)</p>
+<p>This service makes use of the GitLab API and so we can leverage GoTrue to store
+this token in a <code>user_metadata</code> field, which
+<a href="https://github.com/netlify/gotrue-js/issues/44">strangely uses a key</a> of <code>data</code>
+in the update function:</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">setUserGitlabToken</span><span class="token punctuation">(</span><span class="token parameter">user<span class="token punctuation">,</span> token</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>  <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">resolve<span class="token punctuation">,</span> reject</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span><br>    user<br>      <span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span><span class="token punctuation">{</span> data<span class="token operator">:</span> <span class="token punctuation">{</span> gitlab_token<span class="token operator">:</span> token <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><br>      <span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">user</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token function">resolve</span><span class="token punctuation">(</span>user<span class="token punctuation">)</span><span class="token punctuation">)</span><br>      <span class="token punctuation">.</span><span class="token function">catch</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">err</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token function">reject</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token punctuation">}</span><br><br><span class="token punctuation">(</span><span class="token keyword">async</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span><br>  user <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">authUser</span><span class="token punctuation">(</span><span class="token string">"someuser"</span><span class="token punctuation">,</span> <span class="token string">"somepath"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token function">setUserGitlabToken</span><span class="token punctuation">(</span>user<span class="token punctuation">,</span> <span class="token constant">GITLAB_TOKEN</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<hr>
+<h2>Harp.js skeleton</h2>
+<p>We need some content for our site! I've used Harp.js in the past and while it
+seems quite dead in developement now, it's nice and simple for little pages like
+this.</p>
+<blockquote>
+<p>Harp serves Jade, Markdown, EJS, CoffeeScript, Sass, LESS and Stylus as HTML,
+CSS &amp; JavaScript—no configuration necessary.</p>
+</blockquote>
+<p>All I need to do for this part is pass in some markup, write the styles and the
+JS handles DOM manipulation for adding UI elements later on. During compilation
+other JS files will replace placeholder strings like <code>INSERT_LIST_HERE</code> with the
+actual html. While I'm in dev enviroment it looks like this:</p>
+<p><img src="https://ftp.cass.si/=gDN3kTN5k.png" alt=""></p>
+<p>The skeleton source is <a href="https://gitlab.com/cxss/site/tree/ftp/skeleton">here</a>.</p>
+<hr>
+<h2>Client side image compression with tinypng.com</h2>
+<p>Oh man, what fun I had with this, from CORS issues to ArrayBuffers, this part
+probably took me the longest to make. tinypng has pretty good documentation all
+things considered and even a few implementations for different languages... all
+except client-side using HTTPS.</p>
+<p>My thoughts: get image, send image to api, get compressed image, continue as
+normal. Simple right?</p>
+<p>Firstly, what actually is an image? When you add a file to an input field it
+triggers <code>onchange</code>, we can access the content of this (a
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/FileList">FileList</a>) even via
+an event listener:</p>
+<pre class="language-js"><code class="language-js"><span class="token function">$</span><span class="token punctuation">(</span><span class="token string">"#fileUploadInput"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">addEventListener</span><span class="token punctuation">(</span><span class="token string">"change"</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">event</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span><br>  <span class="token keyword">var</span> files <span class="token operator">=</span> event<span class="token punctuation">.</span>target<span class="token punctuation">.</span>files<span class="token punctuation">;</span> <span class="token comment">//is a FileList</span><br>  files<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">file</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span><br>    <span class="token comment">//file is a File object</span><br>    <span class="token comment">//File is inherited from Blob</span><br>    <span class="token comment">//https://developer.mozilla.org/en-US/docs/Web/API/File</span><br>  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>This contains our data, but first it needs to be read in by a <code>FileReader</code>:</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">let</span> reader <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">FileReader</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>Before I go any further we have to take a look at what kind of data the tinypng
+API takes, the docs show:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token function">curl</span> --user api:YOUR_API_KEY <span class="token punctuation">\</span><br>      --data-binary @unoptimized.png -i https://api.tinify.com/shrink</code></pre>
+<p>I tried this on my laptop and cURL said it was a POST request in the headers -
+it takes Basic HTTP authentifcation in the form <code>api:API_KEY</code> and a
+<code>data-binary</code>... whatever that is - and returns an object like this:</p>
+<pre class="language-js"><code class="language-js"><span class="token punctuation">{</span><br>  <span class="token string">"input"</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token string">"size"</span><span class="token operator">:</span> <span class="token number">282615</span><span class="token punctuation">,</span><br>    <span class="token string">"type"</span><span class="token operator">:</span> <span class="token string">"image/png"</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token string">"output"</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token string">"size"</span><span class="token operator">:</span> <span class="token number">77598</span><span class="token punctuation">,</span><br>    <span class="token string">"type"</span><span class="token operator">:</span> <span class="token string">"image/png"</span><span class="token punctuation">,</span><br>    <span class="token string">"width"</span><span class="token operator">:</span> <span class="token number">580</span><span class="token punctuation">,</span><br>    <span class="token string">"height"</span><span class="token operator">:</span> <span class="token number">1034</span><span class="token punctuation">,</span><br>    <span class="token string">"ratio"</span><span class="token operator">:</span> <span class="token number">0.2746</span><span class="token punctuation">,</span><br>    <span class="token string">"url"</span><span class="token operator">:</span> <span class="token string">"https://api.tinify.com/output/tbvcetjky0xtdrb9c4kvc0prur96ha2m"</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">}</span></code></pre>
+<p>The object returns a link to the compressed file, <code>output.url</code>, so we can grab
+that. But first, what the hell is a <code>data-binary</code> in cURL?</p>
+<p>From the man page:</p>
+<pre><code>--data-binary
+
+(HTTP) This posts data exactly as specified with no extra processing whatsoever.
+
+If you start the data with the letter @, the rest should be a filename. Data is
+posted &gt; in a similar manner as -d, --data does, except that newlines and
+carriage returns are &gt; &gt; preserved and conversions are never done.
+
+Like -d, --data the default content-type sent to the server is
+application/x-www-form-&gt; &gt; urlencoded. If you want the data to be treated as
+arbitrary binary data by the server &gt; then set the content-type to
+octet-stream: -H "Content-Type: application/octet-stream".
+</code></pre>
+<p>From this we know the content type is an <code>octet-stream</code> and <code>data-binary</code> is an
+arbitrary piece of binary data with <em>no extra processing</em>. According to MDN docs
+we can read files using FileReader into a <em>"fixed-length raw binary data
+buffer"</em> via <code>readAsArrayBuffer</code>, which sounds like what I want.</p>
+<p>So the request to the tinypng API should look like:</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">let</span> reader <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">FileReader</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>reader<span class="token punctuation">.</span><span class="token function">readAsArrayBuffer</span><span class="token punctuation">(</span>file<span class="token punctuation">)</span><br><br><span class="token keyword">var</span> p <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">resolve<span class="token punctuation">,</span> reject</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span><br>  reader<span class="token punctuation">.</span><span class="token function-variable function">onload</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">e</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>    <span class="token function">resolve</span><span class="token punctuation">(</span>e<span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><br><br><span class="token keyword">var</span> fileArrayBuffer <span class="token operator">=</span> <span class="token keyword">await</span> p<span class="token punctuation">;</span><br><br><span class="token keyword">var</span> result <span class="token operator">=</span> <span class="token keyword">await</span> $<span class="token punctuation">.</span><span class="token function">ajax</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  url<span class="token operator">:</span> <span class="token string">'https://api.tinify.com/shrink'</span><span class="token punctuation">,</span><br>  type<span class="token operator">:</span> <span class="token string">'POST'</span><span class="token punctuation">,</span><br>  data<span class="token operator">:</span> fileArrayBuffer<span class="token punctuation">,</span><br>  processData<span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span><br>  headers<span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token string">"Authorization"</span><span class="token operator">:</span> <span class="token string">'Basic '</span> <span class="token operator">+</span> <span class="token function">btoa</span><span class="token punctuation">(</span><span class="token string">'api:API_KEY'</span><span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token string">"Content-Type"</span><span class="token operator">:</span> <span class="token string">"application/octet-stream"</span><span class="token punctuation">,</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token function-variable function">success</span><span class="token operator">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">response</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>    <span class="token keyword">return</span> response<span class="token punctuation">.</span>output<span class="token punctuation">.</span>url<br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token function-variable function">error</span><span class="token operator">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">xhr<span class="token punctuation">,</span> textStatus<span class="token punctuation">,</span> errorThrown</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>xhr<span class="token punctuation">,</span> textStatus<span class="token punctuation">,</span> errorThrown<span class="token punctuation">)</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>Looks good, then.... this bullshit.</p>
+<p><img src="https://ftp.cass.si/4kjNykTO5k.png" alt=""></p>
+<p>CORS, CORS, so annoying, but has its reasons for existing - to stop requests
+from domains that aren't its own accessing resources <em>unless</em> they're down in
+the hosts <code>Access-Control-Access-Origin</code>.</p>
+<p><img src="https://ftp.cass.si/==AN1YDMwA.png" alt=""></p>
+<p>After a bit of searching I came across this
+<a href="https://stackoverflow.com/questions/29670703/how-to-use-cors-anywhere-to-reverse-proxy-and-add-cors-headers">Stack Overflow post</a>.
+It states by prepending the API url with a Heroku URL it'll do some magic to the
+CORS headers and the request will go through?</p>
+<pre><code>CORS Anywhere helps with accessing data from other websites that is normally
+forbidden by the same origin policy of web browsers. This is done by proxying
+requests to these sites via a server (written in Node.js, in this case).
+
+"To use the API, just prefix the URL with the API URL.". That's really
+all of it. So, instead of requesting http://example.com, you will request
+https://cors-anywhere.herokuapp.com/http://example.com. CORS Anywhere will
+then make the request on behalf of your application, and add CORS headers
+to the response so that your web application can process the response.
+</code></pre>
+<p>I'm not entirely sure how this works... but it does,</p>
+<pre class="language-js"><code class="language-js">url<span class="token operator">:</span> <span class="token string">'https://cors-anywhere.herokuapp.com/https://api.tinify.com/shrink'</span><span class="token punctuation">,</span></code></pre>
+<p>Now to get the compressed file, apparently AJAX doesn't support downloading
+files but xhr does? Weird, anyway (also again with the <code>cors-anywhere</code>):</p>
+<pre class="language-js"><code class="language-js"><span class="token comment">//get that mfing blob</span><br><span class="token keyword">var</span> getBlob <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">resolve<span class="token punctuation">,</span> reject</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span><br>  <span class="token keyword">var</span> xhr <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">XMLHttpRequest</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>  xhr<span class="token punctuation">.</span><span class="token function-variable function">onreadystatechange</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>readyState <span class="token operator">==</span> <span class="token number">4</span> <span class="token operator">&amp;&amp;</span> <span class="token keyword">this</span><span class="token punctuation">.</span>status <span class="token operator">==</span> <span class="token number">200</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>      <span class="token function">resolve</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>response<span class="token punctuation">)</span><span class="token punctuation">;</span><br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">}</span><span class="token punctuation">;</span><br>  xhr<span class="token punctuation">.</span><span class="token function">open</span><span class="token punctuation">(</span><span class="token string">"GET"</span><span class="token punctuation">,</span> <span class="token constant">HEROKU_CORS_URL</span> <span class="token operator">+</span> result<span class="token punctuation">.</span>output<span class="token punctuation">.</span>url<span class="token punctuation">)</span><span class="token punctuation">;</span><br>  xhr<span class="token punctuation">.</span>responseType <span class="token operator">=</span> <span class="token string">"blob"</span><span class="token punctuation">;</span><br>  xhr<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br><span class="token keyword">return</span> <span class="token keyword">await</span> getBlob<span class="token punctuation">;</span></code></pre>
+<p>Woo, a compressed file! Typically tinypng shaves off around 75% of the file size
+with no noticable change, so definitely a worthwhile addition when you consider
+how much file size is added when convering to data URI.</p>
+<p>Files are later read by another <code>FileReader</code> into their base64 data URIs via
+<code>reader.readAsDataURL</code>, this is done so to end up with a flat text file which
+can be sent to the GitLab repo.</p>
+<hr>
+<h2>Packing files into yaml</h2>
+<p>As I said before, one of the main issues of the previous implementation was the
+lack of meta-data. Now that I can support multiple users I want to track who
+uploads what files - incase of abuse or something.</p>
+<p>The YAML file schema looks like:</p>
+<pre class="language-yaml"><code class="language-yaml"><span class="token key atrule">uploader</span><span class="token punctuation">:</span> &lt;string<span class="token punctuation">&gt;</span> full_name of uploader account<br><span class="token key atrule">creationdate</span><span class="token punctuation">:</span> &lt;int<span class="token punctuation">&gt;</span> milliseconds since linux epoch<br><span class="token key atrule">data</span><span class="token punctuation">:</span> <span class="token punctuation">&gt;</span><span class="token scalar string"><br>  "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABI... ..."</span></code></pre>
+<p>This data is used during compilation to generate the file list. I made the
+mistake of using <code>\t</code> to indent but apparently YAML uses 2 spaces to indent
+resulting in an invalid file during parsing. 😒</p>
+<hr>
+<h2>GitLab action hashmap</h2>
+<p>In the previous implementation I used a naive solution of just sending an AJAX
+request for each file - creating a new commit for each file - this isn't exactly
+efficient (and it floods my commit graph).</p>
+<p>I'm not sure why I didn't see this before but there's a
+<a href="https://docs.gitlab.com/ee/api/commits.html#create-a-commit-with-multiple-files-and-actions">route</a>
+that allows multiple files to be uploaded at once:
+<code>POST /projects/:id/repository/commits</code></p>
+<p>It takes a list of "actions", which can be anything from deleting a file to
+moving it.</p>
+<pre class="language-js"><code class="language-js"><span class="token punctuation">{</span><br><span class="token string">"actions"</span><span class="token operator">:</span> <span class="token punctuation">[</span><br>  <span class="token punctuation">{</span><br>    <span class="token string">"action"</span><span class="token operator">:</span> <span class="token string">"create"</span><span class="token punctuation">,</span><br>    <span class="token string">"file_path"</span><span class="token operator">:</span> <span class="token string">"foo/bar.txt"</span><span class="token punctuation">,</span><br>    <span class="token string">"content"</span><span class="token operator">:</span> <span class="token string">"some content"</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token string">"action"</span><span class="token operator">:</span> <span class="token string">"delete"</span><span class="token punctuation">,</span><br>    <span class="token string">"file_path"</span><span class="token operator">:</span> <span class="token string">"foo/bar2.xml"</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token operator">...</span></code></pre>
+<p><code>fileToYaml</code> simply forms a string in the same form as the schema I described,
+thus the request to the GitLab API looks like:</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">var</span> actions <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span><br>files<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">file</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span><br>  actions<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>    action<span class="token operator">:</span> <span class="token string">"create"</span><span class="token punctuation">,</span><br>    file_path<span class="token operator">:</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">f/</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>file<span class="token punctuation">.</span>name<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">.yml</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">,</span><br>    content<span class="token operator">:</span> <span class="token function">fileToYaml</span><span class="token punctuation">(</span>file<span class="token punctuation">)</span><span class="token punctuation">,</span><br>  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br>$<span class="token punctuation">.</span><span class="token function">ajax</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  type<span class="token operator">:</span> <span class="token string">"POST"</span><span class="token punctuation">,</span><br>  url<span class="token operator">:</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token constant">HEROKU_CORS_URL</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">https://gitlab.com/api/v4/projects/</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token constant">PROJECT_ID</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">/repository/commits</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">,</span><br>  dataType<span class="token operator">:</span> <span class="token string">"json"</span><span class="token punctuation">,</span><br>  contentType<span class="token operator">:</span> <span class="token string">"application/json; charset=UTF-8"</span><span class="token punctuation">,</span><br>  data<span class="token operator">:</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>    branch<span class="token operator">:</span> <span class="token string">"ftp"</span><span class="token punctuation">,</span><br>    commit_message<span class="token operator">:</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">FTP :: Uploading </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>files<span class="token punctuation">.</span>length<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> file(s)</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">,</span><br>    actions<span class="token operator">:</span> actions<span class="token punctuation">,</span><br>  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span><br>  <span class="token function-variable function">beforeSend</span><span class="token operator">:</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">xhr</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>    xhr<span class="token punctuation">.</span><span class="token function">setRequestHeader</span><span class="token punctuation">(</span><br>      <span class="token string">"PRIVATE-TOKEN"</span><span class="token punctuation">,</span><br>      auth<span class="token punctuation">.</span><span class="token function">currentUser</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>user_metadata<span class="token punctuation">.</span>gitlab_token<br>    <span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token function-variable function">success</span><span class="token operator">:</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">response</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>response<span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token function-variable function">error</span><span class="token operator">:</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">xhr<span class="token punctuation">,</span> textStatus<span class="token punctuation">,</span> errorThrown</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>xhr<span class="token punctuation">,</span> textStatus<span class="token punctuation">,</span> errorThrown<span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<h2>Building</h2>
+<p>Time to bring it all together. When a commit is sent to GitLab a Netlify build
+hook gets triggered starting a deployment, this deployement uses a <code>build.sh</code>
+file to carry out actions and serves all content out of the <code>_site</code> directory.</p>
+<pre class="language-shell"><code class="language-shell"><span class="token shebang important">#!/bin/sh</span><br><span class="token function">rm</span> -rf _site/<br><span class="token function">mkdir</span> _site/<br><br><span class="token comment">#compile the skeleton site</span><br>harp compile skeleton/ _site/<br><br><span class="token comment">#convert all yml files in ./f to their blob</span><br><span class="token comment">#generate the list string and insert into ./_site/list.html</span><br>node compile.js<br><br><span class="token comment">#get all files (not hidden), get number of lines (files), format as 1,234</span><br><span class="token comment">#replace FILECOUNT in ./_site/index.html with this value</span><br><span class="token assign-left variable">FILECOUNT</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span><span class="token function">find</span> ./f -not -path <span class="token string">'*/\.*'</span> -type f <span class="token operator">|</span> <span class="token function">wc</span> -l <span class="token operator">|</span> <span class="token function">awk</span> <span class="token string">'{ printf("%'</span>"<span class="token string">'"'</span>d<span class="token punctuation">\</span>n",$1<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>'<span class="token variable">)</span></span><br><span class="token function">sed</span> -i -e <span class="token string">"s/FILECOUNT/<span class="token variable">$FILECOUNT</span>/g"</span> ./_site/index.html<br><br><span class="token comment">#get most recent commit SHA (the one that triggered this deployment)</span><br><span class="token comment">#replace GITCOMMIT in ./_site/index.html with this value</span><br><span class="token assign-left variable">COMMIT</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span><span class="token function">curl</span> --silent --header <span class="token string">"PRIVATE-TOKEN: <span class="token variable">$GITLAB_API_KEY</span>"</span> <span class="token string">"https://gitlab.com/api/v4/projects/13261952/repository/commits/ftp"</span> <span class="token operator">|</span> jq <span class="token string">'.short_id'</span> <span class="token operator">|</span> <span class="token function">tr</span> -d <span class="token punctuation">\</span>"<span class="token variable">)</span></span><br><span class="token function">sed</span> -i -e <span class="token string">"s/GITCOMMIT/<span class="token variable">$COMMIT</span>/g"</span> ./_site/index.html<br><br><span class="token builtin class-name">exit</span> <span class="token number">0</span></code></pre>
+<p>The only real file of interest here is <code>compile.js</code> which simply goes over all
+files in <code>f/</code>, parses the YAML, extracts the data URI and converts it into a
+blob writing it to <code>./_site</code>.</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">writeFileToDisk</span><span class="token punctuation">(</span><span class="token parameter">file</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>  <span class="token keyword">var</span> dir <span class="token operator">=</span> __dirname <span class="token operator">+</span> <span class="token string">"/_site"</span><span class="token punctuation">;</span><br>  fs<span class="token punctuation">.</span><span class="token function">writeFile</span><span class="token punctuation">(</span><br>    <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>dir<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">/</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>file<span class="token punctuation">.</span>name<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">.</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>file<span class="token punctuation">.</span>extension<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">,</span><br>    file<span class="token punctuation">.</span>data<span class="token punctuation">,</span><br>    <span class="token string">"base64"</span><span class="token punctuation">,</span><br>    <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">err</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>      <span class="token keyword">if</span> <span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token punctuation">{</span><br>        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span><span class="token punctuation">;</span><br>      <span class="token punctuation">}</span><br>      console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">Wrote </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>file<span class="token punctuation">.</span>name<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> to disk.</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token punctuation">}</span></code></pre>
+<hr>
+<h2>Conclusion</h2>
+<p>That's most of it covered. I will admit it's a bit of an awkward way to do file
+hosting, but it's free and was fun to work on - also a bit of a way to flex my
+programming skills on 18 year old self.</p>
+<p>I added a few other features such as a recovery page, resetting tokens/password
+after logging in an a method of previewing &amp; deleting files from the file list
+page. You can view all that stuff in the source. Feel free to fork and do
+whatever you like :)</p>
+<p><span id="small"><sup>†</sup> I can feel myself saying that again in another 2
+years...</span></p>
+</article>
+
+      </div>
+    </div>
+
+    <footer>
+      <a class="rotonde no-link-style" href="https://webring.xxiivv.com/#random" target="blank_">
+        <img src="https://ftp.cass.si/www/webring.png">
+      </a>
+      <span> 2021 · copyright? no thanks</span>
+    </footer>
+  
+
+</body></html>

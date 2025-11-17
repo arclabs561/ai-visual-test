@@ -1,0 +1,339 @@
+<!DOCTYPE html><html lang="en" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml"><head>
+    <title>The magical world of Pleroma, setting up your instance. - i2p.rocks -- blog about i2p and other stuff</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./theme/images/og-logo.png" rel="icon">
+
+<link rel="canonical" href="./the-magical-world-of-pleroma-setting-up-your-instance.html">
+
+        <meta name="author" content="jeff">
+        <meta name="keywords" content="pleroma">
+        <meta name="description" content="This guide is out of date, use the official docs. This little blog post will guide a user through installing pleroma on a &quot;$3 instance&quot; as suggested by lain. First, what is pleroma? Pleroma is an OStatus and ActivityPub compatable server, a component of the fediverse of which GNU Social and Mastodon belong to as well. Think if twitter was structued how email is. With Email you have many different servers, yahoo mail, gmail, aol, (etc) that all can send mail to each other but are owned by different entities, the thing they have in common is they all speak SMTP. OStatus and AcitivityPub are each the &quot;Twitter of SMTP&quot;, tweets/toots/shitposts/japanese-moonrunes are exchanged between servers. Many users can be on 1 server, (in fact mastodon.social and pawoo.net have a large chunk of the users) or 1 user can run their own server just for them …">
+
+        <meta property="og:site_name" content="i2p.rocks -- blog about i2p and other stuff">
+        <meta property="og:type" content="article">
+        <meta property="og:title" content="The magical world of Pleroma, setting up your instance.">
+        <meta property="og:url" content="https://i2p.rocks/blog/the-magical-world-of-pleroma-setting-up-your-instance.html">
+        <meta property="og:description" content="This guide is out of date, use the official docs. This little blog post will guide a user through installing pleroma on a &quot;$3 instance&quot; as suggested by lain. First, what is pleroma? Pleroma is an OStatus and ActivityPub compatable server, a component of the fediverse of which GNU Social and Mastodon belong to as well. Think if twitter was structued how email is. With Email you have many different servers, yahoo mail, gmail, aol, (etc) that all can send mail to each other but are owned by different entities, the thing they have in common is they all speak SMTP. OStatus and AcitivityPub are each the &quot;Twitter of SMTP&quot;, tweets/toots/shitposts/japanese-moonrunes are exchanged between servers. Many users can be on 1 server, (in fact mastodon.social and pawoo.net have a large chunk of the users) or 1 user can run their own server just for them …">
+        <meta property="article:published_time" content="2018-03-11">
+            <meta property="article:section" content="blog">
+            <meta property="article:tag" content="pleroma">
+            <meta property="article:author" content="jeff">
+            <meta property="og:image" content="https://i2p.rocks/blog/theme/images/og-logo.png">
+
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="./theme/css/bootstrap.min.css" type="text/css">
+<!--    
+
+        <link href="./theme/css/pygments/github.css" rel="stylesheet">
+       -->
+    <link rel="stylesheet" href="./theme/css/style.css" type="text/css">
+    <link rel="stylesheet" href="./theme/css/monokai.css" type="text/css">
+    <link rel="stylesheet" href="./theme/css/local.css" type="text/css">
+    
+
+        <link href="./feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="i2p.rocks -- blog about i2p and other stuff ATOM Feed">
+
+        <link href="./rss.xml" type="application/rss+xml" rel="alternate" title="i2p.rocks -- blog about i2p and other stuff RSS Feed">
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default" role="navigation">
+	<div class="container">
+        <div class="navbar-header">
+            <a href="./" class="navbar-brand">
+                i2p.rocks
+            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                    <li><a href="/blog/rss.xml">RSS Feed</a></li>
+                    <li><a href="/blog/feeds/all.atom.xml">Atom Feed</a></li>
+                        <li class="active">
+                            <a href="./category/blog.html">Blog</a>
+                        </li>
+                        <li>
+                            <a href="./category/development.html">Development</a>
+                        </li>
+                        <li>
+                            <a href="./category/lokinet.html">Lokinet</a>
+                        </li>
+                        <li>
+                            <a href="./category/nntpchan.html">Nntpchan</a>
+                        </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li><a href="./archives.html"><i class="fa fa-th-list"></i><span class="icon-label">Archives</span></a></li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+<div class="container">
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <time datetime="2018-03-11T00:00:00+00:00"> 2018 MAR 11</time>
+                <h1>
+                    <a href="./the-magical-world-of-pleroma-setting-up-your-instance.html" class="text-default" rel="bookmark" title="Permalink to The magical world of Pleroma, setting up your instance.">
+                        The magical world of Pleroma, setting up your instance.
+                    </a>
+                </h1>
+            </header>
+            <div class="entry-content">
+                <h1>This guide is out of date, use <a href="https://docs-develop.pleroma.social/readme.html">the official docs</a>.</h1>
+<p>This little blog post will guide a user through installing pleroma on a "$3 instance" as suggested by lain.</p>
+<p>First, what is pleroma?</p>
+<p>Pleroma is an OStatus and ActivityPub compatable server, a component of the <a href="https://robek.world/featured/what-is-gnu-social-and-is-mastodon-social-a-twitter-clone/">fediverse</a> of which GNU Social and Mastodon belong to as well. Think if twitter was structued how email is. With Email you have many different servers, yahoo mail, gmail, aol, (etc) that all can send mail to each other but are owned by different entities, the thing they have in common is they all speak SMTP. OStatus and AcitivityPub are each the "Twitter of SMTP", tweets/toots/shitposts/japanese-moonrunes are exchanged between servers. Many users can be on 1 server, (in fact mastodon.social and pawoo.net have a large chunk of the users) or 1 user can run their own server just for them (which is what I do, sorta).</p>
+<p>This guide may be outdated but the <a href="https://git.pleroma.social/pleroma/pleroma/wikis/Installing%20on%20Debian%20based%20distributions">pleroma wiki</a> should always be up to date.</p>
+<p>Things you'll need before getting started:</p>
+<ul>
+<li>ssh client</li>
+<li>a domain name</li>
+</ul>
+<p>For this setup we're going to use Debian Stretch (as of writing it's debian stable) on digitial ocean.</p>
+<p>I chose DigitalOcean because they have absolutely fantastic documentation.</p>
+<p>Required things to do before hand:</p>
+<ul>
+<li><a href="https://www.digitalocean.com/community/tutorials/how-to-create-your-first-digitalocean-droplet">Spin up a VPS</a></li>
+<li><a href="https://www.digitalocean.com/community/tutorials/how-to-use-ssh-keys-with-putty-on-digitalocean-droplets-windows-users">Generate an ssh key</a></li>
+<li>Add a DNS A Record with the IP Address of your droplet.</li>
+<li>Make sure that your domain resolves to the ip address of your droplet, hint: use <code>ping -c 1 your-domain.tld</code> to test.</li>
+</ul>
+<p>Some VERY IMPORTANT notes:</p>
+<ul>
+<li>Lines that start with <code>%</code> mean that they should be executed as root user</li>
+<li>Lines that start with <code>$</code> mean that they should NOT be executed as root user</li>
+<li>don't include <code>%</code> or <code>$</code> in the command itself.</li>
+</ul>
+<p>Once that's all set up, log into the droplet as root.</p>
+<p>Get the build dependancies:</p>
+<div class="highlight"><pre><span></span><code>% apt-get install build-essential git wget postgresql nginx certbot sudo
+</code></pre></div>
+
+<p>install elixir, the one in debian stretch is too old:</p>
+<div class="highlight"><pre><span></span><code>% wget https://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb
+% dpkg -i erlang-solutions_1.0_all.deb
+% apt-get update
+% apt-get install --no-install-recommends elixir esl-erlang
+</code></pre></div>
+
+<p>Add a new user called pleroma:</p>
+<div class="highlight"><pre><span></span><code>% useradd pleroma
+% mkdir /home/pleroma <span class="o">&amp;&amp;</span> chown pleroma:pleroma /home/pleroma
+</code></pre></div>
+
+<p>Switch to that user:</p>
+<div class="highlight"><pre><span></span><code>% su - pleroma
+</code></pre></div>
+
+<p>Now that you're the pleroma user, clone the pleroma source code:</p>
+<div class="highlight"><pre><span></span><code>$ git clone https://git.pleroma.social/pleroma/pleroma ~/pleroma
+</code></pre></div>
+
+<p>now move into the code's directory:</p>
+<div class="highlight"><pre><span></span><code>$ <span class="nb">cd</span> ~/pleroma
+</code></pre></div>
+
+<p>The following is from the <a href="https://git.pleroma.social/pleroma/pleroma/blob/develop/README.md">pleroma readme</a></p>
+<p>Get the dependancies for elixir:</p>
+<div class="highlight"><pre><span></span><code>$ mix deps.get
+</code></pre></div>
+
+<p>Generate a config, this will ask a few questions:</p>
+<div class="highlight"><pre><span></span><code>$ mix generate_config
+</code></pre></div>
+
+<p>Copy the generated config in place:</p>
+<div class="highlight"><pre><span></span><code>$ cp config/generated_config.exs config/prod.secret.exs
+</code></pre></div>
+
+<p>Drop back down to root:</p>
+<div class="highlight"><pre><span></span><code>$ <span class="nb">exit</span>
+</code></pre></div>
+
+<p>Then set up postgres:</p>
+<div class="highlight"><pre><span></span><code>% chmod +x /home/pleroma/pleroma/config/setup_db.psql
+% su - postgres -c <span class="s2">"psql -f /home/pleroma/pleroma/config/setup_db.psql"</span>
+</code></pre></div>
+
+<p>Log back into the pleroma user...</p>
+<div class="highlight"><pre><span></span><code>% su - pleroma
+</code></pre></div>
+
+<p>go into the pleroma directory:</p>
+<div class="highlight"><pre><span></span><code>$ <span class="nb">cd</span> ~/pleroma
+</code></pre></div>
+
+<p>and run the database migrations, every time you upgrade the software make sure you run the migrations.</p>
+<div class="highlight"><pre><span></span><code>$ <span class="nv">MIX_ENV</span><span class="o">=</span>prod mix ecto.migrate
+</code></pre></div>
+
+<p>Check to see if the configs work, run the server in the foreground:</p>
+<div class="highlight"><pre><span></span><code>$ <span class="nv">MIX_ENV</span><span class="o">=</span>prod mix phx.server
+</code></pre></div>
+
+<p>The server runs on port 4000, you can check to see if it works by going to http://your-doman.tld:4000/api/v1/instance</p>
+<p>Once that works, interrupt the server with control-c ( <code>^c</code> )</p>
+<p>quit back to root...</p>
+<div class="highlight"><pre><span></span><code>$ quit
+</code></pre></div>
+
+<p>... so you can install the init scripts:</p>
+<div class="highlight"><pre><span></span><code>% cp /home/pleroma/pleroma/installation/pleroma.service /etc/systemd/system/
+</code></pre></div>
+
+<p>make sure pleroma.service has in the service section the following entries,
+specifically the two Environmental variables:</p>
+<div class="highlight"><pre><span></span><code><span class="o">[</span>Service<span class="o">]</span>
+<span class="nv">User</span><span class="o">=</span>pleroma
+<span class="nv">WorkingDirectory</span><span class="o">=</span>/home/pleroma/pleroma
+<span class="nv">Environment</span><span class="o">=</span><span class="s2">"HOME=/home/pleroma"</span>
+<span class="nv">Environment</span><span class="o">=</span><span class="s2">"MIX_ENV=prod"</span>
+<span class="nv">ExecStart</span><span class="o">=</span>/usr/local/bin/mix phx.server
+<span class="nv">ExecReload</span><span class="o">=</span>/bin/kill <span class="nv">$MAINPID</span>
+<span class="nv">KillMode</span><span class="o">=</span>process
+<span class="nv">Restart</span><span class="o">=</span>on-failure
+</code></pre></div>
+
+<p>enable and start pleroma:</p>
+<div class="highlight"><pre><span></span><code>% systemctl <span class="nb">enable</span> pleroma --now
+
+:::bash
+% cp /home/pleroma/pleroma/installation/pleroma.nginx /etc/nginx/sites-enabled/
+</code></pre></div>
+
+<p>edit the <code>/etc/nginx/sites-enabled/pleroma.nginx</code> file, replace <code>example.tld</code> with your domain.</p>
+<p>The config should look similar to this:</p>
+<div class="highlight"><pre><span></span><code>proxy_cache_path /tmp/pleroma-media-cache <span class="nv">levels</span><span class="o">=</span><span class="m">1</span>:2 <span class="nv">keys_zone</span><span class="o">=</span>pleroma_media_cache:10m <span class="nv">max_size</span><span class="o">=</span>10g
+             <span class="nv">inactive</span><span class="o">=</span>720m <span class="nv">use_temp_path</span><span class="o">=</span>off<span class="p">;</span>
+
+server <span class="o">{</span>
+   listen         <span class="m">80</span><span class="p">;</span>
+   server_name    yourdomain.tld<span class="p">;</span>
+
+   location / <span class="o">{</span>
+     <span class="k">return</span>         <span class="m">301</span> https://<span class="nv">$server_name$request_uri</span><span class="p">;</span>
+   <span class="o">}</span>
+
+   location ^~ /.well-known/acme-challenge/ <span class="o">{</span>
+      allow all<span class="p">;</span>
+      root /var/lib/letsencrypt/<span class="p">;</span>
+      default_type <span class="s2">"text/plain"</span><span class="p">;</span>
+      try_files <span class="nv">$uri</span> <span class="o">=</span><span class="m">404</span><span class="p">;</span>
+   <span class="o">}</span>
+<span class="o">}</span>
+
+server <span class="o">{</span>
+    listen <span class="m">443</span><span class="p">;</span>
+    ssl on<span class="p">;</span>
+    ssl_session_timeout 5m<span class="p">;</span>
+
+    ssl_certificate           /etc/letsencrypt/live/yourdomain.tld/fullchain.pem<span class="p">;</span>
+    ssl_certificate_key       /etc/letsencrypt/live/yourdomain.tld/privkey.pem<span class="p">;</span>
+
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2<span class="p">;</span>
+    ssl_ciphers <span class="s2">"HIGH:!aNULL:!MD5 or HIGH:!aNULL:!MD5:!3DES"</span><span class="p">;</span>
+    ssl_prefer_server_ciphers on<span class="p">;</span>
+
+    server_name yourdomain.tld<span class="p">;</span>
+
+    location / <span class="o">{</span>
+      add_header <span class="s1">'Access-Control-Allow-Origin'</span> <span class="s1">'*'</span><span class="p">;</span>
+      proxy_http_version <span class="m">1</span>.1<span class="p">;</span>
+      proxy_set_header Upgrade <span class="nv">$http_upgrade</span><span class="p">;</span>
+      proxy_set_header Connection <span class="s2">"upgrade"</span><span class="p">;</span>
+      proxy_set_header Host <span class="nv">$http_host</span><span class="p">;</span>
+      proxy_pass http://localhost:4000<span class="nv">$request_uri</span><span class="p">;</span>
+    <span class="o">}</span>
+
+    location /proxy <span class="o">{</span>
+      proxy_cache pleroma_media_cache<span class="p">;</span>
+      proxy_cache_lock on<span class="p">;</span>
+      proxy_pass http://localhost:4000<span class="nv">$request_uri</span><span class="p">;</span>
+    <span class="o">}</span>
+
+    location /.well-known/ <span class="o">{</span>
+        proxy_set_header Host <span class="nv">$http_host</span><span class="p">;</span>
+        proxy_pass http://localhost:4000<span class="nv">$request_uri</span><span class="p">;</span>
+    <span class="o">}</span>
+
+    location ^~ /.well-known/acme-challenge/ <span class="o">{</span>
+      allow all<span class="p">;</span>
+      root /var/lib/letsencrypt/<span class="p">;</span>
+      default_type <span class="s2">"text/plain"</span><span class="p">;</span>
+      try_files <span class="nv">$uri</span> <span class="o">=</span><span class="m">404</span><span class="p">;</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+</code></pre></div>
+
+<p>reload nginx and set up ssl with certbot</p>
+<div class="highlight"><pre><span></span><code>% systemctl reload nginx
+% mkdir -p /var/lib/letsencrypt/.well-known
+% certbot certonly --email your@emailaddress --webroot -w /var/lib/letsencrypt/ -d yourdomain
+</code></pre></div>
+
+<p>make sure to change "yourdomain" to be the domain you are using and "your@emailaddress" to an email address you check.</p>
+<p>reload nginx once more</p>
+<div class="highlight"><pre><span></span><code>% systemctl reload nginx
+</code></pre></div>
+
+<p>Then go to https://yourdoman.tld/ to verify that it works.</p>
+<p>That completes the howto setup guide.</p>
+<p>If you have any problems setting up please join the dev chat for assistance and feel free to ask questions.</p>
+<ul>
+<li>
+<p><a href="https://matrix.heldscal.la/#/room/#freenode_#pleroma:matrix.org">matrix</a></p>
+</li>
+<li>
+<p><code>#pleroma</code> on freenode irc network</p>
+</li>
+</ul>
+<p>On freenode I go by the handle <code>__uguu__</code> , don't ask to ask, just ask and someone will get to you (eventually) <code>:^)</code></p>
+            </div>
+            <!-- /.entry-content -->
+
+            <section id="post-info">
+                <hr>
+                Posted at <time datetime="2018-03-11T00:00:00+00:00"> 2018 Mar 11</time>
+                    by <span class="text-warning">jeff</span>
+ &nbsp;&nbsp;&nbsp;
+Tags: pleroma            </section>
+
+        </article>
+    </section>
+
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">© 2022 Jeff
+
+            &nbsp;·&nbsp;
+              <a href="https://github.com/majestrate" target="_blank">GitHub</a>&nbsp;·&nbsp;
+              <a href="/blog/rss.xml" target="_blank">RSS</a>&nbsp;·&nbsp;
+              <a href="/blog/feeds/all.atom.xml" target="_blank">ATOM</a>&nbsp;·&nbsp;
+              <a href="https://lokinet.io/" target="_blank">Lokinet</a>&nbsp;·&nbsp;
+              <a href="https://geti2p.net/" target="_blank">I2P</a>&nbsp;·&nbsp;
+              <a href="https://github.com/majestrate/i2p.rocks.blog/" target="_blank">Submit an I2P related blog via Github</a>&nbsp;·&nbsp;
+            <a href="./archives.html">Archives</a>
+
+            <span class="pull-right small">
+                 Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank" class="text-default">pelican-bootstrap3</a>,
+                <a href="http://docs.getpelican.com/" target="_blank" class="text-default">Pelican</a>,
+                <a href="http://getbootstrap.com" target="_blank" class="text-default">Bootstrap</a>
+            </span>
+         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+
+</body></html>

@@ -1,0 +1,252 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Implementing regular expressions in Hare</title>
+  
+  <link rel="stylesheet" href="/main.min.abeae587d3690b03bbb50e116d142f6ec2d930d046c0211a34db25b9b325ac7e.css">
+</head>
+<body><nav>
+  <img src="/mascot.png" alt="An inked drawing of the Hare mascot, a fuzzy rabbit" width="128" height="128">
+  <h1>The Hare programming language</h1>
+  <ul>
+    <li><a href="/">Home</a></li>
+    <li><a href="/documentation">Documentation</a></li>
+    <li><a href="/roadmap">Roadmap</a></li>
+    <li><a href="/blog">Blog</a></li>
+    <li><a href="/community">Community</a></li>
+    <li><a href="https://sr.ht/~sircmpwn/hare">Source code</a></li>
+    <li><a href="/specification">Specification</a></li>
+  </ul>
+</nav>
+
+<main>
+  <h2>
+    Implementing regular expressions in Hare
+    <small>
+      June 3, 2022
+      by Vlad-Stefan Harbuz
+    </small>
+  </h2>
+  <p>Regular expressions are one of those tools that we kind of take for granted.
+They’re really powerful and useful in so many situations, but most people don’t
+quite understand how they work under the hood. I’m Vlad, the developer who
+implemented Hare’s regular expression engine, and I thought I’d show you why
+regular expressions aren’t as scary as they might seem at first sight. In this
+post, I’d like to take a look at how Hare’s implementation works, as well as how
+an end-user would go about using it. Let’s get started.</p>
+<h2 id="which-flavour-of-regex">Which flavour of regex?</h2>
+<p>The first thing I had to decide when implementing regular expressions was which
+features are appropriate for Hare and which are not. As you may know, there is
+a basic “core” of regular expression features which are generally defined by the
+POSIX standard, such as the <code>*+?</code> operators. Each implementation (Perl, Python
+etc.) adds various different features of its own on top, such as backreferences
+and so on.</p>
+<p>Because Hare is a language focused on simplicity, and because I wanted to
+implement something easy to understand and extend, I decided that sticking to
+POSIX’s Extended Regular Expressions would be the best option. The name is a bit
+misleading, as there isn’t anything really “extended” about them in practical
+terms. Rather, this is the “core” set of regex features I was referring to.</p>
+<p>In simple terms, this means we support the following:</p>
+<ul>
+<li><code>.</code> for any character</li>
+<li>character classes with <code>[abc]</code>, <code>[^a-c]</code>, <code>[[:digit:]]</code> etc.</li>
+<li>the <code>*</code>, <code>+</code>, <code>?</code> operators</li>
+<li>the <code>^</code> and <code>$</code> anchors</li>
+<li>subexpressions with <code>()</code></li>
+<li>alternation with <code>(a|b)</code></li>
+<li>repetitions with <code>a{3,5}</code></li>
+</ul>
+<p>Supporting all combinations of these features gives us a fully functional
+regular expression engine! We don’t support any other vendor extensions, such as
+backreferences or the like, even though enhancements are definitely welcome in
+the extended standard library as well as third party packages. If you need a
+more detailed explanation, check the <a href="https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_04">POSIX specification</a>, which is
+also summarized in this <a href="https://en.wikibooks.org/wiki/Regular_Expressions/POSIX-Extended_Regular_Expressions">wikibooks</a> page.</p>
+<h2 id="representing-regular-expressions">Representing regular expressions</h2>
+<p>Since we’re writing a regex engine, we need to represent the
+expressions in some kind of form. Because these expressions are made up of a
+sequence of operations, it makes a lot of sense to represent them as <a href="https://en.wikipedia.org/wiki/Finite-state_machine">finite
+state automata</a>. “Automata” are something we can execute, and “finite
+state” means that this execution is made up of a finite set of steps.</p>
+<p>Let’s look at a simple example that should definitely clear things up for you.
+Here’s the finite state automaton for the expression <code>/(ab)+c/</code>. I’ve put
+slashes around regexes in this post for clarity.</p>
+<pre><code>/(ab)+c/
+
+   a     b     c
+s1 ─► s2 ─► s3 ─► end
+      ▲     │
+      └─────┘
+         a
+</code></pre><p><code>s1</code>, <code>s2</code> and <code>s3</code> are different states the automaton can be in. We start in
+<code>s1</code>. Our only option is to move to <code>s2</code> by reading an <code>"a"</code>, which we signify
+with a labelled arrow. From <code>s2</code>, we can only read a <code>"b"</code>. Afterwards, we can
+either continue to read an <code>"ab"</code> sequence, or eventually just read a <code>"c"</code> and
+terminate the match. If you work through this yourself, you can see that this
+automaton will easily match a string such as <code>"abababc"</code>.</p>
+<p>I won’t go into the details of how one converts a regular expression to an
+automaton. If you’d like to read up about this topic in more detail, <a href="https://swtch.com/~rsc/regexp/regexp1.html">Russ Cox’s
+articles</a> are the place to do so, as the approach I’m describing here is
+heavily based on his work. However, I’ve tried to simplify the strategies he
+describes in order to make them as simple as possible to work with, which is one
+of the reasons the entire <code>regex.ha</code> implementation is only around 800 lines for
+a fully-functional POSIX-compatible engine.</p>
+<h2 id="checking-regular-expressions">Checking regular expressions</h2>
+<p>Now that we have represented our regex in some way, we need to decide how we’re
+going to test whether a certain string matches it, for example whether <code>"abbb"</code>
+matches <code>/(abab|abbb)/</code>. First of all, let’s look at the representation of this
+latter expression.</p>
+<pre><code>/(abab|abbb)/
+
+              a     b     a     b
+       ┌─► s1 ─► s2 ─► s3 ─► s4 ──┐
+start ─┤                          ├─► end
+       └─► s5 ─► s6 ─► s7 ─► s8 ──┘
+              a     b     b     b
+</code></pre><p>You’ll notice that there are two possible branches at the start. This makes our
+automaton an NFA, or a <a href="https://en.wikipedia.org/wiki/Nondeterministic_finite_automaton">nondeterministic finite automaton</a>. All this
+basically means is that there are certain points in this automaton where you
+don’t really know which path you should take, such as our start branch, hence
+the “nondeterministic” part.</p>
+<p>A simple way of checking would be to try each branch, one at a time. We could
+test the top branch, by going <code>start -&gt; s1 -&gt; s2 -&gt; s3 -&gt; s4</code>. Once we see that
+that branch doesn’t match, we could <em>backtrack</em> and try the bottom match, by
+going <code>start -&gt; s5 -&gt; s6 -&gt; s7 -&gt; s8</code> and seeing that we get a match.</p>
+<p>This backtracking-based approach works, but it comes with a problem. The number
+of branches we need to test can exponentially increase with the size of the
+regex in certain situations, which means that testing all the branches would
+potentially take forever. This is unfortunately what happens in many regular
+expression engines that have this problem, such as those in Perl, Python and
+most other languages.</p>
+<p>There’s no need to despair, though, as there’s a better way. We can simply test
+all branches <em>at the same time</em>. This means we simply need to take each
+character of the string we’re testing, and step forward through our branches by
+the appropriate amount. Here’s what it would look like for the expression
+<code>/(abab|abbb)/</code> and the test string <code>"abbb"</code>. Try to follow along with the above
+diagram.</p>
+<ul>
+<li>We begin in states <code>s1</code> and <code>s5</code> simultaneously</li>
+<li>We read <code>"a"</code> from the test string and are able to advance to <code>s2</code> on the top
+branch and <code>s6</code> on the bottom branch</li>
+<li>We read <code>"b"</code> from the test string and are able to advance to <code>s3</code> on the top
+branch and <code>s7</code> on the bottom branch</li>
+<li>We read <code>"b"</code> from the test string and <em>are unable to advance further</em> on the
+top branch, but advance to <code>s8</code> on the bottom branch</li>
+<li>We only have the bottom branch left, we read <code>"b"</code> and advance to the end</li>
+</ul>
+<p>This approach means we only need to do an amount of tests that’s directly
+proportional to the size of the string we’re testing against. There’s no
+possibility for exponential growth, and so our algorithm is said to guarantee to
+match in linear time. It’s also not that different to implement. Big win!
+Incidentally, this is the approach used in grep and awk.</p>
+<h2 id="the-virtual-machine-approach">The virtual machine approach</h2>
+<p>You might be wondering how this simultaneous testing approach is actually
+implemented in the code. There’s another small trick that helps us out a lot
+here, and that’s implementing each part of the regex as an “instruction”,
+treating the whole regex as a virtual machine.</p>
+<p>To avoid going into too many details, here’s a quick example to show you what I
+mean. Let’s look at how we would compile the expression <code>/ab*/</code>.</p>
+<pre><code>0: literal(a)
+1: branch(4)
+2: literal(b)
+3: jump(1)
+4: match
+</code></pre><p>You can see we’ve compiled the regex into a set of instructions. Here’s the
+meaning of each instruction:</p>
+<ul>
+<li><code>literal(x)</code>: Eat character <code>"x"</code> and move on</li>
+<li><code>branch(n)</code>: Create a new branch starting from instruction <code>n</code>, which executes
+<em>in parallel</em> with the original branch</li>
+<li><code>jump(n)</code>: Go to instruction <code>n</code></li>
+<li><code>match</code>: Declare we’ve successfully matched the string</li>
+</ul>
+<p>The branch part is important. After running <code>1: branch(4)</code> above, we will have
+<em>two execution threads</em> instead of one, running simultaneously.<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup> This means
+that the next step will see us running one thread at the next instruction
+(<code>2:</code>), and another parallel thread at the instruction we branched to (<code>4:</code>).</p>
+<p>Therefore, if you were to run the string <code>"a"</code> through this “program”, the
+successful thread would execute in this order: <code>0 → 1 → 4</code>. On the other hand,
+the successful thread matching string “abb” would execute as
+<code>0 → 1 → 2 → 3 → 1 → 2 → 3 → 1 → 4</code>.</p>
+<p>There are other details and optimisations, such as merging two threads into one
+when they reach the same instruction, but that’s the general idea. So what does
+this approach help us with? Well, two things.</p>
+<p>Firstly, it allows us to keep track of as many branches as we want, by allowing
+us to launch multiple <em>execution threads</em> that run in parallel. Each thread only
+needs to keep track of what would normally be called its “program counter”,
+which basically just means “which instruction is going to be executed next”.</p>
+<p>Secondly, the instruction-based approach means that, whenever we want to add a
+new feature to our regex engine, we just add a new instruction! For example,
+there’s a <code>repeat</code> instruction in <code>regex.ha</code> that implements the <code>a{n,m}</code>
+repetition operator.</p>
+<p>And honestly, that’s basically it. You should be well-equipped to read and
+understand <a href="https://git.sr.ht/~sircmpwn/hare/tree/master/item/regex/regex.ha">regex.ha</a> now, if you were so inclined. Next, let’s
+fast-forward to the completed implementation and look at how to actually use the
+finished product in Hare.</p>
+<h2 id="how-to-use-regex-in-hare">How to use regex:: in Hare</h2>
+<p>The most important functions in <a href="https://docs.harelang.org/regex">regex::</a> are:</p>
+<ul>
+<li><code>compile(str) (regex | error)</code> compiles a string into a <code>regex::regex</code></li>
+<li><code>find(*regex, str) (void | []capture)</code> returns the first match for the regex
+in the given string</li>
+<li><code>findall(*regex, str) (void | [][]capture)</code> returns all matches for the regex
+in the given string</li>
+<li><code>test(*regex, str) bool</code> returns whether or not the given string matches the
+regex</li>
+</ul>
+<p>The only thing that might not be fully clear is: what’s a <code>capture</code>? It’s
+extremely straightforward to understand with an example.</p>
+<p><strong>Tip</strong>: It’s helpful to use <code>`raw strings`</code> for specifying regular
+expressions, so that you can freely type backslashes without them being
+interpreted as escape sequences.</p>
+<pre><code>const re = regex::compile(`hello(there)`)!;
+const captures = regex::find(&amp;re, "hellothere") as []regex::capture;
+</code></pre><p>This will give you two captures:</p>
+<pre><code>capture 0:
+	content = "hellothere"
+	start = 0
+	end = 10
+capture 1:
+	content = "there"
+	start = 5
+	end = 10
+</code></pre><p>This makes things obvious: the first capture is always the full match, while
+subsequent captures are the submatches created by <code>(capture groups)</code>.</p>
+<p>Here’s a more complete example, which shows how to use the <code>findall()</code> function
+to find all matches, as well as how to manage memory and handle errors.</p>
+<pre><code>const all_matches = regex::findall(&amp;re, "Hello Hare, hello Hare.");
+match (all_matches) {
+case void =&gt; void;
+case let matches: [][]regex::capture =&gt;
+	defer regex::free_matches(matches);
+	// matches[0]: All captures for the first match.
+	// matches[0][0]: The full matching string for the first match.
+	// matches[0][1...]: A capture for every capture group in the
+	//     first match.
+	for (let i = 0z; i &lt; len(matches); i += 1) {
+		fmt::printfln("{} ({}, {})", matches[i][0].content,
+			matches[i][0].start,
+			matches[i][0].end)!;
+	};
+};
+</code></pre><p>The thing to keep in mind here is that <code>capture</code>s need to be freed, and
+<code>regex::</code> provides convenience functions such as <code>free_matches()</code> to help you do
+so.</p>
+<h2 id="closing-remarks">Closing remarks</h2>
+<p>With that, we’ve looked at the most important aspects of regular expressions in
+Hare. Building this regex engine was a really rewarding project for me, and I
+hope you got something interesting out of this post.</p>
+<p>If you’d like to have a chat or have any questions, you can find me <a href="https://harelang.org/community/">on
+IRC</a> or send me an email at <a href="mailto:vlad@vladh.net">vlad@vladh.net</a>. Take care and have fun
+programming!</p>
+<section class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1" role="doc-endnote">
+<p>These “threads” are switched cooperatively — they aren’t implemented with threads at the operating system level. <a href="#fnref:1" class="footnote-backref" role="doc-backlink">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+<main>
+</main></main></body></html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html><html lang="en-gb"><head>
+        <meta charset="utf-8">
+        <meta name="author" content="Simonas Kazlauskas">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <meta name="keywords" content="simonas, kazlauskas, simukis, nagisa, open source">
+        <title>Transcript: Should you Rust in embedded yet?</title>
+        <style>:root { --common-unicode-range: U+0-7f,U+a9,U+ad,U+ae,U+b5,U+b7,U+bd,U+d7,U+e9,U+ef,U+14d,U+3b3,U+2013,U+2014,U+2019,U+201c,U+201d,U+2026,U+2032,U+20ac,U+2190,U+21a9,U+2212,U+2227,U+2248,U+2261,U+226b,U+fe0e; }</style>
+        <link rel="stylesheet" type="text/css" href="../data/sandwich.17.css">
+        <link rel="alternate" type="application/atom+xml" href="../feed.atom">
+        <script async="" type="text/javascript" src="../data/site.3.js"></script>
+    </head>
+    <body>
+        <div id="hdr">
+        <header>
+            <span id="title">Simonas Kazlauskas’ blog</span>
+            <nav><ul>
+                <li><a href="../">Index</a></li>
+                <li><a href="../about-contact">About / Contact</a></li>
+            </ul></nav>
+        </header>
+        </div>
+        <main role="main">
+            <aside id="metadata">
+    <h1>Transcript: Should you Rust in embedded yet?</h1>
+    <time pubdate="">2018-02-22</time>
+</aside>
+<article id="entry">
+    <p>This is a tran­script of a talk I gave at the Vil­nius Rust meetup. You can down­load slides
+<a href="../images/rust-embedded-ready/presentation.pdf">here</a> or simply fol­low along.</p><p>Note that con­tent on this page will get out­-of-d­ate fairly quickly (within months), so check the
+date above.</p><p><img src="../images/rust-embedded-ready/p1.svg"></p><p>It would not be an ex­ag­ger­a­tion to say that em­bed­ded is om­ni­present. You can find em­bed­ded firm­ware
+every­where from fridges, mi­crowaves and per­sonal com­puters to safety-crit­ical ap­plic­a­tions in
+auto­mot­ive, med­ical fields, etc.</p><p>Most of this soft­ware is still writ­ten in C or C++, and neither of these, given their non-ideal
+track re­cord in re­la­tion to se­cur­ity crit­ical soft­ware, are the most con­fid­ence in­spir­ing choice
+for safety-crit­ical sys­tems.</p><p><img src="../images/rust-embedded-ready/p2.svg"></p><p>In my ex­per­i­ence, bugs oc­cur­ring in em­bed­ded firm­ware tend to be fairly sim­ilar to those com­monly
+found in the user­-space soft­ware. That is:</p><ul>
+<li>Memory bugs: double frees, leaks, in­valid frees, use after free, out of bound ac­cesses, etc;</li>
+<li>Data races: em­bed­ded tends to not have mul­ti-­core, but has peri­pher­als that may ac­cess memory
+con­cur­rently. A com­mon source of data race bugs. An­other com­mon mis­take is non-atomic
+modi­fic­a­tion of global data; and</li>
+<li>Lo­gic bugs in gen­er­al.</li>
+</ul><p>Un­like in the user­-space, con­veni­ences such as MMU or ad­dress san­it­izer are not used, less cap­able
+or not present at all. This means that more of the bugs go un­der the radar and, when dis­covered,
+more dif­fi­cult to de­bug.</p><p>Rust man­aged to re­duce pres­ence of these bugs in the user­-space soft­ware and is well po­si­tioned to
+work its ma­gic on em­bed­ded firm­ware as well.</p><p><img src="../images/rust-embedded-ready/p3.svg"></p><p>Be­fore re­writ­ing all your em­bed­ded pro­jects in Rust, it is prudent to con­sider Rust’s sup­port for
+your hard­ware. Among the ar­chi­tec­tures nat­ively sup­por­ted by the Rust com­piler ARM and MSP430 are
+the ones in­ter­est­ing for em­bed­ded use cases.</p><p>If your pro­ject uses an ARM-­based chip, you’re in luck – in terms of qual­ity, the sup­port for this
+ar­chi­tec­ture is com­par­able to, say, x86. Sup­port for MSP430 chips is built into the com­piler as
+well, how­ever its backend less battle­-­tested and the lib­rary com­pon­ents are more prone to is­sues
+due to the eso­teric nature of a 16-bit ar­chi­tec­ture.</p><p>Of­ten, due to their cheaper price or, per­haps, design con­straints, ar­chi­tec­tures such as AVR are
+em­ployed. <code>rustc</code> does not ship nat­ive sup­port for any of these ar­chi­tec­tures, but there might
+ex­ist a fork that im­ple­ments sup­port for these ar­chi­tec­tures. Forked <code>rustc</code> not hav­ing “of­fi­cial”
+sup­port and po­ten­tially di­ver­ging out­-of-d­ate from the ori­ginal pro­ject are the usual caveats,
+though.</p><p>Then, there are the ar­chi­tec­tures for which no LLVM backend ex­ists. Those, by ex­ten­sion, are
+un­likely to be sup­por­ted by <code>rust</code> any­time soon. For these, you’re stuck with (often, man­u­fac­turer
+provided) C tool­chain.</p><p><a href="https://github.com/thepowersgang/mrustc">mrustc</a> makes it pos­sible to use Rust with any
+ar­chi­tec­ture for which a C com­piler ex­ists, but is still an ex­tremely ex­per­i­mental tech­no­logy.</p><p><img src="../images/rust-embedded-ready/p4.svg"></p><p>To mean­ing­fully pro­gram a mi­cro­con­trol­ler, it is im­port­ant to have ac­cess to the peri­pher­als and
+func­tions it ad­vert­ises. Man­u­fac­tur­ers provide mi­cro­con­trol­ler­-spe­cific lib­rar­ies us­able within
+C/C++. These lib­rar­ies ex­pose the re­gisters and con­veni­ence func­tions to con­trol the peri­pher­als
+and some­times even ex­ample driver im­ple­ment­a­tions.</p><p>These aren’t dir­ectly us­able within Rust, but not all is lost! Man­u­fac­tur­ers also tend to provide
+de­scrip­tion of the re­gisters in some ma­chine-read­able format. One such form­at, SVD, is pretty
+pop­u­lar and there ex­ists the <code>svd2rust</code> tool to gen­er­ate nice Rust wrap­pers to ac­cess these
+re­gisters.</p><p><img src="../images/rust-embedded-ready/p5.svg"></p><p>Re­gisters, how­ever are not the end of the story… As I men­tioned earli­er, man­u­fac­turer lib­rar­ies
+also provide con­veni­ence lib­rary func­tions as well as ex­ample driver im­ple­ment­a­tions. This is where
+<code>embedded-hal</code> comes in. <code>embedded-hal</code> provides a num­ber of traits which ex­pose com­mon con­cepts in
+em­bed­ded pro­gram­ming in a <em>port­able</em> and <em>safe</em> man­ner.</p><p>Safety as­pect is fairly self-­ex­plan­at­ory and the port­ab­il­ity as­pect is where <code>embedded-hal</code> shines
+the most, I think. Con­sider for ex­ample a driver writ­ten against the non-­port­able
+man­u­fac­turer­-­provided lib­rar­ies. If you wanted to use the same driver with some other MCU, there
+would be a non-trivial amount of port­ing ef­fort ne­ces­sary. With <code>embedded-hal</code>, all the
+device-spe­cific parts are prop­erly ab­strac­ted, which makes these drivers port­able and use­ful when
+put on crates.io.</p><p>There, of course, is a trade-off of hav­ing to im­ple­ment these traits for each mi­cro­con­trol­ler
+fam­ily, pos­sibly by your­self, if no crate im­ple­ment­ing them ex­ists on crates.io yet.</p><p><img src="../images/rust-embedded-ready/p6.svg"></p><p>Cur­rently crates.io has ap­prox­im­ately 40 mi­cro­con­trol­ler sup­port crates. Ma­jor­ity of these are just
+gen­er­ated re­gister bind­ings, how­ever there are also quite a few crates provid­ing higher level
+ab­strac­tions and im­ple­ment­a­tions of the <code>embedded-hal</code> traits.</p><p>As a part of firm­ware de­vel­op­ment, it is very likely you’ll need a real-­time op­er­at­ing sys­tem as
+well as lib­rar­ies for com­monly en­countered tasks such as com­mu­nic­at­ing over TCP/IP. Rust’s quickly
+evolving eco­sys­tem already has lib­rar­ies for many of these tasks. These lib­rar­ies are well
+doc­u­mented and im­ple­men­ted, but are less wide­spread and may be harder to get help with.</p><p>Even then, if the pure Rust lib­rar­ies do not serve your needs well enough, Rust’s great FFI sup­port
+provides all means ne­ces­sary to in­clude the pop­u­lar C lib­rar­ies into your pro­ject.</p><p><img src="../images/rust-embedded-ready/p7.svg"></p><p>All that be­ing said, em­bed­ded firm­ware can­not yet be mean­ing­fully de­veloped in stable Rust. Many
+tasks still re­quire un­stable fea­tures to be achieved. Some of them, such as abil­ity to define the
+<code>panic_fmt</code> lan­guage item, are ex­pec­ted to be­come stable very soon, while some other fea­tures, such
+as in­line as­sembly still need a fair amount of design work be­fore their sta­bil­isa­tion will be
+con­sidered.</p><p><img src="../images/rust-embedded-ready/p8.svg"></p><p>Stable fea­tures, however, aren’t the whole story. Em­bed­ded de­vel­op­ment also re­lies on a num­ber of
+“fea­tures” that aren’t ex­pli­citly tracked for their sta­bil­ity in Rust. Minor changes to, say,
+link­ing or code gen­er­a­tion, while com­pat­ible in the user­-space world, may of­ten cause is­sues for
+em­bed­ded firm­ware.</p><p>Con­sider an in­cid­ent that happened just this week: a re­cent change to the com­piler up­graded LLVM to
+a new ver­sion. This up­grade changed the op­tim­isa­tion pipeline enough, that a cer­tain firm­ware
+be­came just 500 bytes lar­ger than it was be­fore. With this in­crease, the com­piled code would no
+longer fit into the flash stor­age of the mi­cro­con­trol­ler and would fail to link! Some­thing that
+would­n’t usu­ally be con­sidered a break­ing change ended up break­ing ac­tual code!</p><p><img src="../images/rust-embedded-ready/p9.svg"></p><p>So, in sum­mary, can you use Rust to de­velop your em­bed­ded firm­ware? Ab­so­lutely. Ab­so­lutely, as long
+as you are will­ing to deal with slightly less ma­ture eco­sys­tem, pay the up­front cost for fu­ture
+be­ne­fits and fix the oc­ca­sional break­age caused by com­piler changes. In re­turn Rust will give you
+its su­per­ior static ana­lyses and a more-­cor­rect end res­ult.</p><section id="qa" class="level1">
+<h2>Q/A</h2>
+<p>I was asked a few ques­tions dur­ing the Q/A ses­sion after the talk. Sadly, I do not re­mem­ber their
+ex­act phras­ing any­more, so they are all para­phrased.</p>
+<section id="obtaining-libcore-for-embedded-targets" class="level2">
+<h3>Ob­tain­ing <code>libcore</code> for em­bed­ded tar­gets</h3>
+<p><code>rustc</code> does not ship with pre­com­piled <code>libcore</code> for em­bed­ded tar­gets, how­ever with the <code>xargo</code>
+tool us­ing <code>libcore</code> and other lib­rar­ies is as easy as spe­cify­ing a de­pend­ency on a crates.io
+crate.</p>
+</section>
+<section id="using-standard-collections-such-as-hashmap-in-embedded-development" class="level2">
+<h3>Us­ing stand­ard col­lec­tions such as <code>HashMap</code> in em­bed­ded de­vel­op­ment</h3>
+<p>The stand­ard lib­rar­ies are split into more than just <code>libcore</code> and <code>libstd</code>. Quite a few
+col­lec­tions live in <code>liballoc</code> (NB: dur­ing ac­tual Q/A I called this <code>libcollections</code>; what a
+blun­der). <code>HashMap</code> in par­tic­u­lar de­pends on ran­dom num­ber gen­er­a­tion to work, so it is cur­rently
+liv­ing in <code>libstd</code> and is not dir­ectly us­able within em­bed­ded con­text.</p>
+</section>
+<section id="libstd-in-embedded-and-wasm" class="level2">
+<h3><code>libstd</code> in em­bed­ded and wasm</h3>
+<p>Em­bed­ded and wasm are in­deed very sim­ilar in their con­straints in that they both are very
+low-­level en­vir­on­ments. Fairly sim­ilar prob­lems seem to be ap­plic­able to both (e.g. code size
+aware­ness, no <code>libstd</code>).</p>
+<p>You can use <code>libstd</code> in wasm, but we ended up im­ple­ment­ing most of the func­tion­al­ity (such as
+filesys­tems) with <code>unimplemented!()</code>, so you have to be care­ful about what you end up us­ing.</p>
+<p>One of the ideas run­ning around is to “unify” the <code>libcore</code>, <code>libstd</code> and friends and in­stead to
+rely on fea­tures and <code>cfg</code> to ex­pose what is us­able for a par­tic­u­lar tar­get. This would also en­able
+us­ing <code>libstd</code> within em­bed­ded.</p>
+</section>
+<section id="what-microcontroller-to-use" class="level2">
+<h3>What mi­cro­con­trol­ler to use?</h3>
+<p>I re­com­mend the Blue Pill (ST­M32F103C8). It runs at 72M­Hz, has 128kB of flash. One can be got­ten
+from the Chinese (Ali­ex­press) for a small price of €1.50.</p>
+<p>Plus, the eco­sys­tem sup­port for it is <em>great</em>.</p>
+</section>
+</section>
+</article>
+
+
+        </main>
+        <footer>
+            <div id="generator">
+                <a href="http://jaspervdj.be/hakyll" class="hakyll">Hakyll</a>
+            </div>
+            <span id="copy">
+                <!-- TODO -->
+                <a href="http://creativecommons.org/licenses/by/3.0/deed.en_GB" title="Creative Commons Attribution 3.0 Unported">CC BY 3.0</a>
+            </span>
+        </footer>
+    
+
+</body></html>

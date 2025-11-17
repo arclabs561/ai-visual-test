@@ -1,0 +1,275 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="cs" lang="cs"><head>
+<title>Servis a správa serveru | komplexní řešení od TELE3</title>
+<meta http-equiv="Expires" content="-1">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Content-Language" content="cs">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="keywords" content="správa serveru,administrátor serveru, outsourcing, instalace serveru, linux admin, servis serveru,">
+<meta name="description" content="Servis a správa serverů - komplexní řešení od TELE3">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Rating" content="General">
+<meta name="Language" content="Czech">
+<meta name="robots" content="index,follow">
+<meta name="googlebot" content="index,follow,snippet,archive">
+<meta name="author" content="soudruh Todor Dimitrov">
+<meta name="copyright" content="© 2005-2022 TELE3 s.r.o. | všechna práva vyhrazena">
+<meta name="verify-v1" content="cyfen2dDW23rbqFFRfS7FxhIY2HvJyly1pQjyfbdOqE=">
+<meta name="theme-color" content="#EE6425">
+<meta name="apple-mobile-web-app-status-bar-style" content="#EE6425">
+<link href="https://www.tele3.cz/favicon.ico" rel="shortcut icon">
+<link href="https://www.tele3.cz/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180">
+<link href="https://www.tele3.cz/rss.php" rel="alternate" type="application/rss+xml" title="RSS">
+<link href="/css/alertify.core.css" rel="stylesheet" type="text/css">
+<link href="/css/alertify.default.css" rel="stylesheet" type="text/css">
+<link href="/css/style.css?ver=21" rel="stylesheet" type="text/css">
+<link href="/css/awesomplete.css?ver=21" rel="stylesheet" type="text/css">
+<link href="/css/jqueryslidemenu.css" rel="stylesheet" type="text/css">
+<link href="/css/lightbox.css" rel="stylesheet" type="text/css">
+<!--[if lte IE 7]>
+<style type='text/css'>
+html .jqueryslidemenu{height: 1%;}
+#hlavicka #loginform  { top: 0px; }
+</style>
+<![endif]-->
+<script type="text/javascript" src="/js/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="/js/alertify.min.js"></script>
+<script type="text/javascript" src="/js/jquery.cycle.all.min.js"></script>
+<script type="text/javascript" src="/js/jquery.limitkeypress.min.js?v=21"></script>
+<script type="text/javascript" src="/js/jquery.functions7.js?ver=21"></script>
+<script type="text/javascript" src="/js/jqueryslidemenu.js"></script>
+<script type="text/javascript" src="/js/awesomplete.js?v=21"></script>
+<script type="text/javascript" src="/js/functions1.js?v=21"></script>
+<script type="text/javascript">if (top != self) {top.location.href = self.location.href;}</script></head>
+<body>
+<div style="text-align: center">
+<div id="obsah">
+<div id="hlavicka">
+<div id="logo">
+<a href="https://www.tele3.cz/"><img src="/img/logo.jpg" width="215" height="100" alt="TELE3"></a></div>
+<div id="loginform">
+<form action="https://www.tele3.cz/gologin.php" method="post"><p><input type="hidden" name="__csrf_magic" value="sid:0b4ff4bd90018968eab1634be30acdadde911600,1656232926"></p>
+<p class="white">
+<input type="hidden" name="lng" value="cz">
+</p>
+
+<p class="user">
+Login:<img src="/img/mezlog.gif" alt="Login"><br><input type="text" name="system_login" maxlength="80" value="" style="width: 92px" size="24" required="">
+</p>
+
+<p class="psw">
+Heslo:<img src="/img/mezpwd.gif" alt="Heslo"><br><input type="password" name="system_password" value="" style="width: 92px" size="24" required="">
+</p>
+
+<p class="vstup">
+&nbsp;<br><input type="submit" value="vstupte" class="button">
+</p>
+
+</form>
+<div class="orangeline">
+<a class="log" href="zapomenute-heslo.html">zapomenuté heslo</a> | 
+<a class="log" href="https://www.tele3.cz/registrace-uzivatele.html">registrace nového uživatele</a>
+</div>
+</div><div id="mojeid"><a href="/mojeid/try.php" class="mojeid"><img class="hover" src="/img/mojeID-login.png" width="23" height="18" alt="mojeID"></a></div><div id="kosik"><a href="/kosik.html" class="kosik"><img class="hover" src="/img/nakupni-kosik-1.png" width="20" height="20" alt="košík"></a></div><div id="youtube"><a href="https://www.youtube.com/user/TELE3CZ" class="external youtube"><img class="hover" src="/img/youtube.png" width="20" height="20" alt="youtube TELE3"></a></div><div id="linkedin"><a href="https://www.linkedin.com/company/tele3-s-r-o- " class="external linkedin"><img class="hover" src="/img/linkedin.png" width="20" height="20" alt="LinkedIn TELE3"></a></div><div id="facebook"><a href="/facebook.html" class="facebook"><img class="hover" src="/img/facebook.png" width="20" height="20" alt="Facebook TELE3"></a></div><div id="twitter"><a href="https://twitter.com/tele3" class="external twitter"><img class="hover" src="/img/twitter.png" width="20" height="20" alt="Twitter TELE3"></a></div><div id="rss"><a href="/rss.xml" class="rss"><img class="hover" src="/img/rss.png" width="20" height="20" alt="RSS"></a></div></div>
+<div id="myslidemenu" class="jqueryslidemenu">
+<ul>
+<li><a href="/registrace-domen.html" style="padding-right: 23px;">&nbsp;Domény&nbsp;&nbsp;<img src="/img/down.gif" class="downarrowclass" style="border:0;"></a><ul style="top: 30px; display: none; visibility: visible;">
+<li><a href="/registrace-domen.html">Registrace domén</a></li>
+<li><a href="/prevod-domeny.html">Převod domény</a></li>
+<li><a href="/kreditni-system.html">Kreditní systém</a></li>
+<li><a href="/api.html">Ovládání domén API</a></li>
+<li><a href="/cenik-domen.html">Ceník domén</a></li>
+<li><a href="/bezpecny-prodej-domeny.html">Bezpečný prodej domén</a></li>
+</ul>
+</li>
+<li><a href="/kvalitni-webhosting.html" style="padding-right: 23px;">&nbsp;&nbsp;Webhosting&nbsp;&nbsp;<img src="/img/down.gif" class="downarrowclass" style="border:0;"></a><ul style="top: 30px; display: none; visibility: visible;">
+<li><a href="/kvalitni-webhosting.html">Placený webhosting</a></li>
+<li><a href="/stabilni-webhosting-zdarma.html">Webhosting zdarma</a></li>
+<li><a href="/multihosting.html">Multihosting</a></li>
+<li><a href="/wordpress-hosting.html">WordPress hosting</a></li>
+<li><a href="/seo-hosting.html">SEO hosting</a></li>
+<li><a href="/ftp-hosting.html">FTP hosting</a></li>
+<li><a href="/dns-hosting.html">DNS hosting</a></li>
+</ul>
+</li>
+<li><a href="/server-hosting.html" style="padding-right: 23px;">&nbsp;&nbsp;Serverhosting&nbsp;&nbsp;<img src="/img/down.gif" class="downarrowclass" style="border:0;"></a><ul style="top: 30px; display: none; visibility: visible;">
+<li><a href="/server-hosting.html">Umístění serveru</a></li>
+<li><a href="/pronajem-serveru.html">Pronájem serveru</a></li>
+<li><a href="/virtualni-servery.html">Virtuální servery - VPS</a></li>
+<li><a href="/monitoring-serveru.html">Monitoring serveru</a></li>
+<li><a href="/zalohovani-serveru.html">Zálohování serveru</a></li>
+<li><a href="/sprava-serveru.html">Servis a správa serveru</a></li>
+</ul>
+</li>
+<li><a href="/dalsi-sluzby.html" style="padding-right: 23px;">&nbsp;&nbsp;Ostatní služby&nbsp;&nbsp;<img src="/img/down.gif" class="downarrowclass" style="border:0;"></a><ul style="top: 30px; display: none; visibility: visible;">
+<li><a href="/reseni-pro-domainery.html">Řešení pro domainery</a></li>
+<li><a href="/ssl-certifikaty.html">SSL certifikáty</a></li>
+<li><a href="/sms-komunikace.html">SMS komunikace</a></li>
+</ul>
+</li>
+<li><a href="/profil.html" style="padding-right: 23px;">&nbsp;&nbsp;O společnosti&nbsp;&nbsp;<img src="/img/down.gif" class="downarrowclass" style="border:0;"></a><ul style="top: 30px; display: none; visibility: visible;">
+<li><a href="/profil.html">Profil</a></li>
+<li><a href="/partneri.html">Partneři</a></li>
+<li><a href="/reference.html">Reference</a></li>
+<li><a href="/sponzoring.html">Sponzoring</a></li>
+<li><a href="/vypis-z-obchodniho-rejstriku.html">Dokumenty<img src="/img/right.gif" class="rightarrowclass" style="border:0;"></a><ul style="top: 0px; display: none; visibility: visible;">
+<li><a href="/vypis-z-obchodniho-rejstriku.html">Obchodní rejstřík</a></li>
+<li><a href="/ochranna-znamka.html">Ochranná známka</a></li>
+<li><a href="/vseobecne-obchodni-podminky.html">Všeobecné podmínky</a></li>
+<li><a href="/ochrana-osobnich-udaju.html">Ochrana soukromí</a></li>
+<li><a href="/api.html">Dokumentace API</a></li>
+</ul>
+</li>
+<li><a href="/volna-mista.html">Volná místa</a></li>
+<li><a href="/gdpr-ready.html">GDPR ready</a></li>
+<li><a href="/kontakty.html">Kontaktní informace</a></li>
+</ul>
+</li>
+<li><a href="/kontakty.html">&nbsp;&nbsp;Kontakty&nbsp;&nbsp;</a></li>
+</ul>
+<br style="clear: left">
+</div>
+<div id="leva">
+<div class="leva_in">
+<em>Serverhosting</em>
+<div class="lm">
+<ul>
+<li><a href="/server-hosting.html">Umístění serveru</a></li>
+<li><a href="/pronajem-serveru.html">Pronájem serveru&nbsp;&nbsp;[ HW ]</a></li>
+<li><a href="/technicka-podpora.html">Technická podpora&nbsp;&nbsp;[ 24x7 ]</a></li>
+<li><a href="/datova-centra.html">Datová centra&nbsp;&nbsp;[ Telehouse ]</a></li>
+</ul>
+</div>
+<span class="clearboth">&nbsp;</span>
+</div>
+<div class="leva_in">
+<em>Virtuální servery</em>
+<div class="lm">
+<ul>
+<li><a href="/virtualni-servery.html">Základní informace</a></li>
+<li><a href="/vps-webserver.html">VPS <b>Web</b> server</a></li>
+<li><a href="/vps-mailserver.html">VPS <b>Mail</b> server</a></li>
+<li><a href="/vps-dns-server.html">VPS <b>DNS</b> server</a></li>
+<li><a href="/vps-media-server.html">VPS <b>Media</b> server</a></li>
+</ul>
+</div>
+<span class="clearboth">&nbsp;</span>
+</div>
+<div class="leva_in">
+<em>Volitelné služby</em>
+<div class="lm">
+<ul>
+<li><a href="/sprava-serveru.html"><b>Správa serveru</b></a></li>
+<li><a href="/restart-serveru.html">Vzdálené restarty</a></li>
+<li><a href="/monitoring-serveru.html"><b>Monitoring</b> serveru</a></li>
+<li><a href="/zalohovani-serveru.html"><b>Zálohování</b> serveru</a></li>
+<li><a href="/vzdalena-sprava-serveru.html">Dálková konzole KVM over IP</a></li>
+</ul>
+</div>
+<span class="clearboth">&nbsp;</span>
+</div>
+<div style="height: 10px;">&nbsp;</div></div>
+<div id="stredni">
+<div id="stredni_in">
+<h1>Komplexní servis a správa serveru</h1>
+<p class="vlevo">
+<img src="img/sprava-serveru.jpg" width="225" height="310" alt="správa serveru">
+</p>
+
+<h2>Spravujeme servery <i>"od A až po Železo"</i></h2>
+<p>
+<br>
+<img src="img/sip02.gif" style="vertical-align: middle;" alt=""> <strong>Administrace serverů</strong> na platformě <strong>Linux</strong>, BSD, Windows
+<br>
+
+<img src="img/sip02.gif" style="vertical-align: middle;" alt=""> <strong>Bezpečnostní politika</strong>, technici s certifikací <strong>Cisco</strong>
+<br>
+
+<img src="img/sip02.gif" style="vertical-align: middle;" alt=""> <strong>DNS</strong> se zabezpečením <a href="dns-hosting.html"><strong>DNSSEC</strong></a> a geografickým rozložením
+<br>
+
+<img src="img/sip02.gif" style="vertical-align: middle;" alt=""> Dodáváme <strong>Energeticky úsporné servery</strong> 
+<br>
+
+<img src="img/sip02.gif" style="vertical-align: middle;" alt=""> <strong>Instalace</strong> operačního systému dle konkrétních potřeb a zadání
+<br>
+
+<img src="img/sip02.gif" style="vertical-align: middle;" alt=""> <strong>Konfigurace aktivních síťových prvků</strong> / firewally, routery, switche
+<br>
+
+<img src="img/sip02.gif" style="vertical-align: middle;" alt=""> <a href="monitoring-serveru.html"><strong>Monitoring serveru</strong></a> a síťových služeb s oznámením výpadku
+<br>
+
+<img src="img/sip02.gif" style="vertical-align: middle;" alt=""> <strong>Odborný servis IT</strong> s možností pravidelné údržby firemní sítě, vč. HW
+<br>
+
+<img src="img/sip02.gif" style="vertical-align: middle;" alt=""> <strong>Periodické kontroly</strong> stavu OS, HW, aktualizace, zabezpečení<br>
+
+<img src="img/sip02.gif" style="vertical-align: middle;" alt=""> <strong>Webové aplikace</strong> odladíme přesně dle Vašeho zadání<br>
+
+<img src="img/sip02.gif" style="vertical-align: middle;" alt=""> <a href="zalohovani-serveru.html"><strong>Zálohování serveru</strong></a> - automatické zálohy a obnova dat ze zálohy
+<br>
+<img src="img/sip02.gif" style="vertical-align: middle;" alt=""> <strong>Železo</strong> - možnost výměny a držení záložního HW na servisním skladu<br>
+</p>
+
+
+
+<table cellpadding="2" cellspacing="1" width="100%">
+<tbody><tr class="tab2">
+<td align="left">Ceník servisních služeb</td>
+<td align="center">Cena</td>
+</tr>
+
+<tr class="tab3" onmouseover="this.className='tab5'" onmouseout="this.className='tab3'">
+<td align="left">Technik - servisní úkony HW, běžné konfigurace sítě a OS, základní instalace (&nbsp;<em>1 hodina&nbsp;</em>)</td>
+<td align="right">600,-&nbsp;Kč&nbsp;&nbsp;</td>
+</tr>
+
+<tr class="tab3" onmouseover="this.className='tab5'" onmouseout="this.className='tab3'">
+<td align="left">Administrátor - SW správa serverů a síťových prvků, konfigurace OS a aplikací (&nbsp;<em>1 hodina&nbsp;</em>)</td>
+<td align="right">1200,-&nbsp;Kč&nbsp;&nbsp;</td>
+</tr>
+
+<tr class="tab3" onmouseover="this.className='tab5'" onmouseout="this.className='tab3'">
+<td align="left">Programátorské práce - speciální úpravy SW, SQL DB, ladění scriptů (&nbsp;<em>1 hodina&nbsp;</em>)</td>
+<td align="right">1200,-&nbsp;Kč&nbsp;&nbsp;</td>
+</tr>
+
+<tr class="tab3" onmouseover="this.className='tab5'" onmouseout="this.className='tab3'">
+<td align="left">Cisco admin s certifikací CCNA - pouze pro platformu Cisco (&nbsp;<em>1 hodina&nbsp;</em>)</td>
+<td align="right">2000,-&nbsp;Kč&nbsp;&nbsp;</td>
+</tr>
+
+<tr class="tab3" onmouseover="this.className='tab5'" onmouseout="this.className='tab3'">
+<td align="left">Doprava technika po Praze (&nbsp;<em>jednorázově&nbsp;</em>)</td>
+<td align="right">500,-&nbsp;Kč&nbsp;&nbsp;</td>
+</tr>
+
+<tr class="tab3" onmouseover="this.className='tab5'" onmouseout="this.className='tab3'">
+<td align="left">Parkování v Praze na "modrých zónách" (&nbsp;<em>1 hodina&nbsp;</em>)</td>
+<td align="right">100,-&nbsp;Kč&nbsp;&nbsp;</td>
+</tr>
+<tr class="tab3" onmouseover="this.className='tab5'" onmouseout="this.className='tab3'">
+<td align="left">Doprava technika mimo Prahu (&nbsp;<em>příplatková sazba za 1 km</em>&nbsp;)</td>
+<td align="right">25,-&nbsp;Kč&nbsp;&nbsp;</td>
+</tr>
+<tr class="tab2"><td align="center" colspan="2">Uvedené ceny jsou bez DPH 21%.</td></tr>
+</tbody></table>
+<br>
+<center>
+[ Ceny jsou platné od 01.01.2019 ]
+</center></div>
+</div>
+<span class="clearboth">&nbsp;</span>
+<div id="paticka">
+<div id="left_pata">
+© 2005-2022 <a href="https://www.tele3.cz/">TELE3</a> | všechna práva vyhrazena | Vaše IP 54.176.26.247</div><!-- Generováno za 2.020 ms --><div id="right_pata">
+| <a href="/whois.html">Whois</a> | <a href="/susenky-cookies.html">Cookies</a> | <a href="/vseobecne-obchodni-podminky.html">Pravidla</a> | <a href="/napoveda.html">Nápověda</a></div><div class="ikonoid">&nbsp;<img class="hover" src="/img/fio.jpg" width="64" height="31" alt="přijímáme platby FIO banka"><img class="hover" src="/img/rb.jpg" width="39" height="31" alt="přijímáme platby Raiffeisenbank"><a href="/qr-platba.html" style="border-bottom: 0px"><img class="hover" src="/img/qr-platby.jpg" width="37" height="31" alt="generujeme QR platby"></a><img class="hover" src="/img/visa.jpg" width="56" height="31" alt="online platby Visa"><img class="hover" src="/img/mastercard.jpg" width="58" height="31" alt="online platby MasterCard"><img class="hover" src="/img/ipv6.jpg" width="47" height="31" alt="podporujeme protokol IPv6"><a href="/dnssec.html" style="border-bottom: 0px"><img class="hover" src="/img/dnssec.jpg" width="60" height="31" alt="zabezpečení domén DNSSEC"></a><img class="hover" src="/img/suntech.jpg" width="69" height="31" alt="eshop s výpočetní technikou"><img class="hover" src="/img/debian-server.jpg" width="37" height="31" alt="Debian server"><img class="hover" src="/img/ubuntu-server.jpg" width="37" height="31" alt="Ubuntu server"><img class="hover" src="/img/proxmox.jpg" width="37" height="31" alt="Proxmox Virtual Environment"><img class="hover" src="/img/cz-nic.jpg" width="44" height="31" alt="akreditovaný registrátor CZ domény s certifikací"><img class="hover" src="/img/cisco-ccna.jpg" width="37" height="31" alt="certifikace Cisco CCNA"></div></div>
+</div>
+</div>
+<script type="text/javascript" src="/js/lightbox.js"></script>
+<script type="text/javascript" src="/js/jquery.functions8.js?ver=21"></script>
+
+<div id="lightboxOverlay" class="lightboxOverlay" style="display: none;"></div><div id="lightbox" class="lightbox" style="display: none;"><div class="lb-outerContainer"><div class="lb-container"><img class="lb-image" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="><div class="lb-nav"><a class="lb-prev" href=""></a><a class="lb-next" href=""></a></div><div class="lb-loader"><a class="lb-cancel"></a></div></div></div><div class="lb-dataContainer"><div class="lb-data"><div class="lb-details"><span class="lb-caption"></span><span class="lb-number"></span></div><div class="lb-closeContainer"><a class="lb-close"></a></div></div></div></div></body></html>

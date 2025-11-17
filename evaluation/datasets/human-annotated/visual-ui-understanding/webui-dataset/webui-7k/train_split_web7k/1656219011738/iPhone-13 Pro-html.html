@@ -1,0 +1,149 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="stylesheet" href="/assets/css/style.css?v=5e7e378f"><link rel="icon" href="/assets/favicon.png?v=4848a447"><link rel="me" href="https://mastodon.technology/@krinkle"><link rel="canonical" href="https://timotijhof.net/posts/2019/wikipedia-stories-1/"><link rel="alternate" type="application/rss+xml" href="https://timotijhof.net/feed.xml" title="Timo Tijhof"><meta property="og:title" content="Missing partitions, disappearing audio players, and extreme packet loss"><meta property="og:description" content="These are stories from bug hunts and incident investigations at Wikipedia."><meta name="description" content="These are stories from bug hunts and incident investigations at Wikipedia."><meta property="og:type" content="article"><meta property="article:published_time" content="2019-12-06T00:00:00+00:00"><meta name="author" content="Timo Tijhof">
+<title>Missing partitions, disappearing audio players, and extreme packet loss | Timo Tijhof</title>
+</head><body><header class="nav"><div class="nav-container">
+  <a href="/" class="nav-sitelink" title="Visit the home page">Timo Tijhof</a>
+  <p><a href="/about/">About</a> • <a href="/about/#colophon">Colophon</a></p>
+</div></header>
+<div class="wrap">
+<main class="content"><article>
+<header class="post-meta">
+  <a class="post-link" href="/posts/2019/wikipedia-stories-1/"><h1>Missing partitions, disappearing audio players, and extreme packet loss</h1></a>
+  <div class="byline"><time class="post-date" datetime="2019-12-06">6 Dec 2019</time> • <a rel="tag" class="post-tag" href="/tags/engineering-stories/">Engineering stories</a></div>
+</header>
+<div class="post"><p>These are stories from bug hunts and incident investigations at Wikipedia.</p>
+
+<!--more-->
+
+<ul class="md-toc">
+  <li><a href="#new-database-partition">New database partition</a></li>
+  <li><a href="#mystery-of-disappearing-audio-players">Mystery of Disappearing Audio Players</a></li>
+  <li><a href="#losing-packets-on-the-way-to-logstash">Losing packets on the way to Logstash</a></li>
+</ul>
+
+<h2 id="new-database-partition">New database partition</h2>
+
+<p>A user reported a timeout error for certain queries from the <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Special:Log">Public log viewer</a> on commons.wikimedia.org.</p>
+
+<p>Database administrator <a target="_blank" rel="noopener" href="https://phabricator.wikimedia.org/p/Marostegui/">Manuel Aróstegui</a> investigated the underlying query and found that it was slow (and timing out) due to one of the database replicas having an unpartitioned <code class="language-plaintext highlighter-rouge">logging</code> table.</p>
+
+<h3 id="background">Background</h3>
+<p>Our database servers carry labels that the MediaWiki application can ask for along with a query. This allows replicas to be finely tuned to specific kinds of of queries. In particular, when two useful optimisations strategies are mutually exclusive. The labelling system allows both strategies to be applied, on different database servers. MediaWiki then decides which one is most important for that query.</p>
+
+<p>Partioning the <a target="_blank" rel="noopener" href="https://www.mediawiki.org/wiki/Manual:Logging_table">MediaWiki <code class="language-plaintext highlighter-rouge">logging</code> table</a> is one such optimisation strategy. For queries in the Public logs that focus on actions by a specific user, we route the query to replicas where the <code class="language-plaintext highlighter-rouge">logging</code> table is partioned by user ID. This is in addition to a regular index on the user ID column for that table, which we have on all replicas.</p>
+
+<h3 id="action">Action</h3>
+<p>As first response, the faulty server was taken out of rotation. Re-partitioning was completed later that day.</p>
+
+<p>– <a target="_blank" rel="noopener" href="https://phabricator.wikimedia.org/T199790" title="Special:Log results in fatal exception of type DBQueryTimeoutError.">Task #199790<span title="Special:Log results in fatal exception of type DBQueryTimeoutError." tabindex="0"></span></a></p>
+
+<hr>
+
+<h2 id="mystery-of-disappearing-audio-players">Mystery of Disappearing Audio Players</h2>
+
+<p>Routine triaging of PHP errors led to discovery of the following:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[PHP Notice] Undefined index: 'c9ndx98du2.ogg'
+at mediawiki/extensions/Score/includes/Score.php:L507
+</code></pre></div></div>
+
+<h3 id="background-1">Background</h3>
+<p>The <a target="_blank" rel="noopener" href="https://www.mediawiki.org/wiki/Extension:Score">Score extension</a> for MediaWiki provides a way to produce image and audio files from music notation (backed by LilyPond). The extension registers a wikitext tag that allows editors to create and embed music on Wikipedia pages.</p>
+
+<p>The “Undefined index” warning from PHP happens when code tries to access a non-existent key
+from an associative array. For example: <code class="language-plaintext highlighter-rouge">$x = array( 'foo' =&gt; 1 ); return $x['bar'];</code>. When this happens, no exception or run-time errors ocurrs. Instead, the PHP engine implicitly returns the <code class="language-plaintext highlighter-rouge">null</code> value. PHP also emits a notice to the error log channel. We feed that into Logstash and Kibana.</p>
+
+<p>“PHP Notice” errors are not uncommon and can sometimes even cause (by accident) the correct behaviour. For example, if the code involves a condition like <code class="language-plaintext highlighter-rouge">if ($x['bar']) { … } else { … }</code>. Our error will produce the <code class="language-plaintext highlighter-rouge">null</code> value, which casts to <code class="language-plaintext highlighter-rouge">false</code>, and we proceed to the <code class="language-plaintext highlighter-rouge">else</code> branch. If the <code class="language-plaintext highlighter-rouge">bar</code> key is meant to be optional here, and if the <code class="language-plaintext highlighter-rouge">else</code> branch correctly handles the scenario for when it is not set, then this code might already behave correctly. A simple fix would then be to expand the condition to first assert that the key exists. Thus preventing the warning message, but otherwise behaving the same.</p>
+
+<h3 id="action-1">Action</h3>
+<p>Back to our investigation; The response was led by volunteer <a target="_blank" rel="noopener" href="https://phabricator.wikimedia.org/p/Ebe123/">@Ebe123</a> who is also the lead maintainer of the Score extension.</p>
+
+<p>First, we did some exploratory testing to see if there were any defects we could find with the feature. On the various Wikipedia articles we tested it on, the audio player seemed to work fine.</p>
+
+<p>Back to the error we found on the backend, we traced it to the code responsible for adding the “duration” metadata (used by the audio player). The code for computing this duration stores it in an array, and other code later tries to access it. However, these two functions were not using the same logic to create their array key. As such, it was unable to find the duration, and did not add it to the audio player. While this is bad, it appeared to not affect the audio player. It worked and even displayed the correct duration!</p>
+
+<p>Ebe123 wrote a patch that corrects the key string logic anyway. The duration value would then be found in the array and passed on as the code originally intended.</p>
+
+<p>During code review, we also looked at why this code existed in the first place (because the player appeared to work fine without it). The (broken) code was introduced several years ago in an attempt to fix a bug where the player loaded very slowly for some users. The story is that our multimedia framework needs the duration information before it can start playing back audio. And, for most file types, the framework is able to compute this on its own in the backend and hand it to the audio player ahead of time. However, the framework does not support computing durations for files with the <code class="language-plaintext highlighter-rouge">audio/ogg</code> MIME-type (which the Score extension used).</p>
+
+<p>When no duration is given ahead of time, web browsers have a fallback strategy. They attempt to download the track regardless, wait for it to fully arrive, then look at how many seconds it contains audio for, and use that as the duration value. This means the audio would not start playing until <em>after</em> it was fully downloaded. No streaming!</p>
+
+<p>In our isolated testing we were playing relatively short audio clips using a high-bandwidth connection. Thus, the issue was not obvious to us.</p>
+
+<p>We also found a separate bug report from a few months earlier where several users reported that when pressing “Play” the player would dissappear for 5-20 seconds before audio starts playing.</p>
+
+<p>It all started to make sense.</p>
+
+<p>– <a target="_blank" rel="noopener" href="https://phabricator.wikimedia.org/T200835" title="PHP Notice: 'Undefined index' from Score.php:L507.">Task #200835<span title="PHP Notice: 'Undefined index' from Score.php:L507." tabindex="0"></span></a>, <a target="_blank" rel="noopener" href="https://phabricator.wikimedia.org/T192550" title="Score audio player vanishes for a few seconds.">Task #192550<span title="Score audio player vanishes for a few seconds." tabindex="0"></span></a></p>
+
+<hr>
+
+<h2 id="losing-packets-on-the-way-to-logstash">Losing packets on the way to Logstash</h2>
+
+<p>I noticed that for recent bug reports with Error IDs, I was unable to find the
+associated error report in Logstash. I could also reproduce this for bugs I had
+reported myself.</p>
+
+<h3 id="background-2">Background</h3>
+<p>In the event of an internal server error, the MediaWiki web server sends a detailed
+error report to Logstash. MediaWiki then displays an error page to the user,
+where it mentions the “Error ID”.</p>
+
+<h3 id="action-2">Action</h3>
+<p><a target="_blank" rel="noopener" href="https://tstarling.com/blog/">Tim&nbsp;Starling</a> (Platform architect at Wikimedia) started investigating. He created a new Grafana
+dashboard and the culprit was quickly identified. Over 3000 UDP packets were being dropped at the Logstash servers, every second. That’s over 90% of its total packets – lost!</p>
+
+<p>As first mitigation, he rebooted the server, quadrupled the default receive buffer size (<code class="language-plaintext highlighter-rouge">net.core.rmem_default</code> in the Linux kernel) to 4MB, and rebooted it again.</p>
+
+<table class="md-block">
+  <tbody>
+    <tr>
+      <td><img src="/assets/attachments/2018_augstories_1a_logstash_recv.png" alt="Rate of succesfull Logstash packet reception increased from 50 pps to 300 pps" title="Success rate goes up from 50 pps to 300 pps"></td>
+      <td><img src="/assets/attachments/2018_augstories_1b_logstash_loss.png" alt="Rate of Logstash packet loss decreased from 1200 pps to 950 pps." title="Failure rate went down from 1200 pps to 950 pps"></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The first reboot significantly improved throughput (from 10% success, to 25% success), but the receive buffer change didn’t have any positive effect and we were still dropping the remaining 75% of packets.</p>
+
+<p>To recap, the buffer was now large enough to accomodate 3 seconds worth of messages which should be enough margin for Logstash to process it. Short spikes aside, it’s unlikely that allowing more stalling would help, because new packets are constantly added to the buffer as well.</p>
+
+<p><a target="_blank" rel="noopener" href="https://phabricator.wikimedia.org/p/fgiunchedi/">Filippo Giunchedi</a> (Site Reliability Engineering team) jumped in and noticed that the <a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/logstash/6.4/tuning-logstash.html"><code class="language-plaintext highlighter-rouge">workers.pipeline</code> setting</a> was explicitly set to <code class="language-plaintext highlighter-rouge">1</code>, thus allowing Logstash to only use a single thread to process all the messages. This was configured several years earlier (<a target="_blank" rel="noopener" href="https://github.com/wikimedia/puppet/commit/011aa76f0af62c3d5160c9f5e821108323cc3f16">commit</a>) to workaround a problem with the Logstash Multiline plugin; This plugin wasn’t thread-safe and would corrupt logs if active in multiple threads.</p>
+
+<p>Filippo determined we no longer needed this plugin, disabled it, and allowed the default <code class="language-plaintext highlighter-rouge">workers.pipeline</code> setting to take effect - which is to use the number of available CPU cores as the number of threads.</p>
+
+<p>This, together with the 4MB receive buffer Kernel setting, let the packet loss rate drop to zero.</p>
+
+<p>– <a target="_blank" rel="noopener" href="https://phabricator.wikimedia.org/T200960" title="Logstash packet loss (August 2018)">Task #200960<span title="Logstash packet loss (August 2018)" tabindex="0"></span></a>, <a target="_blank" rel="noopener" href="https://grafana.wikimedia.org/dashboard/db/logstash">Grafana&nbsp;dashboard: Logstash</a></p>
+
+<hr>
+
+<p><strong>Note</strong>: I originally wrote about these incidents in the <a target="_blank" rel="noopener" href="https://lists.wikimedia.org/pipermail/wikitech-l/2018-August/090594.html">August 2018 edition</a> of the Production Excellence newsletter for Wikipedia’s Engineering department. This article is an expanded version of that, with additional background information to make the stories suitable for a wider audience.</p>
+</div>
+<hr>
+<footer role="contentinfo"><p>
+  
+  Also published in <a href="https://phabricator.wikimedia.org/phame/blog/view/1/" target="_blank" rel="noopener">Production Excellence at Wikipedia</a>.</p><p><a rel="license noopener" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" title="Except where otherwise noted, this work is licensed under a Creative&nbsp;Commons license (CC BY 4.0)">Some rights reserved<span title="Except where otherwise noted, this work is licensed under a Creative&nbsp;Commons license (CC BY 4.0)" tabindex="0"></span></a>. Written by <span rel="author">Timo Tijhof<span>. Published on <time tabindex="0" datetime="2019-12-06">6 December 2019</time>.</span></span></p>
+</footer>
+</article>
+</main>
+<aside class="about about--foot">
+  <a href="/" class="about-sitelink" title="Visit the home page"><span>Timo Tijhof</span></a>
+  <p class="about-tagline">Principal&nbsp;Engineer, Wikimedia&nbsp;Foundation.</p>
+  <ul class="about-social">
+    <li><a href="https://mastodon.technology/@krinkle" title="Fediverse: @krinkle@mastodon.technology"><i class="icon icon-mastodon"></i></a></li>
+    <li><a href="https://timotijhof.net/feed.xml" title="RSS Feed"><i class="icon icon-rss-squared"></i></a></li>
+    <li><a href="https://github.com/Krinkle" title="GitHub: Krinkle"><i class="icon icon-github-circled"></i></a></li>
+  </ul>
+</aside></div>
+<script type="module">
+if (document.body && document.body.matches) {
+  document.body.addEventListener("ontouchstart" in window ? "dblclick" : "click", e => {
+    if (e.target.nodeName === "IMG" && !e.target.matches("a img")) window.open(e.target.src);
+  });
+  document.body.addEventListener("click", e => {
+    if (e.target.matches("a[title] > span[title]")) e.preventDefault() && e.stopPropagation();
+  });
+}
+</script>
+</body></html>

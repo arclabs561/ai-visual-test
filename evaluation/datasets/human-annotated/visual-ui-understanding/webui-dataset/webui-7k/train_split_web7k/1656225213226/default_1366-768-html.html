@@ -1,0 +1,689 @@
+<!DOCTYPE html><html class="fontawesome-i2svg-active fontawesome-i2svg-complete"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Practical TLS and PKI Training | Feisty Duck</title>
+
+    <style type="text/css">svg:not(:root).svg-inline--fa{overflow:visible}.svg-inline--fa{display:inline-block;font-size:inherit;height:1em;overflow:visible;vertical-align:-.125em}.svg-inline--fa.fa-lg{vertical-align:-.225em}.svg-inline--fa.fa-w-1{width:.0625em}.svg-inline--fa.fa-w-2{width:.125em}.svg-inline--fa.fa-w-3{width:.1875em}.svg-inline--fa.fa-w-4{width:.25em}.svg-inline--fa.fa-w-5{width:.3125em}.svg-inline--fa.fa-w-6{width:.375em}.svg-inline--fa.fa-w-7{width:.4375em}.svg-inline--fa.fa-w-8{width:.5em}.svg-inline--fa.fa-w-9{width:.5625em}.svg-inline--fa.fa-w-10{width:.625em}.svg-inline--fa.fa-w-11{width:.6875em}.svg-inline--fa.fa-w-12{width:.75em}.svg-inline--fa.fa-w-13{width:.8125em}.svg-inline--fa.fa-w-14{width:.875em}.svg-inline--fa.fa-w-15{width:.9375em}.svg-inline--fa.fa-w-16{width:1em}.svg-inline--fa.fa-w-17{width:1.0625em}.svg-inline--fa.fa-w-18{width:1.125em}.svg-inline--fa.fa-w-19{width:1.1875em}.svg-inline--fa.fa-w-20{width:1.25em}.svg-inline--fa.fa-pull-left{margin-right:.3em;width:auto}.svg-inline--fa.fa-pull-right{margin-left:.3em;width:auto}.svg-inline--fa.fa-border{height:1.5em}.svg-inline--fa.fa-li{width:2em}.svg-inline--fa.fa-fw{width:1.25em}.fa-layers svg.svg-inline--fa{bottom:0;left:0;margin:auto;position:absolute;right:0;top:0}.fa-layers{display:inline-block;height:1em;position:relative;text-align:center;vertical-align:-.125em;width:1em}.fa-layers svg.svg-inline--fa{-webkit-transform-origin:center center;transform-origin:center center}.fa-layers-counter,.fa-layers-text{display:inline-block;position:absolute;text-align:center}.fa-layers-text{left:50%;top:50%;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%);-webkit-transform-origin:center center;transform-origin:center center}.fa-layers-counter{background-color:#ff253a;border-radius:1em;-webkit-box-sizing:border-box;box-sizing:border-box;color:#fff;height:1.5em;line-height:1;max-width:5em;min-width:1.5em;overflow:hidden;padding:.25em;right:0;text-overflow:ellipsis;top:0;-webkit-transform:scale(.25);transform:scale(.25);-webkit-transform-origin:top right;transform-origin:top right}.fa-layers-bottom-right{bottom:0;right:0;top:auto;-webkit-transform:scale(.25);transform:scale(.25);-webkit-transform-origin:bottom right;transform-origin:bottom right}.fa-layers-bottom-left{bottom:0;left:0;right:auto;top:auto;-webkit-transform:scale(.25);transform:scale(.25);-webkit-transform-origin:bottom left;transform-origin:bottom left}.fa-layers-top-right{right:0;top:0;-webkit-transform:scale(.25);transform:scale(.25);-webkit-transform-origin:top right;transform-origin:top right}.fa-layers-top-left{left:0;right:auto;top:0;-webkit-transform:scale(.25);transform:scale(.25);-webkit-transform-origin:top left;transform-origin:top left}.fa-lg{font-size:1.3333333333em;line-height:.75em;vertical-align:-.0667em}.fa-xs{font-size:.75em}.fa-sm{font-size:.875em}.fa-1x{font-size:1em}.fa-2x{font-size:2em}.fa-3x{font-size:3em}.fa-4x{font-size:4em}.fa-5x{font-size:5em}.fa-6x{font-size:6em}.fa-7x{font-size:7em}.fa-8x{font-size:8em}.fa-9x{font-size:9em}.fa-10x{font-size:10em}.fa-fw{text-align:center;width:1.25em}.fa-ul{list-style-type:none;margin-left:2.5em;padding-left:0}.fa-ul>li{position:relative}.fa-li{left:-2em;position:absolute;text-align:center;width:2em;line-height:inherit}.fa-border{border:solid .08em #eee;border-radius:.1em;padding:.2em .25em .15em}.fa-pull-left{float:left}.fa-pull-right{float:right}.fa.fa-pull-left,.fab.fa-pull-left,.fal.fa-pull-left,.far.fa-pull-left,.fas.fa-pull-left{margin-right:.3em}.fa.fa-pull-right,.fab.fa-pull-right,.fal.fa-pull-right,.far.fa-pull-right,.fas.fa-pull-right{margin-left:.3em}.fa-spin{-webkit-animation:fa-spin 2s infinite linear;animation:fa-spin 2s infinite linear}.fa-pulse{-webkit-animation:fa-spin 1s infinite steps(8);animation:fa-spin 1s infinite steps(8)}@-webkit-keyframes fa-spin{0%{-webkit-transform:rotate(0);transform:rotate(0)}100%{-webkit-transform:rotate(360deg);transform:rotate(360deg)}}@keyframes fa-spin{0%{-webkit-transform:rotate(0);transform:rotate(0)}100%{-webkit-transform:rotate(360deg);transform:rotate(360deg)}}.fa-rotate-90{-webkit-transform:rotate(90deg);transform:rotate(90deg)}.fa-rotate-180{-webkit-transform:rotate(180deg);transform:rotate(180deg)}.fa-rotate-270{-webkit-transform:rotate(270deg);transform:rotate(270deg)}.fa-flip-horizontal{-webkit-transform:scale(-1,1);transform:scale(-1,1)}.fa-flip-vertical{-webkit-transform:scale(1,-1);transform:scale(1,-1)}.fa-flip-both,.fa-flip-horizontal.fa-flip-vertical{-webkit-transform:scale(-1,-1);transform:scale(-1,-1)}:root .fa-flip-both,:root .fa-flip-horizontal,:root .fa-flip-vertical,:root .fa-rotate-180,:root .fa-rotate-270,:root .fa-rotate-90{-webkit-filter:none;filter:none}.fa-stack{display:inline-block;height:2em;position:relative;width:2.5em}.fa-stack-1x,.fa-stack-2x{bottom:0;left:0;margin:auto;position:absolute;right:0;top:0}.svg-inline--fa.fa-stack-1x{height:1em;width:1.25em}.svg-inline--fa.fa-stack-2x{height:2em;width:2.5em}.fa-inverse{color:#fff}.sr-only{border:0;clip:rect(0,0,0,0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px}.sr-only-focusable:active,.sr-only-focusable:focus{clip:auto;height:auto;margin:0;overflow:visible;position:static;width:auto}.svg-inline--fa .fa-primary{fill:var(--fa-primary-color,currentColor);opacity:1;opacity:var(--fa-primary-opacity,1)}.svg-inline--fa .fa-secondary{fill:var(--fa-secondary-color,currentColor);opacity:.4;opacity:var(--fa-secondary-opacity,.4)}.svg-inline--fa.fa-swap-opacity .fa-primary{opacity:.4;opacity:var(--fa-secondary-opacity,.4)}.svg-inline--fa.fa-swap-opacity .fa-secondary{opacity:1;opacity:var(--fa-primary-opacity,1)}.svg-inline--fa mask .fa-primary,.svg-inline--fa mask .fa-secondary{fill:#000}.fad.fa-inverse{color:#fff}</style><link rel="stylesheet" href="/includes2/bulma.css">
+    
+    <script defer="" src="/includes2/fontawesome-free-5.15.3-web/js/all.js" type="text/javascript"></script>
+
+    <script src="/includes2/jquery-3.6.0.min.js" type="text/javascript"></script>
+
+    <script type="text/javascript" async="" defer="" data-domain="feistyduck.com" src="https://plausible.io/js/plausible.js"></script>
+
+    <link rel="stylesheet" href="/includes2/swiper/swiper-bundle.min.css">
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const burgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+            if (burgers.length > 0) {
+                burgers.forEach(el => {
+                    el.addEventListener('click', () => {
+                        const target = el.dataset.target;
+                        const _target = document.getElementById(target);
+                        el.classList.toggle('is-active');
+                        _target.classList.toggle('is-active');
+                    });
+                });
+            }
+        });
+    </script>
+
+    </head>
+
+    <body class="is-fixed-top">
+
+<noscript>
+    <div class="noscript">
+        <div class="noscript-inner">
+            <p><strong>Error: JavaScript appears to be disabled</strong></p>
+            <p>This web site will not operate correctly without JavaScript. Apologies for the inconvenience.</p>
+        </div>
+    </div>
+</noscript>
+
+<!-- Header -->
+
+<nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item logo" href="/"><img src="/images/fd-logo-red-notagline.png"></a>
+
+            <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbar-menu">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+        <div id="navbar-menu" class="navbar-menu">
+            <div class="navbar-start">
+                <a class="navbar-item" href="/"><span>Home</span></a>
+                <a class="navbar-item" href="/books/"><span>Books</span></a>
+                <a class="navbar-item" href="/training/practical-tls-and-pki"><span>Training</span></a>
+                <a class="navbar-item" href="/bulletproof-tls-newsletter/"><span>Newsletter</span></a>
+                <a class="navbar-item" href="/resources/"><span>Resources</span></a>
+            </div>
+            <div class="navbar-end">
+                <div class="navbar-item">
+                    <div class="buttons">
+                                                    <a class="button is-primary" href="/account/register">Sign up</a>
+                            <a class="button is-light" href="/account/login">Log in</a>
+                                            </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+
+<section id="booktraining" class="section content push-footer-down">
+
+    <div class="container my-4">
+
+        <div class="columns">
+
+            <div class="column is-two-fifths pl-5 pr-6">
+                <img class="has-shadow-book" src="/images2/practical-tls-and-pki-asbookcover.png">
+            </div>
+
+            <div class="column is-three-fifths pl-4">
+
+                
+                <img src="/images2/heading-practical-tls-and-pki.svg" class="mb-3" xwidth="500px">
+
+                <p class="subtitle">Join us on this remote, tutor-led training that covers the theory
+                    and practice of SSL/TLS and Internet PKI. Four half-days, packed with information.</p>
+
+                <p>Taught by Scott Helme and designed by Ivan Ristić,
+                    this practical training course will take you through everything you need to know to
+                    deploy secure servers and design secure web
+                    applications. The training is based on our <a href="/books/bulletproof-ssl-and-tls">Bulletproof TLS
+                        and PKI book</a>, with a series of lectures and exercises designed to give you a hands-on
+                    experience. </p>
+
+                <p>Join more than 1,500 satisfied students who have attended this tutor-led training. 
+
+                </p><p><i>Not available at the moment. Please contact us if you'd like to be notified when new dates become available.</i></p>
+
+                <div class="columns mt-4">
+
+                    <div class="column is-narrow">
+
+                        
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <hr class="my-5">
+
+        <div class="content client-slider-logos">
+
+            <div class="swiper-container py-2 swiper-container-initialized swiper-container-horizontal" id="clients">
+                <div class="swiper-wrapper content" id="swiper-wrapper-7b21f25efd4c4fbc" aria-live="off" style="transform: translate3d(0px, 0px, 0px); transition: all 0ms ease 0s;">
+
+                    <div class="swiper-slide swiper-slide-active" role="group" aria-label="1 / 23" style="width: 143.333px; margin-right: 20px;">
+                        <img src="/images2/clients/client-logo-barclays.svg">
+                    </div>
+
+                    <div class="swiper-slide swiper-slide-next" role="group" aria-label="2 / 23" style="width: 143.333px; margin-right: 20px;">
+                        <img src="/images2/clients/client-logo-cisco.svg">
+                    </div>
+
+                    <div class="swiper-slide" role="group" aria-label="3 / 23" style="width: 143.333px; margin-right: 20px;">
+                        <img src="/images2/clients/client-logo-fastly.svg">
+                    </div>
+
+                    <div class="swiper-slide" role="group" aria-label="4 / 23" style="width: 143.333px; margin-right: 20px;">
+                        <img src="/images2/clients/client-logo-hsbc.svg">
+                    </div>
+
+                    <div class="swiper-slide" role="group" aria-label="5 / 23" style="width: 143.333px; margin-right: 20px;">
+                        <img src="/images2/clients/client-logo-sap.svg">
+                    </div>
+
+                    <div class="swiper-slide" role="group" aria-label="6 / 23" style="width: 143.333px; margin-right: 20px;">
+                        <img src="/images2/clients/client-logo-volvo.svg">
+                    </div>
+
+                    <div class="swiper-slide" role="group" aria-label="7 / 23" style="width: 143.333px; margin-right: 20px;">
+                        <img src="/images2/clients/client-logo-sas.svg">
+                    </div>
+
+                    <div class="swiper-slide" role="group" aria-label="8 / 23" style="width: 143.333px; margin-right: 20px;">
+                        <img src="/images2/clients/client-logo-bbc.svg">
+                    </div>
+
+                    <div class="swiper-slide" role="group" aria-label="9 / 23" style="width: 143.333px; margin-right: 20px;">
+                        <img src="/images2/clients/client-logo-bd-rowa.svg">
+                    </div>
+
+                    <div class="swiper-slide" role="group" aria-label="10 / 23" style="width: 143.333px; margin-right: 20px;">
+                        <img src="/images2/clients/client-logo-bedag.svg">
+                    </div>
+
+                    <div class="swiper-slide" role="group" aria-label="11 / 23" style="width: 143.333px; margin-right: 20px;">
+                        <img src="/images2/clients/client-logo-commerzbank.svg">
+                    </div>
+
+                    <div class="swiper-slide" role="group" aria-label="12 / 23" style="width: 143.333px; margin-right: 20px;">
+                        <img src="/images2/clients/client-logo-denic.svg">
+                    </div>
+
+                    <div class="swiper-slide" role="group" aria-label="13 / 23" style="width: 143.333px; margin-right: 20px;">
+                        <img src="/images2/clients/client-logo-ecb.svg">
+                    </div>
+
+                    <div class="swiper-slide" role="group" aria-label="14 / 23" style="width: 143.333px; margin-right: 20px;">
+                        <img src="/images2/clients/client-logo-ikerlan.svg">
+                    </div>
+
+                    <div class="swiper-slide" role="group" aria-label="15 / 23" style="width: 143.333px; margin-right: 20px;">
+                        <img src="/images2/clients/client-logo-jpmc.svg">
+                    </div>
+
+                    <div class="swiper-slide" role="group" aria-label="16 / 23" style="width: 143.333px; margin-right: 20px;">
+                        <img src="/images2/clients/client-logo-mnemonic.svg">
+                    </div>
+
+                    <div class="swiper-slide" role="group" aria-label="17 / 23" style="width: 143.333px; margin-right: 20px;">
+                        <img src="/images2/clients/client-logo-postbank.svg">
+                    </div>
+
+                    <div class="swiper-slide" role="group" aria-label="18 / 23" style="width: 143.333px; margin-right: 20px;">
+                        <img src="/images2/clients/client-logo-salesforce.svg">
+                    </div>
+
+                    <div class="swiper-slide" role="group" aria-label="19 / 23" style="width: 143.333px; margin-right: 20px;">
+                        <img src="/images2/clients/client-logo-sas.svg">
+                    </div>
+
+                    <div class="swiper-slide" role="group" aria-label="20 / 23" style="width: 143.333px; margin-right: 20px;">
+                        <img src="/images2/clients/client-logo-signicat.svg">
+                    </div>
+
+                    <div class="swiper-slide" role="group" aria-label="21 / 23" style="width: 143.333px; margin-right: 20px;">
+                        <img src="/images2/clients/client-logo-surf-net.svg">
+                    </div>
+
+                    <div class="swiper-slide" role="group" aria-label="22 / 23" style="width: 143.333px; margin-right: 20px;">
+                        <img src="/images2/clients/client-logo-tenable.svg">
+                    </div>
+
+                    <div class="swiper-slide" role="group" aria-label="23 / 23" style="width: 143.333px; margin-right: 20px;">
+                        <img src="/images2/clients/client-logo-venafi.svg">
+                    </div>
+
+                </div>
+
+                <div class="swiper-pagination swiper-pagination-clickable swiper-pagination-bullets"><span class="swiper-pagination-bullet swiper-pagination-bullet-active" tabindex="0" role="button" aria-label="Go to slide 1"></span><span class="swiper-pagination-bullet" tabindex="0" role="button" aria-label="Go to slide 2"></span><span class="swiper-pagination-bullet" tabindex="0" role="button" aria-label="Go to slide 3"></span><span class="swiper-pagination-bullet" tabindex="0" role="button" aria-label="Go to slide 4"></span></div>
+            <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span></div>
+
+        </div>
+
+
+        <hr class="mb-5">
+
+        <div class="content">
+
+            <h2 class="has-text-centered mt-6 mb-5">Overview</h2>
+
+            <div class="columns content">
+
+                <div class="column is-one-third book-toc">
+
+                    <div class="toc" data-id="1">
+                        <h6><b>Day 1: TLS</b></h6>
+                        <ul>
+                            <li>1. Introduction</li>
+                            <li>2. Keys and certificates</li>
+                            <li>3. Protocols and cipher suites</li>
+                            <li>4. HTTPS topics</li>
+                            <li>5. Getting an A+ on SSL Labs</li>
+                        </ul>
+                    </div>
+
+                    <div class="toc" data-id="2">
+                        <h6><b>Day 2: PKI</b></h6>
+                        <ul>
+                            <li>1. Introduction</li>
+                            <li>2. Standards</li>
+                            <li>3. Internet PKI</li>
+                            <li>4. Revocation</li>
+                            <li>5. Defenses</li>
+                            <li>6. Certificate Transparency</li>
+                            <li>7. PKI ecosystem monitoring</li>
+                            <li>8. Project: Building a private CA</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="column is-two-thirds pl-6 pt-4">
+
+                    <div id="intro">
+                        <h3>Introduction</h3>
+
+                        <p>The course is taught in small classes. Currently delivered remotely, over four half-days.
+                            </p>
+
+                        <ul class="is-marginless ml-5 mb-5">
+                            <li>Understand threats and attacks against encryption</li>
+                            <li>Identify real risks that apply to your systems</li>
+                            <li>Deploy servers with strong private keys and valid certificates</li>
+                            <li>Deploy TLS configurations with strong encryption and forward secrecy</li>
+                            <li>Understand higher-level attacks against web applications</li>
+                            <li>Use the latest defence technologies, such as HSTS, CSP, and HPKP</li>
+                            <li>Learn about key PKI standards and formats</li>
+                            <li>Understand where practice differs from theory</li>
+                            <li>Analyze certificate lifecycle in detail</li>
+                            <li>Evaluate PKI weaknesses and how they affect you</li>
+                            <li>Deploy robust protection using public key pinning</li>
+                            <li>Learn about what's coming in the future</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <hr class="my-6">
+
+        <div class="content">
+            <h2 class="has-text-centered mt-6 mb-5">What's Included</h2>
+
+            <div class="columns content">
+
+                <div class="column is-narrow mr-3">
+                    <div class="columns content">
+                        <div class="column">
+                            <a href="/books/bulletproof-ssl-and-tls/"><img class="has-shadow-book" src="/images2/bulletproof-ssl-and-tls-2ed.png" width="170px"></a>
+                        </div>
+
+                        <div class="column">
+                            <img class="has-shadow-book" src="/images2/practical-tls-and-pki-asbookcover.png" width="170px">
+                        </div>
+                    </div>
+                    <div class="has-text-centered pt-4">
+                        <img class="dopoweredby" src="/images2/DO_Powered_by_Badge_black.svg" width="200px">
+                    </div>
+                </div>
+
+                <div class="column">
+                    <p>Every student receives a comprehensive digital package that they can use before, during, and
+                        after the training. Real-world exercises to work on during the training and afterwards. The
+                        500-page <a href="/books/bulletproof-ssl-and-tls">Bulletproof TLS and PKI</a> is provided for
+                        use as a comprehensive reference. All in all, you get:
+                    </p>
+
+                    <ul class="is-marginless ml-5 mb-5">
+                        <li>A trainer, to teach you and assist you for the duration of the training
+                        </li><li>A virtual server specially designed for the exercises (for 4 weeks)</li>
+                        <li>A digital copy of <a href="/books/bulletproof-ssl-and-tls">Bulletproof TLS and PKI</a></li>
+                        <li>Over 50 exercises in total
+                        </li><li>Slide handouts you can print and annotate</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <hr class="my-6">
+
+        <div class="content">
+
+            <h2 class="has-text-centered mb-5">Testimonials</h2>
+
+            <div class="swiper-container my-4 pb-4 pt-3 swiper-container-initialized swiper-container-horizontal" id="testimonials">
+                <div class="swiper-wrapper content" id="swiper-wrapper-233f7a9dfb279434" aria-live="off" style="transition: all 0ms ease 0s; transform: translate3d(0px, 0px, 0px);">
+
+                    <div class="swiper-slide swiper-slide-active" role="group" aria-label="1 / 3" style="width: 960px;">
+                        <div class="columns">
+                            <div class="column">
+                                <div class="testimonial">
+                                    <p class="balloon"><span class="qm">“</span>Scott really knows his
+                                        stuff—inside, out and sideways.</p>
+                                    <p class="author is-size-7"><span><b>Dario Ciccarone</b>, CISCO</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="testimonial">
+                                    <p class="balloon"><span class="qm">“</span>Excellent trainer. Excellent course.</p>
+                                    <p class="author is-size-7"><span><b>Evans J. Jesse</b>, SAP</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="testimonial">
+                                    <p class="balloon"><span class="qm">“</span>Very insightful even if you have
+                                        extensive experience with PKI &amp; TLS.</p>
+                                    <p class="author is-size-7"><span><b>Ramfis E.N. Adrichem</b>, Security Analyst at Kamer van Koophandel</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="columns content">
+                            <div class="column">
+                                <div class="testimonial">
+                                    <p class="balloon"><span class="qm">“</span>Great course. Lots of useful information
+                                        and practical labs. Flawless lab setup. Great that we can continue to use VM
+                                        post course to redo labs, play and learn.</p>
+                                    <p class="author is-size-7"><span><b>Tom Griffiths</b>, Infrasys Technology</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="testimonial">
+                                    <p class="balloon"><span class="qm">“</span>Scott is excellent at delivering the
+                                        material and is clearly very passionate about the subject. 100% recommend
+                                        attending training with him if you have the chance!</p>
+                                    <p class="author is-size-7"><span><b>Nathan Joyce</b>, via Twitter</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="testimonial">
+                                    <p class="balloon"><span class="qm">“</span>Web people—this is probably the best
+                                        TLS training you can get.</p>
+                                    <p class="author is-size-7"><span><b>Peter Chamberlin</b>, via Twitter</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="swiper-slide swiper-slide-next" role="group" aria-label="2 / 3" style="width: 960px;">
+                        <div class="columns">
+                            <div class="column">
+                                <div class="testimonial">
+                                    <p class="balloon"><span class="qm">“</span>Couldn’t recommend this course
+                                        enough—brilliant content, nicely delivered in a good-sized class. Keep up the
+                                        good work.</p>
+                                    <p class="author is-size-7"><span><b>@dsh82</b>, via Twitter</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="testimonial">
+                                    <p class="balloon"><span class="qm">“</span>It was totally worth it to fly to a
+                                        different country to hear Scott Helme drop some serious knowledge about TLS,
+                                        PKI, and related treat models. I was looking forward to this class for about 6
+                                        months, and it was awesome!
+                                    </p>
+                                    <p class="author is-size-7"><span><b>@photo_chocolate</b>, via Twitter</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="testimonial">
+                                    <p class="balloon"><span class="qm">“</span>One of the best courses I’ve taken.
+                                        Totally worth every cent. Scott Helme is a great teacher and Ivan's
+                                        content is the best out there for this subject matter.</p>
+                                    <p class="author is-size-7"><span><b>Brian Long</b>, via Twitter</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="columns content">
+                            <div class="column">
+                                <div class="testimonial">
+                                    <p class="balloon"><span class="qm">“</span>This course is brilliant—best
+                                        I’ve done in at least 15 years.</p>
+                                    <p class="author is-size-7"><span><b>Paul Weaver</b>, via Twitter</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="testimonial">
+                                    <p class="balloon"><span class="qm">“</span>Top Notch!</p>
+                                    <p class="author is-size-7"><span><b>Lukasz Rak</b>, Sharcs</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="testimonial">
+                                    <p class="balloon"><span class="qm">“</span>Great explanations and easy to
+                                        understand.
+                                        Good overview, great course material.</p>
+                                    <p class="author is-size-7"><span><b>Clare Lee</b>, HSBC</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="swiper-slide" role="group" aria-label="3 / 3" style="width: 960px;">
+                        <div class="columns">
+                            <div class="column">
+                                <div class="testimonial">
+                                    <p class="balloon"><span class="qm">“</span>Very thorough, whirlwind tour of TLS
+                                        configuration and deployment. Impressed with trainers' expertise and passion for
+                                        the subject.</p>
+                                    <p class="author is-size-7"><span><b>Jack Hoy</b>, Red Badger</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="testimonial">
+                                    <p class="balloon"><span class="qm">“</span>Very knowledgeable. Well paced, good mix
+                                        of theory and practical work.</p>
+                                    <p class="author is-size-7"><span><b>Scott Oakley</b>, HSBC</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="testimonial">
+                                    <p class="balloon"><span class="qm">“</span>Vibrant, enthusiastic and knowledgeable.
+                                        Covered all I needed and more.</p>
+                                    <p class="author is-size-7"><span><b>Andrew Mallett</b>, The Urban Penguin</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="columns content">
+                            <div class="column">
+                                <div class="testimonial">
+                                    <p class="balloon"><span class="qm">“</span>Made the subject of TLS genuinely
+                                        exciting to learn. The quality of the material, the exercises and the handouts
+                                        were some of the best I've ever seen.</p>
+                                    <p class="author is-size-7"><span><b>Chris Bell</b>, Fujitsu</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="testimonial">
+                                    <p class="balloon"><span class="qm">“</span>Awesome! Knowledgeable, enthusiastic and
+                                        a great communicator. Excellent. "The Best TLS Training" is a bold claim. Having
+                                        attended, I don't see any reason to argue! </p>
+                                    <p class="author is-size-7"><span><b>Ian Lowrey</b>, Fujitsu</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="testimonial">
+                                    <p class="balloon"><span class="qm">“</span>Real world examples mixed with hands-on
+                                        experience. An excellent speaker, engaging stories and kept my attention all
+                                        four days, in the world of Zoom in 2020, that is amazing!</p>
+                                    <p class="author is-size-7"><span><b>Steve Niemczyk</b>, Salesforce</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="swiper-button-next" tabindex="0" role="button" aria-label="Next slide" aria-controls="swiper-wrapper-233f7a9dfb279434" aria-disabled="false"></div>
+                <div class="swiper-button-prev swiper-button-disabled" tabindex="-1" role="button" aria-label="Previous slide" aria-controls="swiper-wrapper-233f7a9dfb279434" aria-disabled="true"></div>
+                <div class="swiper-pagination swiper-pagination-clickable swiper-pagination-bullets"><span class="swiper-pagination-bullet swiper-pagination-bullet-active" tabindex="0" role="button" aria-label="Go to slide 1"></span><span class="swiper-pagination-bullet" tabindex="0" role="button" aria-label="Go to slide 2"></span><span class="swiper-pagination-bullet" tabindex="0" role="button" aria-label="Go to slide 3"></span></div>
+
+            <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span></div>
+
+        </div>
+
+
+        <hr class="my-6">
+
+        <div>
+
+            <h2 class="has-text-centered mt-6 mb-5">About the Trainer</h2>
+
+            <div class="columns content is-align-items-flex-start px-6">
+
+                <div class="column is-one-third pr-5 pl-6 has-text-right">
+                    <img class="framed-photo" src="/images2/scott_helme_320.png" alt="Scott Helme">
+                </div>
+
+                <div class="column is-two-thirds pl-5 pr-6">
+
+                    <p>Scott Helme is a security researcher, consultant and international speaker. He can often be found
+                        talking about web security and performance online and helping organisations better deploy
+                        both.</p>
+
+                    <p>Founder of <a href="https://report-uri.io/">report-uri.io</a>, a free CSP report collection
+                        service, and <a href="https://securityheaders.io">securityheaders.io</a>, a free security
+                        analyser, Scott has a tendency to always be involved in building something new and exciting.</p>
+
+                </div>
+            </div>
+        </div>
+
+
+        <hr class="my-6">
+
+        <div><h2 class="has-text-centered mb-4">About the Author</h2>
+
+<div class="columns content is-align-items-flex-start px-6">
+
+    <div class="column is-one-third pr-5 pl-6 has-text-right">
+        <img class="framed-photo" src="/images2/ivan_ristic-photo.jpg" alt="Ivan Ristic">
+    </div>
+
+    <div class="column is-two-thirds pl-5 pr-6">
+
+        <p>Ivan Ristić writes computer security books and builds security products. His book <a href="/books/bulletproof-tls-and-pki/">Bulletproof
+            TLS and PKI</a>, the result of more than a decade of research and study, is widely recognised as the
+            de-facto SSL/TLS and PKI reference manual. His work on <a href="https://www.ssllabs.com">SSL Labs</a> made
+            hundreds of thousands of web sites more
+            secure. Before that, he created <a href="https://www.github.com/SpiderLabs/ModSecurity">ModSecurity</a>, a
+            leading open source web application firewall.
+        </p>
+
+        <p>More recently, Ivan founded <a href="https://www.hardenize.com">Hardenize</a>, a platform for continuous
+            security monitoring that provides free assessments to everyone. He's a member of <a href="https://letsencrypt.org">Let's Encrypt</a>'s
+            technical advisory board.</p>
+
+    </div>
+</div>
+</div>
+
+
+</div></section>
+
+
+<script src="/includes2/swiper/swiper-bundle.min.js"></script>
+
+<script>
+    var swiperTestimonials = new Swiper('#testimonials', {
+        slidesPerView: 1,
+        spaceBetween: 0,
+        loop: false,
+        grabCursor: false,
+        mousewheel: false,
+        autoplay: {
+            delay: 20000,
+            disableOnInteraction: false,
+        },
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+        pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+        },
+    });
+
+    var swiperClients = new Swiper('#clients', {
+        slidesPerView: 6,
+        slidesPerGroup: 6,
+        spaceBetween: 20,
+        loop: false,
+        grabCursor: false,
+        mousewheel: false,
+        autoplay: {
+            delay: 3000,
+            disableOnInteraction: false,
+        },
+        pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+        },
+    });
+
+</script>
+
+<footer class="footer">
+    <div class="container">
+        <div class="columns">
+
+            <div class="column">
+                <div class="footer-logo"><img src="/images/fd-logo-red-notagline.png"></div>
+                <div class="tagline">THE FINEST IN TLS<br>AND PKI EDUCATION</div>
+                <div class="icons">
+                    <a href="javascript:location='mailto:\u0068\u0065\u006c\u006c\u006f\u0040\u0066\u0065\u0069\u0073\u0074\u0079\u0064\u0075\u0063\u006b\u002e\u0063\u006f\u006d';void 0">
+                        <script type="text/javascript">document.write('<i class=\"fas fa-envelope\"></i><span>\u0068\u0065\u006c\u006c\u006f\u0040\u0066\u0065\u0069\u0073\u0074\u0079\u0064\u0075\u0063\u006b\u002e\u0063\u006f\u006d</span>')</script><svg class="svg-inline--fa fa-envelope fa-w-16" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="envelope" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M502.3 190.8c3.9-3.1 9.7-.2 9.7 4.7V400c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V195.6c0-5 5.7-7.8 9.7-4.7 22.4 17.4 52.1 39.5 154.1 113.6 21.1 15.4 56.7 47.8 92.2 47.6 35.7.3 72-32.8 92.3-47.6 102-74.1 131.6-96.3 154-113.7zM256 320c23.2.4 56.6-29.2 73.4-41.4 132.7-96.3 142.8-104.7 173.4-128.7 5.8-4.5 9.2-11.5 9.2-18.9v-19c0-26.5-21.5-48-48-48H48C21.5 64 0 85.5 0 112v19c0 7.4 3.4 14.3 9.2 18.9 30.6 23.9 40.7 32.4 173.4 128.7 16.8 12.2 50.2 41.8 73.4 41.4z"></path></svg><!-- <i class="fas fa-envelope"></i> Font Awesome fontawesome.com --><span>hello@feistyduck.com</span>
+                    </a>
+                    <a href="https://www.twitter.com/feistyduck"><svg class="svg-inline--fa fa-twitter fa-w-16" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="twitter" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path></svg><!-- <i class="fab fa-twitter"></i> Font Awesome fontawesome.com --><span>@feistyduck</span></a>
+                </div>
+            </div>
+
+            <div class="column">
+                <h2>Books</h2>
+                <ul>
+                                        <li><a href="/books/bulletproof-tls-and-pki/">Bulletproof TLS and PKI</a></li>
+                    <li><a href="/books/modsecurity-handbook/">ModSecurity Handbook</a></li>
+                    <li><a href="/books/openssl-cookbook/">OpenSSL Cookbook</a></li>
+                </ul>
+            </div>
+
+            <div class="column">
+                <h2>Training</h2>
+                <ul>
+                    <li><a href="/training/practical-tls-and-pki">Practical TLS and PKI</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="column">
+                <h2>Resources</h2>
+                <ul>
+                    <li><a href="/bulletproof-tls-newsletter/">Bulletproof TLS Newsletter</a></li>
+                    <li><a href="/ssl-tls-and-pki-history/">SSL/TLS and PKI History</a></li>
+                    <li><a href="/books/archive">Archived Books</a></li>
+                </ul>
+            </div>
+
+            <div class="column pl-5">
+                <h2>Company</h2>
+                <ul>
+                                        <li><a href="/about/support">Support</a></li>
+                    <li><a href="/about/terms">Website Terms of Use</a></li>
+                    <li><a href="/about/terms_and_conditions">Terms and Conditions</a></li>
+                    <li><a href="/about/privacy">Privacy Policy</a></li>
+                    <li><a href="/about/">About Us</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+</body></html>

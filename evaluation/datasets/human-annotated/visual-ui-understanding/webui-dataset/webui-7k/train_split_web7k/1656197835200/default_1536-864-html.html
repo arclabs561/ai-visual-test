@@ -1,0 +1,271 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="https://www.w3.org/1999/xhtml" xml:lang="en"><head>
+		<title>Clarion Write-a-Thon</title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+    	<meta http-equiv="content-language" content="en-us">
+		<meta name="description" content="The Clarion Foundation, Inc. is a nonprofit organization with 501(c)(3) charitable status">
+		<meta name="keywords" content="clarion, science fiction, fantasy, writers, workshop, nonprofit foundation, online workshop, authors">
+		<link rel="stylesheet" href="../common/css/main.css" type="text/css">
+		
+		<script src="../common/js/jquery-1.11.0.min.js" type="text/javascript"></script>
+		<script src="../common/js/jquery.tools.min.js" type="text/javascript"></script>
+		<script src="../common/js/jquery-ui-1.10.4.custom.min.js" type="text/javascript"></script>
+		<script src="../common/js/jquery.cookie.js" type="text/javascript"></script>
+		<script src="../common/js/jQuery-MD5.js" type="text/javascript"></script>
+		<script src="../common/js/jthonfunctions.js" type="text/javascript"></script>
+	
+		<link rel="stylesheet" href="../common/css/jquerytools-tabs.css" type="text/css" media="screen">
+		<link rel="stylesheet" href="../common/css/ui-wrtn/jquery-ui-1.10.4.custom.css" type="text/css" media="screen">
+		<link href="https://fonts.googleapis.com/css?family=Gudea:700" rel="stylesheet" type="text/css">
+		<link rel="icon" href="/favicon-32x32.png" type="image/png">
+		
+		<script type="text/javascript">
+		$(document).ready(function() {
+			$("#subNavWrapper").empty();
+			$("#subNavWrapper").append(showGreetingAsUL());	
+			$(".login-button").click(function(e) {
+				e.preventDefault();
+				if (loginNeeded()) {
+					var func = function() {
+						//if (isWriter()) {
+						//	window.location.assign(localurl() + 'members/profile.php');
+						//} else {
+							window.location.reload();
+						//}
+					};
+					showLoginRegForm(0, func);
+				} else {
+					alert('Already logged in!');
+				}
+			});
+			$(".members-button").click(function(e) {
+				var membersUrl = localurl() + 'members';
+				e.preventDefault();
+				if (loginNeeded()) {
+					var func = function() {
+						window.location.href = membersUrl;
+						};
+					showLoginRegForm(0, func);
+				} else {
+					window.location.href = membersUrl;
+				}
+			});
+		});
+		</script>
+		<style>
+							
+			.modal {
+			  background-color:#fff;
+			  display:none;
+			  padding:15px;
+			  text-align: left;
+			  border:2px solid #333;
+			  opacity:1.0;
+			  z-index:999;
+			  -moz-border-radius:6px;
+			  -webkit-border-radius:6px;
+			  -moz-box-shadow: 0 0 50px #ccc;
+			  -webkit-box-shadow: 0 0 50px #ccc;
+			}
+			
+			.modal h1 {
+				font-size: 1.2.em;
+				font-weight: bold;
+			}
+  
+			.pane {
+				
+			}
+			
+			.pane button {
+				padding: 10px;
+			}
+		
+			button {
+				font-size: 1.2em;
+			}
+			
+			button hover {
+				border-width: 0px;
+			}
+			
+			button:hover {
+				background-color: black;
+				color: white;
+				border-width: 0px;
+				cursor: pointer;
+			}
+			
+			select {
+				border: black;
+				font-size: 1.2em;
+				max-width:70%;
+			}
+			
+			input[type="text"] {
+				padding: 5px;
+				font-size: 1.2em;
+			}
+			
+			input[type="password"] {
+				padding: 5px;
+				font-size: 1.2em;
+			}
+			
+			.validation {
+				color: red;
+			}
+				
+		</style>
+		
+		<script type="text/javascript">
+		$(document).ready(function() {		
+			$("#subNavWrapper").empty();
+			$("#subNavWrapper").append(showGreetingAsUL());
+			
+			$("#multi-button").click(function() {
+				if (loginNeeded()) {
+					var func = function() {
+						window.location.href="../sponsors/sponsor-form-multi.php";
+						};
+					showLoginRegForm(0, func);
+				} else {
+					window.location.href="../sponsors/sponsor-form-multi.php";
+				}
+			});
+		});
+		</script>
+	</head>
+	<body>
+		<div id="headerWrapperPublic">	
+	 
+		<div id="headerGraphic"><a href="/"><img src="../images/header_public_blank.png" width="1020" height="172" alt="Clarion" border="0"></a></div>
+		<div id="headerText">2022 WRITE-A-THON | June 19 - July 30</div>
+
+	</div><!-- End div headerWrapperPublic //-->
+	<div id="navWrapperPublic">
+		<ul>
+			<li><a href="../feedback/" style="width:35px;"><img title="Get help or give feedback." src="../images/icon-feedback.png"></a></li>
+			<li><a href="#" class="login-button">Log In</a></li>			<li><a href="../">home</a></li>
+		</ul>
+	</div><!-- End div navWrapperPublic //-->
+	
+<!--
+	<div id="publicBox2Wrapper">
+		<div id="publicBox2Border" style="text-align:center;">
+			<p class="paraOne"><button style="padding:30px; margin-top: -30px; margin-bottom: 30px;" onclick="window.location.href='../sponsors/sponsor-form-multi.php';">Support Multiple Writers</button></p>
+		</div>
+		</div>
+	</div>
+-->
+
+	<div id="publicBox2Wrapper">
+		<div class="bannerLeft">
+			<p>Choose a Writer</p>
+		</div><!-- End div bannerLeft //-->
+		<div id="publicBox2Border">
+			<p class="paraOne">
+			Browse the individual pages of our dedicated Write-a-Thon writers. You'll find biographical and publishing details, photo portraits, goals, excerpts and more. Then pick one or more to support.
+			<br><br></p><div id="multi-button" class="subMenuOption" style="text-align: center; width: 956px; font-size: 1.2em; color: #FFFFFF;">You can also donate to more than one writer at once.</div>
+			<br><br>
+			<b>Sort by:</b> <a href="browsewriters.php?sort=first">first name</a> | <a href="browsewriters.php?sort=last">last name</a>
+			<br>
+			<div class="writerColumn" style="width: 50%"><div class="writerLink" style="background: #F0F0F0; border: 1px solid #000000; margin: 2px -5px -2px 2px;"><a href="profile.php?writerid=662423">The Clarion Foundation</a></div><div class="writerLink"><a href="profile.php?writerid=459698">Audrey </a></div><div class="writerLink"><a href="profile.php?writerid=861707">Deborah Bailey</a></div><div class="writerLink"><a href="profile.php?writerid=911691">Michael Scott Bricker</a></div><div class="writerLink"><a href="profile.php?writerid=761322">Nyla Bright</a></div><div class="writerLink"><a href="profile.php?writerid=366531">Patrick Coleman</a></div><div class="writerLink"><a href="profile.php?writerid=551989">Tiviander Dev</a></div><div class="writerLink"><a href="profile.php?writerid=293388">Cory Doctorow</a></div><div class="writerLink"><a href="profile.php?writerid=888235">Nancy Etchemendy</a></div><div class="writerLink"><a href="profile.php?writerid=689853">Acin Fals</a></div><div class="writerLink"><a href="profile.php?writerid=517541">Karen Fowler</a></div><div class="writerLink"><a href="profile.php?writerid=314554">Emily Gong</a></div><div class="writerLink"><a href="profile.php?writerid=926188">Daryl Gregory</a></div><div class="writerLink"><a href="profile.php?writerid=506949">Eileen Gunn</a></div><div class="writerLink"><a href="profile.php?writerid=441558">Rose Hartley</a></div><div class="writerLink"><a href="profile.php?writerid=555093">Gwen Hill</a></div><div class="writerLink"><a href="profile.php?writerid=489560">Nathan Hillstrom</a></div><div class="writerLink"><a href="profile.php?writerid=349395">A. P. Howell</a></div><div class="writerLink"><a href="profile.php?writerid=798235">Breeann Kirby</a></div></div><div class="writerColumn" style="width: 50%"><div class="writerLink"><a href="profile.php?writerid=120476">Richard Leis</a></div><div class="writerLink"><a href="profile.php?writerid=153579">Monica Louzon</a></div><div class="writerLink"><a href="profile.php?writerid=543081">Betsy Mahaffey</a></div><div class="writerLink"><a href="profile.php?writerid=451706">JoLynne Martinez</a></div><div class="writerLink"><a href="profile.php?writerid=168163">John McDaid</a></div><div class="writerLink"><a href="profile.php?writerid=186447">Angus McIntyre</a></div><div class="writerLink"><a href="profile.php?writerid=733839">Lyda Morehouse</a></div><div class="writerLink"><a href="profile.php?writerid=671905">Eugene Ramos</a></div><div class="writerLink"><a href="profile.php?writerid=165767">Stan Robinson</a></div><div class="writerLink"><a href="profile.php?writerid=340059">Gabriela Santiago</a></div><div class="writerLink"><a href="profile.php?writerid=219457">Karen Seehaus</a></div><div class="writerLink"><a href="profile.php?writerid=355940">Jim Shea</a></div><div class="writerLink"><a href="profile.php?writerid=864046">Melanie Stormm</a></div><div class="writerLink"><a href="profile.php?writerid=157797">Jerome Stueart</a></div><div class="writerLink"><a href="profile.php?writerid=816887">Sonia Sulaiman</a></div><div class="writerLink"><a href="profile.php?writerid=985677">Marie Vibbert</a></div><div class="writerLink"><a href="profile.php?writerid=640811">Justin Whitney</a></div><div class="writerLink"><a href="profile.php?writerid=660750">Kate Wooderson</a></div><div class="writerLink"><a href="profile.php?writerid=404425">Isabel Yap</a></div></div><p></p>
+			<div class="generalDivSpacer"></div><!-- End div generalDivSpacer //-->
+			</div><!-- End div publicBox1Border//-->
+		</div><!-- End div publicBox1Wrapper //-->
+		
+	
+	
+		
+	<div class="generalDivSpacer"></div>	
+
+	<div id="publicBox2Wrapper">
+	
+		<div class="bannerLeft">
+			<p>Writer Teams</p>
+		</div>
+		<div id="publicBox2Border">
+			<p class="paraOne">Writers: raise or donate at least $20, then check your acknowledgment emails or read our <a href="/teamstips/">Tips for Teams</a> page for instructions about how to join a team.</p>
+	
+		<script type="text/javascript">$(document).ready(function(){$('#toggleMembers_50').click(function(){$('#membersWrapper_50').slideToggle('fast');});});</script><div class="writer-row" style="padding-left: 50px;"><span class="writer-name"><a href="" target="_blank">Rocket ship Spatula</a>&nbsp;&nbsp;<input type="button" id="toggleMembers_50" class="subMenuOption" value="Show/Hide Members"></span></div><div id="membersWrapper_50" style="display:none; padding-left: 100px;"><div class="writer-row"><span class="writer-name"><a href="../members/profile.php?writerid=340059">Gabriela Santiago</a></span></div><div class="writer-row"><span class="writer-name"><a href="../members/profile.php?writerid=985677"><span style="color: purple;">Marie Vibbert</span></a> (team lead)</span></div><div class="writer-row"><span class="writer-name"><a href="../members/profile.php?writerid=404425">Isabel Yap</a></span></div></div><script type="text/javascript">$(document).ready(function(){$('#toggleMembers_49').click(function(){$('#membersWrapper_49').slideToggle('fast');});});</script><div class="writer-row" style="padding-left: 50px;"><span class="writer-name"><a href="" target="_blank">SD First Class</a>&nbsp;&nbsp;<input type="button" id="toggleMembers_49" class="subMenuOption" value="Show/Hide Members"></span></div><div id="membersWrapper_49" style="display:none; padding-left: 100px;"><div class="writer-row"><span class="writer-name"><a href="../members/profile.php?writerid=543081"><span style="color: purple;">Betsy Mahaffey</span></a> (team lead)</span></div><div class="writer-row"><span class="writer-name"><a href="../members/profile.php?writerid=157797">Jerome Stueart</a></span></div><div class="writer-row"><span class="writer-name"><a href="../members/profile.php?writerid=640811">Justin Whitney</a></span></div></div><!--publicBox2Border-->		</div>
+	</div><!--publicBox2Wrapper-->
+				
+	<div class="generalDivSpacer"></div>
+		
+	<div id="publicBox2Wrapper">
+		<div class="bannerLeft">
+			<p>Eligible for Teams</p>
+		</div>
+		<div id="publicBox2Border">
+			<p class="paraOne">These writers have raised enough money to join a team but are not yet team members. For details about creating or joining teams, visit <a href="../teamstips">Tips for Teams</a>.</p>
+			<p>
+			
+			</p><div class="writerColumn" style="width: 33%"><div class="writer-row" style="padding-left: 50px;"><span class="writer-name"><a href="../members/profile.php?writerid=120476">Richard Leis</a></span></div><!--writer-row--><div class="writer-row" style="padding-left: 50px;"><span class="writer-name"><a href="../members/profile.php?writerid=168163">John McDaid</a></span></div><!--writer-row--><div class="writer-row" style="padding-left: 50px;"><span class="writer-name"><a href="../members/profile.php?writerid=366531">Patrick Coleman</a></span></div><!--writer-row--><div class="writer-row" style="padding-left: 50px;"><span class="writer-name"><a href="../members/profile.php?writerid=441558">Rose Hartley</a></span></div><!--writer-row--><div class="writer-row" style="padding-left: 50px;"><span class="writer-name"><a href="../members/profile.php?writerid=451706">JoLynne Martinez</a></span></div><!--writer-row--><div class="writer-row" style="padding-left: 50px;"><span class="writer-name"><a href="../members/profile.php?writerid=489560">Nathan Hillstrom</a></span></div><!--writer-row--></div><!--writerColumn--><div class="writerColumn" style="width: 33%"><div class="writer-row" style="padding-left: 50px;"><span class="writer-name"><a href="../members/profile.php?writerid=517541">Karen Fowler</a></span></div><!--writer-row--><div class="writer-row" style="padding-left: 50px;"><span class="writer-name"><a href="../members/profile.php?writerid=165767">Stan Robinson</a></span></div><!--writer-row--><div class="writer-row" style="padding-left: 50px;"><span class="writer-name"><a href="../members/profile.php?writerid=293388">Cory Doctorow</a></span></div><!--writer-row--><div class="writer-row" style="padding-left: 50px;"><span class="writer-name"><a href="../members/profile.php?writerid=355940">Jim Shea</a></span></div><!--writer-row--><div class="writer-row" style="padding-left: 50px;"><span class="writer-name"><a href="../members/profile.php?writerid=506949">Eileen Gunn</a></span></div><!--writer-row--><div class="writer-row" style="padding-left: 50px;"><span class="writer-name"><a href="../members/profile.php?writerid=662423">The Clarion Foundation</a></span></div><!--writer-row--></div><!--writerColumn--><div class="writerColumn" style="width: 33%"><div class="writer-row" style="padding-left: 50px;"><span class="writer-name"><a href="../members/profile.php?writerid=671905">Eugene Ramos</a></span></div><!--writer-row--><div class="writer-row" style="padding-left: 50px;"><span class="writer-name"><a href="../members/profile.php?writerid=864046">Melanie Stormm</a></span></div><!--writer-row--><div class="writer-row" style="padding-left: 50px;"><span class="writer-name"><a href="../members/profile.php?writerid=888235">Nancy Etchemendy</a></span></div><!--writer-row--><div class="writer-row" style="padding-left: 50px;"><span class="writer-name"><a href="../members/profile.php?writerid=926188">Daryl Gregory</a></span></div><!--writer-row--></div><!--writerColumn-->		<p></p>
+		<div class="generalDivSpacer"></div>
+		</div><!--publicBox1Border-->
+	</div><!--publicBox1Wrapper-->
+	
+	
+	
+		
+		<div id="publicDonateWrapper">
+		<div id="publicDonateHeader"><a href="profile.php?writerid=662423" class="bannerLink">Donate to Clarion!</a></div><!-- End div publicDonateHeader //-->
+		<div id="publicDonateBorderWrapper">
+			<div id="publicDonateBorder">
+				<div id="publicDonateLeft"><p><a href="https://www.mystgalaxy.com" target="_blank"><img src="../images/db_galaxy.png" alt="Mysterious Galaxy" width="95" height="107"></a><br>Contribute to Clarion.<br>Buy from Mysterious Galaxy,<br>an independent bookseller.</p></div><!-- End div publicDonateLeft //-->
+				<div id="publicDonateCenter"><p><br><br><br>
+				Help us reach our goal of $15,000!				<br>
+				<a href="/members/profile.php?writerid=662423" class="donateButton">Just Donate</a>
+				</p></div><!-- End div publicDonateCenter //-->
+				<div id="publicDonateRight"><p><a href="http://clarion.ucsd.edu/scholarships/" target="_blank"><img src="/images/clarion135x110.jpg" alt="Clarion Named Scholarships" width="135" height="110"></a><br>Support Clarion's<br>named scholarships.</p></div><!-- End div publicDonateRight //-->
+			</div><!-- End div publicDonateBorder //-->
+		</div><!-- End div publicDonateBorderWrapper //-->
+		</div><!-- End div publicDonateWrapper //-->
+		<div id="publicDonateBottom"><img src="../images/main_content_shadow_bottom.png" alt="Clarion" width="1020" height="13"></div><!-- End div publicDonateBottom //-->
+<div id="publicBox34Wrapper">
+		<div class="bannerLeft">
+			<p><a href="../sponsorstips" class="bannerLink">Tips for Sponsors</a></p>
+		</div><!-- End div bannerLeft //-->
+		<div class="bannerRight">
+			<p><a href="login-register-form.php?registeras=writer" class="bannerLink">Sign up to Write</a></p>
+		</div><!-- End div bannerLeft //-->
+		<div id="publicBox3Border">
+			<p class="paraOne"><img src="../images/bi_writer.png" alt="Clarion" width="140" height="138">Sharpen the pencils, keep the coffee hot, and be ready with a word of encouragement.  Learn how to support your favorite Write-a-Thon writers as they strive to reach their goals. <br><br><a href="../sponsorstips/">Tips for Write-a-Thon sponsors</a></p>
+			</div><!-- End div publicBox3Border//-->
+		<div id="publicBox4Border">
+			<p class="paraOne"><img src="../images/bi_typewriter.png" alt="Clarion" width="150" height="134">Register now, set your goals, and line up support.  Bringing in $20 or more qualifies you to participate in a team of 8 writers mentored by a Clarion Workshop instructor or graduate -- completely optional.<br><br><a href="../members/login-register-form.php">Register now!</a><br><a href="../writerstips/">Tips for Write-a-Thon writers</a></p>
+			</div><!-- End div publicBox4Border//-->
+		</div><!-- End div publicBox34Wrapper //-->
+	<div id="publicBox56Wrapper">
+		<div class="bannerLeft">
+			<p><a href="login-register-form.php?registeras=writer" class="bannerLink">Writers Log In</a></p>
+		</div><!-- End div bannerLeft //-->
+		<div class="bannerRight">
+			<p><a href="login-register-form.php?registeras=writer" class="bannerLink">Visit your Profile</a></p>
+		</div><!-- End div bannerLeft //-->
+		<div id="publicBox5Border">
+			<div id="publicBox5Image"><img src="../images/bi_quill.png" width="172" height="300" alt="Log In"></div><!-- End div publicBox5Image //-->
+			<p class="paraOne">Already signed up?<br><br><a href="login-register-form.php?registeras=writer">Write-a-Thon writers log in here</a></p>
+			</div><!-- End div publicBox5Border//-->
+		<div id="publicBox6Border">
+			<p class="paraOne"><img src="../images/bi_clipboard.png" width="151" height="160" alt="Log In">Write-a-Thon writers, update your progress bar, see who's supporting you, and keep your official Write-a-Thon page current with new publications and recent excerpts.<br><br><a href="login-register-form.php?registeras=writer">View your writer profile</a></p>
+			</div><!-- End div publicBox6Border//-->
+		</div><!-- End div publicBox56Wrapper //-->
+		<div id="footerWrapper">
+		<br><br>
+		<ul>
+			<li>-</li>
+			<li><a href="https://www.theclarionfoundation.org">clarion foundation home</a></li>
+			<li>-</li>
+			<li><a href="https://www.theclarionfoundation.org/faq.htm" target="_blank">about</a></li>
+			<li>-</li>
+			<li><a href="https://www.theclarionfoundation.org/news.htm" target="_blank">news</a></li>
+			<li>-</li>
+			<li><a href="https://www.theclarionfoundation.org/contact.htm" target="_blank">contact us</a></li>
+			<li>-</li>
+		</ul>
+		<p>Copyright © 2006-2022 by the Clarion Foundation</p>
+	</div><!-- End div footerWrapper //-->	
+
+
+</body></html>

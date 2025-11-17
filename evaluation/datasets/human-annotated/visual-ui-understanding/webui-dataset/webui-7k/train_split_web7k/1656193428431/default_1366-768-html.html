@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Heredox</title>
+<link rel="stylesheet" href="css/main.css">
+<link rel="shortcut icon" href="favicon.ico">
+<script type="text/javascript" async="" src="http://www.google-analytics.com/ga.js"></script><script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/bgscroll.js"></script>
+<script type="text/javascript">
+	var scrollSpeed = 70;
+	var current = 0;
+	var direction = 'h';
+
+	function bgscroll(){
+	    current -= 1;
+	    $('div.clouds').css("backgroundPosition", (direction == 'h') ? current+"px 0" : "0 " + current+"px");
+	}
+	 setInterval("bgscroll()", scrollSpeed);	
+	
+</script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-35013407-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+<script type="text/javascript">
+	// This version waits until the window#load event
+(function($) {
+	
+	  $(window).load(function() {
+		$('#wrap').fadeIn(2000);
+	  });
+	})(jQuery);
+</script>
+<style type="text/css">
+#wrap {
+		display: none;
+	}
+</style>
+<noscript>
+<style type="text/css">
+#wrap {
+		display: block;
+	}
+</style>
+</noscript>
+</head>
+
+<body>
+<div id="page">
+	<div id="wrap" style="display: block;">
+        <div class="clouds" style="background-position: -427px 0px;">
+        </div>	
+        <div class="mask">
+        </div>   
+        <div class="tower">
+        </div>
+        <div class="window1">
+        </div>
+        <div class="window2">
+        </div>
+        <div class="title" onclick="heredox">
+        </div>
+        <div id="table"></div>
+        <div id="animation">
+        	<div id="playarea">
+            	<div id="watch">how do I play?</div>
+                <div id="stack01"></div>
+                <div id="tile01"></div>
+                <div id="tile02"></div>
+                <div id="tilerotate" class="tilebr"></div>
+                <div id="tile03"></div>
+                <div id="lasttile"></div>
+                <div id="cross"></div>
+                <div id="descrip1">Players take turns placing tiles.</div>
+                <div id="descrip2">Each new tile must be placed adjacent to another tile.</div>
+                <div id="descrip3">The tiles must be laid in a four by four square.</div>
+                <div id="descrip4">The winner is the player with the most complete copies of their symbol.</div>
+                <div id="descrip5">Veridican victory!</div>
+            	<div id="p1sel"></div>
+                <div id="p1"></div>
+                <div id="p2sel"></div>
+                <div id="p2"></div>
+                <div id="board"></div>
+                <div id="black"></div>
+                <div id="white"></div>
+				<div id="blacktally"></div>
+                <div id="whitetally"></div>
+                <div id="whitetallysel"></div>
+				<div id="blacktallysel"></div>
+                <div id="rewatch">one more time</div>
+                <div id="next1">go on...</div>
+                <div id="next2">then what?</div>
+                <div id="next3">and then...?</div>
+            </div>
+            <div id="buttonholder">
+            	<a href="http://mydgs.co/v6wPXk" target="_blank">
+                	<div id="dl">
+                    </div>
+                </a> 
+                <a href="http://itunes.apple.com/us/app/heredox/id555104623?mt=8" target="_blank">
+                    <div id="app">
+                    </div>
+                </a>
+                <br class="clear">
+                <div id="mid">
+                To discover the world of Heredox<br>
+                seek out the Clockwork Quartet...</div>
+                <a href="http://clockworkquartet.com" target="_blank">
+                    <div id="steamdrone">
+                    </div>
+                </a>  
+            </div>
+        </div>
+    </div>
+</div>    
+
+
+<script type="text/javascript">
+	
+	$('#watch').click(function() {
+		$('body,html').animate({
+				scrollTop: 750
+			}, 400);
+		$(this).fadeOut(400);
+		$('#descrip1').delay(1000).fadeIn(800).delay(7600).fadeOut(400);
+		$('#p1sel').delay(2400).fadeIn(400).delay(2400).fadeOut(400);
+		$('#tile01').delay(3200).animate({marginLeft:"-348px",marginTop:"133px"}, 1000);	
+		$('#p2sel').delay(6400).fadeIn(400).delay(2600).fadeOut(400);
+		$('#tile02').delay(7200).animate({marginLeft:"-264px",marginTop:"129px"}, 1000);
+		$('#next1').delay(10600).fadeIn(800);
+	});
+	$('#next1').click(function() {
+		$('#next1').fadeOut(400);
+		$('#p1sel').delay(2400).fadeIn(800).delay(4800).fadeOut(400);
+		$('#descrip2').delay(1200).fadeIn(800).delay(6000).fadeOut(400);
+		$('#tilerotate').delay(3000).queue(function(next){
+         			$(this).addClass('tiledr');
+         			next();
+    			}).delay(800).queue(function(next){
+         			$(this).hide();
+					$(this).removeClass('tiledr');
+         			next();
+			});
+		$('#tile03').delay(3800).animate({marginLeft:"-424px",marginTop:"46px"}, 1400).delay(1800).animate({marginLeft:"-344px"}, 1000);
+		$('#cross').delay(5500).fadeIn(200).delay(600).fadeOut(200);
+		$('#next2').delay(8400).fadeIn(800);
+	});
+	$('#next2').click(function() {
+		$('#next2').fadeOut(400);		
+		$('#descrip3').delay(1200).fadeIn(800).delay(4600).fadeOut(400);
+		$('#p2sel').delay(2400).fadeIn(800).delay(3400).fadeOut(400);
+		$('#board').delay(3400).fadeIn(1000);
+		$('#stack01').delay(3400).fadeOut(800);
+		$('#lasttile').delay(3400).fadeIn(400).delay(1000).animate({marginLeft:"-186px",marginTop:"251px"}, 1000);
+		$('#next3').delay(7000).fadeIn(800);
+	});
+	$('#next3').click(function() {
+		$('#next3').fadeOut(400);			
+		$('#descrip4').delay(1200).fadeIn(800).delay(12000).fadeOut(800);
+		$('#p1sel').delay(4000).fadeIn(800).delay(4000).fadeOut(400);
+		$('#white').delay(5000).fadeIn(800).delay(3000).fadeOut(800);
+		$('#whitetally').delay(6900).fadeIn(800);
+		$('#whitetallysel').delay(6900).fadeIn(800).fadeOut(400);
+		$('#p2sel').delay(10000).fadeIn(800).delay(7400).fadeOut(800);
+		$('#black').delay(11000).fadeIn(800).delay(3400).fadeOut(800);
+		$('#blacktally').delay(12300).fadeIn(800);
+		$('#blacktallysel').delay(12300).fadeIn(800).fadeOut(400);
+		$('#descrip5').delay(15000).fadeIn(800).delay(3000).fadeOut(800);
+		$('#rewatch').delay(20000).fadeIn(800).click(function() {
+			$(this).fadeOut(400);
+			$('#descrip1,#descrip2,#descrip3,#descrip4,#descrip5,#p1sel,#p2sel,#tile01,#tile02,#tilerotate,#tile03,#lasttile,#cross,#stack01,#board,#white,#whitetally,#whitetallysel,#black,#blacktally,#blacktallysel,#rewatch').delay(400).removeAttr('style');
+			$('#watch').delay(800).trigger(event);
+			});
+	});
+
+</script>    
+
+
+</body></html>

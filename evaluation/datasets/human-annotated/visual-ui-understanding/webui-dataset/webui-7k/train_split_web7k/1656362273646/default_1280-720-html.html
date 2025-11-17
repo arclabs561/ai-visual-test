@@ -1,0 +1,172 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="utf-8">
+
+  
+    <meta name="description" content="Using abstraction through Rust’s Read and Write traits, we can swap the input and output for byte arrays and vectors during testing instead of capturing stdout.">
+  
+
+  
+    <meta name="author" content="Jeff Kreeftmeijer">
+  
+
+    <title>Testing input and output in Rust command-line applications</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+    <meta name="description" content="Jeff Kreeftmeijer writes (about) software. Elixir &amp; Ruby at AppSignal in Amsterdam.">
+    <meta name="author" content="Jeff Kreeftmeijer">
+    <link rel="alternate" type="application/atom+xml" href="/feed.xml">
+    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgo=">
+
+    <link rel="canonical" href="https://jeffkreeftmeijer.com/rust-stdin-stdout-testing/">
+
+
+    <style>body{font:22px/1.6 system-ui,sans-serif;margin:auto;max-width:35em;padding:0 1em}img,video{max-width:100%;height:auto}@media (max-width:1140px){body{font-size:20px}}@media (max-width:740px){body{font-size:18px}}@media (max-width:466px){body{font-size:16px}}code,kbd,pre{font-family:ui-monospace,Monaco,monospace}pre{background-color:#f8f8ff;font-size:75%;overflow:auto;padding:1em;white-space:pre-wrap}table{border-collapse:collapse;width:100%}td,th{padding:.5em;border:1px solid}figure{margin:0}.byline,.small,figcaption{font-size:smaller}figcaption{margin:1em 0}.listing-block figcaption{margin-bottom:-.5em}dt{font-weight:600}dd{margin-bottom:1em}.image-block img{display:block;margin:auto}.admonition-block,.sidebar{border:1px outset;padding-left:1em;padding-right:1em;margin:1em 0}.admonition-block h6{font-size:1em;margin:1em 0}.warning{background-color:ivory}.caution,.important{background-color:#fff0f5}.note,.tip{background-color:#f0f8ff}.warning h6:before{content:"⚠️ "}.tip h6:before{content:"💡 "}.note h6:before{content:"ℹ️ "}.white{color:#fff}.footnote-ref{font-size:small;vertical-align:super}nav{display:flex;flex-wrap:wrap;justify-content:space-between;margin:1em 0;gap:1em}</style>
+
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@jkreeftmeijer">
+    <meta name="twitter:creator" content="@jkreeftmeijer">
+    <meta name="twitter:title" content="Testing input and output in Rust command-line applications">
+    <meta name="twitter:description" content="Using abstraction through Rust’s Read and Write traits, we can swap the input and output for byte arrays and vectors during testing instead of capturing stdout.">
+    <meta name="twitter:image" content="https://jeffkreeftmeijer.com/rust-stdin-stdout-testing/streams-dark-twitter.png">
+
+
+    <script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": "Article",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://jeffkreeftmeijer.com/rust-stdin-stdout-testing/"
+      },
+      "headline": "Testing input and output in Rust command-line applications",
+      "image": ["https://jeffkreeftmeijer.com/rust-stdin-stdout-testing/streams-dark-twitter.png"],
+      "datePublished": "2021-06-29",
+      "dateModified": "2021-07-01",
+      "author": {
+        "@type": "Person",
+        "name": "Jeff Kreeftmeijer"
+      },
+      "description": "Using abstraction through Rust’s Read and Write traits, we can swap the input and output for byte arrays and vectors during testing instead of capturing stdout.",
+      "publisher": {
+        "@type": "Organization",
+        "name": "jeffkreeftmeijer.com",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://jeffkreeftmeijer.com/logo.png"
+        }
+      }
+    }
+    </script>
+
+  </head>
+  <body>
+
+    <h1>Testing input and output in Rust command-line applications</h1>
+    <p class="byline">
+    By <a href="/" rel="author">Jeff Kreeftmeijer</a> on <time datetime="2021-06-29">2021-06-29, last updated on <time datetime="2021-07-01">2021-07-01</time>
+
+    </time></p>
+
+
+<section id="preamble" aria-label="Preamble"><p>Working with complex input and output can make command line applications challenging to test, as it is inconvenient to capture the output stream to test if the program returns the correct output. Using abstraction through Rust’s <code>Read</code> and <code>Write</code> traits, we can swap the input and output for byte arrays and vectors during testing instead.</p>
+<div class="image-block"><img src="streams-dark.png" alt="3018" width="1364"></div></section>
+<section class="doc-section level-1"><h2 id="_standard_streams">Standard Streams</h2><p><em>Standard streams</em> are abstractions used to handle data input and output to an operating system process.
+Each program has access to an input stream (<em>standard input</em>, or <em>stdin</em>), an output stream (<em>standard output</em>, or <em>stdout</em>), and an error stream (<em>standard error</em>, or <em>stderr</em>) inherited from the parent process.</p>
+<p>For example, <code>grep(1)</code> filters lines read from stdin with a search pattern (“three” in this case) and prints the matching lines to stdout.
+After starting, <code>grep</code> halts to wait for input from stdin.
+By typing this input into the terminal, we can see that <code>grep</code> prints any line that matches the pattern back to stdout, which the terminal displays.
+Then, the program returns to waiting for input until it receives an <em>EOF</em> (<em>end-of-file</em>), which we pass by pressing <kbd class="key">ctrl</kbd>+<kbd class="key">D</kbd> in the terminal.</p>
+<div class="listing-block"><pre>$ grep three
+one
+two
+three
+<em>three</em></pre></div>
+<p>Because of this abstraction, programs can use <em>pipelines</em> to pass the output from one program as the input to another by piping stdout from one process to stdin for another.</p>
+<div class="listing-block"><pre>$ ls -l ~/pager | grep Cargo
+<em>Cargo.lock</em>
+<em>Cargo.toml</em></pre></div>
+<p>Here, <code>ls(1)</code> prints the current directory’s contents to stdout.
+This example uses a <em>pipe</em> (<code>|</code>) to create a pipeline, to pass the output from <code>ls</code> as input to <code>grep</code>.
+<code>grep</code> then filters to only print lines matching the passed pattern (“Cargo”).</p></section>
+<section class="doc-section level-1"><h2 id="_stdin_stdout_and_stderr_in_rust"><code>Stdin</code>, <code>Stdout</code> and <code>Stderr</code> in Rust</h2><p>Rust provides handles to the standard streams through the <a href="https://doc.rust-lang.org/std/io/struct.Stdin.html"><code>Stdin</code></a>, <a href="https://doc.rust-lang.org/std/io/struct.Stdout.html"><code>Stdout</code></a> and <a href="https://doc.rust-lang.org/std/io/struct.Stderr.html"><code>Stderr</code></a> structs, which are created with the <a href="https://doc.rust-lang.org/std/io/fn.stdin.html"><code>io::stdin()</code></a>, <a href="https://doc.rust-lang.org/std/io/fn.stdout.html"><code>io::stdout()</code></a> and <a href="https://doc.rust-lang.org/std/io/fn.stderr.html"><code>io::stderr()</code></a> functions respectively.</p>
+<p id="upcase">This program takes input through stdin, converts the received string to uppercase and prints it back out to the terminal through stdout:</p>
+<figure class="listing-block"><figcaption><code>src/main.rs</code></figcaption>
+<pre class="highlight"><code class="language-rust" data-lang="rust">use std::io;
+use std::io::{Read, Write};
+
+fn main() -&gt; io::Result&lt;()&gt; {
+    let mut buffer = "".to_string();
+
+    io::stdin().read_to_string(&amp;mut buffer)?;
+    io::stdout().write_all(buffer.to_uppercase().as_bytes())?;
+
+    Ok(())
+}</code></pre></figure>
+<p>The stream handlers implement the <a href="https://doc.rust-lang.org/std/io/trait.Read.html"><code>Read</code></a> and <a href="https://doc.rust-lang.org/std/io/trait.Write.html"><code>Write</code></a> traits to read from and write to the streams. Because of that, they share part of their implementation with other “Readers” and “Writers”, like <a href="https://doc.rust-lang.org/std/fs/struct.File.html"><code>File</code></a>.</p></section>
+<section class="doc-section level-1"><h2 id="_abstraction_using_the_read_and_write_traits">Abstraction using the <code>Read</code> and <code>Write</code> traits</h2><p>One of the issues<a class="footnote-ref" id="_footnoteref_1" href="#_footnote_1" title="View footnote 1" role="doc-noteref">[1]</a> in the <a href="#upcase">example</a> above is that it uses the <code>Stdout</code> and <code>Stdin</code> structs directly, making our program challenging to test because it is inconvenient to pass input through stdin and capture stdout to assert that the program produces the correct results.</p>
+<p>To make our program more modular, we will decouple it from the <code>Stdin</code> and <code>Stdout</code> structs and pass the input and output as arguments to a separate function.
+This approach is called <em>dependency injection</em>, as it injects a function’s dependencies (the input and output streams) instead of creating them inside the function in order to make the program independent of the input device.</p>
+<p>In the test for the extracted function, we swap <code>Stdin</code> and <code>Stdout</code> out for other implementors of the <code>Read</code> and <code>Write</code> traits: a byte array for input and a vector for output.</p>
+<figure class="listing-block"><figcaption><code>src/lib.rs</code></figcaption>
+<pre class="highlight"><code class="language-rust" data-lang="rust">#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn writes_upcased_input_to_output() {
+        let mut output: Vec&lt;u8&gt; = Vec::new();
+
+        upcase(&amp;mut "Hello, world!\n".as_bytes(), &amp;mut output).unwrap();
+        assert_eq!(&amp;output, b"HELLO, WORLD!\n");
+    }
+}</code></pre></figure>
+<p>The implementation that satisfies the test looks like the <a href="#upcase">original example</a>, with one significant difference.
+Because the test passes the input and output as arguments, we can use trait objects to allow any type as long as it implements the <code>Read</code> and <code>Write</code> traits:</p>
+<figure class="listing-block"><figcaption><code>src/lib.rs</code></figcaption>
+<pre class="highlight"><code class="language-rust" data-lang="rust">use std::io::{Error, Read, Write};
+
+pub fn upcase(
+    input: &amp;mut impl Read,
+    output: &amp;mut impl Write,
+) -&gt; Result&lt;(), Error&gt; {
+    let mut buffer = "".to_string();
+
+    input.read_to_string(&amp;mut buffer)?;
+    output.write_all(buffer.to_uppercase().as_bytes())?;
+
+    Ok(())
+}</code></pre></figure>
+<p>Finally, we replace the prototype in <code>src/main.rs</code> with a call to our new implementation with a <code>Stdin</code> and <code>Stdout</code> struct for the input and output:</p>
+<figure class="listing-block"><figcaption><code>src/main.rs</code></figcaption>
+<pre class="highlight"><code>use std::io;
+
+fn main() -&gt; io::Result&lt;()&gt; {
+    upcase::upcase(&amp;mut io::stdin(), &amp;mut io::stdout())
+}</code></pre></figure>
+<p>By abstracting <code>Stdin</code> and <code>Stdout</code> out of the implementation, we made our program more modular, allowing us to test the code without resorting to capturing stdout to assert that the printed result matched our expectations.</p>
+<p>Aside from better testability, making our implementation more modular will allow us to work with other data types in the future.
+For example, we might add a command-line option that takes a filename and pass a <code>File</code> to <code>upcase()</code>.
+Since <code>File</code> also implements the <code>Read</code> trait, that would work without further modifications in our implementation.</p></section>
+
+
+    <div id="footnotes">
+      <hr>
+      
+        <div class="footnote" id="_footnote_1">
+          <a href="#_footnoteref_1">1</a>. Another issue with this example is that it uses <a href="https://doc.rust-lang.org/std/io/trait.Read.html#method.read_to_string"><code>Read::read_to_string()</code></a>, which will read the contents of the whole stream from the input before writing everything to stdout at once, which is inefficient, especially for larger inputs. A more efficient implementation could use buffered reading through the <code>BufRead</code> trait to read and write the input stream line by line.
+        </div>
+      
+    </div>
+
+
+    <hr>
+    <nav>
+      <a rel="author" href="/">Jeff Kreeftmeijer</a>
+      <a rel="nofollow" href="mailto:jeffkreeftmeijer@gmail.com">E-mail</a>
+      <a rel="me" href="https://twitter.com/jkreeftmeijer">Twitter</a>
+      <a rel="me" href="https://mastodon.social/@jkreeftmeijer">Mastodon</a>
+      <a rel="me" href="https://github.com/jeffkreeftmeijer">Github</a>
+      <a href="/feed.xml">RSS</a>
+    </nav>
+  
+</body></html>

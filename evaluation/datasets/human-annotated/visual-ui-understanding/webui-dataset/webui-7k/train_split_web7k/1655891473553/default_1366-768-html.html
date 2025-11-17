@@ -1,0 +1,1246 @@
+<!DOCTYPE html><html lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no, user-scalable=no">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://securepubads.g.doubleclick.net">
+<link rel="canonical" href="https://eepower.com/technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work/">
+<meta property="og:url" content="https://eepower.com/technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work/">
+<meta property="og:title" content="What Is a DC-DC Converter and How Does It Work? - Technical Articles">
+<meta property="og:image" content="https://eepower.com/uploads/thumbnails/Screen_Shot_2022-06-13_at_1.15.47_PM_.png">
+<meta name="thumbnail" content="https://eepower.com/uploads/thumbnails/Screen_Shot_2022-06-13_at_1.15.47_PM_.png">
+<meta property="og:type" content="article">
+<meta property="og:description" content="Learn the basics of what DC/DC converters are and how they work.">
+<meta name="description" content="Learn the basics of what DC/DC converters are and how they work.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@eepwr">
+<link href="https://fonts.googleapis.com/css?family=IBM+Plex+Serif:400,700|Arvo:400,700|PT+Sans:400,700&amp;display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css">
+
+<link rel="stylesheet" href="/css/jquery-ui.min.css">
+<link href="/css/code.css" rel="stylesheet" type="text/css" media="screen">
+<link href="/css/app.css?v=125" rel="stylesheet" type="text/css" media="screen">
+<link rel="stylesheet" media="print" href="/css/print.css">
+<link rel="icon" href="/images/favicon.ico">
+<title>What Is a DC-DC Converter and How Does It Work? - Technical Articles</title>
+<link rel="alternate" type="application/rss+xml" title="EE Power Forum RSS Feed" href="//eepower.com/forums/forums/-/index.rss">
+<link rel="alternate" type="application/rss+xml" title="EE Power RSS Feed" href="//eepower.com/rss/">
+
+<script type="text/javascript" async="" src="https://www.google-analytics.com/gtm/js?id=GTM-MDN63VF&amp;cid=1114090064.1655891478"></script><script async="" src="https://data.eetech.com/eetech.js?t=1655942400000"></script><script type="text/javascript" async="" src="https://snap.licdn.com/li.lms-analytics/insight.min.js"></script><script src="https://connect.facebook.net/signals/config/931255253719749?v=2.9.62&amp;r=stable" async=""></script><script async="" src="https://connect.facebook.net/en_US/fbevents.js"></script><script async="" src="//www.google-analytics.com/analytics.js"></script><script type="text/javascript">
+    var ad_categories = ['power','power-converters','industrial'];
+    
+        var pixel_categories = [{"Product":{"Power":[],"Power Converters":[]}},{"Applications":{"Industrial":[]}}];
+    
+  </script>
+
+<script type="text/javascript">
+        var articleAuthor = "Anushree  Ramanath";
+    </script>
+
+<script type="text/javascript">
+        var articlePublishDate = "2022-06-21T12:00:00-06:00";
+    </script>
+
+<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.3/cookieconsent.min.css">
+<script async="" src="/cdn-cgi/challenge-platform/h/g/scripts/invisible.js?ts=1655884800"></script><meta http-equiv="origin-trial" content="AzoawhTRDevLR66Y6MROu167EDncFPBvcKOaQispTo9ouEt5LvcBjnRFqiAByRT+2cDHG1Yj4dXwpLeIhc98/gIAAACFeyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjYxMjk5MTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A6+nc62kbJgC46ypOwRsNW6RkDn2x7tgRh0wp7jb3DtFF7oEhu1hhm4rdZHZ6zXvnKZLlYcBlQUImC4d3kKihAcAAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjYxMjk5MTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A/9La288e7MDEU2ifusFnMg1C2Ij6uoa/Z/ylwJIXSsWfK37oESIPbxbt4IU86OGqDEPnNVruUiMjfKo65H/CQwAAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXRhZ3NlcnZpY2VzLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjYxMjk5MTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><link rel="preload" href="https://adservice.google.com/adsid/integrator.js?domain=eepower.com" as="script"><script type="text/javascript" src="https://adservice.google.com/adsid/integrator.js?domain=eepower.com"></script><style type="text/css">.MathJax_Hover_Frame {border-radius: .25em; -webkit-border-radius: .25em; -moz-border-radius: .25em; -khtml-border-radius: .25em; box-shadow: 0px 0px 15px #83A; -webkit-box-shadow: 0px 0px 15px #83A; -moz-box-shadow: 0px 0px 15px #83A; -khtml-box-shadow: 0px 0px 15px #83A; border: 1px solid #A6D ! important; display: inline-block; position: absolute}
+.MathJax_Menu_Button .MathJax_Hover_Arrow {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; -khtml-border-radius: 4px; font-family: 'Courier New',Courier; font-size: 9px; color: #F0F0F0}
+.MathJax_Menu_Button .MathJax_Hover_Arrow span {display: block; background-color: #AAA; border: 1px solid; border-radius: 3px; line-height: 0; padding: 4px}
+.MathJax_Hover_Arrow:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_Hover_Arrow:hover span {background-color: #CCC!important}
+</style><style type="text/css">#MathJax_About {position: fixed; left: 50%; width: auto; text-align: center; border: 3px outset; padding: 1em 2em; background-color: #DDDDDD; color: black; cursor: default; font-family: message-box; font-size: 120%; font-style: normal; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 15px; -webkit-border-radius: 15px; -moz-border-radius: 15px; -khtml-border-radius: 15px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_About.MathJax_MousePost {outline: none}
+.MathJax_Menu {position: absolute; background-color: white; color: black; width: auto; padding: 5px 0px; border: 1px solid #CCCCCC; margin: 0; cursor: default; font: menu; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 5px; -webkit-border-radius: 5px; -moz-border-radius: 5px; -khtml-border-radius: 5px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+.MathJax_MenuItem {padding: 1px 2em; background: transparent}
+.MathJax_MenuArrow {position: absolute; right: .5em; padding-top: .25em; color: #666666; font-size: .75em}
+.MathJax_MenuActive .MathJax_MenuArrow {color: white}
+.MathJax_MenuArrow.RTL {left: .5em; right: auto}
+.MathJax_MenuCheck {position: absolute; left: .7em}
+.MathJax_MenuCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuRadioCheck {position: absolute; left: .7em}
+.MathJax_MenuRadioCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuLabel {padding: 1px 2em 3px 1.33em; font-style: italic}
+.MathJax_MenuRule {border-top: 1px solid #DDDDDD; margin: 4px 3px}
+.MathJax_MenuDisabled {color: GrayText}
+.MathJax_MenuActive {background-color: #606872; color: white}
+.MathJax_MenuDisabled:focus, .MathJax_MenuLabel:focus {background-color: #E8E8E8}
+.MathJax_ContextMenu:focus {outline: none}
+.MathJax_ContextMenu .MathJax_MenuItem:focus {outline: none}
+#MathJax_AboutClose {top: .2em; right: .2em}
+.MathJax_Menu .MathJax_MenuClose {top: -10px; left: -10px}
+.MathJax_MenuClose {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; font-family: 'Courier New',Courier; font-size: 24px; color: #F0F0F0}
+.MathJax_MenuClose span {display: block; background-color: #AAA; border: 1.5px solid; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; line-height: 0; padding: 8px 0 6px}
+.MathJax_MenuClose:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_MenuClose:hover span {background-color: #CCC!important}
+.MathJax_MenuClose:hover:focus {outline: none}
+</style><style type="text/css">.MathJax_Preview .MJXf-math {color: inherit!important}
+</style><style type="text/css">.MJX_Assistive_MathML {position: absolute!important; top: 0; left: 0; clip: rect(1px, 1px, 1px, 1px); padding: 1px 0 0 0!important; border: 0!important; height: 1px!important; width: 1px!important; overflow: hidden!important; display: block!important; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none}
+.MJX_Assistive_MathML.MJX_Assistive_MathML_Block {width: 100%!important}
+</style><style type="text/css">#MathJax_Zoom {position: absolute; background-color: #F0F0F0; overflow: auto; display: block; z-index: 301; padding: .5em; border: 1px solid black; margin: 0; font-weight: normal; font-style: normal; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; -webkit-box-sizing: content-box; -moz-box-sizing: content-box; box-sizing: content-box; box-shadow: 5px 5px 15px #AAAAAA; -webkit-box-shadow: 5px 5px 15px #AAAAAA; -moz-box-shadow: 5px 5px 15px #AAAAAA; -khtml-box-shadow: 5px 5px 15px #AAAAAA; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_ZoomOverlay {position: absolute; left: 0; top: 0; z-index: 300; display: inline-block; width: 100%; height: 100%; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+#MathJax_ZoomFrame {position: relative; display: inline-block; height: 0; width: 0}
+#MathJax_ZoomEventTrap {position: absolute; left: 0; top: 0; z-index: 302; display: inline-block; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+</style><style type="text/css">.MathJax_Preview {color: #888; display: contents}
+#MathJax_Message {position: fixed; left: 1px; bottom: 2px; background-color: #E6E6E6; border: 1px solid #959595; margin: 0px; padding: 2px 8px; z-index: 102; color: black; font-size: 80%; width: auto; white-space: nowrap}
+#MathJax_MSIE_Frame {position: absolute; top: 0; left: 0; width: 0px; z-index: 101; border: 0px; margin: 0px; padding: 0px}
+.MathJax_Error {color: #CC0000; font-style: italic}
+</style><style type="text/css">.MJXp-script {font-size: .8em}
+.MJXp-right {-webkit-transform-origin: right; -moz-transform-origin: right; -ms-transform-origin: right; -o-transform-origin: right; transform-origin: right}
+.MJXp-bold {font-weight: bold}
+.MJXp-italic {font-style: italic}
+.MJXp-scr {font-family: MathJax_Script,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-frak {font-family: MathJax_Fraktur,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-sf {font-family: MathJax_SansSerif,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-cal {font-family: MathJax_Caligraphic,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-mono {font-family: MathJax_Typewriter,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-largeop {font-size: 150%}
+.MJXp-largeop.MJXp-int {vertical-align: -.2em}
+.MJXp-math {display: inline-block; line-height: 1.2; text-indent: 0; font-family: 'Times New Roman',Times,STIXGeneral,serif; white-space: nowrap; border-collapse: collapse}
+.MJXp-display {display: block; text-align: center; margin: 1em 0}
+.MJXp-math span {display: inline-block}
+.MJXp-box {display: block!important; text-align: center}
+.MJXp-box:after {content: " "}
+.MJXp-rule {display: block!important; margin-top: .1em}
+.MJXp-char {display: block!important}
+.MJXp-mo {margin: 0 .15em}
+.MJXp-mfrac {margin: 0 .125em; vertical-align: .25em}
+.MJXp-denom {display: inline-table!important; width: 100%}
+.MJXp-denom > * {display: table-row!important}
+.MJXp-surd {vertical-align: top}
+.MJXp-surd > * {display: block!important}
+.MJXp-script-box > *  {display: table!important; height: 50%}
+.MJXp-script-box > * > * {display: table-cell!important; vertical-align: top}
+.MJXp-script-box > *:last-child > * {vertical-align: bottom}
+.MJXp-script-box > * > * > * {display: block!important}
+.MJXp-mphantom {visibility: hidden}
+.MJXp-munderover, .MJXp-munder {display: inline-table!important}
+.MJXp-over {display: inline-block!important; text-align: center}
+.MJXp-over > * {display: block!important}
+.MJXp-munderover > *, .MJXp-munder > * {display: table-row!important}
+.MJXp-mtable {vertical-align: .25em; margin: 0 .125em}
+.MJXp-mtable > * {display: inline-table!important; vertical-align: middle}
+.MJXp-mtr {display: table-row!important}
+.MJXp-mtd {display: table-cell!important; text-align: center; padding: .5em 0 0 .5em}
+.MJXp-mtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-mlabeledtr {display: table-row!important}
+.MJXp-mlabeledtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mlabeledtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-merror {background-color: #FFFF88; color: #CC0000; border: 1px solid #CC0000; padding: 1px 3px; font-style: normal; font-size: 90%}
+.MJXp-scale0 {-webkit-transform: scaleX(.0); -moz-transform: scaleX(.0); -ms-transform: scaleX(.0); -o-transform: scaleX(.0); transform: scaleX(.0)}
+.MJXp-scale1 {-webkit-transform: scaleX(.1); -moz-transform: scaleX(.1); -ms-transform: scaleX(.1); -o-transform: scaleX(.1); transform: scaleX(.1)}
+.MJXp-scale2 {-webkit-transform: scaleX(.2); -moz-transform: scaleX(.2); -ms-transform: scaleX(.2); -o-transform: scaleX(.2); transform: scaleX(.2)}
+.MJXp-scale3 {-webkit-transform: scaleX(.3); -moz-transform: scaleX(.3); -ms-transform: scaleX(.3); -o-transform: scaleX(.3); transform: scaleX(.3)}
+.MJXp-scale4 {-webkit-transform: scaleX(.4); -moz-transform: scaleX(.4); -ms-transform: scaleX(.4); -o-transform: scaleX(.4); transform: scaleX(.4)}
+.MJXp-scale5 {-webkit-transform: scaleX(.5); -moz-transform: scaleX(.5); -ms-transform: scaleX(.5); -o-transform: scaleX(.5); transform: scaleX(.5)}
+.MJXp-scale6 {-webkit-transform: scaleX(.6); -moz-transform: scaleX(.6); -ms-transform: scaleX(.6); -o-transform: scaleX(.6); transform: scaleX(.6)}
+.MJXp-scale7 {-webkit-transform: scaleX(.7); -moz-transform: scaleX(.7); -ms-transform: scaleX(.7); -o-transform: scaleX(.7); transform: scaleX(.7)}
+.MJXp-scale8 {-webkit-transform: scaleX(.8); -moz-transform: scaleX(.8); -ms-transform: scaleX(.8); -o-transform: scaleX(.8); transform: scaleX(.8)}
+.MJXp-scale9 {-webkit-transform: scaleX(.9); -moz-transform: scaleX(.9); -ms-transform: scaleX(.9); -o-transform: scaleX(.9); transform: scaleX(.9)}
+.MathJax_PHTML .noError {vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}
+</style></head>
+<body><div id="MathJax_Message" style="display: none;"></div><div id="my_popup" class="fixed h-full top-0 left-0 bottom-0 right-0 bg-overlay z-999 text-white py-12 px-20 no-print"> <div class="w-full"><div class="flex flex-wrap mb-12 px-4"><div class="w-full lg:my-3 lg:px-3 lg:w-1/2"> <img src="/images/site/Logo-white.png" alt="EEPower.com" class="w-60"> </div><a href="#" class="w-full uppercase lg:my-3 lg:px-3 lg:w-1/2 text-right my_popup_close continue-site font-vollkorn text-7xl font-bold cursor-pointer text-white hover:text-red-600 underline"> Continue to site</a></div><div class="flex"><div class="hidden xl:inline-block w-auto text-8xl text-white"> <div class="uppercase font-bold leading-none font-martel text-60px mb-7 px-16"> <span class="text-gray-400-darkest block text-left whitespace-no-wrap">QUOTE OF</span> <span class="text-gray-400-darker block text-right whitespace-no-wrap">THE DAY</span> </div><div class="font-karla leading-tight mb-3 text-left flex pr-20"> <div class="text-10xl text-gray-400-darker">“</div> <div class="pt-4 text-6xl"><span id="welcomequote">As in real life, complex engineering designs demand a pragmatic approach.</span><span>”</span></div> </div><div class="italic font-open-sans text-9xl text-right pr-20"> - <span id="welcomeauthor">Haresh Sippy</span></div> </div><div class="w-full xl:mw-1/2 flex items-center justify-center"> <div id="div-gpt-ad-1430160889889-0" class="w-640px" data-google-query-id="CNiI5rrkwPgCFXgB-QAdopUOkg"><div id="google_ads_iframe_/62616433/EEPower_Welcome_Ad_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/62616433/EEPower_Welcome_Ad_0" name="google_ads_iframe_/62616433/EEPower_Welcome_Ad_0" title="3rd party ad content" width="640" height="480" scrolling="no" marginwidth="0" marginheight="0" frameborder="0" role="region" aria-label="Advertisement" tabindex="0" srcdoc="" data-google-container-id="1" style="border: 0px; vertical-align: bottom;" data-load-complete="true"></iframe></div></div> </div></div></div></div>
+
+<div id="aboveScrollMenu" class="w-full bg-black-100 no-print">
+<ul class="container mx-auto relative z-40 clearfix hidden lg:flex lg:block">
+<li class="px-3 pt-1 pb-3 inline-block float-left">
+<span class="font-ibm-plex-sans text-black-600 uppercase text-sm font-bold tracking-widest" href="#">Network Sites:</span>
+</li>
+
+<li id="network_allaboutcircuits" class="group network-dropdown flex inline-block float-left">
+<a target="_blank" href="https://www.allaboutcircuits.com/" class="dropdown-tab flex py-1 px-4 dropdown-bg-white text-black-200 items-center"><i class="icon-aac text-3xl"></i></a>
+<div class="hidden flex-wrap absolute left-0 top-full bg-white dropdown-shadow w-full">
+<ul class="container mx-auto relative mt-4 pl-10 overflow-hidden h-80">
+<li><a target="_blank" itemprop="url" class="ga-link block font-ibm-plex-sans uppercase text-black-600 text-2xl pb-3 hover:text-red-600 w-1/5 pt-2 border-t-3 border-black-800" href="https://www.allaboutcircuits.com/latest/" data-category="network-header" data-action="allaboutcircuits">Latest</a></li>
+<li><a target="_blank" itemprop="url" class="ga-link block font-ibm-plex-sans uppercase text-black-600 text-2xl pb-3 hover:text-red-600" href="https://forum.allaboutcircuits.com/" data-category="network-header" data-action="allaboutcircuits">Forums</a></li>
+<li><a target="_blank" itemprop="url" class="ga-link block font-ibm-plex-sans uppercase text-black-600 text-2xl pb-3 hover:text-red-600" href="https://www.allaboutcircuits.com/education/" data-category="network-header" data-action="allaboutcircuits">Education</a></li>
+<li><a target="_blank" itemprop="url" class="ga-link block font-ibm-plex-sans uppercase text-black-600 text-2xl pb-3 hover:text-red-600" href="https://www.allaboutcircuits.com/tools/" data-category="network-header" data-action="allaboutcircuits">Tools</a></li>
+<li><a target="_blank" itemprop="url" class="ga-link block font-ibm-plex-sans uppercase text-black-600 text-2xl pb-3 hover:text-red-600" href="https://www.allaboutcircuits.com/videos/" data-category="network-header" data-action="allaboutcircuits">Videos</a></li>
+<li><a target="_blank" itemprop="url" class="ga-link block font-ibm-plex-sans uppercase text-black-600 text-2xl pb-3 hover:text-red-600" href="https://www.allaboutcircuits.com/electronic-components/" data-category="network-header" data-action="allaboutcircuits">Datasheets</a></li>
+<li><a target="_blank" itemprop="url" class="ga-link block font-ibm-plex-sans uppercase text-black-600 text-2xl pb-3 hover:text-red-600" href="https://www.allaboutcircuits.com/giveaways/" data-category="network-header" data-action="allaboutcircuits">Giveaways</a></li>
+</ul>
+</div>
+</li>
+
+
+<li id="network_makerpro" class="group network-dropdown flex inline-block float-left">
+<a target="_blank" href="https://maker.pro/" class="dropdown-tab flex py-1 px-4 dropdown-bg-white text-black-200 items-center"><i class="icon-maker-pro text-5xl"></i></a>
+<div class="hidden flex-wrap absolute left-0 top-full bg-white dropdown-shadow w-full">
+<ul class="container mx-auto relative mt-4 pl-10 overflow-hidden h-80">
+<li><a target="_blank" itemprop="url" class="ga-link block font-ibm-plex-sans uppercase text-black-600 text-2xl pb-3 hover:text-red-600 w-1/5 pt-2 border-t-3 border-black-800" href="https://maker.pro/" data-category="network-header" data-action="makerpro">Latest</a></li>
+<li><a target="_blank" itemprop="url" class="ga-link block font-ibm-plex-sans uppercase text-black-600 text-2xl pb-3 hover:text-red-600" href="https://maker.pro/projects/" data-category="network-header" data-action="makerpro">Projects</a></li>
+<li><a target="_blank" itemprop="url" class="ga-link block font-ibm-plex-sans uppercase text-black-600 text-2xl pb-3 hover:text-red-600" href="https://maker.pro/education/" data-category="network-header" data-action="makerpro">Education</a></li>
+</ul>
+</div>
+</li>
+
+
+<li id="network_control" class="group network-dropdown flex inline-block float-left">
+<a target="_blank" href="https://control.com/" class="dropdown-tab flex py-1 px-4 dropdown-bg-white text-black-200 items-center"><i class="icon-control text-2xl"></i></a>
+<div class="hidden flex-wrap absolute left-0 top-full bg-white dropdown-shadow w-full">
+<ul class="container mx-auto relative mt-4 pl-10 overflow-hidden h-80">
+<li><a target="_blank" itemprop="url" class="ga-link block font-ibm-plex-sans uppercase text-black-600 text-2xl pb-3 hover:text-red-600 w-1/5 pt-2 border-t-3 border-black-800" href="https://control.com/" data-category="network-header" data-action="control">Latest</a></li>
+<li><a target="_blank" itemprop="url" class="ga-link block font-ibm-plex-sans uppercase text-black-600 text-2xl pb-3 hover:text-red-600" href="https://control.com/news/" data-category="network-header" data-action="control">News</a></li>
+<li><a target="_blank" itemprop="url" class="ga-link block font-ibm-plex-sans uppercase text-black-600 text-2xl pb-3 hover:text-red-600" href="https://control.com/technical-articles/" data-category="network-header" data-action="control">Technical Articles</a></li>
+</ul>
+</div>
+</li>
+
+
+<li id="network_mikrocontroller" class="flex inline-block float-left">
+<a target="_blank" href="https://www.mikrocontroller.net/" class="ga-link flex py-2 px-4 dropdown-bg-white text-black-200 hover:text-black-500 items-center hover:bg-white" data-category="network-header" data-action="mikrocontroller"><i class="icon-mikrocontroller"></i></a>
+</li>
+
+</ul>
+</div>
+
+<div id="scrollMenu" class="relative transition-fast z-30 w-full dropdown-shadow bg-white no-print">
+<div id="overlay" class="hidden fixed top-0 left-0 w-full h-full opacity-50 bg-black-900 z-30"></div>
+
+<div class="w-full bg-white">
+<div class="container mx-auto flex clearfix h-16">
+<div class="flex items-center flex-1 lg:flex-none lg:w-auto float-left px-2 lg:px-0">
+<a class="w-auto inline-block py-4" href="https://eepower.com"><img loading="lazy" src="/images/site/Logo-Large.png" alt="EEPower" class="w-31"></a>
+</div>
+<div class="w-auto lg:flex-1 flex flex-wrap lg:relative justify-end">
+<button id="searchToggle" class="flex justify-between items-center bg-transparent text-black-700 focus:outline-none text-3xl lg:text-5xl px-2 lg:pr-3 lg:pl-0">
+<i class="icon-search"></i>
+</button>
+<div id="userMenu" class="fixed top-0 z-50 lg:z-10 w-5/6 lg:w-auto h-full -right-1000 transition-fast lg:transition-none lg:h-auto lg:static border-t-5 lg:border-0 border-black px-6 lg:px-0 bg-white lg:bg-transparent">
+<ul class="font-ibm-plex-sans flex lg:inline-flex flex-wrap lg:h-full items-center clearfix">
+
+<li class="lg:float-left w-full lg:w-auto lg:w-auto lg:flex lg:flex-col lg:inline-block justify-center h-full relative lg:pl-2 lg:pr-4">
+<a class="ga-link rounded bg-white border border-black-600 lg:inline-block hidden text-base text-black-600 hover:shadow uppercase font-bold tracking-wider px-5 py-2" href="https://eepower.com/forums/login/?redirect=https://eepower.com/technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work/" data-category="login" data-action="login (header desktop)" data-label="https://eepower.com/forums/login/?redirect=https://eepower.com/technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work/">Log In</a>
+</li>
+<li class="lg:float-left w-full lg:w-auto lg:w-auto lg:flex lg:flex-col lg:inline-block justify-center h-full relative lg:pr-4">
+<a class="rounded bg-red-600 border border-red-600 lg:inline-block hidden text-base text-white hover:shadow uppercase font-bold tracking-wider px-6 py-2" href="https://eepower.com/forums/register/">Join</a>
+<div class="mobile-unhide-flex hidden static lg:absolute w-full lg:w-40 right-0 w-full bg-white z-30 lg:shadow lg:border-t-10 border-black-600 p-4">
+<ul class="text-5xl lg:text-xl font-karla w-full mt-2 lg:mt-0">
+<li class="pb-2 flex justify-between ">
+<a class="ga-link text-black-600 hover:text-red-600 font-bold lg:font-normal" href="https://eepower.com/forums/login/?redirect=https://eepower.com/technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work/" data-category="login" data-action="login (header mobile)" data-label="/forums/login/?redirect=https://eepower.com/technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work">Log in</a>
+<a class="text-black-600 text-4xl menu-close lg:hidden" href="#"><i class="icon-close"></i></a>
+</li>
+<li class="pb-2"><a class="text-black-600 hover:text-red-600 font-bold lg:font-normal" href="https://eepower.com/forums/register/">Join EEPower</a></li>
+<li class="pb-2 flex items-center my-2 lg:my-0">
+<div class="w-auto pr-2 text-3xl lg:text-xl">Or sign in with</div> <div class="flex-grow border-t border-black-600"></div>
+</li>
+<li>
+<ul class="flex flex-wrap text-5xl">
+<li class="w-full lg:w-auto mb-4 lg:mb-0 inline-block float-left">
+<a class="ga-link text-black-600 hover:text-red-600" href="https://eepower.com/forums/register/connected-accounts/facebook/?setup=1" data-category="register" data-action="facebook" data-label="https://eepower.com/forums/register/connected-accounts/facebook/?setup=1"><i class="icon-facebook"></i>
+<span class="lg:hidden text-5xl ml-4 leading-relaxed">Facebook</span></a>
+</li>
+<li class="w-full lg:w-auto lg:ml-4 mb-4 lg:mb-0 inline-block float-left">
+<a class="ga-link text-black-600 hover:text-red-600" href="https://eepower.com/forums/register/connected-accounts/google/?setup=1" data-category="register" data-action="google" data-label="https://eepower.com/forums/register/connected-accounts/google/?setup=1"><i class="icon-google"></i>
+<span class="lg:hidden text-5xl ml-4 leading-relaxed">Google</span></a>
+</li>
+<li class="w-full lg:w-auto lg:ml-4 mb-4 lg:mb-0 inline-block float-left">
+<a class="ga-link text-black-600 hover:text-red-600" href="https://eepower.com/forums/register/connected-accounts/linkedin/?setup=1" data-category="register" data-action="linkedin" data-label="https://eepower.com/forums/register/connected-accounts/linkedin/?setup=1"><i class="icon-linkedin"></i>
+<span class="lg:hidden text-5xl ml-4 leading-relaxed">LinkedIn</span></a>
+</li>
+<li class="w-full lg:w-auto lg:ml-4 mb-4 lg:mb-0 inline-block float-left">
+<a class="ga-link text-black-600 hover:text-red-600" href="https://eepower.com/forums/register/connected-accounts/github/?setup=1" data-category="register" data-action="github" data-label="https://eepower.com/forums/register/connected-accounts/github/?setup=1"><i class="icon-github"></i>
+<span class="lg:hidden text-5xl ml-4 leading-relaxed">GitHub</span></a>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</li>
+
+</ul>
+</div>
+</div>
+
+<div class="hidden lg:inline-block relative w-300px lg:mr-4 xl:mr-6 float-right">
+<div class="absolute z-20 top-0 left-0 w-full flex flex-col justify-between bg-white">
+<div class="flex flex-row pt-2 px-4 h-16">
+<button type="button" class="podcast-sound focus:outline-none inline-block float-left">
+<i class="ga-link icon-podcast-play text-black-600 hover:text-red-600 text-8xl play" data-category="Podcast" data-action="Play-Button" data-label="https://traffic.libsyn.com/secure/eetech/Ep._48__Argo_AIs_Hardware_VP_Talks_Autonomous_Vehicles_and_Single_Photon_Lidar.mp3?dest-id=2003405#"></i>
+<i class="ga-link icon-podcast-pause text-black-600 hover:text-red-600 text-8xl pause hidden" data-category="Podcast" data-action="Pause-Button" data-label="https://traffic.libsyn.com/secure/eetech/Ep._48__Argo_AIs_Hardware_VP_Talks_Autonomous_Vehicles_and_Single_Photon_Lidar.mp3?dest-id=2003405#"></i>
+</button>
+<div class="pl-4 text-base w-3/4 inline-block float-left">
+<h4 class="podcast_title uppercase text-black-600">Moore's Lobby Podcast</h4>
+<div class="podcast_desc"><p class="ellipsis">Ep. 48 | Argo AI’s Hardware VP Talks Autonomous Vehicles and Single Photon Lidar</p></div>
+<div class="podcast-progress-slider h-2px rounded-l-full rounded-r-full bg-black-600 w-full cursor-pointer mt-2px ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content" data-slider-value="0"><span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default" style="left: 0%;"></span><div class="ui-slider-range ui-corner-all ui-widget-header ui-slider-range-min" style="width: 0%;"></div></div>
+<div class="text-right pr-1 mt-1 text-xxs">
+<span class="podcast-timer">0:00</span>&nbsp;/&nbsp;<span class="podcast-duration">0:00</span>
+</div>
+</div>
+</div>
+<ul class="border-t-1 border-gray-200 px-4 h-26px flex flex-row justify-between items-center list-none uppercase font-bold text-lg">
+<li class="inline-block float-left w-1/3 text-center">
+<a class="text-black-600 hover:text-red-600 ga-link" href="https://www.allaboutcircuits.com/podcast/" data-category="Podcast" data-action="click-podcast-link" data-label="https://eepower.com/technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work" target="_blank" rel="noopener">Podcast</a>
+</li>
+<li class="inline-block float-left w-1/3 text-center">
+<a class="text-black-600 hover:text-red-600 ga-link" href="https://www.allaboutcircuits.com/podcast/latest/" data-category="Podcast" data-action="click-latest-link" data-label="https://eepower.com/technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work" target="_blank" rel="noopener">Latest</a>
+</li>
+<li class="inline-block float-left w-1/3 text-center">
+<a class="dropdown-tab text-black-600" href="#" data-category="Podcast" data-action="click-subscribe-link" data-label="https://eepower.com/technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work">Subscribe</a>
+<div class="hidden lg:absolute border-t-1 w-full bg-white shadow-lg top-full left-0 px-4 py-2">
+<ul class="w-full flex flex-row flex-wrap justify-around list-none uppercase font-bold text-sm">
+<li class="my-2">
+<a class="ga-link text-black-600 hover:text-red-600 whitespace-no-wrap flex items-center" href="https://podcasts.google.com/?feed=aHR0cDovL2VldGVjaC5saWJzeW4uY29tL3Jzcw" target="_blank" rel="noopener" data-category="Podcast" data-action="click-subscribe-google" data-label="https://eepower.com/technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work"><i class="icon-podcasts-google text-2xl mr-2"></i> Google</a>
+</li>
+<li class="my-2">
+<a class="ga-link text-black-600 hover:text-red-600 whitespace-no-wrap flex items-center" href="https://open.spotify.com/show/6EM7WrRcpZAngjo2h2ITgu?si=EQAbj_J7QeqQ1_AEkCRd6w" target="_blank" rel="noopener" data-category="Podcast" data-action="click-subscribe-spotify" data-label="https://eepower.com/technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work"><i class="icon-podcasts-spotify text-2xl mr-2"></i> Spotify</a>
+</li>
+<li class="my-2">
+<a class="ga-link text-black-600 hover:text-red-600 whitespace-no-wrap flex items-center" href="https://podcasts.apple.com/us/podcast/moores-lobby-where-engineers-talk-all-about-circuits/id1509620545" target="_blank" rel="noopener" data-category="Podcast" data-action="click-subscribe-apple" data-label="https://eepower.com/technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work"><i class="icon-podcasts-apple text-2xl mr-2"></i> Apple</a>
+</li>
+<li class="my-2">
+<a class="ga-link text-black-600 hover:text-red-600 whitespace-no-wrap flex items-center" href="https://www.iheart.com/podcast/269-moores-lobby-where-enginee-62401103/" target="_blank" rel="noopener" data-category="Podcast" data-action="click-subscribe-heartradio" data-label="https://eepower.com/technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work"><i class="icon-podcasts-heartradio text-2xl mr-2"></i> iHeartRadio</a>
+</li>
+<li class="my-2">
+ <a class="ga-link text-black-600 hover:text-red-600 whitespace-no-wrap flex items-center" href="https://app.stitcher.com/browse/feed/526810/details" target="_blank" rel="noopener" data-category="Podcast" data-action="click-subscribe-stitcher" data-label="https://eepower.com/technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work"><i class="icon-podcasts-stitcher text-2xl mr-2"></i> Stitcher</a>
+</li>
+<li class="my-2">
+<a class="ga-link text-black-600 hover:text-red-600 whitespace-no-wrap flex items-center" href="https://www.pandora.com/podcast/moores-lobby-where-engineers-talk-all-about-circuits/PC:37676?part=PC:37676&amp;corr=podcast_organic_external_site&amp;TID=Brand:POC:PC37676:podcast_organic_external_site" target="_blank" rel="noopener" data-category="Podcast" data-action="click-subscribe-pandora" data-label="https://eepower.com/technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work"><i class="icon-podcasts-pandora text-2xl mr-2"></i> Pandora</a>
+</li>
+<li class="my-2">
+<a class="ga-link text-black-600 hover:text-red-600 whitespace-no-wrap flex items-center" href="https://tunein.com/podcasts/Technology-Podcasts/Moores-Lobby-Where-engineers-talk-all-about-circ-p1319857/" target="_blank" rel="noopener" data-category="Podcast" data-action="click-subscribe-tunein" data-label="https://eepower.com/technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work"><i class="icon-podcasts-tunein text-2xl mr-2"></i> Tune In</a>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+
+<button data-menu="#userMenu" data-direction="right" class="toggle-menu lg:hidden text-red-600 px-3 focus:outline-none flex items-center text-4xl">
+<i class="icon-user"></i>
+</button>
+<button id="menuToggle" data-menu="#mainMenu" data-direction="right" class="toggle-menu lg:hidden text-red-600 px-3 focus:outline-none flex items-center text-4xl">
+<i class="icon-hamburger"></i>
+</button>
+</div>
+</div>
+
+
+<div id="mainMenu" class="border-t-1 border-gray-200 font-ibm-plex-sans fixed top-0 z-50 w-5/6 h-full bg-white transition-fast lg:transition-none lg:w-full lg:left-0 lg:h-auto lg:static -right-1000">
+<nav class="container lg:mx-auto">
+
+<div class="lg:hidden flex flex-wrap justify-between px-8 pt-5 mb-3 ">
+<span class="font-ibm-plex-sans font-bold text-5xl tracking-wider inline-block text-black-800">Menu</span>
+<a class="text-black-800 menu-close" href="#"><i class="icon-close"></i></a>
+<hr class="w-full pb-3 mb-3 border-b border-black-800">
+</div>
+
+<ul class="lg:relative lg:flex clearfix" itemscope="" itemtype="http://www.schema.org/SiteNavigationElement">
+
+<li class="ml-0 lg:-ml-4 flex flex-wrap lg:static lg:inline-block group hover-bold-width">
+<a class="dropdown-tab text-3xl tracking-widest py-3 px-5 uppercase w-full mx-4 text-black-800 lg:text-base lg:flex lg:py-1 lg:px-4 lg:justify-center lg:mx-0 hover:text-red-600" href="#" title="Explore">Explore</a>
+<div class="ml-0 lg:-ml-4 hidden lg:absolute lg:left-0 lg:z-20 bg-white w-full lg:dropdown-shadow border-t-5 border-black-800 bg-gray-200 lg:bg-white">
+<div class="flex flex-wrap clearfix w-full">
+<div class="hidden w-full lg:w-1/3 pl-0 lg:pl-5 xl:pl-11 pr-5 bg-black-100 lg:inline-block lg:float-right order-2">
+<span class="block uppercase text-3xl font-bold tracking-wider text-black-600 mb-2 mt-7 pb-2 px-6 lg:px-0">
+Content
+</span>
+<ul class="flex flex-wrap justify-between text-left xl:-mx-6">
+<li class="inline-block float-left w-full md:w-1/2 pb-2 px-6 ellipsis" itemprop="name"><a itemprop="url" class="text-xl lg:text-base xl:text-xl text-black-600 hover:text-red-600" href="/capacitor-guide/">Capacitor Guide</a></li>
+<li class="inline-block float-left w-full md:w-1/2 pb-2 px-6 ellipsis" itemprop="name"><a itemprop="url" class="text-xl lg:text-base xl:text-xl text-black-600 hover:text-red-600" href="/forums/">Forums</a></li>
+<li class="inline-block float-left w-full md:w-1/2 pb-2 px-6 ellipsis" itemprop="name"><a itemprop="url" class="text-xl lg:text-base xl:text-xl text-black-600 hover:text-red-600" href="/industry-articles/">Industry Articles</a></li>
+<li class="inline-block float-left w-full md:w-1/2 pb-2 px-6 ellipsis" itemprop="name"><a itemprop="url" class="text-xl lg:text-base xl:text-xl text-black-600 hover:text-red-600" href="/industry-white-papers/">Industry White Papers</a></li>
+<li class="inline-block float-left w-full md:w-1/2 pb-2 px-6 ellipsis" itemprop="name"><a itemprop="url" class="text-xl lg:text-base xl:text-xl text-black-600 hover:text-red-600" href="/market-insights/">Market Insights</a></li>
+<li class="inline-block float-left w-full md:w-1/2 pb-2 px-6 ellipsis" itemprop="name"><a itemprop="url" class="text-xl lg:text-base xl:text-xl text-black-600 hover:text-red-600" href="/news/">News</a></li>
+<li class="inline-block float-left w-full md:w-1/2 pb-2 px-6 ellipsis" itemprop="name"><a itemprop="url" class="text-xl lg:text-base xl:text-xl text-black-600 hover:text-red-600" href="/new-industry-products/">New Industry Products</a></li>
+<li class="inline-block float-left w-full md:w-1/2 pb-2 px-6 ellipsis" itemprop="name"><a itemprop="url" class="text-xl lg:text-base xl:text-xl text-black-600 hover:text-red-600" href="/resistor-guide/">Resistor Guide</a></li>
+<li class="inline-block float-left w-full md:w-1/2 pb-2 px-6 ellipsis" itemprop="name"><a itemprop="url" class="text-xl lg:text-base xl:text-xl text-black-600 hover:text-red-600" href="/technical-articles/">Technical Articles</a></li>
+<li class="inline-block float-left w-full md:w-1/2 pb-2 px-6 ellipsis" itemprop="name"><a itemprop="url" class="text-xl lg:text-base xl:text-xl text-black-600 hover:text-red-600" href="/power-electronics-textbook/">Textbook</a></li>
+<li class="inline-block float-left w-full md:w-1/2 pb-2 px-6 ellipsis" itemprop="name"><a itemprop="url" class="text-xl lg:text-base xl:text-xl text-black-600 hover:text-red-600" href="/tools/">Tools</a></li>
+</ul>
+</div>
+<div class="w-full lg:w-auto flex flex-1 flex-wrap lg:overflow-hidden order-1">
+<div class="w-full lg:w-1/2 pl-8 pb-6 text-center inline-block float-left flex flex-col">
+<span class="block uppercase text-3xl font-bold tracking-wider text-black-600 mb-2 mt-7 gradient-line gradient-line-bottom text-left mr-5">
+Products
+</span>
+<ul class="flex flex-wrap justify-between text-left -mx-6 mb-8">
+<li class="inline-block float-left w-full md:w-1/2 pb-2 px-6 ellipsis" itemprop="name"><a itemprop="url" class="text-xl lg:text-base xl:text-xl text-black-600 hover:text-red-600" href="/latest/assemblies-enclosures/">Assemblies &amp; Enclosures</a></li>
+<li class="inline-block float-left w-full md:w-1/2 pb-2 px-6 ellipsis" itemprop="name"><a itemprop="url" class="text-xl lg:text-base xl:text-xl text-black-600 hover:text-red-600" href="/latest/batteries/">Batteries</a></li>
+<li class="inline-block float-left w-full md:w-1/2 pb-2 px-6 ellipsis" itemprop="name"><a itemprop="url" class="text-xl lg:text-base xl:text-xl text-black-600 hover:text-red-600" href="/latest/cables-connectors/">Cables &amp; Connectors</a></li>
+<li class="inline-block float-left w-full md:w-1/2 pb-2 px-6 ellipsis" itemprop="name"><a itemprop="url" class="text-xl lg:text-base xl:text-xl text-black-600 hover:text-red-600" href="/latest/integrated-circuits/">Integrated Circuits (ICs)</a></li>
+<li class="inline-block float-left w-full md:w-1/2 pb-2 px-6 ellipsis" itemprop="name"><a itemprop="url" class="text-xl lg:text-base xl:text-xl text-black-600 hover:text-red-600" href="/latest/magnetics/">Magnetics</a></li>
+<li class="inline-block float-left w-full md:w-1/2 pb-2 px-6 ellipsis" itemprop="name"><a itemprop="url" class="text-xl lg:text-base xl:text-xl text-black-600 hover:text-red-600" href="/latest/motor-drives/">Motor Drives</a></li>
+<li class="inline-block float-left w-full md:w-1/2 pb-2 px-6 ellipsis" itemprop="name"><a itemprop="url" class="text-xl lg:text-base xl:text-xl text-black-600 hover:text-red-600" href="/latest/passives/">Passives</a></li>
+<li class="inline-block float-left w-full md:w-1/2 pb-2 px-6 ellipsis" itemprop="name"><a itemprop="url" class="text-xl lg:text-base xl:text-xl text-black-600 hover:text-red-600" href="/latest/power-supplies/">Power Supplies</a></li>
+<li class="inline-block float-left w-full md:w-1/2 pb-2 px-6 ellipsis" itemprop="name"><a itemprop="url" class="text-xl lg:text-base xl:text-xl text-black-600 hover:text-red-600" href="/latest/semiconductors/">Semiconductors</a></li>
+<li class="inline-block float-left w-full md:w-1/2 pb-2 px-6 ellipsis" itemprop="name"><a itemprop="url" class="text-xl lg:text-base xl:text-xl text-black-600 hover:text-red-600" href="/latest/sensors/">Sensors</a></li>
+<li class="inline-block float-left w-full md:w-1/2 pb-2 px-6 ellipsis" itemprop="name"><a itemprop="url" class="text-xl lg:text-base xl:text-xl text-black-600 hover:text-red-600" href="/latest/test-measurement/">Test &amp; Measurement</a></li>
+<li class="inline-block float-left w-full md:w-1/2 pb-2 px-6 ellipsis" itemprop="name"><a itemprop="url" class="text-xl lg:text-base xl:text-xl text-black-600 hover:text-red-600" href="/latest/thermal-management/">Thermal Management</a></li>
+</ul>
+<a class="text-2xl text-black-600 hover:text-red-600 mt-auto flex w-full items-center justify-center" href="/latest/">View all <i class="icon-caret-right text-5xl ml-1"></i></a>
+</div>
+<div class="w-full lg:w-1/2 xl:w-auto xl:flex-1 pl-8 lg:px-4 pb-6 text-center lg:overflow-hidden flex flex-col">
+<span class="block uppercase text-3xl font-bold tracking-wider text-black-600 mb-2 mt-7 gradient-line gradient-line-bottom text-left mr-5">
+Applications
+</span>
+<ul class="flex flex-wrap justify-between text-left -mx-6 mb-8">
+<li class="inline-block float-left w-full md:w-1/2 pb-2 px-6 ellipsis" itemprop="name"><a itemprop="url" class="text-xl lg:text-base xl:text-xl text-black-600 hover:text-red-600" href="/latest/automotive/">Automotive</a></li>
+<li class="inline-block float-left w-full md:w-1/2 pb-2 px-6 ellipsis" itemprop="name"><a itemprop="url" class="text-xl lg:text-base xl:text-xl text-black-600 hover:text-red-600" href="/latest/consumer-electronics/">Consumer Electronics</a></li>
+<li class="inline-block float-left w-full md:w-1/2 pb-2 px-6 ellipsis" itemprop="name"><a itemprop="url" class="text-xl lg:text-base xl:text-xl text-black-600 hover:text-red-600" href="/latest/industrial/">Industrial</a></li>
+<li class="inline-block float-left w-full md:w-1/2 pb-2 px-6 ellipsis" itemprop="name"><a itemprop="url" class="text-xl lg:text-base xl:text-xl text-black-600 hover:text-red-600" href="/latest/lighting/">Lighting</a></li>
+<li class="inline-block float-left w-full md:w-1/2 pb-2 px-6 ellipsis" itemprop="name"><a itemprop="url" class="text-xl lg:text-base xl:text-xl text-black-600 hover:text-red-600" href="/latest/medical-fitness/">Medical &amp; Fitness</a></li>
+<li class="inline-block float-left w-full md:w-1/2 pb-2 px-6 ellipsis" itemprop="name"><a itemprop="url" class="text-xl lg:text-base xl:text-xl text-black-600 hover:text-red-600" href="/latest/military-aerospace/">Military &amp; Aerospace</a></li>
+<li class="inline-block float-left w-full md:w-1/2 pb-2 px-6 ellipsis" itemprop="name"><a itemprop="url" class="text-xl lg:text-base xl:text-xl text-black-600 hover:text-red-600" href="/latest/renewable-energy/">Renewable Energy</a></li>
+<li class="inline-block float-left w-full md:w-1/2 pb-2 px-6 ellipsis" itemprop="name"><a itemprop="url" class="text-xl lg:text-base xl:text-xl text-black-600 hover:text-red-600" href="/latest/security/">Security</a></li>
+<li class="inline-block float-left w-full md:w-1/2 pb-2 px-6 ellipsis" itemprop="name"><a itemprop="url" class="text-xl lg:text-base xl:text-xl text-black-600 hover:text-red-600" href="/latest/utilities/">Utilities</a></li>
+</ul>
+<a class="text-2xl text-black-600 hover:text-red-600 mt-auto flex w-full items-center justify-center" href="/latest/">View all <i class="icon-caret-right text-5xl ml-1"></i></a>
+</div>
+</div>
+</div>
+</div>
+</li>
+
+
+<li id="articles" class="flex flex-wrap md:static lg:inline-block hover-bold-width">
+<a class="dropdown-tab text-3xl tracking-widest py-3 px-5 uppercase w-full mx-4 text-black-800 lg:text-base lg:flex lg:py-1 lg:px-4 lg:justify-center lg:mx-0 hover:text-red-600" href="/latest/" title="Articles">Articles</a>
+<div class="hidden lg:flex-wrap lg:absolute lg:left-0 lg:z-20 lg:bg-gray-100 w-full lg:h-324px lg:dropdown-shadow flex border-t-5 border-black-800">
+<ul class="w-full lg:w-7/25 flex flex-col bg-gray-200 lg:bg-white h-full">
+
+<li itemprop="name" class="dropdown-hover default lg:pl-6 lg:pt-4">
+<span class="hidden lg:block pt-2 border-t-3 border-black-800 w-11/12 h-1 p-0 -mb-1 clearfix"></span>
+<a itemprop="url" class="text-base leading-relaxed uppercase text-black-600 text-3xl block px-8 lg:px-2 py-1" href="/latest/">Latest</a>
+</li>
+
+
+<li itemprop="name" class="dropdown-hover lg:pl-6">
+<a itemprop="url" class="text-base leading-relaxed uppercase text-black-600 text-3xl block px-8 lg:px-2 py-1" href="/news/">News</a>
+</li>
+
+
+<li itemprop="name" class="dropdown-hover lg:pl-6">
+<a itemprop="url" class="text-base leading-relaxed uppercase text-black-600 text-3xl block px-8 lg:px-2 py-1" href="/new-industry-products/">New Industry Products</a>
+</li>
+
+
+<li itemprop="name" class="dropdown-hover lg:pl-6">
+<a itemprop="url" class="text-base leading-relaxed uppercase text-black-600 text-3xl block px-8 lg:px-2 py-1" href="/technical-articles/">Technical Articles</a>
+</li>
+
+
+<li itemprop="name" class="dropdown-hover lg:pl-6">
+<a itemprop="url" class="text-base leading-relaxed uppercase text-black-600 text-3xl block px-8 lg:px-2 py-1" href="/market-insights/">Market Insights</a>
+</li>
+
+
+<li itemprop="name" class="dropdown-hover lg:pl-6">
+<a itemprop="url" class="text-base leading-relaxed uppercase text-black-600 text-3xl block px-8 lg:px-2 py-1" href="/industry-articles/">Industry Articles</a>
+</li>
+
+
+<li itemprop="name" class="dropdown-hover lg:pl-6 flex-1">
+ <a itemprop="url" class="text-base leading-relaxed uppercase text-black-600 text-3xl block px-8 lg:px-2 py-1" href="/industry-white-papers/">Industry White Papers</a>
+</li>
+
+</ul>
+</div>
+</li>
+
+
+<li id="forums" class="flex flex-wrap md:static lg:inline-block hover-bold-width">
+<a class="dropdown-tab text-3xl tracking-widest py-3 px-5 uppercase w-full mx-4 text-black-800 lg:text-base lg:flex lg:py-1 lg:px-4 lg:justify-center lg:mx-0 hover:text-red-600" href="/forums/" title="Forums">Forums</a>
+<div class="hidden lg:flex-wrap lg:absolute lg:left-0 lg:z-20 lg:bg-gray-100 w-full lg:h-324px lg:dropdown-shadow flex border-t-5 border-black-800">
+<ul class="w-full lg:w-7/25 flex flex-col bg-gray-200 lg:bg-white h-full">
+<li itemprop="name" class="dropdown-hover default lg:pl-6 lg:pt-4">
+<span class="hidden lg:block pt-2 border-t-3 border-black-800 w-11/12 h-1 p-0 -mb-1 clearfix"></span>
+<a itemprop="url" class="text-base leading-relaxed uppercase text-black-600 text-3xl block px-8 lg:px-2 py-1" href="/posts/">Latest</a>
+</li>
+<li itemprop="name" class="dropdown-hover lg:pl-6">
+<a itemprop="url" class="text-base leading-relaxed uppercase text-black-600 text-3xl block px-8 lg:px-2 py-1" href="/forums/forums/general-power-chat.2/">General Power Chat</a>
+</li>
+<li itemprop="name" class="dropdown-hover lg:pl-6">
+<a itemprop="url" class="text-base leading-relaxed uppercase text-black-600 text-3xl block px-8 lg:px-2 py-1" href="/forums/forums/batteries-power-supply-design.3/">Batteries &amp; Power Supply Design</a>
+</li>
+<li itemprop="name" class="dropdown-hover lg:pl-6">
+<a itemprop="url" class="text-base leading-relaxed uppercase text-black-600 text-3xl block px-8 lg:px-2 py-1" href="/forums/forums/power-conversion.4/">Power Conversion</a>
+</li>
+<li itemprop="name" class="dropdown-hover lg:pl-6">
+<a itemprop="url" class="text-base leading-relaxed uppercase text-black-600 text-3xl block px-8 lg:px-2 py-1" href="/forums/forums/power-management.5/">Power Management</a>
+</li>
+</ul>
+</div>
+</li>
+
+
+<li id="tools" class="flex flex-wrap md:static lg:inline-block hover-bold-width">
+<a class="text-3xl tracking-widest py-3 px-5 uppercase w-full mx-4 text-black-800 lg:text-base lg:flex lg:py-1 lg:px-4 lg:justify-center lg:mx-0 hover:text-red-600" href="/tools/" title="Tools">Tools</a>
+</li>
+
+
+<li id="education" class="flex flex-wrap md:static lg:inline-block hover-bold-width">
+<a class="dropdown-tab text-3xl tracking-widest py-3 px-5 uppercase w-full mx-4 text-black-800 lg:text-base lg:flex lg:py-1 lg:px-4 lg:justify-center lg:mx-0 hover:text-red-600" href="/power-electronics-textbook/" title="Education">Education</a>
+<div class="hidden lg:flex-wrap lg:absolute lg:left-0 lg:z-20 lg:bg-gray-100 w-full lg:h-324px lg:dropdown-shadow flex border-t-5 border-black-800">
+<ul class="w-full lg:w-7/25 flex flex-col bg-gray-200 lg:bg-white h-full">
+
+<li itemprop="name" class="dropdown-hover default lg:pl-6 lg:pt-4">
+<span class="hidden lg:block pt-2 border-t-3 border-black-800 w-11/12 h-1 p-0 -mb-1 clearfix"></span>
+<a itemprop="url" class="text-base leading-relaxed uppercase text-black-600 text-3xl block px-8 lg:px-2 py-1" href="/power-electronics-textbook/">Textbook</a>
+</li>
+
+
+<li itemprop="name" class="dropdown-hover lg:pl-6">
+<a itemprop="url" class="text-base leading-relaxed uppercase text-black-600 text-3xl block px-8 lg:px-2 py-1" href="/resistor-guide/">Resistor Guide</a>
+</li>
+
+
+<li itemprop="name" class="dropdown-hover lg:pl-6">
+<a itemprop="url" class="text-base leading-relaxed uppercase text-black-600 text-3xl block px-8 lg:px-2 py-1" href="/capacitor-guide/">Capacitor Guide</a>
+</li>
+
+</ul>
+</div>
+</li>
+
+
+<li id="datasheets" class="flex flex-wrap md:static lg:inline-block hover-bold-width">
+<a class="text-3xl tracking-widest py-3 px-5 uppercase w-full mx-4 text-black-800 lg:text-base lg:flex lg:py-1 lg:px-4 lg:justify-center lg:mx-0 hover:text-red-600" title="Datasheets" href="https://www.allaboutcircuits.com/electronic-components/" target="_blank">Datasheets</a>
+</li>
+
+
+<li itemprop="name" class="flex flex-wrap lg:hidden">
+<a itemprop="url" class="text-3xl tracking-widest py-3 px-5 uppercase w-full mx-4 text-black-800 hover:text-red-600" href="https://www.allaboutcircuits.com/podcast/">Podcast</a>
+</li>
+
+<li class="ml-1 xl:ml-auto px-8 xl:pr-3 lg:hidden items-center lg:float-right">
+<ul class="flex flex-wrap items-center text-black-800" itemscope="" itemtype="http://schema.org/Organization">
+<link itemprop="url" href="https://eepower.com">
+<li class="w-full lg:w-auto text-3xl lg:text-base tracking-widest uppercase mt-8 mb-4 lg:my-0 float-left">Connect with us</li>
+<li class="lg:pl-5 text-7xl lg:text-xl float-left"><a href="https://www.facebook.com/eepwr/" itemprop="sameAs" target="_blank" rel="noopener"><i class="icon-facebook text-black-800 hover:text-red-600"></i></a></li>
+<li class="pl-3 text-7xl lg:text-xl float-left"><a href="https://twitter.com/eepwr/" itemprop="sameAs" target="_blank" rel="noopener"><i class="icon-twitter text-black-800 hover:text-red-600"></i></a></li>
+<li class="pl-3 text-7xl lg:text-xl float-left"><a href="https://www.linkedin.com/company/ee-power/" itemprop="sameAs" target="_blank" rel="noopener"><i class="icon-linkedin text-black-800 hover:text-red-600"></i></a></li>
+</ul>
+</li>
+
+
+
+<li class="block lg:hidden ml-1 px-8">
+<ul class="flex flex-col text-black-800">
+<li class="text-3xl tracking-widest uppercase mt-8 mb-4">
+Network Sites:
+</li>
+<li class="my-3">
+<a href="https://www.allaboutcircuits.com/" target="_blank" class="text-black-800 hover:text-red-600"><i class="icon-aac text-5xl"></i></a>
+</li>
+<li class="my-3">
+<a href="https://maker.pro" target="_blank" class="text-black-800 hover:text-red-600"><i class="icon-maker-pro text-5xl"></i></a>
+</li>
+<li class="my-3">
+<a href="https://control.com" target="_blank" class="text-black-800 hover:text-red-600"><i class="icon-control text-2xl"></i></a>
+</li>
+<li class="my-3">
+<a href="https://www.mikrocontroller.net/" target="_blank" class="text-black-800 hover:text-red-600"><i class="icon-mikrocontroller"></i></a>
+</li>
+</ul>
+</li>
+
+</ul>
+</nav>
+</div>
+
+
+<div class="w-full bg-white">
+<form action="/search" method="GET" id="searchForm" class="w-full flex hidden">
+<input type="text" name="q" id="q" class="ga-search block text-center w-full bg-white text-black-700 font-ibm-plex-sans text-4xl p-3 focus:outline-none border-t-1 border-black-100" placeholder="Search..." aria-label="Search...">
+</form>
+</div>
+
+</div>
+<div id="subscriber-newsletter-container"></div>
+<div id="contentHeader" class="no-print block bg-white shadow w-full fixed -top-160 left-0 z-20">
+<div class="max-w-7xl mx-auto bg-white flex pt-1">
+<div class="w-auto float-left inline-block p-4 lg:w-45 lg:h-16">
+<a href="https://eepower.com">
+<img loading="lazy" src="/images/site/Logo-Large.png" alt="EEPower" class="w-32 lg:w-32 h-auto">
+</a>
+</div>
+<div class="hidden md:flex w-auto flex-1 flex-grow float-left">
+<div id="contentTitle" class="w-full flex flex-col justify-center items-center text-center">
+<span class="text-black-400 font-bold text-sm lg:text-base tracking-widest uppercase lg:mb-1">
+Technical Article
+</span>
+<h2 class="font-vollkorn text-xl text-black-700 font-extrabold">
+What Is a DC-DC Converter and How Does It Work?
+</h2>
+</div>
+<div id="contentRegister" class="w-full flex justify-center items-center" style="display: none;">
+<h2 class="font-arial text-2xl font-extrabold inline mr-2">
+Join our <span class="hidden lg:inline">Engineering</span> Community! <span class="hidden lg:inline">Sign-in with:</span>
+</h2>
+<div class="flex">
+<a href="/forums/register/connected-accounts/google/?setup=1" class="inline-flex justify-center items-center rounded w-9 h-9 leading-none mx-1 text-white hover:shadow-md bg-google hover:bg-google-dark hover:text-white font-bold ga-link" data-category="header-scroll-register" data-action="Article-Google" data-label="https://eepower.com/technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work"><i class="icon-google2 text-2xl"></i></a>
+<a href="/forums/register/connected-accounts/facebook/?setup=1" class="inline-flex justify-center items-center rounded w-9 h-9 leading-none mx-1 text-white hover:shadow-md bg-facebook hover:bg-facebook-dark hover:text-white font-bold ga-link" data-category="header-scroll-register" data-action="Article-Facebook" data-label="https://eepower.com/technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work"><i class="icon-facebook2 text-2xl"></i></a>
+<a href="/forums/register/connected-accounts/linkedin/?setup=1" class="inline-flex justify-center items-center rounded w-9 h-9 leading-none mx-1 text-white hover:shadow-md bg-linkedin hover:bg-linkedin-dark hover:text-white font-bold ga-link" data-category="header-scroll-register" data-action="Article-LinkedIn" data-label="https://eepower.com/technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work"><i class="icon-linked2 text-3xl"></i></a>
+<a href="/forums/register/connected-accounts/github/?setup=1" class="inline-flex justify-center items-center rounded w-9 h-9 leading-none mx-1 text-white hover:shadow-md bg-github hover:bg-github-dark hover:text-white font-bold ga-link" data-category="header-scroll-register" data-action="Article-Github" data-label="https://eepower.com/technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work"><i class="icon-github text-2xl"></i></a>
+</div>
+</div>
+</div>
+<ul class="flex items-center justify-end w-full md:w-auto float-right text-base lg:w-45">
+<li class="inline-block float-left mr-8 py-2">
+<a class="group font-bold text-black-700 hover:text-red-600 flex items-center" href="#loginModal" rel="modal:open">
+<i class="icon-bookmarked text-black-700 group-hover:text-red-600 text-2xl mr-2"></i>
+</a>
+</li>
+<li class="inline-block float-left mr-8 py-2">
+<a class="group font-bold text-black-700 hover:text-red-600 flex items-center" href="#loginModal" rel="modal:open">
+<i class="icon-like text-black-700 group-hover:text-red-600 text-2xl mr-2"></i>
+</a>
+</li>
+<li class="inline-block float-left mr-4 py-2">
+<a class=" group font-bold text-black-700 hover:text-red-600 flex items-center" href="#loginModal" rel="modal:open">
+<i class="icon-comments text-black-700 group-hover:text-red-600 text-4xl mr-2"></i>
+</a>
+</li>
+</ul>
+</div>
+</div>
+<a target="_blank" href="https://adclick.g.doubleclick.net/pcs/click?xai=AKAOjstJ-Me-Aa9vEao350zLAG5dCTePHeA8Sfw1aJuimY3rSI24QpboCyU5Rl2N2FQRQsCUixh7owzu9Z2o-wmFQeD7iwSden8TEbzzZTQf7DR6qSvYED6031v-oOLXu-p8C0A-CRJL2SOFCPj3dy4TqBtITuxvDT43vYhc3pwqd48UEwsSHfRkR04cL73qV0cScm94AHoH1Zf92vLKHOWj0QLybZtxNPP83lk_KYmetCSGg0jph-EuMJmfVFtUoY2Ez4oyG-0ZjcPc844_3qefmOmmX2pbWaa5Yhl58-LagR4KP2pcq3E1ovEN&amp;sai=AMfl-YTPUZUyxbOtBezNDAC6N0hIiG5t4aZDWxisMQYYrv0L0fRQyCD-64yBU7lnDmoNcV1zBHuuzHtxJisv7RvyypJ8T1Gg8GxsdEPCXKlpS13UzsxRRhkOwkyyrTzDC4U&amp;sig=Cg0ArKJSzCqsW7Gh4u2vEAE&amp;fbs_aeid=[gw_fbsaeid]&amp;urlfix=1&amp;adurl=https://go.allegromicro.com/power-tools?utm_source=eepower.com&amp;utm_medium=display&amp;utm_campaign=Power-Tools-2022&amp;utm_term=&amp;utm_content=Wallpaper-B-Efficient-Power-Tools" id="wallpaper" class="absolute block z-0 w-full h-screen" style="background: url(&quot;https://tpc.googlesyndication.com/simgad/15450343757271422439?&quot;) center top no-repeat rgb(255, 255, 255); height: 5610.44px;"></a><main>
+<div class="container relative w-full lg:container mx-auto lg:px-4 xl:px-6 pt-5 mt-1 bg-black-100">
+<div class="mx-4 lg:mx-0">
+
+<ul class="no-print md:flex clearfix text-base text-black-300 hidden">
+<li class="float-left inline-block flex items-center ellipsis">
+<a class="text-black-700 hover:text-red-600 hover:no-underline ellipsis" href="/"><i class="icon-home text-sm mr-1"></i> <span>Home</span></a>
+<i class="icon-caret-right text-2xl mx-2"></i>
+</li>
+<li class="float-left inline-block flex items-center ellipsis" itemprop="itemListElement">
+<a class="text-black-700 hover:text-red-600 hover:no-underline ellipsis" href="/technical-articles/"><span>Technical Articles</span></a>
+<i class="icon-caret-right text-2xl mx-2"></i>
+</li>
+<li class="float-left inline-block flex items-center ellipsis" itemprop="itemListElement">
+<span itemprop="name">What Is a DC-DC Converter and How Does It Work?</span>
+</li>
+</ul>
+
+<script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement":
+        [
+            {
+                "@type": "ListItem",
+                "position": 0,
+                "item":
+                {
+                    "@id": "https://eepower.com",
+                    "name": "Home"
+                }
+            }
+            
+            ,
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "item":
+                {
+                    "@id": "/technical-articles/",
+                    "name": "Technical Articles"
+                }
+            }
+            
+            ,
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "item":
+                {
+                    "@id": "/technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work/",
+                    "name": "What Is a DC-DC Converter and How Does It Work?"
+                }
+            }
+            
+        ]
+    }
+</script>
+</div>
+
+<div class="flex flex-wrap clearfix mt-3 lg:mb-7">
+
+<div class="no-print w-full lg:w-300px float-right inline-block flex flex-wrap order-2 pb-7 -mt-2">
+<div class="md:flex-1 order-1 md:order-2 w-full text-center">
+
+<div class="sticky-container transition-fast flex justify-center mt-2">
+<div id="div-gpt-ad-1429623690593-0" data-google-query-id="CNqI5rrkwPgCFXgB-QAdopUOkg">
+<div id="google_ads_iframe_/62616433/EEPower_Boombox_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/62616433/EEPower_Boombox_0" name="google_ads_iframe_/62616433/EEPower_Boombox_0" title="3rd party ad content" width="300" height="250" scrolling="no" marginwidth="0" marginheight="0" frameborder="0" role="region" aria-label="Advertisement" tabindex="0" srcdoc="" data-google-container-id="3" style="border: 0px; vertical-align: bottom;" data-load-complete="true"></iframe></div></div>
+</div>
+
+</div>
+</div>
+
+
+<article class="w-full lg:w-auto md:flex-1 flex flex-wrap md:pr-4 overflow-hidden order-1">
+
+<div class="border-t-7 border-black-800 w-full bg-white lg:px-4 pt-5 pb-7">
+<div class="mx-4">
+<span class="block tracking-widest text-base text-black-200 uppercase">
+Technical Article
+</span>
+<h1 class="font-arvo text-40px font-bold my-2 leading-tight text-black-700">
+What Is a DC-DC Converter and How Does It Work?
+</h1>
+<div class="flex flex-wrap lg:flex-no-wrap justify-between items-center pb-7 mb-7 border-b border-black-100">
+<span class="text-xl w-full lg:w-auto pb-4 lg:pb-0 block lg:inline-block font-ibm-plex-sans text-black-200">
+16 hours ago <span class="text-aac-grey">by</span> <a class="text-black-700 hover:underline" href="/author/anushree-ramanath">Anushree Ramanath</a>
+</span>
+<ul class="flex flex-wrap flex-none no-print text-4xl">
+<li class="float-left inline-block pr-4 inline-flex justify-center items-center">
+<a class="ga-link text-black-200 hover:text-red-600" href="https://www.facebook.com/eepwr/" target="_blank" rel="noopener" data-category="social-media-button" data-action="facebook-article" data-label="https://eepower.com/technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work"><i class="icon-facebook"></i></a>
+</li>
+<li class="float-left inline-block pr-4 inline-flex justify-center items-center">
+<a class="ga-link text-black-200 hover:text-red-600" href="https://twitter.com/eepwr/" target="_blank" rel="noopener" data-category="social-media-button" data-action="twitter-article" data-label="https://eepower.com/technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work"><i class="icon-twitter"></i></a>
+</li>
+<li class="float-left inline-block pr-4 inline-flex justify-center items-center">
+<a class="ga-link text-black-200 hover:text-red-600" href="https://www.linkedin.com/company/ee-power/" target="_blank" rel="noopener" data-category="social-media-button" data-action="linkedin-article" data-label="https://eepower.com/technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work"><i class="icon-linkedin"></i></a>
+</li>
+</ul>
+</div>
+<h2 class="text-5xl font-martel leading-tight mb-6 text-black-700 mb-4">
+Learn the basics of what DC/DC converters are and how they work.
+</h2>
+</div>
+
+<div class="flex w-full text-center justify-center order-first md:order-3">
+<div id="div-gpt-ad-1430160961981-0" class="w-full flex justify-center mb-6" data-google-query-id="CNuI5rrkwPgCFXgB-QAdopUOkg">
+<div id="google_ads_iframe_/62616433/EEPower_Leaderboard_0__container__" style="border: 0pt none; display: inline-block; width: 800px; height: 250px;"><iframe frameborder="0" src="https://7ec50aa9603db44bd2d13d574d5d7ff6.safeframe.googlesyndication.com/safeframe/1-0-38/html/container.html" id="google_ads_iframe_/62616433/EEPower_Leaderboard_0" title="3rd party ad content" name="" scrolling="no" marginwidth="0" marginheight="0" width="800" height="250" data-is-safeframe="true" sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation" role="region" aria-label="Advertisement" tabindex="0" data-google-container-id="4" style="border: 0px; vertical-align: bottom;" data-load-complete="true"></iframe></div></div>
+</div>
+
+<div class="wysiwyg-content text-black-700 mb-5">
+<p>Power electronic systems form an indispensable part of a huge share of devices we use on a daily basis. Portable electronic devices such as cellphones and laptops do not function without a key power electronic component called the converter.&nbsp;</p>
+<p>Due to the vast number of sub-circuits that are present in these complex devices, there is a need to cater to varied voltage requirements that are not the same as the battery or the AC supply that powers the device. This is where DC-DC converters come in handy and offer ways to step up or step down the voltage based on the requirements as illustrated in Figure 1.</p>
+<p>&nbsp;</p>
+<p style="text-align: center;"><img loading="lazy" alt="Step-up and step-down capability of DC-DC converters " src="https://eepower.com/uploads/articles/Screen_Shot_2022-06-13_at_1.11.13_PM_.png" style="width: 600px; height: 396px;"></p>
+<h5 style="text-align:center"><em><strong>Figure 1.&nbsp;</strong>Step-up and step-down capability of DC-DC converters. Image used courtesy of&nbsp;<a href="https://hardwarebee.com/what-is-dc-dc-converters/" target="_blank">HardwareBee</a></em></h5>
+<p>&nbsp;</p>
+<p>This also compensates the system when the battery voltage decreases due to energy drain, making the system more effective, cost-efficient, and compact [1]. Read on to learn more about the history of DC-DC converters, how they work, and how they help build huge systems.</p>
+<p>&nbsp;</p>
+<h3>A History of DC-DC Converters</h3>
+<p>When semiconductor technology was in its initial stages, the conversion of direct current (DC) supply voltage to a higher voltage was done by converting it to alternating current (AC) intermediately using the vibrator, step-up transformer, and the rectifier assembly. This is feasible for low power applications.&nbsp;</p>
+<p>However, for higher power applications, an electric motor was needed to drive a generator of suitable voltage. Such processes turned out to consume a lot of time for setup procedures, involved exorbitant costs, and were less efficient overall.&nbsp;</p>
+<p>With the rise of semiconductor devices and integrated circuits, the conversion circuits could be designed and implemented effectively as the components were compact, economically viable, and accessible. The biggest advantage was the ability to design energy-efficient processes using solid-state switch mode conversion as opposed to age-old methods that dissipated excess energy in the form of heat.</p>
+<p>&nbsp;</p>
+<h3>What Is a Power Converter?</h3>
+<p>A power converter is a device that converts one form of energy into another on a continuous basis. There are several such devices available with varying degrees of complexity, reliability, and performance [2]. Also, power conversion mechanisms can occur in various forms including mechanical, chemical, and electrical processes.&nbsp;</p>
+<p>For applications in power electronic systems, converters capable of performing energy translation dynamically using electrical processes are preferred. The components typically employed for this purpose include switches along with passive components like inductors, capacitors, and transformers. The use of resistors is avoided in order to reduce possible power losses. The way these components are interconnected depends on the desired method of power translation.&nbsp;</p>
+<p>The simplest form of power conversion would be the transformation of a polyphase AC voltage of one magnitude, phase, and frequency to another magnitude, phase, and frequency. In this sense, a DC input or output can be deemed as AC with zero phases and frequency.&nbsp;</p>
+<p>A DC-DC converter is an electronic circuit that facilitates the conversion of direct current from one voltage level to another based on the requirements. This electric power converter is capable of operating at a wide range of power levels from very low power, such as in the case of batteries, to very large power, such as in the case of large-scale high voltage power transmission systems.&nbsp;</p>
+<p>Some sample DC-DC converter circuit finished products are shown in Figure 2.&nbsp; A DC-DC converter can efficiently produce regulated voltage from a source that may or may not be controlled to a constant or variable load, thus ensuring proper system regulation in addition to the desired voltage level change.</p>
+<p>&nbsp;</p>
+<div class="no-print mobile-container w-full hidden pb-4">
+    <div class="bg-black-800 px-2 w-full font-arial">
+        <span class="uppercase text-white text-sm ">Scroll to continue with content</span>
+    </div>
+    <div class="w-full h-screen flex justify-center">
+        <div class="block relative w-full">
+            <div class="absolute top-0 left-0 clip-rect z-10 w-full h-full overflow-hidden">
+                <div class="fixed flex justify-center py-4 TranslateZ-0 top-0 left-0 right-0 bottom-0 bg-ctl-grey-lightest">
+                    <div class="flex flex-col justify-center h-full">
+                        <div id="div-gpt-ad-1574089611610-0" style="width: 320px; height: 480px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div><p style="text-align: center;"><img loading="lazy" alt="DC-DC Converters" src="https://eepower.com/uploads/articles/Screen_Shot_2022-06-13_at_1.15.47_PM_.png" style="width: 600px; height: 406px;"></p>
+<h5 style="text-align:center"><em><strong>Figure 2.&nbsp;</strong>Sample DC-DC converters. Image used courtesy of&nbsp;<a href="https://www.xppower.com/dc-dc-converters" target="_blank">XP Power</a></em></h5>
+<p>Depending on the application, a converter circuit might consist of only one switch, one inductor, and one capacitor or could be complex due to the use of multiple components integrated into a particular fashion to achieve the desired power conversion.</p>
+<p>&nbsp;</p>
+<h3>High-level Operating Principle</h3>
+<p>The DC-DC converter circuits employ high-frequency power conversion using switches and other passive components to eliminate the switching noise thus regulating the output voltage. The arrangement of the energy storage elements is determined by the step-up or step-down requirement and the application in hand.&nbsp;</p>
+<p>The DC-powered oscillator can be used to drive a simple diode-capacitor voltage multiplier network, a flying capacitor voltage converter, a diode-steered charge pump, or a step-up transformer along with a rectifier network [3]. These are the ways in which most of the electronic DC-DC converters operate.&nbsp;</p>
+<p>The basic idea behind the operation of a DC-DC converter circuit is that the inductors and capacitors employed in the circuit should form a low-pass filter network in some manner. This helps to minimize or eliminate the possible superimposition of AC ripple or other components with the output voltage formed due to switching action.</p>
+<p>&nbsp;</p>
+<h3>Key Takeaways</h3>
+<ul>
+<li>A power converter is a device that converts one form of energy into another on a continuous basis.</li>
+<li>A DC-DC converter is an electronic circuit that facilitates the conversion of direct current from one voltage level to another based on the requirements.</li>
+<li>The DC-DC converter circuits employ high-frequency power conversion using switches and other passive components to eliminate the switching noise thus regulating the output voltage.&nbsp;</li>
+</ul>
+<p>&nbsp;</p>
+<p>Next up, learn about DC-DC conversion principles!</p>
+<p>&nbsp;</p>
+<h3>References</h3>
+<ol>
+<li>Robert W Erickson and Dragan Maksimovic, Fundamentals of power electronics, Springer Science &amp; Business Media, 2007.</li>
+<li>Rudolf P.Severns and Gordon E.Bloom, Modern DC-to-DC switch-mode power converter circuits, 1985.</li>
+<li>Ray Marston, ‘DC Voltage Converter Circuits’. 2017.</li>
+</ol>
+<p>&nbsp;</p>
+<h5><em>Feature image used courtesy of&nbsp;<a href="https://www.xppower.com/dc-dc-converters" target="_blank">XP Power</a></em></h5>
+<div id="div-gpt-ad-1429623690599-0" class="md:hidden w-full flex justify-center my-4" style="display: none;">
+</div>
+</div>
+<div class="mx-4">
+
+
+<div class="related-content no-print w-full border-t-7 border-black-800 ">
+<h3 class="uppercase font-bold font-ibm-plex-sans mb-5 tracking-wide md:text-3xl text-2xl pt-3">
+Related Content
+</h3>
+<ul class="lg:mb-16 md:mb-8 mb-5 lg:ml-16 md:ml-12 ml-8 list-disc font-ibm-plex-sans">
+<li class="lg:mb-7"><a class="ga-link text-black-700 hover:text-red-600" href="/technical-articles/intro-to-cuk-converters-part-1/" data-category="related-content-click" data-action="/technical-articles/intro-to-cuk-converters-part-1/">What is a Ćuk Converter?</a></li>
+<li class="lg:mb-7"><a class="ga-link text-black-700 hover:text-red-600" href="/technical-articles/what-is-electromagnetic-induction/" data-category="related-content-click" data-action="/technical-articles/what-is-electromagnetic-induction/">What is Electromagnetic Induction?</a></li>
+<li class="lg:mb-7"><a class="ga-link text-black-700 hover:text-red-600" href="/technical-articles/what-is-partial-discharge/" data-category="related-content-click" data-action="/technical-articles/what-is-partial-discharge/">What is Partial Discharge?</a></li>
+<li class="lg:mb-7"><a class="ga-link text-black-700 hover:text-red-600" href="/technical-articles/what-is-a-finfet/" data-category="related-content-click" data-action="/technical-articles/what-is-a-finfet/">What is a FinFET?</a></li>
+<li class="lg:mb-7"><a class="ga-link text-black-700 hover:text-red-600" href="/new-industry-products/buck-converters-AC-DC-converters-and-dc-dc-converters/" data-category="related-content-click" data-action="/new-industry-products/buck-converters-AC-DC-converters-and-dc-dc-converters/">Buck Converters, AC-DC Converters, and DC-DC Converters</a></li>
+</ul>
+</div>
+
+<div class="no-print w-full border-t border-black-200">
+<h3 class="font-bold text-black-700 text-3xl mt-6 font-ibm-plex-sans">
+Learn More About:
+</h3>
+<ul class="flex flex-wrap clearfix mt-4">
+<li class="pr-4 pb-4 inline-block float-left"><a class="ga-link uppercase inline-block whitespace-no-wrap px-4 py-1 rounded-r-full bg-red-300 text-black-700 text-xl hover:shadow-md" href="/search?q=Power Conversion" rel="nofollow" data-category="content-tag-click" data-action="Power Conversion">Power Conversion</a></li>
+<li class="pr-4 pb-4 inline-block float-left"><a class="ga-link uppercase inline-block whitespace-no-wrap px-4 py-1 rounded-r-full bg-red-300 text-black-700 text-xl hover:shadow-md" href="/search?q=DC-DC Converter" rel="nofollow" data-category="content-tag-click" data-action="DC-DC Converter">DC-DC Converter</a></li>
+<li class="pr-4 pb-4 inline-block float-left"><a class="ga-link uppercase inline-block whitespace-no-wrap px-4 py-1 rounded-r-full bg-red-300 text-black-700 text-xl hover:shadow-md" href="/search?q=Power Converter" rel="nofollow" data-category="content-tag-click" data-action="Power Converter">Power Converter</a></li>
+<li class="pr-4 pb-4 inline-block float-left"><a class="ga-link uppercase inline-block whitespace-no-wrap px-4 py-1 rounded-r-full bg-red-300 text-black-700 text-xl hover:shadow-md" href="/search?q=DC-DC Conversion" rel="nofollow" data-category="content-tag-click" data-action="DC-DC Conversion">DC-DC Conversion</a></li>
+</ul>
+</div>
+
+</div>
+</div>
+
+</article>
+
+</div>
+
+
+<div id="comment_container" class="no-print w-full border-t-10 border-black-800 pb-7">
+<div class="w-full py-4 px-6 bg-white">
+<a data-menu="#comments" class="menu-toggle flex items-center uppercase font-bold font-ibm-plex-sans text-black-700 tracking-wider text-2xl hover:no-underline" href="#">
+Comments <i class="icon-caret-up transition-ease text-5xl ml-1"></i>
+</a>
+</div>
+<div id="comments" class="w-full py-4 pb-7 px-6 flex flex-wrap border-t border-black-100 bg-white">
+
+<strong class="w-full block text-black-700 text-xl mb-4">
+0 Comments
+</strong>
+
+
+<form id="main_form" class="w-full flex flex-wrap items-start mt-5 mb-8" method="post" action="https://eepower.com/technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work">
+<div class="hiddenFields">
+<input type="hidden" name="ACT" value="4">
+<input type="hidden" name="RET" value="AdDSOZ1OLmAH4gSKL1rpCJXSSHE+5Y/okyRwgGqZrl64yuNsJHlADCtH72ZHpIUOYMn54E8R0fJI3yy2ooFh87AfszhhWjCzEaF5kxJBJzVe7vGaAOY3GnEiD0gUp7oUeSJX+4DUBH8rfsSlRwAS9A==">
+<input type="hidden" name="URI" value="technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work">
+<input type="hidden" name="PRV" value="">
+<input type="hidden" name="entry_id" value="60257">
+<input type="hidden" name="parent_id" value="0">
+<input type="hidden" name="site_id" value="1">
+<input type="hidden" name="csrf_token" value="1d2b1163dbe1b403e25dd5962b1b09fe2725524f">
+</div>
+<img loading="lazy" class="float-left inline-block" src="/images/site/default_avatar.jpg" height="35px" width="35px">
+<textarea name="comment" class="flex-1 flex-grow w-4/5 border border-black-100 ml-4 text-xl px-4 py-2" placeholder="Please log in before you can comment." readonly=""></textarea>
+<div class="w-full flex justify-end pt-4">
+<a href="#loginModal" rel="modal:open" class="bg-black-800 py-2 px-7 font-bold text-white text-xl float-right hover:shadow-md cursor-pointer">Log in to comment</a>
+</div>
+</form>
+
+
+<form id="reply_form" class="hidden w-full flex flex-wrap items-start mt-5 mb-8" method="post" action="https://eepower.com/technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work">
+<div class="hiddenFields">
+<input type="hidden" name="ACT" value="4">
+<input type="hidden" name="RET" value="9FtJ05sZqSvlb1X46T7xsv4WsYCFoGnHH4tcRp9WlBi/HPbY/fTuvpfqiFStLmtJdRj93x599W61YW8Zg+Fs3LTcDXJkwSfnGomyfmt9BsIL1BwjbmuEQ4QKlLG9KiL4O+mEl89quQhi5/dmsUgeVA==">
+<input type="hidden" name="URI" value="technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work">
+<input type="hidden" name="PRV" value="">
+<input type="hidden" name="entry_id" value="60257">
+<input type="hidden" name="parent_id" value="0">
+<input type="hidden" name="site_id" value="1">
+<input type="hidden" name="csrf_token" value="1d2b1163dbe1b403e25dd5962b1b09fe2725524f">
+</div>
+<img loading="lazy" class="float-left inline-block" src="/images/site/default_avatar.jpg" height="35px" width="35px">
+<textarea name="comment" class="flex-1 flex-grow w-4/5 border border-black-100 ml-4 text-xl px-4 py-2" placeholder="Please log in before you can comment." readonly=""></textarea>
+<div class="w-full flex justify-end pt-4">
+<input type="submit" disabled="true" class="ga-link bg-black-800 py-2 px-7 font-bold text-white text-xl float-right hover:shadow-md cursor-pointer" value="Submit" data-category="article-comment" data-action="https://eepower.com/technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work">
+</div>
+<input type="hidden" id="parent_id" name="parent_id" value="">
+</form>
+
+
+<ul class="w-full">
+</ul>
+
+</div>
+</div>
+
+
+<div id="show_all_comments_btn" class="hidden w-full flex flex-wrap mt-5 mb-7">
+<div class="flex-grow flex flex-col justify-center inline-block float-left pl-2 md:pl-6"><hr class="border-t border-black-800 align-middle m-0 p-0"></div>
+<div class="flex px-8 text-center">
+<a href="#" class="bg-black-800 rounded py-2 px-7 font-bold text-white text-xl hover:shadow-md cursor-pointer">Load more comments</a>
+</div>
+<div class="flex-grow flex flex-col justify-center inline-block float-left pr-2 md:pr-6"><hr class="border-t border-black-800 align-middle m-0 p-0"></div>
+</div>
+
+
+<div class="no-print w-full border-t-8 md:border-t-10 border-black-800 px-4 py-2 lg:px-7 lg:py-4 bg-white mb-7">
+<h3 class="uppercase font-martel font-bold text-black-700 tracking-wider text-3xl mt-2 mb-6">
+You May Also Like
+</h3>
+<ul class="flex flex-wrap mb-4 mx-0 md:-mx-3 clearfix recommended-articles">
+
+<li id="recommended_1" class="w-full md:w-1/5 flex flex-col justify-between px-0 md:px-4 group float-left inline-block ">
+<a class="ga-link" href="/technical-articles/embedded-designs-drive-tomorrows-solutions/" data-category="you-may-also-like" data-action="/technical-articles/embedded-designs-drive-tomorrows-solutions/">
+<div class="relative inline-block">
+<picture>
+<source media="(max-width: 1024px)" srcset="https://eepower.com/uploads/thumbnails/Vincotech_Fig3_0.jpg 0.5x">
+<img class="w-full" loading="lazy" src="https://eepower.com/uploads/thumbnails/_315_220/Vincotech_Fig3_0.jpg" alt="">
+</picture>
+<div class="group-hover:opacity-25 bg-gradient-black opacity-0 absolute top-0 left-0 w-full h-full transition-ease"></div>
+</div>
+<h4 class="mt-3 mb-2 font-bold font-ibm-plex-sans text-24px leading-tight lg:leading-normal md:text-base xl:text-2xl text-black-700 group-hover:text-red-600">
+Embedded Designs Drive Tomorrows Solutions
+</h4>
+</a>
+<p class="text-black-300 ml-2 text-base pb-4 lg:pb-8">
+by <a class="font-bold" href="/author/micheleportico">MIchele Portico</a>
+</p>
+</li>
+
+
+<li id="recommended_2" class="w-full md:w-1/5 flex flex-col justify-between px-0 md:px-4 group float-left inline-block pt-8 md:pt-0 border-t md:border-t-0 md:border-l border-black-500">
+<a class="ga-link" href="/technical-articles/the-expanding-markets-for-gan-technology/" data-category="you-may-also-like" data-action="/technical-articles/the-expanding-markets-for-gan-technology/">
+<div class="relative inline-block">
+<picture>
+<source media="(max-width: 1024px)" srcset="https://eepower.com/uploads/thumbnails/2464-7461-efficient-power-conversion.jpg 0.5x">
+<img class="w-full" loading="lazy" src="https://eepower.com/uploads/thumbnails/_315_220/2464-7461-efficient-power-conversion.jpg" alt="">
+</picture>
+<div class="group-hover:opacity-25 bg-gradient-black opacity-0 absolute top-0 left-0 w-full h-full transition-ease"></div>
+</div>
+<h4 class="mt-3 mb-2 font-bold font-ibm-plex-sans text-24px leading-tight lg:leading-normal md:text-base xl:text-2xl text-black-700 group-hover:text-red-600">
+The Expanding Markets for GaN Technology
+</h4>
+</a>
+<p class="text-black-300 ml-2 text-base pb-4 lg:pb-8">
+by <a class="font-bold" href="/author/alexlidow">Alex Lidow</a>
+</p>
+</li>
+
+
+<li id="recommended_3" class="w-full md:w-1/5 flex flex-col justify-between px-0 md:px-4 group float-left inline-block pt-8 md:pt-0 border-t md:border-t-0 md:border-l border-black-500">
+<a class="ga-link" href="/news/mouser-electronics-power-one-sign-global-distribution-agreement/" data-category="you-may-also-like" data-action="/news/mouser-electronics-power-one-sign-global-distribution-agreement/">
+<div class="relative inline-block">
+<picture>
+<source media="(max-width: 1024px)" srcset="/images/site/default-image-small.jpg 0.5x">
+<img class="w-full" loading="lazy" src="/images/site/default-image-small.jpg" alt="">
+</picture>
+<div class="group-hover:opacity-25 bg-gradient-black opacity-0 absolute top-0 left-0 w-full h-full transition-ease"></div>
+</div>
+<h4 class="mt-3 mb-2 font-bold font-ibm-plex-sans text-24px leading-tight lg:leading-normal md:text-base xl:text-2xl text-black-700 group-hover:text-red-600">
+Mouser Electronics &amp; Power-One Sign Global Distribution Agreement
+</h4>
+</a>
+<p class="text-black-300 ml-2 text-base pb-4 lg:pb-8">
+by <a class="font-bold" href="/author/jeffshepard">Jeff Shepard</a>
+</p>
+</li>
+
+
+<li id="recommended_4" class="w-full md:w-1/5 flex flex-col justify-between px-0 md:px-4 group float-left inline-block pt-8 md:pt-0 border-t md:border-t-0 md:border-l border-black-500">
+<a class="ga-link" href="/news/micro-power-secures-9-million-in-new-funding/" data-category="you-may-also-like" data-action="/news/micro-power-secures-9-million-in-new-funding/">
+<div class="relative inline-block">
+<picture>
+<source media="(max-width: 1024px)" srcset="/images/site/default-image-small.jpg 0.5x">
+<img class="w-full" loading="lazy" src="/images/site/default-image-small.jpg" alt="">
+</picture>
+<div class="group-hover:opacity-25 bg-gradient-black opacity-0 absolute top-0 left-0 w-full h-full transition-ease"></div>
+ </div>
+<h4 class="mt-3 mb-2 font-bold font-ibm-plex-sans text-24px leading-tight lg:leading-normal md:text-base xl:text-2xl text-black-700 group-hover:text-red-600">
+Micro Power Secures $9 Million in New Funding
+</h4>
+</a>
+<p class="text-black-300 ml-2 text-base pb-4 lg:pb-8">
+by <a class="font-bold" href="/author/jeffshepard">Jeff Shepard</a>
+</p>
+</li>
+
+
+<li id="recommended_5" class="w-full md:w-1/5 flex flex-col justify-between px-0 md:px-4 group float-left inline-block pt-8 md:pt-0 border-t md:border-t-0 md:border-l border-black-500">
+<a class="ga-link" href="/news/active-power-receives-chinese-certification-for-flywheel-ups-system/" data-category="you-may-also-like" data-action="/news/active-power-receives-chinese-certification-for-flywheel-ups-system/">
+<div class="relative inline-block">
+<picture>
+<source media="(max-width: 1024px)" srcset="/images/site/default-image-small.jpg 0.5x">
+<img class="w-full" loading="lazy" src="/images/site/default-image-small.jpg" alt="">
+</picture>
+<div class="group-hover:opacity-25 bg-gradient-black opacity-0 absolute top-0 left-0 w-full h-full transition-ease"></div>
+</div>
+<h4 class="mt-3 mb-2 font-bold font-ibm-plex-sans text-24px leading-tight lg:leading-normal md:text-base xl:text-2xl text-black-700 group-hover:text-red-600">
+Active Power Receives Chinese Certification For Flywheel UPS System
+</h4>
+</a>
+<p class="text-black-300 ml-2 text-base pb-4 lg:pb-8">
+by <a class="font-bold" href="/author/jeffshepard">Jeff Shepard</a>
+</p>
+</li>
+
+</ul>
+</div>
+
+</div>
+</main>
+<script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "mainEntityOfPage": {
+  "@type": "WebPage",
+  "@id": "https://eepower.com/technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work/"
+  },
+  "headline": "What Is a DC-DC Converter and How Does It Work?",
+  "description": "Learn the basics of what DC\/DC converters are and how they work.",
+  "image": [
+  "https://eepower.com/uploads/thumbnails/Screen_Shot_2022-06-13_at_1.15.47_PM_.png"
+  ],
+  "datePublished": "2022-06-21T12:00:00-06:00",
+  "dateModified": "2022-06-13T12:33:32-06:00",
+  "author": {
+  "@type": "Person",
+  
+  "name": "Anushree  Ramanath",
+  "sameAs": "https://eepower.com/author/anushree-ramanath/",
+  "image": "https://eepower.com/uploads/articles/Anushree_-_Image_-_Anushree_Ramanath.JPG"
+  
+  },
+  "publisher": {
+  "@type": "Organization",
+  "name": "EEPower.com",
+  "logo": {
+  "@type": "ImageObject",
+  "url": "https://eepower.com/images/site/og_default.png"
+  }
+  }
+  }
+</script>
+<script type="application/javascript">
+    window.addEventListener('load', function(event) {
+        if ($('.wysiwyg-content:contains("$$")').length > 0 || $('.wysiwyg-content:contains("\[")').length > 0) {
+            // add async mathjax
+            var script = document.createElement("script");
+            script.type = "text/javascript";
+            script.src  = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-MML-AM_CHTML";
+            script.async = 1;
+            document.getElementsByTagName("body")[0].appendChild(script);
+        }
+    });
+</script>
+<footer class="footer footer-bg-gradient border-t-5 border-black-500 font-ibm-plex-sans lg:px-0 md:px-4 no-print">
+<div class="container mx-auto lg:px-16 hidden md:block">
+<div class="w-full inline-block float-left pt-12">
+<h6 class="text-white text-lg uppercase tracking-widest pt-6">
+Who We Are
+</h6>
+<img loading="lazy" class="my-6" src="/images/site/footer-logo2.png" alt="">
+</div>
+<div class="w-full flex clearfix">
+<div class="w-2/3 inline-block float-left py-6">
+<ul class="w-full flex flex-wrap">
+<li class="w-2/6 inline-block float-left py-6">
+<h6 class="text-white tracking-wider text-xl uppercase mb-3">
+Products
+</h6>
+<ul class="w-full text-xl leading-extraloose">
+<li><a class="text-black-200 hover:text-white" href="/latest/assemblies-enclosures/">Assemblies &amp; Enclosures</a></li>
+<li><a class="text-black-200 hover:text-white" href="/latest/batteries/">Batteries</a></li>
+<li><a class="text-black-200 hover:text-white" href="/latest/cables-connectors/">Cables &amp; Connectors</a></li>
+<li><a class="text-black-200 hover:text-white" href="/latest/integrated-circuits/">Integrated Circuits (ICs)</a></li>
+<li><a class="text-black-200 hover:text-white" href="/latest/magnetics/">Magnetics</a></li>
+<li><a class="text-black-200 hover:text-white" href="/latest/motor-drives/">Motor Drives</a></li>
+<li><a class="text-black-200 hover:text-white" href="/latest/passives/">Passives</a></li>
+<li><a class="text-black-200 hover:text-white" href="/latest/power-supplies/">Power Supplies</a></li>
+<li><a class="text-black-200 hover:text-white" href="/latest/semiconductors/">Semiconductors</a></li>
+<li><a class="text-black-200 hover:text-white" href="/latest/sensors/">Sensors</a></li>
+<li><a class="text-black-200 hover:text-white" href="/latest/test-measurement/">Test &amp; Measurement</a></li>
+<li><a class="text-black-200 hover:text-white" href="/latest/thermal-management/">Thermal Management</a></li>
+</ul>
+</li>
+<li class="w-2/6 inline-block float-left py-6">
+<h6 class="text-white tracking-wider text-xl uppercase mb-3">
+Applications
+</h6>
+<ul class="w-full text-xl leading-extraloose">
+<li><a class="text-black-200 hover:text-white" href="/latest/automotive/">Automotive</a></li>
+<li><a class="text-black-200 hover:text-white" href="/latest/consumer-electronics/">Consumer Electronics</a></li>
+<li><a class="text-black-200 hover:text-white" href="/latest/industrial/">Industrial</a></li>
+<li><a class="text-black-200 hover:text-white" href="/latest/lighting/">Lighting</a></li>
+<li><a class="text-black-200 hover:text-white" href="/latest/medical-fitness/">Medical &amp; Fitness</a></li>
+<li><a class="text-black-200 hover:text-white" href="/latest/military-aerospace/">Military &amp; Aerospace</a></li>
+<li><a class="text-black-200 hover:text-white" href="/latest/renewable-energy/">Renewable Energy</a></li>
+<li><a class="text-black-200 hover:text-white" href="/latest/security/">Security</a></li>
+<li><a class="text-black-200 hover:text-white" href="/latest/utilities/">Utilities</a></li>
+</ul>
+</li>
+<li class="w-2/6 inline-block float-left py-6">
+<h6 class="text-white tracking-wider text-xl uppercase mb-3">
+Content
+</h6>
+<ul class="w-full text-xl leading-extraloose">
+<li><a class="text-black-200 hover:text-white" href="/news/">News</a></li>
+<li><a class="text-black-200 hover:text-white" href="/new-industry-products/">New Industry Products</a></li>
+<li><a class="text-black-200 hover:text-white" href="/technical-articles/">Technical Articles</a></li>
+<li><a class="text-black-200 hover:text-white" href="/market-insights/">Market Insights</a></li>
+<li><a class="text-black-200 hover:text-white" href="/industry-articles/">Industry Articles</a></li>
+<li><a class="text-black-200 hover:text-white" href="/industry-white-papers/">Industry White Papers</a></li>
+<li><a class="text-black-200 hover:text-white" href="/power-electronics-textbook/">Textbook</a></li>
+<li><a class="text-black-200 hover:text-white" href="/resistor-guide/">Resistor Guide</a></li>
+<li><a class="text-black-200 hover:text-white" href="/capacitor-guide/">Capacitor Guide</a></li>
+<li><a class="text-black-200 hover:text-white" href="/tools/">Tools</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="w-1/3 inline-block float-left py-6 md:pl-20">
+<div class="flex flex-col w-full clearfix py-6 pb-4">
+<h6 class="align-middle text-white text-xl uppercase tracking-widest leading-none -mt-1">
+Connect With Us
+</h6>
+<ul class="w-full flex items-center text-7xl my-4">
+<li class="inline-block float-left mr-7">
+<a class="ga-link text-black-500 hover:text-black-100" href="https://www.facebook.com/eepwr/" target="_blank" rel="noopener" data-category="social-media-button" data-action="facebook-footer" data-label="https://eepower.com/technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work"><i class="icon-facebook"></i></a>
+</li>
+<li class="inline-block float-left mr-7">
+<a class="ga-link text-black-500 hover:text-black-100" href="https://twitter.com/eepwr/" target="_blank" rel="noopener" data-category="social-media-button" data-action="twitter-footer" data-label="https://eepower.com/technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work"><i class="icon-twitter"></i></a>
+</li>
+<li class="inline-block float-left mr-7">
+ <a class="ga-link text-black-500 hover:text-black-100" href="https://www.linkedin.com/company/ee-power/" target="_blank" rel="noopener" data-category="social-media-button" data-action="linkedin-footer" data-label="https://eepower.com/technical-articles/what-is-a-dc-dc-converter-and-how-does-it-work"><i class="icon-linkedin"></i></a>
+</li>
+</ul>
+</div>
+<ul class="text-11px flex flex-wrap w-3/4 clearfix">
+<li class="w-1/2 inline-block float-left py-3">
+<a class="text-black-200 hover:text-white text-xl" href="/contact-us/">Contact Us</a>
+</li>
+<li class="w-1/2 inline-block float-left py-3">
+<a class="text-black-200 hover:text-white text-xl" href="https://www.eetech.com" target="_blank">Advertise</a>
+</li>
+<li class="w-1/2 inline-block float-left py-3">
+<a class="ga-link text-black-200 hover:text-white text-xl" href="/write-for-us/" data-category="write-for-us" data-action="write-for-us">Write For Us</a>
+</li>
+</ul>
+<div class="w-full pt-16">
+<h6 class="align-middle text-white text-xl uppercase tracking-widest leading-none">
+Sign Up
+</h6>
+<form action="/forums/register" method="GET" class="flex w-full md:w-4/5 pt-4">
+<input type="text" name="email" class="flex-1 pl-4 py-3 text-black-500 text-base bg-white" placeholder="Enter your email address" aria-label="Enter you email address" aria-describedby="basic-addon1">
+<button type="submit" class="ga-link w-auto bg-black-400 text-white px-5 py-3 text-11px" data-category="register" data-action="email" data-label="https://eepower.com/forums/register">
+Register
+</button>
+</form>
+</div>
+</div>
+</div>
+<div class="flex w-full flex-col">
+<h6 class="align-middle text-white text-xl uppercase tracking-widest leading-none">
+More From Our Network
+</h6>
+<ul class="flex border-t-1 border-black-500 mt-4 pt-4 pb-16">
+<li class="mr-10">
+<a href="https://www.allaboutcircuits.com" target="_blank" class="text-black-500 hover:text-black-100">
+<i class="icon-aac text-4xl"></i>
+</a>
+</li>
+<li class="mr-10">
+<a href="https://maker.pro" target="_blank" class="text-black-500 hover:text-black-100">
+<i class="icon-maker-pro text-4xl"></i>
+</a>
+</li>
+<li class="mr-10">
+<a href="https://control.com" target="_blank" class="text-black-500 hover:text-black-100">
+<i class="icon-control text-4xl"></i>
+</a>
+</li>
+<li class="mr-10">
+<a href="https://www.mikrocontroller.net/" target="_blank" class="text-black-500 hover:text-black-100">
+<i class="icon-mikrocontroller text-2xl"></i>
+</a>
+</li>
+</ul>
+</div>
+</div>
+<div class="w-full bg-black-800">
+<div class="container mx-auto px-16">
+<div class="flex flex-wrap py-5 text-11px">
+<div class="w-full lg:flex-1 text-black-300 text-center lg:text-left order-2 md:order-1">
+© EETech Media, LLC. All rights reserved
+</div>
+<div class="mx-auto lg:mx-0 lg:w-auto flex items-center whitespace-no-wrap order-1 md:order-2 mb-3 lg:mb-0">
+<a class="text-black-300 hover:text-black-100" href="/privacy-policy/">Privacy Policy</a>
+<span class="text-black-300 mx-1">·</span>
+<a class="text-black-300 hover:text-black-100" href="/user-agreement/">User Agreement</a>
+</div>
+</div>
+</div>
+</div>
+</footer>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+
+<script src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script><script src="https://securepubads.g.doubleclick.net/gpt/pubads_impl_2022061501.js" id="gpt-impl-0.5459052094052401" nonce=""></script>
+<script src="/js/ad.js?v=108"></script>
+<script src="/js/welcome.js?v=102"></script><iframe src="https://7ec50aa9603db44bd2d13d574d5d7ff6.safeframe.googlesyndication.com/safeframe/1-0-38/html/container.html" style="visibility: hidden; display: none;"></iframe>
+
+<script type="text/javascript">
+    googletag.cmd.push(function() {googletag.display('div-gpt-ad-1430160961981-0');});
+    googletag.cmd.push(function() {googletag.display('div-gpt-ad-1429623690593-0');});
+    googletag.cmd.push(function() {googletag.display('div-gpt-ad-1429623690599-0');});
+</script>
+
+<div id="div-gpt-ad-1430235245447-0" class="wallpaperadpixel hidden" data-google-query-id="CNmI5rrkwPgCFXgB-QAdopUOkg">
+
+<div id="google_ads_iframe_/62616433/EEPower_Wallpaper_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/62616433/EEPower_Wallpaper_0" name="google_ads_iframe_/62616433/EEPower_Wallpaper_0" title="3rd party ad content" width="1" height="1" scrolling="no" marginwidth="0" marginheight="0" frameborder="0" role="region" aria-label="Advertisement" tabindex="0" srcdoc="" data-google-container-id="2" data-load-complete="true" style="border: 0px; vertical-align: bottom;"></iframe></div></div>
+
+<div id="div-gpt-ad-1441294234226-0" data-google-query-id="CNyI5rrkwPgCFXgB-QAdopUOkg" style="display: none;">
+<script>
+        googletag.cmd.push(function() {googletag.display('div-gpt-ad-1441294234226-0');});
+    </script>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.matchHeight/0.7.2/jquery.matchHeight-min.js" integrity="sha256-+oeQRyZyY2StGafEsvKyDuEGNzJWAbWqiO2L/ctxF6c=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jStorage/0.4.12/jstorage.min.js" integrity="sha256-JpV4IWnt/w4RQKkIQd0NORsrqy7mnydQFD0iQjKEc/Y=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.hoverintent/1.10.0/jquery.hoverIntent.min.js" integrity="sha256-rsusDYnTpKDiboGp6W+t4oB9VOdybAuz3F/JalS7P5Y=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js" crossorigin="anonymous"></script>
+<script src="/js/jquery-ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.1.3/howler.min.js" integrity="sha256-/Q4ZPy6sMbk627wHxuaWSIXS1y7D2KnMhsm/+od7ptE=" crossorigin="anonymous"></script>
+<script src="/js/code.js"></script>
+<script src="/js/subscriber.newsletter.js?v=102"></script>
+<script src="/js/app.js?v=114"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jstimezonedetect/1.0.6/jstz.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.3/cookieconsent.min.js"></script>
+<script src="/js/view.js?v=107"></script>
+
+<div class="w-5/6 md:w-590px absolute z-50 bg-white border-t-7 border-red-600 mt-24 top-0 mx-auto left-0 right-0 modal rounded-none" id="loginModal">
+<img loading="lazy" src="/images/site/Logo-Large.png" alt="EEPower" class="mx-auto mt-4 w-1/2 h-auto">
+<h2 class="text-center text-black-600 font-ibm-plex-sans font-bold text-7xl my-4">Welcome Back</h2>
+<form method="POST" action="/forums/login/login">
+<input class="appearance-none block w-full text-gray-400 focus:text-black-600 text-xl focus:font-bold border border-black-200 focus:border-black-300 outline-none p-4 mb-2 leading-tight focus:outline-none focus:bg-white" type="text" placeholder="Username or Email" name="login" id="username">
+<p class="text-xl text-black-600 mb-4">Don't have an EEPower account? <a href="/forums/register/" class="text-red-600 hover:text-red-600">Create one now</a>.</p>
+<input class="appearance-none block w-full text-gray-400 focus:border-gray-700 text-xl focus:font-bold border border-black-200 focus:border-black-300 outline-none p-4 mb-2 leading-tight focus:outline-none focus:bg-white" type="password" placeholder="Password" name="password" id="password">
+<p class="text-xl text-black-600 mb-4">Forgot your password? <a href="/forums/lost-password" class="text-red-600 hover:text-red-600">Click here</a>.</p>
+<button class="block w-full font-open-sans text-xl text-center px-8 py-5 font-bold text-white mb-4 hover:shadow-md bg-black-800">Sign In</button>
+<label class="text-xl font-open-sans font-bold cursor-pointer mb-4 custom-checkbox">
+<input class="mr-2 leading-tight" type="checkbox" name="remember" value="1" id="remember_me" checked="checked">
+<span class="checkmark"></span>
+<span>Stay logged in</span>
+</label>
+<input type="hidden" id="_xfRedirect" name="_xfRedirect" value="">
+<input type="hidden" id="_xfToken" name="_xfToken" value="">
+</form>
+<div class="italic font-xl text-black-600 px-16 mb-4 flex items-center"><span>Or sign in with</span> <hr class="h-px bg-black-300 flex-grow ml-4"></div>
+<ul class="flex flex-wrap mx-auto items-center justify-between clearfix -mx-4">
+<li class="mb-5 w-full md:w-1/2 float-left inline-block px-2"><a href="/forums/register/connected-accounts/facebook/?setup=1" class="flex block items-center py-4 px-8 md:px-3 lg:px-6 text-center text-white text-xl rounded-md bg-facebook hover:bg-facebook-dark"><i class="icon-facebook text-4xl mr-2"></i> Facebook</a></li>
+<li class="mb-5 w-full md:w-1/2 float-left inline-block px-2"><a href="/forums/register/connected-accounts/google/?setup=1" class="flex block items-center py-4 px-6 md:px-3 lg:px-6 text-center text-white text-xl rounded-md bg-google hover:bg-google-dark"><i class="icon-google text-4xl mr-2"></i> Google</a></li>
+<li class="mb-5 w-full md:w-1/2 float-left inline-block px-2"><a href="/forums/register/connected-accounts/linkedin/?setup=1" class="flex block items-center py-4 px-6 md:px-3 lg:px-6 text-center text-white text-xl rounded-md bg-linkedin hover:bg-linkedin-dark"><i class="icon-linkedin text-4xl mr-2"></i> LinkedIn</a></li>
+<li class="mb-5 w-full md:w-1/2 float-left inline-block px-2"><a href="/forums/register/connected-accounts/github/?setup=1" class="flex block items-center py-4 px-6 md:px-3 lg:px-6 text-center text-white text-xl rounded-md bg-github hover:bg-github-dark"><i class="icon-github text-4xl mr-2"></i> GitHub</a></li>
+</ul>
+</div>
+
+
+<script type="text/javascript">(function(){window['__CF$cv$params']={r:'71f4158fdab19e53',m:'08A0A7tnxkW3RyE5QjGb0Q5LgqNcs.vurzaYmfP0aIg-1655891474-0-AZsydU0OYYqWLyWv9mMtCkDjPp3GbRIH31UR7iMiSk/TwkY+sm5knejkUtxFmDyqf0tDJKNAeZ4MSybQJet1qOpceqGsiblTR5y0DU7ZaCdi58e+Y71j+alcpFAii5lpYbRRcGAsncpp0v5xC/Q1rBIXcVVAt5NHLduBUM3p7HTjuaDPHMTwTp6aNcZko251qrGIIfg+Tfe770DA0SwuobY=',s:[0x57587e9241,0x12221248d7],u:'/cdn-cgi/challenge-platform/h/g'}})();</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-MML-AM_CHTML" async=""></script><iframe src="https://www.google.com/recaptcha/api2/aframe" width="0" height="0" style="display: none;"></iframe></body></html>

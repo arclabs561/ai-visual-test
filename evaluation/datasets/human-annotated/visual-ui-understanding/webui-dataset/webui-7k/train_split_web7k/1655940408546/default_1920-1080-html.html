@@ -1,0 +1,883 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><link rel="icon" href="/logo3.ico"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0013F4"><link rel="apple-touch-icon" href="/streak_192.png"><meta name="description" content="Strategy trading platform"><meta name="keywords" content="Streak,no coding, backtest, deploy, live, market, web based trading platform, html5 trading platform, best trading platform, best web trading platform"><meta name="og:description" content="Strategy trading platform"><meta name="og:url" content="https://streak.tech"><meta name="og:title" content="Streak | Create, backtest and deploy"><meta name="og:image" content="/streak_192.png"><meta name="facebook-domain-verification" content="2t5nu821ptwr0izd3qqp872cldhi4l"><link rel="manifest" href="/manifest.json"><link rel="shortcut icon" href="/logo3.icon"><link rel="icon" href="/logo3.ico" type="image/x-icon"><title>Streak | Create, backtest and deploy trading strategies</title><script async="" src="https://www.google-analytics.com/analytics.js"></script><script type="text/javascript" async="" src="https://www.googleadservices.com/pagead/conversion_async.js"></script><script src="https://connect.facebook.net/signals/config/732362331237761?v=2.9.62&amp;r=stable" async=""></script><script async="" src="https://connect.facebook.net/en_US/fbevents.js"></script><script async="" src="https://www.googletagmanager.com/gtag/js?id=AW-612213518"></script><script>function gtag(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","AW-612213518")</script><script>!function(e,t,n,c,o,a,f){e.fbq||(o=e.fbq=function(){o.callMethod?o.callMethod.apply(o,arguments):o.queue.push(arguments)},e._fbq||(e._fbq=o),o.push=o,o.loaded=!0,o.version="2.0",o.queue=[],(a=t.createElement(n)).async=!0,a.src="https://connect.facebook.net/en_US/fbevents.js",(f=t.getElementsByTagName(n)[0]).parentNode.insertBefore(a,f))}(window,document,"script"),fbq("init","732362331237761"),fbq("track","PageView")</script><noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=732362331237761&ev=PageView&noscript=1"/></noscript><link href="/static/css/13.fa48e153.chunk.css" rel="stylesheet"><link href="/static/css/main.3528465e.chunk.css" rel="stylesheet"><meta http-equiv="origin-trial" content="A9wkrvp9y21k30U9lU7MJMjBj4USjLrGwV+Z8zO3J3ZBH139DOnCv3XLK2Ii40S94HG1SZ/Zeg2GSHOD3wlWngYAAAB7eyJvcmlnaW4iOiJodHRwczovL3d3dy5nb29nbGV0YWdtYW5hZ2VyLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjYxMjk5MTk5LCJpc1RoaXJkUGFydHkiOnRydWV9"><script src="https://googleads.g.doubleclick.net/pagead/viewthroughconversion/612213518/?random=1655940410710&amp;cv=9&amp;fst=1655940410710&amp;num=1&amp;bg=ffffff&amp;guid=ON&amp;resp=GooglemKTybQhCsO&amp;u_h=600&amp;u_w=800&amp;u_ah=600&amp;u_aw=800&amp;u_cd=24&amp;u_his=2&amp;u_tz=0&amp;u_java=false&amp;u_nplug=0&amp;u_nmime=0&amp;gtm=2oa6f0&amp;sendb=1&amp;ig=1&amp;data=event%3Dgtag.config&amp;frm=0&amp;url=https%3A%2F%2Fwww.streak.tech%2Fhome&amp;tiba=Streak%20%7C%20Create%2C%20backtest%20and%20deploy%20trading%20strategies&amp;hn=www.googleadservices.com&amp;async=1&amp;rfmt=3&amp;fmt=4"></script><style data-jss="" data-meta="makeStyles">
+.jss80 {
+  border: 1px solid transparent;
+  padding: 6px 20px;
+  transition: all 0.3s var(--anim-func-ease);
+  vertical-align: top;
+}
+.jss80 .jss91 {
+  color: #FFF !important;
+}
+.jss81 {
+  border: 1px solid transparent;
+  padding: 6px 20px;
+}
+.jss82 {
+  border-color: #0013F4;
+  background-color: #0013F4;
+}
+.jss83 {
+  border-color: #3CBB00;
+  background-color: #3CBB00;
+}
+.jss84 {
+  border-color: #EB1D54;
+  background-color: #EB1D54;
+}
+.jss85 {
+  border-color: #00000080;
+  background-color: #00000080;
+}
+.jss86 {
+  border-color: #FF892E;
+  background-color: #FF892E;
+}
+.jss87 {
+  border-color: var(--linkColor);
+}
+.jss87:hover {
+  background-color: var(--blueLightBg);
+}
+.jss88 {
+  border-color: #3CBB00;
+}
+.jss88:hover {
+  background-color: var(--greenLightBg);
+}
+.jss89 {
+  border-color: #EB1D54;
+}
+.jss89:hover {
+  background-color: var(--redLightBg);
+}
+.jss90 {
+  border-color: #FF892E;
+}
+.jss91 {
+  background-color: transparent;
+}
+.jss95 {
+  border-color: var(--btnDisabled);
+  background-color: var(--btnDisabled);
+}
+.jss96 {
+  width: 100%;
+}
+.jss97 {
+  width: 100%;
+  max-width: 40px;
+}
+</style><style data-jss="" data-meta="r">
+.jss98 {
+  display: flex;
+  padding: 8px 12px 8px 20px;
+  min-width: 280px;
+  transition: all 1s var(--anim-func-bouncy);
+  align-items: center;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  justify-content: space-between;
+}
+.jss99 {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+  border-radius: 50%;
+  justify-content: center;
+}
+.jss99:hover {
+  background-color: #00000012;
+}
+</style><style data-jss="" data-meta="makeStyles">
+.jss74 {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  z-index: 9999;
+  position: fixed;
+}
+.jss75 {
+  width: 80%;
+  margin: auto;
+  opacity: 0;
+  padding: 24px 20px;
+  overflow: auto;
+  max-width: 500px;
+  box-shadow: 0px 14px 20px #162B7433;
+  max-height: 80%;
+  border-radius: 10px;
+}
+.jss76 {
+  opacity: 0;
+  overflow: auto;
+  box-shadow: 0px 14px 20px #162B7433;
+}
+.jss77 {
+  right: 0;
+  width: 28%;
+  position: fixed;
+  min-width: 400px;
+  max-height: 100%;
+  border-radius: 0;
+}
+.jss78 {
+  width: 100% !important;
+  margin: 0;
+  padding: 10px 20px;
+  max-width: unset !important;
+  min-width: unset;
+  align-self: flex-end;
+  max-height: 80%;
+  min-height: 30%;
+  border-radius: 0;
+}
+.jss79 {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  background-color: var(--backdropBg);
+}
+@media only screen and (max-width: 786px) {
+  .jss77 {
+    width: 100%;
+  }
+  .jss76 {
+    width: 100% !important;
+    margin: 0;
+    opacity: 0;
+    padding: 0;
+    overflow: auto;
+    min-width: unset;
+  }
+}
+</style><style data-jss="" data-meta="makeStyles">
+.jss65 {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bgPrimary);
+}
+.jss66 {
+  width: 100%;
+  margin-bottom: 10px;
+}
+.jss68 {
+  margin-top: 10px;
+}
+.jss69 {
+  margin-top: 20px;
+}
+.jss72 {
+  margin-right: 10px;
+}
+.jss73 {
+  display: flex;
+  margin-top: 20px;
+  align-items: center;
+  justify-content: space-between;
+}
+.jss73 button {
+  flex: 1;
+  border: 1px solid transparent;
+  padding: 8px 20px;
+  margin-left: 20px;
+}
+.jss73 button:first-child {
+  margin: 0;
+}
+</style><style data-jss="" data-meta="r">
+.jss102 {
+  padding: 0 0 38px 0;
+  margin-top: 4%;
+}
+.jss103 {
+  display: flex;
+  justify-content: space-between;
+}
+.jss104 {
+  width: 325px;
+  background-color: var(--peach) !important;
+}
+.jss105 {
+  flex: 1;
+  height: 484px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.jss108 {
+  flex: 1;
+  display: flex;
+  padding-top: 2%;
+  padding-right: 5% !important;
+  justify-content: flex-end;
+}
+.jss109 {
+  display: unset;
+  padding: unset;
+  padding-right: 0% !important;
+}
+.jss110 {
+  max-width: 519px !important;
+}
+.jss111 {
+  flex: 1;
+  display: flex;
+  padding-top: 2%;
+  justify-content: center;
+}
+.jss112 {
+  width: 100%;
+  padding: 40px 30px;
+  max-width: 380px;
+  box-shadow: 0px 3px 20px var(--boxShadow);
+  max-height: 250px;
+  text-align: center;
+  border-radius: 16px;
+  background-color: var(--bgPrimary);
+}
+.jss113 {
+  width: 85%;
+  margin: auto;
+}
+.jss114 {
+  width: 60px;
+  margin-top: 20px;
+}
+.jss115 {
+  max-width: 400px;
+}
+.jss116 {
+  height: 100%;
+}
+.jss117 {
+  width: 100%;
+  display: flex;
+  padding: 24px 42px;
+  max-width: 360px;
+  box-shadow: 0px 3px 20px var(--boxShadow);
+  padding-top: 3%;
+  border-radius: 16px;
+  flex-direction: column;
+  background-color: var(--bgPrimary);
+}
+.jss118 {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.jss119 {
+  width: 100%;
+}
+.jss121 {
+  background-color: var(--inputLightBg);
+}
+.jss122 {
+  margin-top: 20px;
+}
+.jss123 {
+  margin-top: 20px;
+}
+.jss125 {
+  display: flex;
+  margin-top: 10px;
+  justify-content: flex-end;
+}
+.jss127 {
+  width: 100%;
+  margin: 20px 0;
+  padding: 10px 20px;
+}
+.jss128 {
+  margin: 10px 0 28px;
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+}
+.jss129 {
+  padding: 0 6px;
+  z-index: 9;
+  background-color: var(--bgPrimary);
+}
+.jss130 {
+  width: 100%;
+  height: 1px;
+  position: absolute;
+  background-color: var(--borderColor);
+}
+.jss131 {
+  width: 100%;
+  border: 1px solid var(--borderColor);
+  display: flex;
+  padding: 10px 20px;
+  margin-top: 20px;
+  align-items: center;
+  border-radius: 6px;
+  justify-content: center;
+  background-color: var(--bgPrimary);
+}
+.jss131:hover {
+  background-color: var(--hover);
+}
+.jss132 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.jss133 {
+  flex-direction: column;
+}
+.jss134 {
+  width: 16px;
+}
+.jss135 {
+  margin-left: 10px;
+}
+.jss136 {
+  width: 46px;
+  height: 46px;
+  margin: 0 20px 10px;
+  display: inline-flex;
+  border-radius: 50%;
+  vertical-align: top;
+}
+.jss136 > img {
+  width: 22px;
+}
+.jss140 {
+  flex: 1;
+  margin: 28px 0 10px;
+  display: flex;
+  text-align: center;
+  align-items: flex-end;
+  justify-content: center;
+}
+.jss142 {
+  width: 100%;
+  margin: auto;
+  display: flex;
+  padding: 32px 42px;
+  max-width: 440px;
+  box-shadow: 0px 3px 20px var(--boxShadow);
+  margin-top: 28px;
+  min-height: calc(100vh - 120px);
+  text-align: center;
+  border-radius: 16px;
+  flex-direction: column;
+  background-color: var(--bgPrimary);
+}
+.jss143 {
+  min-height: 100%;
+}
+.jss144 {
+  width: 100%;
+  margin: auto;
+  display: block;
+  max-width: 240px;
+  padding-right: 16px;
+}
+.jss145 {
+  width: 100%;
+  margin: 28px 0 20px;
+  padding: 10px 20px;
+}
+.jss146 {
+  text-align: left;
+  margin-bottom: 20px;
+}
+.jss147 {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.jss148 {
+  left: -5px;
+  position: relative;
+}
+.jss149 {
+  max-width: 40px;
+}
+.jss150 {
+  width: 100%;
+  margin: 20px 0;
+  padding: 10px 20px;
+}
+@media only screen and (max-width: 786px) {
+  .jss108 {
+    padding-right: 0;
+    justify-content: center;
+  }
+}
+</style><style data-jss="" data-meta="r">
+.jss17 {
+  top: 0;
+  height: 56px;
+  z-index: 9999;
+  position: sticky;
+  box-shadow: 0px 3px 20px var(--boxShadow);
+  background-color: var(--bgPrimary);
+}
+.jss18 {
+  height: 100%;
+  display: flex;
+}
+.jss19 {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+.jss20 {
+  width: 100px;
+  height: 24px;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.jss21 {
+  height: 24px;
+}
+.jss22 {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+.jss24 {
+  width: 30px;
+  height: 30px;
+}
+.jss25 {
+  display: flex;
+  align-items: center;
+}
+.jss26 {
+  padding: 8px 28px;
+  margin-right: 20px;
+}
+.jss26:hover {
+  border-color: var(--hover);
+  background-color: var(--hover);
+}
+.jss27 {
+  display: flex;
+  padding: 8px 28px;
+  align-items: center;
+}
+.jss27:hover {
+  border-color: var(--hover);
+  background-color: var(--hover);
+}
+.jss28 {
+  display: flex;
+  align-items: center;
+}
+.jss29 {
+  width: 10px;
+  margin-right: 8px;
+}
+.jss31 {
+  width: 100%;
+  display: flex;
+  position: relative;
+  max-width: 340px;
+  align-items: center;
+}
+.jss32 {
+  width: 100%;
+  display: inline-flex;
+  padding: 10px 0;
+  align-items: center;
+  border-radius: 8px;
+  justify-content: center;
+}
+.jss32:hover  {
+  background-color: var(--hover);
+}
+.jss32:hover  > svg {
+  fill: var(--primaryLink);
+}
+.jss33 .jss35 {
+  transition: all 0.8s;
+  background-color: var(--primaryLink);
+}
+.jss33 > svg {
+  fill: var(--primaryLink);
+}
+.jss33:hover  {
+  background-color: unset;
+}
+.jss33:hover  > svg {
+  fill: var(--primaryLink);
+}
+.jss34 {
+  cursor: default;
+}
+.jss35 {
+  bottom: 0;
+  height: 4px;
+  position: absolute;
+  transition: all 0.3s var(--anim-func-bouncy);
+  background-color: var(--primaryLink);
+}
+.jss36 {
+  flex: unset;
+  width: 30px;
+  height: 30px;
+}
+.jss37 {
+  width: 35px;
+  height: 35px;
+  display: flex;
+  position: relative;
+  align-items: center;
+  margin-right: 12px;
+  border-radius: 50%;
+  justify-content: center;
+}
+.jss37:hover {
+  background-color: var(--hover);
+}
+.jss38 {
+  position: relative;
+}
+.jss38:hover .jss54 {
+  opacity: 1;
+  visibility: visible;
+}
+.jss39:hover {
+  background-color: transparent !important;
+}
+.jss40 {
+  margin: 0 10px 0 0;
+  display: flex;
+  padding: 4px 8px;
+  align-items: center;
+  border-radius: 6px;
+}
+.jss40:hover {
+  background-color: var(--hover);
+}
+.jss41 {
+  width: 16px;
+  margin-right: 8px;
+}
+.jss42 {
+  margin-right: 8px;
+}
+.jss43 {
+  display: flex;
+  padding: 10px 20px;
+  min-width: 180px;
+  align-items: center;
+}
+.jss43:hover {
+  background-color: var(--hover);
+}
+.jss44 {
+  height: 100%;
+}
+.jss45 {
+  display: flex;
+  align-items: center;
+}
+.jss46 {
+  width: 100%;
+  display: block;
+  padding: 8px 20px;
+  font-size: 13px;
+  box-sizing: border-box;
+  margin-top: 6px;
+  text-align: left;
+  font-weight: 500;
+}
+.jss46:hover {
+  background-color: var(--hover);
+}
+.jss48 {
+  width: 100%;
+  display: block;
+  padding: 8px 20px;
+  box-sizing: border-box;
+  text-align: left;
+}
+.jss48:hover {
+  background-color: var(--hover);
+}
+.jss49 {
+  width: 100%;
+  display: block;
+  padding: 8px 20px;
+  box-sizing: border-box;
+  text-align: left;
+}
+.jss49:hover {
+  background-color: var(--hover);
+}
+.jss50 {
+  width: 100%;
+  display: flex;
+  padding: 8px 20px;
+  box-sizing: border-box;
+  text-align: left;
+  align-items: center;
+  justify-content: space-between;
+}
+.jss50:hover {
+  background-color: var(--hover);
+}
+.jss50:hover > svg {
+  fill: var(--linkWhite);
+}
+.jss52 {
+  min-width: 75px;
+}
+.jss53 {
+  height: 20px;
+  max-width: 70px;
+  margin-right: 10px;
+}
+.jss54 {
+  top: 34px;
+  right: -106px;
+  opacity: 0;
+  padding: 10px 0;
+  overflow: hidden;
+  position: absolute;
+  box-shadow: 0px 3px 20px var(--boxShadow);
+  visibility: hidden;
+  border-radius: 5px;
+  background-color: var(--dropdownBg);
+}
+.jss55 {
+  height: 100%;
+  position: relative;
+  text-align: center;
+}
+.jss55 > button {
+  margin-bottom: 16px;
+}
+.jss56 {
+  width: 100%;
+  display: flex;
+  padding: 10px 0;
+  justify-content: center;
+}
+.jss57 {
+  height: 50%;
+  margin: 12px 0 0px 30px;
+}
+@media only screen and (max-width: 786px) {
+  .jss31 {
+    margin: 0 auto;
+    max-width: 500px;
+  }
+  .jss58 {
+    top: unset;
+    width: 100%;
+    bottom: 0;
+    z-index: 9999;
+    position: fixed;
+    margin-bottom: 0;
+  }
+  .jss59 {
+    padding: 2px 4px;
+    border-width: 0 0 1px 0;
+    margin-right: 20px;
+    border-radius: 0;
+  }
+  .jss28 {
+    margin: auto;
+  }
+  .jss60 {
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  .jss61 {
+    top: 6px;
+    right: 0;
+    padding: 10px 16px 6px;
+    position: relative;
+  }
+  .jss62 {
+    height: calc(100% - 40px);
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .jss62 button {
+    width: calc(100% - 40px);
+    margin: 0 20px;
+    padding: 10px;
+    box-sizing: border-box;
+    text-align: left;
+    border-bottom: 1px solid var(--borderColor);
+  }
+  .jss63 {
+    text-align: center !important;
+    margin-bottom: 16px !important;
+  }
+  .jss64 {
+    text-align: center !important;
+    margin-bottom: 20px !important;
+  }
+  .jss26 {
+    margin-right: 0;
+  }
+  .jss36 {
+    width: 26px;
+    height: 26px;
+  }
+}
+</style><style data-jss="" data-meta="makeStyles">
+.jss101 {
+  padding: 0px 0px;
+  max-width: 387px;
+  border-radius: 27px;
+}
+</style><style data-jss="" data-meta="r">
+.jss1 {
+  height: 100vh;
+  overflow: auto;
+  position: relative;
+  overflow-x: hidden;
+  background-color: var(--screenBg);
+}
+.jss3 {
+  width: 325px;
+}
+.jss4 {
+  display: inline-block;
+  transition: all 0.35s var(--anim-func-ease);
+}
+.jss5 {
+  min-height: calc(100% - 54px);
+}
+.jss6 {
+  background-image: url(/static/media/login_bg.1643a999.png);
+  background-position: center;
+}
+.jss7 {
+  width: calc(100% - 334px);
+  margin-right: 40px;
+}
+.jss8 {
+  width: 100%;
+}
+.jss9 {
+  top: 54px;
+  width: 294px;
+  display: inline-block;
+  opacity: 1;
+  position: sticky;
+  transform: translate(0px, 0px);
+  margin-top: 30px;
+  transition: all 350ms var(--anim-func-ease);
+  margin-bottom: 38px;
+  vertical-align: top;
+}
+.jss10 {
+  opacity: 0;
+  position: absolute;
+  visibility: hidden;
+}
+.jss11 {
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  z-index: 99999;
+  position: fixed;
+  background: #f9f9f99e;
+  align-items: center;
+  justify-content: center;
+}
+.jss12 {
+  top: 100px;
+  right: 36px;
+  opacity: 1;
+  position: fixed;
+  transform: translate(0px);
+  transition: transform 450ms var(--anim-func-ease);
+}
+.jss13 {
+  width: 52px;
+  border: 1px solid #0013F4;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  justify-content: center;
+  background-color: #0013F4;
+}
+.jss14 {
+  opacity: 0;
+  transform: translate(100px, 0);
+}
+.jss15 {
+  top: 10px;
+  right: 30px;
+  z-index: 99;
+  position: absolute;
+}
+.jss16 {
+  padding: 20px;
+  max-width: 740px;
+}
+@media only screen and (min-width: 1025px) and (max-width: 1366px) {
+  .jss7 {
+    width: calc(75% - 24px);
+    margin-right: 24px;
+  }
+  .jss9 {
+    width: 25%;
+  }
+}
+@media only screen and (min-width: 786px) and (max-width: 1024px) {
+  .jss7 {
+    width: 100%;
+    margin-right: 0;
+  }
+}
+@media only screen and (max-width: 786px) {
+  .jss7 {
+    width: 100%;
+    margin-right: 0;
+  }
+}
+</style><link rel="stylesheet" type="text/css" href="/static/css/21.5d373e2a.chunk.css"><script charset="utf-8" src="/static/js/21.c3df0c73.chunk.js"></script></head><body class="" style="--red:#EB1D54; --green:#3CBB00; --orange:#FF892E; --purple:#A350FF; --voilet:#6B0FE9; --peach:#FCDECA; --bgPrimary:#FFF; --bgSecondary:#FFF; --bgTertiary:#FFF; --screenBg:#FBFDFF; --bgSidebar:#FFF; --bgHeaderReferal:#FFFBFA; --bgReferal:#FFF8F5; --ReferalInput:#FFE6DE; --refText:#0013F4; --btnPrimary:#0013F4; --btnDisabled:#ECECEC; --text:#000; --textSecondary:#9BABC6; --textTertiary:#000; --backdrop:#636363; --borderColor:#00000012; --notifBg:#EEEEFF; --paperBg:#E2FFD5; --scannerBg:#FFEAD9; --navBtnBg:#FFF; --navDotsBg-false:#DFDEFF; --navDotsBg-true:#9BABC6; --navBtnShadow:rgb(208 210 220); --filterOptionBg:#FAFAFF; --inputDarkBg:#FFF; --placeholderDarkColor:#BFCAD9; --inputLightBg:#FFF; --placeholderLightColor:#ECECEC; --inputFocusBorderColor:#0013F4; --progress25:#FF667D; --progress50:#140DFA; --progress75:#3CBB00; --underlay:#fbfbfb; --linkColor:#0013F4; --linkWhite:#0013F4; --linkGrey:#0013F4; --primaryLink:#0013F4; --secondaryLink:#0013F4; --switchTrack-false:#EEEEFF; --switchTrack-true:#0013F4; --switchThumb-false:#00000012; --switchThumb-true:#EEEEFF; --disabled:#ECECEC; --boxShadow:#162B740A; --dropdownShadow:#162B7424; --dropdownBg:#FFF; --listDropDownBg:#F7F7FF; --hover:#F7F7FA; --scannerTimeIntervalBg:#EEEEFF; --lossBg:#FFEFEF; --gainBg:#DEFFE7; --inputBorder:#BFCAD9; --sell:#FF892E; --checkboxBorder:#e2e2e2; --horizontalTabBg:#EEEEFF; --tabsBg:#F6F8FB; --activeTabsBg:#FFF; --stoppedBg:#9BABC6; --createBtnBg:#FFFCFA; --cardPlaceHolderColor:#F2F2F2; --backdropBg:#00000080; --tourBackdrop:#0000004d; --redLightBg:#FFE2EB; --greyLightBg:#ECECEC; --greenLightBg:#E2FFD5; --blueLightBg:#EEEEFF; --orangeLightBg:#FFEAD9; --purpleLightBg:#F0E5FF; --editContentBg:#EEE6FF; --editContentInputBg:#ffffff60; --editDropdownBg:#FFF; --editDropdownItem:#FFF; --editDropdownItemHover:#F7F7FA; --profileMenuIconSelected-bg:#EEEEFF; --profileMenuIconSelected-fill:#0013F4; --profileMenuIcon-bg:#F6F8FB; --profileMenuIcon-fill:#9BABC6; --textGrey:#000; --stepsCircleBorder:#DDDFFF; --stepsBar:#EAEDF4; --stepsBg:#FFF; --createTabsBg:#EEE6FF; --scanPink:#FF5B8D; --tooltipBg:#000000; --profileInputBorder:#EBEEF4; --editParamsIntervalBg:#F8F5FF; --obBgTechnicals:#ECDBFF; --obBgAlgo:#FCDECA; --obBgScanner:#FFE2E1; --obCreateList:#FFF;"><noscript>You need to enable JavaScript to run this app.</noscript><div id="root"><main class="jss1" data-tour="" id="main"><header class="mainHeader jss17 undefined" id="mainheader"><div class="jss18" id="headerContainer"><div id="logoSection" class="jss19"><a href="/home" class="jss20" id="logoLink" style="background-image: url(&quot;/static/media/logo-tm.3d4fcbe1.png&quot;);"></a></div><div class="jss25"><button type="button" class="jss91 jss27" style="border-radius: 6px;"><p class="jss91" style="font-weight: 500; font-size: 12px; color: rgb(0, 19, 244);">Pricing</p></button><button type="button" class="jss91 jss27" style="border-radius: 6px;"><svg class="icon icon-tab_create " fill="#0013F4" width="12" height="12" style="margin-right: 10px; pointer-events: none;"><use xlink:href="/static/media/svg-defs.84f72f98.svg#icon-tab_create"></use></svg><p class="jss91" style="font-weight: 500; font-size: 12px; color: rgb(0, 19, 244);">Discover Scanners</p></button><button type="button" class="jss91 jss27" style="border-radius: 6px;"><svg class="icon icon-tab_add " fill="#0013F4" width="12" height="12" style="margin-right: 10px; pointer-events: none;"><use xlink:href="/static/media/svg-defs.84f72f98.svg#icon-tab_add"></use></svg><p class="jss91" style="font-weight: 500; font-size: 12px; color: rgb(0, 19, 244);">Discover Strategies</p></button><button type="button" class="jss91 jss27 jss28" style="border-radius: 6px;"><img src="/static/media/academy_logo.d974bf39.svg" class="jss29" alt="academy"><p class="" style="font-weight: 500; font-size: 12px; color: rgb(0, 19, 244);">Streak Academy</p></button><button type="button" class="jss91 jss26" style="border-radius: 6px;"><p class="jss91" style="font-weight: 500; font-size: 12px; color: rgb(0, 19, 244);">Log in</p></button><button type="button" class="jss81 jss87 jss30" style="border-radius: 6px;"><p class="jss91" style="font-weight: 500; font-size: 12px; color: rgb(0, 19, 244);">Start Free Trial</p></button></div></div></header><div class="jss5 " style=""><div id="homeScreens" class="jss2"><div id="portalWindow"></div><div class="jss4 jss8"><div class="homeContainer"><div class="homeWrapper"><div class="bannerContainer"><div class="bannerLeftContent"><h1 class="bannerTitle">The modern way to trade</h1><h5 class="bannerSubTitle">Streak lets you plan and manage your trades without coding, on the go. We have made strategic trading, accessible and affordable to all.</h5><button type="button" class="jss80 jss82 getStartedBt" style="border-radius: 6px;"><p class="jss91" style="font-weight: 500; font-size: 16px; color: var(--text);">Get FREE Demo</p></button></div><div class="bannerRightContent"><img src="/static/media/home_banner.e4e43dcf.png" alt="banner" class="bannerImg"></div></div></div><div class="homeWrapper infoWrapper"><div class="infoContainer"><div class="infoLeft"><p class="infoTitle">What makes Streak so great</p><div class="infoLeftContent"><button type="button"><h1 class="infoLeftTextActive">It's easy</h1></button><button type="button"><h1 class="infoLeftText">It's powerful</h1></button><button type="button"><h1 class="infoLeftText">It's beautiful</h1></button></div></div><div class="infoRight"><div class="infoRightContent scrollFromDown"><img src="/static/media/thumbs_3d.f15aae21.png" class="infoRightImg" alt="streak markets" style="width: 150px;"><p class="infoRightText">First of a kind innovation that lets you  
+ easily <span style="color: var(--text);">Create Strategies</span> and 
+ <span style="color: var(--text);">deploy to markets</span>,
+  as easy as plotting charts.</p></div><div class="infoRightContent "><img src="/static/media/home_info.50217ce1.png" class="infoRightImg" alt="streak markets"><p class="infoRightText">We run <span style="color: var(--text);">Billions</span> of computations 
+ every second, to provide 
+<span style="color: var(--text);">lightning fast Backtesting,
+</span> real time alerts and scanning.</p></div><div class="infoRightContent scrollToUp"><img src="/static/media/diamond.c0fe94d1.png" class="infoRightImg" alt="streak markets" style="width: 100px;"><p class="infoRightText"><span style="color: var(--text);">Beautiful UI</span> for the modern trader,
+ with access on all platforms,
+ to trade <span style="color: var(--text);">on the go</span></p></div></div></div></div><div class="homeWrapper"><div class="coreContainer"><div class="coreHeader"><h5>Don't miss a trade</h5><h1 class="coreTitle">Streak Highlights</h1><h5 class="coreSubTitle">Streak provides all you need to trade in this modern age in one platform. Following are 
+
+          the three key features we would like to highlight, and there is a lot more in store.</h5></div><div class="coreContent hideScrollbar"><div class="coreCards" style="background-color: rgb(245, 243, 253); background-image: url(&quot;/static/media/card_strategies.c160b308.png&quot;);"><div class="coreCardHeader"><p>Strategies</p><img src="/static/media/home_pencil.fd33fe42.svg" alt="icon Strategies"></div><div class="coreCardContent"><div class="coreCardStepper"></div><div class="coreStepsRow"><div class="coreStepsRowIndex coreStepsRowIndexSelected">1</div><div class="coreStepsRowText"><p>Create or copy a strategy</p></div></div><div class="coreStepsRow"><div class="coreStepsRowIndex coreStepsRowIndexSelected">2</div><div class="coreStepsRowText"><p>Backtest in seconds</p></div></div><div class="coreStepsRow"><div class="coreStepsRowIndex coreStepsRowIndexSelected">3</div><div class="coreStepsRowText"><p>Deploy live or paper trade</p></div></div></div></div><div class="coreCards" style="background-color: rgb(252, 236, 235); background-image: url(&quot;/static/media/card_technicals.2dade063.png&quot;);"><div class="coreCardHeader"><p>Technicals</p><img src="/static/media/home_send.b38cdf24.svg" alt="icon Technicals"></div><div class="coreCardContent"><div class="coreCardStepper"></div><div class="coreStepsRow"><div class="coreStepsRowIndex coreStepsRowIndexSelected">1</div><div class="coreStepsRowText"><p>Create custom watchlists</p></div></div><div class="coreStepsRow"><div class="coreStepsRowIndex coreStepsRowIndexSelected">2</div><div class="coreStepsRowText"><p>Get quick technical snapshots</p></div></div><div class="coreStepsRow"><div class="coreStepsRowIndex coreStepsRowIndexSelected">3</div><div class="coreStepsRowText"><p>Make unbiased trading decisions</p></div></div></div></div><div class="coreCards" style="background-color: rgb(253, 241, 221); background-image: url(&quot;/static/media/card_scanner.9dc23a5d.png&quot;);"><div class="coreCardHeader"><p>Scanner</p><img src="/static/media/home_lighting.05b05c40.svg" alt="icon Scanner"></div><div class="coreCardContent"><div class="coreCardStepper"></div><div class="coreStepsRow"><div class="coreStepsRowIndex coreStepsRowIndexSelected">1</div><div class="coreStepsRowText"><p>Scan any sector in seconds</p></div></div><div class="coreStepsRow"><div class="coreStepsRowIndex coreStepsRowIndexSelected">2</div><div class="coreStepsRowText"><p>Scan with pre-market data</p></div></div><div class="coreStepsRow"><div class="coreStepsRowIndex coreStepsRowIndexSelected">3</div><div class="coreStepsRowText"><p>Take live to get notified</p></div></div></div></div></div></div></div><div class="homeWrapper"><div class="benefitsContainer" id="homeBenefits"><div class="benefitsLeft"><h1 class="benefitsTitle">Why do traders love Streak?</h1><h5 class="benefitsSubTitle">Streak gives traders the edge they always lacked. With strategic trading,
+          backtesting and live deployment, they can now easily be disciplined &amp;
+          manage risk well to become better traders than before.</h5></div><div class="benefitsRight"><div class="benefitsRightContent"><div class="benefitsRightBg"><p class="benefitsRightText">Turn 
+ Your Trading 
+ Ideas</p><p class="benefitsRightTextOverlay">Into 
+ Strategies</p></div><div class="benefitsRightOverlay"><img src="/static/media/confetti.66c9cd17.png" class="benefitsRightImg" alt="strategy graffiti"></div></div></div></div></div><div class="homeWrapper"><div class="resContainer" id="homeRes"><div class="resLeftContent"><a href="https://academy.streak.tech/" class="resLeftImg" rel="noreferrer" target="_blank" style="z-index: 3;"><img src="/static/media/resources_3.b4294b58.svg" alt="streak academy"><p>Academy</p></a><a href="https://academy.streak.tech/blogs/" class="resLeftImg" rel="noreferrer" target="_blank" style="z-index: 2;"><img src="/static/media/resources_1.d2710079.svg" alt="streak blogs"><p>Blogs</p></a><a href="https://academy.streak.tech/videos/" class="resLeftImg" rel="noreferrer" target="_blank" style="z-index: 1;"><img src="/static/media/resources_2.0f3be8aa.svg" alt="streak videos"><p>Videos</p></a></div><div class="resRightContent"><div class="resTag"><p>Resources</p></div><h1>Get up and running fast</h1><h5 class="resSubtitle">An ecosystem that will support you in your trading journey,
+          taking you 
+ from ABCs of technical trading all the way to complex strategy building.</h5></div></div></div><div class="homeWrapper trialOfferWrapper" id="trialWrapper"><div class="trialOfferContainer"><div class="trialOfferLeft"><div class="limitedTag"><p>Limited time offer</p></div><h1 style="color: white;">Claim your 7 day free trial</h1><h5 class="trailOfferSubtitle">Get your 7 day free trial, and experience Streak without any commitment.
+
+          You will not be charged till you choose a plan.</h5><div class="trialOfferFeat"><div class="trialOfferFeatRow"><img src="/static/media/Tick_w_bg.ee095a99.svg" alt="0" class="trialOfferFeaTickImg"><p>50 Backtests per day</p></div><div class="trialOfferFeatRow"><img src="/static/media/Tick_w_bg.ee095a99.svg" alt="1" class="trialOfferFeaTickImg"><p>50 Scans per day</p></div><div class="trialOfferFeatRow"><img src="/static/media/Tick_w_bg.ee095a99.svg" alt="2" class="trialOfferFeaTickImg"><p>5 Live deployments at a time</p></div></div><button type="button" class="jss91 claimTrialBtn" style="border-radius: 6px; background-color: rgb(255, 255, 255);"><p class="jss91" style="font-weight: 500; font-size: 16px; color: var(--linkColor);">Claim Now</p></button></div><div class="trialOfferRight"><div title="" role="button" aria-label="animation" tabindex="0" style="width: 240px; height: 100%; overflow: hidden; margin: 0px auto; outline: none;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400" preserveAspectRatio="xMidYMid slice" style="width: 100%; height: 100%; transform: translate3d(0px, 0px, 0px); content-visibility: visible;"><defs><clipPath id="__lottie_element_2"><rect width="400" height="400" x="0" y="0"></rect></clipPath><clipPath id="__lottie_element_4"><path d="M0,0 L600,0 L600,600 L0,600z"></path></clipPath><clipPath id="__lottie_element_17"><path d="M0,0 L339,0 L339,576 L0,576z"></path></clipPath><clipPath id="__lottie_element_24"><path d="M0,0 L101,0 L101,140 L0,140z"></path></clipPath><clipPath id="__lottie_element_40"><path d="M0,0 L600,0 L600,600 L0,600z"></path></clipPath><clipPath id="__lottie_element_62"><path d="M0,0 L122,0 L122,61 L0,61z"></path></clipPath></defs><g clip-path="url(#__lottie_element_2)"><g clip-path="url(#__lottie_element_4)" transform="matrix(1,0,0,1,-100,-188)" opacity="1" style="display: block;"><g clip-path="url(#__lottie_element_40)" transform="matrix(1,0,0,1,0,0)" opacity="1" style="display: block;"><g transform="matrix(0.23388999700546265,0,0,0.23388999700546265,283.51824951171875,430.1961975097656)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(243,179,3)" fill-opacity="1" d=" M137.4739990234375,64.74400329589844 C109.66200256347656,54.47999954223633 87.54199981689453,32.39400100708008 77.27799987792969,4.547999858856201 C75.04199981689453,-1.5160000324249268 67.01399993896484,-1.5160000324249268 64.77799987792969,4.547999858856201 C54.513999938964844,32.39400100708008 32.36000061035156,54.47999954223633 4.547999858856201,64.74400329589844 C-1.5160000324249268,66.9800033569336 -1.5160000324249268,75.00800323486328 4.547999858856201,77.24400329589844 C32.36000061035156,87.50800323486328 54.513999938964844,109.62899780273438 64.77799987792969,137.4409942626953 C67.01399993896484,143.5050048828125 75.04199981689453,143.5050048828125 77.27799987792969,137.4409942626953 C87.54199981689453,109.62899780273438 109.66200256347656,87.50800323486328 137.4739990234375,77.24400329589844 C143.53799438476562,75.00800323486328 143.53799438476562,66.9800033569336 137.4739990234375,64.74400329589844"></path></g></g><g transform="matrix(0.03711999952793121,0,0,0.03711999952793121,325.4910888671875,457.16571044921875)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(243,179,3)" fill-opacity="1" d=" M137.4739990234375,64.74400329589844 C109.66200256347656,54.47999954223633 87.54199981689453,32.39400100708008 77.27799987792969,4.547999858856201 C75.04199981689453,-1.5160000324249268 67.01399993896484,-1.5160000324249268 64.77799987792969,4.547999858856201 C54.513999938964844,32.39400100708008 32.36000061035156,54.47999954223633 4.547999858856201,64.74400329589844 C-1.5160000324249268,66.9800033569336 -1.5160000324249268,75.00800323486328 4.547999858856201,77.24400329589844 C32.36000061035156,87.50800323486328 54.513999938964844,109.62899780273438 64.77799987792969,137.4409942626953 C67.01399993896484,143.5050048828125 75.04199981689453,143.5050048828125 77.27799987792969,137.4409942626953 C87.54199981689453,109.62899780273438 109.66200256347656,87.50800323486328 137.4739990234375,77.24400329589844 C143.53799438476562,75.00800323486328 143.53799438476562,66.9800033569336 137.4739990234375,64.74400329589844"></path></g></g><g transform="matrix(0.10711999982595444,0,0,0.10711999982595444,317.7723083496094,435.19610595703125)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(255,255,255)" fill-opacity="1" d=" M137.47500610351562,64.74400329589844 C109.66300201416016,54.47999954223633 87.54199981689453,32.39400100708008 77.24400329589844,4.547999858856201 C75.00800323486328,-1.5160000324249268 67.01399993896484,-1.5160000324249268 64.77799987792969,4.547999858856201 C54.513999938964844,32.39400100708008 32.36000061035156,54.47999954223633 4.547999858856201,64.74400329589844 C-1.5160000324249268,66.9800033569336 -1.5160000324249268,75.00800323486328 4.547999858856201,77.24400329589844 C32.36000061035156,87.50800323486328 54.513999938964844,109.62899780273438 64.77799987792969,137.4409942626953 C67.01399993896484,143.5050048828125 75.00800323486328,143.5050048828125 77.24400329589844,137.4409942626953 C87.54199981689453,109.62899780273438 109.66300201416016,87.50800323486328 137.47500610351562,77.24400329589844 C143.53900146484375,75.00800323486328 143.53900146484375,66.9800033569336 137.47500610351562,64.74400329589844"></path></g></g><g transform="matrix(0.008539999835193157,0,0,0.008539999835193157,257.7725524902344,448.1947021484375)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(255,255,255)" fill-opacity="1" d=" M137.47500610351562,64.74400329589844 C109.66300201416016,54.47999954223633 87.54199981689453,32.39400100708008 77.24400329589844,4.547999858856201 C75.00800323486328,-1.5160000324249268 67.01399993896484,-1.5160000324249268 64.77799987792969,4.547999858856201 C54.513999938964844,32.39400100708008 32.36000061035156,54.47999954223633 4.547999858856201,64.74400329589844 C-1.5160000324249268,66.9800033569336 -1.5160000324249268,75.00800323486328 4.547999858856201,77.24400329589844 C32.36000061035156,87.50800323486328 54.513999938964844,109.62899780273438 64.77799987792969,137.4409942626953 C67.01399993896484,143.5050048828125 75.00800323486328,143.5050048828125 77.24400329589844,137.4409942626953 C87.54199981689453,109.62899780273438 109.66300201416016,87.50800323486328 137.47500610351562,77.24400329589844 C143.53900146484375,75.00800323486328 143.53900146484375,66.9800033569336 137.47500610351562,64.74400329589844"></path></g></g><g transform="matrix(0.17000000178813934,0,0,0.17000000178813934,271.05279541015625,448.05279541015625)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(21,229,124)" fill-opacity="1" d=" M101.6259994506836,50.8129997253418 C101.6259994506836,78.86199951171875 78.86199951171875,101.6259994506836 50.8129997253418,101.6259994506836 C22.763999938964844,101.6259994506836 0,78.86199951171875 0,50.8129997253418 C0,22.763999938964844 22.763999938964844,0 50.8129997253418,0 C78.86199951171875,0 101.6259994506836,22.763999938964844 101.6259994506836,50.8129997253418"></path></g></g><g transform="matrix(0.10000000149011612,0,0,0.10000000149011612,270.6097106933594,422.6097106933594)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(99,21,229)" fill-opacity="1" d=" M101.6259994506836,50.8129997253418 C101.6259994506836,78.86199951171875 78.86199951171875,101.6259994506836 50.8129997253418,101.6259994506836 C22.763999938964844,101.6259994506836 0,78.86199951171875 0,50.8129997253418 C0,22.763999938964844 22.763999938964844,0 50.8129997253418,0 C78.86199951171875,0 101.6259994506836,22.763999938964844 101.6259994506836,50.8129997253418"></path></g></g><g transform="matrix(0.09000000357627869,0,0,0.09000000357627869,354.81298828125,445.94000244140625)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="miter" fill-opacity="0" stroke-miterlimit="4" stroke="rgb(44,90,218)" stroke-opacity="1" stroke-width="10" d=" M0,-50.8129997253418 C28.0436954498291,-50.8129997253418 50.8129997253418,-28.0436954498291 50.8129997253418,0 C50.8129997253418,28.0436954498291 28.0436954498291,50.8129997253418 0,50.8129997253418 C-28.0436954498291,50.8129997253418 -50.8129997253418,28.0436954498291 -50.8129997253418,0 C-50.8129997253418,-28.0436954498291 -28.0436954498291,-50.8129997253418 0,-50.8129997253418z"></path></g></g><g transform="matrix(0.09000000357627869,0,0,0.09000000357627869,314.81298828125,465.94000244140625)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="miter" fill-opacity="0" stroke-miterlimit="4" stroke="rgb(219,49,158)" stroke-opacity="1" stroke-width="10" d=" M0,-50.8129997253418 C28.0436954498291,-50.8129997253418 50.8129997253418,-28.0436954498291 50.8129997253418,0 C50.8129997253418,28.0436954498291 28.0436954498291,50.8129997253418 0,50.8129997253418 C-28.0436954498291,50.8129997253418 -50.8129997253418,28.0436954498291 -50.8129997253418,0 C-50.8129997253418,-28.0436954498291 -28.0436954498291,-50.8129997253418 0,-50.8129997253418z"></path></g></g><g transform="matrix(1,0,0,1,318.7909851074219,491.7879943847656)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(193,171,255)" fill-opacity="1" d=" M91.5,-70 C91.5,-70 91.5,70 91.5,70 C91.5,70 -91.5,70 -91.5,70 C-91.5,70 -91.5,-70 -91.5,-70 C-91.5,-70 91.5,-70 91.5,-70z"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"></g></g><g transform="matrix(1,0,0,1.0255600214004517,187.57598876953125,421.4189453125)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(121,98,239)" fill-opacity="1" d=" M0,136.86900329589844 C0,136.86900329589844 0,0 0,0 C0,0 40.34299850463867,0 40.34299850463867,0 C40.34299850463867,0 40.34299850463867,136.86900329589844 40.34299850463867,136.86900329589844 C40.34299850463867,136.86900329589844 0,136.86900329589844 0,136.86900329589844z"></path></g></g><g transform="matrix(1,0,0,1.0255500078201294,310.75799560546875,492.1168212890625)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(77,52,255)" fill-opacity="1" d=" M18,-68.5 C18,-68.5 18,68.5 18,68.5 C18,68.5 -18,68.5 -18,68.5 C-18,68.5 -18,-68.5 -18,-68.5 C-18,-68.5 18,-68.5 18,-68.5z"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"></g></g><g transform="matrix(1,0,0,1.0524300336837769,313.25799560546875,491.8804016113281)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(209,203,249)" fill-opacity="1" d=" M17.5,-67 C17.5,-67 17.5,67 17.5,67 C17.5,67 -17.5,67 -17.5,67 C-17.5,67 -17.5,-67 -17.5,-67 C-17.5,-67 17.5,-67 17.5,-67z"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"></g></g><g transform="matrix(1.193660020828247,0,0,1,180.7632293701172,369.44097900390625)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(77,52,255)" fill-opacity="1" d=" M0,0 C0,0 0,51.47800064086914 0,51.47800064086914 C0,51.47800064086914 199.61199951171875,51.47800064086914 199.61199951171875,51.47800064086914 C199.61199951171875,51.47800064086914 199.61199951171875,0 199.61199951171875,0 C199.61199951171875,0 0,0 0,0z"></path></g></g><g transform="matrix(1,0,0,1,218.93099975585938,366.44097900390625)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(209,203,249)" fill-opacity="1" d=" M0,0 C0,0 0,51.47800064086914 0,51.47800064086914 C0,51.47800064086914 199.61199951171875,51.47800064086914 199.61199951171875,51.47800064086914 C199.61199951171875,51.47800064086914 199.61199951171875,0 199.61199951171875,0 C199.61199951171875,0 0,0 0,0z"></path></g></g><g transform="matrix(1,0,0,1,180.5,366.56097412109375)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(153,145,215)" fill-opacity="1" d=" M0,51.358001708984375 C0,51.358001708984375 38.76300048828125,51.358001708984375 38.76300048828125,51.358001708984375 C38.76300048828125,51.358001708984375 38.76300048828125,0 38.76300048828125,0 C38.76300048828125,0 0,0 0,0 C0,0 0,51.358001708984375 0,51.358001708984375z"></path></g></g><g clip-path="url(#__lottie_element_62)" transform="matrix(1,0,0,1,237.86900329589844,306.4999694824219)" opacity="1" style="display: block;"><g transform="matrix(1,0,0,1,84.05799865722656,2.2819995880126953)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(171,160,246)" fill-opacity="1" d=" M0,53.46900177001953 C0,53.46900177001953 27.158000946044922,54.724998474121094 27.35700035095215,14.937000274658203 C26.56599998474121,6.313000202178955 16.972999572753906,-0.6299999952316284 5.684999942779541,3.7119998931884766 C5.298999786376953,4.447000026702881 20.18600082397461,-6.367000102996826 32.78300094604492,5.866000175476074 C45.380001068115234,18.099000930786133 29.76799964904785,49.933998107910156 15.060999870300293,55.58599853515625 C0.3540000021457672,61.237998962402344 2.9630000591278076,55.58599853515625 2.9630000591278076,55.58599853515625 C2.9630000591278076,55.58599853515625 0,53.46900177001953 0,53.46900177001953z"></path></g></g><g transform="matrix(1,0,0,1,59.45800018310547,0)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(187,178,247)" fill-opacity="1" d=" M57.07899856567383,6.71999979019165 C53.47999954223633,1.309000015258789 45.888999938964844,0.12099999934434891 35.07899856567383,0.0020000000949949026 C24.268999099731445,-0.11699999868869781 12.71399974822998,6.64300012588501 8.420999526977539,18.716999053955078 C4.127999782562256,30.791000366210938 0,35.35100173950195 0,35.35100173950195 C0,35.35100173950195 4.738999843597412,42.58300018310547 4.738999843597412,42.58300018310547 C4.738999843597412,42.58300018310547 7.5,45.49599838256836 13.842000007629395,28.049999237060547 C20.18400001525879,10.604000091552734 29.542999267578125,6.71999979019165 29.542999267578125,6.71999979019165 C29.542999267578125,6.71999979019165 40.15399932861328,-2.0950000286102295 54.047000885009766,4.771999835968018 C54.09600067138672,4.840000152587891 57.07899856567383,6.71999979019165 57.07899856567383,6.71999979019165z"></path></g></g><g transform="matrix(1,0,0,1,18.422000885009766,2.6090011596679688)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(151,135,253)" fill-opacity="1" d=" M47.069000244140625,40.15700149536133 C47.069000244140625,40.15700149536133 43.93299865722656,40.3650016784668 39.058998107910156,24.96299934387207 C34.185001373291016,9.560999870300293 20.98900032043457,-5.0960001945495605 0,1.715000033378601 C-0.014999999664723873,1.7599999904632568 18.200000762939453,-1.805999994277954 23.990999221801758,15.753999710083008 C29.781999588012695,33.31399917602539 34.345001220703125,40.5 37.84400177001953,41.02799987792969 C41.34299850463867,41.555999755859375 47.069000244140625,40.15700149536133 47.069000244140625,40.15700149536133z"></path></g></g><g transform="matrix(1,0,0,1,0,0.11499977111816406)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(166,158,229)" fill-opacity="1" d=" M50.63600158691406,13.515000343322754 C51.39099884033203,14.789999961853027 39.57099914550781,-8.034000396728516 9.04800033569336,3.0420000553131104 C-3.5,8.104999542236328 -1.7109999656677246,34.26599884033203 6.599999904632568,44.439998626708984 C14.91100025177002,54.61399841308594 23.187999725341797,62.11600112915039 49.56800079345703,58.542999267578125 C49.77899932861328,58.733001708984375 25.55900001525879,59.439998626708984 17.856000900268555,45.28200149536133 C10.152999877929688,31.124000549316406 3.924999952316284,17.273000717163086 16.27199935913086,6.111000061035156 C28.618999481201172,-5.051000118255615 49.88100051879883,12.239999771118164 50.63600158691406,13.515000343322754z"></path></g></g></g><g transform="matrix(1,0,0,1,265.5,359.9999694824219)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(77,52,255)" fill-opacity="1" d=" M27.020999908447266,61.680999755859375 C27.020999908447266,61.680999755859375 27.020999908447266,9.803999900817871 27.020999908447266,9.803999900817871 C27.020999908447266,9.803999900817871 24.993999481201172,5.683000087738037 13.307999610900879,5.7779998779296875 C8.482999801635742,5.560999870300293 8.619000434875488,2.5880000591278076 5.26200008392334,2.7820000648498535 C1.9049999713897705,2.9760000705718994 0,3.947000026702881 0,3.947000026702881 C0,3.947000026702881 5.97599983215332,-0.32499998807907104 12.005999565124512,0.13199999928474426 C18.035999298095703,0.5889999866485596 29.743000030517578,0.9710000157356262 33.731998443603516,0.13199999928474426 C37.72100067138672,-0.7070000171661377 41.4119987487793,2.7260000705718994 46.41400146484375,2.7820000648498535 C51.41600036621094,2.8380000591278076 61.770999908447266,2.9800000190734863 62.38100051879883,8.875 C62.99100112915039,14.770000457763672 62.38100051879883,61.680999755859375 62.38100051879883,61.680999755859375 C62.38100051879883,61.680999755859375 27.020999908447266,61.680999755859375 27.020999908447266,61.680999755859375z"></path></g></g><g transform="matrix(1,0,0,1,268.5,359.9999694824219)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(209,203,249)" fill-opacity="1" d=" M27.020999908447266,61.680999755859375 C27.020999908447266,61.680999755859375 27.020999908447266,9.864999771118164 27.020999908447266,9.864999771118164 C27.020999908447266,9.864999771118164 24.993999481201172,5.7179999351501465 13.307999610900879,5.814000129699707 C8.482999801635742,5.5960001945495605 8.619000434875488,2.6040000915527344 5.26200008392334,2.7990000247955322 C1.9049999713897705,2.99399995803833 0,3.9719998836517334 0,3.9719998836517334 C0,3.9719998836517334 5.97599983215332,-0.3269999921321869 12.005999565124512,0.13300000131130219 C18.035999298095703,0.5929999947547913 29.743000030517578,0.9769999980926514 33.731998443603516,0.13300000131130219 C37.72100067138672,-0.7120000123977661 41.4119987487793,2.743000030517578 46.41400146484375,2.7990000247955322 C51.41600036621094,2.8550000190734863 61.770999908447266,2.999000072479248 62.38100051879883,8.930999755859375 C62.99100112915039,14.862000465393066 62.38100051879883,61.680999755859375 62.38100051879883,61.680999755859375 C62.38100051879883,61.680999755859375 27.020999908447266,61.680999755859375 27.020999908447266,61.680999755859375z"></path></g></g><g style="display: none;"><g><path></path></g></g><g transform="matrix(0.05000000074505806,0,0,0.05000000074505806,399.57647705078125,453.25128173828125)" opacity="0.03" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(243,179,3)" fill-opacity="1" d=" M137.4739990234375,64.74400329589844 C109.66200256347656,54.47999954223633 87.54199981689453,32.39400100708008 77.27799987792969,4.547999858856201 C75.04199981689453,-1.5160000324249268 67.01399993896484,-1.5160000324249268 64.77799987792969,4.547999858856201 C54.513999938964844,32.39400100708008 32.36000061035156,54.47999954223633 4.547999858856201,64.74400329589844 C-1.5160000324249268,66.9800033569336 -1.5160000324249268,75.00800323486328 4.547999858856201,77.24400329589844 C32.36000061035156,87.50800323486328 54.513999938964844,109.62899780273438 64.77799987792969,137.4409942626953 C67.01399993896484,143.5050048828125 75.04199981689453,143.5050048828125 77.27799987792969,137.4409942626953 C87.54199981689453,109.62899780273438 109.66200256347656,87.50800323486328 137.4739990234375,77.24400329589844 C143.53799438476562,75.00800323486328 143.53799438476562,66.9800033569336 137.4739990234375,64.74400329589844"></path></g></g><g transform="matrix(0.27000001072883606,0,0,0.27000001072883606,229.9540252685547,482.63262939453125)" opacity="0.03" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(243,179,3)" fill-opacity="1" d=" M137.4739990234375,64.74400329589844 C109.66200256347656,54.47999954223633 87.54199981689453,32.39400100708008 77.27799987792969,4.547999858856201 C75.04199981689453,-1.5160000324249268 67.01399993896484,-1.5160000324249268 64.77799987792969,4.547999858856201 C54.513999938964844,32.39400100708008 32.36000061035156,54.47999954223633 4.547999858856201,64.74400329589844 C-1.5160000324249268,66.9800033569336 -1.5160000324249268,75.00800323486328 4.547999858856201,77.24400329589844 C32.36000061035156,87.50800323486328 54.513999938964844,109.62899780273438 64.77799987792969,137.4409942626953 C67.01399993896484,143.5050048828125 75.04199981689453,143.5050048828125 77.27799987792969,137.4409942626953 C87.54199981689453,109.62899780273438 109.66200256347656,87.50800323486328 137.4739990234375,77.24400329589844 C143.53799438476562,75.00800323486328 143.53799438476562,66.9800033569336 137.4739990234375,64.74400329589844"></path></g></g></g><g clip-path="url(#__lottie_element_17)" transform="matrix(0.08156770467758179,0.038035646080970764,-0.038035646080970764,0.08156770467758179,300.6285400390625,374.06146240234375)" opacity="0" style="display: block;"><g transform="matrix(1,0,0,1,0,0)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(244,185,37)" fill-opacity="1" d=" M304.87799072265625,0 C304.87799072265625,18.698999404907227 289.7019958496094,33.875 271.00299072265625,33.875 C252.3040008544922,33.875 237.1269989013672,18.698999404907227 237.1269989013672,0 C237.1269989013672,0 203.2519989013672,0 203.2519989013672,0 C203.2519989013672,18.698999404907227 188.0760040283203,33.875 169.3769989013672,33.875 C150.67799377441406,33.875 135.50100708007812,18.698999404907227 135.50100708007812,0 C135.50100708007812,0 101.6259994506836,0 101.6259994506836,0 C101.6259994506836,18.698999404907227 86.44999694824219,33.875 67.7509994506836,33.875 C49.051998138427734,33.875 33.875,18.698999404907227 33.875,0 C33.875,0 0,0 0,0 C0,0 0,575.8800048828125 0,575.8800048828125 C0,575.8800048828125 33.875,575.8800048828125 33.875,575.8800048828125 C33.875,557.1810302734375 49.051998138427734,542.0050048828125 67.7509994506836,542.0050048828125 C86.44999694824219,542.0050048828125 101.6259994506836,557.1810302734375 101.6259994506836,575.8800048828125 C101.6259994506836,575.8800048828125 135.50100708007812,575.8800048828125 135.50100708007812,575.8800048828125 C135.50100708007812,557.1810302734375 150.67799377441406,542.0050048828125 169.3769989013672,542.0050048828125 C188.0760040283203,542.0050048828125 203.2519989013672,557.1810302734375 203.2519989013672,575.8800048828125 C203.2519989013672,575.8800048828125 237.1269989013672,575.8800048828125 237.1269989013672,575.8800048828125 C237.1269989013672,557.1810302734375 252.3040008544922,542.0050048828125 271.00299072265625,542.0050048828125 C289.7019958496094,542.0050048828125 304.87799072265625,557.1810302734375 304.87799072265625,575.8800048828125 C304.87799072265625,575.8800048828125 338.75299072265625,575.8800048828125 338.75299072265625,575.8800048828125 C338.75299072265625,575.8800048828125 338.75299072265625,0 338.75299072265625,0 C338.75299072265625,0 304.87799072265625,0 304.87799072265625,0z"></path></g></g><g transform="matrix(1,0,0,1,67.00000762939453,102)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(242,147,22)" fill-opacity="1" d=" M177.67599487304688,372.62799072265625 C177.67599487304688,372.62799072265625 25.54199981689453,372.62799072265625 25.54199981689453,372.62799072265625 C11.416000366210938,372.62799072265625 0,361.1789855957031 0,347.0530090332031 C0,347.0530090332031 0,25.576000213623047 0,25.576000213623047 C0,11.449999809265137 11.416000366210938,0 25.54199981689453,0 C25.54199981689453,0 177.67599487304688,0 177.67599487304688,0 C191.802001953125,0 203.2519989013672,11.449999809265137 203.2519989013672,25.576000213623047 C203.2519989013672,25.576000213623047 203.2519989013672,347.0530090332031 203.2519989013672,347.0530090332031 C203.2519989013672,361.1789855957031 191.802001953125,372.62799072265625 177.67599487304688,372.62799072265625"></path></g></g><g clip-path="url(#__lottie_element_24)" transform="matrix(1,0,0,1,118.52900695800781,217.93099975585938)" opacity="1" style="display: block;"><g transform="matrix(-1,0,0,-1,100.05799865722656,139.86099243164062)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(255,255,255)" fill-opacity="1" d=" M66.77200317382812,3.255000114440918 C66.77200317382812,3.255000114440918 66.77200317382812,76.63600158691406 66.77200317382812,76.63600158691406 C66.77300262451172,77.5009994506836 66.43000030517578,78.33100128173828 65.81900024414062,78.94200134277344 C65.20800018310547,79.5530014038086 64.37799835205078,79.89600372314453 63.51300048828125,79.8949966430664 C63.51300048828125,79.8949966430664 3.256999969482422,79.8949966430664 3.256999969482422,79.8949966430664 C2,79.89299774169922 0.8569999933242798,79.16899871826172 0.31700000166893005,78.03399658203125 C-0.22300000488758087,76.89900207519531 -0.06400000303983688,75.55599975585938 0.7269999980926514,74.5790023803711 C0.7269999980926514,74.5790023803711 60.987998962402344,1.184999942779541 60.987998962402344,1.184999942779541 C61.8650016784668,0.125 63.31100082397461,-0.27300000190734863 64.60600280761719,0.19099999964237213 C65.9010009765625,0.6549999713897705 66.76699829101562,1.8799999952316284 66.77200317382812,3.255000114440918z"></path></g></g><g transform="matrix(1,0,0,1,0,0)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(255,255,255)" fill-opacity="1" d=" M66.77200317382812,3.255000114440918 C66.77200317382812,3.255000114440918 66.77200317382812,76.63600158691406 66.77200317382812,76.63600158691406 C66.77300262451172,77.5009994506836 66.43000030517578,78.33100128173828 65.81900024414062,78.94200134277344 C65.20800018310547,79.5530014038086 64.37799835205078,79.89600372314453 63.51300048828125,79.8949966430664 C63.51300048828125,79.8949966430664 3.256999969482422,79.8949966430664 3.256999969482422,79.8949966430664 C2,79.89299774169922 0.8569999933242798,79.16899871826172 0.31700000166893005,78.03399658203125 C-0.22300000488758087,76.89900207519531 -0.06400000303983688,75.55599975585938 0.7269999980926514,74.5790023803711 C0.7269999980926514,74.5790023803711 60.987998962402344,1.184999942779541 60.987998962402344,1.184999942779541 C61.8650016784668,0.125 63.31100082397461,-0.27300000190734863 64.60600280761719,0.19099999964237213 C65.9010009765625,0.6549999713897705 66.76699829101562,1.8799999952316284 66.77200317382812,3.255000114440918z"></path></g></g></g><g transform="matrix(1,0,0,1,152,278)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(255,255,255)" fill-opacity="1" d=" M0,19.562999725341797 C0,19.562999725341797 0,3.256999969482422 0,3.256999969482422 C0,2.3940000534057617 0.34299999475479126,1.565000057220459 0.9539999961853027,0.9539999961853027 C1.565000057220459,0.34299999475479126 2.3940000534057617,0 3.256999969482422,0 C3.256999969482422,0 33.48400115966797,0 33.48400115966797,0 C33.48400115966797,0 33.48400115966797,16.305999755859375 33.48400115966797,16.305999755859375 C33.48400115966797,17.16900062561035 33.14099884033203,17.99799919128418 32.529998779296875,18.608999252319336 C31.91900062561035,19.219999313354492 31.09000015258789,19.562999725341797 30.226999282836914,19.562999725341797 C30.226999282836914,19.562999725341797 0,19.562999725341797 0,19.562999725341797z"></path></g></g></g><g transform="matrix(0.27000001072883606,0,0,0.27000001072883606,274.95404052734375,472.63262939453125)" opacity="0.03" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(255,255,255)" fill-opacity="1" d=" M137.4739990234375,64.74400329589844 C109.66200256347656,54.47999954223633 87.54199981689453,32.39400100708008 77.27799987792969,4.547999858856201 C75.04199981689453,-1.5160000324249268 67.01399993896484,-1.5160000324249268 64.77799987792969,4.547999858856201 C54.513999938964844,32.39400100708008 32.36000061035156,54.47999954223633 4.547999858856201,64.74400329589844 C-1.5160000324249268,66.9800033569336 -1.5160000324249268,75.00800323486328 4.547999858856201,77.24400329589844 C32.36000061035156,87.50800323486328 54.513999938964844,109.62899780273438 64.77799987792969,137.4409942626953 C67.01399993896484,143.5050048828125 75.04199981689453,143.5050048828125 77.27799987792969,137.4409942626953 C87.54199981689453,109.62899780273438 109.66200256347656,87.50800323486328 137.4739990234375,77.24400329589844 C143.53799438476562,75.00800323486328 143.53799438476562,66.9800033569336 137.4739990234375,64.74400329589844"></path></g></g><g transform="matrix(0.05000000074505806,0,0,0.05000000074505806,399.57647705078125,453.25128173828125)" opacity="0.03" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(243,179,3)" fill-opacity="1" d=" M137.4739990234375,64.74400329589844 C109.66200256347656,54.47999954223633 87.54199981689453,32.39400100708008 77.27799987792969,4.547999858856201 C75.04199981689453,-1.5160000324249268 67.01399993896484,-1.5160000324249268 64.77799987792969,4.547999858856201 C54.513999938964844,32.39400100708008 32.36000061035156,54.47999954223633 4.547999858856201,64.74400329589844 C-1.5160000324249268,66.9800033569336 -1.5160000324249268,75.00800323486328 4.547999858856201,77.24400329589844 C32.36000061035156,87.50800323486328 54.513999938964844,109.62899780273438 64.77799987792969,137.4409942626953 C67.01399993896484,143.5050048828125 75.04199981689453,143.5050048828125 77.27799987792969,137.4409942626953 C87.54199981689453,109.62899780273438 109.66200256347656,87.50800323486328 137.4739990234375,77.24400329589844 C143.53799438476562,75.00800323486328 143.53799438476562,66.9800033569336 137.4739990234375,64.74400329589844"></path></g></g><g style="display: none;"><g><path></path></g></g></g></g></svg></div></div></div></div><div class="homeWrapper" id="pricing"><div class="planContainer " id="homePlan"><p class="" style="font-weight: 600; font-size: 34px; color: var(--text);">Pick a plan</p><div class="plansContent"><div class="plansCard"><div class="plansCardImgContainer"><img src="/static/media/explorer.0ed88868.png" alt="streak 0 plan" class="plansImg"></div><p class="plansCardTitle" style="font-weight: 500; font-size: 13px; color: var(--home-voilet);">regular</p><p class="plansCardPrice" style="font-weight: 600; font-size: 23px; color: var(--text);"><span class="rupeeSym">₹</span>690<span class="priceSubTxt">+GST</span><span class="priceSubTxt priceSubTxt_1">/mo</span></p><div class="plansCardSeperator"></div><div class="plansCardContent"><div class="plansCardRow"><div class="tick"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="planTick "><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><path d="M32,0A32,32,0,1,0,64,32,32,32,0,0,0,32,0ZM44.64,26.69,30.53,40.8a2.37,2.37,0,0,1-3.33,0L19.36,33a2.33,2.33,0,0,1,0-3.3l0,0a2.37,2.37,0,0,1,3.33,0l6.16,6.18L41.31,23.36a2.35,2.35,0,0,1,3.33,3.33Z"></path></g></g></svg></div><p class="" style="font-weight: 400; font-size: 13px; color: var(--text); text-align: left; margin-top: 2px;"><span class="plansCardRowValue "> 300 </span><span class="plansCardRowLabel">Backtests per day</span></p></div><div class="plansCardRow"><div class="tick"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="planTick "><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><path d="M32,0A32,32,0,1,0,64,32,32,32,0,0,0,32,0ZM44.64,26.69,30.53,40.8a2.37,2.37,0,0,1-3.33,0L19.36,33a2.33,2.33,0,0,1,0-3.3l0,0a2.37,2.37,0,0,1,3.33,0l6.16,6.18L41.31,23.36a2.35,2.35,0,0,1,3.33,3.33Z"></path></g></g></svg></div><p class="" style="font-weight: 400; font-size: 13px; color: var(--text); text-align: left; margin-top: 2px;"><span class="plansCardRowValue "> 30 </span><span class="plansCardRowLabel">Live strategies at a time</span></p></div><div class="plansCardRow"><div class="tick"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="planTick "><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><path d="M32,0A32,32,0,1,0,64,32,32,32,0,0,0,32,0ZM44.64,26.69,30.53,40.8a2.37,2.37,0,0,1-3.33,0L19.36,33a2.33,2.33,0,0,1,0-3.3l0,0a2.37,2.37,0,0,1,3.33,0l6.16,6.18L41.31,23.36a2.35,2.35,0,0,1,3.33,3.33Z"></path></g></g></svg></div><p class="" style="font-weight: 400; font-size: 13px; color: var(--text); text-align: left; margin-top: 2px;"><span class="plansCardRowValue "> 500 </span><span class="plansCardRowLabel">Scans per day</span></p></div><div class="plansCardRow"><div class="tick"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="planTick "><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><path d="M32,0A32,32,0,1,0,64,32,32,32,0,0,0,32,0ZM44.64,26.69,30.53,40.8a2.37,2.37,0,0,1-3.33,0L19.36,33a2.33,2.33,0,0,1,0-3.3l0,0a2.37,2.37,0,0,1,3.33,0l6.16,6.18L41.31,23.36a2.35,2.35,0,0,1,3.33,3.33Z"></path></g></g></svg></div><p class="" style="font-weight: 400; font-size: 13px; color: var(--text); text-align: left; margin-top: 2px;"><span class="plansCardRowValue "> Heikin-Ashi </span><span class="plansCardRowLabel"></span></p></div><div class="plansCardRow"><div class="tick"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="planTick "><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><path d="M32,0A32,32,0,1,0,64,32,32,32,0,0,0,32,0ZM44.64,26.69,30.53,40.8a2.37,2.37,0,0,1-3.33,0L19.36,33a2.33,2.33,0,0,1,0-3.3l0,0a2.37,2.37,0,0,1,3.33,0l6.16,6.18L41.31,23.36a2.35,2.35,0,0,1,3.33,3.33Z"></path></g></g></svg></div><p class="" style="font-weight: 400; font-size: 13px; color: var(--text); text-align: left; margin-top: 2px;"><span class="plansCardRowValue "> 7 </span><span class="plansCardRowLabel">entry and exit conditions</span></p></div><div class="plansCardRow"><div class="tick"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="planUntick"><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><path id="Path_2057" data-name="Path 2057" d="M32,0A32,32,0,1,0,64,32,32,32,0,0,0,32,0ZM46,40.37,40.37,46,32,37.6,23.63,46,18,40.37,26.4,32,18,23.63l5.6-5.6L32,26.4,40.37,18l5.6,5.6L37.6,32Z"></path></g></g></svg></div><p class="" style="font-weight: 400; font-size: 13px; color: var(--text); text-align: left; margin-top: 2px;"><span class="plansCardRowValue textDisabled"> Trailing stoploss </span><span class="plansCardRowLabel"></span></p></div><div class="plansCardRow"><div class="tick"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="planUntick"><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><path id="Path_2057" data-name="Path 2057" d="M32,0A32,32,0,1,0,64,32,32,32,0,0,0,32,0ZM46,40.37,40.37,46,32,37.6,23.63,46,18,40.37,26.4,32,18,23.63l5.6-5.6L32,26.4,40.37,18l5.6,5.6L37.6,32Z"></path></g></g></svg></div><p class="" style="font-weight: 400; font-size: 13px; color: var(--text); text-align: left; margin-top: 2px;"><span class="plansCardRowValue textDisabled"> Renko (In basic strategy) </span><span class="plansCardRowLabel"></span></p></div><div class="plansCardRow"><div class="tick"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="planUntick"><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><path id="Path_2057" data-name="Path 2057" d="M32,0A32,32,0,1,0,64,32,32,32,0,0,0,32,0ZM46,40.37,40.37,46,32,37.6,23.63,46,18,40.37,26.4,32,18,23.63l5.6-5.6L32,26.4,40.37,18l5.6,5.6L37.6,32Z"></path></g></g></svg></div><p class="" style="font-weight: 400; font-size: 13px; color: var(--text); text-align: left; margin-top: 2px;"><span class="plansCardRowValue textDisabled"> MCX (Commodities) </span><span class="plansCardRowLabel"></span></p></div><div class="plansCardRow"><div class="tick"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="planUntick"><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><path id="Path_2057" data-name="Path 2057" d="M32,0A32,32,0,1,0,64,32,32,32,0,0,0,32,0ZM46,40.37,40.37,46,32,37.6,23.63,46,18,40.37,26.4,32,18,23.63l5.6-5.6L32,26.4,40.37,18l5.6,5.6L37.6,32Z"></path></g></g></svg></div><p class="" style="font-weight: 400; font-size: 13px; color: var(--text); text-align: left; margin-top: 2px;"><span class="plansCardRowValue textDisabled"> Options (NFO-OPT) </span><span class="plansCardRowLabel"></span></p></div><div class="plansCardRow"><div class="tick"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="planUntick"><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><path id="Path_2057" data-name="Path 2057" d="M32,0A32,32,0,1,0,64,32,32,32,0,0,0,32,0ZM46,40.37,40.37,46,32,37.6,23.63,46,18,40.37,26.4,32,18,23.63l5.6-5.6L32,26.4,40.37,18l5.6,5.6L37.6,32Z"></path></g></g></svg></div><p class="" style="font-weight: 400; font-size: 13px; color: var(--text); text-align: left; margin-top: 2px;"><span class="plansCardRowValue textDisabled"> Multi-time frame &amp; Multi-time frame completed </span><span class="plansCardRowLabel"></span></p></div><div class="plansCardRow"><div class="tick"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="planUntick"><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><path id="Path_2057" data-name="Path 2057" d="M32,0A32,32,0,1,0,64,32,32,32,0,0,0,32,0ZM46,40.37,40.37,46,32,37.6,23.63,46,18,40.37,26.4,32,18,23.63l5.6-5.6L32,26.4,40.37,18l5.6,5.6L37.6,32Z"></path></g></g></svg></div><p class="" style="font-weight: 400; font-size: 13px; color: var(--text); text-align: left; margin-top: 2px;"><span class="plansCardRowValue textDisabled"> 1 hour </span><span class="plansCardRowLabel"> handholding session on annual plan</span></p></div></div><div class="actionBar"><button type="button" class="jss80 jss82 planCardBtn" style="border-radius: 6px;"><p class="jss91" style="font-weight: 500; font-size: 12px; color: var(--text);">Pick a plan</p></button></div></div><div class="plansCard" style="background-color: rgb(255, 239, 227);"><div class="plansCardImgContainer"><img src="/static/media/plan_ultimate.6cd467ec.png" alt="streak 0 plan" class="plansImg"></div><p class="plansCardTitle" style="font-weight: 500; font-size: 13px; color: var(--home-voilet);">ultimate</p><p class="plansCardPrice" style="font-weight: 600; font-size: 23px; color: var(--text);"><span class="rupeeSym">₹</span>1400<span class="priceSubTxt">+GST</span><span class="priceSubTxt priceSubTxt_1">/mo</span></p><div class="plansCardSeperator"></div><div class="plansCardContent"><div class="plansCardRow"><div class="tick"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="planTick "><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><path d="M32,0A32,32,0,1,0,64,32,32,32,0,0,0,32,0ZM44.64,26.69,30.53,40.8a2.37,2.37,0,0,1-3.33,0L19.36,33a2.33,2.33,0,0,1,0-3.3l0,0a2.37,2.37,0,0,1,3.33,0l6.16,6.18L41.31,23.36a2.35,2.35,0,0,1,3.33,3.33Z"></path></g></g></svg></div><p class="" style="font-weight: 400; font-size: 13px; color: var(--text); text-align: left; margin-top: 2px;"><span class="plansCardRowValue "> 1000 </span><span class="plansCardRowLabel">Backtests per day</span></p></div><div class="plansCardRow"><div class="tick"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="planTick "><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><path d="M32,0A32,32,0,1,0,64,32,32,32,0,0,0,32,0ZM44.64,26.69,30.53,40.8a2.37,2.37,0,0,1-3.33,0L19.36,33a2.33,2.33,0,0,1,0-3.3l0,0a2.37,2.37,0,0,1,3.33,0l6.16,6.18L41.31,23.36a2.35,2.35,0,0,1,3.33,3.33Z"></path></g></g></svg></div><p class="" style="font-weight: 400; font-size: 13px; color: var(--text); text-align: left; margin-top: 2px;"><span class="plansCardRowValue "> 100 </span><span class="plansCardRowLabel">Live strategies at a time</span></p></div><div class="plansCardRow"><div class="tick"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="planTick "><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><path d="M32,0A32,32,0,1,0,64,32,32,32,0,0,0,32,0ZM44.64,26.69,30.53,40.8a2.37,2.37,0,0,1-3.33,0L19.36,33a2.33,2.33,0,0,1,0-3.3l0,0a2.37,2.37,0,0,1,3.33,0l6.16,6.18L41.31,23.36a2.35,2.35,0,0,1,3.33,3.33Z"></path></g></g></svg></div><p class="" style="font-weight: 400; font-size: 13px; color: var(--text); text-align: left; margin-top: 2px;"><span class="plansCardRowValue "> Unlimited </span><span class="plansCardRowLabel">Scans per day</span></p></div><div class="plansCardRow"><div class="tick"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="planTick "><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><path d="M32,0A32,32,0,1,0,64,32,32,32,0,0,0,32,0ZM44.64,26.69,30.53,40.8a2.37,2.37,0,0,1-3.33,0L19.36,33a2.33,2.33,0,0,1,0-3.3l0,0a2.37,2.37,0,0,1,3.33,0l6.16,6.18L41.31,23.36a2.35,2.35,0,0,1,3.33,3.33Z"></path></g></g></svg></div><p class="" style="font-weight: 400; font-size: 13px; color: var(--text); text-align: left; margin-top: 2px;"><span class="plansCardRowValue "> Heikin-Ashi </span><span class="plansCardRowLabel"></span></p></div><div class="plansCardRow"><div class="tick"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="planTick "><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><path d="M32,0A32,32,0,1,0,64,32,32,32,0,0,0,32,0ZM44.64,26.69,30.53,40.8a2.37,2.37,0,0,1-3.33,0L19.36,33a2.33,2.33,0,0,1,0-3.3l0,0a2.37,2.37,0,0,1,3.33,0l6.16,6.18L41.31,23.36a2.35,2.35,0,0,1,3.33,3.33Z"></path></g></g></svg></div><p class="" style="font-weight: 400; font-size: 13px; color: var(--text); text-align: left; margin-top: 2px;"><span class="plansCardRowValue "> 10 </span><span class="plansCardRowLabel">entry and exit conditions</span></p></div><div class="plansCardRow"><div class="tick"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="planTick "><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><path d="M32,0A32,32,0,1,0,64,32,32,32,0,0,0,32,0ZM44.64,26.69,30.53,40.8a2.37,2.37,0,0,1-3.33,0L19.36,33a2.33,2.33,0,0,1,0-3.3l0,0a2.37,2.37,0,0,1,3.33,0l6.16,6.18L41.31,23.36a2.35,2.35,0,0,1,3.33,3.33Z"></path></g></g></svg></div><p class="" style="font-weight: 400; font-size: 13px; color: var(--text); text-align: left; margin-top: 2px;"><span class="plansCardRowValue "> Trailing stoploss </span><span class="plansCardRowLabel"></span></p></div><div class="plansCardRow"><div class="tick"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="planTick "><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><path d="M32,0A32,32,0,1,0,64,32,32,32,0,0,0,32,0ZM44.64,26.69,30.53,40.8a2.37,2.37,0,0,1-3.33,0L19.36,33a2.33,2.33,0,0,1,0-3.3l0,0a2.37,2.37,0,0,1,3.33,0l6.16,6.18L41.31,23.36a2.35,2.35,0,0,1,3.33,3.33Z"></path></g></g></svg></div><p class="" style="font-weight: 400; font-size: 13px; color: var(--text); text-align: left; margin-top: 2px;"><span class="plansCardRowValue "> Renko (In basic strategy) </span><span class="plansCardRowLabel"></span></p></div><div class="plansCardRow"><div class="tick"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="planTick "><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><path d="M32,0A32,32,0,1,0,64,32,32,32,0,0,0,32,0ZM44.64,26.69,30.53,40.8a2.37,2.37,0,0,1-3.33,0L19.36,33a2.33,2.33,0,0,1,0-3.3l0,0a2.37,2.37,0,0,1,3.33,0l6.16,6.18L41.31,23.36a2.35,2.35,0,0,1,3.33,3.33Z"></path></g></g></svg></div><p class="" style="font-weight: 400; font-size: 13px; color: var(--text); text-align: left; margin-top: 2px;"><span class="plansCardRowValue "> MCX (Commodities) </span><span class="plansCardRowLabel"></span></p></div><div class="plansCardRow"><div class="tick"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="planTick "><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><path d="M32,0A32,32,0,1,0,64,32,32,32,0,0,0,32,0ZM44.64,26.69,30.53,40.8a2.37,2.37,0,0,1-3.33,0L19.36,33a2.33,2.33,0,0,1,0-3.3l0,0a2.37,2.37,0,0,1,3.33,0l6.16,6.18L41.31,23.36a2.35,2.35,0,0,1,3.33,3.33Z"></path></g></g></svg></div><p class="" style="font-weight: 400; font-size: 13px; color: var(--text); text-align: left; margin-top: 2px;"><span class="plansCardRowValue "> Options (NFO-OPT) </span><span class="plansCardRowLabel"></span></p></div><div class="plansCardRow"><div class="tick"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="planTick "><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><path d="M32,0A32,32,0,1,0,64,32,32,32,0,0,0,32,0ZM44.64,26.69,30.53,40.8a2.37,2.37,0,0,1-3.33,0L19.36,33a2.33,2.33,0,0,1,0-3.3l0,0a2.37,2.37,0,0,1,3.33,0l6.16,6.18L41.31,23.36a2.35,2.35,0,0,1,3.33,3.33Z"></path></g></g></svg></div><p class="" style="font-weight: 400; font-size: 13px; color: var(--text); text-align: left; margin-top: 2px;"><span class="plansCardRowValue "> Multi-time frame &amp; Multi-time frame completed </span><span class="plansCardRowLabel"></span></p></div><div class="plansCardRow"><div class="tick"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="planTick "><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><path d="M32,0A32,32,0,1,0,64,32,32,32,0,0,0,32,0ZM44.64,26.69,30.53,40.8a2.37,2.37,0,0,1-3.33,0L19.36,33a2.33,2.33,0,0,1,0-3.3l0,0a2.37,2.37,0,0,1,3.33,0l6.16,6.18L41.31,23.36a2.35,2.35,0,0,1,3.33,3.33Z"></path></g></g></svg></div><p class="" style="font-weight: 400; font-size: 13px; color: var(--text); text-align: left; margin-top: 2px;"><span class="plansCardRowValue "> 1 hour </span><span class="plansCardRowLabel"> handholding session on annual plan</span></p></div></div><div class="actionBar"><button type="button" class="jss80 jss82 planCardBtn" style="border-radius: 6px;"><p class="jss91" style="font-weight: 500; font-size: 12px; color: var(--text);">Pick a plan</p></button></div></div></div></div></div><div class="homeWrapper"><div class="otgContainer"><div class="otgLeft"><h1>On The Go</h1><h5 class="otgSubTitle">We believe that everyone should be able to wield technology while trading.
+          We have made strategic trading, accessible and affordable to all.
+          Use Streak on the go, on your mobile device. Experience the ultimate trading experience on Android or IOS.</h5><div class="appInstall"><img src="/static/media/streak_scan.eadd3bbd.PNG" class="streakQrImg" alt="streak qr code install"><div class="scanQrContent"><a referrerpolicy="no-referrer" rel="noreferrer" target="_blank" class="appInstallTitle" href="https://play.google.com/store/apps/details?id=com.streak">Scan and download</a><h5 class="appInstallSubTitle">Use your android or IOS device 
+to download the app</h5></div></div></div><div class="otgRight"><div class="otgImgContainer"><img src="/static/media/otg_mobile.58500c83.png" alt="streak mobile"></div></div></div></div><div class="homeWrapper featuresWrapper" id="featWrapper" style="height: 800vh;"><div class="featuresContainer" id="featureContainer"><button type="button" class="featuresSection slideFromDown" id="homeFeature_0"><h1 class="featuresText">Technicals</h1><img alt="Technicals" class="featuresImg" src="/static/media/technicals.a601792a.png" style="width: 280px; margin-top: 32px;"></button><button type="button" class="featuresSection hiddenImg" id="homeFeature_1"><h1 class="featuresText">Get notified</h1><img alt="Get notified" class="featuresImg" src="/static/media/bell.ff0239cf.png" style="width: 135px; margin-top: 22px;"></button><button type="button" class="featuresSection hiddenImg" id="homeFeature_2"><h1 class="featuresText">Paper trade</h1><img alt="Paper trade" class="featuresImg" src="/static/media/folder.dd26fd07.png" style="width: 120px; margin-top: 22px;"></button><button type="button" class="featuresSection hiddenImg" id="homeFeature_3"><h1 class="featuresText">Advanced strategy creation</h1><img alt="Advanced strategy creation" class="featuresImg" src="/static/media/hand_trade.c240d729.png" style="width: 160px; margin-top: 22px;"></button><button type="button" class="featuresSection hiddenImg" id="homeFeature_4"><h1 class="featuresText">Options trading</h1><img alt="Options trading" class="featuresImg" src="/static/media/chart_3d.2a61df4f.png" style="width: 170px; margin-top: 32px;"></button><button type="button" class="featuresSection hiddenImg" id="homeFeature_5"><h1 class="featuresText">Multi-Time frame</h1><img alt="Multi-Time frame" class="featuresImg" src="/static/media/clock_3d.10edb730.png" style="width: 120px; margin-top: 22px;"></button><button type="button" class="featuresSection hiddenImg" id="homeFeature_6"><h1 class="featuresText">Dynamic contracts</h1><img alt="Dynamic contracts" class="featuresImg" src="/static/media/rocket_paper.48491a89.png" style="width: 150px; margin-top: 22px;"></button><div class="featuresDotsContainer"><button class="featuresDotBtn" type="button" disabled=""><div class="featuresDot featuresDotActive"></div></button><button class="featuresDotBtn" type="button" disabled=""><div class="featuresDot "></div></button><button class="featuresDotBtn" type="button" disabled=""><div class="featuresDot "></div></button><button class="featuresDotBtn" type="button" disabled=""><div class="featuresDot "></div></button><button class="featuresDotBtn" type="button" disabled=""><div class="featuresDot "></div></button><button class="featuresDotBtn" type="button" disabled=""><div class="featuresDot "></div></button><button class="featuresDotBtn" type="button" disabled=""><div class="featuresDot "></div></button></div></div></div><div class="homeWrapper"><div class="aboutUsContainer"><h5 class="aboutUsTitle">About us</h5><h1 class="aboutUsText">We’re on a mission to democratize access to technology in capital markets for all.
+        We believe the financial system should be built to work for everyone.
+        That’s why we create products that let you start strategic trading at your own pace, on your own terms.
+        As part of this vision, we have partnered with the country’s top stock brokers who share our vision.</h1><div class="aboutUsImgContainer"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAAlCAYAAAAXzipbAAAABHNCSVQICAgIfAhkiAAABQZJREFUaEPNmetvFGUUxp/ZmdnSXfrBXWPA7ZZtaS0qMUGhtNylamJM/GQ0JEZUrAZrqxYRNCiaaKJmEzQRUKPxQlBRisFI4q0KxvhnmKhEQFFgK7vTnZkdz3lnZ3vby+zstjvzdXcm7+895zzPec8rWfTA4yNe1bMwT30J/eDzwOWUxy/V+TVJgrQ4gUD/XUnJKyDDWQRkjh2D8ckbwL9/AfThhj8MF++C8sBuBFZuqgGQ4IyTx2EceRM4d7rhXGIBDNdxPVSGW7EOkqJ6A7RME8aJj2B8dgD4+0+AU7XR0RNwy6E+SHA3rocUkBm5ekCGM388Bv2tF4DUBTtyjYbjJXBabnsG8qrNHDkno9wDCkHJXIZxitLy7ReB9H++AKNFQIoloAzsJbibCU6ZWi7uAAUcARknv7DT8szv/oDjtFyyDMp9T0FefctMOPcpanHkxkYJbr+/BKXrBqhbd5GgrIUkT4uc+xS1TAPGt0dgHN5HgnLGH4LCabmEreBZyCs3QlKDpVS8dIoWTPwHEhQ2cYqiH8REaFqsnQTlOci9/aUiVz6CTs2ZP5+A/v4rvjJxLGqD+hDDcc0V1LK6CFosKGNHYYy+Q4Lym09MPACpczmUe0dstSxeczPXOjtFueZMEhT98OvA2T+o5nKNT01h4teRWu6EfFPZmisPKOCo/dLfexn455xPBIXWzGk5QGnZ0w+QoEjuGws7gqLmspp9KjiwhzzPP4KCq1oJbg/kNbcX87lK5ZOUcrmcxQpp/vI19ENJf5n41aSW9+8muNvcCEoxWALMapb5PZn40YOwTv9aaUfm53euuaUkKFuGIfcRnDtBKQ6oj41a+oevkaDQkccPgsIm3tYJZevTduPctKCWTU1K6S0rLJw/23ilzGOYTS0I3D2E5nsGynUobqGTkv7Np5b+wasNV02emxi5AFLaQuRi3Yg89iRCPb0IBJvcwvi3BhlONxWCa8bEBDfNEoLXdOOKbQ9j4UZK01pqUKhoehzmT19B/5jMnccP7n2mlt0V74q5VU7BuLYA2gS3XjTXyU8Igh0diAw+jvCaDV4sYvK41CgftNNSxqV0CBNZ57iTH1zlh33K4kWIDO1Ay+ZbvUBOb9VEJ/Pd59DffWnOxxEMZ1oBXMqEoWl2WhZ9CFRpjePKHbsQ7lsHyHL1nczUD89HLypqjiKXylDk8jVXMteddO3sQmT7EEIEGVArniKczxU/D87lacKBGyc4rRKcs0wHctm1iAxsp5qkqdn02Uup/SkBmJ/B1Ps8aAuKTILSPCkobmUqD6nEYogOjZC68oCpYiTn90TPPncxHZ4tKNVA0n/VeBuiwyMIb9hUyUIqT9XqMZPhzWc4FhRbLWsf8avt7YhSM8DCI5WuycqAwqtqmKo5aSkEpU5wIuDk1U3dVJODwwitWu19qmabsbe5qGPiqQx1KPWEczoEggwu7UTkkUGE11O6zhYedxEsQFY52dZNsgKtCrV0W4sz1FWNxxF9YmcxdXUPWPimi7sJjlzOknAh05L3uWpXXv3/1UTCrkm2kMmarB5QRLPM7ZItKBw56lCEz83Tw+lKDXqUetdQTx/VpMfbpUIki9wPTq+5ih5Vf3IH8lGG7OWa9BZBpyan3vBadMNr0KlgTmvOzZYQpJogC+FI9q4VgGk37xX7z+Qd/XFo+/fi4nkLWpYi5/nW3+tKZrxHkEqsFS133Lnvf/O65RaepLsZAAAAAElFTkSuQmCC" alt="Zerodha img" width="34px" class="brokerImg"><img src="data:image/png;base64,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" alt="Angel One img" width="34px" class="brokerImg"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA1CAYAAAAUGCjAAAAABHNCSVQICAgIfAhkiAAAEaFJREFUaEPNWgd4VVW2Xrff9F5IgZAGHyWgQwlFnaHzGBQBJVSBEZASQT8ZhQDDwIMHIgMiKCU6jjxFhUHeMJSE6oQSaQktCYH0AqQnN7n35uaW969Nbl7I5CYBor79fec7N+fsfc7+17/+tdbeJxL69ZoEr+ZDhsOEw/xzTIVf8Es0KxA+q6ba+bt2Mzm7ShWKgECZXb86i9kwS3N5M+7Vtfdkfg6AVjByTJYPyfPOXj6zZEEj/OuU47zM8kEWk8Xe3OjNWok58z9053qjr+b/E0CeorTexdjNpJFqV6/pytABPkbFIDdSPEcmsydJJV4yi8SZLBYZSZq3p4ykppWUFnpW/yD71wDYGAgDUrzpGBYQSS69XE2KXvYkDQO6EAlJ/FQWqTtZSG55Ur8wW+iSomrkH2uun2xvLTaeilX0DIIP1Rsugd6RJq9O9mZFkL1E0s2e5H1UFklPlVniZrIAhg1GnoaFXGnN/Bnaq7EYa3ya8bbGCFDDyM15iDKgg1lK3l5yZW9vi2q4s0UWCSCeRosFPZ6UkiefYonM8JeJNYnLMbL2yUfbHsEzV8Q6910QarDb2p4PftJnVUrqDryiuzgT42qedGxL/QXAVepuLw4hT/b/X63pJKa00brz/do7koqQvljZufurkoDrv4Qr2rSgRFI7TXcpJJ90Be1pZaHBQWq3wI2WnjnGFqRmgRYlPq4k93Ujo5MdwpCUzFodmUs1JCsoJYkBxcgzaFUCqZ9Sl41YU3nrVHtGUiskl1MOL96VmcirqfUkdkpS9Q4h1duvUq2/Bxn0ejLUGchkMpGxDgEPT6ipriZp/DVyirtBypJq4sk+TSuQGT6YWpP4F4xtt4rGCtBuv/PAL7wM8ijrxJgxhz5h5LRjCRVrKqmyspLc3dxIrlDQ/fv3yQ2/+Zq9vT2VlZVRrb6WLGBQd/Emdfn8wtPgoxqZ6bsxNednYbDuqR7QzCArQOVy5+7jR9Z67LMgU6u6BpD7f86xFLkpJcySTC4jk9GEwsREcrmcKioqSKlQUk1NNe7JBUAXZ2cArgJgOypNz6IuH58kpY5r6LY3OPz50fpzo9sz0FgBynzU6o4HPIfccVs0QWEZ1YdKysvI0cmJ5DKAgzvWAajRZBRnM/9trBOgNdUawZ4UmmQJ1tYaSK/Xkb5SQ123nyHHcn2bERok5twRunMRGFDZ5kGtdLQC5LP7vbQ7KWWaKu/a2lrycPcQgIxG4yO94cxs1olznQBYh7PBYKA6A8Cijwn92W39/f2ppKSUyu9mU5/YRFIa2roSshim6C+HFZI+D/N5SiU/jrhx3HSLj48/1zk4uBszJICZzfXBBEAARlzDwb8ZHP9tAGO1tfoG4LUAzOP9AwKoID+fFHFJ1P10ZpsiLAens+qKiX+qvHEI03wy/7bBZGOAjslJSQcdnJyGW/XGYARz7JJgyWx5BFingwvq9KQHMNEXzDFoA5gXhqgHr0fElSsV9JtNJ8le3zYWH8gNn0ZVJ76L+bZLydYYoOrEsWNrg8PDlzIgnqTVNYVb4rCzs4PrlTxyS9xnV2YGhbvimmAWZz2uW0GyjuncLeofl9UmFg1Sy08jtAlDAFDbHjpsDFC+acOGMRMnTTrEAJqCUyA95OVCGhxIEFQ4F0oQVZhlHZh6pEsjlcIA3NeqXY66cAGK+GsieZQZWp2z2WLJGVKb0Ku9As1jyyU/d/eAhMuX081ms1q4Jg5mSoIIWV5eTuVIBw4OjlRrqEWk1FO1RiPclbXKRmHtlZcjhagUj7QKt+ZA5enpRbUZ+TTkv2+2yqJJYqkYqksIBsCK9gg0TYsz19u3b19RqVQhAlw9SGbqTtod8vTyFEAYHGuQgwsHFT1Acv/KqkrS1mhJrVaJdMFewOnD2cVZ5M/Ar85TYGZVayCNk+hS+EO9Prc9Ak1TgE7Xk5O/h25GWQGy7m5cv05eXt5CawyWQVRpqnCuEYC1Wq04C/D1gYeZZ1B8cKEQGNiRiktLqO/6uJbTBkdS+6qpq8uT97dHydYUoF3ihQtbvHx957GLsfWLiouRkSyIoBbKzc2tz4eP0gYP5oDCQPm+lUkGx2MZnFqtFmc2FJ8dDyZS5wsgx1Zhjuc8VBm/n1R18Q1+fKuibWOit3ZTHDp4cG6PiIjtzBRP+sGDByimsQYFGolECs1phYuy9vjgSFqNYluLss2MvRVmnoOMUqkUgBQ4K/E3//b29qaK0jLy33SEnB9W25yaSUalQ2v+xTqEPz9ba8qgdHVMzODJM974USaTCtdjEBxkRO4DML7GgGu0NYIxk8kMgBrSIOBwTlSpAUilAnOPGFNY3RQlnxSHE9JG3dlk6vQlCnJbu2xw07XSex3jdYX5zxpomgKU+Pn5BRw/fjwbDEh5Qpy8OQ0wQNYeA2PG+KiBazJIHx8fSk9PB4NmcnN3I5VS1cCgVYdyuUJo0dHRUbi3XcxecsmzXXIeMxdFbDSk3QbAtlUIbahkrF2cz545c93d0zPIDiwYEVgYXDXAMCBmShxVVQCrFamCARZDqzIYxBmrCnZLNVhkA6nwG5YS9+QKudCmvZ09aa/dIY81B2yyeJpKhq3Rp/yIST3TLltza3iHfx4+vNfL2+dVOyx9mA1eHVTVA+NcWIGCugoHg+bKxcoag+BI6uHhAfdUQIuIoqw/GYDB5fk+a5tBMvCy9XvJ81xGs7a/q9Atm6O5zBthzxRomgOo3r17d0xoWNgKB3sHLJkcyQLXqwRjvO7jUq0S68GKygqRC9nlWFd8cBBiPfr4+v5fimDtAZAU9yTSR+C4n0qF9WRBEamm4ZMErjVtFTJj3LiaC+OftWRrDqB8w7p1UV179NjLrsRJmievqdLQw6KH9ACreQbJ7sru6ITDxcUFLqkWk68EcF/fDkJv/DezJiIqWHz48AHYdm9gka9nbf6KPA8miZTTuJmklvKh2oQQXCtvIY7yMOtGNS+vWK+PabY5gLL58+cP7tOnz1k1chdPnjXGDGRmZVJWZiYiaQ25urqJbQsHMOjl6SkWwsxQKZJ5hw5+AhznQLEoRlHAenUHOG6cRrgx6DqzkTRjVpCi6nFPxPcM+lKR3/Pz6gwONNwawPy2d2/7UVFRzqGhoa54VmB4ePhAVF99goODX23KeHMAJegYOHPmzByepIODAxjxJbgspaWmUUbGPQoJDRULYt6PUWA55AsDsPvy9kVBQQH5deggZsSrEgtyI7PJgYr7FcIDMBnUDhZycsRKA+va1A1fkPeBK/8WcK5JNJPf1SUdZVusXr26x2uvvTYBuXSUp6dneHOsRkVF/ea77767jnsNa0lbG4XO7y9deh3fH4I4KHAeZJY6dw4m3w6+ggEeyD7B99kIHFkZDLuhN4DwTXbBKmiXAVZhv6YaxYC/n79gmhvf53q1oriE5FEbSQnWVGH+5D4iklxfeo4c+nUvVro54/VSJ7i6yparFhUViWelp6W923/AgO3o17ArZwugwx/fe2+Hm4fHGwyGy6yAwEDKz8uDy7oKXXJ0FYkc93mSPGkGyezwy2AWYLQ0LLtYo1zlPDIYgKCfM7TNz2YDqYqqLA4dfSUKF2a1+cYrFScEPX7vsg+WCW+4du2aiAldunShv/3ty78HBQVNxeiGxbItgKpF8+dPiXjuuS9U0JGrK0AhmKTfSYcrlgotcfTkasXbx1vsw7A7l6EM47/Z/bi5Qr963k6s315xgEt36tRJPIsB2mpsiKtXrwpdDxo0UAB44YUXKSsri9566y36+OOt9Morr6C4uEvM3siRIykuLo7y8nJTYSze/m+oA20BlM+bN6/v73435ILaTo0JuWDSZsrOzqYcHKw9Xqm7u7mDLYWoQe3QTwudsQt6eHqQrN6tXWAcZq1pY9aZcWbPGnSsfUaNGk0/JSaKwHTy5AmxiRUaGkYLFy6k06dPU0rKbdq5cyctXrxEGGzEiBH06aef0s2bNx706NGjG57TEHltAZROmjSpy/TpM1JUWNuxG/Fk7hfep8LCAlGPcuAZMGAg+fl1EL+ZQWvj1YQ9cujy5cvpz39eLS4zq1yYc2StQckX0SuCMjMyqX///nTx4oXHjDB+/ARE41LRf+zY3xOMLZZre/bsBoPzoetKugNvev755+m3L71EfjDAGQBfHhOji45e1BGvK8Mh0oUtgBL4ss+e2Nj79gDHLskreQdHWBv+zxoTOrNRLDOYf/zjMKWmpdIH778Pl9pGK1euFLnz0qWfhIuGh3fB9Y/BwmKRO/matX3zzT6aPXu2AMTa6t27tzDY5s0fwWgxglXUzBQU1JmWLl1Kx44dpeDgECbCIpfL+n/99ddJeJYo8WwB5HuOeXl5l48cOdqVLcz+PnTYUFq7Zk3DRNjKXJZxW4PrcXHx1DOiJ+387DPavn27mAznxXXr1tPevXspH9uI3G/JksU0ceLrNGVKFI6pWGfmYEEc2PBcrmt9fHwpPj5OeM64ceNo8OAXhLdwqpoHHU6fPk3k4tjYWFqwYAGeuYSOHj1Ksbv3rIocGPkhHiYCTUsA1UlXr66Zv3DRUhb3jh07YMleFBISQtvxe9fOXWIFwdfffPMP0EIQoTigEydOYF+mTHy/6NixE927d5eSkpJo5sxZFBMTIybGmuLoN2bM78V68+rVK8LdGjeO1mPHjqVTp07hWYW0bdsnhFwIWQxAIeFLu3btwvrSh9555x1hTAbIgWnL5o+SAzt1Gohnie8bLQFUvL1gwWCtoe7UDz/8IPnmm6+F9tiaBw78XbjWiOHD6R4Sf0JCAr388svUrXt32rhhI926dZO64zdb+Ntvv6XIyP40ZfIUuojAwe6eBtdlsIcO/Q8KhwwRIObNmyvY4o0qDw93YbC+ffsS3i0Mxku2YORhDkjQGa1du5bgiuI93bp1E5Kp17oRf/umpaWVtgaQo4ZX7J7YzDfnzLHnzhxsuExjq3M5tmrVKuF6mZkZIoj069efrly5Qtugrei3oyk8LJzehiF48ts++YReGDwYQSUSzN+h8+fPY/yfUO65Cj3u3/89zZgxA2G/mI4fP0bjx48HuEMiTZw7d+4xdlv7A4wGR0dHZ6Nfi//wwey6Y5cteeXKVQGjR4+iOXPmcigWVmOAkydHIbl+JXLj57Gf039t3ECdIXxHBCO2/MCBgygCmmSGAgICBdDNmzcDzH4RVDi3sdE4snIFdPbsWbE9OWHCBFEg8A4CpyQbwcyCoFUGvV6BhP6VnpKS/KCkpCg5Obnk0KFD99uiQTaUC1buZ7ds2dqbX7JixQoRJFauXCEmx4GBJ8tRMDUllQbjWnT0Qjp8+J+UmppCixZFEwxEZ86cFuM2bfqIwlDTsruzluPjT1DXrl1E0cD7Nc0BwS6BCeVeAdaZd7CpnFJcUnIXyT3/5MmT2dChFQjXnlyeWf/nrWFF0ZIGGaB9Tk7OX1+fNOl1Hwj6zJkzSLihIijMnv0HUVhzUGEAgwYNEqL38sImL/JXTk427p0UY9avXydcmHVkB7aaA4L7Jmi8FFVMAb4i5+O9qTl5eclbtmy5AXfG1p4I+wyCz3xYl0YtfoVqDaAy8Xxi9PbPdnx048YN4qrm8qUrcB0toto2WrZsuVgysWY4CuLrFFwxQLDUtDpppBszCgEtXLAKYMqyMjKuZ+fmJnz44YeJ0NrDRgB4n5+BMCvWtV5r8vu3+60BlM2dO7cPQnPirFmzxeC50BHnObgITZs2DdrhObXcGFDGvXsXsrOyji1buvR0ckpKURMgzbpXa89ty/3WAPJ9T+gwHYJ25WBgrTg4vA8bNhz57KpgkRu0ch+AL6SmpiYU5BTc1hq0lWC+EgGnDCmAV7TsVlYwzEq7fORsCWhrAHmsS0V5+Y8omvmLj2gAXIrd7LSS4uJbGk1NWsH9gpwDBw5k7Nu3j+lkIOxWjbXyi4BpDmhbANohab4HzXgWFhbe2rp167UjR44U4mFcCllBMCttEn1b3Ko9+7QFICd8LhP43Dh6PdOGbHuCeFYX/aXm8rO8538BWxbProme4fUAAAAASUVORK5CYII=" alt="5Paisa img" width="34px" class="brokerImg"><img src="/static/media/upstox_logo.5b47a03f.png" alt="Upstox img" width="28px" class="brokerImg"></div></div></div><div class="homeWrapper"><div class="directLoginContainer"><div class="directLoginContent"><div class="jss102"><div class="jss103"><div class="jss108 loginRightContainer"><div class="jss117 loginRightContent"><div class="jss118 loginBrokerContainer"><div style="text-align: center;"><button type="button" class="jss131 jss137 loginBtn"><img src="/static/media/kite_logo.07854a92.svg" alt="Log in with Kite" class="jss134"><p class="jss135" style="font-weight: 500; font-size: 12px; color: var(--text);">Log in with Kite</p></button><button type="button" class="jss131 loginBtn"><img src="/static/media/upstox.5b47a03f.png" alt="Log in with Upstox" class="jss134"><p class="jss135" style="font-weight: 500; font-size: 12px; color: var(--text);">Log in with Upstox</p></button><button type="button" class="jss131 jss138 loginBtn"><img src="/static/media/angel_broking_logo.7b5e7dae.svg" alt="Log in with Angel One" class="jss134"><p class="jss135" style="font-weight: 500; font-size: 12px; color: var(--text);">Log in with Angel One</p></button><button type="button" class="jss131 jss139 loginBtn"><img src="/static/media/five_paisa.1bb25e01.svg" alt="Log in with 5 Paisa" class="jss134"><p class="jss135" style="font-weight: 500; font-size: 12px; color: var(--text);">Log in with 5 Paisa</p></button><div class="jss140"><p class="" style="font-weight: 400; font-size: 12px; color: var(--text); white-space: pre-line;">Don't have any broker account? 
+<a href="/signup" rel="noreferrer" class="jss141">Sign Up</a></p></div></div><div class="jss140"><p class="" style="font-weight: 400; font-size: 12px; color: var(--text); white-space: pre-line;">By Continuing you agree to our 
+<a href="/terms" rel="noreferrer" target="_blank" class="jss141">Terms &amp; Conditions</a></p></div></div></div></div></div></div></div></div></div><div class="homeWrapper footerWrapper" id="footerWrapper"><div class="footer"><div class="footerTop"><div class="footerTrial"><h1 class="footerTrailTitle">Claim your 7 
+day free trial</h1><h5 class="footerTrailSubtitle">Get your 7 day free trial. You can pick any plan after your trial. You will not be charged with any amount of money till your 7 day free trial.</h5><button type="button" class="jss91 footerClaimBtn" style="border-radius: 6px; background-color: rgb(255, 255, 255);"><p class="jss91" style="font-weight: 500; font-size: 16px; color: var(--linkColor);">Claim now</p></button></div><div class="feedbackContainer"><div class="feedbackHeader"><img src="data:image/png;base64,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" alt="streak feedback" class="feedbackImg"><h1>Still got questions?</h1></div><h5 class="reachOutText">reach out at <a href="mailto:support@streak.tech" class="reachOutLink">support@streak.tech</a></h5></div></div><div class="footerBottom"><img class="streakLogo" alt="streak logo" src="/static/media/streaktm.2808499a.svg"><div class="footerBottomContent"><div class="footerBottomCol"><h5 class="footerBottomColTitle">Learn and get help</h5><div><a href="https://academy.streak.tech/" class="footerlink">Streak Academy</a></div><div><a href="https://academy.streak.tech/technical-indicators/" class="footerlink">Technical Indicators</a></div><div><a href="https://academy.streak.tech/topics/" class="footerlink">Articles</a></div><div><a href="https://help.streak.tech/" class="footerlink">Help</a></div></div><div class="footerBottomCol footerBottomCol_2"><h5 class="footerBottomColTitle">Company</h5><div><a href="/terms" class="footerlink">Terms of use</a></div><div><a href="/privacy" class="footerlink">Privacy Policy</a></div><div><a href="/disclosure" class="footerlink">Risk Disclosure</a></div></div><div class="footerBottomColFixed"><h5 class="footerBottomColTitle">Social</h5><a href="https://twitter.com/StreakTech" class="footerlink footerlinkFixed" target="_blank" rel="noreferrer"><img src="/static/media/footer_twitter.22927787.svg" alt="streak twitter"></a><a href="https://t.me/Streaktech" class="footerlink footerlinkFixed footerTelegram" target="_blank" rel="noreferrer"><img src="/static/media/footer_telegram.4586875f.svg" alt="streak telegram"></a><a href=" https://www.facebook.com/StreakAI/" class="footerlink footerlinkFixed footerFb" target="_blank" rel="noreferrer"><img src="/static/media/footer_facebook.0f287ce6.svg" alt="streak facebook"></a><a href="https://www.youtube.com/c/StreakTech" class="footerlink footerlinkFixed" target="_blank" rel="noreferrer"><img src="/static/media/footer_youtube.9dceed4d.svg" alt="streak youtube"></a><a href="https://www.instagram.com/streak.tech/" class="footerlink footerlinkFixed" target="_blank" rel="noreferrer"><img src="/static/media/footer_instagram.7e9a8b15.svg" alt="streak instagram"></a><a href="https://www.linkedin.com/company/streaktech/" class="footerlink footerlinkFixed" target="_blank" rel="noreferrer"><img src="/static/media/footer_linkedin.a9400b4c.svg" alt="streak linkedin"></a><a href=" https://apps.apple.com/in/app/streak-algo-trade/id1423080803" class="footerlink footerlinkFixed" target="_blank" rel="noreferrer"><img src="/static/media/footer_app_store.24c1af59.svg" alt="streak appstore"></a><a href="https://play.google.com/store/apps/details?id=com.streak" class="footerlink footerlinkFixed" target="_blank" rel="noreferrer"><img src="/static/media/footer_play_store.7d14b4f7.svg" alt="streak playstore"></a></div></div></div><div class="copyright"><h5>© 2021 Streak. All rights reserved.</h5></div></div></div></div></div><aside class="jss9 jss10"></aside></div></div><div class="snackbar-container hideScrollbar"></div></main></div><script>!function(e){function t(t){for(var c,n,a=t[0],o=t[1],u=t[2],i=0,s=[];i<a.length;i++)n=a[i],Object.prototype.hasOwnProperty.call(f,n)&&f[n]&&s.push(f[n][0]),f[n]=0;for(c in o)Object.prototype.hasOwnProperty.call(o,c)&&(e[c]=o[c]);for(l&&l(t);s.length;)s.shift()();return d.push.apply(d,u||[]),r()}function r(){for(var e,t=0;t<d.length;t++){for(var r=d[t],c=!0,n=1;n<r.length;n++){var o=r[n];0!==f[o]&&(c=!1)}c&&(d.splice(t--,1),e=a(a.s=r[0]))}return e}var c={},n={12:0},f={12:0},d=[];function a(t){if(c[t])return c[t].exports;var r=c[t]={i:t,l:!1,exports:{}};return e[t].call(r.exports,r,r.exports,a),r.l=!0,r.exports}a.e=function(e){var t=[];n[e]?t.push(n[e]):0!==n[e]&&{21:1,25:1,26:1,27:1,28:1}[e]&&t.push(n[e]=new Promise((function(t,r){for(var c="static/css/"+({}[e]||e)+"."+{0:"31d6cfe0",1:"31d6cfe0",2:"31d6cfe0",3:"31d6cfe0",4:"31d6cfe0",5:"31d6cfe0",6:"31d6cfe0",7:"31d6cfe0",8:"31d6cfe0",9:"31d6cfe0",10:"31d6cfe0",14:"31d6cfe0",15:"31d6cfe0",16:"31d6cfe0",17:"31d6cfe0",18:"31d6cfe0",19:"31d6cfe0",20:"31d6cfe0",21:"5d373e2a",22:"31d6cfe0",23:"31d6cfe0",24:"31d6cfe0",25:"da222d3e",26:"993e6d3e",27:"993e6d3e",28:"993e6d3e",29:"31d6cfe0",30:"31d6cfe0",31:"31d6cfe0",32:"31d6cfe0",33:"31d6cfe0",34:"31d6cfe0",35:"31d6cfe0",36:"31d6cfe0",37:"31d6cfe0",38:"31d6cfe0",39:"31d6cfe0",40:"31d6cfe0",41:"31d6cfe0",42:"31d6cfe0",43:"31d6cfe0",44:"31d6cfe0",45:"31d6cfe0",46:"31d6cfe0",47:"31d6cfe0"}[e]+".chunk.css",f=a.p+c,d=document.getElementsByTagName("link"),o=0;o<d.length;o++){var u=(l=d[o]).getAttribute("data-href")||l.getAttribute("href");if("stylesheet"===l.rel&&(u===c||u===f))return t()}var i=document.getElementsByTagName("style");for(o=0;o<i.length;o++){var l;if((u=(l=i[o]).getAttribute("data-href"))===c||u===f)return t()}var s=document.createElement("link");s.rel="stylesheet",s.type="text/css",s.onload=t,s.onerror=function(t){var c=t&&t.target&&t.target.src||f,d=new Error("Loading CSS chunk "+e+" failed.\n("+c+")");d.code="CSS_CHUNK_LOAD_FAILED",d.request=c,delete n[e],s.parentNode.removeChild(s),r(d)},s.href=f,document.getElementsByTagName("head")[0].appendChild(s)})).then((function(){n[e]=0})));var r=f[e];if(0!==r)if(r)t.push(r[2]);else{var c=new Promise((function(t,c){r=f[e]=[t,c]}));t.push(r[2]=c);var d,o=document.createElement("script");o.charset="utf-8",o.timeout=120,a.nc&&o.setAttribute("nonce",a.nc),o.src=function(e){return a.p+"static/js/"+({}[e]||e)+"."+{0:"b0bc4897",1:"ac977fc9",2:"5170d526",3:"afd22b93",4:"15fd0624",5:"a23b26a1",6:"e277a0de",7:"b8c117f6",8:"820012b9",9:"00a52f6c",10:"165ae951",14:"81707d3f",15:"1697c4e3",16:"5ffd20d2",17:"6b73f148",18:"94ca5ddb",19:"51df0c92",20:"85b8e70a",21:"c3df0c73",22:"4d13e4dc",23:"516b9652",24:"c7b725cc",25:"df5f7f2d",26:"e436ceec",27:"c30f9902",28:"86b38de3",29:"46a1c4ef",30:"c267edb2",31:"adbf5ce3",32:"9cdfd92a",33:"119b8e80",34:"71211837",35:"8c71537d",36:"a99ac681",37:"75ecb3ba",38:"2c5a401f",39:"94cf7fc6",40:"22725c8a",41:"50a42fe1",42:"d775eb4a",43:"4babe40f",44:"234482d7",45:"f16ddbf0",46:"0eab85a9",47:"f8d39878"}[e]+".chunk.js"}(e);var u=new Error;d=function(t){o.onerror=o.onload=null,clearTimeout(i);var r=f[e];if(0!==r){if(r){var c=t&&("load"===t.type?"missing":t.type),n=t&&t.target&&t.target.src;u.message="Loading chunk "+e+" failed.\n("+c+": "+n+")",u.name="ChunkLoadError",u.type=c,u.request=n,r[1](u)}f[e]=void 0}};var i=setTimeout((function(){d({type:"timeout",target:o})}),12e4);o.onerror=o.onload=d,document.head.appendChild(o)}return Promise.all(t)},a.m=e,a.c=c,a.d=function(e,t,r){a.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},a.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},a.t=function(e,t){if(1&t&&(e=a(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(a.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var c in e)a.d(r,c,function(t){return e[t]}.bind(null,c));return r},a.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return a.d(t,"a",t),t},a.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},a.p="/",a.oe=function(e){throw console.error(e),e};var o=this.webpackJsonpstreak_web_v4=this.webpackJsonpstreak_web_v4||[],u=o.push.bind(o);o.push=t,o=o.slice();for(var i=0;i<o.length;i++)t(o[i]);var l=u;r()}([])</script><script src="/static/js/13.00dd2baf.chunk.js"></script><script src="/static/js/main.2b94c2d2.chunk.js"></script><script src="https://streak-public-assets.s3.ap-south-1.amazonaws.com/bt_dist/wasm_exec.js"></script><script>function gtag_report_conversion(n){return gtag("event","conversion",{send_to:"AW-612213518/ueKXCMTg-6YDEI7G9qMC",event_callback:function(){void 0!==n&&(window.location=n)}}),!1}</script></body></html>

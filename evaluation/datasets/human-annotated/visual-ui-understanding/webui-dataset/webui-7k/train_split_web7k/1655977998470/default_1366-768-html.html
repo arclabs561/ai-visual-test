@@ -1,0 +1,202 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Horms Solutions: </title>
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/blog/rss.xml">
+<link rel="shortcut icon" href="/favicon.ico">
+<meta name="description" content="Horms Solutions">
+<link rel="stylesheet" href="/top.css" type="text/css">
+
+</head>
+
+<body><div class="banner">
+<a href="/" class="noborder"> <img src="/pics/horms-text-600.png" width="600" height="67" alt="Horms Solutions - Free and Open Source Software Development"></a>
+</div>
+
+<div class="body">
+<p align="right">
+<a href="/">Horms Solutions</a>
+</p>
+
+<a name="2019-10-16T16_48_31.txt"></a>
+<h1>Upstream Linux Kernel Development</h1>
+<p>
+<em>It's All About the Long Term</em>
+</p><p>
+by Simon Horman
+</p><h3>Introduction</h3>
+<p>
+My thoughts on the importance of upstream Linux kernel development.
+An exploration of the motivation for organisations to invest
+in development for the upstream Linux kernel.
+</p><ul>
+<li> Why develop for Linux and why for upstream?
+</li><li> Upstreaming models: Upstream first or upstream last
+</li><li> Differentiating products and technology
+</li><li> Standardisation through collaboration
+</li></ul>
+<h3>Why Linux?</h3>
+<p>
+Before discussing the merits of working on upstreaming code to the
+upstream Linux kernel it is worth examining the motivation for developing
+for Linux at all. There are surely many reasons, lets dig into a few.
+</p><h4>Stand on the shoulders of giants</h4>
+<p>
+Modern computers are complex high-performance machines.  The development
+effort required to fully utilise a system grows with complexity of its
+hardware. I would argue that we are long past the point where it is
+impractical to create general purpose kernels to utilise modern hardware.
+Rather, a far more practical approach is to build on the work of others.
+And Linux is a premier platform for such work.
+</p><h4>Linux is pervasive</h4>
+<p>
+Linux has become pervasive in various parts of industry including cloud
+computing and enterprise ITC. In order to access such markets solutions are
+often required to work on Linux. This includes facilities, such as hardware
+support, provided by the kernel. To meet such customer needs solutions need
+to be developed for Linux.
+</p><h4>Attract developer talent</h4>
+<p>
+By working on the Linux kernel, which is an Open Source project, developers
+are able develop portable skills. Each contribution is peer reviewed and
+accepted on its merit. And each contribution acts as part of an evolving
+online CV for the developer. This is clearly and attractive mechanism for
+developers to display their skills and thus Linux kernel development
+attracts talent.
+</p><h3>Why Upstream?</h3>
+<p>
+When working on the Linux kernel the resulting code may be kept out-of-tree
+or submitted for inclusion in upstream. An attraction of working
+out-of-tree is that it has a somewhat lower barrier to entry.  The process
+of upstreaming can be time consuming and approaches to problems that work
+out-of-tree may not be accepted into upstream for a variety of reasons. So
+there can be a strong temptation to keep code out-of-tree.  However, I
+argue against this approach.
+</p><p>
+Working with the upstream Linux kernel is, in my opinion, all about
+planning for the long term. It involves up-front work to enhance the kernel
+in conjunction with the upstream development community. And doing so is a
+step towards long term maintainability of code and a sustainable
+development model.
+</p><h4>Technical Debt</h4>
+<p>
+If code is worked on out-of-tree for a sustained period of time then the
+volume and complexity of the code is bound to grow. And each time a part
+of the upstream kernel on which this code is dependent on changes the
+out-of-tree code needs to either be refactored or risk obsolescence.  The more
+time passes the more code there is to refactor, as there is more code the
+chance of a dependency changing increases, and as the distance to the
+original kernel version increases the complexity of such refactoring is likely
+to also increase. In short, technical debt mounts over time requiring ever
+increasing effort to maintain.
+</p><h4>Focus</h4>
+<p>
+Another benefit of working with upstream is that in large organisations it
+can provide focus. Rather than different teams developing different
+solutions to similar problems for each customer for each hardware
+generation a single solution can be developed upstream. As
+customer needs change over time they can be addressed via incremental
+changes upstream rather than perpetuating an explosion of out-of-tree code.
+And if the focus is on upstream then discussion around which in-house
+solution to reuse becomes moot.
+</p><h4>Avoiding Fragmentation</h4>
+<p>
+Working with upstream also helps to reduce fragmentation in solutions.
+Users want a consistent experience when configuring hardware from different
+vendors, running kernels from different distributions and so on. Adding
+special sauce at this layer only diminishes the user experience in the long
+term.
+</p><h3>Upstreaming Models</h3>
+<p>
+When working on the Debian kernel team, many years ago now, I instigated a
+policy of only accepting changes from the upstream kernel.  Prior to this
+policy Debian had often seen itself as acting as a testing ground for
+upstream-bound, or in some cases not upstream-bound, features. A key
+problem with this approach was that once a feature became available in the
+Debian kernel it was bound to be used. And once it became used it had to be
+maintained. And if it wasn't upstream then that maintenance would typically
+fall to the Debian Kernel team whose bandwidth was already consumed
+packaging the upstream kernel.
+</p><p>
+Upstream first is the idea that code is developed for the upstream kernel.
+That it is in the upstream kernel that it is made available. And that
+consumers of the code do so by consuming the upstream kernel. It seeks to
+place the focus of kernel development where I believe it belongs, in
+upstream.
+</p><p>
+The converse of upstream fist is upstream last. In this model code is
+developed out of tree. And when the time is right it is contributed to
+upstream. A key attraction of this approach is that it can, in the short term
+at least, lead to higher velocity of feature development. It may also
+provide a way to develop ideas that do not seem appropriate for upstream
+yet. However, it leads to a number of problems.
+</p><p>
+For one, code that is not developed for upstream is, in my experience,
+often not suitable for inclusion in upstream. So in this model a
+typical upstreaming effort involves refactoring or more often than not
+rewriting the code with the out-of-tree version acting as a reference
+implementation. Clearly duplicated effort.  And there are the problems
+outlined previously with maintaining code-out-of tree. So while
+upstream-last can be useful it does come at some cost.
+</p><h3>Differentiating Products and Technology</h3>
+<p>
+An important distinction that can bee made working on the Linux kernel is that
+between product and technology. On the one hand technology can be raw,
+incomplete and often only of use as part of a larger whole. On the other
+hand products are polished, ideally complete, systems that can readily
+by utilised by users.
+</p><p>
+When developing kernel code innovation is occurring, technology is being
+developed. By participating in upstream development this distinction
+becomes clearer. The collaboration, often between competitors, in upstream
+kernel development leads to the technology that can be sustained for the
+long term. Meeting shorter term customer needs by delivering products
+becomes a distinctly different activity.
+</p><h3>Standardisation Through Collaboration</h3>
+<p>
+The process of standardisation takes many guises. One obvious form is
+through standards bodies. In this model the standards body formulates
+a standard and possibly a reference implementation and then it is up
+to adopters to implement the standard. The Linux kernel implements
+many such standards but it also serves as a mechanism for a very different
+form of standardisation: the standard emerges from the implementation.
+Given the pervasive nature of Linux its implementation of a feature can
+be come a standard. Thus by collaborating on upstream kernel development
+one effectively participates in a standardisation process.
+</p><h3>Conclusion</h3>
+<p>
+This discussion has covered some motivations for developing for
+the upstream kernel and the upstream first and last models for upstream
+development. If I could stress one point is is that upstream development
+is all about building a string base for long term maintainability. A solid
+foundation on which to build products that address customer need.
+</p><h3>Credits</h3>
+<p>
+The ideas presented above reflect those developed in collaboration
+with other team members and to a greater or lesser extent put
+into practice while working with those teams in the past and present.
+These teams include:
+</p><ul>
+<li> Netronome
+</li><li> Hisao Munakata, Magnus Damm, Paul Mundt and others at Renesas Electronics
+</li><li> Debian Kernel Team
+</li></ul><p></p>
+<p>
+<em>Wed, 16 Oct 2019 16:48:31 +0200</em>&nbsp;|
+<a href="/blog/permalink/2019/2019-10-16T16_48_31.shtml">Permalink</a>
+</p>
+<div class="hr"><hr></div>
+<div class="navi">
+<a href="/blog/rss.xml">RSS</a>,
+<a href="/news/archives/#2019-10-16T16_48_31.txt">Blog Archive</a><br>
+</div>
+
+<p>
+</p><p align="right">
+</p><div class="copyright">
+Copyright © 2010-2021 <a href="/">Horms&nbsp;Solutions</a><br>
+All rights reserved unless otherwise noted
+</div>
+
+
+
+</div></body></html>

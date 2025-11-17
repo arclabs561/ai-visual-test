@@ -1,0 +1,327 @@
+<!DOCTYPE html><html class="writer-html5" lang="en"><head>
+  <meta charset="utf-8"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Uploading Content To Funkwhale — funkwhale 1.2.5 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css">
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css">
+      <link rel="stylesheet" href="../_static/graphviz.css" type="text/css">
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css">
+      <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css">
+      <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css">
+    <link rel="shortcut icon" href="../_static/favicon.png">
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html">
+    <link rel="search" title="Search" href="../search.html">
+    <link rel="next" title="Editing Uploaded Content" href="editing.html">
+    <link rel="prev" title="Tagging Music With MusicBrainz Picard" href="tagging.html"> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+            <a href="../index.html" class="icon icon-home"> funkwhale
+            <img src="../_static/logo.svg" class="logo" alt="Logo">
+          </a>
+              <div class="version">
+                1.2.5
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs">
+    <input type="hidden" name="check_keywords" value="yes">
+    <input type="hidden" name="area" value="default">
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current" aria-expanded="true">
+<li class="toctree-l1"><a class="reference internal" href="../features.html">Features</a></li>
+<li class="toctree-l1 current" aria-expanded="true"><a class="reference internal" href="index.html"><button class="toctree-expand" title="Open/close menu"></button>User Documentation</a><ul class="" aria-expanded="false">
+<li class="toctree-l2 current" aria-expanded="true"><a class="reference internal" href="index.html#getting-started"><button class="toctree-expand" title="Open/close menu"></button>Getting Started</a><ul class="" aria-expanded="false">
+<li class="toctree-l3"><a class="reference internal" href="create.html">Creating a Funkwhale Account</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tagging.html">Tagging Music With MusicBrainz Picard</a></li>
+<li class="toctree-l3 current" aria-expanded="true"><a class="reference internal current" href="#" aria-expanded="true"><button class="toctree-expand" title="Open/close menu"></button>Uploading Content To Funkwhale</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#storage-space">Storage space</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#using-a-channel">Using a Channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#using-a-library">Using a library</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tagging-files">Tagging files</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#common-errors-during-import">Common errors during import</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="editing.html">Editing Uploaded Content</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#using-funkwhale">Using Funkwhale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#troubleshooting-issues">Troubleshooting Issues</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../moderator/index.html">Moderator Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../admin/index.html">Administrator Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers/index.html">Developer documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../third-party.html">Third party projects</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../documentation/index.html">Contribute to Funkwhale’s Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contribute to Funkwhale development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../translators.html">Translating Funkwhale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">funkwhale</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> »</li>
+          <li><a href="index.html">User Documentation</a> »</li>
+      <li>Uploading Content To Funkwhale</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://dev.funkwhale.audio/funkwhale/funkwhale/blob/stable/docs/users/upload.rst" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+
+  
+
+
+           <div itemprop="articleBody">
+             
+  <section id="uploading-content-to-funkwhale">
+<h1>Uploading Content To Funkwhale<a class="headerlink" href="#uploading-content-to-funkwhale" title="Permalink to this headline"></a></h1>
+<p>To upload content to any Funkwhale instance, you need:</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="create.html"><span class="doc">An account on that instance</span></a>;</p></li>
+<li><p><a class="reference internal" href="#upload-storage"><span class="std std-ref">Storage space</span></a>;</p></li>
+<li><p><a class="reference internal" href="#upload-library"><span class="std std-ref">A library</span></a> or <a class="reference internal" href="#upload-channel"><span class="std std-ref">channel</span></a>;</p></li>
+<li><p><a class="reference internal" href="#upload-tagging"><span class="std std-ref">Properly tagged files</span></a>;</p></li>
+<li><p>To upload your files <a class="reference internal" href="managing.html#upload-library"><span class="std std-ref">to a library</span></a> or <a class="reference internal" href="channels.html#channel-upload"><span class="std std-ref">to a channel</span></a>.</p></li>
+</ol>
+<section id="storage-space">
+<span id="upload-storage"></span><h2>Storage space<a class="headerlink" href="#storage-space" title="Permalink to this headline"></a></h2>
+<p>Once you have an account on a Funkwhale instance, as a user, you are granted the
+default upload quota (1GB by default). This default quota can be increased,
+reduced or completely removed by your instance admins depending on their policy.</p>
+<p>Additionally, instance admins can grant you storage space manually. Get in touch with them
+if you’d like some additional storage space.</p>
+<p>You can view your current quota and usage at any time by visiting <code class="docutils literal notranslate"><span class="pre">/content/libraries/</span></code> on your instance,
+or clicking the “Add content” link in the sidebar, then visiting the “Upload audio content” section.</p>
+</section>
+<section id="using-a-channel">
+<span id="upload-channel"></span><h2>Using a Channel<a class="headerlink" href="#using-a-channel" title="Permalink to this headline"></a></h2>
+<p>A channel is a collection of content that is published directly to funkwhale. Channels are always public
+and can be followed from different fediverse software such as Mastodon, Reel2Bits or other Funkwhale
+pods.</p>
+<p>There are two types of channel:</p>
+<ul class="simple">
+<li><p>A podcast channel</p></li>
+<li><p>An artist discography channel</p></li>
+</ul>
+<p>See <a class="reference internal" href="channels.html"><span class="doc">Managing Channels</span></a> for more information on channels.</p>
+</section>
+<section id="using-a-library">
+<span id="upload-library"></span><h2>Using a library<a class="headerlink" href="#using-a-library" title="Permalink to this headline"></a></h2>
+<p>In Funkwhale’s world, a library is a collection of audio files with an associated visibility level. A library can be:</p>
+<ul class="simple">
+<li><p>Public: anyone can follow the library to automatically access its content (including users on other instances)</p></li>
+<li><p>Local: other users from your instance can follow the library to automatically access its content</p></li>
+<li><p>Private: nobody apart from you can access the library content</p></li>
+</ul>
+<p>Regardless of visibility settings, you can share the library link to specific users
+and accept their follow request in order to grant then access to its content. Typically, this
+is useful when you have a private library you want to share with friends or family.</p>
+<p>Before you upload your content, you need to know the content audience and license:</p>
+<ul class="simple">
+<li><p>If the content is under an open license (like Creative Commons licenses), it’s usually fine to upload it in a public library</p></li>
+<li><p>If you are uploading content purchased from other platforms or stores, you should upload it in a private library</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>As a rule of thumb, only use public and local libraries for content for which you own the copyright or for content you know you can share with a wider audience.</p>
+</div>
+<p>See <a class="reference internal" href="managing.html"><span class="doc">libraries</span></a> for more information on libraries.</p>
+</section>
+<section id="tagging-files">
+<span id="upload-tagging"></span><h2>Tagging files<a class="headerlink" href="#tagging-files" title="Permalink to this headline"></a></h2>
+<p>Funkwhale relies on embedded file metadata (also known as tags) to infer the artist,
+album and track associated with a given upload. Most stores and platforms include
+those tags by default, but it’s possible the tags are missing or incomplete, in which case
+Funkwhale will not be able to process the upload and display an error.</p>
+<p>The minimum required tags are:</p>
+<ul class="simple">
+<li><p>Title</p></li>
+<li><p>Artist</p></li>
+<li><p>Album</p></li>
+</ul>
+<p>However, Funkwhale can understand and use additional tags to enhance user experience and display more information. The full list of supported tags is available below:</p>
+<div class="wy-table-responsive"><table class="docutils align-default">
+<colgroup>
+<col style="width: 24%">
+<col style="width: 31%">
+<col style="width: 45%">
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Name</p></td>
+<td><p>Example value</p></td>
+<td><p>Description</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Title</span></code> (required)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Letting</span> <span class="pre">you</span></code></p></td>
+<td><p>The track title</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Artist</span></code> (required)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Nine</span> <span class="pre">Inch</span> <span class="pre">Nails</span></code></p></td>
+<td><p>The artist name</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Album</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">The</span> <span class="pre">Slip</span></code></p></td>
+<td><p>The album title. If none is provided, an [Unknown Album]
+entry will be created</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Album</span> <span class="pre">artist</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Trent</span> <span class="pre">Reznor</span></code></p></td>
+<td><p>The album artist name (can be different than the track
+artist)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Genre</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Industrial,</span> <span class="pre">Metal</span></code></p></td>
+<td><p>A comma separated list of tags to associate with the track
+Other supported separators: <code class="docutils literal notranslate"><span class="pre">;</span></code> and <code class="docutils literal notranslate"><span class="pre">/</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Track</span> <span class="pre">number</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">4</span></code></p></td>
+<td><p>The position of the track in the album/release</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Disc</span> <span class="pre">number</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
+<td><p>The disc number (in case of multi-disc albums)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Date</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">2019</span></code></p></td>
+<td><p>The release date of the track or album</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">License</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CC-BY</span> <span class="pre">3.0:</span> <span class="pre">http://creativecommons</span>
+<span class="pre">.org/licenses/cc-by/3.0/</span></code></p></td>
+<td><p>The license associated with this work. The first found URL
+will be checked against <a class="reference external" href="https://dev.funkwhale.audio/funkwhale/funkwhale/blob/develop/api/tests/music/licenses.json">our list of supported licenses</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Copyright</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CC-BY</span> <span class="pre">3.0:</span> <span class="pre">http://creativecommons</span>
+<span class="pre">.org/licenses/cc-by/3.0/</span></code></p></td>
+<td><p>The license associated with this work. The first found URL
+will be checked against <a class="reference external" href="https://dev.funkwhale.audio/funkwhale/funkwhale/blob/develop/api/tests/music/licenses.json">our list of supported licenses</a>.
+Used if no license found in the License tag</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Pictures</span></code></p></td>
+<td></td>
+<td><p>The first embeded picture found will be used as the album
+covers</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">MusicBrainz</span> <span class="pre">Recording</span> <span class="pre">ID</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">99244237-850b-4a93-904d-57305bcadb4e</span></code></p></td>
+<td><p>The MusicBrainz ID for this recording</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">MusicBrainz</span> <span class="pre">Album</span> <span class="pre">ID</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bca982fd-ab73-3c9f-ad07-9104a4f53a32</span></code></p></td>
+<td><p>The MusicBrainz ID for this album</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">MusicBrainz</span> <span class="pre">Artist</span> <span class="pre">ID</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">b7ffd2af-418f-4be2-bdd1-22f8b48613da</span></code></p></td>
+<td><p>The MusicBrainz ID for this artist</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">MusicBrainz</span> <span class="pre">Album</span> <span class="pre">Artist</span> <span class="pre">ID</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">b7ffd2af-418f-4be2-bdd1-22f8b48613da</span></code></p></td>
+<td><p>The MusicBrainz ID for this album artist</p></td>
+</tr>
+</tbody>
+</table></div>
+<p>The easiest way to inspect and edit file tags is with <a class="reference external" href="https://picard.musicbrainz.org/">MusicBrainz Picard</a>, a free
+software, that works on Windows, MacOS and Linux. Picard is able to automatically tag many files,
+and include non-necessary but nice to have information, such as album covers. For a guide on tagging content with Picard,
+see <a class="reference internal" href="tagging.html"><span class="doc">Tagging Music With MusicBrainz Picard</span></a>.</p>
+</section>
+<section id="common-errors-during-import">
+<h2>Common errors during import<a class="headerlink" href="#common-errors-during-import" title="Permalink to this headline"></a></h2>
+<section id="invalid-metadata">
+<span id="id1"></span><h3>Invalid metadata<a class="headerlink" href="#invalid-metadata" title="Permalink to this headline"></a></h3>
+<p>This error occurs when the uploaded file miss some mandatory tags, or when some tags have
+incorrect values (e.g an empty title or artist name).</p>
+<p>To fix this issue, please retag the file properly as described in <a class="reference internal" href="#upload-tagging"><span class="std std-ref">Tagging files</span></a>
+and reupload it.</p>
+</section>
+<section id="unknown-error">
+<span id="id2"></span><h3>Unknown error<a class="headerlink" href="#unknown-error" title="Permalink to this headline"></a></h3>
+<p>This error can happen for multiple reasons and likely indicates an issue with the Funkwhale
+server (e.g. misconfiguration) or with Funkwhale itself.</p>
+<p>If the issue persists when you relaunch the import, get in touch with our instance admin
+or open a support thread on our forum.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+
+
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tagging.html" class="btn btn-neutral float-left" title="Tagging Music With MusicBrainz Picard" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="editing.html" class="btn btn-neutral float-right" title="Editing Uploaded Content" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr>
+
+  <div role="contentinfo">
+    <p>© Copyright 2022, The Funkwhale Collective.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    stable
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Versions</dt>
+      <dd><a href="../../develop/index.html">develop</a></dd>
+      <dd><a href="upload.html">stable</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+
+</body></html>

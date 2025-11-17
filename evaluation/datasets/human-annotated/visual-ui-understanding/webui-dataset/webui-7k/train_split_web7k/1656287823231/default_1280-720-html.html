@@ -1,0 +1,675 @@
+<!DOCTYPE html><html class=" js borderradius boxshadow textshadow opacity cssanimations cssgradients csstransitions video audio" dir="ltr" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head>
+		
+	<!-- START META -->
+		
+
+<!-- meta.tpl -->
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="expires" content="0">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">	
+	<meta name="description" content="Pligg is an open source content management system that lets you easily <a href='http://pligg.com'>create your own user-powered website</a>.">
+	<meta name="keywords" content="News,Stories,Articles,Vote,Publish,Social,Networking,Groups,Submit,New,Comments,Tags,Live">
+<meta name="Language" content="en-us">
+<meta name="Robots" content="All">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Pligg">
+<!--/meta.tpl -->	<!-- END META -->
+	
+	<link rel="stylesheet" type="text/css" href="/templates/bootstrap/css/bootstrap.no-icons.min.css">
+	<link rel="stylesheet" type="text/css" href="/templates/bootstrap/css/bootstrap-theme.min.css">
+	<link rel="stylesheet" type="text/css" href="/templates/bootstrap/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="/templates/bootstrap/css/jquery.pnotify.css" media="screen">
+	<link rel="stylesheet" type="text/css" href="/templates/bootstrap/css/style.css" media="screen">
+		
+	<script type="text/javascript" src="/templates/bootstrap/js/modernizr.js"></script>	
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
+			
+	<!-- START TITLE -->
+		
+<!-- title.tpl -->
+	<title>Live | My Site</title>
+<!-- /title.tpl -->	<!-- END TITLE -->
+	
+		
+	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="http://lauriemann.net/rss.php">
+	<link rel="icon" href="/favicon.ico" type="image/x-icon">
+	</head>
+<body dir="ltr" onload="start()">
+		
+		
+	<!-- START HEADER -->
+		
+
+<!-- header.tpl -->
+<header role="banner" class="navbar navbar-inverse navbar-fixed-top custom_header">
+	<div class="container">
+		<div class="navbar-header">
+			<button data-target=".bs-navbar-collapse" data-toggle="collapse" type="button" class="navbar-toggle">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="http://lauriemann.net">My Site</a>			
+		</div>
+		<nav role="navigation" class="collapse navbar-collapse bs-navbar-collapse">
+			<ul class="nav navbar-nav">
+				<li><a href="http://lauriemann.net">Home</a></li>
+								<li><a href="/new.php">New</a></li>
+								<li><a href="/submit.php">Submit</a></li>
+									
+					<li><a href="/groups.php"><span>Groups</span></a></li>
+																					<li><a href="/register.php"><span>Register</span></a></li>
+					<li><a data-toggle="modal" href="#loginModal">Login</a>
+											</li></ul>
+			
+						
+		</nav>
+	</div>
+</header>
+<!--/header.tpl -->	<!-- END HEADER -->
+	
+	<!-- START CATEGORIES -->
+		
+
+<!-- categories.tpl -->
+<div class="subnav" id="categories">
+	<div class="container">
+		<ul class="nav nav-pills">
+																									<li class="category_item">
+						<a href="/index.php?category=News">News </a>
+											</li>
+																									</ul>
+	</div>
+</div>
+<!--/categories.tpl -->
+	<!-- END CATEGORIES -->
+	
+	<div class="container">
+		<section id="maincontent">
+			<div class="row">
+											<div class="col-md-9">
+								<!-- START BREADCRUMB -->
+						
+
+<!-- breadcrumb.tpl -->
+<ul class="breadcrumb">
+	<li><a href="http://lauriemann.net">Home</a></li>
+														<li class="active">Live</li>															 
+						
+		<div class="btn-group pull-right breadcrumb-right">
+			<ul class="nav nav-pills">
+				<li class="dropdown pull-right">
+					<a href="#" data-toggle="dropdown" class="dropdown-toggle">Sort <span class="caret"></span></a>
+					<ul class="dropdown-menu" id="menu1">
+													
+												
+							<li id="active">
+								<a href="/live.php">
+									<span class="active">All</span>
+								</a>
+							</li>
+							<li>
+								<a href="/live_published.php">
+									<span>Published</span>
+								</a>
+							</li>
+							<li>
+								<a href="/live_unpublished.php">
+									<span>New</span>
+								</a>
+							</li>
+							<li>
+								<a href="/live_comments.php">
+									<span>Comments</span>
+								</a>
+							</li>
+							
+												
+					</ul>
+				</li>
+			</ul>
+		</div>
+	</ul>
+<!--/breadcrumb.tpl -->					<!-- END BREADCRUMB -->
+					
+					
+						<script type="text/javascript" language="JavaScript">
+						function checkForm() {
+							answer = true;
+							if (siw && siw.selectingSomething)
+								answer = false;
+							return answer;
+						}//
+						</script>
+					
+					
+															
+					<!-- START CENTER CONTENT -->
+						
+
+<!-- live_center.tpl -->
+
+<legend>Live</legend>
+<table class="table table-bordered table-striped" id="liveTble">
+	<thead>
+		<tr class="live2-item">
+			<th><span class="live2-ts"><strong>Hour</strong></span></th>
+			<th><span class="live2-type"><strong>Action</strong></span></th>
+			<th><span class="live2-votes"><strong><center>Votes</center></strong></span></th>
+			<th><span class="live2-story"><span align="center"><strong>Story</strong></span></span></th>
+			<th><span class="live2-who"><strong>User/Problem</strong></span></th>
+			<th><span class="live2-status"><strong>State</strong></span></th>
+		</tr>
+	</thead>
+	<tbody>
+					<tr id="live2-0" class="live2-item" style="background-color: rgb(255, 255, 255);"><td class="live2-ts">&gt; 25 hours</td><td class="live2-type"><strong><a href="/live_published.php">Published</a></strong></td><td class="live2-votes">1</td><td class="live2-story"><a href="/story.php?id=13557">A quite exciting site along with fantastic short articles! g7z2p8u4</a></td><td class="live2-who"><a href="/user.php?login=shauna_007">shauna_007</a></td><td class="live2-status">Published</td></tr>
+					<tr id="live2-1" class="live2-item" style="background-color: rgb(255, 255, 255);"><td class="live2-ts">&gt; 25 hours</td><td class="live2-type"><strong><a href="/live_published.php">Published</a></strong></td><td class="live2-votes">1</td><td class="live2-story"><a href="/story.php?id=13556">A really intriguing internet site along with terrific articles! i2o0f7n6</a></td><td class="live2-who"><a href="/user.php?login=shauna_007">shauna_007</a></td><td class="live2-status">Published</td></tr>
+					<tr id="live2-2" class="live2-item" style="background-color: rgb(255, 255, 255);"><td class="live2-ts">&gt; 25 hours</td><td class="live2-type"><strong><a href="/live_published.php">Published</a></strong></td><td class="live2-votes">1</td><td class="live2-story"><a href="/story.php?id=13555">A very interesting web site along with fantastic short articles! n1b7a0u8</a></td><td class="live2-who"><a href="/user.php?login=shauna_007">shauna_007</a></td><td class="live2-status">Published</td></tr>
+					<tr id="live2-3" class="live2-item" style="background-color: rgb(255, 255, 255);"><td class="live2-ts">&gt; 25 hours</td><td class="live2-type"><strong><a href="/live_published.php">Published</a></strong></td><td class="live2-votes">1</td><td class="live2-story"><a href="/story.php?id=13554">A quite exciting website along with great posts! r4m1s7o8</a></td><td class="live2-who"><a href="/user.php?login=shauna_007">shauna_007</a></td><td class="live2-status">Published</td></tr>
+					<tr id="live2-4" class="live2-item" style="background-color: rgb(255, 255, 255);"><td class="live2-ts">&gt; 25 hours</td><td class="live2-type"><strong><a href="/live_published.php">Published</a></strong></td><td class="live2-votes">1</td><td class="live2-story"><a href="/story.php?id=13553">House Sublimation Business  s3c2m7o1</a></td><td class="live2-who"><a href="/user.php?login=shauna_007">shauna_007</a></td><td class="live2-status">Published</td></tr>
+					<tr id="live2-5" class="live2-item" style="background-color: rgb(255, 255, 255);"><td class="live2-ts">&gt; 25 hours</td><td class="live2-type"><strong><a href="/live_published.php">Published</a></strong></td><td class="live2-votes">1</td><td class="live2-story"><a href="/story.php?id=13552">Chord Melody Guitar Music s2f4t0r1</a></td><td class="live2-who"><a href="/user.php?login=shauna_007">shauna_007</a></td><td class="live2-status">Published</td></tr>
+					<tr id="live2-6" class="live2-item" style="background-color: rgb(255, 255, 255);"><td class="live2-ts">&gt; 25 hours</td><td class="live2-type"><strong><a href="/live_published.php">Published</a></strong></td><td class="live2-votes">1</td><td class="live2-story"><a href="/story.php?id=13551">An extremely interesting web site along with fantastic write-ups! h0o4z2m0</a></td><td class="live2-who"><a href="/user.php?login=shauna_007">shauna_007</a></td><td class="live2-status">Published</td></tr>
+					<tr id="live2-7" class="live2-item" style="background-color: rgb(255, 255, 255);"><td class="live2-ts">&gt; 25 hours</td><td class="live2-type"><strong><a href="/live_published.php">Published</a></strong></td><td class="live2-votes">1</td><td class="live2-story"><a href="/story.php?id=13550">A really interesting internet site with terrific posts! n5i1c3i6</a></td><td class="live2-who"><a href="/user.php?login=shauna_007">shauna_007</a></td><td class="live2-status">Published</td></tr>
+					<tr id="live2-8" class="live2-item" style="background-color: rgb(255, 255, 255);"><td class="live2-ts">&gt; 25 hours</td><td class="live2-type"><strong><a href="/live_published.php">Published</a></strong></td><td class="live2-votes">1</td><td class="live2-story"><a href="/story.php?id=13549">A very appealing website along with excellent short articles! t0u7b9s8</a></td><td class="live2-who"><a href="/user.php?login=shauna_007">shauna_007</a></td><td class="live2-status">Published</td></tr>
+					<tr id="live2-9" class="live2-item" style="background-color: rgb(255, 255, 255);"><td class="live2-ts">&gt; 25 hours</td><td class="live2-type"><strong><a href="/live_published.php">Published</a></strong></td><td class="live2-votes">1</td><td class="live2-story"><a href="/story.php?id=13548">A very exciting site along with terrific articles! s6u2j8m5</a></td><td class="live2-who"><a href="/user.php?login=shauna_007">shauna_007</a></td><td class="live2-status">Published</td></tr>
+					<tr id="live2-10" class="live2-item" style="background-color: rgb(255, 255, 255);"><td class="live2-ts">&gt; 25 hours</td><td class="live2-type"><strong><a href="/live_published.php">Published</a></strong></td><td class="live2-votes">1</td><td class="live2-story"><a href="/story.php?id=13547">An incredibly exciting website with wonderful write-ups! b8d8o2r1</a></td><td class="live2-who"><a href="/user.php?login=shauna_007">shauna_007</a></td><td class="live2-status">Published</td></tr>
+					<tr id="live2-11" class="live2-item" style="background-color: rgb(255, 255, 255);"><td class="live2-ts">&gt; 25 hours</td><td class="live2-type"><strong><a href="/live_published.php">Published</a></strong></td><td class="live2-votes">1</td><td class="live2-story"><a href="/story.php?id=13546">A really intriguing website with terrific short articles! e5d4g6c0</a></td><td class="live2-who"><a href="/user.php?login=shauna_007">shauna_007</a></td><td class="live2-status">Published</td></tr>
+					<tr id="live2-12" class="live2-item" style="background-color: rgb(255, 255, 255);"><td class="live2-ts">&gt; 25 hours</td><td class="live2-type"><strong><a href="/live_published.php">Published</a></strong></td><td class="live2-votes">1</td><td class="live2-story"><a href="/story.php?id=13545">An extremely exciting website with great articles! p8l8o9d1</a></td><td class="live2-who"><a href="/user.php?login=shauna_007">shauna_007</a></td><td class="live2-status">Published</td></tr>
+					<tr id="live2-13" class="live2-item" style="background-color: rgb(255, 255, 255);"><td class="live2-ts">&gt; 25 hours</td><td class="live2-type"><strong><a href="/live_published.php">Published</a></strong></td><td class="live2-votes">1</td><td class="live2-story"><a href="/story.php?id=13544">An incredibly fascinating website along with fantastic write-ups! j1v4o2h4</a></td><td class="live2-who"><a href="/user.php?login=shauna_007">shauna_007</a></td><td class="live2-status">Published</td></tr>
+					<tr id="live2-14" class="live2-item" style="background-color: rgb(255, 255, 255);"><td class="live2-ts">&gt; 25 hours</td><td class="live2-type"><strong><a href="/live_published.php">Published</a></strong></td><td class="live2-votes">1</td><td class="live2-story"><a href="/story.php?id=13543">An incredibly appealing site with excellent short articles! g2c8u4i4</a></td><td class="live2-who"><a href="/user.php?login=shauna_007">shauna_007</a></td><td class="live2-status">Published</td></tr>
+					<tr id="live2-15" class="live2-item" style="background-color: rgb(255, 255, 255);"><td class="live2-ts">&gt; 25 hours</td><td class="live2-type"><strong><a href="/live_published.php">Published</a></strong></td><td class="live2-votes">1</td><td class="live2-story"><a href="/story.php?id=13542">A really exciting site along with great articles! f6k9l8d8</a></td><td class="live2-who"><a href="/user.php?login=shauna_007">shauna_007</a></td><td class="live2-status">Published</td></tr>
+					<tr id="live2-16" class="live2-item" style="background-color: rgb(255, 255, 255);"><td class="live2-ts">&gt; 25 hours</td><td class="live2-type"><strong><a href="/live_published.php">Published</a></strong></td><td class="live2-votes">1</td><td class="live2-story"><a href="/story.php?id=13541">A really appealing internet site with fantastic short articles! n6t5m9b2</a></td><td class="live2-who"><a href="/user.php?login=shauna_007">shauna_007</a></td><td class="live2-status">Published</td></tr>
+					<tr id="live2-17" class="live2-item" style="background-color: rgb(255, 255, 255);"><td class="live2-ts">&gt; 25 hours</td><td class="live2-type"><strong><a href="/live_published.php">Published</a></strong></td><td class="live2-votes">1</td><td class="live2-story"><a href="/story.php?id=13540">A quite appealing site along with terrific posts! d1p7h3z3</a></td><td class="live2-who"><a href="/user.php?login=shauna_007">shauna_007</a></td><td class="live2-status">Published</td></tr>
+					<tr id="live2-18" class="live2-item" style="background-color: rgb(255, 255, 255);"><td class="live2-ts">&gt; 25 hours</td><td class="live2-type"><strong><a href="/live_published.php">Published</a></strong></td><td class="live2-votes">1</td><td class="live2-story"><a href="/story.php?id=13539">An incredibly intriguing web site along with great write-ups! a0t4c6e5</a></td><td class="live2-who"><a href="/user.php?login=shauna_007">shauna_007</a></td><td class="live2-status">Published</td></tr>
+					<tr id="live2-19" class="live2-item" style="background-color: rgb(255, 255, 255);"><td class="live2-ts">&gt; 25 hours</td><td class="live2-type"><strong><a href="/live_published.php">Published</a></strong></td><td class="live2-votes">1</td><td class="live2-story"><a href="/story.php?id=13538">Parkwood Hills Ottawa Homes for Sale u8s9o2e7</a></td><td class="live2-who"><a href="/user.php?login=shauna_007">shauna_007</a></td><td class="live2-status">Published</td></tr>
+			</tbody>
+</table>
+
+	<div id="live2-0" class="live2-item">&nbsp;</div>
+	<div id="live2-1" class="live2-item">&nbsp;</div>
+	<div id="live2-2" class="live2-item">&nbsp;</div>
+	<div id="live2-3" class="live2-item">&nbsp;</div>
+	<div id="live2-4" class="live2-item">&nbsp;</div>
+	<div id="live2-5" class="live2-item">&nbsp;</div>
+	<div id="live2-6" class="live2-item">&nbsp;</div>
+	<div id="live2-7" class="live2-item">&nbsp;</div>
+	<div id="live2-8" class="live2-item">&nbsp;</div>
+	<div id="live2-9" class="live2-item">&nbsp;</div>
+	<div id="live2-10" class="live2-item">&nbsp;</div>
+	<div id="live2-11" class="live2-item">&nbsp;</div>
+	<div id="live2-12" class="live2-item">&nbsp;</div>
+	<div id="live2-13" class="live2-item">&nbsp;</div>
+	<div id="live2-14" class="live2-item">&nbsp;</div>
+	<div id="live2-15" class="live2-item">&nbsp;</div>
+	<div id="live2-16" class="live2-item">&nbsp;</div>
+	<div id="live2-17" class="live2-item">&nbsp;</div>
+	<div id="live2-18" class="live2-item">&nbsp;</div>
+	<div id="live2-19" class="live2-item">&nbsp;</div>
+
+<!--/live_center.tpl -->					<!-- END CENTER CONTENT -->
+					
+														</div><!--/span-->
+	  
+					
+				
+									<!-- START RIGHT COLUMN -->
+					<div class="col-md-3">
+						<div class="panel panel-default">
+							<div id="rightcol" class="panel-body">
+								<!-- START FIRST SIDEBAR -->
+									
+
+<!-- sidebar.tpl -->
+		<!-- START SEARCH BOX -->
+		
+
+<!-- search_box.tpl -->
+<script type="text/javascript">
+						
+		var some_search='Search..';
+</script>
+<div class="search">
+	<div class="headline">
+		<div class="sectiontitle">Search</div>
+	</div>
+
+	<form action="/search.php" method="get" name="thisform-search" class="form-inline search-form" role="form" id="thisform-search">
+		
+			<div class="input-group">
+		
+		<input type="text" class="form-control" tabindex="20" name="search" id="searchsite" value="Search.." onfocus="if(this.value == some_search) {this.value = '';}" onblur="if (this.value == '') {this.value = some_search;}">
+			
+			<span class="input-group-btn">
+				<button type="submit" tabindex="21" class="btn btn-primary custom_nav_search_button">Go</button>
+			</span>
+		 </div>
+	</form>
+
+	<div style="clear:both;"></div>
+	<br>
+</div>
+<!--/search_box.tpl -->
+	<!-- END SEARCH BOX -->
+		<!-- START ABOUT BOX -->
+		
+
+<!-- about_box.tpl -->
+<div class="headline">
+	<div class="sectiontitle">What is Pligg?</div>
+</div>
+<div id="aboutcontent">
+	<p>Pligg is an open source content management system that lets you easily <a href="http://pligg.com">create your own user-powered website</a>.</p>
+</div>
+<!--/about_box.tpl -->
+	<!-- END ABOUT BOX -->
+	<!--/sidebar.tpl -->								<!-- END FIRST SIDEBAR -->
+								<!-- START SECOND SIDEBAR -->
+									
+
+<!-- sidebar2.tpl -->
+			<!--/sidebar2.tpl -->								<!-- END SECOND SIDEBAR -->
+							</div>
+						</div><!--/.panel -->
+					</div><!--/span-->
+					<!-- END RIGHT COLUMN -->
+										</div><!--/.row-->
+		</section><!--/#maincontent-->
+					<hr>
+			<footer class="footer">
+				<!-- START FOOTER -->
+					
+
+<!-- footer.tpl -->
+<div id="footer">
+		<span class="subtext"> 
+		Copyright © 2022 My Site
+		| <a href="/advancedsearch.php">Advanced Search</a> 
+					| <a href="/live.php">Live</a>
+							| <a href="/cloud.php">Tag Cloud</a>
+				| <a href="/topusers.php">Top Users</a>
+		| Made wtih <a href="http://pligg.com/" target="_blank">Pligg CMS</a> 
+		| <a href="http://pligg.com/hosting/" target="_blank">Web Host Promotions</a> 
+				| <a href="http://lauriemann.net/rssfeeds.php">All RSS Feeds</a> 
+	</span>
+	</div>
+<!--/footer.tpl -->				<!-- END FOOTER -->
+			</footer>
+				
+	</div><!--/.container-->
+	
+	<!-- START COMMON JAVASCRIPT FUNCTIONS -->
+	
+<script>
+function show_hide_user_links(thediv)
+{
+	if(window.Effect){
+		if(thediv.style.display == 'none')
+		{Effect.Appear(thediv); return false;}
+		else
+		{Effect.Fade(thediv); return false;}
+	}else{
+		var replydisplay=thediv.style.display ? '' : 'none';
+		thediv.style.display = replydisplay;					
+	}
+}
+</script>
+	<!-- END COMMON JAVASCRIPT FUNCTIONS -->
+	
+			<!-- START UP/DOWN VOTING JAVASCRIPT -->
+			
+<script>
+var my_base_url='http://lauriemann.net';
+var my_pligg_base='';
+var anonymous_vote = false;
+var Voting_Method = '1';
+var PLIGG_Visual_Vote_Cast = "Voted";
+var PLIGG_Visual_Vote_Report = "Buried";
+var PLIGG_Visual_Vote_For_It = "Vote";
+var PLIGG_Visual_Comment_ThankYou_Rating = "Thank you for rating this comment.";
+
+
+function vote (user, id, htmlid, md5, value)
+{
+    var anchor = $('#xvote-'+htmlid+' > a:'+(value>0 ? 'first' : 'last'));
+    anchor.attr('disabled','disabled');
+
+    var url = my_pligg_base + "/vote_total.php";
+    var mycontent = "id=" + id + "&user=" + user + "&md5=" + md5 + "&value=" + value;
+	dynamic_class=".linkVote_"+id;
+    var link_title=$(dynamic_class).attr("title");
+	
+	
+    if (!anonymous_vote && user=="") {
+        window.location= my_base_url + my_pligg_base + "/login.php?return="+location.href;
+    } else {
+		
+    	$.post(url, mycontent, function (data) {
+		if (data.match (new RegExp ("^ERROR:"))) {
+			var tag = $("<div></div>");
+			tag.html(data).dialog({modal: true}).dialog('open');
+   		} else {
+			var anchor = $('#xvote-'+htmlid+' > .'+(value>0 ? 'btn-danger' : 'btn-success'));
+			if (anchor.length)
+				anchor.removeClass(value>0 ? 'btn-danger' : 'btn-success')
+					.attr('href', anchor.attr('href').replace(/unvote/,'vote'))
+					.removeAttr('disabled')
+					.children('i').removeClass('fa-white');
+
+			var anchor = $('#xvote-'+htmlid+' > a:'+(value>0 ? 'first' : 'last'));
+			anchor.addClass(value>0 ? 'btn-success' : 'btn-danger')
+				.attr('href', anchor.attr('href').replace(/vote/,'unvote'))
+				.removeAttr('disabled')
+				.children('i').addClass('fa-white');
+				
+		     if(value==10){
+			  
+			  like_dislike_text='You like';
+			  notify_icon = 'fa fa-thumbs-up'
+			 }
+			 else if(value==-10){
+			 	
+			  	like_dislike_text='You dislike';
+				notify_icon = 'fa fa-thumbs-down';
+			  }
+			    
+			 $.pnotify({
+							pnotify_text: like_dislike_text+' &quot;'+link_title+'&quot;',
+							pnotify_sticker: false,
+							pnotify_history: false,
+							pnotify_notice_icon: notify_icon
+						});	
+			
+
+			if (Voting_Method == 2){
+			} else {
+				$('#xnews-'+htmlid+' .votenumber').html(data.split('~')[0]);
+			}
+		}
+	}, "text");
+    }
+}
+
+function unvote (user, id, htmlid, md5, value)
+{
+    var anchor = $('#xvote-'+htmlid+' > a:'+(value>0 ? 'first' : 'last'));
+    anchor.attr('disabled','disabled');
+
+    var url = my_pligg_base + "/vote_total.php";
+    var mycontent = "unvote=true&id=" + id + "&user=" + user + "&md5=" + md5 + "&value=" + value;
+	dynamic_class = ".linkVote_"+id;
+    var link_title = $(dynamic_class).attr("title");
+	
+	
+	//user = 2;
+	//alert("from unvote"+user);
+	//alert(anonymous_vote);
+	
+    if (!anonymous_vote && user== "") {
+        window.location= my_base_url + my_pligg_base + "/login.php?return="+location.href;
+    } else {
+    	$.post(url, mycontent, function (data) {
+		if (data.match (new RegExp ("^ERROR:"))) {
+			alert(data.substring (6, data.length));
+   		} else {
+			var anchor = $('#xvote-'+htmlid+' > a:'+(value>0 ? 'first' : 'last'));
+			anchor.removeClass(value>0 ? 'btn-success' : 'btn-danger')
+				.attr('href', anchor.attr('href').replace(/unvote/,'vote'))
+				.removeAttr('disabled')
+				.children('i').removeClass('fa-white');
+				
+			if(value==10)
+			  like_dislike_text='You removed like';
+			 else if(value==-10)
+			  like_dislike_text='You removed dislike';
+				
+			$.pnotify({
+								pnotify_text: like_dislike_text+' &quot;'+link_title+'&quot;',
+								pnotify_sticker: false,
+								pnotify_history: false,
+								pnotify_notice_icon: 'fa fa-thumbs-down'
+							});	
+						
+
+			if (Voting_Method == 2){
+			} else {
+				$('#xnews-'+htmlid+' .votenumber').html(data.split('~')[0]);
+			}
+		}
+	}, "text");
+    }
+}
+
+</script>
+		<!-- END UP/DOWN VOTING JAVASCRIPT -->
+		
+	
+		
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+	<link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/themes/smoothness/jquery-ui.css" media="all" rel="stylesheet" type="text/css">
+	
+	<!--[if lt IE 7]>
+	<script type="text/javascript" src="/templates/bootstrap/js/jquery/jquery.dropdown.js"></script>
+	<![endif]-->
+	
+	<script type="text/javascript" src="/templates/bootstrap/js/registration_verify.js"></script>
+	<script type="text/javascript" src="/templates/bootstrap/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="/templates/bootstrap/js/bootstrap-fileupload.js"></script>
+	<script type="text/javascript" src="/templates/bootstrap/js/jquery/jquery.pnotify.min.js"></script>
+	
+		
+    	
+			<!-- Login Modal -->
+		<div class="modal fade" id="loginModal" tabindex="-1" role="dialog">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+						<h4 class="modal-title">Login</h4>
+					</div>
+					<div class="modal-body">
+						<div class="control-group">
+							<form id="signin" action="/login.php?return=/live.php" method="post">
+								
+								<div style="login_modal_username">
+									<label for="username">Username/Email</label>
+									<input id="username" name="username" class="form-control" value="" title="username" tabindex="1" type="text">
+								</div>
+								<div class="login_modal_password">
+									<label for="password">Password</label>
+									<input id="password" name="password" class="form-control" value="" title="password" tabindex="2" type="password">
+								</div>
+								<div class="login_modal_remember">
+									<div class="login_modal_remember_checkbox">
+										<input id="remember" style="float:left;margin-right:5px;" name="persistent" value="1" tabindex="3" type="checkbox">
+									</div>
+									<div class="login_modal_remember_label">
+										<label for="remember" style="">Remember</label>
+									</div>
+									<div style="clear:both;"></div>
+								</div>
+								<div class="login_modal_login">
+									<input type="hidden" name="processlogin" value="1">
+									<input type="hidden" name="return" value="">
+									<input class="btn btn-primary col-md-12" id="signin_submit" value="Sign In" tabindex="4" type="submit">
+								</div>
+																<hr class="soften" id="login_modal_spacer">
+								<div class="login_modal_forgot">
+									<a class="btn btn-default col-md-12" id="forgot_password_link" href="/login.php?return=/live.php">Forgotten Password?</a>
+								</div>
+								<div class="clearboth"></div>
+							</form>
+						</div>
+					</div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+	
+		
+		
+		
+		
+	
+		<script> 
+		$('.avatar-tooltip').tooltip()
+		</script>
+	
+
+	
+
+
+<script type="text/javascript">
+//<![CDATA[
+var timestamp=0;
+var busy = false;
+var animating = false;
+var my_base_url='http://lauriemann.net';
+var my_pligg_base='';
+var pligg_hours = 'hours';
+var items = Array();
+var new_items = 0;
+var animation_colors = Array("#CFCFCF", "#D1D1D1", "#D4D4D4", "#D9D9D9", "#DEDEDE", "#E6E6E6", "#E8E8E8", "#F0F0F0", "#F5F5F5", "#FFFFFF");
+var colors_max = animation_colors.length - 1;
+var current_colors = Array();
+var animation_timer;
+var max_items = 20;
+var min_update = 20 * 1000;
+var next_update = 5000;
+var requests = 0;
+var max_requests = 3000;
+// Reload the mnm banner each 5 minutes
+var mnm_banner_reload = 180000;
+
+
+function start() {
+	for (i=0; i<max_items; i++)
+	    items[i] = document.getElementById('live2-'+i);
+	get_data();
+}
+
+function get_data() {
+	if (busy) 
+		return;
+	busy = true;
+	url  = window.location.href.replace(/\/live.*?$/, '/live2.php?time=' + timestamp);
+		
+	$.get(url, function (data) {
+		busy = false;
+
+	// We get new_data array
+		var new_data = Array();
+		eval (data);
+		new_items = new_data.length;
+		
+		if(new_items > 0) {
+			clearInterval(animation_timer);
+			next_update = Math.round(0.5*next_update + 0.5*min_update/(new_items*2));
+			shift_items(new_items);
+			for (i=0; i<new_items && i<max_items; i++) {
+				items[i].innerHTML = to_html(new_data[i]);
+				set_initial_color(i);
+			}
+			animation_timer = setInterval('animate_background()', 100)
+		} 
+		else 
+			next_update = Math.round(next_update*1.25);
+
+		if (next_update < 5000) next_update = 5000;
+		if (next_update > min_update) next_update = min_update;
+		if (requests > max_requests) {
+			if ( !confirm('Timeout: Would you like to try to reconnect?') ) {
+				mnm_banner_reload = 0;
+				return;
+			}
+			requests = 0;
+			next_update = 100;
+		}
+		timer = setTimeout('get_data()', next_update)
+}, "text");
+
+	requests++;
+	return false;
+}
+
+function set_initial_color(i) {
+	var j;
+	if (i >= colors_max)
+		j = colors_max - 1;
+	else j = i;
+	current_colors[i] = j;
+	items[i].style.backgroundColor = animation_colors[j];
+}
+
+function animate_background() {
+	if (animating) {
+		return;
+	}
+	if (current_colors[0] == colors_max) {
+		clearInterval(animation_timer);
+		return;
+	}
+	animating = true;
+	for (i=new_items-1; i>=0; i--) {
+		if (current_colors[i] < colors_max) {
+			current_colors[i]++;
+			items[i].style.backgroundColor = animation_colors[current_colors[i]];
+		} else 
+			new_items--;
+	}
+	animating = false;
+}
+
+function shift_items(n) {
+	//for (i=n;i<max_items;i++) {
+	for (i=max_items-1;i>=n;i--) {
+		items[i].innerHTML = items[i-n].innerHTML;
+		//items.shift();
+	}
+}
+
+function to_html(data) {
+
+	var ts=new Date(data.ts*1000);
+	var timeStr;
+
+	var hours = ts.getHours();
+	var minutes = ts.getMinutes();
+	var seconds = ts.getSeconds();
+
+	timeStr  = ((hours < 10) ? "0" : "") + hours;
+	timeStr  += ((minutes < 10) ? ":0" : ":") + minutes;
+	timeStr  += ((seconds < 10) ? ":0" : ":") + seconds;
+	
+	var Xts = new Date();
+	var diff = (Xts - ts) / 60000; // how manys minutes since
+	if (diff > 1440) timeStr = '> 25 ' + pligg_hours; // 1440 = 60 mins/hr * 24 hrs/day
+
+	html = '<td class="live2-ts">'+timeStr+'</td>';
+
+	if (data.type == 'problem')
+		html += '<td class="live2-type"><span class="live2-problem">'+data.type+'</span></td>';
+	else if (data.type == 'Submission')
+		html += '<td class="live2-type"><strong><a href="' + my_pligg_base + '/live_unpublished.php">'+data.type+'</a></strong></td>';
+	else if (data.type == 'Published')
+		html += '<td class="live2-type"><strong><a href="' + my_pligg_base + '/live_published.php">'+data.type+'</a></strong></td>';	
+	else if (data.type == 'Comment')
+		html += '<td class="live2-type"><strong><a href="' + my_pligg_base + '/live_comments.php">'+data.type+'</a></strong></td>';	
+	else
+		html += '<td class="live2-type">'+data.type+'</td>';
+
+	html += '<td class="live2-votes">'+data.votes+'</td>';
+	html += '<td class="live2-story"><a href="' + my_pligg_base + '/story.php?id='+data.link+'">'+data.title+'</a></td>';
+	if (data.type == 'problem')
+		html += '<td class="live2-who"><span class="live2-problem">'+data.who+'</span></td>';
+	else if (data.uid > 0) 
+		html += '<td class="live2-who"><a href="' + my_pligg_base + '/user.php?login='+data.who+'">'+data.who+'</a></td>';
+	else 
+		html += '<td class="live2-who">Anonymous</td>';
+	html += '<td class="live2-status">'+data.status+'</td>';
+	return html;
+}
+
+
+//]]>
+</script></body></html>

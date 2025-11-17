@@ -1,0 +1,1064 @@
+<!DOCTYPE html><html lang="en"><head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="profile" href="https://gmpg.org/xfn/11">
+	<title>Recommended Reading – Linda Stone</title>
+<meta name="robots" content="max-image-preview:large">
+
+<!-- Async WordPress.com Remote Login -->
+<script id="wpcom_remote_login_js">
+var wpcom_remote_login_extra_auth = '';
+function wpcom_remote_login_remove_dom_node_id( element_id ) {
+	var dom_node = document.getElementById( element_id );
+	if ( dom_node ) { dom_node.parentNode.removeChild( dom_node ); }
+}
+function wpcom_remote_login_remove_dom_node_classes( class_name ) {
+	var dom_nodes = document.querySelectorAll( '.' + class_name );
+	for ( var i = 0; i < dom_nodes.length; i++ ) {
+		dom_nodes[ i ].parentNode.removeChild( dom_nodes[ i ] );
+	}
+}
+function wpcom_remote_login_final_cleanup() {
+	wpcom_remote_login_remove_dom_node_classes( "wpcom_remote_login_msg" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_key" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_validate" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_js" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_request_access_iframe" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_request_access_styles" );
+}
+
+// Watch for messages back from the remote login
+window.addEventListener( "message", function( e ) {
+	if ( e.origin === "https://r-login.wordpress.com" ) {
+		var data = {};
+		try {
+			data = JSON.parse( e.data );
+		} catch( e ) {
+			wpcom_remote_login_final_cleanup();
+			return;
+		}
+
+		if ( data.msg === 'LOGIN' ) {
+			// Clean up the login check iframe
+			wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_key" );
+
+			var id_regex = new RegExp( /^[0-9]+$/ );
+			var token_regex = new RegExp( /^.*|.*|.*$/ );
+			if (
+				token_regex.test( data.token )
+				&& id_regex.test( data.wpcomid )
+			) {
+				// We have everything we need to ask for a login
+				var script = document.createElement( "script" );
+				script.setAttribute( "id", "wpcom_remote_login_validate" );
+				script.src = '/remote-login.php?wpcom_remote_login=validate'
+					+ '&wpcomid=' + data.wpcomid
+					+ '&token=' + encodeURIComponent( data.token )
+					+ '&host=' + window.location.protocol
+					+ '//' + window.location.hostname
+					+ '&postid=15'
+					+ '&is_singular=';
+				document.body.appendChild( script );
+			}
+
+			return;
+		}
+
+		// Safari ITP, not logged in, so redirect
+		if ( data.msg === 'LOGIN-REDIRECT' ) {
+			window.location = 'https://wordpress.com/log-in?redirect_to=' + window.location.href;
+			return;
+		}
+
+		// Safari ITP, storage access failed, remove the request
+		if ( data.msg === 'LOGIN-REMOVE' ) {
+			var css_zap = 'html { -webkit-transition: margin-top 1s; transition: margin-top 1s; } /* 9001 */ html { margin-top: 0 !important; } * html body { margin-top: 0 !important; } @media screen and ( max-width: 782px ) { html { margin-top: 0 !important; } * html body { margin-top: 0 !important; } }';
+			var style_zap = document.createElement( 'style' );
+			style_zap.type = 'text/css';
+			style_zap.appendChild( document.createTextNode( css_zap ) );
+			document.body.appendChild( style_zap );
+
+			var e = document.getElementById( 'wpcom_request_access_iframe' );
+			e.parentNode.removeChild( e );
+
+			document.cookie = 'wordpress_com_login_access=denied; path=/; max-age=31536000';
+
+			return;
+		}
+
+		// Safari ITP
+		if ( data.msg === 'REQUEST_ACCESS' ) {
+			console.log( 'request access: safari' );
+
+			// Check ITP iframe enable/disable knob
+			if ( wpcom_remote_login_extra_auth !== 'safari_itp_iframe' ) {
+				return;
+			}
+
+			// If we are in a "private window" there is no ITP.
+			var private_window = false;
+			try {
+				var opendb = window.openDatabase( null, null, null, null );
+			} catch( e ) {
+				private_window = true;
+			}
+
+			if ( private_window ) {
+				console.log( 'private window' );
+				return;
+			}
+
+			var iframe = document.createElement( 'iframe' );
+			iframe.id = 'wpcom_request_access_iframe';
+			iframe.setAttribute( 'scrolling', 'no' );
+			iframe.setAttribute( 'sandbox', 'allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-top-navigation-by-user-activation' );
+			iframe.src = 'https://r-login.wordpress.com/remote-login.php?wpcom_remote_login=request_access&origin=' + encodeURIComponent( data.origin ) + '&wpcomid=' + encodeURIComponent( data.wpcomid );
+
+			var css = 'html { -webkit-transition: margin-top 1s; transition: margin-top 1s; } /* 9001 */ html { margin-top: 46px !important; } * html body { margin-top: 46px !important; } @media screen and ( max-width: 660px ) { html { margin-top: 71px !important; } * html body { margin-top: 71px !important; } #wpcom_request_access_iframe { display: block; height: 71px !important; } } #wpcom_request_access_iframe { border: 0px; height: 46px; position: fixed; top: 0; left: 0; width: 100%; min-width: 100%; z-index: 99999; background: #23282d; } ';
+
+			var style = document.createElement( 'style' );
+			style.type = 'text/css';
+			style.id = 'wpcom_request_access_styles';
+			style.appendChild( document.createTextNode( css ) );
+			document.body.appendChild( style );
+
+			document.body.appendChild( iframe );
+		}
+
+		if ( data.msg === 'DONE' ) {
+			wpcom_remote_login_final_cleanup();
+		}
+	}
+}, false );
+
+// Inject the remote login iframe after the page has had a chance to load
+// more critical resources
+window.addEventListener( "DOMContentLoaded", function( e ) {
+	var iframe = document.createElement( "iframe" );
+	iframe.style.display = "none";
+	iframe.setAttribute( "scrolling", "no" );
+	iframe.setAttribute( "id", "wpcom_remote_login_key" );
+	iframe.src = "https://r-login.wordpress.com/remote-login.php"
+		+ "?wpcom_remote_login=key"
+		+ "&origin=aHR0cHM6Ly9saW5kYXN0b25lLm5ldA%3D%3D"
+		+ "&wpcomid=10705793"
+		+ "&time=1656192811";
+	document.body.appendChild( iframe );
+}, false );
+</script>
+<link rel="dns-prefetch" href="//s0.wp.com">
+<link rel="dns-prefetch" href="//stonelinda.wordpress.com">
+<link href="https://fonts.gstatic.com" crossorigin="" rel="preconnect">
+<link rel="alternate" type="application/rss+xml" title="Linda Stone » Feed" href="https://lindastone.net/feed/">
+<link rel="alternate" type="application/rss+xml" title="Linda Stone » Comments Feed" href="https://lindastone.net/comments/feed/">
+	<script type="text/javascript">
+		/* <![CDATA[ */
+		function addLoadEvent(func) {
+			var oldonload = window.onload;
+			if (typeof window.onload != 'function') {
+				window.onload = func;
+			} else {
+				window.onload = function () {
+					oldonload();
+					func();
+				}
+			}
+		}
+		/* ]]> */
+	</script>
+	<script type="text/javascript">
+window._wpemojiSettings = {"baseUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/72x72\/","ext":".png","svgUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/s0.wp.com\/wp-includes\/js\/wp-emoji-release.min.js?m=1652185836h&ver=6.0-RC4-53438"}};
+/*! This file is auto-generated */
+!function(e,a,t){var n,r,o,i=a.createElement("canvas"),p=i.getContext&&i.getContext("2d");function s(e,t){var a=String.fromCharCode,e=(p.clearRect(0,0,i.width,i.height),p.fillText(a.apply(this,e),0,0),i.toDataURL());return p.clearRect(0,0,i.width,i.height),p.fillText(a.apply(this,t),0,0),e===i.toDataURL()}function c(e){var t=a.createElement("script");t.src=e,t.defer=t.type="text/javascript",a.getElementsByTagName("head")[0].appendChild(t)}for(o=Array("flag","emoji"),t.supports={everything:!0,everythingExceptFlag:!0},r=0;r<o.length;r++)t.supports[o[r]]=function(e){if(!p||!p.fillText)return!1;switch(p.textBaseline="top",p.font="600 32px Arial",e){case"flag":return s([127987,65039,8205,9895,65039],[127987,65039,8203,9895,65039])?!1:!s([55356,56826,55356,56819],[55356,56826,8203,55356,56819])&&!s([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]);case"emoji":return!s([129777,127995,8205,129778,127999],[129777,127995,8203,129778,127999])}return!1}(o[r]),t.supports.everything=t.supports.everything&&t.supports[o[r]],"flag"!==o[r]&&(t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&t.supports[o[r]]);t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&!t.supports.flag,t.DOMReady=!1,t.readyCallback=function(){t.DOMReady=!0},t.supports.everything||(n=function(){t.readyCallback()},a.addEventListener?(a.addEventListener("DOMContentLoaded",n,!1),e.addEventListener("load",n,!1)):(e.attachEvent("onload",n),a.attachEvent("onreadystatechange",function(){"complete"===a.readyState&&t.readyCallback()})),(e=t.source||{}).concatemoji?c(e.concatemoji):e.wpemoji&&e.twemoji&&(c(e.twemoji),c(e.wpemoji)))}(window,document,window._wpemojiSettings);
+</script><script src="https://s0.wp.com/wp-includes/js/wp-emoji-release.min.js?m=1652185836h&amp;ver=6.0-RC4-53438" type="text/javascript" defer=""></script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 0.07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	<link crossorigin="anonymous" rel="stylesheet" id="all-css-0-1" href="https://s0.wp.com/_static/??-eJytUstuwyAQ/KECdSy36aHqtwBe0U1YjFhIxN8Huy83SZseekEaZmc0+1DHKOwUMoSsqIjoi8PA6hjtRIIJPdQzJC3znbou87gHVjvIUdu9WNBF+UetKw0aSK4xCdSh6+Ug75Up6Edl/LQYmKRTVZyrh/8wyq9AX0YYrC/jHJgVwYgafKPnjlYgel0hCQ9O2yoJw21549b4m+jn8EvS1fB0nUoWLuH45/7PLJLOGBzfkNvpXbaR3VZ2gpGiB5HgIDdqRM6fFeK60Wr/8wLaP0V9OYVfZG/3ZUxMwCzaS1hILMta7ueFnruHYXjqt8NjvzsBilMB/Q==?cssminify=yes" type="text/css" media="all">
+<style id="wp-block-library-inline-css">
+.has-text-align-justify {
+	text-align:justify;
+}
+</style>
+<style id="global-styles-inline-css">
+body{--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--color--primary: #32127a;--wp--preset--color--secondary: #007fdb;--wp--preset--color--background: #ffffff;--wp--preset--color--foreground: #222222;--wp--preset--color--foreground-light: #666666;--wp--preset--color--foreground-dark: #111111;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--duotone--dark-grayscale: url('#wp-duotone-dark-grayscale');--wp--preset--duotone--grayscale: url('#wp-duotone-grayscale');--wp--preset--duotone--purple-yellow: url('#wp-duotone-purple-yellow');--wp--preset--duotone--blue-red: url('#wp-duotone-blue-red');--wp--preset--duotone--midnight: url('#wp-duotone-midnight');--wp--preset--duotone--magenta-yellow: url('#wp-duotone-magenta-yellow');--wp--preset--duotone--purple-green: url('#wp-duotone-purple-green');--wp--preset--duotone--blue-orange: url('#wp-duotone-blue-orange');--wp--preset--font-size--small: 16.66px;--wp--preset--font-size--medium: 24px;--wp--preset--font-size--large: 28.8px;--wp--preset--font-size--x-large: 42px;--wp--preset--font-size--normal: 20px;--wp--preset--font-size--huge: 34.56px;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+</style>
+<link crossorigin="anonymous" rel="stylesheet" id="print-css-3-1" href="https://s0.wp.com/wp-content/themes/pub/varia/print.css?m=1571655471h&amp;cssminify=yes" type="text/css" media="print">
+<link crossorigin="anonymous" rel="stylesheet" id="all-css-4-1" href="https://s0.wp.com/_static/??-eJx9j9sKwjAQRH/IuASt1AfxW9K4piub3ZBLi3/fgi9KpW8zcA7MwJyMV6koFeqIEQukNkDGx0jMUOqb8ehLOcB/cHKZHJD4D2rm5DVuhNhM4hZICgRUw+pdJZWfYp7sKO+pGQfWsMYAK/VV9wZuntzjzV6607m/9ta+FoDzXxE=?cssminify=yes" type="text/css" media="all">
+<style id="jetpack-global-styles-frontend-style-inline-css">
+:root { --font-headings: unset; --font-base: unset; --font-headings-default: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif; --font-base-default: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;}
+</style>
+<link crossorigin="anonymous" rel="stylesheet" id="all-css-6-1" href="https://s0.wp.com/_static/??-eJxti8sKgCAQAH8oW6KXHaJvMTE1Vldapd+PDh2iTsPADJxJaIrZxAyhiITF+siQiLPYUPkD2KnDR/uw1swV/F9M2isUSJbe8pmyM8EwuA4s0qrwDpYwN0PfymmUstsvZXo34g==?cssminify=yes" type="text/css" media="all">
+<script id="media-video-jwt-bridge-js-extra">
+var videopressAjax = {"ajaxUrl":"https:\/\/stonelinda.wordpress.com\/wp-admin\/admin-ajax.php","bridgeUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/videopress\/js\/videopress-token-bridge.js","post_id":"15"};
+</script>
+<script id="wpcom-actionbar-placeholder-js-extra">
+var actionbardata = {"siteID":"10705793","siteURL":"https:\/\/lindastone.net","xhrURL":"https:\/\/lindastone.net\/wp-admin\/admin-ajax.php","nonce":"51302790d3","isLoggedIn":"","statusMessage":"","subsEmailDefault":"instantly","proxyScriptUrl":"https:\/\/s0.wp.com\/wp-content\/js\/wpcom-proxy-request.js?ver=20211021","shortlink":"https:\/\/wp.me\/PIV45-f","i18n":{"followedText":"New posts from this site will now appear in your <a href=\"https:\/\/wordpress.com\/read\">Reader<\/a>","foldBar":"Collapse this bar","unfoldBar":"Expand this bar"}};
+</script>
+<script crossorigin="anonymous" type="text/javascript" src="https://s0.wp.com/_static/??/wp-content/js/mobile-useragent-info.js,/wp-content/js/rlt-proxy.js,/wp-content/mu-plugins/videopress/js/videopress-token-bridge.js?m=1652791886j"></script>
+<script type="text/javascript">
+	window.addEventListener( 'DOMContentLoaded', function() {
+		rltInitialize( {"token":null,"iframeOrigins":["https:\/\/widgets.wp.com"]} );
+	} );
+</script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://stonelinda.wordpress.com/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://s0.wp.com/wp-includes/wlwmanifest.xml"> 
+<meta name="generator" content="WordPress.com">
+<link rel="canonical" href="https://lindastone.net/recommended-reading/">
+<link rel="shortlink" href="https://wp.me/PIV45-f">
+<link rel="alternate" type="application/json+oembed" href="https://public-api.wordpress.com/oembed/?format=json&amp;url=https%3A%2F%2Flindastone.net%2Frecommended-reading%2F&amp;for=wpcom-auto-discovery"><link rel="alternate" type="application/xml+oembed" href="https://public-api.wordpress.com/oembed/?format=xml&amp;url=https%3A%2F%2Flindastone.net%2Frecommended-reading%2F&amp;for=wpcom-auto-discovery">
+<!-- Jetpack Open Graph Tags -->
+<meta property="og:type" content="article">
+<meta property="og:title" content="Recommended Reading">
+<meta property="og:url" content="https://lindastone.net/recommended-reading/">
+<meta property="og:description" content="Stuart Brown.&nbsp;Play: How It Shapes the Brain, Opens the Imagination, and Invigorates the Soul Mihaly Csikszentmihalyi. Flow: The Psychology of Optimal Experience Mihaly Csikszentmihalyi.&nbsp;Creativity:…">
+<meta property="article:published_time" content="2009-11-28T01:15:09+00:00">
+<meta property="article:modified_time" content="2020-04-29T16:02:36+00:00">
+<meta property="og:site_name" content="Linda Stone">
+<meta property="og:image" content="http://www.assoc-amazon.com/e/ir?t=linsto-20&amp;l=as2&amp;o=1&amp;a=B002KAORUM">
+<meta property="og:image:width" content="1">
+<meta property="og:image:height" content="1">
+<meta property="og:image:alt" content="">
+<meta property="og:locale" content="en_US">
+<meta property="article:publisher" content="https://www.facebook.com/WordPresscom">
+<meta name="twitter:creator" content="@LindaStone">
+<meta name="twitter:site" content="@LindaStone">
+<meta name="twitter:text:title" content="Recommended Reading">
+<meta name="twitter:image" content="http://www.assoc-amazon.com/e/ir?t=linsto-20&amp;l=as2&amp;o=1&amp;a=B002KAORUM&amp;w=144">
+<meta name="twitter:card" content="summary">
+
+<!-- End Jetpack Open Graph Tags -->
+<link rel="openid.server" href="https://lindastone.net/?openidserver=1">
+<link rel="openid.delegate" href="https://lindastone.net/">
+<link rel="search" type="application/opensearchdescription+xml" href="https://lindastone.net/osd.xml" title="Linda Stone">
+<link rel="search" type="application/opensearchdescription+xml" href="https://s1.wp.com/opensearch.xml" title="WordPress.com">
+<meta name="application-name" content="Linda Stone"><meta name="msapplication-window" content="width=device-width;height=device-height"><meta name="msapplication-tooltip" content="Writer, speaker, consultant "><meta name="msapplication-task" content="name=Subscribe;action-uri=https://lindastone.net/feed/;icon-uri=https://stonelinda.files.wordpress.com/2020/05/cropped-favicon-1.jpg?w=16"><meta name="msapplication-task" content="name=Sign up for a free blog;action-uri=http://wordpress.com/signup/;icon-uri=https://s0.wp.com/i/favicon.ico"><meta name="msapplication-task" content="name=WordPress.com Support;action-uri=http://support.wordpress.com/;icon-uri=https://s0.wp.com/i/favicon.ico"><meta name="msapplication-task" content="name=WordPress.com Forums;action-uri=http://forums.wordpress.com/;icon-uri=https://s0.wp.com/i/favicon.ico"><meta name="description" content="Stuart Brown.&nbsp;Play: How It Shapes the Brain, Opens the Imagination, and Invigorates the Soul Mihaly Csikszentmihalyi. Flow: The Psychology of Optimal Experience Mihaly Csikszentmihalyi.&nbsp;Creativity: Flow and the Psychology of Discovery and Invention Mihaly Csikszentmihalyi.&nbsp;Finding Flow: The Psychology of Engagement with Everyday Life Mihaly Csikszentmihalyi.&nbsp;The Evolving Self Dan Ariely.&nbsp;Predictably Irrational, Revised and Expanded Edition: The Hidden…">
+<!-- There is no amphtml version available for this URL. --><style type="text/css" id="custom-colors-css">	@media screen and (max-width: 560px) {
+		/* Prevent background color hovers on mobile */
+		.site-header .main-navigation > div,
+		.site-header .main-navigation > div > ul > li.current-menu-item > a,
+		.site-header .main-navigation > div > ul > li.current-menu-item li.current-menu-item > a,
+		.site-header .main-navigation > div > ul > li.current-menu-item li.focus > a,
+		.site-header .main-navigation > div > ul > li.current-menu-item li:hover > a,
+		.site-header .main-navigation > div > ul > li.focus > a,
+		.site-header .main-navigation > div > ul > li.focus li.current-menu-item > a,
+		.site-header .main-navigation > div > ul > li.focus li.focus > a,
+		.site-header .main-navigation > div > ul > li.focus li:hover > a,
+		.site-header .main-navigation > div > ul > li:hover > a,
+		.site-header .main-navigation > div > ul > li:hover li.current-menu-item > a,
+		.site-header .main-navigation > div > ul > li:hover li.focus > a,
+		.site-header .main-navigation > div > ul > li:hover li:hover > a,
+		.site-header .main-navigation > div > ul > li:hover li > a {
+			background: transparent;
+			color: inherit;
+		}
+		.site-header .main-navigation > div > ul > li.current-menu-item li.focus > a,
+		.site-header .main-navigation > div > ul > li.current-menu-item li:hover > a,
+		.site-header .main-navigation > div > ul > li.focus > a,
+		.site-header .main-navigation > div > ul > li.focus li.current-menu-item > a,
+		.site-header .main-navigation > div > ul > li.focus li.focus > a,
+		.site-header .main-navigation > div > ul > li.focus li:hover > a,
+		.site-header .main-navigation > div > ul > li:hover > a,
+		.site-header .main-navigation > div > ul > li:hover li.current-menu-item > a,
+		.site-header .main-navigation > div > ul > li:hover li.focus > a,
+		.site-header .main-navigation > div > ul > li:hover li:hover > a {
+			text-decoration: underline;
+		}
+	}
+	.screen-reader-text:focus,
+			body,
+			.wp-block-table.is-style-stripes tbody tr:nth-child(odd),
+			table.is-style-stripes tbody tr:nth-child(odd),
+			body .widget_eu_cookie_law_widget #eu-cookie-law,
+			body .widget_eu_cookie_law_widget #eu-cookie-law.negative input.accept,
+			.main-navigation > div,
+			.main-navigation > div > ul > li > .sub-menu { background-color: #ffffff;}
+.a8c-posts-list-item__featured span,
+			.a8c-posts-list__view-all,
+			.a8c-posts-list__view-all:focus,
+			.a8c-posts-list__view-all:hover,
+			.button,
+			.button:focus,
+			.button:hover,
+			.sticky-post,
+			.wp-block-button__link,
+			.wp-block-button__link:focus,
+			.wp-block-button__link:hover,
+			.wp-block-file .wp-block-file__button,
+			.wp-block-file a.wp-block-file__button:active,
+			.wp-block-file a.wp-block-file__button:focus,
+			.wp-block-file a.wp-block-file__button:hover,
+			.wp-block-file a.wp-block-file__button:visited,
+			.wp-block-file__button,
+			.wp-block-file__button:focus,
+			.wp-block-file__button:hover,
+			.wp-block-search .wp-block-search__button,
+			.wp-block-gallery .blocks-gallery-image figcaption,
+			.wp-block-gallery .blocks-gallery-item figcaption,
+			.wp-block-pullquote.is-style-solid-color,
+			body .widget_eu_cookie_law_widget #eu-cookie-law input.accept,
+			body .widget_eu_cookie_law_widget #eu-cookie-law input.accept:focus,
+			body .widget_eu_cookie_law_widget #eu-cookie-law input.accept:hover,
+			body .widget_eu_cookie_law_widget #eu-cookie-law input.has-focus.accept,
+			body .widget_eu_cookie_law_widget #eu-cookie-law.negative,
+			button,
+			button.has-focus,
+			button:focus,
+			button:hover,
+			button[data-load-more-btn],
+			input.has-focus[type="submit"],
+			input:focus[type="submit"],
+			input:hover[type="submit"],
+			input[type="submit"],
+			.main-navigation > div > ul > li.current-menu-item > a,
+			.main-navigation > div > ul > li.current-menu-item li > a,
+			.main-navigation > div > ul > li.focus > a,
+			.main-navigation > div > ul > li.focus li > a,
+			.main-navigation > div > ul > li:hover > a,
+			.main-navigation > div > ul > li:hover li > a { color: #ffffff;}
+.wp-block-table.is-style-stripes tbody tr:nth-child(odd),
+			table.is-style-stripes tbody tr:nth-child(odd) { background-color: #FFFFFF;}
+.comments-area .comment-list,
+			.widget_archive ul,
+			.widget_authors ul,
+			.widget_categories ul,
+			.widget_jp_blogs_i_follow ul,
+			.widget_links ul,
+			.widget_meta ul,
+			.widget_nav_menu ul,
+			.widget_pages ul,
+			.widget_recent_comments ul,
+			.widget_recent_entries ul,
+			.widget_rss ul,
+			.widget_rss_links ul,
+			.widget_top-click ul,
+			.widget_top-posts ul,
+			.widget_upcoming_events_widget ul { border-bottom-color: #FFFFFF;}
+.comments-area .children > li,
+			.comments-area .comment-list > li,
+			.widget_archive li,
+			.widget_authors li,
+			.widget_categories li,
+			.widget_jp_blogs_i_follow li,
+			.widget_links li,
+			.widget_meta li,
+			.widget_nav_menu li,
+			.widget_pages li,
+			.widget_recent_comments li,
+			.widget_recent_entries li,
+			.widget_rss li,
+			.widget_rss_links li,
+			.widget_top-click li,
+			.widget_top-posts li,
+			.widget_upcoming_events_widget li { border-top-color: #FFFFFF;}
+.has-primary-background-color[class],
+			.has-primary-background-color.has-background-dim[class],
+			.has-secondary-background-color[class],
+			.has-secondary-background-color.has-background-dim[class],
+			.has-foreground-background-color[class],
+			.has-foreground-background-color.has-background-dim[class],
+			.has-foreground-dark-background-color[class],
+			.has-foreground-dark-background-color.has-background-dim[class],
+			.has-foreground-light-background-color[class],
+			.has-foreground-light-background-color.has-background-dim[class],
+			.has-background-color[class],
+			.has-background-dark-color[class],
+			.has-background-light-color[class] { color: #ffffff;}
+.has-background-background-color[class],
+			.has-background-background-color.has-background-dim[class] { background-color: #ffffff;}
+.has-background-dark-color[class],
+			.has-background-dark-color.has-background-dim[class] { color: #E5E5E5;}
+.has-background-dark-background-color[class],
+			.has-background-dark-background-color.has-background-dim[class] { background-color: #E5E5E5;}
+.has-background-light-color[class],
+			.has-background-light-color.has-background-dim[class] { color: #FFFFFF;}
+.has-background-light-background-color[class],
+			.has-background-light-background-color.has-background-dim[class] { background-color: #FFFFFF;}
+.wp-block-code,
+			.wp-block-table td,
+			.wp-block-table th,
+			body .widget_eu_cookie_law_widget #eu-cookie-law,
+			input[type="color"],
+			input[type="date"],
+			input[type="datetime"],
+			input[type="datetime-local"],
+			input[type="email"],
+			input[type="month"],
+			input[type="number"],
+			input[type="password"],
+			input[type="range"],
+			input[type="search"],
+			input[type="tel"],
+			input[type="text"],
+			input[type="time"],
+			input[type="url"],
+			input[type="week"],
+			.wp-block-search .wp-block-search__input:focus,
+			select,
+			table td,
+			table th,
+			textarea,
+			 { border-color: #E5E5E5;}
+.comment-list .children > li,
+			.comment-list > li,
+			.entry-footer,
+			.wp-block-pullquote,
+			#jp-relatedposts h3.jp-relatedposts-headline em:before { border-top-color: #E5E5E5;}
+.comment-list,
+			.wp-block-pullquote,
+			hr,
+			hr.wp-block-separator { border-bottom-color: #E5E5E5;}
+hr.wp-block-separator.is-style-dots:before { color: #E5E5E5;}
+.comments-area:before,
+			.post-navigation:before,
+			.pagination:before,
+			body .widget_eu_cookie_law_widget #eu-cookie-law.negative input.accept.has-focus,
+			body .widget_eu_cookie_law_widget #eu-cookie-law.negative input.accept:focus,
+			body .widget_eu_cookie_law_widget #eu-cookie-law.negative input.accept:hover { background-color: #E5E5E5;}
+.a8c-posts-list-item__featured span,
+			.a8c-posts-list__view-all,
+			.button,
+			.main-navigation #toggle:focus + #toggle-menu,
+			.sticky-post,
+			.wp-block-button__link,
+			.wp-block-file .wp-block-file__button,
+			.wp-block-file__button,
+			.wp-block-pullquote.is-style-solid-color,
+			body .widget_eu_cookie_law_widget #eu-cookie-law input.accept,
+			button,
+			button[data-load-more-btn],
+			.wp-block-search .wp-block-search__button,
+			.wp-block-search .wp-block-search__button:focus,
+			.wp-block-search .wp-block-search__button:hover,
+			.wp-block-search .wp-block-search__button:not(.has-background-color):hover,
+			input[type="submit"],
+			.main-navigation > div > ul > li.current-menu-item > a,
+			.main-navigation > div > ul > li.current-menu-item li.current-menu-item > a,
+			.main-navigation > div > ul > li.current-menu-item li.focus > a,
+			.main-navigation > div > ul > li.current-menu-item li:hover > a,
+			.main-navigation > div > ul > li.focus > a,
+			.main-navigation > div > ul > li.focus li.current-menu-item > a,
+			.main-navigation > div > ul > li.focus li.focus > a,
+			.main-navigation > div > ul > li.focus li:hover > a,
+			.main-navigation > div > ul > li:hover > a,
+			.main-navigation > div > ul > li:hover li.current-menu-item > a,
+			.main-navigation > div > ul > li:hover li.focus > a,
+			.main-navigation > div > ul > li:hover li:hover > a { background-color: #32127a;}
+.a8c-posts-list-item__title a:active,
+			.a8c-posts-list-item__title a:focus,
+			.a8c-posts-list-item__title a:hover,
+			.comment-meta .comment-metadata a:active,
+			.comment-meta .comment-metadata a:focus,
+			.comment-meta .comment-metadata a:hover,
+			.comment-navigation a:active,
+			.comment-navigation a:focus,
+			.comment-navigation a:hover,
+			.footer-navigation .footer-menu a:hover,
+			.main-navigation a:hover,
+			.page-title a:active,
+			.page-title a:focus,
+			.page-title a:hover,
+			.pagination .nav-links > *.current,
+			.pagination .nav-links > *:active,
+			.pagination .nav-links > *:focus,
+			.pagination .nav-links > *:hover,
+			.post-navigation a:active,
+			.post-navigation a:focus,
+			.post-navigation a:hover,
+			.site-info a:hover,
+			.site-title a:hover,
+			.social-navigation a,
+			.wp-block-button.is-style-outline.wp-block-button__link,
+			.wp-block-button.is-style-outline .wp-block-button__link,
+			.wp-block-button.is-style-outline:not(.has-text-color),
+			.wp-block-button.is-style-outline:not(.has-text-color):active,
+			.wp-block-button.is-style-outline .wp-block-button__link:not(.has-text-color),
+			.wp-block-button.is-style-outline .wp-block-button__link:not(.has-text-color):active,
+			.wp-block-newspack-blocks-homepage-articles article .entry-title a,
+			.wp-block-newspack-blocks-homepage-articles article .entry-title a:active,
+			.wp-block-newspack-blocks-homepage-articles article .entry-title a:focus,
+			.wp-block-newspack-blocks-homepage-articles article .entry-title a:hover,
+			a,
+			article .entry-header .entry-title a:active,
+			article .entry-header .entry-title a:focus,
+			article .entry-header .entry-title a:hover { color: #32127a;}
+.wp-block-quote { border-left-color: #32127a;}
+.wp-block-quote[style*="text-align: right"],
+			.wp-block-quote[style*="text-align:right"] { border-right-color: #32127a;}
+.has-primary-color[class],
+			.has-primary-color.has-background-dim[class] { color: #32127a;}
+.has-primary-background-color[class],
+			.has-primary-background-color.has-background-dim[class] { background-color: #32127a;}
+.a8c-posts-list__item .a8c-posts-list-item__meta a:active,
+			.a8c-posts-list__item .a8c-posts-list-item__meta a:hover,
+			.comment-meta .comment-metadata,
+			.comment-meta .comment-metadata a:active,
+			.comment-meta .comment-metadata a:hover,
+			.entry-footer a:active,
+			.entry-footer a:hover,
+			.entry-meta a:active,
+			.entry-meta a:hover,
+			.main-navigation,
+			.main-navigation a,
+			.main-navigation a:link,
+			.main-navigation a:visited,
+			.post-navigation a,
+			.screen-reader-text:focus,
+			.social-navigation a:hover,
+			.wp-block-button.is-style-outline .wp-block-button__link.has-focus,
+			.wp-block-button.is-style-outline .wp-block-button__link:focus,
+			.wp-block-button.is-style-outline .wp-block-button__link:hover,
+			.wp-block-button.is-style-outline.wp-block-button__link.has-focus,
+			.wp-block-button.is-style-outline.wp-block-button__link:focus,
+			.wp-block-button.is-style-outline.wp-block-button__link:hover,
+			.wp-block-code,
+			.wp-block-code pre,
+			.wp-block-newspack-blocks-homepage-articles article .cat-links a:active,
+			.wp-block-newspack-blocks-homepage-articles article .cat-links a:hover,
+			.wp-block-newspack-blocks-homepage-articles article .entry-meta a:active,
+			.wp-block-newspack-blocks-homepage-articles article .entry-meta a:hover,
+			.wp-block-newspack-blocks-homepage-articles article .entry-title a:hover,
+			.wp-block-pullquote,
+			.wp-block-table.is-style-stripes tbody tr:nth-child(odd),
+			table.is-style-stripes tbody tr:nth-child(odd),
+			a:hover,
+			body,
+			body .widget_eu_cookie_law_widget #eu-cookie-law,
+			body .widget_eu_cookie_law_widget #eu-cookie-law.negative input.accept { color: #222222;}
+.a8c-posts-list__view-all:focus,
+			.a8c-posts-list__view-all:hover,
+			.button:focus,
+			.button:hover,
+			.has-focus.a8c-posts-list__view-all,
+			.has-focus.button,
+			.has-focus.wp-block-button__link,
+			.has-focus.wp-block-file__button,
+			.has-foreground-background-color[class],
+			.wp-block-button__link:focus,
+			.wp-block-button__link:hover,
+			.wp-block-file__button:focus,
+			.wp-block-file__button:hover,
+			body .widget_eu_cookie_law_widget #eu-cookie-law input.accept:focus,
+			body .widget_eu_cookie_law_widget #eu-cookie-law input.accept:hover,
+			body .widget_eu_cookie_law_widget #eu-cookie-law input.has-focus.accept,
+			body .widget_eu_cookie_law_widget #eu-cookie-law.negative,
+			button.has-focus,
+			button:focus,
+			button:hover,
+			input.has-focus[type="submit"],
+			input:focus[type="submit"],
+			input:hover[type="submit"],
+			.main-navigation > div > ul > li.current-menu-item li > a,
+			.main-navigation > div > ul > li.focus li > a,
+			.main-navigation > div > ul > li:hover li > a { background-color: #222222;}
+input[type="color"]:focus,
+			input[type="date"]:focus,
+			input[type="datetime"]:focus,
+			input[type="datetime-local"]:focus,
+			input[type="email"]:focus,
+			input[type="month"]:focus,
+			input[type="number"]:focus,
+			input[type="password"]:focus,
+			input[type="range"]:focus,
+			input[type="search"]:focus,
+			input[type="tel"]:focus,
+			input[type="text"]:focus,
+			input[type="time"]:focus,
+			input[type="url"]:focus,
+			input[type="week"]:focus,
+			textarea:focus { border-color: #222222;}
+.site { border-top-color: #222222;}
+.a8c-posts-list__item .a8c-posts-list-item__meta,
+			.comment-meta .comment-metadata,
+			.comment-navigation a,
+			.entry-footer,
+			.entry-meta,
+			.footer-navigation .footer-menu,
+			.pagination .nav-links > *,
+			.post-navigation .meta-nav,
+			.site-branding,
+			.site-info,
+			.wp-block-image figcaption,
+			.wp-block-latest-comments .wp-block-latest-comments__comment-date,
+			.wp-block-latest-posts .wp-block-latest-posts__post-date,
+			.wp-block-newspack-blocks-homepage-articles article .cat-links,
+			.wp-block-newspack-blocks-homepage-articles article .entry-meta,
+			.wp-block-pullquote .wp-block-pullquote__citation,
+			.wp-block-pullquote cite,
+			.wp-block-pullquote footer,
+			.wp-block-quote .wp-block-quote__citation,
+			.wp-block-quote cite,
+			.wp-block-quote footer,
+			.wp-block-quote.is-large .wp-block-quote__citation,
+			.wp-block-quote.is-large cite,
+			.wp-block-quote.is-large footer,
+			.wp-block-quote.is-style-large .wp-block-quote__citation,
+			.wp-block-quote.is-style-large cite,
+			.wp-block-quote.is-style-large footer,
+			.wp-block-video figcaption,
+			figcaption { color: #545454;}
+.site-title { color: #070707;}
+body .widget_eu_cookie_law_widget #eu-cookie-law.negative { border-color: #070707;}
+.wp-block-search .wp-block-search__input { border-color: #222222;}
+.wp-block-search .wp-block-search__input { border-color: rgba( 34, 34, 34, 0.8 );}
+.has-background-background-color[class],
+			.has-background-background-color.has-background-dim[class],
+			.has-background-dark-background-color[class],
+			.has-background-dark-background-color.has-background-dim[class],
+			.has-background-light-background-color[class],
+			.has-background-light-background-color.has-background-dim[class],
+			.has-foreground-color[class] { color: #222222;}
+.has-background-dim[class],
+			.has-foreground-background-color[class],
+			.has-foreground-background-color.has-background-dim[class] { background-color: #222222;}
+.has-foreground-dark-color[class],
+			.has-foreground-dark-color.has-background-dim[class] { color: #070707;}
+.has-foreground-dark-background-color[class],
+			.has-foreground-dark-background-color.has-background-dim[class] { background-color: #070707;}
+.has-foreground-light-color[class],
+			.has-foreground-light-color.has-background-dim[class] { color: #545454;}
+.has-foreground-light-background-color[class],
+			.has-foreground-light-background-color.has-background-dim[class] { background-color: #545454;}
+.has-secondary-color[class],
+			.has-secondary-color.has-background-dim[class] { color: #007fdb;}
+.has-secondary-background-color[class],
+			.has-secondary-background-color.has-background-dim[class] { background-color: #007fdb;}
+</style>
+<link rel="icon" href="https://stonelinda.files.wordpress.com/2020/05/cropped-favicon-1.jpg?w=32" sizes="32x32">
+<link rel="icon" href="https://stonelinda.files.wordpress.com/2020/05/cropped-favicon-1.jpg?w=192" sizes="192x192">
+<link rel="apple-touch-icon" href="https://stonelinda.files.wordpress.com/2020/05/cropped-favicon-1.jpg?w=180">
+<meta name="msapplication-TileImage" content="https://stonelinda.files.wordpress.com/2020/05/cropped-favicon-1.jpg?w=270">
+<link rel="stylesheet" type="text/css" id="gravatar-card-css" href="https://0.gravatar.com/dist/css/hovercard.min.css?ver=202225z"><link rel="stylesheet" type="text/css" id="gravatar-card-services-css" href="https://0.gravatar.com/dist/css/services.min.css?ver=202225z"><link href="https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.css?v=20210915" type="text/css" rel="stylesheet"></head>
+
+<body class="page-template-default page page-id-15 wp-custom-logo wp-embed-responsive customizer-styles-applied singular image-filters-enabled hide-homepage-title highlander-enabled highlander-light custom-colors">
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-dark-grayscale"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></feColorMatrix><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0 0.49803921568627"></feFuncR><feFuncG type="table" tableValues="0 0.49803921568627"></feFuncG><feFuncB type="table" tableValues="0 0.49803921568627"></feFuncB><feFuncA type="table" tableValues="1 1"></feFuncA></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-grayscale"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></feColorMatrix><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0 1"></feFuncR><feFuncG type="table" tableValues="0 1"></feFuncG><feFuncB type="table" tableValues="0 1"></feFuncB><feFuncA type="table" tableValues="1 1"></feFuncA></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-purple-yellow"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></feColorMatrix><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0.54901960784314 0.98823529411765"></feFuncR><feFuncG type="table" tableValues="0 1"></feFuncG><feFuncB type="table" tableValues="0.71764705882353 0.25490196078431"></feFuncB><feFuncA type="table" tableValues="1 1"></feFuncA></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-blue-red"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></feColorMatrix><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0 1"></feFuncR><feFuncG type="table" tableValues="0 0.27843137254902"></feFuncG><feFuncB type="table" tableValues="0.5921568627451 0.27843137254902"></feFuncB><feFuncA type="table" tableValues="1 1"></feFuncA></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-midnight"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></feColorMatrix><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0 0"></feFuncR><feFuncG type="table" tableValues="0 0.64705882352941"></feFuncG><feFuncB type="table" tableValues="0 1"></feFuncB><feFuncA type="table" tableValues="1 1"></feFuncA></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-magenta-yellow"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></feColorMatrix><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0.78039215686275 1"></feFuncR><feFuncG type="table" tableValues="0 0.94901960784314"></feFuncG><feFuncB type="table" tableValues="0.35294117647059 0.47058823529412"></feFuncB><feFuncA type="table" tableValues="1 1"></feFuncA></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-purple-green"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></feColorMatrix><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0.65098039215686 0.40392156862745"></feFuncR><feFuncG type="table" tableValues="0 1"></feFuncG><feFuncB type="table" tableValues="0.44705882352941 0.4"></feFuncB><feFuncA type="table" tableValues="1 1"></feFuncA></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-blue-orange"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></feColorMatrix><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0.098039215686275 1"></feFuncR><feFuncG type="table" tableValues="0 0.66274509803922"></feFuncG><feFuncB type="table" tableValues="0.84705882352941 0.41960784313725"></feFuncB><feFuncA type="table" tableValues="1 1"></feFuncA></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs></svg>
+<div id="page" class="site">
+	<a class="skip-link screen-reader-text" href="#content">Skip to content</a>
+
+	
+<header id="masthead" class="site-header responsive-max-width has-logo has-title-and-tagline has-menu" role="banner">
+	<div class="site-branding">
+
+			<div class="site-logo"><a href="https://lindastone.net/" class="custom-logo-link" rel="home"><img width="119" height="120" src="https://stonelinda.files.wordpress.com/2020/07/cropped-bestlinda.png" class="custom-logo" alt="Linda Stone" data-attachment-id="1436" data-permalink="https://lindastone.net/cropped-bestlinda-png/" data-orig-file="https://stonelinda.files.wordpress.com/2020/07/cropped-bestlinda.png" data-orig-size="119,120" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;0&quot;}" data-image-title="Linda Stone" data-image-description="" data-image-caption="" data-medium-file="https://stonelinda.files.wordpress.com/2020/07/cropped-bestlinda.png?w=119" data-large-file="https://stonelinda.files.wordpress.com/2020/07/cropped-bestlinda.png?w=119" scale="0"></a></div>
+								<p class="site-title"><a href="https://lindastone.net/" rel="home">Linda Stone</a></p>
+			
+				<p class="site-description">
+				Writer, speaker, consultant 			</p>
+	</div><!-- .site-branding -->
+		<nav id="site-navigation" class="main-navigation" aria-label="Main Navigation">
+
+		<input type="checkbox" role="button" aria-haspopup="true" id="toggle" class="hide-visually">
+		<label for="toggle" id="toggle-menu" class="button">
+			Menu			<span class="dropdown-icon open">+</span>
+			<span class="dropdown-icon close">×</span>
+			<span class="hide-visually expanded-text">expanded</span>
+			<span class="hide-visually collapsed-text">collapsed</span>
+		</label>
+
+		<div class="menu-home-container"><ul id="menu-home-1" class="main-menu" aria-label="submenu"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-home menu-item-1099"><a href="https://lindastone.net/">Home</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1469"><a href="https://lindastone.net/about/">About</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1448"><a href="https://lindastone.net/blog/">Blog</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1093"><a href="https://lindastone.net/faq/">FAQ</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1098"><a href="https://lindastone.net/media-press/">Media/Press</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1274"><a href="https://lindastone.net/talks/">Talks</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page current-menu-ancestor current-menu-parent current_page_parent current_page_ancestor menu-item-has-children menu-item-1220"><a href="https://lindastone.net/resources/" aria-haspopup="true" aria-expanded="false">Resources</a>
+<ul class="sub-menu">
+	<li class="menu-item menu-item-type-post_type menu-item-object-page current-menu-item page_item page-item-15 current_page_item menu-item-1096"><a href="https://lindastone.net/recommended-reading/" aria-current="page">Recommended Reading</a></li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1232"><a href="https://lindastone.net/contact-linda/">Contact</a></li>
+</ul></div>	</nav><!-- #site-navigation -->
+		<nav class="social-navigation" role="navigation" aria-label="Social Links Menu">
+		<div class="menu-social-container"><ul id="menu-social" class="social-links-menu"><li id="menu-item-1369" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1369"><a href="https://twitter.com/lindastone"><span class="screen-reader-text">Twitter</span><svg class="svg-icon" width="26" height="26" aria-hidden="true" role="img" focusable="false" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M22.23,5.924c-0.736,0.326-1.527,0.547-2.357,0.646c0.847-0.508,1.498-1.312,1.804-2.27 c-0.793,0.47-1.671,0.812-2.606,0.996C18.324,4.498,17.257,4,16.077,4c-2.266,0-4.103,1.837-4.103,4.103 c0,0.322,0.036,0.635,0.106,0.935C8.67,8.867,5.647,7.234,3.623,4.751C3.27,5.357,3.067,6.062,3.067,6.814 c0,1.424,0.724,2.679,1.825,3.415c-0.673-0.021-1.305-0.206-1.859-0.513c0,0.017,0,0.034,0,0.052c0,1.988,1.414,3.647,3.292,4.023 c-0.344,0.094-0.707,0.144-1.081,0.144c-0.264,0-0.521-0.026-0.772-0.074c0.522,1.63,2.038,2.816,3.833,2.85 c-1.404,1.1-3.174,1.756-5.096,1.756c-0.331,0-0.658-0.019-0.979-0.057c1.816,1.164,3.973,1.843,6.29,1.843 c7.547,0,11.675-6.252,11.675-11.675c0-0.178-0.004-0.355-0.012-0.531C20.985,7.47,21.68,6.747,22.23,5.924z"></path></svg></a></li>
+</ul></div>	</nav><!-- .social-navigation -->
+</header><!-- #masthead -->
+
+	<div id="content" class="site-content">
+
+	<section id="primary" class="content-area">
+		<main id="main" class="site-main">
+
+			
+<article id="post-15" class="post-15 page type-page status-publish hentry entry">
+
+	<header class="entry-header responsive-max-width">
+		
+<h1 class="entry-title">Recommended Reading</h1>
+	</header>
+
+	
+	<div class="entry-content">
+		
+<p><strong>Stuart Brown.&nbsp;<a href="http://www.amazon.com/gp/product/B002KAORUM?ie=UTF8&amp;tag=linsto-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=B002KAORUM" target="_blank">Play: How It Shapes the Brain, Opens the Imagination, and Invigorates the Soul</a><img width="1" height="1" border="0" src="http://www.assoc-amazon.com/e/ir?t=linsto-20&amp;l=as2&amp;o=1&amp;a=B002KAORUM" alt="" scale="0"></strong></p>
+
+
+
+<p><strong>Mihaly Csikszentmihalyi</strong>. <strong><a href="http://www.amazon.com/gp/product/0061339202?ie=UTF8&amp;tag=linsto-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0061339202" target="_blank">Flow: The Psychology of Optimal Experience</a><img width="1" height="1" border="0" src="http://www.assoc-amazon.com/e/ir?t=linsto-20&amp;l=as2&amp;o=1&amp;a=0061339202" alt="" scale="0"></strong></p>
+
+
+
+<p><strong>Mihaly Csikszentmihalyi.&nbsp;<a href="http://www.amazon.com/gp/product/0060928204?ie=UTF8&amp;tag=linsto-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0060928204" target="_blank">Creativity: Flow and the Psychology of Discovery and Invention</a><img width="1" height="1" border="0" src="http://www.assoc-amazon.com/e/ir?t=linsto-20&amp;l=as2&amp;o=1&amp;a=0060928204" alt="" scale="0"></strong></p>
+
+
+
+<p><strong>Mihaly Csikszentmihalyi.&nbsp;<a href="http://www.amazon.com/gp/product/0465024114?ie=UTF8&amp;tag=linsto-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0465024114" target="_blank">Finding Flow: The Psychology of Engagement with Everyday Life</a><img width="1" height="1" border="0" src="http://www.assoc-amazon.com/e/ir?t=linsto-20&amp;l=as2&amp;o=1&amp;a=0465024114" alt="" scale="0"></strong></p>
+
+
+
+<p><strong>Mihaly Csikszentmihalyi.&nbsp;<a href="http://www.amazon.com/gp/product/0060921927?ie=UTF8&amp;tag=linsto-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0060921927" target="_blank">The Evolving Self</a><img width="1" height="1" border="0" src="http://www.assoc-amazon.com/e/ir?t=linsto-20&amp;l=as2&amp;o=1&amp;a=0060921927" alt="" scale="0"></strong></p>
+
+
+
+<p><strong>Dan Ariely.&nbsp;<a href="http://www.amazon.com/gp/product/0061854549?ie=UTF8&amp;tag=linsto-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0061854549" target="_blank">Predictably Irrational, Revised and Expanded Edition: The Hidden Forces That Shape Our Decisions</a><img width="1" height="1" border="0" src="http://www.assoc-amazon.com/e/ir?t=linsto-20&amp;l=as2&amp;o=1&amp;a=0061854549" alt="" scale="0"></strong></p>
+
+
+
+<p><strong>Robert Sapolsky.&nbsp;<a href="http://www.amazon.com/gp/product/0805073698?ie=UTF8&amp;tag=linsto-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0805073698" target="_blank">Why Zebras Don’t Get Ulcers</a><img width="1" height="1" border="0" src="http://www.assoc-amazon.com/e/ir?t=linsto-20&amp;l=as2&amp;o=1&amp;a=0805073698" alt="" scale="0"></strong></p>
+
+
+
+<p><strong>Al Lee.&nbsp;<a href="http://www.amazon.com/gp/product/1402743882?ie=UTF8&amp;tag=linsto-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=1402743882" target="_blank">Perfect Breathing: Transform Your Life One Breath at a Time</a><img width="1" height="1" border="0" src="http://www.assoc-amazon.com/e/ir?t=linsto-20&amp;l=as2&amp;o=1&amp;a=1402743882" alt="" scale="0"></strong></p>
+
+
+
+<p><strong>Nicholas Christakis and James Fowler.&nbsp;<a href="http://www.amazon.com/gp/product/0316036145?ie=UTF8&amp;tag=linsto-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0316036145" target="_blank">Connected: The Surprising Power of Our Social Networks and How They Shape Our Lives</a><img width="1" height="1" border="0" style="border:none !important;margin:0!important;" src="http://www.assoc-amazon.com/e/ir?t=linsto-20&amp;l=as2&amp;o=1&amp;a=0316036145" alt="" scale="0"></strong></p>
+
+
+
+<p><strong>Ray Oldenburg.&nbsp;<a href="http://www.amazon.com/gp/product/1569246815?ie=UTF8&amp;tag=linsto-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=1569246815" target="_blank">The Great Good Place: Cafes, Coffee Shops, Bookstores, Bars, Hair Salons, and Other Hangouts at the Heart of a Community</a><img width="1" height="1" border="0" style="border:none !important;margin:0!important;" src="http://www.assoc-amazon.com/e/ir?t=linsto-20&amp;l=as2&amp;o=1&amp;a=1569246815" alt="" scale="0"></strong></p>
+
+
+
+<p><strong>Chip Heath.&nbsp;<a href="http://www.amazon.com/gp/product/1400064287?ie=UTF8&amp;tag=linsto-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=1400064287" target="_blank">Made to Stick: Why Some Ideas Survive and Others Die</a><img width="1" height="1" border="0" style="border:none !important;margin:0!important;" src="http://www.assoc-amazon.com/e/ir?t=linsto-20&amp;l=as2&amp;o=1&amp;a=1400064287" alt="" scale="0"></strong></p>
+
+
+
+<p><strong>Thomas Friedman.&nbsp;<a href="http://www.amazon.com/gp/product/0385499345?ie=UTF8&amp;tag=linsto-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0385499345" target="_blank">The Lexus and the Olive Tree: Understanding Globalization</a><img width="1" height="1" border="0" style="border:none !important;margin:0!important;" src="http://www.assoc-amazon.com/e/ir?t=linsto-20&amp;l=as2&amp;o=1&amp;a=0385499345" alt="" scale="0"></strong></p>
+
+
+
+<p><strong>Malcolm Gladwell.&nbsp;<a href="http://www.amazon.com/gp/product/0316346624?ie=UTF8&amp;tag=linsto-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0316346624" target="_blank">The Tipping Point: How Little Things Can Make a Big Difference</a><img width="1" height="1" border="0" style="border:none !important;margin:0!important;" src="http://www.assoc-amazon.com/e/ir?t=linsto-20&amp;l=as2&amp;o=1&amp;a=0316346624" alt="" scale="0"></strong></p>
+
+
+
+<p><strong>Malcolm Gladwell.&nbsp;<a href="http://www.amazon.com/gp/product/0316017922?ie=UTF8&amp;tag=linsto-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0316017922" target="_blank">Outliers: The Story of Success</a><img width="1" height="1" border="0" style="border:none !important;margin:0!important;" src="http://www.assoc-amazon.com/e/ir?t=linsto-20&amp;l=as2&amp;o=1&amp;a=0316017922" alt="" scale="0"></strong></p>
+
+
+
+<p><strong>Malcolm Gladwell.&nbsp;<a href="http://www.amazon.com/gp/product/0316010669?ie=UTF8&amp;tag=linsto-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0316010669" target="_blank">Blink: The Power of Thinking Without Thinking</a><img width="1" height="1" border="0" style="border:none !important;margin:0!important;" src="http://www.assoc-amazon.com/e/ir?t=linsto-20&amp;l=as2&amp;o=1&amp;a=0316010669" alt="" scale="0"></strong></p>
+
+
+
+<p><strong>Thomas Goetz.&nbsp;<a href="http://www.amazon.com/gp/product/1605297291?ie=UTF8&amp;tag=linsto-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=1605297291" target="_blank">The Decision Tree: Taking Control of Your Health in the New Era of Personalized Medicine</a><img width="1" height="1" border="0" style="border:none !important;margin:0!important;" src="http://www.assoc-amazon.com/e/ir?t=linsto-20&amp;l=as2&amp;o=1&amp;a=1605297291" alt="" scale="0"></strong></p>
+
+
+
+<p><strong>Nance Guilmartin.&nbsp;<a href="http://www.amazon.com/gp/product/0470478276?ie=UTF8&amp;tag=linsto-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0470478276" target="_blank">The Power of Pause: How to be More Effective in a Demanding, 24/7 World</a><img width="1" height="1" border="0" style="border:none !important;margin:0!important;" src="http://www.assoc-amazon.com/e/ir?t=linsto-20&amp;l=as2&amp;o=1&amp;a=0470478276" alt="" scale="0"></strong></p>
+
+
+
+<p><strong>Jim Loehr and Tony Schwartz.&nbsp;<a href="http://www.amazon.com/gp/product/0743226755?ie=UTF8&amp;tag=linsto-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0743226755" target="_blank">The Power of Full Engagement: Managing Energy, Not Time, Is the Key to High Performance and Personal Renewal</a><img width="1" height="1" border="0" style="border:none !important;margin:0!important;" src="http://www.assoc-amazon.com/e/ir?t=linsto-20&amp;l=as2&amp;o=1&amp;a=0743226755" alt="" scale="0"></strong></p>
+
+
+
+<p><strong>Robert Putnam.&nbsp;<a href="http://www.amazon.com/gp/product/0743203046?ie=UTF8&amp;tag=linsto-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0743203046" target="_blank">Bowling Alone : The Collapse and Revival of American Community</a><img width="1" height="1" border="0" style="border:none !important;margin:0!important;" src="http://www.assoc-amazon.com/e/ir?t=linsto-20&amp;l=as2&amp;o=1&amp;a=0743203046" alt="" scale="0"></strong></p>
+
+
+
+<p><strong>Frank Forencich.&nbsp;<a href="http://www.amazon.com/gp/product/1425956637?ie=UTF8&amp;tag=linsto-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=1425956637" target="_blank">Exuberant Animal: The Power of Health, Play and Joyful Movement</a><img width="1" height="1" border="0" style="border:none !important;margin:0!important;" src="http://www.assoc-amazon.com/e/ir?t=linsto-20&amp;l=as2&amp;o=1&amp;a=1425956637" alt="" scale="0"></strong></p>
+
+
+
+<p><strong>Daniel Drubach.&nbsp;<a href="http://www.amazon.com/gp/product/0137961944?ie=UTF8&amp;tag=linsto-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0137961944" target="_blank">The Brain Explained</a><img width="1" height="1" border="0" style="border:none !important;margin:0!important;" src="http://www.assoc-amazon.com/e/ir?t=linsto-20&amp;l=as2&amp;o=1&amp;a=0137961944" alt="" scale="0"></strong></p>
+
+
+
+<p><strong>Jim Robbins.&nbsp;<a href="http://www.amazon.com/gp/product/0802143814?ie=UTF8&amp;tag=linsto-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0802143814" target="_blank">A Symphony in the Brain: The Evolution of the New Brain Wave Biofeedback</a><img width="1" height="1" border="0" style="border:none !important;margin:0!important;" src="http://www.assoc-amazon.com/e/ir?t=linsto-20&amp;l=as2&amp;o=1&amp;a=0802143814" alt="" scale="0"></strong></p>
+
+
+
+<p><strong>Paul Swingle.&nbsp;<a href="http://www.amazon.com/gp/product/0813542871?ie=UTF8&amp;tag=linsto-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0813542871" target="_blank">Biofeedback for the Brain: How Neurotherapy Effectively Treats Depression, ADHD, Autism, and More</a><img width="1" height="1" border="0" style="border:none !important;margin:0!important;" src="http://www.assoc-amazon.com/e/ir?t=linsto-20&amp;l=as2&amp;o=1&amp;a=0813542871" alt="" scale="0"></strong></p>
+
+
+
+<p><strong>Norman Doidge.&nbsp;<a href="http://www.amazon.com/gp/product/0143113100?ie=UTF8&amp;tag=linsto-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0143113100" target="_blank">The Brain That Changes Itself: Stories of Personal Triumph from the Frontiers of Brain Science</a><img width="1" height="1" border="0" style="border:none !important;margin:0!important;" src="http://www.assoc-amazon.com/e/ir?t=linsto-20&amp;l=as2&amp;o=1&amp;a=0143113100" alt="" scale="0"></strong></p>
+
+
+
+<p><strong>Antonio Damasio.&nbsp;<a href="http://www.amazon.com/gp/product/0156028719?ie=UTF8&amp;tag=linsto-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0156028719" target="_blank">Looking for Spinoza: Joy, Sorrow, and the Feeling Brain</a><img width="1" height="1" border="0" style="border:none !important;margin:0!important;" src="http://www.assoc-amazon.com/e/ir?t=linsto-20&amp;l=as2&amp;o=1&amp;a=0156028719" alt="" scale="0"></strong></p>
+
+
+
+<p><strong>Joseph Ledoux.&nbsp;<a href="http://www.amazon.com/gp/product/0684836599?ie=UTF8&amp;tag=linsto-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0684836599" target="_blank">The Emotional Brain: The Mysterious Underpinnings of Emotional Life</a><img width="1" height="1" border="0" style="border:none !important;margin:0!important;" src="http://www.assoc-amazon.com/e/ir?t=linsto-20&amp;l=as2&amp;o=1&amp;a=0684836599" alt="" scale="0"></strong></p>
+
+
+
+<p><strong>danah boyd.&nbsp;<a href="http://www.amazon.com/gp/product/0262013363?ie=UTF8&amp;tag=linsto-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0262013363" target="_blank">Hanging Out, Messing Around, and Geeking Out: Kids Living and Learning with New Media</a></strong></p>
+
+
+
+<p><strong>Henry Jenkins.&nbsp; <a href="http://www.amazon.com/gp/product/0814742955?ie=UTF8&amp;tag=linsto-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0814742955" target="_blank">Convergence Culture: Where Old and New Media Collide</a><img style="border:none !important;margin:0!important;" src="http://www.assoc-amazon.com/e/ir?t=linsto-20&amp;l=as2&amp;o=1&amp;a=0814742955" alt="" width="1" height="1" border="0" scale="0"></strong></p>
+
+
+
+<p><strong>Henry Jenkins.&nbsp; <a href="http://www.amazon.com/gp/product/0262513625?ie=UTF8&amp;tag=linsto-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0262513625" target="_blank">Confronting the Challenges of Participatory Culture: Media Education for the 21st Century</a><img style="border:none !important;margin:0!important;" src="http://www.assoc-amazon.com/e/ir?t=linsto-20&amp;l=as2&amp;o=1&amp;a=0262513625" alt="" width="1" height="1" border="0" scale="0"></strong></p>
+
+
+
+<p><strong>Henry Jenkins.&nbsp; <a href="http://www.amazon.com/gp/product/0814742858?ie=UTF8&amp;tag=linsto-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0814742858" target="_blank">Fans, Bloggers, and Gamers: Media Consumers in a Digital Age</a><img style="border:none !important;margin:0!important;" src="http://www.assoc-amazon.com/e/ir?t=linsto-20&amp;l=as2&amp;o=1&amp;a=0814742858" alt="" width="1" height="1" border="0" scale="0"></strong></p>
+
+
+
+<p><strong>Henry Jenkins.&nbsp; <a href="http://www.amazon.com/gp/product/0415905729?ie=UTF8&amp;tag=linsto-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0415905729" target="_blank">Textual Poachers: Television Fans and Participatory Culture<br>
+</a></strong></p>
+
+
+
+<p><strong>Henry Jenkins.&nbsp; <a href="http://www.amazon.com/gp/product/0814742831?ie=UTF8&amp;tag=linsto-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0814742831" target="_blank">The Wow Climax: Tracing the Emotional Impact of Popular Culture</a><img style="border:none !important;margin:0!important;" src="http://www.assoc-amazon.com/e/ir?t=linsto-20&amp;l=as2&amp;o=1&amp;a=0814742831" alt="" width="1" height="1" border="0" scale="0"></strong></p>
+<div id="jp-post-flair" class="sharedaddy sd-like-enabled sd-sharing-enabled"><div class="sharedaddy sd-block sd-like jetpack-likes-widget-wrapper jetpack-likes-widget-unloaded" id="like-post-wrapper-10705793-15-62b77f2bb50be" data-src="//widgets.wp.com/likes/index.html?ver=20220105#blog_id=10705793&amp;post_id=15&amp;origin=stonelinda.wordpress.com&amp;obj_id=10705793-15-62b77f2bb50be&amp;domain=lindastone.net" data-name="like-post-frame-10705793-15-62b77f2bb50be" data-title="Like or Reblog"><h3 class="sd-title">Like this:</h3><div class="likes-widget-placeholder post-likes-widget-placeholder" style="height: 55px;"><span class="button"><span>Like</span></span> <span class="loading">Loading...</span></div><span class="sd-text-color"></span><a class="sd-link-color"></a></div></div>	</div><!-- .entry-content -->
+
+	</article><!-- #post-15 -->
+
+		</main><!-- #main -->
+	</section><!-- #primary -->
+
+
+	</div><!-- #content -->
+
+	
+	<footer id="colophon" class="site-footer responsive-max-width">
+			
+	<aside class="widget-area responsive-max-width" role="complementary" aria-label="Footer">
+		<section id="search-4" class="widget widget_search"><form role="search" method="get" class="search-form" action="https://lindastone.net/">
+				<label>
+					<span class="screen-reader-text">Search for:</span>
+					<input type="search" class="search-field" placeholder="Search …" value="" name="s">
+				</label>
+				<input type="submit" class="search-submit" value="Search">
+			</form></section>	</aside><!-- .widget-area -->
+
+
+	
+		<div class="site-info">
+		<a class="site-name" href="https://lindastone.net/" rel="home">Linda Stone</a><span class="comma">,</span>
+<a href="https://wordpress.com/?ref=footer_custom_svg" title="Create a website or blog at WordPress.com" rel="nofollow"><svg style="fill: currentColor; position: relative; top: 1px;" width="14px" height="15px" viewBox="0 0 14 15" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-labelledby="title" role="img">
+				<desc id="title">Create a website or blog at WordPress.com</desc>
+				<path d="M12.5225848,4.97949746 C13.0138466,5.87586309 13.2934037,6.90452431 13.2934037,7.99874074 C13.2934037,10.3205803 12.0351007,12.3476807 10.1640538,13.4385638 L12.0862862,7.88081544 C12.4453251,6.98296834 12.5648813,6.26504621 12.5648813,5.62667922 C12.5648813,5.39497674 12.549622,5.17994084 12.5225848,4.97949746 L12.5225848,4.97949746 Z M7.86730089,5.04801561 C8.24619178,5.02808979 8.58760099,4.98823815 8.58760099,4.98823815 C8.9267139,4.94809022 8.88671369,4.44972248 8.54745263,4.46957423 C8.54745263,4.46957423 7.52803983,4.54957381 6.86996227,4.54957381 C6.25158863,4.54957381 5.21247202,4.46957423 5.21247202,4.46957423 C4.87306282,4.44972248 4.83328483,4.96816418 5.17254589,4.98823815 C5.17254589,4.98823815 5.49358462,5.02808979 5.83269753,5.04801561 L6.81314716,7.73459399 L5.43565839,11.8651647 L3.14394256,5.04801561 C3.52312975,5.02808979 3.86416859,4.98823815 3.86416859,4.98823815 C4.20305928,4.94809022 4.16305906,4.44972248 3.82394616,4.46957423 C3.82394616,4.46957423 2.80475558,4.54957381 2.14660395,4.54957381 C2.02852925,4.54957381 1.88934333,4.54668493 1.74156477,4.54194422 C2.86690406,2.83350881 4.80113651,1.70529256 6.99996296,1.70529256 C8.638342,1.70529256 10.1302017,2.33173369 11.2498373,3.35765419 C11.222726,3.35602457 11.1962815,3.35261718 11.1683554,3.35261718 C10.5501299,3.35261718 10.1114609,3.89113285 10.1114609,4.46957423 C10.1114609,4.98823815 10.4107217,5.42705065 10.7296864,5.94564049 C10.969021,6.36482346 11.248578,6.90326506 11.248578,7.68133501 C11.248578,8.21992476 11.0413918,8.84503256 10.7696866,9.71584277 L10.1417574,11.8132391 L7.86730089,5.04801561 Z M6.99996296,14.2927074 C6.38218192,14.2927074 5.78595654,14.2021153 5.22195356,14.0362644 L7.11048207,8.54925635 L9.04486267,13.8491542 C9.05760348,13.8802652 9.07323319,13.9089317 9.08989995,13.9358945 C8.43574834,14.1661896 7.73285573,14.2927074 6.99996296,14.2927074 L6.99996296,14.2927074 Z M0.706448182,7.99874074 C0.706448182,7.08630113 0.902152921,6.22015756 1.25141403,5.43749503 L4.25357806,13.6627848 C2.15393732,12.6427902 0.706448182,10.4898387 0.706448182,7.99874074 L0.706448182,7.99874074 Z M6.99996296,0.999 C3.14016476,0.999 0,4.13905746 0,7.99874074 C0,11.8585722 3.14016476,14.999 6.99996296,14.999 C10.8596871,14.999 14,11.8585722 14,7.99874074 C14,4.13905746 10.8596871,0.999 6.99996296,0.999 L6.99996296,0.999 Z" id="wordpress-logo-simplified-cmyk" stroke="none" fill="“currentColor”" fill-rule="evenodd"></path>
+			</svg></a>	</div><!-- .site-info -->
+	</footer><!-- #colophon -->
+
+</div><!-- #page -->
+
+<!--  -->
+<script src="//0.gravatar.com/js/gprofiles.js?ver=202225z" id="grofiles-cards-js"></script>
+<script id="wpgroho-js-extra">
+var WPGroHo = {"my_hash":""};
+</script>
+<script crossorigin="anonymous" type="text/javascript" src="https://s0.wp.com/wp-content/mu-plugins/gravatar-hovercards/wpgroho.js?m=1610363240h"></script>
+
+	<script>
+		// Initialize and attach hovercards to all gravatars
+		( function() {
+			function init() {
+				if ( typeof Gravatar === 'undefined' ) {
+					return;
+				}
+
+				if ( typeof Gravatar.init !== 'function' ) {
+					return;
+				}
+
+				Gravatar.profile_cb = function ( hash, id ) {
+					WPGroHo.syncProfileData( hash, id );
+				};
+
+				Gravatar.my_hash = WPGroHo.my_hash;
+				Gravatar.init( 'body', '#wp-admin-bar-my-account' );
+			}
+
+			if ( document.readyState !== 'loading' ) {
+				init();
+			} else {
+				document.addEventListener( 'DOMContentLoaded', init );
+			}
+		} )();
+	</script>
+
+		<div style="display:none">
+	</div>
+	<div id="actionbar" class="actnbr-pub-redhill actnbr-has-follow">
+		<ul>
+								<li class="actnbr-btn actnbr-hidden">
+								<a class="actnbr-action actnbr-actn-follow " href="">
+			<svg class="gridicon gridicons-reader-follow" height="24" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M23 16v2h-3v3h-2v-3h-3v-2h3v-3h2v3h3zM20 2v9h-4v3h-3v4H4c-1.1 0-2-.9-2-2V2h18zM8 13v-1H4v1h4zm3-3H4v1h7v-1zm0-2H4v1h7V8zm7-4H4v2h14V4z"></path></g></svg><span>Follow</span>
+		</a>
+		<a class="actnbr-action actnbr-actn-following  no-display" href="">
+			<svg class="gridicon gridicons-reader-following" height="24" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M23 13.482L15.508 21 12 17.4l1.412-1.388 2.106 2.188 6.094-6.094L23 13.482zm-7.455 1.862L20 10.89V2H2v14c0 1.1.9 2 2 2h4.538l4.913-4.832 2.095 2.176zM8 13H4v-1h4v1zm3-2H4v-1h7v1zm0-2H4V8h7v1zm7-3H4V4h14v2z"></path></g></svg><span>Following</span>
+		</a>
+							<div class="actnbr-popover tip tip-top-left actnbr-notice" id="follow-bubble">
+							<div class="tip-arrow"></div>
+							<div class="tip-inner actnbr-follow-bubble">
+															<ul>
+											<li class="actnbr-sitename">
+			<a href="https://lindastone.net">
+				<img alt="" src="https://stonelinda.files.wordpress.com/2020/05/cropped-favicon-1.jpg?w=50" class="avatar avatar-50" height="50" width="50" srcset="https://stonelinda.files.wordpress.com/2020/05/cropped-favicon-1.jpg?w=50&amp;zoom=2 2x" scale="2">				Linda Stone			</a>
+		</li>
+										<form method="post" action="https://subscribe.wordpress.com" accept-charset="utf-8" style="display: none;">
+																						<div class="actnbr-follow-count">Join 323 other followers</div>
+																					<div>
+										<input type="email" name="email" placeholder="Enter your email address" class="actnbr-email-field" aria-label="Enter your email address">
+										</div>
+										<input type="hidden" name="action" value="subscribe">
+										<input type="hidden" name="blog_id" value="10705793">
+										<input type="hidden" name="source" value="https://lindastone.net/recommended-reading/">
+										<input type="hidden" name="sub-type" value="actionbar-follow">
+										<input type="hidden" id="_wpnonce" name="_wpnonce" value="cf8e2c0f8b">										<div class="actnbr-button-wrap">
+											<button type="submit" value="Sign me up">
+												Sign me up											</button>
+										</div>
+									</form>
+									<li class="actnbr-login-nudge">
+										<div>
+											Already have a WordPress.com account? <a href="https://wordpress.com/log-in?redirect_to=https%3A%2F%2Fr-login.wordpress.com%2Fremote-login.php%3Faction%3Dlink%26back%3Dhttps%253A%252F%252Flindastone.net%252Frecommended-reading%252F">Log in now.</a>										</div>
+									</li>
+								</ul>
+															</div>
+						</div>
+					</li>
+							<li class="actnbr-ellipsis actnbr-hidden">
+				<svg class="gridicon gridicons-ellipsis" height="24" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M7 12c0 1.104-.896 2-2 2s-2-.896-2-2 .896-2 2-2 2 .896 2 2zm12-2c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2zm-7 0c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2z"></path></g></svg>				<div class="actnbr-popover tip tip-top-left actnbr-more">
+					<div class="tip-arrow"></div>
+					<div class="tip-inner">
+						<ul>
+									<li class="actnbr-sitename">
+			<a href="https://lindastone.net">
+				<img alt="" src="https://stonelinda.files.wordpress.com/2020/05/cropped-favicon-1.jpg?w=50" class="avatar avatar-50" height="50" width="50" srcset="https://stonelinda.files.wordpress.com/2020/05/cropped-favicon-1.jpg?w=50&amp;zoom=2 2x" scale="2">				Linda Stone			</a>
+		</li>
+								<li class="actnbr-folded-customize">
+								<a href="https://stonelinda.wordpress.com/wp-admin/customize.php?url=https%3A%2F%2Fstonelinda.wordpress.com%2Frecommended-reading%2F">
+									<svg class="gridicon gridicons-customize" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M2 6c0-1.505.78-3.08 2-4 0 .845.69 2 2 2 1.657 0 3 1.343 3 3 0 .386-.08.752-.212 1.09.74.594 1.476 1.19 2.19 1.81L8.9 11.98c-.62-.716-1.214-1.454-1.807-2.192C6.753 9.92 6.387 10 6 10c-2.21 0-4-1.79-4-4zm12.152 6.848l1.34-1.34c.607.304 1.283.492 2.008.492 2.485 0 4.5-2.015 4.5-4.5 0-.725-.188-1.4-.493-2.007L18 9l-2-2 3.507-3.507C18.9 3.188 18.225 3 17.5 3 15.015 3 13 5.015 13 7.5c0 .725.188 1.4.493 2.007L3 20l2 2 6.848-6.848c1.885 1.928 3.874 3.753 5.977 5.45l1.425 1.148 1.5-1.5-1.15-1.425c-1.695-2.103-3.52-4.092-5.448-5.977z"></path></g></svg>									<span>Customize</span>
+								</a>
+							</li>
+																<li class="actnbr-folded-follow">
+												<a class="actnbr-action actnbr-actn-follow " href="">
+			<svg class="gridicon gridicons-reader-follow" height="24" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M23 16v2h-3v3h-2v-3h-3v-2h3v-3h2v3h3zM20 2v9h-4v3h-3v4H4c-1.1 0-2-.9-2-2V2h18zM8 13v-1H4v1h4zm3-3H4v1h7v-1zm0-2H4v1h7V8zm7-4H4v2h14V4z"></path></g></svg><span>Follow</span>
+		</a>
+		<a class="actnbr-action actnbr-actn-following  no-display" href="">
+			<svg class="gridicon gridicons-reader-following" height="24" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M23 13.482L15.508 21 12 17.4l1.412-1.388 2.106 2.188 6.094-6.094L23 13.482zm-7.455 1.862L20 10.89V2H2v14c0 1.1.9 2 2 2h4.538l4.913-4.832 2.095 2.176zM8 13H4v-1h4v1zm3-2H4v-1h7v1zm0-2H4V8h7v1zm7-3H4V4h14v2z"></path></g></svg><span>Following</span>
+		</a>
+										</li>
+																	<li class="actnbr-signup"><a href="https://wordpress.com/start/">Sign up</a></li>
+									<li class="actnbr-login"><a href="https://wordpress.com/log-in?redirect_to=https%3A%2F%2Fr-login.wordpress.com%2Fremote-login.php%3Faction%3Dlink%26back%3Dhttps%253A%252F%252Flindastone.net%252Frecommended-reading%252F">Log in</a></li>
+																	<li class="actnbr-shortlink"><a href="https://wp.me/PIV45-f">Copy shortlink</a></li>
+																	<li class="flb-report"><a href="http://en.wordpress.com/abuse/">Report this content</a></li>
+																	<li class="actnbr-reader">
+										<a href="https://wordpress.com/read/blogs/10705793/posts/15">
+											View post in Reader										</a>
+									</li>
+																	<li class="actnbr-subs">
+										<a href="https://subscribe.wordpress.com/">Manage subscriptions</a>
+									</li>
+																		<li class="actnbr-fold"><a href="">Collapse this bar</a></li>
+															</ul>
+					</div>
+				</div>
+			</li>
+		</ul>
+	</div>
+	
+<script>
+window.addEventListener( "load", function( event ) {
+	var link = document.createElement( "link" );
+	link.href = "https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.css?v=20210915";
+	link.type = "text/css";
+	link.rel = "stylesheet";
+	document.head.appendChild( link );
+
+	var script = document.createElement( "script" );
+	script.src = "https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.js?v=20220329";
+	script.defer = true;
+	document.body.appendChild( script );
+} );
+</script>
+
+	<script crossorigin="anonymous" type="text/javascript" src="https://s0.wp.com/_static/??/wp-content/js/devicepx.js,/wp-content/mu-plugins/likes/queuehandler.js,/wp-content/mu-plugins/admin-bar/masterbar-tracks.js?m=1649402273j"></script>
+	<script>
+	/(trident|msie)/i.test(navigator.userAgent)&&document.getElementById&&window.addEventListener&&window.addEventListener("hashchange",function(){var t,e=location.hash.substring(1);/^[A-z0-9_-]+$/.test(e)&&(t=document.getElementById(e))&&(/^(?:a|select|input|button|textarea)$/i.test(t.tagName)||(t.tabIndex=-1),t.focus())},!1);
+	</script>
+	<script type="text/javascript">
+// <![CDATA[
+(function() {
+try{
+  if ( window.external &&'msIsSiteMode' in window.external) {
+    if (window.external.msIsSiteMode()) {
+      var jl = document.createElement('script');
+      jl.type='text/javascript';
+      jl.async=true;
+      jl.src='/wp-content/plugins/ie-sitemode/custom-jumplist.php';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(jl, s);
+    }
+  }
+}catch(e){}
+})();
+// ]]>
+</script>	<iframe src="https://widgets.wp.com/likes/master.html?ver=20220105#ver=20220105&amp;origin=https://lindastone.net" scrolling="no" id="likes-master" name="likes-master" style="display:none;"></iframe>
+	<div id="likes-other-gravatars">
+		<div class="likes-text">
+			<span>%d</span> bloggers like this:		</div>
+		<ul class="wpl-avatars sd-like-gravatars"></ul>
+	</div>
+
+		<script src="//stats.wp.com/w.js?63" defer=""></script> <script type="text/javascript">
+_tkq = window._tkq || [];
+_stq = window._stq || [];
+_tkq.push(['storeContext', {'blog_id':'10705793','blog_tz':'-7','user_lang':'en','blog_lang':'en','user_id':'0'}]);
+_stq.push(['view', {'blog':'10705793','v':'wpcom','tz':'-7','user_id':'0','post':'15','subd':'stonelinda'}]);
+_stq.push(['extra', {'crypt':'UE40eW5QN0p8M2Y/RE1TaVhzUzFMbjdWNHpwZGhTayxPSUFCMGNrd29+Smw0TDhnZmRTK0hlRi9QSGh6bi9GXVhBJWIlZlR5U1JMLU8/MkNtblkvY1dMdmNlNi1dWnQvcUt4NndzOG10QWJuTUMzVTJMT11YSDI1cS4zVCxdamZxYjQzW11aQ0wmY25fJkFvYnllSTVkN1kwUzV3Vm1fLGtIWkwsZU9XSkpZdTNZaW9uenV3Sj01fGNJWjNjZlV4dk92Nngwdn4vRXFWZ2M2ZktwTTRbOHBYYU1jcnZSa2lUWmcseVE3WDE4K1lTZURHLm54ekxiK2ZoW1QvVA=='}]);
+_stq.push([ 'clickTrackerInit', '10705793', '15' ]);
+	</script>
+<noscript><img src="https://pixel.wp.com/b.gif?v=noscript" style="height:1px;width:1px;overflow:hidden;position:absolute;bottom:1px;" alt="" /></noscript>
+<script>
+if ( 'object' === typeof wpcom_mobile_user_agent_info ) {
+
+	wpcom_mobile_user_agent_info.init();
+	var mobileStatsQueryString = "";
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedPlatformName )
+		mobileStatsQueryString += "&x_" + 'mobile_platforms' + '=' + wpcom_mobile_user_agent_info.matchedPlatformName;
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedUserAgentName )
+		mobileStatsQueryString += "&x_" + 'mobile_devices' + '=' + wpcom_mobile_user_agent_info.matchedUserAgentName;
+	
+	if( wpcom_mobile_user_agent_info.isIPad() )
+		mobileStatsQueryString += "&x_" + 'ipad_views' + '=' + 'views';
+
+	if( "" != mobileStatsQueryString ) {
+		new Image().src = document.location.protocol + '//pixel.wp.com/g.gif?v=wpcom-no-pv' + mobileStatsQueryString + '&baba=' + Math.random();
+	}
+	
+}
+</script>
+
+
+<style>img#wpstats {
+			position: absolute !important;
+			clip: rect(0, 0, 0, 0);
+			padding: 0 !important;
+			border: 0 !important;
+			height: 0 !important;
+			width: 0 !important;
+			overflow: hidden;
+		}</style><img src="https://pixel.wp.com/g.gif?blog=10705793&amp;v=wpcom&amp;tz=-7&amp;user_id=0&amp;post=15&amp;subd=stonelinda&amp;host=lindastone.net&amp;ref=&amp;rand=0.08268793797482443" alt=":)" id="wpstats"><iframe scrolling="no" id="wpcom_remote_login_key" src="https://r-login.wordpress.com/remote-login.php?wpcom_remote_login=key&amp;origin=aHR0cHM6Ly9saW5kYXN0b25lLm5ldA%3D%3D&amp;wpcomid=10705793&amp;time=1656192811" style="display: none;"></iframe><script src="https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.js?v=20220329" defer=""></script></body></html>

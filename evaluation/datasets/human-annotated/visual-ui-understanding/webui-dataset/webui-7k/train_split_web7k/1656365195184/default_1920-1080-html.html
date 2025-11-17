@@ -1,0 +1,398 @@
+<!DOCTYPE html><html><head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="X-XRDS-Location" content="https://www.google.com/accounts/o8/id">
+	<title>Lukáš Lalinský</title>
+	<link type="application/rss+xml" rel="alternate" title="Lukáš Lalinský" href="http://oxygene.sk/feed.xml">
+	
+	
+	<link href="/css/style.css" rel="stylesheet" type="text/css">
+	<link href="/css/pygments.css" rel="stylesheet" type="text/css">
+	<script type="text/javascript" async="" src="https://ssl.google-analytics.com/ga.js"></script><script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-11936848-1']);
+		_gaq.push(['_trackPageview']);
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+<script async="" type="text/javascript" src="//oxygene.disqus.com/count.js"></script><script src="//oxygene.disqus.com/count-data.js?2=https%3A%2F%2Foxygene.sk%2F2016%2F02%2Fchromaprint-1-3-1-released%2F&amp;2=https%3A%2F%2Foxygene.sk%2F2016%2F02%2Fchromaprint-1-3-released%2F&amp;2=https%3A%2F%2Foxygene.sk%2F2016%2F07%2Fchromaprint-1-3-2-released%2F&amp;2=https%3A%2F%2Foxygene.sk%2F2016%2F07%2Fmbdata-2016-07-17-released%2F&amp;2=https%3A%2F%2Foxygene.sk%2F2016%2F12%2Fchromaprint-1-4-released%2F"></script></head>
+<body>
+	<div id="wrapper">
+		<div id="header">
+			<h1><a href="/">Lukáš Lalinský</a></h1>
+			<div id="cover"><img src="/images/header.jpg" alt=""></div>
+			<div id="navigation">
+				<a class="active" href="/">Home</a>
+				<a href="/projects/">Projects</a>
+				<a href="/about/">About</a>
+			</div>
+		</div>
+		<div id="sidebar">
+			<h3>Links</h3>
+			<ul>
+				<li><a href="https://bitbucket.org/lalinsky">Me @ Bitbucket</a></li>
+				<li><a href="https://github.com/lalinsky">Me @ GitHub</a></li>
+				<li><a href="http://stackoverflow.com/users/60950/lukas-lalinsky" rel="me">Me @ Stack Overflow</a></li>
+				<li><a href="http://twitter.com/#!/lukaslalinsky">Me @ Twitter</a></li>
+				<li><a href="http://www.flickr.com/photos/lukasl/">Me @ Flickr</a></li>
+				<li><a href="http://www.last.fm/user/lukz">Me @ Last.fm</a></li>
+				<li><a href="https://launchpad.net/~luks" rel="me">Me @ Launchpad</a></li>
+				<li><a href="http://www.linkedin.com/in/lalinsky" rel="me">Me @ LinkedIn</a></li>
+				<li><a href="https://www.ohloh.net/accounts/luks" rel="me">Me @ Ohloh</a></li>
+			</ul>
+			<h3>Categories</h3>
+			<ul>
+			
+				<li><a href="/category/acoustid/">AcoustID</a></li>
+			
+				<li><a href="/category/database-modeller/">Database Modeller</a></li>
+			
+				<li><a href="/category/musicbrainz/">MusicBrainz</a></li>
+			
+				<li><a href="/category/programming/">Programming</a></li>
+			
+				<li><a href="/category/taglib/">TagLib</a></li>
+			
+				<li><a href="/category/tools/">Tools</a></li>
+			
+				<li><a href="/category/misc/">Misc</a></li>
+			
+			</ul>
+		</div>
+		<div id="main">
+
+
+
+
+<div class="post">
+	
+	<h2 class="entry-title"><a href="/2016/12/chromaprint-1-4-released/">Chromaprint 1.4 released</a></h2>
+	
+	<div class="entry-meta">
+		Posted on <span class="entry-date">December 03, 2016</span> in
+			
+				<a href="/category/acoustid/">AcoustID</a>
+			
+		| Tagged
+			
+				<a href="/tag/acoustid/">acoustid</a>, 
+			
+				<a href="/tag/chromaprint/">chromaprint</a>, 
+			
+				<a href="/tag/release/">release</a>
+			
+		
+		| <a href="/2016/12/chromaprint-1-4-released/#disqus_thread" class="comments-link">8 Comments</a>
+		
+	</div>
+	<div class="entry-content"><p>A new version of Chromaprint has been released. This is a fairly big release I originally intended to call 2.0,
+but one key feature I was planning to include is not yet finished, so I decided to go with 1.4 instead.</p>
+
+<p>So what's new?</p>
+
+<p>The biggest feature is that all components of audio fingerprinting process now work in a streaming fashion and
+can provide partial results at any time. That means that it's now possible to feed a continuous audio stream
+to the process and get back partial fingerprints. This is useful if you want to fingerprint e.g. an internet radio stream
+and do not want to explicitly split the stream into small chunks. There are also side effects of these changes and
+the whole process is now faster and uses less memory.</p>
+
+<p>This change is also reflected in the fpcalc utility, which can now work on streams.
+In fact, the fpcalc utility has been completely rewritten. It now also supports JSON output for easier integration,
+since you can find JSON parser in the standard library of almost every new programing language.</p>
+
+<p>Here is an example using an online radio:</p>
+
+<pre><code>$ fpcalc -ts -chunk 10 -overlap -json http://icecast2.play.cz/radio1.mp3
+{"timestamp": 1480789416.14, "duration": 12.60, "fingerprint": "AQAAUFSSTEnCRBKeZsR0..."}
+{"timestamp": 1480789423.68, "duration": 12.60, "fingerprint": "AQAAUZOSRIsUTkGz9SCZ..."}
+{"timestamp": 1480789433.68, "duration": 12.60, "fingerprint": "AQAAUYmWfJIoiNIRHzsl..."}
+</code></pre>
+
+<p>Or you can fingerprint raw pcm data from an external audio input:</p>
+
+<pre><code>$ arecord --format=S16 --rate=44100 --channels=1 --file-type=raw \
+    | fpcalc -format s16le -rate 44100 -channels 1 -ts -chunk 10 -overlap -json -
+{"timestamp": 1480789965.67, "duration": 12.60, "fingerprint": "AQAAUFqkMVmyJMHWBa97..."}
+{"timestamp": 1480789975.81, "duration": 12.60, "fingerprint": "AQAAUVGYSEkXJvit4ce1..."}
+{"timestamp": 1480789985.72, "duration": 12.60, "fingerprint": "AQAAUcoSpRunwN6Op_hy..."}
+</code></pre>
+
+<p>This opens up many options how Chromaprint can be used outside of AcoustID.</p>
+
+<p>There has also been a big source code cleanup. A lot of old code has been removed. We started using C++11 features,
+so it's no longer possible to compile Chromaprintwith old C++ compilers. Unit tests no longer depend on boost.
+KissFFT is now bundled in the package and used as a fallback if no other FFT library is found. That means Chromaprint can be now
+build without any external dependencies.</p>
+
+<p>The public C API now uses standard fixed-size int types from stdint.h. This breaks API-level backwards compatibility,
+you will need to modify your programs. The binary interface has not changed and programs compiled against the old version of
+the library will continue working.</p>
+
+<p>All source code from Chromaprint written by me has been relicensed from LGPL to MIT. Note that this does not mean much for the
+library as a whole, since it still depends on LGPL code, but it's now easier to reuse parts of the code in other projects, if needed.</p>
+
+<p>We also have fpcalc binaries for ARM processors now. They were built and tested on Raspberry Pi, but might work on other ARM devices.</p>
+
+<p>Download:</p>
+
+<ul>
+<li><a href="https://bitbucket.org/acoustid/chromaprint/downloads/chromaprint-1.4.tar.gz">Source code tarball</a> (597 KB)</li>
+<li>Static binaries for the <code>fpcalc</code> tool
+
+<ul>
+<li><a href="https://bitbucket.org/acoustid/chromaprint/downloads/chromaprint-fpcalc-1.4-windows-i686.zip">Windows, i686</a> (1.4 MB)</li>
+<li><a href="https://bitbucket.org/acoustid/chromaprint/downloads/chromaprint-fpcalc-1.4-windows-x86_64.zip">Windows, x86_64</a> (1.5 MB)</li>
+<li><a href="https://bitbucket.org/acoustid/chromaprint/downloads/chromaprint-fpcalc-1.4-macos-i386.tar.gz">macOS, i386</a> (1.1 MB)</li>
+<li><a href="https://bitbucket.org/acoustid/chromaprint/downloads/chromaprint-fpcalc-1.4-macos-x86_64.tar.gz">macOS, x86_64</a> (1.2 MB)</li>
+<li><a href="https://bitbucket.org/acoustid/chromaprint/downloads/chromaprint-fpcalc-1.4-linux-i686.tar.gz">Linux, i686</a> (1.3 MB)</li>
+<li><a href="https://bitbucket.org/acoustid/chromaprint/downloads/chromaprint-fpcalc-1.4-linux-x86_64.tar.gz">Linux, x86_64</a> (1.2 MB)</li>
+<li><a href="https://bitbucket.org/acoustid/chromaprint/downloads/chromaprint-fpcalc-1.4-linux-armhf.tar.gz">Linux, armhf</a> (1.2 MB)</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+
+
+<div class="post">
+	
+	<h2 class="entry-title"><a href="/2016/07/mbdata-2016-07-17-released/">mbdata 2016.07.17 released</a></h2>
+	
+	<div class="entry-meta">
+		Posted on <span class="entry-date">July 17, 2016</span> in
+			
+				<a href="/category/musicbrainz/">MusicBrainz</a>
+			
+		| Tagged
+			
+				<a href="/tag/musicbrainz/">musicbrainz</a>, 
+			
+				<a href="/tag/mbdata/">mbdata</a>, 
+			
+				<a href="/tag/python/">python</a>, 
+			
+				<a href="/tag/release/">release</a>
+			
+		
+		| <a href="/2016/07/mbdata-2016-07-17-released/#disqus_thread" class="comments-link">0 Comments</a>
+		
+	</div>
+	<div class="entry-content"><p>I have released a new version of <a href="https://pypi.python.org/pypi/mbdata">mbdata</a>.
+It's a small Python package for working with the MusicBrainz database using SQLAlchemy.</p>
+
+<p>This version updates the SQLAlchemy models to the latest MusicBrainz database schema.
+It also adds support for Python 3 in addition to Python 2.</p>
+
+<p>Install:</p>
+
+<pre><code>pip install mbdata==2016.7.17
+</code></pre>
+</div>
+</div>
+
+
+
+<div class="post">
+	
+	<h2 class="entry-title"><a href="/2016/07/chromaprint-1-3-2-released/">Chromaprint 1.3.2 released</a></h2>
+	
+	<div class="entry-meta">
+		Posted on <span class="entry-date">July 09, 2016</span> in
+			
+				<a href="/category/acoustid/">AcoustID</a>
+			
+		| Tagged
+			
+				<a href="/tag/acoustid/">acoustid</a>, 
+			
+				<a href="/tag/chromaprint/">chromaprint</a>, 
+			
+				<a href="/tag/release/">release</a>
+			
+		
+		| <a href="/2016/07/chromaprint-1-3-2-released/#disqus_thread" class="comments-link">0 Comments</a>
+		
+	</div>
+	<div class="entry-content"><p>A new version of Chromaprint has been released.
+This is a very small bug fix release fixing fpcalc crash on a corrupt file.</p>
+
+<p>Changes since version 1.3.1:</p>
+
+<ul>
+<li>Fixed crash on an invalid audio file that FFmpeg could not decode.</li>
+<li>Fixed build on Ubuntu 14.04 with libav.</li>
+</ul>
+
+
+<p>Download:</p>
+
+<ul>
+<li><a href="https://bitbucket.org/acoustid/chromaprint/downloads/chromaprint-1.3.2.tar.gz">Source code tarball</a> (525 KB)</li>
+<li>Static binaries for the <code>fpcalc</code> tool
+
+<ul>
+<li><a href="https://bitbucket.org/acoustid/chromaprint/downloads/chromaprint-fpcalc-1.3.2-win-i686.zip">Windows, 32-bit</a> (1 MB)</li>
+<li><a href="https://bitbucket.org/acoustid/chromaprint/downloads/chromaprint-fpcalc-1.3.2-win-x86_64.zip">Windows, 64-bit</a> (1 MB)</li>
+<li><a href="https://bitbucket.org/acoustid/chromaprint/downloads/chromaprint-fpcalc-1.3.2-osx-i386.tar.gz">Mac OS X, 32-bit, 10.4+</a> (964 KB)</li>
+<li><a href="https://bitbucket.org/acoustid/chromaprint/downloads/chromaprint-fpcalc-1.3.2-osx-x86_64.tar.gz">Mac OS X, 64-bit, 10.4+</a> (944 KB)</li>
+<li><a href="https://bitbucket.org/acoustid/chromaprint/downloads/chromaprint-fpcalc-1.3.2-linux-i686.tar.gz">Linux, 32-bit</a> (1 MB)</li>
+<li><a href="https://bitbucket.org/acoustid/chromaprint/downloads/chromaprint-fpcalc-1.3.2-linux-x86_64.tar.gz">Linux, 64-bit</a> (1 MB)</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+
+
+<div class="post">
+	
+	<h2 class="entry-title"><a href="/2016/02/chromaprint-1-3-1-released/">Chromaprint 1.3.1 released</a></h2>
+	
+	<div class="entry-meta">
+		Posted on <span class="entry-date">February 10, 2016</span> in
+			
+				<a href="/category/acoustid/">AcoustID</a>
+			
+		| Tagged
+			
+				<a href="/tag/acoustid/">acoustid</a>, 
+			
+				<a href="/tag/chromaprint/">chromaprint</a>, 
+			
+				<a href="/tag/release/">release</a>
+			
+		
+		| <a href="/2016/02/chromaprint-1-3-1-released/#disqus_thread" class="comments-link">6 Comments</a>
+		
+	</div>
+	<div class="entry-content"><p>A new version of Chromaprint has been released.</p>
+
+<p>Changes since version 1.3:</p>
+
+<ul>
+<li>Fixed <code>fpcalc -length</code> to actually restrict fingerprints the requested length.</li>
+<li>Fixed SONAME version for the shared library.</li>
+</ul>
+
+
+<p>Download:</p>
+
+<ul>
+<li><a href="https://bitbucket.org/acoustid/chromaprint/downloads/chromaprint-1.3.1.tar.gz">Source code tarball</a> (525 KB)</li>
+<li>Static binaries for the <code>fpcalc</code> tool
+
+<ul>
+<li><a href="https://bitbucket.org/acoustid/chromaprint/downloads/chromaprint-fpcalc-1.3.1-win-i686.zip">Windows, 32-bit</a> (1 MB)</li>
+<li><a href="https://bitbucket.org/acoustid/chromaprint/downloads/chromaprint-fpcalc-1.3.1-win-x86_64.zip">Windows, 64-bit</a> (1 MB)</li>
+<li><a href="https://bitbucket.org/acoustid/chromaprint/downloads/chromaprint-fpcalc-1.3.1-osx-i386.tar.gz">Mac OS X, 32-bit, 10.4+</a> (964 KB)</li>
+<li><a href="https://bitbucket.org/acoustid/chromaprint/downloads/chromaprint-fpcalc-1.3.1-osx-x86_64.tar.gz">Mac OS X, 64-bit, 10.4+</a> (944 KB)</li>
+<li><a href="https://bitbucket.org/acoustid/chromaprint/downloads/chromaprint-fpcalc-1.3.1-linux-i686.tar.gz">Linux, 32-bit</a> (1 MB)</li>
+<li><a href="https://bitbucket.org/acoustid/chromaprint/downloads/chromaprint-fpcalc-1.3.1-linux-x86_64.tar.gz">Linux, 64-bit</a> (1 MB)</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+
+
+<div class="post">
+	
+	<h2 class="entry-title"><a href="/2016/02/chromaprint-1-3-released/">Chromaprint 1.3 released</a></h2>
+	
+	<div class="entry-meta">
+		Posted on <span class="entry-date">February 03, 2016</span> in
+			
+				<a href="/category/acoustid/">AcoustID</a>
+			
+		| Tagged
+			
+				<a href="/tag/acoustid/">acoustid</a>, 
+			
+				<a href="/tag/chromaprint/">chromaprint</a>, 
+			
+				<a href="/tag/release/">release</a>
+			
+		
+		| <a href="/2016/02/chromaprint-1-3-released/#disqus_thread" class="comments-link">0 Comments</a>
+		
+	</div>
+	<div class="entry-content"><p>A new version of Chromaprint has been released. This is another small release, there are no changes to the core functionality.</p>
+
+<p>Changes since version 1.2:</p>
+
+<ul>
+<li>The binary packages have been built with FFmpeg 2.8.6, adding support for DSF files</li>
+<li>You can use use <code>fpcalc -length 0</code> to get the full fingerprint</li>
+<li>New function <code>chromaprint_get_fingerprint_hash</code> for calculating SimHash from the fingerprint data</li>
+<li>Added info section to the fpcalc executable on Mac OS X</li>
+<li>Generate .pc (pkg-config) file on Mac OS X when not building a framework</li>
+<li>Removed use of some long deprecated FFmpeg APIs</li>
+<li>Some smaller bug fixes</li>
+</ul>
+
+
+<p>Download:</p>
+
+<ul>
+<li><a href="https://bitbucket.org/acoustid/chromaprint/downloads/chromaprint-1.3.tar.gz">Source code tarball</a> (525 KB)</li>
+<li>Static binaries for the <code>fpcalc</code> tool
+
+<ul>
+<li><a href="https://bitbucket.org/acoustid/chromaprint/downloads/chromaprint-fpcalc-1.3-win-i686.zip">Windows, 32-bit</a> (1 MB)</li>
+<li><a href="https://bitbucket.org/acoustid/chromaprint/downloads/chromaprint-fpcalc-1.3-win-x86_64.zip">Windows, 64-bit</a> (1 MB)</li>
+<li><a href="https://bitbucket.org/acoustid/chromaprint/downloads/chromaprint-fpcalc-1.3-osx-i386.tar.gz">Mac OS X, 32-bit, 10.4+</a> (964 KB)</li>
+<li><a href="https://bitbucket.org/acoustid/chromaprint/downloads/chromaprint-fpcalc-1.3-osx-x86_64.tar.gz">Mac OS X, 64-bit, 10.4+</a> (944 KB)</li>
+<li><a href="https://bitbucket.org/acoustid/chromaprint/downloads/chromaprint-fpcalc-1.3-linux-i686.tar.gz">Linux, 32-bit</a> (1 MB)</li>
+<li><a href="https://bitbucket.org/acoustid/chromaprint/downloads/chromaprint-fpcalc-1.3-linux-x86_64.tar.gz">Linux, 64-bit</a> (1 MB)</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+
+
+
+<p class="older-posts"><a href="/archive/">← Older posts</a></p>
+
+
+
+
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'oxygene'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function () {
+	var s = document.createElement('script'); s.async = true;
+	s.type = 'text/javascript';
+	s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+	(document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+}());
+</script>
+
+
+		</div>
+		<div id="footer">
+			<div id="site-info">
+				<a href="/" title="Lukáš Lalinský">Lukáš Lalinský</a>
+			</div>
+			<div id="site-generator">
+				Header image by <a href="http://www.flickr.com/photos/28481088@N00/3425488931/">tanakawho</a>.<br>
+				Design from <a href="http://wordpress.org/" title="Semantic Personal Publishing Platform">WordPress</a> by the Wordpress team.<br>
+			</div>
+		</div>
+	</div>
+
+
+
+</body></html>

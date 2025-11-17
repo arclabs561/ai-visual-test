@@ -1,0 +1,898 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US" xmlns:fb="http://www.facebook.com/2008/fbml"><head>        
+    
+
+
+
+                        	            <meta name="author" content="Gunnar Beutner">
+
+    
+
+
+
+
+
+<title>Versatile Valet » Linux Magazine</title>
+        	            
+    <link rel="canonical" href="http://www.linux-magazine.com/Issues/2017/203/Home-Assistant">
+<meta name="description" content="Home Assistant brings an open standards approach to home automation and control.">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<meta name="revisit-after" content="1 days">
+
+<meta property="og:description" content="Home Assistant brings an open standards approach to home automation and control.">
+<meta property="og:title" content="Versatile Valet » Linux Magazine">
+<meta property="og:url" content="http://www.linux-magazine.com/Issues/2017/203/Home-Assistant">
+<meta property="og:site_name" content="Linux Magazine">
+
+
+                        	            <meta property="og:image" content="http://www.linux-magazine.com/var/linux_magazin/storage/images/issues/2017/203/home-assistant/figure-1/713392-1-eng-US/Figure-11_opengraph_h.png">
+    <meta property="og:image:width" content="295">
+    <meta property="og:image:height" content="200">
+    <meta property="og:image:type" content="image/png">
+    <link rel="image_src" href="http://www.linux-magazine.com/var/linux_magazin/storage/images/issues/2017/203/home-assistant/figure-1/713392-1-eng-US/Figure-11_opengraph_h.png">
+        
+
+<!--[if lt IE 9 ]>
+    <meta http-equiv="X-UA-Compatible" content="IE=8,chrome=1" />
+<![endif]-->
+
+<link rel="Alternate" type="application/rss+xml" title="RSS" href="/rss/feed/news">
+<link rel="Shortcut icon" href="/extension/lnm/design/linux_magazin_en/images/favicon.ico" type="image/x-icon">
+
+
+        <link rel="stylesheet" type="text/css" href="/var/linux_magazin/cache/public/stylesheets/1d71b71ef2e6502b5b0a178449311c8d_all.css">
+
+<script type="text/javascript" async="" src="https://e-4669.adzerk.net/ados?t=1655959376779&amp;request=%7B%22Placements%22%3A%5B%7B%22A%22%3A4669%2C%22S%22%3A20977%2C%22D%22%3A%22zerkbanner_rectangle%22%2C%22AT%22%3A5%7D%2C%7B%22A%22%3A4669%2C%22S%22%3A20977%2C%22D%22%3A%22zerkbanner_mobile_top%22%2C%22AT%22%3A23%2C%22Z%22%3A%5B%5D%7D%2C%7B%22A%22%3A4669%2C%22S%22%3A20977%2C%22D%22%3A%22zerkbanner_rectangle%22%2C%22AT%22%3A5%2C%22Z%22%3A%5B16034%5D%7D%2C%7B%22A%22%3A4669%2C%22S%22%3A20977%2C%22D%22%3A%22zerkbanner_bottom_full%22%2C%22ATA%22%3A%5B3%2C20%5D%2C%22Z%22%3A%5B16097%5D%7D%2C%7B%22A%22%3A4669%2C%22S%22%3A20977%2C%22D%22%3A%22zerkbanner_masthead%22%2C%22AT%22%3A20%2C%22Z%22%3A%5B16206%5D%7D%2C%7B%22A%22%3A4669%2C%22S%22%3A20977%2C%22D%22%3A%22zerkbanner_button_2%22%2C%22AT%22%3A14%2C%22Z%22%3A%5B16097%5D%7D%2C%7B%22A%22%3A4669%2C%22S%22%3A20977%2C%22D%22%3A%22zerkbanner_left_menue_button%22%2C%22AT%22%3A14%2C%22Z%22%3A%5B16204%5D%7D%2C%7B%22A%22%3A4669%2C%22S%22%3A20977%2C%22D%22%3A%22zerkbanner_var_zone%22%2C%22AT%22%3A20%2C%22Z%22%3A%5B16205%5D%7D%2C%7B%22A%22%3A4669%2C%22S%22%3A20977%2C%22D%22%3A%22zerkbanner_tracking%22%2C%22AT%22%3A20%2C%22Z%22%3A%5B20871%5D%7D%5D%2C%22Keywords%22%3A%22T%253ASSL%252C%2520S%253ASubpage%22%2C%22Referrer%22%3A%22%22%2C%22IsAsync%22%3Atrue%7D"></script><script type="text/javascript" async="" src="https://engine.adzerk.net/ados.js"></script><script type="text/javascript" async="" src="https://ssl.google-analytics.com/ga.js"></script><script type="text/javascript" src="/var/linux_magazin/cache/public/javascript/a07ee557768c42b154149aa9a527a17e.js" charset="utf-8"></script>
+
+
+<script type="text/javascript">
+
+function gaEvent( category, action, label )
+{
+	try {
+	    gaTrackEvent( category, action, label, 'UA-15255196-1' );
+    	gaTrackEvent( category, action, label, 'UA-15255196-4' );
+	}
+	catch(err) {}
+}
+
+
+function gaTrackEvent( category, action, label, account )
+{
+    _gaq = _gaq || [];
+    _gaq.push(['_setAccount', account ]);
+    _gaq.push(['_trackEvent', category, action, label ]);
+}
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-15255196-1']);
+  _gaq.push(['_gat._anonymizeIp']);
+  _gaq.push(['_setCustomVar',
+	1,
+	'Content Type',
+	'lmi_article',
+	3
+  ]);
+  _gaq.push(['_trackPageview']);
+
+  _gaq.push(['_setAccount', 'UA-15255196-4']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_gat._anonymizeIp']);
+  _gaq.push(['_setCustomVar',
+	1,
+	'Content Type',
+	'lmi_article',
+	3
+  ]);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+
+
+<script type="text/javascript">
+
+
+$(document).ready(function() {
+    $('.block-type-feed-reader').each(function() {
+        var category = 'Feed-Block: ' + $(this).find('h2').text().replace(/^\s+|\s+$/g, '');
+        $(this).find('a').each( function() {
+            $(this).click(function(event) { // when someone clicks these links
+                event.preventDefault(); // don't open the link yet
+                var label=$(this).attr('href');
+                //var label=$(this).text();
+                var target = $(this).attr("target");
+                var href = $(this).attr("href");
+		_gaq.push(["_trackEvent", category, 'click', label, 0, true]); // create a custom event
+                setTimeout(function() { // now wait 300 milliseconds...
+                    window.open(href,(!target?"_self":target)); // ...and open the link as usual
+                    },300);
+            });
+        });
+    });
+});
+
+</script>
+
+<script type="text/javascript"><!--//<![CDATA[
+    
+	var ados_keywords = ados_keywords || [];
+	if( location.protocol=='https:' ) {
+	    ados_keywords.push('T:SSL');
+	}
+	else {
+	    ados_keywords.push('T:HTTP');
+	}
+    
+
+    	ados_keywords.push('S:Subpage');
+    
+        	    
+    
+//]]>--></script>
+<script type="text/javascript"><!--//<![CDATA[
+    
+    function browserWidth() {
+	var myWidth = 0;
+	if( typeof( window.innerWidth ) == 'number' ) {
+	    //Non-IE
+	    myWidth = window.innerWidth;
+	}
+	else if( document.documentElement && document.documentElement.clientWidth ) {
+	    //IE 6+ in 'standards compliant mode'
+	    myWidth = document.documentElement.clientWidth;
+	}
+	else if( document.body && document.body.clientWidth ) {
+	    //IE 4 compatible
+	    myWidth = document.body.clientWidth;
+	}
+	return myWidth;
+    }
+    
+//]]>--></script>
+
+    
+	<script type="text/javascript">
+	    var p="http",d="static";
+	    if(document.location.protocol=="https:"){p+="s";d="engine";}
+	    var z=document.createElement("script");
+	    z.type="text/javascript";
+	    z.async=true;
+	    z.src=p+"://"+d+".adzerk.net/ados.js";
+	    var s=document.getElementsByTagName("script")[0];
+	    s.parentNode.insertBefore(z,s);
+	</script>
+    
+
+                <script type="text/javascript"><!--//<![CDATA[
+
+	
+	    var ados = ados || {};
+	    ados.run = ados.run || [];
+	    ados.run.push(function() {
+	
+
+	ados_setKeywords(ados_keywords.join(', '));
+
+		    		    		    						    								    ados_add_placement(4669,20977,"zerkbanner_rectangle",5);
+					    		    		    	
+            
+            if (browserWidth() >= 768)
+            {
+                ados_add_placement(
+                    4669,
+                    20977,
+                    "zerkbanner_leaderboard",
+                    4).setZone(16033);
+            }            
+            else {
+                ados_add_placement(
+                    4669,
+                    20977,
+                    "zerkbanner_mobile_top",
+                    23).setZone();
+            }                    
+            
+            ados_add_placement(
+                4669,
+                20977,
+                "zerkbanner_rectangle",
+                5 ).setZone(16034);
+
+        
+            
+            if (browserWidth() >= 979)
+            {
+                ados_add_placement(
+                    4669,
+                    20977,
+                    "zerkbanner_skyscraper",
+                    6).setZone(16035);
+            }                    
+            
+            if (browserWidth() >= 979)
+            {
+                ados_add_placement(
+                    4669,
+                    20977,
+                    "zerkbanner_skyscraper_2",
+                    6).setZone(16036);
+            }                    
+            
+            ados_add_placement(
+                4669,
+                20977,
+                "zerkbanner_bottom_full",
+                [3,20] ).setZone(16097);
+
+        
+            
+            ados_add_placement(
+                4669,
+                20977,
+                "zerkbanner_masthead",
+                20 ).setZone(16206);
+
+        
+            
+            ados_add_placement(
+                4669,
+                20977,
+                "zerkbanner_button_2",
+                14 ).setZone(16097);
+
+        
+            
+            ados_add_placement(
+                4669,
+                20977,
+                "zerkbanner_left_menue_button",
+                14 ).setZone(16204);
+
+        
+            
+            ados_add_placement(
+                4669,
+                20977,
+                "zerkbanner_var_zone",
+                20 ).setZone(16205);
+
+        
+            
+            ados_add_placement(
+                4669,
+                20977,
+                "zerkbanner_tracking",
+                20 ).setZone(20871);
+
+        
+    
+	ados_load();
+    
+	});
+    
+    //]]>--></script>
+<script type="text/javascript" async="" src="http://linuxpromagazine.disqus.com/embed.js"></script></head>
+<body style="">
+<div id="Body">
+                <div id="zerkbanner_leaderboard" class="leaderboard span12 hidden-phone">
+        
+    
+</div>            <div id="Skyscraper">            <div id="zerkbanner_skyscraper" class="skyscraper hidden-phone hidden-tablet">
+        
+    
+</div>            <div id="zerkbanner_skyscraper_2" class="skyscraper_2 hidden-phone hidden-tablet">
+        
+    
+</div></div>
+            <div id="zerkbanner_tracking" class="">
+        
+    
+</div>    <div id="Stage">
+	<header>
+	    <div class="container">
+		<div class="row">
+		    <div class="span12">
+			<div class="row" id="HeaderTop">
+			    <div class="span3" id="Logo">
+				<a href="/"><img src="/extension/lnm/design/linux_magazin_en/images/LinuxInt-outline_220-97.png" title="" alt=""></a>			    </div>
+			    <div class="span9" id="HeaderRight">
+				<div class="row">
+				    <div class="span1">
+					&nbsp;
+				    </div>
+
+				    <div class="span3" id="Search">
+					<div id="searchbox">
+    <form action="/content/search">
+	<label>search:</label>
+        <input onfocus="if (value == 'search') {value=''}" onblur="if (value== '') {value='search'}" name="SearchText" value="search" id="searchtext" class="input_top" type="text">
+		    <input onclick="_gaq.push(['_trackEvent', 'header-search', 'search', 'image-link'])" type="image" class="searchimage" src="/extension/lnm/design/linux_magazin_en/images/icons/pfeil_schwarz.gif" alt="search:">
+			<div id="header-autocomplete-rs" style="width: 210px;"></div>
+    </form>
+</div>
+
+<script type="text/javascript" src="/var/linux_magazin/cache/public/javascript/05e4fa5193610538b63ad2c8a5ca7b13.js" charset="utf-8"></script>
+
+<script type="text/javascript">
+jQuery('#header-autocomplete-rs').css('width', jQuery('input#searchtext').width() + 60);
+var autocomplete = new eZAJAXAutoComplete({    url: '/ezjscore/call/ezfind::autocomplete',
+    inputid: 'searchtext',
+    containerid: 'header-autocomplete-rs',
+    minquerylength: 2,
+    resultlimit: 10});
+</script>
+				    </div>
+				    <div class="span2 hidden-tablet hidden-phone" id="Claim">
+					            <div id="zerkbanner_button_2" class="hidden-tablet hidden-phone button_2">
+        
+    
+</div>				    </div>
+				</div>
+				<div class="row">
+				    <div class="span12" id="Menue">
+					
+<ul>
+    		    		
+		    <li><a onclick="_gaq.push(['_trackEvent', 'menue', 'Online/News', 'text-link'])" href="/Online/News" class="toplinks ">News</a></li>			    <li class="delimiter"></li>		    		
+		    <li><a onclick="_gaq.push(['_trackEvent', 'menue', 'Online/Features', 'text-link'])" href="/Online/Features" class="toplinks ">Features</a></li>			    <li class="delimiter"></li>		    		
+		    <li><a onclick="_gaq.push(['_trackEvent', 'menue', 'Online/Blogs', 'text-link'])" href="/Online/Blogs" class="toplinks ">Blogs</a></li>			    <li class="delimiter"></li>		    		
+		    <li><a onclick="_gaq.push(['_trackEvent', 'menue', 'Online/White-Papers', 'text-link'])" href="/Online/White-Papers" class="toplinks ">White Papers</a></li>			    <li class="delimiter"></li>		    		
+		    <li><a onclick="_gaq.push(['_trackEvent', 'menue', 'Issues', 'text-link'])" href="/Issues" class="toplinks active">Archives</a></li>			    <li class="delimiter"></li>		    		
+		    <li><a onclick="_gaq.push(['_trackEvent', 'menue', 'Resources/Special-Editions', 'text-link'])" href="/Resources/Special-Editions" class="toplinks ">Special Editions</a></li>			    <li class="delimiter"></li>		    		
+		    <li><a onclick="_gaq.push(['_trackEvent', 'menue', 'lnmshop/start', 'text-link'])" href="/lnmshop/start" class="toplinks ">DigiSub</a></li>			    <li class="delimiter"></li>		    		
+		    <li><a onclick="_gaq.push(['_trackEvent', 'menue', 'http://www.sparkhaus-shop.com?utm_source=LPM&amp;utm_medium=Link&amp;utm_campaign=SHOP', 'text-link'])" href="http://www.sparkhaus-shop.com?utm_source=LPM&amp;utm_medium=Link&amp;utm_campaign=SHOP" target="_blank" class="toplinks ">Shop</a></li>			    </ul>
+				    </div>
+				</div>
+			    </div>
+			</div>
+			<div class="row" id="Tagmenue">
+			    <div class="span12">
+				                    <ul class="level1">
+		    <li class="menu-level-0">        	<a onclick="_gaq.push(['_trackEvent', 'tagmenue', '[1] Administration', 'text-link'])" href="/tags/view/administration">Administration</a>
+        </li>
+		    <li class="menu-level-0">        	<a onclick="_gaq.push(['_trackEvent', 'tagmenue', '[1] Desktop', 'text-link'])" href="/tags/view/desktop">Desktop</a>
+        </li>
+		    <li class="menu-level-0">        	<a onclick="_gaq.push(['_trackEvent', 'tagmenue', '[1] Development', 'text-link'])" href="/tags/view/web+development">Development</a>
+        </li>
+		    <li class="menu-level-0">        	<a onclick="_gaq.push(['_trackEvent', 'tagmenue', '[1] Hardware', 'text-link'])" href="/tags/view/hardware">Hardware</a>
+        </li>
+		    <li class="menu-level-0">        	<a onclick="_gaq.push(['_trackEvent', 'tagmenue', '[1] Security', 'text-link'])" href="/tags/view/security">Security</a>
+        </li>
+		    <li class="menu-level-0">        	<a onclick="_gaq.push(['_trackEvent', 'tagmenue', '[1] Server', 'text-link'])" href="/tags/view/administration/server">Server</a>
+        </li>
+		    <li class="menu-level-0">        	<a onclick="_gaq.push(['_trackEvent', 'tagmenue', '[1] Programming', 'text-link'])" href="/tags/view/programming">Programming</a>
+        </li>
+		    <li class="menu-level-0">        	<a onclick="_gaq.push(['_trackEvent', 'tagmenue', '[1] Operating Systems', 'text-link'])" href="/tags/view/operating systems">Operating Systems</a>
+        </li>
+		    <li class="menu-level-0">        	<a onclick="_gaq.push(['_trackEvent', 'tagmenue', '[1] Software', 'text-link'])" href="/tags/view/software">Software</a>
+        </li>
+		    <li class="menu-level-0">        	<a onclick="_gaq.push(['_trackEvent', 'tagmenue', '[1] Networking', 'text-link'])" href="/tags/view/networking">Networking</a>
+        </li>
+	    </ul>
+        
+			    </div>
+			</div>
+			<div class="row">
+			    <div class="span12" id="Breadcrumb">
+				<div itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+
+    
+        		    Home
+        	            	    		&nbsp;<span class="separator">»</span>&nbsp;
+	    			    	    
+	    
+	    	    	    	    	        	        <a class="path" href="/Issues" itemprop="url"><span itemprop="title">Issues</span></a>
+	    		            	    		&nbsp;<span class="separator">»</span>&nbsp;
+	    			    	    
+	    
+	    	    	    	    	        	        <a class="path" href="/Issues/2017" itemprop="url"><span itemprop="title">2017</span></a>
+	    		            	    		&nbsp;<span class="separator">»</span>&nbsp;
+	    			    	    
+	    
+	    	    	    	    	        	        <a class="path" href="/Issues/2017/203" itemprop="url"><span itemprop="title">203</span></a>
+	    		            	    		&nbsp;<span class="separator">»</span>&nbsp;
+	    			    	    
+	    
+	    	    	    	    	        <a class="path" href="#" itemprop="url"><span itemprop="title">Home Assistant</span></a>
+	    		                    <div class="link">
+			    <a class="login" href="/user/login" title="Logout">Login</a>
+	    </div><div class="link"><a href="/rss/feed/lmi_news" title="The latest Linux and Open Source News" target="_blank"><img src="/extension/bootstrap/design/bootstrap/images/icons/feedIcon16.png" width="16" height="16" alt="The latest Linux and Open Source News"></a></div><div class="link"><a href="https://www.facebook.com/linuxpromagazine" target="_blank" title="Linux Magazine on Facebook"><img src="/extension/bootstrap/design/bootstrap/images/facebook_icon.png" width="16" height="16" alt="Linux Magazine on Facebook"></a></div></div>
+			    </div>
+			</div>
+		    </div>
+		</div>
+	    </div>
+	</header>
+	    <div class="container" id="mainContent">		<div id="main-position" class="row">
+		            <div id="zerkbanner_masthead" class=""><a href="https://e-4669.adzerk.net/r?e=eyJ2IjoiMS4xMCIsImF2IjoxMzMxNSwiYXQiOjIwLCJidCI6MCwiY20iOjgyNTc2MywiY2giOjcyOTQsImNrIjp7fSwiY3IiOjY3OTUzMDYzLCJkaSI6IjM4OWEyODk3YmIzZTQ1YTlhZjVkZmMwOWM2OTFiODI0IiwiZGoiOjAsImlpIjoiN2FmM2QwY2JhMDhmNGQ4ZDkwNjM3NGY2ZWRhOTQzNGEiLCJkbSI6MSwiZmMiOjEyNTIxNTY2NSwiZmwiOjgwNDE2MTIsImlwIjoiMTMuNTIuODEuNDAiLCJudyI6NDY2OSwicGMiOjAsIm9wIjowLCJlYyI6MCwiZ20iOjAsImVwIjpudWxsLCJwciI6MTc1MjQsInJ0IjoxLCJycyI6NTAwLCJzYSI6InVuZGVmaW5lZCIsInNiIjoiaS0wYmZkMWM4YWY5ZjA5OWRmNyIsInNwIjoyNDM3MTIzLCJzdCI6MjA5NzcsInVrIjoidWUxLTkyYzk4YTk1ZTA0ZDQ5NmZiZmVjZDgzNWZkNmVlYzM1Iiwiem4iOjE2MjA2LCJ0cyI6MTY1NTk1OTM3NzE3MCwiYmYiOnRydWUsInBuIjoiemVya2Jhbm5lcl9tYXN0aGVhZCIsImdjIjp0cnVlLCJnQyI6dHJ1ZSwiZ3MiOiJub25lIiwiZGMiOjEsInR6IjoiVVRDIiwidXIiOiJodHRwczovL3Nob3AubGludXhuZXdtZWRpYS5jb20vdXMvbWFnYXppbmVzL3RyaWFsLXN1YnNjcmlwdGlvbnMuaHRtbCJ9&amp;s=p9mfIqBH5zHzvwoyTPoBbcW7Dj8" rel="nofollow" target="_blank" title=""><img src="https://s.zkcdn.net/Advertisers/9fe40057b540423baee9fb83948cf7e4.png" title="" alt="" border="0"></a><img height="0px" width="0px" border="0" style="position:absolute;" src="https://e-4669.adzerk.net/i.gif?e=eyJ2IjoiMS4xMCIsImF2IjoxMzMxNSwiYXQiOjIwLCJidCI6MCwiY20iOjgyNTc2MywiY2giOjcyOTQsImNrIjp7fSwiY3IiOjY3OTUzMDYzLCJkaSI6IjM4OWEyODk3YmIzZTQ1YTlhZjVkZmMwOWM2OTFiODI0IiwiZGoiOjAsImlpIjoiN2FmM2QwY2JhMDhmNGQ4ZDkwNjM3NGY2ZWRhOTQzNGEiLCJkbSI6MSwiZmMiOjEyNTIxNTY2NSwiZmwiOjgwNDE2MTIsImlwIjoiMTMuNTIuODEuNDAiLCJudyI6NDY2OSwicGMiOjAsIm9wIjowLCJlYyI6MCwiZ20iOjAsImVwIjpudWxsLCJwciI6MTc1MjQsInJ0IjoxLCJycyI6NTAwLCJzYSI6InVuZGVmaW5lZCIsInNiIjoiaS0wYmZkMWM4YWY5ZjA5OWRmNyIsInNwIjoyNDM3MTIzLCJzdCI6MjA5NzcsInVrIjoidWUxLTkyYzk4YTk1ZTA0ZDQ5NmZiZmVjZDgzNWZkNmVlYzM1Iiwiem4iOjE2MjA2LCJ0cyI6MTY1NTk1OTM3NzE3MCwiYmYiOnRydWUsInBuIjoiemVya2Jhbm5lcl9tYXN0aGVhZCIsImdjIjp0cnVlLCJnQyI6dHJ1ZSwiZ3MiOiJub25lIiwiZGMiOjEsInR6IjoiVVRDIiwiYmEiOjEsImZxIjowfQ&amp;s=t_RtLloCOhuBPkr-snCANmE4vzg"></div>		</div>
+		<div class="row">
+		    					    		    			<div id="ContentLeft" class="span8">
+			    
+<div class="full article">
+    <h2>
+		        Control home automation hardware with Home Assistant	    </h2>
+    <div class="full-content">
+		    <div class="social_bookmarks">
+    <div style="display: inline; padding-top: 5px;">
+	<a class="FlattrButton" style="display:none;" title="Home Assistant" rev="flattr;uid:lnmusa;button:compact;category:text;tags:linux,magazine,linux-magazine;" href="http://www.linux-magazine.com/Issues/2017/203/Home-Assistant">
+	    Home Assistant brings an open standards approach to home automation and control.
+	</a>
+    </div>
+    <a class="a2a_dd" href="http://www.addtoany.com/share_save?linkurl=http%3A%2F%2Fwww.linux-magazin.de%2F&amp;linkname=linux-magazine.com"><img src="http://static.addtoany.com/buttons/share_save_171_16.png" width="171" height="16" border="0" alt="Share"></a>
+    
+	<script type="text/javascript">
+	    var a2a_config = a2a_config || {};
+	    a2a_config.linkname = "Home Assistant";
+	    a2a_config.linkurl = "https://www.linux-magazine.com/Issues/2017/203/Home-Assistant";
+	</script>
+	<script type="text/javascript" src="http://static.addtoany.com/menu/page.js"></script>
+    
+</div>
+
+	    <h1>    Versatile Valet</h1>
+	    		<div class="leadimage">
+		    
+
+
+
+
+            
+ 
+    
+    
+
+
+
+
+        	<img src="/var/linux_magazin/storage/images/issues/2017/203/home-assistant/coverstoryimage-3_203.png/713389-1-eng-US/CoverStoryImage-3_203.png1_medium.png" itemprop="image" alt="">
+        		    		</div>
+	    	    	    	        <div class="attribute-issue">
+		    Article from <a href="/Issues/2017/203">Issue 203/2017</a>
+	        </div>
+	    	    		
+
+                <div class="author">
+		    	    	    	    	    	    			    	    
+
+	    Author(s): 	    		<span class="author" itemprop="author">Gunnar Beutner</span>
+	    	    	    </div>
+	    	    <div class="article_intro">
+		    <p>Home Assistant brings an open standards approach to home automation and control.</p>
+	    </div>
+			    	    	    	            	<div class="article_body"><p>Home Assistant <a href="/Issues/2017/203/Home-Assistant/(offset)/6#article_i1" target="_self" class="info">[1]</a> is an open source home automation system written in Python. The software supports a variety of open protocols and hardware components for home automation, including:</p>
+<ul>
+
+<li>Reading sensors</li>
+
+<li>Detecting the presence of people</li>
+
+<li>Requesting the weather or the position of the sun</li>
+
+<li>Controlling lighting</li>
+
+<li>Playing music through media players</li>
+
+<li>Regulating the thermostat</li>
+
+</ul>
+<p>After a recent move to a new city, I decided to give Home Assistant a try. I wanted to equip my new apartment with Philips Hue lamps, Sonos wireless speakers, and various other sensors to support automation. My main criterion was that the technology remain invisible in my normal daily routine and that Home Assistant would, preferably, work entirely in the background.</p><a name="eztoc0_0_1" id="eztoc0_0_1"></a><h4>Containerized</h4><p>Home Assistant requires a Linux System. An ordinary Raspberry Pi, acting as a dust catcher under the sofa is fine. Home Assistant makes no particular demands on the memory and processing power. If you prefer to keep your home-grown projects farther apart, Proxmox VE (<a href="#article_f1" target="_self" class="figure">Figure 1</a>) <a href="/Issues/2017/203/Home-Assistant/(offset)/6#article_i2" target="_self" class="info">[2]</a> or other virtualization platforms provide a useful service.</p>
+<div class="object-center" id="article_f1">    
+        	                    
+	<a href="https://www.linux-magazine.com/var/linux_magazin/storage/images/issues/2017/203/home-assistant/figure-1/713392-1-eng-US/Figure-11_reference.png" rel="lightbox[image]" title="Figure 1: Many users prefer to run Home Assistant in a container environment.">
+	    <img src="/var/linux_magazin/storage/images/issues/2017/203/home-assistant/figure-1/713392-1-eng-US/Figure-11_large.png" alt="">
+	</a>
+	<span class="attribute-caption" style="max-width:336px;">
+Figure 1: Many users prefer to run Home Assistant in a container environment.
+</span>    </div><p>To get started, create an additional user for the Home Assistant account and install additional packages on Ubuntu Server 16.04:</p>    <pre class="auto">adduser --system homeassistant
+apt-get install python-pippython3-dev
+pip install --upgrade virtualenv</pre><p>Next, install Home Assistant in a virtual environment in the home directory of the user account you just created (see <a href="#article_l1" target="_self" class="listing">Listing 1</a>).</p><div class="box listingbox" id="article_l1">
+<div class="boxname">
+<p>Listing 1</p>
+</div>
+<div class="boxtitle">
+<p>Installing on Ubuntu Server 16.04</p>
+</div>
+<p>&nbsp;</p>
+<div class="clear"></div>
+</div><p>One advantage of locking up Python in a virtual environment is that, if necessary, Home Assistant can install more Python packages during operations, and the installation will occur in a separate directory tree – without the need for root privileges on the base system.</p><p>Once you complete the installation, you can check to see whether Home Assistant is working by calling it directly in the shell:</p>    <pre class="auto">sudo -u homeassistant -H /home/homeassistant/ha/bin/hass</pre><p>The project documentation <a href="/Issues/2017/203/Home-Assistant/(offset)/6#article_i3" target="_self" class="info">[3]</a> offers a detailed description of how to configure Home Assistant so that it automatically restarts after a reboot.</p><p>When first launched, Home Assistant sets up a sample configuration file in <code>/home/homeassistant/.homeassistant/configuration.yaml</code>. The config file lets you set values for the time zone and the location of your home automation setup. Home Assistant then installs some additional Python packages and listens for browser users on port 8123 and the local IP address.</p><a name="eztoc0_0_2" id="eztoc0_0_2"></a><h4>Initial Installation in Your Very Own Home</h4><p>Thanks to auto discovery, Home Assistant recognizes a variety of devices <a href="/Issues/2017/203/Home-Assistant/(offset)/6#article_i4" target="_self" class="info">[4]</a> without any configuration up front. To make things even easier, the program lets you set up the detected devices (<a href="#article_f2" target="_self" class="figure">Figure 2</a>).</p>
+<div class="object-center" id="article_f2">    
+        	                    
+	<a href="https://www.linux-magazine.com/var/linux_magazin/storage/images/issues/2017/203/home-assistant/figure-2/713395-1-eng-US/Figure-21_reference.png" rel="lightbox[image]" title="Figure 2: Home Assistant has discovered a Philips Hue base station and wants to configure it.">
+	    <img src="/var/linux_magazin/storage/images/issues/2017/203/home-assistant/figure-2/713395-1-eng-US/Figure-21_large.png" alt="">
+	</a>
+	<span class="attribute-caption" style="max-width:336px;">
+Figure 2: Home Assistant has discovered a Philips Hue base station and wants to configure it.
+</span>    </div><a name="eztoc0_0_3" id="eztoc0_0_3"></a><h4>Component Glue</h4><p>Almost all of the features of Home Assistant are implemented as components. If you cannot find the feature you need in the library of more than 600 components, you can still use Home Assistant to connect your hardware with one of the generic protocols (MQTT, HTTP, and others), as long as you are willing to do a little programming. I have written a small web service for my Geiger counter, which supplies its values via a serial interface; the service outputs the current radiation levels as a JSON document, which is then accessed by Home Assistant.</p></div>
+        	    <div class="pagenavigator">
+	<p>
+	    			    <span class="pages">
+						<span class="current">1</span>
+				    			<span class="other"><a href="/Issues/2017/203/Home-Assistant/(offset)/3">2</a></span>
+		    				    			<span class="other"><a href="/Issues/2017/203/Home-Assistant/(offset)/6">3</a></span>
+		    					    </span>
+	    		    <span class="next"><a href="/Issues/2017/203/Home-Assistant/(offset)/3"><span class="text">Next&nbsp;»</span></a></span>
+
+			</p>
+	<div class="break"></div>
+    </div>
+	    		        <div id="articlebox">
+
+		    <div class="articlebox row">
+		<h2>Buy this article as PDF</h2>
+		<div class="span8">
+		    <div class="row express">
+			<div class="span2 description">Express-Checkout as PDF</div>
+			<div class="span2">
+			    			</div>
+			<div class="span2">
+			    Price $2.95<br> <span class="vat">(incl. VAT)</span>
+			</div>
+			<div class="span2">
+			    
+	
+				
+	<form action="https://www.paypal.com/cgi-bin/webscr" method="POST" target="_blank">
+	<input type="hidden" name="charset" value="utf-8">
+	<input type="hidden" name="cmd" value="_xclick">
+	<input type="hidden" name="business" value="payment@linuxnewmedia.com">
+	<input type="hidden" name="item_name" value="[LMI]: Home Assistant">
+	<input type="hidden" name="item_number" value="77512">
+	<input type="hidden" name="amount" value="2.95">
+	<input type="hidden" name="tax" value="0">
+	<input type="hidden" name="no_shipping" value="0">
+	<input type="hidden" name="no_note" value="1">
+	<input type="hidden" name="custom" value="1655934242"><!-- customtag -->
+	<input type="hidden" name="currency_code" value="USD">
+	<input type="hidden" name="lc" value="US">
+	<input type="hidden" name="bn" value="PP-BuyNowBF">
+	<input type="hidden" name="notify_url" value="http://www.linux-magazine.com/paypal/ipn">
+	<input type="hidden" name="return" value="https://www.linux-magazine.com/paypal/return">
+	<input type="image" onclick="_gaq.push(['_trackEvent', 'PayPal', 'articlebox', 'Home Assistant'])" src="/extension/lnm_paypal/design/standard/images/paypal_button.gif" border="0" name="submit" alt="Make payments with PayPal">
+	<!-- img alt="" border="0" src="https://www.sandbox.paypal.com/de_DE/i/scr/pixel.gif" width="1" height="1"/ -->
+	</form>
+			    			</div>
+		    </div>
+		</div>
+	    </div>
+		<div class="articlebox row">
+	    <h2>Buy Linux Magazine</h2>
+	    <div class="span8">
+		<div class="row single">
+		    <div class="span2 description">SINGLE ISSUES</div>
+		    <div class="span2"><a onclick="_gaq.push(['_trackEvent', 'articlebox', 'Order-Print-Issue', 'Home Assistant', 'text-link'])" target="_blank" title="Linux Magazine Print Issues" href="http://www.sparkhaus-shop.com/magazines/linux-magazine-linux-pro-magazine/back-issues.html?utm_source=LMI&amp;utm_medium=Link&amp;utm_content=ArticleUpsellingBox&amp;utm_campaign=LMIBackissue"><span>Print Issues</span></a></div>
+		    <div class="span2"><a onclick="_gaq.push(['_trackEvent', 'articlebox', 'Order-Digital-Issue', 'Home Assistant', 'text-link'])" target="_blank" title="Linux Magazine Digital Issues" href="http://www.sparkhaus-shop.com/magazines/linux-magazine-linux-pro-magazine/digital-issues.html?utm_source=LMI&amp;utm_medium=Link&amp;utm_content=ArticleUpsellingBox&amp;utm_campaign=LMIDigitalIssue"><span>Digital Issues</span></a></div>
+		    <div class="span2">&nbsp;</div>
+		</div>
+				    <div class="row subs">
+			<div class="span2 description">SUBSCRIPTIONS</div>
+			<div class="span2">
+			    				<a onclick="_gaq.push(['_trackEvent', 'articlebox', 'Order-Print-Subscription', 'Home Assistant', 'text-link'])" target="_blank" title="Linux Magazine Print Subscriptions" href="http://www.sparkhaus-shop.com/magazines/linux-magazine-linux-pro-magazine/full-subscription.html?utm_source=LMI&amp;utm_medium=Link&amp;utm_content=ArticleUpsellingBox&amp;utm_campaign=LMISubscription"><span>Print Subs</span></a>
+			    			</div>
+			<div class="span2">
+			    				<a onclick="_gaq.push(['_trackEvent', 'articlebox', 'Order-Digital-Subscription', 'Home Assistant', 'text-link'])" target="_blank" title="Linux Magazine Digital Subscriptions" href="http://www.sparkhaus-shop.com/magazines/linux-magazine-linux-pro-magazine/digital-subscription.html?utm_source=LMI&amp;utm_medium=Link&amp;utm_content=ArticleUpsellingBox&amp;utm_campaign=LMIDigisub"><span>Digisubs</span></a>
+			    			</div>
+			<div class="span2">&nbsp;</div>
+		    </div>
+						    <div class="row apps">
+			<div class="span2 description">TABLET &amp; SMARTPHONE APPS</div>
+			<div class="span2">
+			    				<a onclick="_gaq.push(['_trackEvent', 'articlebox', 'Apps-iTunes', 'Home Assistant', 'image-link'])" target="_blank" href="https://itunes.apple.com/us/app/linux-pro-magazine/id581202149" title="Linux Magazine on iTunes"><img alt="" src="/extension/lnm_upselling/design/bootstrap/images/Download_on_the_App_Store_Badge_US-UK_135x40.png"></a>
+			    			</div>
+			<div class="span2">
+			    				<a onclick="_gaq.push(['_trackEvent', 'articlebox', 'Apps-Android-US', 'Home Assistant', 'image-link'])" target="_blank" href="https://play.google.com/store/newsstand/details?id=CAow-vqbBw" title="Linux Magazine on Google Play Magazines"><img width="102" height="35" alt="Get it on Google Play" src="https://developer.android.com/images/brand/en_generic_rgb_wo_45.png"></a><p>US / Canada</p>
+			    			</div>
+			<div class="span2">
+			    				<a onclick="_gaq.push(['_trackEvent', 'articlebox', 'Apps-Android-UK', 'Home Assistant', 'image-link'])" target="_blank" href="https://play.google.com/store/newsstand/details?id=CAow-fqbBw" title="Linux Magazine on Google Play Magazines"><img width="102" height="35" alt="Get it on Google Play" src="https://developer.android.com/images/brand/en_generic_rgb_wo_45.png"></a>
+				<p>UK / Australia</p>
+			    			</div>
+		    </div>
+			    </div>
+	</div>
+    </div>
+	            <div class="attribute-relatedcontent">
+    <h2>Related content</h2>
+    <ul>
+		            	<li class="float-break">
+		            								        		    <a onclick="_gaq.push(['_trackEvent', 'related-content', 'Issues/2021/248/Z-Wave-Home-Assistant', 'text-link'])" href="/Issues/2021/248/Z-Wave-Home-Assistant" title="Z-Wave Home Assistant">Z-Wave Home Assistant</a>
+									<div class="attribute-intro">    <p>Z-Wave components, a RaZberry module, and the free Home Assistant software make the Raspberry Pi a powerful smart home control center.</p>
+</div>
+			<div class="more">
+			            			<a onclick="_gaq.push(['_trackEvent', 'related-content', 'Issues/2021/248/Z-Wave-Home-Assistant', 'more-link'])" href="/Issues/2021/248/Z-Wave-Home-Assistant" title="Z-Wave Home Assistant">more »</a>
+			    			    			</div>
+		            	    <!--100-->
+        	</li>
+        		    		            	<li class="float-break">
+		            								        		    <a onclick="_gaq.push(['_trackEvent', 'related-content', 'Issues/2018/211/Mycroft', 'text-link'])" href="/Issues/2018/211/Mycroft" title="Mycroft">Mycroft</a>
+									<div class="attribute-intro">    <p>Voice-activated assistants like Mycroft bring online, hands-free help to users, but with more transparency and less spying.</p>
+</div>
+			<div class="more">
+			            			<a onclick="_gaq.push(['_trackEvent', 'related-content', 'Issues/2018/211/Mycroft', 'more-link'])" href="/Issues/2018/211/Mycroft" title="Mycroft">more »</a>
+			    			    			</div>
+		            	    <!--25-->
+        	</li>
+        		    		            	<li class="float-break">
+		            								        		    <a onclick="_gaq.push(['_trackEvent', 'related-content', 'Issues/2014/167/Git-annex-Assistant', 'text-link'])" href="/Issues/2014/167/Git-annex-Assistant" title="Git-annex Assistant">Git-annex Assistant</a>
+									<div class="attribute-intro">    <p>Git-annex Assistant is a handy web interface that lets you use the power of Git to synchronize data across several computers.</p>
+</div>
+			<div class="more">
+			            			<a onclick="_gaq.push(['_trackEvent', 'related-content', 'Issues/2014/167/Git-annex-Assistant', 'more-link'])" href="/Issues/2014/167/Git-annex-Assistant" title="Git-annex Assistant">more »</a>
+			    			    			</div>
+		            	    <!--19-->
+        	</li>
+        		    		            	<li class="float-break">
+		            								        		    <a onclick="_gaq.push(['_trackEvent', 'related-content', 'Online/Blogs/Paw-Prints-Writings-of-the-maddog/Help-Needed-Survey-of-home-automation-needs-and-desires', 'text-link'])" href="/Online/Blogs/Paw-Prints-Writings-of-the-maddog/Help-Needed-Survey-of-home-automation-needs-and-desires" title="Help Needed: Survey of home automation needs and desires">Help Needed: Survey of home automation needs and desires</a>
+									<div class="attribute-intro"></div>
+			<div class="more">
+			            			<a onclick="_gaq.push(['_trackEvent', 'related-content', 'Online/Blogs/Paw-Prints-Writings-of-the-maddog/Help-Needed-Survey-of-home-automation-needs-and-desires', 'more-link'])" href="/Online/Blogs/Paw-Prints-Writings-of-the-maddog/Help-Needed-Survey-of-home-automation-needs-and-desires" title="Help Needed: Survey of home automation needs and desires">more »</a>
+			    			    			</div>
+		            	    <!--17-->
+        	</li>
+        		    		    	    </ul>
+</div>	
+	            
+    	<div id="disqus_thread"></div>
+	<script type="text/javascript">
+	    
+	    var disqus_shortname = 'linuxpromagazine';
+	    var disqus_identifier = 88840;
+	    var disqus_url = "https://www.linux-magazine.com/Issues/2017/203/Home-Assistant";
+	    var disqus_title = "Home Assistant";
+	    
+		(function() {
+		    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+		    dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+		    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+		})();
+	    
+	</script>
+	<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+	<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+    
+    </div>
+</div>
+
+
+			</div>
+			<div id="ContentRight" class="span4">
+			                                                                                	                
+    		    <div class="block block-buy_item block-">
+
+        <div class="block-content">
+	<div class="offsite">
+	    <h3>Visit Our Shop</h3>
+	    	    		<div class="bob"><a href="http://shop.linuxnewmedia.com/us/magazines/linux-magazine-linux-pro-magazine/trial-subscription.html?utm_source=LMI&amp;utm_medium=Link&amp;utm_content=ArticleShopBoxTopRight&amp;utm_campaign=LMITrial" target="_blank"><p>Trial Subscription</p></a></div>
+	    	    		<div class="bob"><a href="http://shop.linuxnewmedia.com/us/magazines/linux-magazine-linux-pro-magazine/digital-subscription.html?utm_source=LMI&amp;utm_medium=Link&amp;utm_content=ArticleShopBoxTopRight&amp;utm_campaign=LMIDigisub" target="_blank"><p>Digital Subscription</p></a></div>
+	    	    		<div class="bob"><a href="http://shop.linuxnewmedia.com/us/magazines/linux-magazine-linux-pro-magazine/full-subscription.html?utm_source=LMI&amp;utm_medium=Link&amp;utm_content=ArticleShopBoxTopRight&amp;utm_campaign=LMISubscription" target="_blank"><p>Subscribe</p></a></div>
+	    	</div>
+	<div class="onsite">
+	    <h3>Direct Download</h3>
+	    	    		    <h2>Read full article as PDF: </h2>
+    <div class="paypal-option">
+        <div class="paypal-button">
+        
+	
+				
+	<form action="https://www.paypal.com/cgi-bin/webscr" method="POST" target="_blank">
+	<input type="hidden" name="charset" value="utf-8">
+	<input type="hidden" name="cmd" value="_xclick">
+	<input type="hidden" name="business" value="payment@linuxnewmedia.com">
+	<input type="hidden" name="item_name" value="[LMI]: Home Assistant">
+	<input type="hidden" name="item_number" value="77512">
+	<input type="hidden" name="amount" value="2.95">
+	<input type="hidden" name="tax" value="0">
+	<input type="hidden" name="no_shipping" value="0">
+	<input type="hidden" name="no_note" value="1">
+	<input type="hidden" name="custom" value="1655959374"><!-- customtag -->
+	<input type="hidden" name="currency_code" value="USD">
+	<input type="hidden" name="lc" value="US">
+	<input type="hidden" name="bn" value="PP-BuyNowBF">
+	<input type="hidden" name="notify_url" value="http://www.linux-magazine.com/paypal/ipn">
+	<input type="hidden" name="return" value="https://www.linux-magazine.com/paypal/return">
+	<input type="image" onclick="_gaq.push(['_trackEvent', 'PayPal', 'direct_download.tpl', 'Home Assistant'])" src="/extension/lnm_paypal/design/standard/images/paypal_button.gif" border="0" name="submit" alt="Make payments with PayPal">
+	<!-- img alt="" border="0" src="https://www.sandbox.paypal.com/de_DE/i/scr/pixel.gif" width="1" height="1"/ -->
+	</form>
+        </div>
+                <p>Price $2.95<br></p>
+        
+    </div>
+	    	</div>
+    </div>
+</div>
+
+		    	    <div class="block-separator"></div>
+			    		    
+<div id="rectangle" class="block adzerk  ">
+    
+    <div class="block-content">
+	            <div id="zerkbanner_rectangle" class=""><a href="https://e-4669.adzerk.net/r?e=eyJ2IjoiMS4xMCIsImF2Ijo0MzE5MzMsImF0Ijo1LCJidCI6MCwiY20iOjYzNTE2NjQ2LCJjaCI6NzI5NCwiY2siOnt9LCJjciI6OTM3MTk3MTMsImRpIjoiNjY5YTJmZGQxMWU1NDk0Nzg5NWViNDE4MGRjOGY0ZDgiLCJkaiI6MCwiaWkiOiJjZDU1ZjM0YTU2NmE0Y2ExYmQyMTFjZjUzODFlODZlNiIsImRtIjoxLCJmYyI6MjM4NjI4Njg5LCJmbCI6MTY5NzgxODE1LCJpcCI6IjEzLjUyLjgxLjQwIiwibnciOjQ2NjksInBjIjoxMiwib3AiOjEyLCJlYyI6MCwiZ20iOjAsImVwIjpudWxsLCJwciI6MTc1MjIsInJ0IjoyLCJycyI6NTAwLCJzYSI6InVuZGVmaW5lZCIsInNiIjoiaS0wYmZkMWM4YWY5ZjA5OWRmNyIsInNwIjoyNDM3MTIzLCJzdCI6MjA5NzcsInVrIjoidWUxLTkyYzk4YTk1ZTA0ZDQ5NmZiZmVjZDgzNWZkNmVlYzM1IiwidHMiOjE2NTU5NTkzNzcxNjgsImJmIjp0cnVlLCJwbiI6InplcmtiYW5uZXJfcmVjdGFuZ2xlIiwiZ2MiOnRydWUsImdDIjp0cnVlLCJncyI6Im5vbmUiLCJkYyI6MSwidHoiOiJVVEMiLCJ1ciI6Imh0dHBzOi8vd3d3LnR1eGVkb2NvbXB1dGVycy5jb20vZW4vTGludXgtSGFyZHdhcmUvTGludXgtTm90ZWJvb2tzLzEwLTE0LWluY2gvVFVYRURPLUluZmluaXR5Qm9vay1Qcm8tMTQtR2VuNi50dXhlZG8jIn0&amp;s=__7TsuWKTyebb0EVzSRoWNeMnh8" rel="nofollow" target="_blank" title="InfinityBook Pro 16 Gen 6"><img src="https://s.zkcdn.net/Advertisers/510c81e41ff84d0289b92266a03fadbe.gif" title="InfinityBook Pro 16 Gen 6" alt="InfinityBook Pro 16 Gen 6" border="0" width="300" height="250"></a><img height="0px" width="0px" border="0" style="position:absolute;" src="https://e-4669.adzerk.net/i.gif?e=eyJ2IjoiMS4xMCIsImF2Ijo0MzE5MzMsImF0Ijo1LCJidCI6MCwiY20iOjYzNTE2NjQ2LCJjaCI6NzI5NCwiY2siOnt9LCJjciI6OTM3MTk3MTMsImRpIjoiNjY5YTJmZGQxMWU1NDk0Nzg5NWViNDE4MGRjOGY0ZDgiLCJkaiI6MCwiaWkiOiJjZDU1ZjM0YTU2NmE0Y2ExYmQyMTFjZjUzODFlODZlNiIsImRtIjoxLCJmYyI6MjM4NjI4Njg5LCJmbCI6MTY5NzgxODE1LCJpcCI6IjEzLjUyLjgxLjQwIiwibnciOjQ2NjksInBjIjoxMiwib3AiOjEyLCJlYyI6MCwiZ20iOjAsImVwIjpudWxsLCJwciI6MTc1MjIsInJ0IjoyLCJycyI6NTAwLCJzYSI6InVuZGVmaW5lZCIsInNiIjoiaS0wYmZkMWM4YWY5ZjA5OWRmNyIsInNwIjoyNDM3MTIzLCJzdCI6MjA5NzcsInVrIjoidWUxLTkyYzk4YTk1ZTA0ZDQ5NmZiZmVjZDgzNWZkNmVlYzM1IiwidHMiOjE2NTU5NTkzNzcxNjksImJmIjp0cnVlLCJwbiI6InplcmtiYW5uZXJfcmVjdGFuZ2xlIiwiZ2MiOnRydWUsImdDIjp0cnVlLCJncyI6Im5vbmUiLCJkYyI6MSwidHoiOiJVVEMiLCJiYSI6MSwiZnEiOjB9&amp;s=ichoyftVWA1V8rWWbZ2dgejkpHw"></div>    </div>
+    <div class="clear"></div>
+</div>
+
+		    	    <div class="block-separator"></div>
+			                        		    <div class="block block-latest_content_auto block-news">
+    <h2>News</h2>    <div class="block-content">
+	<ul>
+	    				    				<li>
+		    					    		    <h3><a href="/Online/News/Manjaro-21.3.0-Is-Now-Available">    Manjaro 21.3.0 Is Now Available</a></h3>
+		    					    		    <div class="tags">
+    
+    </div>
+		    			    <p>Manjaro “Ruah” has been released and includes the latest Calamares installer, GNOME 42, and much more.</p>
+		    		</li>
+			    				    				<li>
+		    					    		    <h3><a href="/Online/News/SpiralLinux-is-a-New-Linux-Distribution-Focused-on-Simplicity">    SpiralLinux is a New Linux Distribution Focused on Simplicity</a></h3>
+		    					    		    <div class="tags">
+    
+    </div>
+		    			    <p>A new Linux distribution, from the creator of GeckoLinux, is a Debian-based operating system with a focus on simplicity and ease of use.</p>
+		    		</li>
+			    				    				<li>
+		    					    		    <h3><a href="/Online/News/HP-Dev-One-Linux-Laptop-is-Now-Available-for-Pre-Order">    HP Dev One Linux Laptop is Now Available for Pre-Order</a></h3>
+		    					    		    <div class="tags">
+    
+    </div>
+		    			    <p>The System76/HP collaboration Dev One laptop, geared toward developers, is now available for pre-order.</p>
+		    		</li>
+			    				    				<li>
+		    					    		    <h3><a href="/Online/News/NixOS-22.5-Is-Now-Available">    NixOS 22.5 Is Now Available</a></h3>
+		    					    		    <div class="tags">
+    
+    </div>
+		    			    <p>The latest release of NixOS with a much-improved package manager and a user-friendly graphical installer.</p>
+		    		</li>
+			    				    				<li>
+		    					    		    <h3><a href="/Online/News/System76-Teams-up-with-HP-to-Create-the-Dev-One-Laptop">    System76 Teams up with HP to Create the Dev One Laptop</a></h3>
+		    					    		    <div class="tags">
+    
+    </div>
+		    			    <p>HP and System76 have come together to develop a new laptop, powered by Pop!_OS and aimed toward developers.</p>
+		    		</li>
+			    				    				<li>
+		    					    		    <h3><a href="/Online/News/Titan-Linux-is-a-New-KDE-Linux-Based-on-Debian-Stable">    Titan Linux is a New KDE Linux Based on Debian Stable</a></h3>
+		    					    		    <div class="tags">
+    
+    </div>
+		    			    <p>Titan Linux is a new Debian-based Linux distribution that features the KDE Plasma desktop with a focus on usability and performance.</p>
+		    		</li>
+			    				    				<li>
+		    					    		    <h3><a href="/Online/News/Danielle-Fore-Has-an-Update-for-elementary-OS-7">    Danielle Foré Has an Update for elementary OS 7</a></h3>
+		    					    		    <div class="tags">
+    
+    </div>
+		    			    <p>Now that Ubuntu 22.04 has been released, the team behind elementary OS is preparing for the upcoming 7.0 release.</p>
+		    		</li>
+			    				    				<li>
+		    					    		    <h3><a href="/Online/News/Linux-New-Media-Launches-Open-Source-JobHub">    Linux New Media Launches Open Source JobHub</a></h3>
+		    					    		    <div class="tags">
+    
+    </div>
+		    			    <p>New job website focuses on connecting technical and non-technical professionals with organizations in open source.</p>
+		    		</li>
+			    				    				<li>
+		    					    		    <h3><a href="/Online/News/Ubuntu-Cinnamon-22.04-Now-Available">    Ubuntu Cinnamon 22.04 Now Available</a></h3>
+		    					    		    <div class="tags">
+    
+    </div>
+		    			    <p>Ubuntu Cinnamon 22.04 has been released with all the additions from upstream as well as other features and improvements.</p>
+		    		</li>
+			    				    				<li>
+		    					    		    <h3><a href="/Online/News/Pop!_OS-22.04-Has-Officially-Been-Released">    Pop!_OS 22.04 Has Officially Been Released</a></h3>
+		    					    		        			
+			    <div class="tags">
+    
+    		        	<a onclick="_gaq.push(['_trackEvent', 'taglist', '[2] Linux', 'text-link'])" href="/tags/view/Operating+Systems/Linux">Linux</a>
+        		    </div>
+		    			    <p>From the makers of some of the finest Linux-powered desktop and laptop computers on the market comes the latest version of their Ubuntu-based distribution, Pop!_OS 22.04.</p>
+		    		</li>
+			    	</ul>
+    </div>
+</div>
+		    	    <div class="block-separator"></div>
+			    <div class="block block-tag_cloud block-tag_cloud">
+    <h2>Tag Cloud</h2>    <div class="block-content">
+	
+		    		<div class="full full-tagcloud">
+    		    		    		    		    		    		    		    		    		    		    		    		    		    		    		            			    <a href="/tags/view/Administration" style="font-size: 136.20689655172%" title="427 objects tagged with 'Administration'">Administration</a>
+	    			    <a href="/tags/view/Community" style="font-size: 200%" title="760 objects tagged with 'Community'">Community</a>
+	    			    <a href="/tags/view/Desktop" style="font-size: 100%" title="238 objects tagged with 'Desktop'">Desktop</a>
+	    			    <a href="/tags/view/Events" style="font-size: 116.28352490421%" title="323 objects tagged with 'Events'">Events</a>
+	    			    <a href="/tags/view/Hardware" style="font-size: 139.84674329502%" title="446 objects tagged with 'Hardware'">Hardware</a>
+	    			    <a href="/tags/view/Operating+Systems/Linux" style="font-size: 168.58237547893%" title="596 objects tagged with 'Linux'">Linux</a>
+	    			    <a href="/tags/view/Community/Linux+Pro+Magazine" style="font-size: 103.6398467433%" title="257 objects tagged with 'Linux Pro Magazine'">Linux Pro Magazine</a>
+	    			    <a href="/tags/view/Mobile" style="font-size: 106.51340996169%" title="272 objects tagged with 'Mobile'">Mobile</a>
+	    			    <a href="/tags/view/Programming" style="font-size: 139.65517241379%" title="445 objects tagged with 'Programming'">Programming</a>
+	    			    <a href="/tags/view/Software" style="font-size: 114.55938697318%" title="314 objects tagged with 'Software'">Software</a>
+	    			    <a href="/tags/view/Operating+Systems/Ubuntu" style="font-size: 122.41379310345%" title="355 objects tagged with 'Ubuntu'">Ubuntu</a>
+	    			    <a href="/tags/view/Web+Development" style="font-size: 119.54022988506%" title="340 objects tagged with 'Web Development'">Web Development</a>
+	    			    <a href="/tags/view/Operating+Systems/Windows" style="font-size: 104.02298850575%" title="259 objects tagged with 'Windows'">Windows</a>
+	    			    <a href="/tags/view/Software/free+software" style="font-size: 109.00383141762%" title="285 objects tagged with 'free software'">free software</a>
+	    			    <a href="/tags/view/Events/CeBIT/open+source" style="font-size: 104.02298850575%" title="259 objects tagged with 'open source'">open source</a>
+	    </div>
+    </div>
+</div>
+
+
+
+
+
+		    
+			</div>
+		    		</div>
+		<div id="bottom-banner" class="row">
+		    <div class="span12">
+			        <div id="zerkbanner_bottom_full" class="">
+        
+    
+</div>		    </div>
+		</div>	    </div>
+	<div>
+	    <div class="container">
+		<div class="row">
+		    <div class="span12" id="Footer">
+			<footer>
+    <div class="footer row">
+	<div class="span1"></div>
+	<div class="span10 claim-wrapper">
+	    <div id="footer-topics" class="container">
+		    			            	        
+<div class="footer-sitemap">
+    </div>
+
+		    		    		    			    
+<div class="footer-topics">
+                        	<div class="footer-topic lastli footer-ini">
+	    <ul>
+				    			<li class="footer_topic_AboutUs"><a onclick="_gaq.push(['_trackEvent', 'footer-topics', '/About-Us', 'text-link'])" href="/About-Us">About Us </a></li>
+		    		    				    			<li class="footer_topic_WriteForUs"><a onclick="_gaq.push(['_trackEvent', 'footer-topics', '/About-Us/Write-for-Us', 'text-link'])" href="/About-Us/Write-for-Us">Write for Us </a></li>
+		    		    				    			<li class="footer_topic_Contact"><a onclick="_gaq.push(['_trackEvent', 'footer-topics', '/About-Us/Contact', 'text-link'])" href="/About-Us/Contact">Contact </a></li>
+		    		    				    			<li class="footer_topic_LegalNotice"><a onclick="_gaq.push(['_trackEvent', 'footer-topics', '/About-Us/Legal-Notice', 'text-link'])" href="/About-Us/Legal-Notice">Legal Notice </a></li>
+		    		    				    			<li class="footer_topic_PrivacyPolicy"><a onclick="_gaq.push(['_trackEvent', 'footer-topics', '/About-Us/Privacy-Policy', 'text-link'])" href="/About-Us/Privacy-Policy">Privacy Policy </a></li>
+		    		    				    			<li class="footer_topic_ManageSubscription"><a onclick="_gaq.push(['_trackEvent', 'footer-topics', '/Subscribe/Manage-Subscription', 'text-link'])" href="/Subscribe/Manage-Subscription">Manage Subscription </a></li>
+		    		    			    </ul>
+	</div>
+    </div>
+
+
+		    	    </div>
+	</div>
+	<div class="span1"></div>
+    </div>
+    <div class="row">
+					    <div id="glossar">
+		<ul id="glossar_menue">
+		    			<li>
+			    <a href="/Glossary">Glossary</a>
+			            <ul>
+		    		<li>
+		    <a href="/Glossary/Raspberry-Pi">Raspberry Pi</a>
+		    		</li>
+	    	    </ul>			</li>
+		    		</ul>
+	    </div>
+			    <div id="copyright">
+				© 2022 <a href="http://www.linuxnewmedia.com/" target="_blank">Linux New Media USA, LLC</a>
+	    </div>
+	    </div>
+</footer>		    </div>
+		</div>
+	    </div>
+	</div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<div id="lightboxOverlay" style="display: none;"></div><div id="lightbox" style="display: none;"><div class="lb-outerContainer"><div class="lb-container"><img class="lb-image"><div class="lb-nav"><a class="lb-prev"></a><a class="lb-next"></a></div><div class="lb-loader"><a class="lb-cancel"><img src="/extension/ezjquerylightbox/design/standard/images/loading.gif"></a></div></div></div><div class="lb-dataContainer"><div class="lb-data"><div class="lb-details"><span class="lb-caption"></span><span class="lb-number"></span></div><div class="lb-closeContainer"><a class="lb-close"><img src="/extension/ezjquerylightbox/design/standard/images/close.png"></a></div></div></div></div></body></html>

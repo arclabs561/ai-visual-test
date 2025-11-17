@@ -1,0 +1,971 @@
+<html xmlns="http://www.w3.org/1999/xhtml"><head><style id="xml-viewer-style">/* Copyright 2014 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+:root {
+  color-scheme: light dark;
+}
+
+div.header {
+    border-bottom: 2px solid black;
+    padding-bottom: 5px;
+    margin: 10px;
+}
+
+@media (prefers-color-scheme: dark) {
+  div.header {
+    border-bottom: 2px solid white;
+  }
+}
+
+div.folder &gt; div.hidden {
+    display:none;
+}
+
+div.folder &gt; span.hidden {
+    display:none;
+}
+
+.pretty-print {
+    margin-top: 1em;
+    margin-left: 20px;
+    font-family: monospace;
+    font-size: 13px;
+}
+
+#webkit-xml-viewer-source-xml {
+    display: none;
+}
+
+.opened {
+    margin-left: 1em;
+}
+
+.comment {
+    white-space: pre;
+}
+
+.folder-button {
+    user-select: none;
+    cursor: pointer;
+    display: inline-block;
+    margin-left: -10px;
+    width: 10px;
+    background-repeat: no-repeat;
+    background-position: left top;
+    vertical-align: bottom;
+}
+
+.fold {
+    background: url("data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' fill='%23909090' width='10' height='10'&gt;&lt;path d='M0 0 L8 0 L4 7 Z'/&gt;&lt;/svg&gt;");
+    height: 10px;
+}
+
+.open {
+    background: url("data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' fill='%23909090' width='10' height='10'&gt;&lt;path d='M0 0 L0 8 L7 4 Z'/&gt;&lt;/svg&gt;");
+    height: 10px;
+}
+</style></head><body><div id="webkit-xml-viewer-source-xml"><rss xmlns="" version="2.0">
+  <channel>
+    <title>Serverless Status</title>
+    <description>A weekly newsletter on serverless and function-as-a-service (FaaS) architectures and platforms including AWS Lambda and Azure Functions.</description>
+    <link>https://serverless.email/</link>
+    <item>
+      <title>Is Aurora Serverless v2 really 'serverless'?</title>
+      <link>https://serverless.email/issues/249</link>
+      <description>
+
+  
+
+    
+    
+    
+    
+    
+  
+
+
+
+
+&lt;table border=0 cellpadding=0 cellspacing=0 align="center" border="0"&gt;
+  &lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;
+  &lt;div&gt;    
+    &lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;
+&lt;td align="left" style="padding-left: 4px; font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;&lt;p&gt;#​249 — June 17, 2022&lt;/p&gt;&lt;/td&gt;
+&lt;td align="right" style="padding-right: 4px; font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;&lt;p&gt;&lt;a href="https://serverless.email/link/125002/rss" style=" color: #dc5300;"&gt;Read on the Web&lt;/a&gt;&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;&lt;/table&gt;
+    
+    &lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0; padding-right: 12px;  padding-left: 12px;"&gt;&lt;p&gt;&lt;span style=" padding-left: 10px;"&gt;serverless⚡️status&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;
+  &lt;a href="https://serverless.email/link/125003/rss" style=" color: #dc5300;"&gt;&lt;img src="https://res.cloudinary.com/cpress/image/upload/w_1280,e_sharpen:60/v1655467894/bigvy6qgcodbqmgcvfgh.jpg" width="640" style="      line-height: 100%;     "&gt;&lt;/a&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/125003/rss" title="www.mongodb.com" style=" color: #dc5300; font-size: 1.1em; line-height: 1.4em;   "&gt;MongoDB Atlas Serverless Instances Go GA&lt;/a&gt;&lt;/span&gt; — Last week’s MongoDB World conference brought us news that their serverless instances are now generally available, and the price to use them has &lt;em&gt;dropped significantly&lt;/em&gt; too.&lt;/p&gt;
+  &lt;p&gt;MongoDB &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/125005/rss" title="www.lastweekinaws.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;'No, AWS, Aurora Serverless v2 Is Not Serverless'&lt;/a&gt;&lt;/span&gt; — Argues that the recently released highly available, fully managed SQL database is a touch “&lt;em&gt;misleading with the ‘serverless’ descriptor&lt;/em&gt;”.&lt;/p&gt;
+  &lt;p&gt;Maciej Radzikowski &lt;span style="text-transform: uppercase; margin-left: 4px; padding-top: 1px; padding-right: 4px;  padding-left: 4px; font-size: 0.9em;             "&gt;Opinion&lt;/span&gt;&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  &lt;a href="https://serverless.email/link/125006/rss" style=" color: #dc5300;   "&gt;&lt;img src="https://copm.s3.amazonaws.com/46ceaf42.jpg" width="220" height="100" style="padding-top: 12px; padding-left: 12px;     line-height: 100%;    "&gt;&lt;/a&gt;
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/125006/rss" title="community.bitmovin.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;Be Amongst the First to Shape Our New Dev Community&lt;/a&gt;&lt;/span&gt; — Bitmovin is excited to announce our Developers Community. We want to give developers from around the world a place where they can connect, explore, learn, share their experience, and shape the future of video streaming, together. Join us today!&lt;/p&gt;
+  &lt;p&gt;Bitmovin Inc. &lt;span style="text-transform: uppercase; margin-left: 4px; font-size: 0.9em;   color: #997 !important; padding-top: 1px; padding-right: 4px;  padding-left: 4px;            "&gt;sponsor&lt;/span&gt;&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/125008/rss" title="spacelift.io" style=" color: #dc5300; font-size: 1.05em;   "&gt;Adventures in AWS Lambda Land: A Migration Gone Well&lt;/a&gt;&lt;/span&gt; — Lessons learned moving from long-running processes hosted in containers (ECS) to a serverless-based approach, including some annoying-but-still-better-anyway gotchas.&lt;/p&gt;
+  &lt;p&gt;Jacob Martin (Spacelift) &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/125004/rss" title="www.infoq.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;Reduce Carbon Dioxide Emissions with Serverless and Kubernetes Native Java&lt;/a&gt;&lt;/span&gt; — How serverless tech can go some way to reduce carbon dioxide emissions via native features with milliseconds first boot time, tiny resident set size memory and scalability.&lt;/p&gt;
+  &lt;p&gt;Daniel Oh &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/125007/rss" title="medium.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;Flipping Business Rules in Serverless&lt;/a&gt;&lt;/span&gt; — Should you put AWS step-function centrally in your application? This post explores the architecture considerations.&lt;/p&gt;
+  &lt;p&gt;Kevin van Ingen &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/125009/rss" title="dev.biglemon.co.uk" style=" color: #dc5300; font-size: 1.05em;   "&gt;How We Handle Repeated Tasks using Amazon EventBridge and AWS Lambda&lt;/a&gt;&lt;/span&gt; — Todo apps can be infinitely more complex with repeated todo tasks. This post explores handling such complexity in production with the AWS stack.&lt;/p&gt;
+  &lt;p&gt;Mike Rudge &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/125010/rss" title="dev.to" style=" color: #dc5300; font-size: 1.05em;   "&gt;A Serverless Solution to Just-in-Time Scheduling&lt;/a&gt;&lt;/span&gt; — Here’s a quick overview of an CDK construct to add to your stack for event scheduling. &lt;a href="https://serverless.email/link/125011/rss" style=" color: #dc5300;   "&gt;Repo here&lt;/a&gt;.&lt;/p&gt;
+  &lt;p&gt;Adèle Gauvrit &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 0px;  padding-left: 0px;"&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+ &lt;p&gt;&lt;strong&gt;⚡️ In Brief:&lt;/strong&gt;&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.0em; color: #000;"&gt;▶  &lt;a href="https://serverless.email/link/125012/rss" style=" color: #dc5300; font-size: 1.0em !important;   "&gt;Write Your Lambda Functions using TypeScript with AWS SAM&lt;/a&gt;&lt;/span&gt;
+  &lt;br&gt;&lt;span style="color: #5a5a5a; margin-top: 4px; text-transform: uppercase; font-size: 0.75em; line-height: 1.5em;"&gt;Marcia Villalba&lt;/span&gt; 
+  &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.0em; color: #000;"&gt;&lt;a href="https://serverless.email/link/125013/rss" style=" color: #dc5300; font-size: 1.0em !important;   "&gt;Triggering AWS Lambda Functions from Serverless Kafka&lt;/a&gt;&lt;/span&gt;
+  &lt;br&gt;&lt;span style="color: #5a5a5a; margin-top: 4px; text-transform: uppercase; font-size: 0.75em; line-height: 1.5em;"&gt;Tobias Wissmueller&lt;/span&gt; 
+  &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.0em; color: #000;"&gt;&lt;a href="https://serverless.email/link/125017/rss" style=" color: #dc5300; font-size: 1.0em !important;   "&gt;MongoDB vs DynamoDB Head-to-Head: Which Should You Choose?&lt;/a&gt;&lt;/span&gt;
+  &lt;br&gt;&lt;span style="color: #5a5a5a; margin-top: 4px; text-transform: uppercase; font-size: 0.75em; line-height: 1.5em;"&gt;Shawn Adams&lt;/span&gt; 
+  &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.0em; color: #000;"&gt;&lt;a href="https://serverless.email/link/125014/rss" style=" color: #dc5300; font-size: 1.0em !important;   "&gt;Serverless Puppeteer: Use Cases in 2022&lt;/a&gt;&lt;/span&gt;
+  &lt;br&gt;&lt;span style="color: #5a5a5a; margin-top: 4px; text-transform: uppercase; font-size: 0.75em; line-height: 1.5em;"&gt;Emil Hein&lt;/span&gt; 
+  &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.0em; color: #000;"&gt;&lt;a href="https://serverless.email/link/125015/rss" style=" color: #dc5300; font-size: 1.0em !important;   "&gt;AWS Step Functions: Are Active Executions Affected When Your State Machine Gets Updated?&lt;/a&gt;&lt;/span&gt;
+  &lt;br&gt;&lt;span style="color: #5a5a5a; margin-top: 4px; text-transform: uppercase; font-size: 0.75em; line-height: 1.5em;"&gt;Pubudu Jayawardana&lt;/span&gt; 
+  &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.0em; color: #000;"&gt;&lt;a href="https://serverless.email/link/125016/rss" style=" color: #dc5300; font-size: 1.0em !important;   "&gt;How Serverless Changes The Way Developers Build and Test&lt;/a&gt;&lt;/span&gt;
+  &lt;br&gt;&lt;span style="color: #5a5a5a; margin-top: 4px; text-transform: uppercase; font-size: 0.75em; line-height: 1.5em;"&gt;Matt Asay&lt;/span&gt; 
+  &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style=" font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style=" font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+  &lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+
+
+
+
+&lt;img src="https://serverless.email/open/249/rss" width="1" height="1" /&gt;</description>
+      <pubDate>Fri, 17 Jun 2022 00:00:00 +0000</pubDate>
+      <guid>https://serverless.email/issues/249</guid>
+    </item>
+    <item>
+      <title>Serverless as a catalyst for useful practices</title>
+      <link>https://serverless.email/issues/248</link>
+      <description>
+
+  
+
+    
+    
+    
+    
+    
+  
+
+
+
+
+&lt;table border=0 cellpadding=0 cellspacing=0 align="center" border="0"&gt;
+  &lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;
+  &lt;div&gt;    
+    &lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;
+&lt;td align="left" style="padding-left: 4px; font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;&lt;p&gt;#​248 — June 10, 2022&lt;/p&gt;&lt;/td&gt;
+&lt;td align="right" style="padding-right: 4px; font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;&lt;p&gt;&lt;a href="https://serverless.email/link/124719/rss" style=" color: #dc5300;"&gt;Read on the Web&lt;/a&gt;&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;&lt;/table&gt;
+    
+    &lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0; padding-right: 12px;  padding-left: 12px;"&gt;&lt;p&gt;&lt;span style=" padding-left: 10px;"&gt;serverless⚡️status&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;
+  &lt;a href="https://serverless.email/link/124720/rss" style=" color: #dc5300;"&gt;&lt;img src="https://res.cloudinary.com/cpress/image/upload/w_1280,e_sharpen:60/ocfjycf8418lmqaafs0j.jpg" width="640" style="      line-height: 100%;     "&gt;&lt;/a&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124720/rss" title="www.serverless.com" style=" color: #dc5300; font-size: 1.1em; line-height: 1.4em;   "&gt;Seven Reasons Why Serverless Encourages Useful Engineering Practices&lt;/a&gt;&lt;/span&gt; — Much in the same way that the &lt;a href="https://serverless.email/link/124721/rss" style=" color: #dc5300;   "&gt;12 factor app methodology&lt;/a&gt; previously introduced numerous useful practices into the app development and deployment field, so now does the challenge of building serverless apps, whether it's through ubiquitous infrastructure-as-code, loose coupling, or self contained execution environments.&lt;/p&gt;
+  &lt;p&gt;Anna Geller &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124722/rss" title="kerkour.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;When Serverless Really Shines (and When to Avoid It)&lt;/a&gt;&lt;/span&gt; — Ok, from a marketing perspective Serverless may have been pushed hard in recent years as “a magical solution for all our problems” 😅 As it goes, the author counters, adding that we shouldn’t get carried away, and noting that serverless is “&lt;em&gt;a niche pattern for high-compute, low throughout applications&lt;/em&gt;”.&lt;/p&gt;
+  &lt;p&gt;Sylvain Kerkour &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  &lt;a href="https://serverless.email/link/124723/rss" style=" color: #dc5300;   "&gt;&lt;img src="https://copm.s3.amazonaws.com/a4602653.jpg" width="146" height="110" style="padding-top: 12px; padding-left: 12px;     line-height: 100%;    "&gt;&lt;/a&gt;
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124723/rss" title="appwrite.io" style=" color: #dc5300; font-size: 1.05em;   "&gt;Self-Hosted, Open-Source Firebase Alternative&lt;/a&gt;&lt;/span&gt; — Appwrite is a secure, self-hosted solution that provides developers with a set of easy-to-use REST APIs for their core backend needs. Build fast and own your data with Appwrite! &lt;a href="https://serverless.email/link/124723/rss" style=" color: #dc5300;   "&gt;Click here&lt;/a&gt; to learn more.&lt;/p&gt;
+  &lt;p&gt;Appwrite &lt;span style="text-transform: uppercase; margin-left: 4px; font-size: 0.9em;   color: #997 !important; padding-top: 1px; padding-right: 4px;  padding-left: 4px;            "&gt;sponsor&lt;/span&gt;&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124724/rss" title="techcommunity.microsoft.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;New Major Release of Durable Functions for Node.js&lt;/a&gt;&lt;/span&gt; — Here’s a new major version of the &lt;a href="https://serverless.email/link/124725/rss" style=" color: #dc5300;   "&gt;Durable Functions&lt;/a&gt; NodeJS SDK — it claims to reduce orchestration time by more than 50%. There’s a few breaking changes you’ll want to be aware of too.&lt;/p&gt;
+  &lt;p&gt;David Justo (Microsoft) &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124726/rss" title="aws.amazon.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;Amazon EMR Serverless Now Generally Available: Run Big Data Applications without Managing Servers&lt;/a&gt;&lt;/span&gt; — We seemingly missed this news last week, so here it is: A serverless deployment option for running big data analytics apps using open-source frameworks (like Apache Spark and Hive) without the need to configure, manage, and scale clusters or servers — &lt;em&gt;now GA&lt;/em&gt;.&lt;/p&gt;
+  &lt;p&gt;Channy Yun (AWS) &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124727/rss" title="www.infoworld.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;It’s a Serverless and Containerized World&lt;/a&gt;&lt;/span&gt; — Last week we linked to &lt;a href="https://serverless.email/link/124728/rss" style=" color: #dc5300;   "&gt;Datadog’s 2022 State of Serverless survey results&lt;/a&gt;. Here, David reflects on the findings, chiefly how cloud solutions are focused on the popular combo of serverless and containers.&lt;/p&gt;
+  &lt;p&gt;David Linthicum &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;▶  &lt;a href="https://serverless.email/link/124729/rss" title="www.serverlesschats.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;Discussing Tactical Serverless with Lee Gilmore&lt;/a&gt;&lt;/span&gt; — A 45-minute chat with serverless architect &lt;a href="https://serverless.email/link/124730/rss" style=" color: #dc5300;   "&gt;Lee Gilmore&lt;/a&gt; about the complexities of taking serverless apps to production, what 'Tactical DDR' is, why serverless threat modeling is so important, and more.&lt;/p&gt;
+  &lt;p&gt;Serverless Chats &lt;span style="text-transform: uppercase; margin-left: 4px; padding-top: 1px; padding-right: 4px;  padding-left: 4px; font-size: 0.9em;             "&gt;podcast&lt;/span&gt;&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124731/rss" title="aws.amazon.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;How to Build a Multilingual Dashboard with Amazon Athena and Amazon QuickSight&lt;/a&gt;&lt;/span&gt; — &lt;a href="https://serverless.email/link/124732/rss" style=" color: #dc5300;   "&gt;QuickSight&lt;/a&gt; is a serverless business intelligence service. This post looks at how, combined with &lt;a href="https://serverless.email/link/124733/rss" style=" color: #dc5300;   "&gt;Athena&lt;/a&gt;, you can create multilingual dashboards at the data level.&lt;/p&gt;
+  &lt;p&gt;Francesco Marelli (AWS) &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124734/rss" title="css-tricks.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;Let's Make a QR Code Generator with a Serverless Function&lt;/a&gt;&lt;/span&gt; — A good, quick example of what cloud functions can be good for. DigitalOcean's new Functions platform is used here.&lt;/p&gt;
+  &lt;p&gt;Geoff Graham &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style=" font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+  &lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+
+
+
+
+&lt;img src="https://serverless.email/open/248/rss" width="1" height="1" /&gt;</description>
+      <pubDate>Fri, 10 Jun 2022 00:00:00 +0000</pubDate>
+      <guid>https://serverless.email/issues/248</guid>
+    </item>
+    <item>
+      <title>The State of Serverless in 2022</title>
+      <link>https://serverless.email/issues/247</link>
+      <description>
+
+  
+
+    
+    
+    
+    
+    
+  
+
+
+
+
+&lt;table border=0 cellpadding=0 cellspacing=0 align="center" border="0"&gt;
+  &lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;
+  &lt;div&gt;    
+    &lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;
+&lt;td align="left" style="padding-left: 4px; font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;&lt;p&gt;#​247 — June 3, 2022&lt;/p&gt;&lt;/td&gt;
+&lt;td align="right" style="padding-right: 4px; font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;&lt;p&gt;&lt;a href="https://serverless.email/link/124371/rss" style=" color: #dc5300;"&gt;Read on the Web&lt;/a&gt;&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;&lt;/table&gt;
+    
+    &lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0; padding-right: 12px;  padding-left: 12px;"&gt;&lt;p&gt;&lt;span style=" padding-left: 10px;"&gt;serverless⚡️status&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;
+  &lt;a href="https://serverless.email/link/124372/rss" style=" color: #dc5300;"&gt;&lt;img src="https://res.cloudinary.com/cpress/image/upload/w_1280,e_sharpen:60/xklc9nme5xhvxbx84ntv.jpg" width="640" style="      line-height: 100%;     "&gt;&lt;/a&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124372/rss" title="www.datadoghq.com" style=" color: #dc5300; font-size: 1.1em; line-height: 1.4em;   "&gt;The State of Serverless 2022&lt;/a&gt;&lt;/span&gt; — Datadog’s annual report looking at trends across the serverless space is back for 2022. Lots of interesting insights here, including data on adoption rates, language choices, Lambda function deployment and preferences, and  more.&lt;/p&gt;
+  
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 20px;  padding-left: 20px;"&gt;
+  &lt;p&gt;“&lt;em&gt;...we identified three key themes in how teams are using serverless today. First, serverless compute has become an essential part of the technology stacks of organizations that operate in each cloud. Second, AWS Lambda remains extremely popular among AWS customers, who are using it in new ways to support their unique business needs. Finally, there are meaningful differences between the serverless offerings available within AWS, Azure, and Google Cloud, and each gives users distinct options for building serverless applications&lt;/em&gt;.”&lt;/p&gt;
+
+  
+    &lt;p&gt;___&lt;br&gt;&lt;a href="https://serverless.email/link/124372/rss" style=" color: #dc5300;"&gt;Datadog&lt;/a&gt;&lt;/p&gt;
+  
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 0px;  padding-left: 0px;"&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  &lt;a href="https://serverless.email/link/124373/rss" style=" color: #dc5300;   "&gt;&lt;img src="https://copm.s3.amazonaws.com/19262749.png" width="165" height="165" style="padding-top: 12px; padding-left: 12px;     line-height: 100%;    "&gt;&lt;/a&gt;
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124373/rss" title="www.rookout.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;Debugging Serverless Environments Is Difficult&lt;/a&gt;&lt;/span&gt; — Level up your Serverless debugging experience with Rookout's Serverless Debug Session. Quickly identify problematic areas with the addition of graphic visualization of the serverless function history. Try Rookout's Live Debugger Free Today.&lt;/p&gt;
+  &lt;p&gt;Rookout &lt;span style="text-transform: uppercase; margin-left: 4px; font-size: 0.9em;   color: #997 !important; padding-top: 1px; padding-right: 4px;  padding-left: 4px;            "&gt;sponsor&lt;/span&gt;&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style=" font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style=" font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124374/rss" title="github.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;Neon: An Open Source Serverless Alternative to AWS Aurora Postgres?&lt;/a&gt;&lt;/span&gt; — This is the codebase behind &lt;a href="https://serverless.email/link/124375/rss" style=" color: #dc5300;   "&gt;an eponymously named company&lt;/a&gt; (founded by Nikita Shamgunov who co-founded MemSQL) building a multi-cloud serverless Postgres platform and giving us strong &lt;a href="https://serverless.email/link/124376/rss" style=" color: #dc5300;   "&gt;PlanetScale&lt;/a&gt; vibes.&lt;/p&gt;
+  &lt;p&gt;Neon &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124377/rss" title="launchdarkly.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;Handling Data at the Edge with Cloudflare Workers&lt;/a&gt;&lt;/span&gt; — Still curious as to what the big deal is with edge functions? Well, this post explains what the fuss is about and demonstrates its usage with ‘data at the edge’.&lt;/p&gt;
+  &lt;p&gt;Brian Rinaldi &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124378/rss" title="www.lastweekinaws.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;The Aurora Serverless Road Not Taken&lt;/a&gt;&lt;/span&gt; — “&lt;em&gt;we’re staring down two diverging roads for Aurora Serverless. AWS now has a v1 and a v2 of the same service, each offering different capabilities and trade-offs&lt;/em&gt;”. — Corey explains here how he thinks &lt;a href="https://serverless.email/link/124379/rss" style=" color: #dc5300;   "&gt;the recent launch of Amazon Aurora Serverless v2 &lt;/a&gt; fails to fulfill the promises of serverless.&lt;/p&gt;
+  &lt;p&gt;Corey Quinn &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124380/rss" title="www.readysetcloud.io" style=" color: #dc5300; font-size: 1.05em;   "&gt;Quick Optimizations You Should Make to Your Serverless Applications&lt;/a&gt;&lt;/span&gt; — A few AWS-oriented ways to fine-tune your serverless app to make it perform “&lt;em&gt;better than ever before&lt;/em&gt;”.&lt;/p&gt;
+  &lt;p&gt;Allen Helton &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.0em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124382/rss" style=" color: #dc5300; font-size: 1.0em !important;   "&gt;AWS SNS vs. SQS - What Are The Main Differences?&lt;/a&gt;&lt;/span&gt; — SNS is essentially pub/sub, whereas SQS is a queue. But it does go a lot further than that..
+  &lt;br&gt;&lt;span style="color: #5a5a5a; margin-top: 4px; text-transform: uppercase; font-size: 0.75em; line-height: 1.5em;"&gt;Sandro Volpicella&lt;/span&gt; 
+  &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.0em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124381/rss" style=" color: #dc5300; font-size: 1.0em !important;   "&gt;AWS AppSync Introduces New Simplified Console Experience to Deploy Generic Real-time Pub/Sub APIs&lt;/a&gt;&lt;/span&gt;
+  &lt;br&gt;&lt;span style="color: #5a5a5a; margin-top: 4px; text-transform: uppercase; font-size: 0.75em; line-height: 1.5em;"&gt;AWS&lt;/span&gt; 
+  &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.0em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124383/rss" style=" color: #dc5300; font-size: 1.0em !important;   "&gt;How to Deploy a NestJS App on Google Cloud Run with GitHub Actions&lt;/a&gt;&lt;/span&gt;
+  &lt;br&gt;&lt;span style="color: #5a5a5a; margin-top: 4px; text-transform: uppercase; font-size: 0.75em; line-height: 1.5em;"&gt;Tom Ray&lt;/span&gt; 
+  &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.0em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124384/rss" style=" color: #dc5300; font-size: 1.0em !important;   "&gt;cf-workers-telegram-bot: Run a Telegram Bot on CloudFlare Workers&lt;/a&gt;&lt;/span&gt; — Telegram is a popular chat system that's particularly friendly to developers and bot use cases.
+  &lt;br&gt;&lt;span style="color: #5a5a5a; margin-top: 4px; text-transform: uppercase; font-size: 0.75em; line-height: 1.5em;"&gt;Sean Behan&lt;/span&gt; 
+  &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style=" font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+  &lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+
+
+
+
+&lt;img src="https://serverless.email/open/247/rss" width="1" height="1" /&gt;</description>
+      <pubDate>Fri, 3 Jun 2022 00:00:00 +0000</pubDate>
+      <guid>https://serverless.email/issues/247</guid>
+    </item>
+    <item>
+      <title>DigitalOcean joins the serverless party</title>
+      <link>https://serverless.email/issues/246</link>
+      <description>
+
+  
+
+    
+    
+    
+    
+    
+  
+
+
+
+
+&lt;table border=0 cellpadding=0 cellspacing=0 align="center" border="0"&gt;
+  &lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;
+  &lt;div&gt;    
+    &lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;
+&lt;td align="left" style="padding-left: 4px; font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;&lt;p&gt;#​246 — May 27, 2022&lt;/p&gt;&lt;/td&gt;
+&lt;td align="right" style="padding-right: 4px; font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;&lt;p&gt;&lt;a href="https://serverless.email/link/124050/rss" style=" color: #dc5300;"&gt;Read on the Web&lt;/a&gt;&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;&lt;/table&gt;
+    
+    &lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0; padding-right: 12px;  padding-left: 12px;"&gt;&lt;p&gt;&lt;span style=" padding-left: 10px;"&gt;serverless⚡️status&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;
+  &lt;a href="https://serverless.email/link/124051/rss" style=" color: #dc5300;"&gt;&lt;img src="https://res.cloudinary.com/cpress/image/upload/w_1280,e_sharpen:60/v1653646145/ievugzixtsotsluhg0sd.png" width="640" style="      line-height: 100%;     "&gt;&lt;/a&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124051/rss" title="techcommunity.microsoft.com" style=" color: #dc5300; font-size: 1.1em; line-height: 1.4em;   "&gt;&lt;em&gt;Azure Container Apps&lt;/em&gt; Now Generally Available&lt;/a&gt;&lt;/span&gt; — At its annual Build conference this week, Microsoft announced the general availability of &lt;em&gt;Azure Container Apps&lt;/em&gt; — a way to deliver cloud-native apps with serverless containers in a Kubernetes-based environment that essentially acts as a platform on top of Azure Kubernetes Service.&lt;/p&gt;
+  &lt;p&gt;Daria Grigoriu (Microsoft) &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124052/rss" title="www.digitalocean.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;DigitalOcean Functions: A New Functions-as-a-Service Platform&lt;/a&gt;&lt;/span&gt; — Here’s a &lt;a href="https://serverless.email/link/124053/rss" style=" color: #dc5300;   "&gt;new scalable compute solution from DigitalOcean&lt;/a&gt; who have joined AWS, Google, Microsoft and others by offering a FaaS-specific service. You get up to 5 seconds per invocation and it supports Go, Node, Python, and PHP as first-class languages for now. The free tier is reasonably generous so it's ripe for testing.&lt;/p&gt;
+  &lt;p&gt;Anshu Agarwal (DigitalOcean) &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  &lt;a href="https://serverless.email/link/124054/rss" style=" color: #dc5300;   "&gt;&lt;img src="https://copm.s3.amazonaws.com/cb43c9c6.jpg" width="156" height="117" style="padding-top: 12px; padding-left: 12px;     line-height: 100%;    "&gt;&lt;/a&gt;
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124054/rss" title="www.cockroachlabs.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;Finally, a Database Designed with Devs in Mind&lt;/a&gt;&lt;/span&gt; — Automate scale, high availability, deployment and operations for your applications with CockroachDB — a serverless database designed to let you start fast, pay as you go, and build without worrying about your database.&lt;/p&gt;
+  &lt;p&gt;Cockroach Labs &lt;span style="text-transform: uppercase; margin-left: 4px; font-size: 0.9em;   color: #997 !important; padding-top: 1px; padding-right: 4px;  padding-left: 4px;            "&gt;sponsor&lt;/span&gt;&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124056/rss" title="aws.amazon.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;Near Real-Time Notifications from Aurora PostgreSQL with Triggers, Lambda, and SNS&lt;/a&gt;&lt;/span&gt; — This is the sort of plumbing work that AWS is well suited for. This tutorial covers the process of enabling notifications of data changes on a Postgres-compatible Aurora database to be sent through a serverless function and then on to other places via SNS. Just be careful not to send yourself an email every time a table gets a new row added.. ;-)&lt;/p&gt;
+  &lt;p&gt;Wajid Ali Mir and Anjan Mukherjee &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 0px;  padding-left: 0px;"&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+ &lt;p&gt;&lt;strong&gt;⚡️ In Brief:&lt;/strong&gt;&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;There's a &lt;a href="https://serverless.email/link/124057/rss" style=" color: #dc5300; font-weight: 600;"&gt;new PowerShell custom runtime&lt;/a&gt; for AWS Lambda.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href="https://serverless.email/link/124058/rss" style=" color: #dc5300; font-weight: 600;"&gt;Here's a case study from Gramercy&lt;/a&gt; on how they use serverless tech, namely Google Cloud.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Lee James Gilmore shares this high-level overview of &lt;a href="https://serverless.email/link/124059/rss" style=" color: #dc5300; font-weight: 600;"&gt;what to look out for when it comes to serverless threat modelling&lt;/a&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;ServerlessQ is &lt;a href="https://serverless.email/link/124060/rss" style=" color: #dc5300; font-weight: 600;"&gt;a new way to create message queues&lt;/a&gt; without the need of a cloud provider. &lt;a href="https://serverless.email/link/124061/rss" style=" color: #dc5300; font-weight: 600;"&gt;Docs here&lt;/a&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style=" font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124064/rss" title="austingil.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;What Is Edge Compute? It's Kind of Like Knitting Dog Hats&lt;/a&gt;&lt;/span&gt; — The author calls Edge compute “&lt;em&gt;the new frontier in computing technology&lt;/em&gt;” and goes on to explain what it is and why it’s awesome by using some of the oddest metaphors this side of 1985's &lt;em&gt;After Hours.&lt;/em&gt;&lt;/p&gt;
+  &lt;p&gt;Austin Gil &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124063/rss" title="t.co" style=" color: #dc5300; font-size: 1.05em;   "&gt;Starter Guide: “Things I Wish I Knew Before” for AWS Lambda&lt;/a&gt;&lt;/span&gt; — Here’s a fairly comprehensive guide to AWS Lambda. Looks at layers, EFS integrations, Edge, concurrency, security, and more.&lt;/p&gt;
+  &lt;p&gt;Tobias Schmidt &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124065/rss" title="venturebeat.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;Why SQLite May Become Foundational for Digital Progress&lt;/a&gt;&lt;/span&gt; — If so, this could throw up some interesting challenges as the way SQLite works, out of the box, isn't suitable for every serverless platform as-is.&lt;/p&gt;
+  &lt;p&gt;Peter Wayner &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style=" font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+  &lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+
+
+
+
+&lt;img src="https://serverless.email/open/246/rss" width="1" height="1" /&gt;</description>
+      <pubDate>Fri, 27 May 2022 00:00:00 +0000</pubDate>
+      <guid>https://serverless.email/issues/246</guid>
+    </item>
+  </channel>
+</rss></div><div class="header"><span>This XML file does not appear to have any style information associated with it. The document tree is shown below.</span><br /></div><div class="pretty-print"><div class="folder" id="folder0"><div class="line"><span class="folder-button fold"></span><span class="html-tag">&lt;rss<span class="html-attribute"> <span class="html-attribute-name">version</span>="<span class="html-attribute-value">2.0</span>"</span>&gt;</span></div><div class="opened"><span>
+  </span><div class="folder" id="folder1"><div class="line"><span class="folder-button fold"></span><span class="html-tag">&lt;channel&gt;</span></div><div class="opened"><span>
+    </span><div class="line"><span class="html-tag">&lt;title&gt;</span><span>Serverless Status</span><span class="html-tag">&lt;/title&gt;</span></div><span>
+    </span><div class="line"><span class="html-tag">&lt;description&gt;</span><span>A weekly newsletter on serverless and function-as-a-service (FaaS) architectures and platforms including AWS Lambda and Azure Functions.</span><span class="html-tag">&lt;/description&gt;</span></div><span>
+    </span><div class="line"><span class="html-tag">&lt;link&gt;</span><span>https://serverless.email/</span><span class="html-tag">&lt;/link&gt;</span></div><span>
+    </span><div class="folder" id="folder2"><div class="line"><span class="folder-button fold"></span><span class="html-tag">&lt;item&gt;</span></div><div class="opened"><span>
+      </span><div class="line"><span class="html-tag">&lt;title&gt;</span><span>Is Aurora Serverless v2 really 'serverless'?</span><span class="html-tag">&lt;/title&gt;</span></div><span>
+      </span><div class="line"><span class="html-tag">&lt;link&gt;</span><span>https://serverless.email/issues/249</span><span class="html-tag">&lt;/link&gt;</span></div><span>
+      </span><div class="line"><span class="html-tag">&lt;description&gt;</span><span>
+
+  
+
+    
+    
+    
+    
+    
+  
+
+
+
+
+&lt;table border=0 cellpadding=0 cellspacing=0 align="center" border="0"&gt;
+  &lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;
+  &lt;div&gt;    
+    &lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;
+&lt;td align="left" style="padding-left: 4px; font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;&lt;p&gt;#​249 — June 17, 2022&lt;/p&gt;&lt;/td&gt;
+&lt;td align="right" style="padding-right: 4px; font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;&lt;p&gt;&lt;a href="https://serverless.email/link/125002/rss" style=" color: #dc5300;"&gt;Read on the Web&lt;/a&gt;&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;&lt;/table&gt;
+    
+    &lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0; padding-right: 12px;  padding-left: 12px;"&gt;&lt;p&gt;&lt;span style=" padding-left: 10px;"&gt;serverless⚡️status&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;
+  &lt;a href="https://serverless.email/link/125003/rss" style=" color: #dc5300;"&gt;&lt;img src="https://res.cloudinary.com/cpress/image/upload/w_1280,e_sharpen:60/v1655467894/bigvy6qgcodbqmgcvfgh.jpg" width="640" style="      line-height: 100%;     "&gt;&lt;/a&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/125003/rss" title="www.mongodb.com" style=" color: #dc5300; font-size: 1.1em; line-height: 1.4em;   "&gt;MongoDB Atlas Serverless Instances Go GA&lt;/a&gt;&lt;/span&gt; — Last week’s MongoDB World conference brought us news that their serverless instances are now generally available, and the price to use them has &lt;em&gt;dropped significantly&lt;/em&gt; too.&lt;/p&gt;
+  &lt;p&gt;MongoDB &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/125005/rss" title="www.lastweekinaws.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;'No, AWS, Aurora Serverless v2 Is Not Serverless'&lt;/a&gt;&lt;/span&gt; — Argues that the recently released highly available, fully managed SQL database is a touch “&lt;em&gt;misleading with the ‘serverless’ descriptor&lt;/em&gt;”.&lt;/p&gt;
+  &lt;p&gt;Maciej Radzikowski &lt;span style="text-transform: uppercase; margin-left: 4px; padding-top: 1px; padding-right: 4px;  padding-left: 4px; font-size: 0.9em;             "&gt;Opinion&lt;/span&gt;&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  &lt;a href="https://serverless.email/link/125006/rss" style=" color: #dc5300;   "&gt;&lt;img src="https://copm.s3.amazonaws.com/46ceaf42.jpg" width="220" height="100" style="padding-top: 12px; padding-left: 12px;     line-height: 100%;    "&gt;&lt;/a&gt;
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/125006/rss" title="community.bitmovin.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;Be Amongst the First to Shape Our New Dev Community&lt;/a&gt;&lt;/span&gt; — Bitmovin is excited to announce our Developers Community. We want to give developers from around the world a place where they can connect, explore, learn, share their experience, and shape the future of video streaming, together. Join us today!&lt;/p&gt;
+  &lt;p&gt;Bitmovin Inc. &lt;span style="text-transform: uppercase; margin-left: 4px; font-size: 0.9em;   color: #997 !important; padding-top: 1px; padding-right: 4px;  padding-left: 4px;            "&gt;sponsor&lt;/span&gt;&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/125008/rss" title="spacelift.io" style=" color: #dc5300; font-size: 1.05em;   "&gt;Adventures in AWS Lambda Land: A Migration Gone Well&lt;/a&gt;&lt;/span&gt; — Lessons learned moving from long-running processes hosted in containers (ECS) to a serverless-based approach, including some annoying-but-still-better-anyway gotchas.&lt;/p&gt;
+  &lt;p&gt;Jacob Martin (Spacelift) &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/125004/rss" title="www.infoq.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;Reduce Carbon Dioxide Emissions with Serverless and Kubernetes Native Java&lt;/a&gt;&lt;/span&gt; — How serverless tech can go some way to reduce carbon dioxide emissions via native features with milliseconds first boot time, tiny resident set size memory and scalability.&lt;/p&gt;
+  &lt;p&gt;Daniel Oh &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/125007/rss" title="medium.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;Flipping Business Rules in Serverless&lt;/a&gt;&lt;/span&gt; — Should you put AWS step-function centrally in your application? This post explores the architecture considerations.&lt;/p&gt;
+  &lt;p&gt;Kevin van Ingen &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/125009/rss" title="dev.biglemon.co.uk" style=" color: #dc5300; font-size: 1.05em;   "&gt;How We Handle Repeated Tasks using Amazon EventBridge and AWS Lambda&lt;/a&gt;&lt;/span&gt; — Todo apps can be infinitely more complex with repeated todo tasks. This post explores handling such complexity in production with the AWS stack.&lt;/p&gt;
+  &lt;p&gt;Mike Rudge &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/125010/rss" title="dev.to" style=" color: #dc5300; font-size: 1.05em;   "&gt;A Serverless Solution to Just-in-Time Scheduling&lt;/a&gt;&lt;/span&gt; — Here’s a quick overview of an CDK construct to add to your stack for event scheduling. &lt;a href="https://serverless.email/link/125011/rss" style=" color: #dc5300;   "&gt;Repo here&lt;/a&gt;.&lt;/p&gt;
+  &lt;p&gt;Adèle Gauvrit &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 0px;  padding-left: 0px;"&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+ &lt;p&gt;&lt;strong&gt;⚡️ In Brief:&lt;/strong&gt;&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.0em; color: #000;"&gt;▶  &lt;a href="https://serverless.email/link/125012/rss" style=" color: #dc5300; font-size: 1.0em !important;   "&gt;Write Your Lambda Functions using TypeScript with AWS SAM&lt;/a&gt;&lt;/span&gt;
+  &lt;br&gt;&lt;span style="color: #5a5a5a; margin-top: 4px; text-transform: uppercase; font-size: 0.75em; line-height: 1.5em;"&gt;Marcia Villalba&lt;/span&gt; 
+  &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.0em; color: #000;"&gt;&lt;a href="https://serverless.email/link/125013/rss" style=" color: #dc5300; font-size: 1.0em !important;   "&gt;Triggering AWS Lambda Functions from Serverless Kafka&lt;/a&gt;&lt;/span&gt;
+  &lt;br&gt;&lt;span style="color: #5a5a5a; margin-top: 4px; text-transform: uppercase; font-size: 0.75em; line-height: 1.5em;"&gt;Tobias Wissmueller&lt;/span&gt; 
+  &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.0em; color: #000;"&gt;&lt;a href="https://serverless.email/link/125017/rss" style=" color: #dc5300; font-size: 1.0em !important;   "&gt;MongoDB vs DynamoDB Head-to-Head: Which Should You Choose?&lt;/a&gt;&lt;/span&gt;
+  &lt;br&gt;&lt;span style="color: #5a5a5a; margin-top: 4px; text-transform: uppercase; font-size: 0.75em; line-height: 1.5em;"&gt;Shawn Adams&lt;/span&gt; 
+  &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.0em; color: #000;"&gt;&lt;a href="https://serverless.email/link/125014/rss" style=" color: #dc5300; font-size: 1.0em !important;   "&gt;Serverless Puppeteer: Use Cases in 2022&lt;/a&gt;&lt;/span&gt;
+  &lt;br&gt;&lt;span style="color: #5a5a5a; margin-top: 4px; text-transform: uppercase; font-size: 0.75em; line-height: 1.5em;"&gt;Emil Hein&lt;/span&gt; 
+  &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.0em; color: #000;"&gt;&lt;a href="https://serverless.email/link/125015/rss" style=" color: #dc5300; font-size: 1.0em !important;   "&gt;AWS Step Functions: Are Active Executions Affected When Your State Machine Gets Updated?&lt;/a&gt;&lt;/span&gt;
+  &lt;br&gt;&lt;span style="color: #5a5a5a; margin-top: 4px; text-transform: uppercase; font-size: 0.75em; line-height: 1.5em;"&gt;Pubudu Jayawardana&lt;/span&gt; 
+  &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.0em; color: #000;"&gt;&lt;a href="https://serverless.email/link/125016/rss" style=" color: #dc5300; font-size: 1.0em !important;   "&gt;How Serverless Changes The Way Developers Build and Test&lt;/a&gt;&lt;/span&gt;
+  &lt;br&gt;&lt;span style="color: #5a5a5a; margin-top: 4px; text-transform: uppercase; font-size: 0.75em; line-height: 1.5em;"&gt;Matt Asay&lt;/span&gt; 
+  &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style=" font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style=" font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+  &lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+
+
+
+
+&lt;img src="https://serverless.email/open/249/rss" width="1" height="1" /&gt;</span><span class="html-tag">&lt;/description&gt;</span></div><span>
+      </span><div class="line"><span class="html-tag">&lt;pubDate&gt;</span><span>Fri, 17 Jun 2022 00:00:00 +0000</span><span class="html-tag">&lt;/pubDate&gt;</span></div><span>
+      </span><div class="line"><span class="html-tag">&lt;guid&gt;</span><span>https://serverless.email/issues/249</span><span class="html-tag">&lt;/guid&gt;</span></div><span>
+    </span></div><span class="folded hidden">...</span><div class="line"><span class="html-tag">&lt;/item&gt;</span></div></div><span>
+    </span><div class="folder" id="folder3"><div class="line"><span class="folder-button fold"></span><span class="html-tag">&lt;item&gt;</span></div><div class="opened"><span>
+      </span><div class="line"><span class="html-tag">&lt;title&gt;</span><span>Serverless as a catalyst for useful practices</span><span class="html-tag">&lt;/title&gt;</span></div><span>
+      </span><div class="line"><span class="html-tag">&lt;link&gt;</span><span>https://serverless.email/issues/248</span><span class="html-tag">&lt;/link&gt;</span></div><span>
+      </span><div class="line"><span class="html-tag">&lt;description&gt;</span><span>
+
+  
+
+    
+    
+    
+    
+    
+  
+
+
+
+
+&lt;table border=0 cellpadding=0 cellspacing=0 align="center" border="0"&gt;
+  &lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;
+  &lt;div&gt;    
+    &lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;
+&lt;td align="left" style="padding-left: 4px; font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;&lt;p&gt;#​248 — June 10, 2022&lt;/p&gt;&lt;/td&gt;
+&lt;td align="right" style="padding-right: 4px; font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;&lt;p&gt;&lt;a href="https://serverless.email/link/124719/rss" style=" color: #dc5300;"&gt;Read on the Web&lt;/a&gt;&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;&lt;/table&gt;
+    
+    &lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0; padding-right: 12px;  padding-left: 12px;"&gt;&lt;p&gt;&lt;span style=" padding-left: 10px;"&gt;serverless⚡️status&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;
+  &lt;a href="https://serverless.email/link/124720/rss" style=" color: #dc5300;"&gt;&lt;img src="https://res.cloudinary.com/cpress/image/upload/w_1280,e_sharpen:60/ocfjycf8418lmqaafs0j.jpg" width="640" style="      line-height: 100%;     "&gt;&lt;/a&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124720/rss" title="www.serverless.com" style=" color: #dc5300; font-size: 1.1em; line-height: 1.4em;   "&gt;Seven Reasons Why Serverless Encourages Useful Engineering Practices&lt;/a&gt;&lt;/span&gt; — Much in the same way that the &lt;a href="https://serverless.email/link/124721/rss" style=" color: #dc5300;   "&gt;12 factor app methodology&lt;/a&gt; previously introduced numerous useful practices into the app development and deployment field, so now does the challenge of building serverless apps, whether it's through ubiquitous infrastructure-as-code, loose coupling, or self contained execution environments.&lt;/p&gt;
+  &lt;p&gt;Anna Geller &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124722/rss" title="kerkour.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;When Serverless Really Shines (and When to Avoid It)&lt;/a&gt;&lt;/span&gt; — Ok, from a marketing perspective Serverless may have been pushed hard in recent years as “a magical solution for all our problems” 😅 As it goes, the author counters, adding that we shouldn’t get carried away, and noting that serverless is “&lt;em&gt;a niche pattern for high-compute, low throughout applications&lt;/em&gt;”.&lt;/p&gt;
+  &lt;p&gt;Sylvain Kerkour &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  &lt;a href="https://serverless.email/link/124723/rss" style=" color: #dc5300;   "&gt;&lt;img src="https://copm.s3.amazonaws.com/a4602653.jpg" width="146" height="110" style="padding-top: 12px; padding-left: 12px;     line-height: 100%;    "&gt;&lt;/a&gt;
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124723/rss" title="appwrite.io" style=" color: #dc5300; font-size: 1.05em;   "&gt;Self-Hosted, Open-Source Firebase Alternative&lt;/a&gt;&lt;/span&gt; — Appwrite is a secure, self-hosted solution that provides developers with a set of easy-to-use REST APIs for their core backend needs. Build fast and own your data with Appwrite! &lt;a href="https://serverless.email/link/124723/rss" style=" color: #dc5300;   "&gt;Click here&lt;/a&gt; to learn more.&lt;/p&gt;
+  &lt;p&gt;Appwrite &lt;span style="text-transform: uppercase; margin-left: 4px; font-size: 0.9em;   color: #997 !important; padding-top: 1px; padding-right: 4px;  padding-left: 4px;            "&gt;sponsor&lt;/span&gt;&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124724/rss" title="techcommunity.microsoft.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;New Major Release of Durable Functions for Node.js&lt;/a&gt;&lt;/span&gt; — Here’s a new major version of the &lt;a href="https://serverless.email/link/124725/rss" style=" color: #dc5300;   "&gt;Durable Functions&lt;/a&gt; NodeJS SDK — it claims to reduce orchestration time by more than 50%. There’s a few breaking changes you’ll want to be aware of too.&lt;/p&gt;
+  &lt;p&gt;David Justo (Microsoft) &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124726/rss" title="aws.amazon.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;Amazon EMR Serverless Now Generally Available: Run Big Data Applications without Managing Servers&lt;/a&gt;&lt;/span&gt; — We seemingly missed this news last week, so here it is: A serverless deployment option for running big data analytics apps using open-source frameworks (like Apache Spark and Hive) without the need to configure, manage, and scale clusters or servers — &lt;em&gt;now GA&lt;/em&gt;.&lt;/p&gt;
+  &lt;p&gt;Channy Yun (AWS) &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124727/rss" title="www.infoworld.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;It’s a Serverless and Containerized World&lt;/a&gt;&lt;/span&gt; — Last week we linked to &lt;a href="https://serverless.email/link/124728/rss" style=" color: #dc5300;   "&gt;Datadog’s 2022 State of Serverless survey results&lt;/a&gt;. Here, David reflects on the findings, chiefly how cloud solutions are focused on the popular combo of serverless and containers.&lt;/p&gt;
+  &lt;p&gt;David Linthicum &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;▶  &lt;a href="https://serverless.email/link/124729/rss" title="www.serverlesschats.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;Discussing Tactical Serverless with Lee Gilmore&lt;/a&gt;&lt;/span&gt; — A 45-minute chat with serverless architect &lt;a href="https://serverless.email/link/124730/rss" style=" color: #dc5300;   "&gt;Lee Gilmore&lt;/a&gt; about the complexities of taking serverless apps to production, what 'Tactical DDR' is, why serverless threat modeling is so important, and more.&lt;/p&gt;
+  &lt;p&gt;Serverless Chats &lt;span style="text-transform: uppercase; margin-left: 4px; padding-top: 1px; padding-right: 4px;  padding-left: 4px; font-size: 0.9em;             "&gt;podcast&lt;/span&gt;&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124731/rss" title="aws.amazon.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;How to Build a Multilingual Dashboard with Amazon Athena and Amazon QuickSight&lt;/a&gt;&lt;/span&gt; — &lt;a href="https://serverless.email/link/124732/rss" style=" color: #dc5300;   "&gt;QuickSight&lt;/a&gt; is a serverless business intelligence service. This post looks at how, combined with &lt;a href="https://serverless.email/link/124733/rss" style=" color: #dc5300;   "&gt;Athena&lt;/a&gt;, you can create multilingual dashboards at the data level.&lt;/p&gt;
+  &lt;p&gt;Francesco Marelli (AWS) &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124734/rss" title="css-tricks.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;Let's Make a QR Code Generator with a Serverless Function&lt;/a&gt;&lt;/span&gt; — A good, quick example of what cloud functions can be good for. DigitalOcean's new Functions platform is used here.&lt;/p&gt;
+  &lt;p&gt;Geoff Graham &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style=" font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+  &lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+
+
+
+
+&lt;img src="https://serverless.email/open/248/rss" width="1" height="1" /&gt;</span><span class="html-tag">&lt;/description&gt;</span></div><span>
+      </span><div class="line"><span class="html-tag">&lt;pubDate&gt;</span><span>Fri, 10 Jun 2022 00:00:00 +0000</span><span class="html-tag">&lt;/pubDate&gt;</span></div><span>
+      </span><div class="line"><span class="html-tag">&lt;guid&gt;</span><span>https://serverless.email/issues/248</span><span class="html-tag">&lt;/guid&gt;</span></div><span>
+    </span></div><span class="folded hidden">...</span><div class="line"><span class="html-tag">&lt;/item&gt;</span></div></div><span>
+    </span><div class="folder" id="folder4"><div class="line"><span class="folder-button fold"></span><span class="html-tag">&lt;item&gt;</span></div><div class="opened"><span>
+      </span><div class="line"><span class="html-tag">&lt;title&gt;</span><span>The State of Serverless in 2022</span><span class="html-tag">&lt;/title&gt;</span></div><span>
+      </span><div class="line"><span class="html-tag">&lt;link&gt;</span><span>https://serverless.email/issues/247</span><span class="html-tag">&lt;/link&gt;</span></div><span>
+      </span><div class="line"><span class="html-tag">&lt;description&gt;</span><span>
+
+  
+
+    
+    
+    
+    
+    
+  
+
+
+
+
+&lt;table border=0 cellpadding=0 cellspacing=0 align="center" border="0"&gt;
+  &lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;
+  &lt;div&gt;    
+    &lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;
+&lt;td align="left" style="padding-left: 4px; font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;&lt;p&gt;#​247 — June 3, 2022&lt;/p&gt;&lt;/td&gt;
+&lt;td align="right" style="padding-right: 4px; font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;&lt;p&gt;&lt;a href="https://serverless.email/link/124371/rss" style=" color: #dc5300;"&gt;Read on the Web&lt;/a&gt;&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;&lt;/table&gt;
+    
+    &lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0; padding-right: 12px;  padding-left: 12px;"&gt;&lt;p&gt;&lt;span style=" padding-left: 10px;"&gt;serverless⚡️status&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;
+  &lt;a href="https://serverless.email/link/124372/rss" style=" color: #dc5300;"&gt;&lt;img src="https://res.cloudinary.com/cpress/image/upload/w_1280,e_sharpen:60/xklc9nme5xhvxbx84ntv.jpg" width="640" style="      line-height: 100%;     "&gt;&lt;/a&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124372/rss" title="www.datadoghq.com" style=" color: #dc5300; font-size: 1.1em; line-height: 1.4em;   "&gt;The State of Serverless 2022&lt;/a&gt;&lt;/span&gt; — Datadog’s annual report looking at trends across the serverless space is back for 2022. Lots of interesting insights here, including data on adoption rates, language choices, Lambda function deployment and preferences, and  more.&lt;/p&gt;
+  
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 20px;  padding-left: 20px;"&gt;
+  &lt;p&gt;“&lt;em&gt;...we identified three key themes in how teams are using serverless today. First, serverless compute has become an essential part of the technology stacks of organizations that operate in each cloud. Second, AWS Lambda remains extremely popular among AWS customers, who are using it in new ways to support their unique business needs. Finally, there are meaningful differences between the serverless offerings available within AWS, Azure, and Google Cloud, and each gives users distinct options for building serverless applications&lt;/em&gt;.”&lt;/p&gt;
+
+  
+    &lt;p&gt;___&lt;br&gt;&lt;a href="https://serverless.email/link/124372/rss" style=" color: #dc5300;"&gt;Datadog&lt;/a&gt;&lt;/p&gt;
+  
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 0px;  padding-left: 0px;"&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  &lt;a href="https://serverless.email/link/124373/rss" style=" color: #dc5300;   "&gt;&lt;img src="https://copm.s3.amazonaws.com/19262749.png" width="165" height="165" style="padding-top: 12px; padding-left: 12px;     line-height: 100%;    "&gt;&lt;/a&gt;
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124373/rss" title="www.rookout.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;Debugging Serverless Environments Is Difficult&lt;/a&gt;&lt;/span&gt; — Level up your Serverless debugging experience with Rookout's Serverless Debug Session. Quickly identify problematic areas with the addition of graphic visualization of the serverless function history. Try Rookout's Live Debugger Free Today.&lt;/p&gt;
+  &lt;p&gt;Rookout &lt;span style="text-transform: uppercase; margin-left: 4px; font-size: 0.9em;   color: #997 !important; padding-top: 1px; padding-right: 4px;  padding-left: 4px;            "&gt;sponsor&lt;/span&gt;&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style=" font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style=" font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124374/rss" title="github.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;Neon: An Open Source Serverless Alternative to AWS Aurora Postgres?&lt;/a&gt;&lt;/span&gt; — This is the codebase behind &lt;a href="https://serverless.email/link/124375/rss" style=" color: #dc5300;   "&gt;an eponymously named company&lt;/a&gt; (founded by Nikita Shamgunov who co-founded MemSQL) building a multi-cloud serverless Postgres platform and giving us strong &lt;a href="https://serverless.email/link/124376/rss" style=" color: #dc5300;   "&gt;PlanetScale&lt;/a&gt; vibes.&lt;/p&gt;
+  &lt;p&gt;Neon &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124377/rss" title="launchdarkly.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;Handling Data at the Edge with Cloudflare Workers&lt;/a&gt;&lt;/span&gt; — Still curious as to what the big deal is with edge functions? Well, this post explains what the fuss is about and demonstrates its usage with ‘data at the edge’.&lt;/p&gt;
+  &lt;p&gt;Brian Rinaldi &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124378/rss" title="www.lastweekinaws.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;The Aurora Serverless Road Not Taken&lt;/a&gt;&lt;/span&gt; — “&lt;em&gt;we’re staring down two diverging roads for Aurora Serverless. AWS now has a v1 and a v2 of the same service, each offering different capabilities and trade-offs&lt;/em&gt;”. — Corey explains here how he thinks &lt;a href="https://serverless.email/link/124379/rss" style=" color: #dc5300;   "&gt;the recent launch of Amazon Aurora Serverless v2 &lt;/a&gt; fails to fulfill the promises of serverless.&lt;/p&gt;
+  &lt;p&gt;Corey Quinn &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124380/rss" title="www.readysetcloud.io" style=" color: #dc5300; font-size: 1.05em;   "&gt;Quick Optimizations You Should Make to Your Serverless Applications&lt;/a&gt;&lt;/span&gt; — A few AWS-oriented ways to fine-tune your serverless app to make it perform “&lt;em&gt;better than ever before&lt;/em&gt;”.&lt;/p&gt;
+  &lt;p&gt;Allen Helton &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.0em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124382/rss" style=" color: #dc5300; font-size: 1.0em !important;   "&gt;AWS SNS vs. SQS - What Are The Main Differences?&lt;/a&gt;&lt;/span&gt; — SNS is essentially pub/sub, whereas SQS is a queue. But it does go a lot further than that..
+  &lt;br&gt;&lt;span style="color: #5a5a5a; margin-top: 4px; text-transform: uppercase; font-size: 0.75em; line-height: 1.5em;"&gt;Sandro Volpicella&lt;/span&gt; 
+  &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.0em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124381/rss" style=" color: #dc5300; font-size: 1.0em !important;   "&gt;AWS AppSync Introduces New Simplified Console Experience to Deploy Generic Real-time Pub/Sub APIs&lt;/a&gt;&lt;/span&gt;
+  &lt;br&gt;&lt;span style="color: #5a5a5a; margin-top: 4px; text-transform: uppercase; font-size: 0.75em; line-height: 1.5em;"&gt;AWS&lt;/span&gt; 
+  &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.0em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124383/rss" style=" color: #dc5300; font-size: 1.0em !important;   "&gt;How to Deploy a NestJS App on Google Cloud Run with GitHub Actions&lt;/a&gt;&lt;/span&gt;
+  &lt;br&gt;&lt;span style="color: #5a5a5a; margin-top: 4px; text-transform: uppercase; font-size: 0.75em; line-height: 1.5em;"&gt;Tom Ray&lt;/span&gt; 
+  &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.0em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124384/rss" style=" color: #dc5300; font-size: 1.0em !important;   "&gt;cf-workers-telegram-bot: Run a Telegram Bot on CloudFlare Workers&lt;/a&gt;&lt;/span&gt; — Telegram is a popular chat system that's particularly friendly to developers and bot use cases.
+  &lt;br&gt;&lt;span style="color: #5a5a5a; margin-top: 4px; text-transform: uppercase; font-size: 0.75em; line-height: 1.5em;"&gt;Sean Behan&lt;/span&gt; 
+  &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style=" font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+  &lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+
+
+
+
+&lt;img src="https://serverless.email/open/247/rss" width="1" height="1" /&gt;</span><span class="html-tag">&lt;/description&gt;</span></div><span>
+      </span><div class="line"><span class="html-tag">&lt;pubDate&gt;</span><span>Fri, 3 Jun 2022 00:00:00 +0000</span><span class="html-tag">&lt;/pubDate&gt;</span></div><span>
+      </span><div class="line"><span class="html-tag">&lt;guid&gt;</span><span>https://serverless.email/issues/247</span><span class="html-tag">&lt;/guid&gt;</span></div><span>
+    </span></div><span class="folded hidden">...</span><div class="line"><span class="html-tag">&lt;/item&gt;</span></div></div><span>
+    </span><div class="folder" id="folder5"><div class="line"><span class="folder-button fold"></span><span class="html-tag">&lt;item&gt;</span></div><div class="opened"><span>
+      </span><div class="line"><span class="html-tag">&lt;title&gt;</span><span>DigitalOcean joins the serverless party</span><span class="html-tag">&lt;/title&gt;</span></div><span>
+      </span><div class="line"><span class="html-tag">&lt;link&gt;</span><span>https://serverless.email/issues/246</span><span class="html-tag">&lt;/link&gt;</span></div><span>
+      </span><div class="line"><span class="html-tag">&lt;description&gt;</span><span>
+
+  
+
+    
+    
+    
+    
+    
+  
+
+
+
+
+&lt;table border=0 cellpadding=0 cellspacing=0 align="center" border="0"&gt;
+  &lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;
+  &lt;div&gt;    
+    &lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;
+&lt;td align="left" style="padding-left: 4px; font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;&lt;p&gt;#​246 — May 27, 2022&lt;/p&gt;&lt;/td&gt;
+&lt;td align="right" style="padding-right: 4px; font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;&lt;p&gt;&lt;a href="https://serverless.email/link/124050/rss" style=" color: #dc5300;"&gt;Read on the Web&lt;/a&gt;&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;&lt;/table&gt;
+    
+    &lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0; padding-right: 12px;  padding-left: 12px;"&gt;&lt;p&gt;&lt;span style=" padding-left: 10px;"&gt;serverless⚡️status&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;
+  &lt;a href="https://serverless.email/link/124051/rss" style=" color: #dc5300;"&gt;&lt;img src="https://res.cloudinary.com/cpress/image/upload/w_1280,e_sharpen:60/v1653646145/ievugzixtsotsluhg0sd.png" width="640" style="      line-height: 100%;     "&gt;&lt;/a&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124051/rss" title="techcommunity.microsoft.com" style=" color: #dc5300; font-size: 1.1em; line-height: 1.4em;   "&gt;&lt;em&gt;Azure Container Apps&lt;/em&gt; Now Generally Available&lt;/a&gt;&lt;/span&gt; — At its annual Build conference this week, Microsoft announced the general availability of &lt;em&gt;Azure Container Apps&lt;/em&gt; — a way to deliver cloud-native apps with serverless containers in a Kubernetes-based environment that essentially acts as a platform on top of Azure Kubernetes Service.&lt;/p&gt;
+  &lt;p&gt;Daria Grigoriu (Microsoft) &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124052/rss" title="www.digitalocean.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;DigitalOcean Functions: A New Functions-as-a-Service Platform&lt;/a&gt;&lt;/span&gt; — Here’s a &lt;a href="https://serverless.email/link/124053/rss" style=" color: #dc5300;   "&gt;new scalable compute solution from DigitalOcean&lt;/a&gt; who have joined AWS, Google, Microsoft and others by offering a FaaS-specific service. You get up to 5 seconds per invocation and it supports Go, Node, Python, and PHP as first-class languages for now. The free tier is reasonably generous so it's ripe for testing.&lt;/p&gt;
+  &lt;p&gt;Anshu Agarwal (DigitalOcean) &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  &lt;a href="https://serverless.email/link/124054/rss" style=" color: #dc5300;   "&gt;&lt;img src="https://copm.s3.amazonaws.com/cb43c9c6.jpg" width="156" height="117" style="padding-top: 12px; padding-left: 12px;     line-height: 100%;    "&gt;&lt;/a&gt;
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124054/rss" title="www.cockroachlabs.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;Finally, a Database Designed with Devs in Mind&lt;/a&gt;&lt;/span&gt; — Automate scale, high availability, deployment and operations for your applications with CockroachDB — a serverless database designed to let you start fast, pay as you go, and build without worrying about your database.&lt;/p&gt;
+  &lt;p&gt;Cockroach Labs &lt;span style="text-transform: uppercase; margin-left: 4px; font-size: 0.9em;   color: #997 !important; padding-top: 1px; padding-right: 4px;  padding-left: 4px;            "&gt;sponsor&lt;/span&gt;&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124056/rss" title="aws.amazon.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;Near Real-Time Notifications from Aurora PostgreSQL with Triggers, Lambda, and SNS&lt;/a&gt;&lt;/span&gt; — This is the sort of plumbing work that AWS is well suited for. This tutorial covers the process of enabling notifications of data changes on a Postgres-compatible Aurora database to be sent through a serverless function and then on to other places via SNS. Just be careful not to send yourself an email every time a table gets a new row added.. ;-)&lt;/p&gt;
+  &lt;p&gt;Wajid Ali Mir and Anjan Mukherjee &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 0px;  padding-left: 0px;"&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+ &lt;p&gt;&lt;strong&gt;⚡️ In Brief:&lt;/strong&gt;&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;There's a &lt;a href="https://serverless.email/link/124057/rss" style=" color: #dc5300; font-weight: 600;"&gt;new PowerShell custom runtime&lt;/a&gt; for AWS Lambda.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href="https://serverless.email/link/124058/rss" style=" color: #dc5300; font-weight: 600;"&gt;Here's a case study from Gramercy&lt;/a&gt; on how they use serverless tech, namely Google Cloud.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Lee James Gilmore shares this high-level overview of &lt;a href="https://serverless.email/link/124059/rss" style=" color: #dc5300; font-weight: 600;"&gt;what to look out for when it comes to serverless threat modelling&lt;/a&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;ServerlessQ is &lt;a href="https://serverless.email/link/124060/rss" style=" color: #dc5300; font-weight: 600;"&gt;a new way to create message queues&lt;/a&gt; without the need of a cloud provider. &lt;a href="https://serverless.email/link/124061/rss" style=" color: #dc5300; font-weight: 600;"&gt;Docs here&lt;/a&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style=" font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124064/rss" title="austingil.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;What Is Edge Compute? It's Kind of Like Knitting Dog Hats&lt;/a&gt;&lt;/span&gt; — The author calls Edge compute “&lt;em&gt;the new frontier in computing technology&lt;/em&gt;” and goes on to explain what it is and why it’s awesome by using some of the oddest metaphors this side of 1985's &lt;em&gt;After Hours.&lt;/em&gt;&lt;/p&gt;
+  &lt;p&gt;Austin Gil &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124063/rss" title="t.co" style=" color: #dc5300; font-size: 1.05em;   "&gt;Starter Guide: “Things I Wish I Knew Before” for AWS Lambda&lt;/a&gt;&lt;/span&gt; — Here’s a fairly comprehensive guide to AWS Lambda. Looks at layers, EFS integrations, Edge, concurrency, security, and more.&lt;/p&gt;
+  &lt;p&gt;Tobias Schmidt &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style="font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em;  padding-top: 0px; padding-right: 15px;  padding-left: 15px;"&gt;
+  
+  &lt;p&gt;&lt;span style="font-weight: 600; font-size: 1.1em; color: #000;"&gt;&lt;a href="https://serverless.email/link/124065/rss" title="venturebeat.com" style=" color: #dc5300; font-size: 1.05em;   "&gt;Why SQLite May Become Foundational for Digital Progress&lt;/a&gt;&lt;/span&gt; — If so, this could throw up some interesting challenges as the way SQLite works, out of the box, isn't suitable for every serverless platform as-is.&lt;/p&gt;
+  &lt;p&gt;Peter Wayner &lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=0 cellpadding=0 cellspacing=0 border=0 cellpadding=0 cellspacing=0&gt;&lt;tr&gt;&lt;td style=" font-family: -apple-system,BlinkMacSystemFont,Helvetica,sans-serif; font-size: 15px; line-height: 1.55em; "&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+  &lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+
+
+
+
+&lt;img src="https://serverless.email/open/246/rss" width="1" height="1" /&gt;</span><span class="html-tag">&lt;/description&gt;</span></div><span>
+      </span><div class="line"><span class="html-tag">&lt;pubDate&gt;</span><span>Fri, 27 May 2022 00:00:00 +0000</span><span class="html-tag">&lt;/pubDate&gt;</span></div><span>
+      </span><div class="line"><span class="html-tag">&lt;guid&gt;</span><span>https://serverless.email/issues/246</span><span class="html-tag">&lt;/guid&gt;</span></div><span>
+    </span></div><span class="folded hidden">...</span><div class="line"><span class="html-tag">&lt;/item&gt;</span></div></div><span>
+  </span></div><span class="folded hidden">...</span><div class="line"><span class="html-tag">&lt;/channel&gt;</span></div></div><span>
+</span></div><span class="folded hidden">...</span><div class="line"><span class="html-tag">&lt;/rss&gt;</span></div></div></div></body></html>

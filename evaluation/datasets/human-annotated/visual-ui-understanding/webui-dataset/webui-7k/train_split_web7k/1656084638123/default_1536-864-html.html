@@ -1,0 +1,1150 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- force IE browsers in compatibility mode to use their most aggressive rendering engine -->
+
+    <meta charset="utf-8">
+    <title>Basecamp Status - Campfire Database Maintenance</title>
+    <meta name="description" content="Basecamp's Status Page - Campfire Database Maintenance.">
+
+    <!-- Mobile viewport optimization h5bp.com/ad -->
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+
+    <!-- Time this page was rendered - http://purl.org/dc/terms/issued -->
+    <meta name="issued" content="1656084638">
+
+    <!-- Mobile IE allows us to activate ClearType technology for smoothing fonts for easy reading -->
+    <meta http-equiv="cleartype" content="on">
+
+    <!-- Le fonts -->
+<style>
+  @font-face {
+    font-family: 'proxima-nova';
+    src: url('https://dka575ofm4ao0.cloudfront.net/assets/ProximaNovaLight-f0b2f7c12b6b87c65c02d3c1738047ea67a7607fd767056d8a2964cc6a2393f7.eot?host=www.basecampstatus.com');
+    src: url('https://dka575ofm4ao0.cloudfront.net/assets/ProximaNovaLight-f0b2f7c12b6b87c65c02d3c1738047ea67a7607fd767056d8a2964cc6a2393f7.eot?host=www.basecampstatus.com#iefix') format('embedded-opentype'),
+         url('https://dka575ofm4ao0.cloudfront.net/assets/ProximaNovaLight-e642ffe82005c6208632538a557e7f5dccb835c0303b06f17f55ccf567907241.woff?host=www.basecampstatus.com') format('woff'),
+         url('https://dka575ofm4ao0.cloudfront.net/assets/ProximaNovaLight-0f094da9b301d03292f97db5544142a16f9f2ddf50af91d44753d9310c194c5f.ttf?host=www.basecampstatus.com') format('truetype');
+    font-weight:300;
+    font-style:normal;
+  }
+   
+  @font-face {
+    font-family: 'proxima-nova';
+    src: url('https://dka575ofm4ao0.cloudfront.net/assets/ProximaNovaRegular-366d17769d864aa72f27defaddf591e460a1de4984bb24dacea57a9fc1d14878.eot?host=www.basecampstatus.com');
+    src: url('https://dka575ofm4ao0.cloudfront.net/assets/ProximaNovaRegular-366d17769d864aa72f27defaddf591e460a1de4984bb24dacea57a9fc1d14878.eot?host=www.basecampstatus.com#iefix') format('embedded-opentype'),
+         url('https://dka575ofm4ao0.cloudfront.net/assets/ProximaNovaRegular-2ee4c449a9ed716f1d88207bd1094e21b69e2818b5cd36b28ad809dc1924ec54.woff?host=www.basecampstatus.com') format('woff'),
+         url('https://dka575ofm4ao0.cloudfront.net/assets/ProximaNovaRegular-a40a469edbd27b65b845b8000d47445a17def8ba677f4eb836ad1808f7495173.ttf?host=www.basecampstatus.com') format('truetype');
+    font-weight:400;
+    font-style:normal;
+  }
+   
+  @font-face {
+    font-family: 'proxima-nova';
+    src: url('https://dka575ofm4ao0.cloudfront.net/assets/ProximaNovaRegularIt-0bf83a850b45e4ccda15bd04691e3c47ae84fec3588363b53618bd275a98cbb7.eot?host=www.basecampstatus.com');
+    src: url('https://dka575ofm4ao0.cloudfront.net/assets/ProximaNovaRegularIt-0bf83a850b45e4ccda15bd04691e3c47ae84fec3588363b53618bd275a98cbb7.eot?host=www.basecampstatus.com#iefix') format('embedded-opentype'),
+         url('https://dka575ofm4ao0.cloudfront.net/assets/ProximaNovaRegularIt-0c394ec7a111aa7928ea470ec0a67c44ebdaa0f93d1c3341abb69656cc26cbdd.woff?host=www.basecampstatus.com') format('woff'),
+         url('https://dka575ofm4ao0.cloudfront.net/assets/ProximaNovaRegularIt-9e43859f8015a4d47d9eaf7bafe8d1e26e3298795ce1f4cdb0be0479b8a4605e.ttf?host=www.basecampstatus.com') format('truetype');
+    font-weight:400;
+    font-style:italic;
+  }
+   
+  @font-face {
+    font-family: 'proxima-nova';
+    src: url('https://dka575ofm4ao0.cloudfront.net/assets/ProximaNovaSemibold-09566917307251d22021a3f91fc646f3e45f8d095209bcd2cded8a1979f06e54.eot?host=www.basecampstatus.com');
+    src: url('https://dka575ofm4ao0.cloudfront.net/assets/ProximaNovaSemibold-09566917307251d22021a3f91fc646f3e45f8d095209bcd2cded8a1979f06e54.eot?host=www.basecampstatus.com#iefix') format('embedded-opentype'),
+         url('https://dka575ofm4ao0.cloudfront.net/assets/ProximaNovaSemibold-86724fb2152613d735ba47c3f47a9ad2424b898bea4bece213dacee40344f966.woff?host=www.basecampstatus.com') format('woff'),
+         url('https://dka575ofm4ao0.cloudfront.net/assets/ProximaNovaSemibold-cf3e4eb7fbdf6fb83e526cc2a0141e55b01097e6e1abfd4cbdc3eda75d183f74.ttf?host=www.basecampstatus.com') format('truetype');
+    font-weight:500;
+    font-style:normal;
+  }
+   
+  @font-face {
+    font-family: 'proxima-nova';
+    src: url('https://dka575ofm4ao0.cloudfront.net/assets/ProximaNovaBold-622ea489d20e12e691663f83217105e957e2d3d09703707d40155a29c06cc9d9.eot?host=www.basecampstatus.com');
+    src: url('https://dka575ofm4ao0.cloudfront.net/assets/ProximaNovaBold-622ea489d20e12e691663f83217105e957e2d3d09703707d40155a29c06cc9d9.eot?host=www.basecampstatus.com#iefix') format('embedded-opentype'),
+         url('https://dka575ofm4ao0.cloudfront.net/assets/ProximaNovaBold-c8dc577ff7f76d2fc199843e38c04bb2e9fd15889421358d966a9f846c2ed1cd.woff?host=www.basecampstatus.com') format('woff'),
+         url('https://dka575ofm4ao0.cloudfront.net/assets/ProximaNovaBold-27177fe9242acbe089276ee587feef781446667ffe9b6fdc5b7fe21ad73e12f3.ttf?host=www.basecampstatus.com') format('truetype');
+    font-weight:700;
+    font-style:normal;
+  }
+</style>
+
+
+      <link rel="shortcut icon" type="image/x-icon" href="//dka575ofm4ao0.cloudfront.net/pages-favicon_logos/original/143948/basecamp-icon-96x96.png">
+
+    <link rel="shortcut icon" href="//dka575ofm4ao0.cloudfront.net/pages-favicon_logos/original/143948/basecamp-icon-96x96.png">
+
+    <link rel="alternate" type="application/atom+xml" href="https://www.basecampstatus.com/history.atom" title="Basecamp Status History - Atom Feed">
+    <link rel="alternate" type="application/rss+xml" href="https://www.basecampstatus.com/history.rss" title="Basecamp Status History - RSS Feed">
+
+      <!-- Canonical Link to ensure that only the custom domain is indexed when present -->
+      <link rel="canonical" href="https://www.basecampstatus.com/incidents/0dbg0pslwnrq">
+
+    <meta name="_globalsign-domain-verification" content="y_VzfckMy4iePo5oDJNivyYIjh8LffYa4jzUndm_bZ">
+
+      <meta name="robots" content="noindex,nofollow">
+
+    <link rel="alternate" type="application/atom+xml" title="ATOM" href="https://www.basecampstatus.com/history.atom">
+
+    <!-- Le styles -->
+    <link rel="stylesheet" media="screen" href="https://dka575ofm4ao0.cloudfront.net/packs/0.e1392dc636beb2127d2e.css">
+    <link rel="stylesheet" media="all" href="https://dka575ofm4ao0.cloudfront.net/assets/status/status_manifest-147454f9b807498350e28c864db1d7b4667efab830b8e7ab24a3066acbe22757.css">
+
+    <script type="text/javascript" async="" src="https://www.gstatic.com/recaptcha/releases/M10Y1otwqRkBioiFUKRQ8s3N/recaptcha__en.js" crossorigin="anonymous" integrity="sha384-PgEKqOsT6tbtZbSlFK1VS+4RfrrSSV+WKcTMdqGJQT3MX4Mw8BfhcXChqRm88iWl"></script><script src="https://dka575ofm4ao0.cloudfront.net/assets/jquery-3.5.1.min-729e416557a365062a8a20f0562f18aa171da57298005d392312670c706c68de.js"></script>
+
+    <script>
+      window.pageColorData = {"blue":"#3498DB","border":"#E0E0E0","body_background":"#FFFFFF","font":"#1D2D35","graph":"#3498DB","green":"#3CB371","light_font":"#1D2D35","link":"#1D2D35","orange":"#EC7A3C","red":"#E55235","yellow":"#FFE000","no_data":"#b3bac5"};
+    </script>
+    <style>
+  /* BODY BACKGROUND */ /* BODY BACKGROUND */ /* BODY BACKGROUND */ /* BODY BACKGROUND */ /* BODY BACKGROUND */
+  body,
+  .layout-content.status.status-api .section .example-container .example-opener .color-secondary,
+  .grouped-items-selector,
+  .layout-content.status.status-full-history .history-nav a.current,
+  div[id^="subscribe-modal"] .modal-footer,
+  div[id^="subscribe-modal"],
+  #uptime-tooltip .tooltip-box {
+    background-color:#FFFFFF;
+  }
+
+  #uptime-tooltip .pointer-container .pointer-smaller {
+    border-bottom-color:#FFFFFF;
+  }
+
+
+
+
+  /* PRIMARY FONT COLOR */ /* PRIMARY FONT COLOR */ /* PRIMARY FONT COLOR */ /* PRIMARY FONT COLOR */
+  body.status,
+  .color-primary,
+  .color-primary:hover,
+  .layout-content.status-index .status-day .update-title.impact-none a,
+  .layout-content.status-index .status-day .update-title.impact-none a:hover,
+  .layout-content.status-index .timeframes-container .timeframe.active,
+  .layout-content.status-full-history .month .incident-container .impact-none,
+  .layout-content.status.status-index .incidents-list .incident-title.impact-none a,
+  .incident-history .impact-none,
+  .layout-content.status .grouped-items-selector.inline .grouped-item.active,
+  .layout-content.status.status-full-history .history-nav a.current,
+  .layout-content.status.status-full-history .history-nav a:not(.current):hover,
+  div[id^="subscribe-modal"] .modal-header .close,
+  .grouped-item-label,
+  #uptime-tooltip .tooltip-box .tooltip-content .related-events .related-event a.related-event-link {
+    color:#1D2D35;
+  }
+
+  .layout-content.status.status-index .components-statuses .component-container .name {
+    color:#1D2D35;
+    color:rgba(29,45,53,.8);
+  }
+
+
+
+
+  /* SECONDARY FONT COLOR */ /* SECONDARY FONT COLOR */ /* SECONDARY FONT COLOR */ /* SECONDARY FONT COLOR */
+  small,
+  .layout-content.status .table-row .date,
+  .color-secondary,
+  .layout-content.status .grouped-items-selector.inline .grouped-item,
+  .layout-content.status.status-full-history .history-footer .pagination a.disabled,
+  .layout-content.status.status-full-history .history-nav a,
+  #uptime-tooltip .tooltip-box .tooltip-content .related-events #related-event-header {
+    color:#1D2D35;
+  }
+
+
+
+
+  /* BORDER COLOR */  /* BORDER COLOR */  /* BORDER COLOR */  /* BORDER COLOR */  /* BORDER COLOR */  /* BORDER COLOR */
+  body.status .layout-content.status .border-color,
+  hr,
+  .tooltip-base,
+  .markdown-display table,
+  div[id^="subscribe-modal"],
+  #uptime-tooltip .tooltip-box {
+    border-color:#E0E0E0;
+  }
+
+  div[id^="subscribe-modal"] .modal-footer,
+  .markdown-display table td {
+    border-top-color:#E0E0E0;
+  }
+
+  div[id^="subscribe-modal"] .modal-header .close:hover {
+    color:#E0E0E0;
+  }
+
+  .markdown-display table td + td, .markdown-display table th + th {
+    border-left-color:#E0E0E0;
+  }
+
+  div[id^="subscribe-modal"] .modal-header,
+  #uptime-tooltip .pointer-container .pointer-larger {
+    border-bottom-color:#E0E0E0;
+  }
+
+  #uptime-tooltip .tooltip-box .outage-field {
+    /*
+      Generate the background-color for the outage-field from the css_body_background_color and css_border_color.
+
+      For the default background (#ffffff) and default css_border_color (#e0e0e0), use the luminosity of the default background with a magic number to arrive at
+      the original outage-field background color (#f4f5f7). I used the formula Target Color = Color * alpha + Background * (1 - alpha) to find the magic number of ~0.08.
+
+      For darker css_body_background_color, luminosity values are lower so alpha trends toward becoming transparent (thus outage-field background becomes same as css_body_background_color).
+    */
+    background-color: rgba(224,224,224,0.31);
+
+    /*
+      outage-field border-color alpha is inverse to the luminosity of css_body_background_color.
+      That is to say, with a default white background this border is transparent, but on a black background, it's opaque css_border_color.
+    */
+    border-color: rgba(224,224,224,0.0);
+  }
+
+
+
+
+  /* CSS REDS */ /* CSS REDS */ /* CSS REDS */ /* CSS REDS */ /* CSS REDS */ /* CSS REDS */ /* CSS REDS */
+  .layout-content.status.status-index .status-day .update-title.impact-critical a,
+  .layout-content.status.status-index .status-day .update-title.impact-critical a:hover,
+  .layout-content.status.status-index .page-status.status-critical,
+  .layout-content.status.status-index .unresolved-incident.impact-critical .incident-title,
+  .flat-button.background-red {
+    background-color:#E55235;
+  }
+
+  .layout-content.status-index .components-statuses .component-container.status-red:after,
+  .layout-content.status-full-history .month .incident-container .impact-critical,
+  .layout-content.status-incident .incident-name.impact-critical,
+  .layout-content.status.status-index .incidents-list .incident-title.impact-critical a,
+  .status-red .icon-indicator,
+  .incident-history .impact-critical,
+  .components-container .component-inner-container.status-red .component-status,
+  .components-container .component-inner-container.status-red .icon-indicator {
+    color:#E55235;
+  }
+
+  .layout-content.status.status-index .unresolved-incident.impact-critical .updates {
+    border-color:#E55235;
+  }
+
+
+
+
+  /* CSS ORANGES */ /* CSS ORANGES */ /* CSS ORANGES */ /* CSS ORANGES */ /* CSS ORANGES */ /* CSS ORANGES */
+  .layout-content.status.status-index .status-day .update-title.impact-major a,
+  .layout-content.status.status-index .status-day .update-title.impact-major a:hover,
+  .layout-content.status.status-index .page-status.status-major,
+  .layout-content.status.status-index .unresolved-incident.impact-major .incident-title {
+    background-color:#EC7A3C;
+  }
+
+  .layout-content.status-index .components-statuses .component-container.status-orange:after,
+  .layout-content.status-full-history .month .incident-container .impact-major,
+  .layout-content.status-incident .incident-name.impact-major,
+  .layout-content.status.status-index .incidents-list .incident-title.impact-major a,
+  .status-orange .icon-indicator,
+  .incident-history .impact-major,
+  .components-container .component-inner-container.status-orange .component-status,
+  .components-container .component-inner-container.status-orange .icon-indicator {
+    color:#EC7A3C;
+  }
+
+  .layout-content.status.status-index .unresolved-incident.impact-major .updates {
+    border-color:#EC7A3C;
+  }
+
+
+
+
+  /* CSS YELLOWS */ /* CSS YELLOWS */ /* CSS YELLOWS */ /* CSS YELLOWS */ /* CSS YELLOWS */ /* CSS YELLOWS */
+  .layout-content.status.status-index .status-day .update-title.impact-minor a,
+  .layout-content.status.status-index .status-day .update-title.impact-minor a:hover,
+  .layout-content.status.status-index .page-status.status-minor,
+  .layout-content.status.status-index .unresolved-incident.impact-minor .incident-title,
+  .layout-content.status.status-index .scheduled-incidents-container .tab {
+    background-color:#FFE000;
+  }
+
+  .layout-content.status-index .components-statuses .component-container.status-yellow:after,
+  .layout-content.status-full-history .month .incident-container .impact-minor,
+  .layout-content.status-incident .incident-name.impact-minor,
+  .layout-content.status.status-index .incidents-list .incident-title.impact-minor a,
+  .status-yellow .icon-indicator,
+  .incident-history .impact-minor,
+  .components-container .component-inner-container.status-yellow .component-status,
+  .components-container .component-inner-container.status-yellow .icon-indicator,
+  .layout-content.status.manage-subscriptions .confirmation-infobox .fa {
+    color:#FFE000;
+  }
+
+  .layout-content.status.status-index .unresolved-incident.impact-minor .updates,
+  .layout-content.status.status-index .scheduled-incidents-container {
+    border-color:#FFE000;
+  }
+
+
+
+
+  /* CSS BLUES */ /* CSS BLUES */ /* CSS BLUES */ /* CSS BLUES */ /* CSS BLUES */ /* CSS BLUES */
+  .layout-content.status.status-index .status-day .update-title.impact-maintenance a,
+  .layout-content.status.status-index .status-day .update-title.impact-maintenance a:hover,
+  .layout-content.status.status-index .page-status.status-maintenance,
+  .layout-content.status.status-index .unresolved-incident.impact-maintenance .incident-title,
+  .layout-content.status.status-index .scheduled-incidents-container .tab {
+    background-color:#3498DB;
+  }
+
+  .layout-content.status-index .components-statuses .component-container.status-blue:after,
+  .layout-content.status-full-history .month .incident-container .impact-maintenance,
+  .layout-content.status-incident .incident-name.impact-maintenance,
+  .layout-content.status.status-index .incidents-list .incident-title.impact-maintenance a,
+  .status-blue .icon-indicator,
+  .incident-history .impact-maintenance,
+  .components-container .component-inner-container.status-blue .component-status,
+  .components-container .component-inner-container.status-blue .icon-indicator {
+    color:#3498DB;
+  }
+
+  .layout-content.status.status-index .unresolved-incident.impact-maintenance .updates,
+  .layout-content.status.status-index .scheduled-incidents-container {
+    border-color:#3498DB;
+  }
+
+
+
+
+  /* CSS GREENS */ /* CSS GREENS */ /* CSS GREENS */ /* CSS GREENS */ /* CSS GREENS */ /* CSS GREENS */ /* CSS GREENS */
+  .layout-content.status.status-index .page-status.status-none {
+    background-color:#3CB371;
+  }
+  .layout-content.status-index .components-statuses .component-container.status-green:after,
+  .status-green .icon-indicator,
+  .components-container .component-inner-container.status-green .component-status,
+  .components-container .component-inner-container.status-green .icon-indicator {
+    color:#3CB371;
+  }
+
+
+
+
+  /* CSS LINK COLOR */  /* CSS LINK COLOR */  /* CSS LINK COLOR */  /* CSS LINK COLOR */  /* CSS LINK COLOR */  /* CSS LINK COLOR */
+  a,
+  a:hover,
+  .layout-content.status-index .page-footer span a:hover,
+  .layout-content.status-index .timeframes-container .timeframe:not(.active):hover,
+  .layout-content.status-incident .subheader a:hover {
+    color:#1D2D35;
+  }
+
+  .flat-button,
+  .masthead .updates-dropdown-container .show-updates-dropdown,
+  .layout-content.status-full-history .show-filter.open  {
+    background-color:#1D2D35;
+  }
+
+
+
+
+  /* CUSTOM COLOR OVERRIDES FOR UPTIME SHOWCASE */
+  .components-section .components-uptime-link {
+    color: #1d2d35;
+  }
+
+  .layout-content.status .shared-partial.uptime-90-days-wrapper .legend .legend-item {
+    color: #1d2d35;
+    opacity: 0.8;
+  }
+  .layout-content.status .shared-partial.uptime-90-days-wrapper .legend .legend-item.light {
+    color: #1d2d35;
+    opacity: 0.5;
+  }
+  .layout-content.status .shared-partial.uptime-90-days-wrapper .legend .spacer {
+    background: #1d2d35;
+    opacity: 0.3;
+  }
+</style>
+
+
+    <!-- custom css -->
+        <link rel="stylesheet" type="text/css" href="//dka575ofm4ao0.cloudfront.net/page_display_customizations-custom_css_externals/143602/external20200528-45-1iivok.css">
+
+      <!-- polyfills -->
+      <script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+
+    <!-- Le HTML5 shim -->
+    <!--[if lt IE 9]>
+      <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- injection for static -->
+
+
+      <meta name="twitter:card" content="summary">
+  <meta name="twitter:site">
+  <meta name="twitter:creator">
+  <meta name="robots" content="noindex,nofollow">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://www.basecampstatus.com/incidents/0dbg0pslwnrq">
+  <meta property="og:image" content="https://dka575ofm4ao0.cloudfront.net/assets/logos/favicon-2b86ed00cfa6258307d4a3d0c482fd733c7973f82de213143b24fc062c540367.png">
+  <meta property="og:title" content="Campfire Database Maintenance">
+  <meta property="og:description">
+
+  </head>
+
+
+  <body class="status incident status-none" data-breakpoint-reached="false">
+
+    
+
+<style>
+  /* BODY BACKGROUND */ /* BODY BACKGROUND */ /* BODY BACKGROUND */ /* BODY BACKGROUND */ /* BODY BACKGROUND */
+  body,
+  .layout-content.status.status-api .section .example-container .example-opener .color-secondary,
+  .grouped-items-selector,
+  .layout-content.status.status-full-history .history-nav a.current,
+  div[id^="subscribe-modal"] .modal-footer,
+  div[id^="subscribe-modal"],
+  #uptime-tooltip .tooltip-box {
+    background-color:#FFFFFF;
+  }
+
+  #uptime-tooltip .pointer-container .pointer-smaller {
+    border-bottom-color:#FFFFFF;
+  }
+
+
+
+
+  /* PRIMARY FONT COLOR */ /* PRIMARY FONT COLOR */ /* PRIMARY FONT COLOR */ /* PRIMARY FONT COLOR */
+  body.status,
+  .color-primary,
+  .color-primary:hover,
+  .layout-content.status-index .status-day .update-title.impact-none a,
+  .layout-content.status-index .status-day .update-title.impact-none a:hover,
+  .layout-content.status-index .timeframes-container .timeframe.active,
+  .layout-content.status-full-history .month .incident-container .impact-none,
+  .layout-content.status.status-index .incidents-list .incident-title.impact-none a,
+  .incident-history .impact-none,
+  .layout-content.status .grouped-items-selector.inline .grouped-item.active,
+  .layout-content.status.status-full-history .history-nav a.current,
+  .layout-content.status.status-full-history .history-nav a:not(.current):hover,
+  div[id^="subscribe-modal"] .modal-header .close,
+  .grouped-item-label,
+  #uptime-tooltip .tooltip-box .tooltip-content .related-events .related-event a.related-event-link {
+    color:#1D2D35;
+  }
+
+  .layout-content.status.status-index .components-statuses .component-container .name {
+    color:#1D2D35;
+    color:rgba(29,45,53,.8);
+  }
+
+
+
+
+  /* SECONDARY FONT COLOR */ /* SECONDARY FONT COLOR */ /* SECONDARY FONT COLOR */ /* SECONDARY FONT COLOR */
+  small,
+  .layout-content.status .table-row .date,
+  .color-secondary,
+  .layout-content.status .grouped-items-selector.inline .grouped-item,
+  .layout-content.status.status-full-history .history-footer .pagination a.disabled,
+  .layout-content.status.status-full-history .history-nav a,
+  #uptime-tooltip .tooltip-box .tooltip-content .related-events #related-event-header {
+    color:#1D2D35;
+  }
+
+
+
+
+  /* BORDER COLOR */  /* BORDER COLOR */  /* BORDER COLOR */  /* BORDER COLOR */  /* BORDER COLOR */  /* BORDER COLOR */
+  body.status .layout-content.status .border-color,
+  hr,
+  .tooltip-base,
+  .markdown-display table,
+  div[id^="subscribe-modal"],
+  #uptime-tooltip .tooltip-box {
+    border-color:#E0E0E0;
+  }
+
+  div[id^="subscribe-modal"] .modal-footer,
+  .markdown-display table td {
+    border-top-color:#E0E0E0;
+  }
+
+  div[id^="subscribe-modal"] .modal-header .close:hover {
+    color:#E0E0E0;
+  }
+
+  .markdown-display table td + td, .markdown-display table th + th {
+    border-left-color:#E0E0E0;
+  }
+
+  div[id^="subscribe-modal"] .modal-header,
+  #uptime-tooltip .pointer-container .pointer-larger {
+    border-bottom-color:#E0E0E0;
+  }
+
+  #uptime-tooltip .tooltip-box .outage-field {
+    /*
+      Generate the background-color for the outage-field from the css_body_background_color and css_border_color.
+
+      For the default background (#ffffff) and default css_border_color (#e0e0e0), use the luminosity of the default background with a magic number to arrive at
+      the original outage-field background color (#f4f5f7). I used the formula Target Color = Color * alpha + Background * (1 - alpha) to find the magic number of ~0.08.
+
+      For darker css_body_background_color, luminosity values are lower so alpha trends toward becoming transparent (thus outage-field background becomes same as css_body_background_color).
+    */
+    background-color: rgba(224,224,224,0.31);
+
+    /*
+      outage-field border-color alpha is inverse to the luminosity of css_body_background_color.
+      That is to say, with a default white background this border is transparent, but on a black background, it's opaque css_border_color.
+    */
+    border-color: rgba(224,224,224,0.0);
+  }
+
+
+
+
+  /* CSS REDS */ /* CSS REDS */ /* CSS REDS */ /* CSS REDS */ /* CSS REDS */ /* CSS REDS */ /* CSS REDS */
+  .layout-content.status.status-index .status-day .update-title.impact-critical a,
+  .layout-content.status.status-index .status-day .update-title.impact-critical a:hover,
+  .layout-content.status.status-index .page-status.status-critical,
+  .layout-content.status.status-index .unresolved-incident.impact-critical .incident-title,
+  .flat-button.background-red {
+    background-color:#E55235;
+  }
+
+  .layout-content.status-index .components-statuses .component-container.status-red:after,
+  .layout-content.status-full-history .month .incident-container .impact-critical,
+  .layout-content.status-incident .incident-name.impact-critical,
+  .layout-content.status.status-index .incidents-list .incident-title.impact-critical a,
+  .status-red .icon-indicator,
+  .incident-history .impact-critical,
+  .components-container .component-inner-container.status-red .component-status,
+  .components-container .component-inner-container.status-red .icon-indicator {
+    color:#E55235;
+  }
+
+  .layout-content.status.status-index .unresolved-incident.impact-critical .updates {
+    border-color:#E55235;
+  }
+
+
+
+
+  /* CSS ORANGES */ /* CSS ORANGES */ /* CSS ORANGES */ /* CSS ORANGES */ /* CSS ORANGES */ /* CSS ORANGES */
+  .layout-content.status.status-index .status-day .update-title.impact-major a,
+  .layout-content.status.status-index .status-day .update-title.impact-major a:hover,
+  .layout-content.status.status-index .page-status.status-major,
+  .layout-content.status.status-index .unresolved-incident.impact-major .incident-title {
+    background-color:#EC7A3C;
+  }
+
+  .layout-content.status-index .components-statuses .component-container.status-orange:after,
+  .layout-content.status-full-history .month .incident-container .impact-major,
+  .layout-content.status-incident .incident-name.impact-major,
+  .layout-content.status.status-index .incidents-list .incident-title.impact-major a,
+  .status-orange .icon-indicator,
+  .incident-history .impact-major,
+  .components-container .component-inner-container.status-orange .component-status,
+  .components-container .component-inner-container.status-orange .icon-indicator {
+    color:#EC7A3C;
+  }
+
+  .layout-content.status.status-index .unresolved-incident.impact-major .updates {
+    border-color:#EC7A3C;
+  }
+
+
+
+
+  /* CSS YELLOWS */ /* CSS YELLOWS */ /* CSS YELLOWS */ /* CSS YELLOWS */ /* CSS YELLOWS */ /* CSS YELLOWS */
+  .layout-content.status.status-index .status-day .update-title.impact-minor a,
+  .layout-content.status.status-index .status-day .update-title.impact-minor a:hover,
+  .layout-content.status.status-index .page-status.status-minor,
+  .layout-content.status.status-index .unresolved-incident.impact-minor .incident-title,
+  .layout-content.status.status-index .scheduled-incidents-container .tab {
+    background-color:#FFE000;
+  }
+
+  .layout-content.status-index .components-statuses .component-container.status-yellow:after,
+  .layout-content.status-full-history .month .incident-container .impact-minor,
+  .layout-content.status-incident .incident-name.impact-minor,
+  .layout-content.status.status-index .incidents-list .incident-title.impact-minor a,
+  .status-yellow .icon-indicator,
+  .incident-history .impact-minor,
+  .components-container .component-inner-container.status-yellow .component-status,
+  .components-container .component-inner-container.status-yellow .icon-indicator,
+  .layout-content.status.manage-subscriptions .confirmation-infobox .fa {
+    color:#FFE000;
+  }
+
+  .layout-content.status.status-index .unresolved-incident.impact-minor .updates,
+  .layout-content.status.status-index .scheduled-incidents-container {
+    border-color:#FFE000;
+  }
+
+
+
+
+  /* CSS BLUES */ /* CSS BLUES */ /* CSS BLUES */ /* CSS BLUES */ /* CSS BLUES */ /* CSS BLUES */
+  .layout-content.status.status-index .status-day .update-title.impact-maintenance a,
+  .layout-content.status.status-index .status-day .update-title.impact-maintenance a:hover,
+  .layout-content.status.status-index .page-status.status-maintenance,
+  .layout-content.status.status-index .unresolved-incident.impact-maintenance .incident-title,
+  .layout-content.status.status-index .scheduled-incidents-container .tab {
+    background-color:#3498DB;
+  }
+
+  .layout-content.status-index .components-statuses .component-container.status-blue:after,
+  .layout-content.status-full-history .month .incident-container .impact-maintenance,
+  .layout-content.status-incident .incident-name.impact-maintenance,
+  .layout-content.status.status-index .incidents-list .incident-title.impact-maintenance a,
+  .status-blue .icon-indicator,
+  .incident-history .impact-maintenance,
+  .components-container .component-inner-container.status-blue .component-status,
+  .components-container .component-inner-container.status-blue .icon-indicator {
+    color:#3498DB;
+  }
+
+  .layout-content.status.status-index .unresolved-incident.impact-maintenance .updates,
+  .layout-content.status.status-index .scheduled-incidents-container {
+    border-color:#3498DB;
+  }
+
+
+
+
+  /* CSS GREENS */ /* CSS GREENS */ /* CSS GREENS */ /* CSS GREENS */ /* CSS GREENS */ /* CSS GREENS */ /* CSS GREENS */
+  .layout-content.status.status-index .page-status.status-none {
+    background-color:#3CB371;
+  }
+  .layout-content.status-index .components-statuses .component-container.status-green:after,
+  .status-green .icon-indicator,
+  .components-container .component-inner-container.status-green .component-status,
+  .components-container .component-inner-container.status-green .icon-indicator {
+    color:#3CB371;
+  }
+
+
+
+
+  /* CSS LINK COLOR */  /* CSS LINK COLOR */  /* CSS LINK COLOR */  /* CSS LINK COLOR */  /* CSS LINK COLOR */  /* CSS LINK COLOR */
+  a,
+  a:hover,
+  .layout-content.status-index .page-footer span a:hover,
+  .layout-content.status-index .timeframes-container .timeframe:not(.active):hover,
+  .layout-content.status-incident .subheader a:hover {
+    color:#1D2D35;
+  }
+
+  .flat-button,
+  .masthead .updates-dropdown-container .show-updates-dropdown,
+  .layout-content.status-full-history .show-filter.open  {
+    background-color:#1D2D35;
+  }
+
+
+
+
+  /* CUSTOM COLOR OVERRIDES FOR UPTIME SHOWCASE */
+  .components-section .components-uptime-link {
+    color: #1d2d35;
+  }
+
+  .layout-content.status .shared-partial.uptime-90-days-wrapper .legend .legend-item {
+    color: #1d2d35;
+    opacity: 0.8;
+  }
+  .layout-content.status .shared-partial.uptime-90-days-wrapper .legend .legend-item.light {
+    color: #1d2d35;
+    opacity: 0.5;
+  }
+  .layout-content.status .shared-partial.uptime-90-days-wrapper .legend .spacer {
+    background: #1d2d35;
+    opacity: 0.3;
+  }
+</style>
+
+
+<div class="layout-content status status-incident">
+    <div class="custom-header-container">
+    <nav class="bc-nav">
+  <a class="bc-nav__logo" href="/">
+    <svg viewBox="0 0 145.08 32.74" xmlns="http://www.w3.org/2000/svg"><path d="m42.07 4.85h6.11c3.39 0 5.16 1.4 5.16 4.05v.1a3.2 3.2 0 0 1 -2.53 3.33 3.4 3.4 0 0 1 3.11 3.67v.09c0 2.85-1.87 4.35-5.46 4.35h-6.39zm5.54 6.4c1.7 0 2.38-.61 2.38-2v-.09c0-1.3-.74-1.89-2.4-1.89h-2.09v4zm.31 6.75c1.74 0 2.52-.78 2.52-2.19v-.09c0-1.44-.78-2.18-2.7-2.18h-2.24v4.46z" fill="#1d2d35"></path><path d="m54.84 17.26c0-2.66 2.44-3.66 5.92-3.66h1.24v-.46c0-1.35-.41-2.09-1.85-2.09a1.71 1.71 0 0 0 -1.93 1.61h-3c.19-2.69 2.32-3.89 5.11-3.89s4.83 1.13 4.83 4.23v7.42h-3.07v-1.42a3.9 3.9 0 0 1 -3.44 1.61c-2.07.04-3.81-.96-3.81-3.35zm7.2-.83v-1h-1.21c-1.83 0-2.9.39-2.9 1.61 0 .83.5 1.37 1.66 1.37 1.41.04 2.41-.72 2.41-1.98z" fill="#1d2d35"></path><path d="m66.49 16.84h2.93c.14 1 .64 1.61 2 1.61 1.21 0 1.78-.45 1.78-1.24s-.67-1.11-2.31-1.35c-3-.45-4.2-1.32-4.2-3.54 0-2.37 2.18-3.55 4.51-3.55 2.52 0 4.42.91 4.7 3.52h-2.9a1.55 1.55 0 0 0 -1.79-1.37c-1 0-1.61.48-1.61 1.18s.54 1 2.2 1.24c2.85.41 4.41 1.13 4.41 3.57s-1.78 3.74-4.78 3.74-4.83-1.35-4.94-3.81z" fill="#1d2d35"></path><path d="m77 14.86v-.17a5.65 5.65 0 0 1 5.9-5.92c2.93 0 5.54 1.72 5.54 5.79v.87h-8.2c.09 1.89 1.11 3 2.83 3 1.46 0 2.18-.63 2.37-1.59h3c-.37 2.46-2.33 3.83-5.44 3.83-3.46-.02-6-2.17-6-5.81zm8.34-1.37c-.11-1.72-1-2.54-2.48-2.54a2.61 2.61 0 0 0 -2.62 2.54z" fill="#1d2d35"></path><path d="m89.27 14.86v-.17a5.66 5.66 0 0 1 5.88-5.92c2.63 0 5.07 1.15 5.35 4.42h-3a2.09 2.09 0 0 0 -2.3-1.94c-1.64 0-2.72 1.22-2.72 3.39v.18c0 2.28 1 3.46 2.78 3.46a2.32 2.32 0 0 0 2.44-2.2h2.85c-.18 2.7-2.14 4.57-5.44 4.57s-5.84-2.07-5.84-5.79z" fill="#1d2d35"></path><path d="m101.31 17.26c0-2.66 2.44-3.66 5.92-3.66h1.28v-.46c0-1.35-.41-2.09-1.85-2.09a1.71 1.71 0 0 0 -1.93 1.61h-3c.19-2.69 2.32-3.89 5.11-3.89s4.76 1.13 4.76 4.22v7.42h-3.06v-1.41a3.9 3.9 0 0 1 -3.44 1.61c-2.05.04-3.79-.96-3.79-3.35zm7.2-.83v-1h-1.22c-1.82 0-2.89.39-2.89 1.61 0 .83.5 1.37 1.65 1.37 1.4.04 2.46-.72 2.46-1.98z" fill="#1d2d35"></path><path d="m113.78 9h3.16v1.74a3.87 3.87 0 0 1 3.48-2 3.15 3.15 0 0 1 3.18 2 4.51 4.51 0 0 1 3.82-2c2.12 0 3.75 1.33 3.75 4.35v7.29h-3.17v-6.91c0-1.46-.65-2.11-1.78-2.11a2.11 2.11 0 0 0 -2.2 2.33v6.72h-3.13v-6.94c0-1.46-.68-2.11-1.79-2.11a2.11 2.11 0 0 0 -2.19 2.33v6.72h-3.16z" fill="#1d2d35"></path><path d="m133.33 9h3.15v1.79a4.23 4.23 0 0 1 3.64-2.05c2.78 0 5 2.07 5 5.83v.18c0 3.76-2.14 5.87-5 5.87a4 4 0 0 1 -3.64-2v5.61h-3.15zm8.55 5.77v-.18c0-2.3-1.13-3.43-2.72-3.43s-2.79 1.15-2.79 3.43v.18c0 2.28 1.09 3.39 2.81 3.39s2.7-1.16 2.7-3.36z" fill="#1d2d35"></path><path d="m1.74 18.09c2.67-7.55 7.78-16.35 18.07-16.35s15.39 13.52 16 22.79c-2.7 4.7-9.23 6.47-16 6.47a19.23 19.23 0 0 1 -14.75-6.47s3.23-8.7 6.24-8.72c2.21 0 4 4 5.85 4s5.43-7.81 5.43-7.81" fill="none" stroke="#1d2d35" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.48"></path><g fill="#1d2d35"><path d="m42.51 29.13h.76c.06.59.37.95 1.16.95s1.07-.25 1.07-.78-.39-.69-1.15-.83c-1.28-.23-1.71-.59-1.71-1.45a1.53 1.53 0 0 1 1.66-1.38 1.57 1.57 0 0 1 1.78 1.42h-.75c-.11-.54-.41-.77-1-.77s-.93.28-.93.7.25.63 1.15.79 1.73.41 1.73 1.46c0 .89-.61 1.49-1.8 1.49s-1.93-.59-1.97-1.6z"></path><path d="m48.48 30.14-1.93-4.42h.83l1.51 3.53 1.37-3.53h.8l-2.73 6.64h-.79z"></path><path d="m51.44 29.13h.76c.06.59.37.95 1.16.95s1.08-.25 1.08-.78-.39-.69-1.15-.83c-1.28-.23-1.72-.59-1.72-1.45a1.54 1.54 0 0 1 1.67-1.38 1.57 1.57 0 0 1 1.76 1.42h-.75a.9.9 0 0 0 -1-.77c-.56 0-.93.28-.93.7s.24.63 1.15.79 1.73.41 1.73 1.46c0 .89-.61 1.49-1.81 1.49s-1.9-.59-1.95-1.6z"></path><path d="m56.3 29.41v-3h-.7v-.66h.7v-1.15h.78v1.12h1.15v.66h-1.15v3c0 .48.22.71.61.71a1.56 1.56 0 0 0 .61-.1v.66a1.81 1.81 0 0 1 -.67.1 1.19 1.19 0 0 1 -1.33-1.34z"></path><path d="m58.87 28.24v-.08a2.31 2.31 0 0 1 2.31-2.52 2.15 2.15 0 0 1 2.21 2.45v.25h-3.71c0 1.12.58 1.74 1.58 1.74.77 0 1.21-.28 1.31-.85h.78a1.89 1.89 0 0 1 -2.1 1.5 2.31 2.31 0 0 1 -2.38-2.49zm3.72-.53c-.07-1-.6-1.42-1.41-1.42a1.47 1.47 0 0 0 -1.47 1.42z"></path><path d="m64.35 25.72h.78v.76a1.62 1.62 0 0 1 1.47-.84 1.42 1.42 0 0 1 1.44.92 1.91 1.91 0 0 1 1.69-.92c.88 0 1.66.53 1.66 2v3h-.79v-3.1c0-.87-.36-1.22-1-1.22a1.25 1.25 0 0 0 -1.3 1.31v3h-.78v-3.09c0-.87-.37-1.22-1-1.22a1.25 1.25 0 0 0 -1.3 1.31v3h-.78z"></path><path d="m74.54 29.13h.77c0 .59.36.95 1.15.95s1.08-.25 1.08-.78-.39-.69-1.15-.83c-1.28-.23-1.72-.59-1.72-1.45a1.54 1.54 0 0 1 1.67-1.38 1.57 1.57 0 0 1 1.78 1.42h-.75a.9.9 0 0 0 -1-.77c-.56 0-.93.28-.93.7s.24.63 1.15.79 1.73.41 1.73 1.46c0 .89-.61 1.49-1.81 1.49s-1.92-.59-1.97-1.6z"></path><path d="m79.4 29.41v-3h-.7v-.66h.7v-1.15h.78v1.12h1.15v.66h-1.15v3c0 .48.22.71.61.71a1.56 1.56 0 0 0 .61-.1v.66a1.81 1.81 0 0 1 -.67.1 1.19 1.19 0 0 1 -1.33-1.34z"></path><path d="m82 29.28c0-1.14 1.21-1.52 2.47-1.52h.7v-.36c0-.78-.3-1.11-1.05-1.11s-1 .28-1.13.88h-.78a1.72 1.72 0 0 1 2-1.53 1.59 1.59 0 0 1 1.8 1.76v3.25h-.79v-.65a1.76 1.76 0 0 1 -1.53.7c-.98.03-1.69-.41-1.69-1.42zm3.17-.36v-.61h-.67c-1 0-1.72.25-1.72 1 0 .51.25.83.93.83.81-.03 1.44-.45 1.44-1.22z"></path><path d="m87.41 29.41v-3h-.71v-.66h.71v-1.15h.78v1.12h1.15v.66h-1.15v3c0 .48.21.71.61.71a1.54 1.54 0 0 0 .6-.1v.66a1.81 1.81 0 0 1 -.67.1 1.19 1.19 0 0 1 -1.32-1.34z"></path><path d="m90.3 28.84v-3.12h.78v3.08c0 .87.37 1.25 1.14 1.25a1.29 1.29 0 0 0 1.35-1.34v-3h.78v4.93h-.78v-.78a1.67 1.67 0 0 1 -1.56.86c-1.01.01-1.71-.52-1.71-1.88z"></path><path d="m95.3 29.13h.76c.06.59.37.95 1.16.95s1.07-.25 1.07-.78-.39-.69-1.15-.83c-1.28-.23-1.71-.59-1.71-1.45a1.53 1.53 0 0 1 1.67-1.38 1.57 1.57 0 0 1 1.77 1.42h-.75c-.11-.54-.41-.77-1-.77s-.94.28-.94.7.25.63 1.15.79 1.67.41 1.67 1.46c0 .89-.61 1.49-1.8 1.49s-1.86-.59-1.9-1.6z"></path></g></svg>
+  </a>
+</nav>
+      
+
+
+  <div class="updates-dropdown-container" data-js-hook="updates-dropdown-container">
+    <a href="#" data-js-hook="show-updates-dropdown" id="show-updates-dropdown" class="show-updates-dropdown" aria-label="Subscribe to updates" aria-expanded="false" aria-haspopup="dialog" role="button">
+
+    </a>
+
+<!--    Accessibility guidelines for tabs: https://www.w3.org/TR/wai-aria-practices-1.1/examples/tabs/tabs-1/tabs.html -->
+    <div class="updates-dropdown" data-js-hook="updates-dropdown" style="display:none">
+      <div class="updates-dropdown-nav nav-items-2" role="tablist" aria-label="Subscribe to updates">
+          <a href="#updates-dropdown-support" aria-controls="updates-dropdown-support" aria-label="Contact support" role="tab" id="updates-dropdown-support-btn">
+            <span class="icon-container support">
+          </span></a>
+        <a href="#" data-js-hook="updates-dropdown-close" aria-controls="updates-dropdown-close" aria-label="Close subscribe form" role="button" id="updates-dropdown-close-btn">
+          x
+        </a>
+      </div>
+      <div class="updates-dropdown-sections-container">
+
+
+
+
+
+          <div class="updates-dropdown-section support" id="updates-dropdown-support" style="display:none" role="tabpanel" aria-labelledby="updates-dropdown-support-btn">
+            Visit our <a target="_blank" href="https://basecamp.com/support">support site</a>.
+          </div>
+
+      </div>
+    </div>
+  </div>
+
+  </div>
+
+
+  <div class="container default-spacing">
+    <div class="page-title">
+      <div class="color-primary incident-name whitespace-pre-wrap impact-maintenance">Campfire Database Maintenance</div>
+      <div class="font-largest color-secondary subheader ">
+            Scheduled Maintenance
+
+          Report for <a class="color-secondary" href="/">Basecamp</a>
+      </div>
+    </div>
+
+    <div class="incident-updates-container">
+      <!-- postmortem if it's published -->
+
+      <!-- incident updates in reverse order -->
+        <div class="row update-row">
+          <div class="update-title span3 font-large">
+            Completed
+          </div>
+          <div class="update-container span9">
+            <div class="update-body font-regular">
+              <span class="whitespace-pre-wrap">The scheduled maintenance has been completed.</span>
+            </div>
+            <div class="update-timestamp font-small color-secondary">
+              Posted <span class="ago" data-datetime-unix="1655270140000"><var data-var="num">9</var> days ago. </span>Jun <var data-var="date">15</var>, <var data-var="year">2022</var> - <var data-var="time">05:15</var> UTC
+            </div>
+          </div>
+        </div>
+        <div class="row update-row">
+          <div class="update-title span3 font-large">
+            In progress
+          </div>
+          <div class="update-container span9">
+            <div class="update-body font-regular">
+              <span class="whitespace-pre-wrap">Scheduled maintenance is currently in progress. We will provide updates as necessary.</span>
+            </div>
+            <div class="update-timestamp font-small color-secondary">
+              Posted <span class="ago" data-datetime-unix="1655267499000"><var data-var="num">9</var> days ago. </span>Jun <var data-var="date">15</var>, <var data-var="year">2022</var> - <var data-var="time">04:31</var> UTC
+            </div>
+          </div>
+        </div>
+        <div class="row update-row">
+          <div class="update-title span3 font-large">
+            Scheduled
+          </div>
+          <div class="update-container span9">
+            <div class="update-body font-regular">
+              <span class="whitespace-pre-wrap">We're performing some routine Database maintenance on the legacy version of Campfire (campfirenow.com) that will make it inaccessible for a 15 minute period.<br><br>This maintenance does NOT affect the embedded Campfire in Basecamp 2 / 3.<br><br>Please bear with us while we make sure the legacy version of Campfire continues to run smoothly.<br><br>Thanks!</span>
+            </div>
+            <div class="update-timestamp font-small color-secondary">
+              Posted <span class="ago" data-datetime-unix="1655179689000"><var data-var="num">10</var> days ago. </span>Jun <var data-var="date">14</var>, <var data-var="year">2022</var> - <var data-var="time">04:08</var> UTC
+            </div>
+          </div>
+        </div>
+
+      <!-- affected components -->
+        <div class="components-affected font-small color-secondary border-color">
+          This scheduled maintenance affected: Campfire.
+        </div>
+    </div>
+
+    <div class="page-footer border-color font-small">
+      <a href="/"><span style="font-family:arial">←</span> Current Status</a>
+      <span class="color-secondary powered-by" style="display: inline !important; visibility:visible !important; opacity: 1 !important; position:static !important; text-indent:0px !important; transform:scale(1) !important"><a class="color-secondary" target="_blank" rel="noopener noreferrer nofollow" href="https://www.atlassian.com/software/statuspage?utm_campaign=www.basecampstatus.com&amp;utm_content=SP-notifications&amp;utm_medium=powered-by&amp;utm_source=inapp">Powered by Atlassian Statuspage</a></span>
+    </div>
+  </div>
+
+  
+</div>
+
+
+  <div class="modal hide fade modal-open-incident-subscribe" id="subscribe-modal-0dbg0pslwnrq" style="display: none" data-js-hook="incident-subscription-modal" role="dialog" aria-labelledby="incident-subscription-dialog-header" aria-describedby="incident-subscription-dialog-description" aria-modal="true">
+    <form class="modal-content" id="subscribe-form-0dbg0pslwnrq" action="/subscriptions/incident.json" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="✓">
+      <input type="hidden" name="incident_code" id="incident_code" value="0dbg0pslwnrq">
+      <div class="modal-header">
+        <a href="#" data-dismiss="modal" class="close" data-js-hook="incident-modal-close" aria-label="close" role="button">×</a>
+        <h4 id="incident-subscription-dialog-header"> Subscribe to Incident </h4>
+      </div>
+      <div class="modal-body">
+        <p style="margin-bottom:25px" id="incident-subscription-dialog-description">
+          Subscribe to updates for <strong>Campfire Database Maintenance</strong> via . You'll receive .
+        </p>
+
+      </div>
+
+      <div class="modal-footer incident-subscribe">
+        <!-- tests fail if static width isn't present  ¯\_(ツ)_/¯ -->
+          <button name="button" type="submit" class="flat-button cpt-button incident-subscribe-btn-captcha" id="subscribe-btn-0dbg0pslwnrq" onclick="submitCaptchaIncidentSubscribe(event)">Subscribe to Incident</button>
+          <input type="hidden" name="captcha_error" id="captcha_error" value="false">
+          <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response" value="false">
+      </div>
+</form>  </div>
+
+
+
+
+
+
+    <script src="https://dka575ofm4ao0.cloudfront.net/assets/status_manifest-17828477b2beff6fbc771737842e0eb2941321d787585277de332b4a6c1b4efa.js"></script>
+    <div id="cpt-notification-container"></div>
+    
+
+
+
+
+    <!-- all of the content_for stuff -->
+      <script src="https://dka575ofm4ao0.cloudfront.net/assets/register_subscription_form-879ad6742751a5926359f0430c1692c94f00c87d533ed504ee28db2c0de01100.js"></script>
+
+  <script type="text/javascript">
+
+
+  </script>
+  <script src="https://dka575ofm4ao0.cloudfront.net/assets/status_common-c71dfacc6ab11ce212c0127e73cb0bae84e2856d83c17739bebb5e11a970e857.js"></script>
+
+
+  <script>
+    $(function() { // docks custom footer
+      var content = $('.layout-content > .container')
+        , header = $('.custom-header-container')
+        , footer = $('.custom-footer-container')
+
+      if (!footer.length) {
+        content.addClass('default-spacing');
+      }
+      else {
+        var screenHeight = $(window).outerHeight()
+          , containerHeight = $('.layout-content > .container').outerHeight(true) || null
+          , headerHeight = $('.custom-header-container').outerHeight(true) || null
+          , footerHeight = $('.custom-footer-container').outerHeight(true) || null;
+
+        if (screenHeight > containerHeight + footerHeight + headerHeight) {
+          $('.layout-content > .container').css('padding-bottom', screenHeight - containerHeight - footerHeight - headerHeight);
+        }
+      }
+    });
+
+    $(function() {
+      $(document).on('ajax:complete', '.modal.in', function(e) {
+        // Close the active modal.
+        $('.modal.in').modal('hide');
+      });
+    });
+
+    $(function() {
+        var timeDifference = function(previous) {
+            var msPerMinute = 60 * 1000;
+            var msPerHour = msPerMinute * 60;
+            var msPerDay = msPerHour * 24;
+            var msPerMonth = msPerDay * 30;
+            var msPerYear = msPerDay * 365;
+            var now = Date.now();
+            var elapsedMs = now - previous;
+
+            var elapsed = Math.round(elapsedMs/msPerMinute);
+            if (elapsed === 0) {
+                return elapsedString(1) + ' minute ago. ';
+            }
+            else if (elapsed < 60) {
+                return elapsedString(elapsed) + ' minute' + plural(elapsed) + ' ago. ';
+            }
+
+            elapsed = Math.round(elapsedMs/msPerHour);
+            if (elapsed < 24) {
+                return elapsedString(elapsed) + ' hour' + plural(elapsed) + ' ago. ';
+            }
+
+            elapsed = Math.round(elapsedMs/msPerDay);
+            if (elapsed < 31) {
+                return elapsedString(elapsed) + ' day' + plural(elapsed) + ' ago. ';
+            }
+
+            elapsed = Math.round(elapsedMs/msPerMonth);
+            if (elapsed < 12) {
+                return elapsedString(elapsed) + ' month' + plural(elapsed) + ' ago. ';
+            }
+
+            elapsed = Math.round(elapsedMs/msPerYear);
+            return elapsedString(elapsed) + ' year' + plural(elapsed) + ' ago. ';
+        };
+
+        var elapsedString = function(elapsed) {
+            return '<var data-var="num">' + elapsed + '</var>'
+        };
+
+        var plural = function(x) {
+            return (x <= 1) ? '' : 's';
+        };
+
+        var relative_dates = $('span.ago');
+        relative_dates.each(function() {
+            var $el = $(this);
+            var time = $el.data("datetime-unix");
+            $el.html(timeDifference(time));
+        })
+    });
+
+  </script>
+
+
+      <script>
+  /** INITIALIZATION **/
+  var recaptchaIds = {}
+
+  // Unfortunately there's no unique selectors on the parent divs that recaptcha adds. The first unique selector
+  // is the iframe rendered 2 levels deep. So this waits until the iframes are added to the page, then finds
+  // the parent div and sets the z index so that it'll render above our modals & dropdowns from the start.
+  function setZIndex(captchaCount, startTime) {
+    // bail after 10s just in case so we don't do this forever if something whaky happens
+    if (new Date() - startTime > 10000) {
+      return;
+    }
+
+    var iframes = document.querySelectorAll('iframe[title="recaptcha challenge"]');
+    if (iframes.length != captchaCount) {
+      setTimeout(function() {
+        setZIndex(captchaCount, startTime);
+      }, 500);
+    }
+
+    for (var i = 0; i < iframes.length; i++) {
+      // incident subscribe modal is 1050, so this has to be above that
+      iframes[i].parentElement.parentElement.style.zIndex = "1100";
+    }
+  }
+
+  function addIncidentCaptcha() {
+    var incidentCaptcha = document.createElement('div');
+    incidentCaptcha.setAttribute('id', 'subscribe-incident-recaptcha');
+    incidentCaptcha.setAttribute('class', 'g-recaptcha');
+    incidentCaptcha.setAttribute('data-sitekey', '6LcZ-b0UAAAAAENi956aWzynTT2ZJ80dGU3F80Op');
+    incidentCaptcha.setAttribute('data-callback', 'submitIncidentSubscriberSuccess');
+    incidentCaptcha.setAttribute('data-error-callback', 'submitIncidentSubscriberError');
+    incidentCaptcha.setAttribute('data-size', 'invisible');
+    document.body.appendChild(incidentCaptcha);
+    var incidentCode = document.createElement('input');
+    incidentCode.setAttribute('type', 'hidden');
+    incidentCode.setAttribute('id', 'submit_incident_code');
+    document.body.appendChild(incidentCode);
+  }
+
+  var onloadCallback = function() {
+    // if there is an incident, then add incident captcha element
+    if (document.getElementsByClassName('modal-open-incident-subscribe').length > 0) {
+      addIncidentCaptcha();
+    }
+
+    var captchas = document.getElementsByClassName("g-recaptcha");
+
+    for(var i = 0; i < captchas.length; i++) {
+      var elId = captchas[i].id;
+      recaptchaIds[elId] = grecaptcha.render(elId);
+    }
+
+    setZIndex(captchas.length, new Date());
+  }
+
+
+  /** SUBSCRIBE DROPDOWN */
+
+  // callbacks for captcha success
+  function submitNewSubscriber(type, error) {
+    if (error) document.querySelector('#subscribe-form-' + type + ' #captcha_error').value = 'true';
+
+    document.getElementById('subscribe-form-' + type).dispatchEvent(new Event('submit', {bubbles: true, cancelable: true}));
+    grecaptcha.reset(recaptchaIds['subscribe-btn-' + type]);
+  }
+  function submitNewEmailSubscriber(token) {
+    submitNewSubscriber('email');
+  }
+  function submitNewSmsSubscriber(token) {
+    submitNewSubscriber('sms');
+  }
+  function submitNewWebhookSubscriber(token) {
+    submitNewSubscriber('webhook');
+  }
+  function submitIncidentSubscriber(token, error) {
+    var incidentCode = document.getElementById('submit_incident_code').value;
+    var incidentForm = document.getElementById('subscribe-form-' + incidentCode);
+
+    incidentForm.querySelector('input[name="captcha_error"]').value = error;
+    incidentForm.querySelector('input[name="g-recaptcha-response"]').value = token;
+    incidentForm.dispatchEvent(new Event('submit', {bubbles: true, cancelable: true}));
+    grecaptcha.reset(recaptchaIds['subscribe-incident-recaptcha']);
+  }
+  function submitIncidentSubscriberSuccess(token) {
+    submitIncidentSubscriber(token, 'false');
+  }
+
+  // callbacks if we get captcha network errors
+  function emailSubscriberCaptchaError(token) {
+    submitNewSubscriber('email', true);
+  }
+  function smsSubscriberCaptchaError(token) {
+    submitNewSubscriber('sms', true);
+  }
+  function webhookSubscriberCaptchaError(token) {
+    submitNewSubscriber('webhook', true);
+  }
+  function submitIncidentSubscriberError(token) {
+    submitIncidentSubscriber(token, 'true');
+  }
+
+  // tracking clicks
+  ['email', 'sms', 'webhook'].forEach(function(type) {
+    var el = document.getElementById('subscribe-btn-' + type);
+    el && el.addEventListener("click", function() {
+      $.ajax({
+        type: "POST",
+        url: "/subscriptions/track_attempt",
+        data: {
+          type: type
+        }
+      })
+    })
+  })
+
+  // form submission success callbacks
+  $('#subscribe-form-email').on('ajax:success', function(e, data, status, xhr){
+    if (data.type === 'success') {
+      SP.currentPage.updatesDropdown.hide();
+      document.getElementById('email').value = '';
+    }
+  });
+  $('#subscribe-form-sms').on('ajax:success', function(e, data, status, xhr){
+    if (data.type === 'success') {
+      SP.currentPage.updatesDropdown.hide();
+      document.getElementById('phone-number').value = '';
+    }
+  });
+  $('#subscribe-form-webhook').on('ajax:success', function(e, data, status, xhr){
+    if (data.type === 'success') {
+      SP.currentPage.updatesDropdown.hide();
+      document.getElementById('endpoint-webhooks').value = '';
+      document.getElementById('email-webhooks').value = '';
+    }
+  });
+
+  $('a.subscribe').on('click', function() {
+    document.body.style.overflow = "hidden";
+    document.body.style.height = "100vh";
+  });
+
+  $('div.modal-open-incident-subscribe').on('hidden', function(){
+    document.body.style.overflow = "";
+    document.body.style.height = "";
+  });
+
+  function submitCaptchaIncidentSubscribe(event) {
+    var incidentCode = event.target.id.split('-')[2];
+    event.preventDefault();
+
+    $.ajax({
+      type: "POST",
+      url: "/subscriptions/track_attempt",
+      data: {
+        type: 'incident'
+      }
+    })
+
+    document.getElementById('submit_incident_code').value = incidentCode;
+    grecaptcha.execute(recaptchaIds['subscribe-incident-recaptcha']);
+  }
+</script>
+
+<script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&amp;render=explicit" async="" defer=""></script>
+
+
+    
+  <script src="https://dka575ofm4ao0.cloudfront.net/packs/common-cba1ac313c3df995e6f6.chunk.js"></script>
+  <script src="https://dka575ofm4ao0.cloudfront.net/packs/globals-fdac871125af016e7db7.chunk.js"></script>
+
+    <script src="https://dka575ofm4ao0.cloudfront.net/packs/runtime-7f5105047ab241b20fb4.js"></script>
+    
+    
+
+
+    <script>
+  window.addEventListener('load', function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const messageToken = urlParams.get('slack_message_token');
+    const channelName = escape(urlParams.get('channel_name'));
+
+    if(!!messageToken) {
+      switch(messageToken) {
+        case 'slack_auth_error':
+          HRB.utils.notify('The Slack authorization attempt was unsuccessful. Try again.', {cssClass:'error'});
+          break;
+        case 'subscribers_disabled_error':
+          HRB.utils.notify('Slack subscriptions are not enabled on this page.', {cssClass:'error'});
+          break;
+        case 'direct_message_channel_error':
+          HRB.utils.notify('Subscriptions aren’t supported in direct messages. Try subscribing again and choose a channel instead.', {cssClass:'error'});
+          break
+        case 'duplicate_error':
+          HRB.utils.notify("You're already subscribed to get Slack notifications in that channel.", {cssClass:'error'});
+          break;
+        case 'duplicate_private_channel_error':
+          HRB.utils.notify(`You're already subscribed to get Slack notifications in #${channelName}. Invite the @Statuspage app to that channel to start getting status updates.`, {cssClass: 'error'});
+          break;
+        case 'default_success':
+          HRB.utils.notify("You're now subscribed to get Statuspage updates in Slack!", {cssClass:'success'});
+          break;
+        case 'private_channel_success':
+          HRB.utils.notify(`IMPORTANT: Invite the @Statuspage app to your Slack channel #${channelName} to start getting status updates.`, {cssClass:'success'});
+          break;
+      }
+    }
+  });
+</script>
+
+    
+<!-- FOR FLASH NOTICES -->
+
+<!-- FOR ERROR -->
+
+
+    <script>
+  $(function() {
+    var $link = $('<span class="color-secondary powered-by"><a class="color-secondary" target="_blank" rel="noopener noreferrer nofollow" href="https://www.atlassian.com/software/statuspage?utm_campaign=www.basecampstatus.com&amp;utm_content=SP-notifications&amp;utm_medium=powered-by&amp;utm_source=inapp">Powered by Atlassian Statuspage</a></span>');
+
+  	var setPoweredByStyles = function() {
+  		if (!$('.powered-by').length) {
+  			$link.appendTo($('.page-footer'))
+  		}
+  		$('.powered-by').attr('style', 'display: inline !important; visibility:visible !important; opacity: 1 !important; position:static !important; text-indent:0px !important; transform:scale(1) !important');
+  	}
+
+  	setInterval(setPoweredByStyles, 1000);
+  });
+</script>
+
+
+
+
+
+  
+
+<svg id="SvgjsSvg1001" width="2" height="0" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs" style="overflow: hidden; top: -100%; left: -100%; position: absolute; opacity: 0;"><defs id="SvgjsDefs1002"></defs><polyline id="SvgjsPolyline1003" points="0,0"></polyline><path id="SvgjsPath1004" d="M0 0 "></path></svg><div id="subscribe-incident-recaptcha" class="g-recaptcha" data-sitekey="6LcZ-b0UAAAAAENi956aWzynTT2ZJ80dGU3F80Op" data-callback="submitIncidentSubscriberSuccess" data-error-callback="submitIncidentSubscriberError" data-size="invisible"><div class="grecaptcha-badge" data-style="bottomright" style="width: 256px; height: 60px; position: fixed; visibility: hidden; display: block; transition: right 0.3s ease 0s; bottom: 14px; right: -186px; box-shadow: gray 0px 0px 5px; border-radius: 2px; overflow: hidden;"><div class="grecaptcha-logo"><iframe title="reCAPTCHA" src="https://www.google.com/recaptcha/api2/anchor?ar=1&amp;k=6LcZ-b0UAAAAAENi956aWzynTT2ZJ80dGU3F80Op&amp;co=aHR0cHM6Ly93d3cuYmFzZWNhbXBzdGF0dXMuY29tOjQ0Mw..&amp;hl=en&amp;v=M10Y1otwqRkBioiFUKRQ8s3N&amp;size=invisible&amp;cb=45jy6tbw4a07" width="256" height="60" role="presentation" name="a-w1kcubz5kf9m" frameborder="0" scrolling="no" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox"></iframe></div><div class="grecaptcha-error"></div><textarea id="g-recaptcha-response" name="g-recaptcha-response" class="g-recaptcha-response" style="width: 250px; height: 40px; border: 1px solid rgb(193, 193, 193); margin: 10px 25px; padding: 0px; resize: none; display: none;"></textarea></div><iframe style="display: none;"></iframe></div><input type="hidden" id="submit_incident_code"><div style="visibility: hidden; position: absolute; width: 100%; top: -10000px; left: 0px; right: 0px; transition: visibility 0s linear 0.3s, opacity 0.3s linear 0s; opacity: 0;"><div style="width: 100%; height: 100%; position: fixed; top: 0px; left: 0px; z-index: 2000000000; background-color: rgb(255, 255, 255); opacity: 0.5;"></div><div style="margin: 0px auto; top: 0px; left: 0px; right: 0px; position: absolute; border: 1px solid rgb(204, 204, 204); z-index: 2000000000; background-color: rgb(255, 255, 255); overflow: hidden;"><iframe title="recaptcha challenge expires in two minutes" src="https://www.google.com/recaptcha/api2/bframe?hl=en&amp;v=M10Y1otwqRkBioiFUKRQ8s3N&amp;k=6LcZ-b0UAAAAAENi956aWzynTT2ZJ80dGU3F80Op" name="c-w1kcubz5kf9m" frameborder="0" scrolling="no" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox" style="width: 100%; height: 100%;"></iframe></div></div></body></html>

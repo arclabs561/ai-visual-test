@@ -1,0 +1,518 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"><html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Free Guestbook - Easy and quick setup for your website</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="ROBOTS" content="all"> 
+<meta name="keywords" content="guestbook, free guestbook, guest book, free guest book, smart guestbook, guestbooks, smartgb, website guestbook, create guestbook, html guestbook, sign guestbook, guestbook code, html, free service, homepage, website, spam filter, libro de visitas, Livro de visitas, Livre d'or, Gästebuch, Libro degli ospiti, gastenboek, ziyaretci defteri, vendégkönyv, ksiega gosci">
+<meta name="description" content="Free Guestbook for your website. Easy and quick setup. Advanced language and spam filter. Customizable design and input fields. Password protect and backup your guestbooks.">
+<meta name="author" content="Smart Guestbook, smartgb.com">
+<meta name="netinsert" content="840.0.1.3.1.1.1">
+<link rel="canonical" href="https://www.smartgb.com/">
+<style type="text/css">
+<!--
+body {margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0;}
+html {overflow-y: scroll;}
+-->
+</style>
+<script language="JavaScript" type="text/javascript">
+<!--
+function openFile(fileName) { 
+	popupWin = window.open(fileName, 'popup', 'width=420,height=400,resizable=no,scrollbars=yes')
+} 
+// -->
+</script>
+
+<script language="JavaScript" type="text/javascript">
+<!--
+
+var unSuppLang = 0;
+var s = 0;
+
+function check_email(e) {
+ ok = "1234567890qwertyuiop[]asdfghjklzxcvbnm.@-_QWERTYUIOPASDFGHJKLZXCVBNM#~!&'()*+,;=:";
+ for(i=0; i < e.length ;i++){
+  if(ok.indexOf(e.charAt(i))<0){
+   return (false);
+  }
+ }
+ if (document.images) {
+  re = /(@.*@)|(\.\.)|(^\.)|(^@)|(@$)|(\.$)|(@\.)/;
+  re_two = /^.+\@(\[?)[a-zA-Z0-9\-\.]+\.([a-zA-Z]{2,8}|[0-9]{1,3})(\]?)$/;
+  if (!e.match(re) && e.match(re_two)) {
+   return (true);
+  }
+  return (false);
+ }
+ return (true);
+}
+
+function check_pass(p) {
+	ok = "1234567890qwertyuiopasdfghjklzxcvbnm.-_QWERTYUIOPASDFGHJKLZXCVBNM";
+	for(i=0; i < p.length ;i++){
+		if(ok.indexOf(p.charAt(i))<0){
+			return (false);
+		}
+	}
+	return (true);
+}
+
+function checkform () {
+
+ if (document.getElementById) {
+
+  document.all.stylename.style.color = "";
+  document.all.stylename.style.fontWeight = "";
+  document.all.styleepost.style.color = "";
+  document.all.styleepost.style.fontWeight = "";
+  document.all.styleurl.style.color = "";
+  document.all.styleurl.style.fontWeight = "";
+  document.all.stylerubrik.style.color = "";
+  document.all.stylerubrik.style.fontWeight = "";
+  document.all.stylelosenord.style.color = "";
+  document.all.stylelosenord.style.fontWeight = "";
+
+  if (document.getElementById("reg").namn.value == "") {
+	document.all.stylename.style.color = "#FF3C3C";
+	document.all.stylename.style.fontWeight = "bold";
+    alert("Please enter your name.");
+    document.getElementById("reg").namn.focus();
+    return(false);
+  }
+  if (document.getElementById("reg").epost.value == "" || !check_email(document.getElementById("reg").epost.value)) {
+	document.all.styleepost.style.color = "#FF3C3C";
+	document.all.styleepost.style.fontWeight = "bold";
+    alert("Please enter your email address.");
+    document.getElementById("reg").epost.focus();
+    return(false);
+  }
+  if (document.getElementById("reg").url.value == "" || document.getElementById("reg").url.value == "http://") {
+	document.all.styleurl.style.color = "#FF3C3C";
+	document.all.styleurl.style.fontWeight = "bold";
+    alert("Please enter your website address.");
+    document.getElementById("reg").url.focus();
+    return(false);
+  }
+  if (document.getElementById("reg").rubrik.value == "") {
+	document.all.stylerubrik.style.color = "#FF3C3C";
+	document.all.stylerubrik.style.fontWeight = "bold";
+    alert("Please enter a title for your guestbook.");
+    document.getElementById("reg").rubrik.focus();
+    return(false);
+  }
+  if (document.getElementById("reg").losenord.value == "" || !check_pass(document.getElementById("reg").losenord.value)) {
+	document.all.stylelosenord.style.color = "#FF3C3C";
+	document.all.stylelosenord.style.fontWeight = "bold";
+    alert("Please enter a password.\n\nNote that only English letters (A-Z,a-z) and numbers (0-9) are allowed.");
+    document.getElementById("reg").losenord.focus();
+    return(false);
+  }
+
+ }
+ else {
+
+ if (document.getElementById("reg").namn.value == "") {
+    alert("Please enter your name.");
+    document.getElementById("reg").namn.focus();
+    return(false);
+  }
+  if (document.getElementById("reg").epost.value == "" || !check_email(document.getElementById("reg").epost.value)) {
+    alert("Please enter your email address.");
+    document.getElementById("reg").epost.focus();
+    return(false);
+  }
+  if (document.getElementById("reg").url.value == "" || document.getElementById("reg").url.value == "http://") {
+    alert("Please enter your website address.");
+    document.getElementById("reg").url.focus();
+    return(false);
+  }
+  if (document.getElementById("reg").rubrik.value == "") {
+    alert("Please enter a title for your guestbook.");
+    document.getElementById("reg").rubrik.focus();
+    return(false);
+  }
+  if (document.getElementById("reg").losenord.value == "" || !check_pass(document.getElementById("reg").losenord.value)) {
+    alert("Please enter a password.\n\nNote that only English letters (A-Z,a-z) and numbers (0-9) are allowed.");
+    document.getElementById("reg").losenord.focus();
+    return(false);
+  }
+
+ }
+
+ if (unSuppLang == 1) {
+	 return(confirm("Please confirm your registration!\n\nNote that our service does only support messages written in following languages: English, Arabic, Bulgarian, Catalan, Croatian, Czech, Chinese (both traditional and simplified), Danish, Dutch, Estonian, Filipino, Finnish, French, German, Greek, Hebrew, Hindi, Hungarian, Indonesian, Italian, Japanese, Korean, Lithuanian, Latvian, Norwegian, Malay, Polish, Portuguese, Romanian, Russian, Serbian, Slovenian, Slovak, Spanish, Swedish, Thai, Turkish, Ukrainian and Vietnamese.\n\nGuestbooks with messages written in other languages will be disabled.\n\nDo you want to continue?"));
+ }
+ else {
+	 setTimeout('window.location.href=\'//www.smartgb.com/?e=1&s=' + s + '\'', 18000); 
+	 return(true);
+ }
+
+}
+//-->
+</script>
+
+<style id="mobilestyle" type="text/css">
+<!--
+/*--------------------mobile-------------*/
+@media handheld, only screen and (max-width: 721px) {
+	#outertable, #toptable {
+		max-width: 700px;
+		width: 100%;
+	}
+	.hidemobile {
+		display: none;
+	}
+	.shrinkmobile {
+		width: 80%;
+		height: auto;
+	}
+	#mobile-switch, #mobile-switch0 {
+		display: block !important;
+	}
+	#mobile-switch1 {
+		display: none;
+	}
+}
+-->
+</style>
+</head>
+<body bgcolor="#FFFFFF">
+
+
+<table id="outertable" border="0" style="height: 100%;" width="100%" cellpadding="0" cellspacing="0">
+
+<script type="text/javascript">
+<!-- 
+if (document.getElementById && document.getElementById("outertable")) {
+	document.getElementById("outertable").style.display = 'none';
+	setTimeout('document.getElementById("outertable").style.display = ""', 1500);
+}
+// -->
+</script>
+
+	<tbody><tr class="hidemobile">
+		<td valign="top" align="right" height="0" width="50%" bgcolor="#CEECF8">
+
+			<table border="0" style="height: 100%;" width="20" cellpadding="0" cellspacing="0" bgcolor="#FFFFFF">
+				<tbody><tr>
+					<td valign="top" align="center" style="height: 100%;" width="10" bgcolor="#AEE1F5">
+
+					</td>
+					<td valign="top" align="center" style="height: 100%;" width="10" bgcolor="#89D3F1">
+					</td>
+				</tr>
+			</tbody></table>
+
+		</td>
+
+
+		<td valign="top" align="center" style="height: 0px;">
+		</td>
+		
+		<td valign="top" align="left" height="0" width="50%" bgcolor="#CEECF8">
+		</td>
+
+	</tr>
+	<tr>
+
+		<td class="hidemobile" valign="top" align="right" height="0" width="50%" bgcolor="#CEECF8">
+
+			<table border="0" style="height: 100%;" width="20" cellpadding="0" cellspacing="0" bgcolor="#FFFFFF">
+				<tbody><tr>
+					<td valign="top" align="center" style="height: 100%;" width="10" bgcolor="#AEE1F5">
+
+					</td>
+					<td valign="top" align="center" style="height: 100%;" width="10" bgcolor="#89D3F1">
+					</td>
+				</tr>
+			</tbody></table>
+
+		</td>
+
+		<td valign="top" align="center" style="height: 100%;">
+
+
+			<table id="toptable" border="0" style="height: 100%;" width="620" cellpadding="0" cellspacing="2" bgcolor="#FFFFFF">
+				<tbody><tr>
+					<td align="left" height="" width="" bgcolor="#FFFFFF">
+
+						<table border="0" width="100%" cellpadding="0" cellspacing="3" bgcolor="">
+							<tbody><tr>
+								<td colspan="3" align="center" height="" width="" bgcolor="#FFFFFF">
+
+									<table border="0" style="height: 55px;" width="100%" cellpadding="0" cellspacing="0" bgcolor="">
+										<tbody><tr>
+											<td align="left" height="19" width="220" bgcolor="#FFFFFF">
+												<img class="shrinkmobile" width="210" height="30" border="0" src="//www.smartgb.com/logo4.gif" alt="Logo">
+												<img class="hidemobile" width="210" height="6" border="0" src="//www.smartgb.com/logo3_extra.gif" alt="-----">											</td>
+											<td class="hidemobile" align="left" height="19" width="5" bgcolor="#FFFFFF">
+											</td>
+											<td align="right" height="19" width="" bgcolor="#FFFFFF">
+
+												<table border="0" width="" cellpadding="0" cellspacing="0" bgcolor="">
+													<tbody><tr>
+														<td class="hidemobile" align="left" height="" width="" bgcolor="#FFFFFF">
+
+
+														<font face="Tahoma, Arial" color="#808080" style="font-size: 8pt;">
+<b>What our customers say: </b><br>
+"Thank you for your great service. It is very reliable!"<br>"You guys rock! I am so happy we found you."<br>
+</font>
+
+														</td>
+														<td class="hidemobile" height="" width="15" bgcolor="#FFFFFF">
+														&nbsp;
+														</td>
+														<td style="font-size: 0.9em;" align="center" valign="middle" height="" width="" bgcolor="#FFFFFF">
+														
+
+														</td>
+													</tr>
+												</tbody></table>
+
+
+											</td>
+										</tr>
+									</tbody></table>
+					
+								</td>
+							</tr>
+							<tr>
+								<td colspan="3" align="center" height="107" width="" bgcolor="">
+
+									<table border="0" width="100%" cellpadding="5" cellspacing="0" bgcolor="">
+										<tbody><tr>
+											<td valign="middle" align="left" height="" width="" bgcolor="#6CA9C5">
+
+									<table border="0" width="100%" cellpadding="0" cellspacing="0" bgcolor="">
+										<tbody><tr>
+											<td class="hidemobile" valign="middle" align="center" height="125" width="110" bgcolor="#6CA9C5">
+												<img border="0" src="//www.smartgb.com/bar_01.gif" width="101" height="110" alt="Free Guestbook">
+											</td>
+											<td class="hidemobile" valign="middle" align="center" height="125" width="110" bgcolor="#6CA9C5">
+												<img border="0" src="//www.smartgb.com/bar_05.gif" width="101" height="110" alt="Free Guestbook">
+											</td>
+																						<td valign="middle" align="center" height="125" width="110" bgcolor="#6CA9C5">
+												<img class="shrinkmobile" border="0" src="//www.smartgb.com/bar_03.gif" width="101" height="110" alt="Free Guestbook">
+											</td>
+																						<td valign="middle" align="center" height="125" width="" bgcolor="#6CA9C5">
+											<img class="shrinkmobile" border="0" width="252" height="102" src="//www.smartgb.com/bar_04.gif" alt="-">
+											</td>
+										</tr>
+									</tbody></table>
+
+											</td>
+										</tr>
+									</tbody></table>
+
+								</td>
+							</tr>
+							<tr>
+								<td colspan="3" valign="top" align="center" height="" width="100%" bgcolor="#FFFFFF">
+	
+									<table border="0" style="height: 100%;" width="100%" cellpadding="0" cellspacing="0" bgcolor="#FFFFFF">
+										<tbody><tr>
+											<td valign="top" align="left" height="" width="" bgcolor="#FFFFFF">
+
+	
+												<table border="0" style="height: 100%; min-height: 500px;" width="100%" cellpadding="3" cellspacing="0" bgcolor="#FFFFFF">
+													<tbody><tr>
+														<td valign="top" align="left" height="" id="maintable" width="" bgcolor="">
+
+
+<h1 style="font-family: Trebuchet MS, Trebuchet, tahoma, verdana, arial, helvetica; color: #338DD9;">Free Guestbook</h1>
+<font face="Trebuchet MS, Trebuchet, tahoma, verdana, arial, helvetica" size="2" style="font-size: 10pt;"><b>Get a guestbook for your website. It's easy. It's quick! <font color="#338DD9">It's FREE!</font></b></font>
+<br class="hidemobile">
+<font face="Trebuchet MS, Trebuchet, tahoma, verdana, arial, helvetica" size="2" style="font-size: 10pt;">
+<b>Sign up for our high quality service today.</b> <a title="More information..." href="/overview.php">More information...</a>
+
+
+</font>
+<hr size="0" width="95%" align="left">
+
+<h2 style="color: #338DD9; font-family: Trebuchet MS, Trebuchet, tahoma, verdana, arial, helvetica;">Start here!</h2>
+
+
+<img class="hidemobile" align="right" src="//www.smartgb.com/formpic1.jpg" width="300" height="200" alt="<---">
+
+
+
+
+
+
+
+
+
+
+
+<script language="JavaScript" type="text/javascript">
+<!--
+	s = 3;
+//-->
+</script>
+
+                                                                                                                                        <form method="POST" action="//users3.smartgb.com/g/g.php?a=c" onsubmit="return checkform();" id="reg">
+
+<font face="tahoma, verdana, arial, helvetica" color="#000000" style="font-size: 10pt;">
+<b><font color="#000000"><span id="stylename" style="">Your name</span></font></b><br>
+<input type="text" name="namn" size="30" maxlength="35" onfocus="if (document.arrowhelp) document.arrowhelp.height=265;"><br><img src="//www.smartgb.com/tom.gif" alt="" width="50" height="3"><br>
+<b><font color="#000000"><span id="styleepost" style="">Your email address</span></font></b> <i>(have to be valid)</i><br>
+<input type="text" name="epost" size="30" maxlength="64" onfocus="if (document.arrowhelp) document.arrowhelp.height=310;"><br><img src="//www.smartgb.com/tom.gif" alt="" width="50" height="3"><br>
+<b><font color="#000000"><span id="styleurl" style="">Your website address</span></font></b><br>
+<input type="text" name="url" size="30" maxlength="128" value="http://" onfocus="if (document.arrowhelp) document.arrowhelp.height=355;"><br><br>
+<b><font color="#000000"><span id="stylerubrik" style="">Title for your guestbook</span></font></b><br>
+<input type="text" name="rubrik" size="30" maxlength="35" onfocus="if (document.arrowhelp) document.arrowhelp.height=415;"><br><img src="//www.smartgb.com/tom.gif" alt="" width="50" height="3"><br>
+<b><font color="#000000"><span id="stylelosenord" style="">Choose a password</span></font></b><br>
+<input type="password" name="losenord" size="20" maxlength="20" autocomplete="new-password" onfocus="if (document.arrowhelp) document.arrowhelp.height=460;"><br><br>
+<input type="hidden" name="inf" value="a79e97b34db30921860008cf7badf17f">
+<input type="hidden" name="email" size="30" maxlength="64" value="">
+
+<input type="hidden" name="website" size="30" maxlength="128" value="">
+	<input style="font-weight:bold; font-size: 13pt;" type="submit" name="Skicka" value="Create Guestbook" onfocus="if (document.arrowhelp) document.arrowhelp.height=500;">
+<!-- &nbsp;<input type="reset" name="Reset" value="Reset"> -->
+</font>
+
+</form>
+<br>
+<font face="tahoma, verdana, arial, helvetica" size="1" color="#000000" style="font-size: 8pt;">
+You can change any data above when your guestbook has been activated. <br class="hidemobile">Please view our <script language="javascript" type="text/javascript">
+<!--
+document.write('<' + 'a rel="nofollow" href="javascript:openFile(\'/agreement.htm\')">agreement and privacy policy</' + 'a>');
+// -->
+</script><a rel="nofollow" href="javascript:openFile('/agreement.htm')">agreement and privacy policy</a>
+</font>
+<noscript>
+<font face="tahoma, verdana, arial, helvetica" size="1" color="#000000" style="font-size: 8pt;">
+<a href="/agreement.htm" rel="nofollow" target="_blank">agreement and privacy policy</a>
+</font>
+</noscript>
+<font face="tahoma, verdana, arial, helvetica" size="1" color="#000000" style="font-size: 8pt;">
+before completing the registration.<br>
+<br>
+</font>	
+
+<script type="text/javascript">
+<!--
+document.getElementById("reg").namn.focus();
+// -->
+</script>
+
+
+
+														</td>
+													</tr>
+												</tbody></table>
+
+											</td>
+										</tr>
+									</tbody></table>
+
+</td>
+
+</tr>
+
+<tr>
+								
+<td colspan="3" align="center" height="1" width="" bgcolor="#A1A4A7">
+								
+</td>
+							
+</tr>							
+						
+</tbody></table>
+<div id="mobile-switch" style="display: none; margin-bottom: 1em; margin-top: 1em;"><input id="mobile-switch0" type="button" value="Show desktop site" style="margin: 0 auto; font-size: 110%; font-weight: bold; display: none; width: 60%; min-width: 200px; max-width: 500px; padding: 0.5em;" onclick="switchVersion(0);"><input id="mobile-switch1" type="button" value="Show mobile site" style="width: 50%; max-width: 240px; font-size: 110%; font-weight: bold; padding: 0.5em;" onclick="switchVersion(1);"></div>
+<script language="JavaScript" type="text/javascript">
+if (((window.matchMedia && window.matchMedia('(max-device-width: 721px)').matches) || (!window.matchMedia && navigator.userAgent.match(/(Android|iPhone|iPad|phone|tablet|mobile)/i))) && document.createElement) {
+	var js = document.createElement("script");
+	js.type = "application/javascript";
+	js.src = '/m.js';
+	document.body.appendChild(js);
+}
+</script>
+</td>
+				
+</tr>
+				
+<tr class="hidemobile">
+					
+<td align="left" style="height: 100%;" width="100%" bgcolor="#FAFAFA">
+					
+						
+<table border="0" style="height: 100%;" width="100%" cellpadding="0" cellspacing="0" bgcolor="">
+							
+<tbody><tr>
+								
+<td valign="top" align="right" height="" width="100%" bgcolor="#FAFAFA"><font face="tahoma, verdana, arial, helvetica" color="#3a3a3a" size="1" style="font-size: 8pt;">Copyright smartgb.com 2005-2022&nbsp;<br><a href="javascript:openFile('/agreement.htm')">Agreement and Privacy and Data Protection Policy</a>&nbsp;<br></font>
+<script language="JavaScript" type="text/javascript">
+<!--
+document.writeln('<img src="//users3.smartgb.com/checkserver.gif" width=5 height=2 onerror="s=2; document.getElementById(\'reg\').action=\'//users2.smartgb.com/g/g.php?a=c\';" alt="">');
+//-->
+</script><img src="//users3.smartgb.com/checkserver.gif" width="5" height="2" onerror="s=2; document.getElementById('reg').action='//users2.smartgb.com/g/g.php?a=c';" alt="">
+
+<script language="javascript" type="text/javascript">
+<!--
+var today = new Date();
+var diff = today.getTimezoneOffset();
+if (Math.floor(Math.random()*100) > 100*0.75 && (Math.abs(diff-(60)) < Math.abs(diff-(-480)) && Math.abs(diff+(60)) < Math.abs(diff+(-480)))) {
+	s = 2;
+	document.getElementById('reg').action = '//users2.smartgb.com/g/g.php?a=c';
+}
+//  End -->
+</script>
+</td>
+								
+<td align="center" height="" width="3" bgcolor="#FFFFFF">
+								
+</td>
+							
+</tr>
+						
+</tbody></table>
+
+		
+</td>
+				
+</tr>
+			
+</tbody></table>
+</td>
+		
+<td class="hidemobile" valign="top" align="left" height="0" width="50%" bgcolor="#CEECF8">
+
+			
+<table border="0" style="height: 100%;" width="20" cellpadding="0" cellspacing="0" bgcolor="#FFFFFF">
+				
+<tbody><tr>
+					
+<td valign="top" align="center" style="height: 100%;" width="10" bgcolor="#89D3F1">
+					
+</td>
+					
+<td valign="top" align="center" style="height: 100%;" width="10" bgcolor="#AEE1F5">
+					
+</td>
+				
+</tr>
+			
+</tbody></table>
+
+		
+
+
+</td>
+	
+</tr>
+
+</tbody></table><script type="application/javascript" src="/m.js"></script>
+
+
+<script type="text/javascript">
+<!-- 
+if (document.getElementById && document.getElementById("outertable")) {
+	document.getElementById("outertable").style.display = '';
+}
+// -->
+</script>
+
+	
+	
+</body></html>

@@ -1,0 +1,397 @@
+<!DOCTYPE html><html lang="en"><head><title>InfoSec Handlers Diary Blog - SANS Internet Storm Center</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="" width="device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta property="og:site_name" content="SANS Internet Storm Center">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://isc.sans.edu/diary.html?storyid=17929">
+    <meta property="twitter:site" content="@sans_isc">
+    <meta property="twitter:creator" content="@sans_isc">
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:image" content="https://isc.sans.edu/images/logos/isc/large.png">
+    <meta property="twitter:image:alt" content="SANS Internet Storm Center">
+    <meta property="og:image" content="https://isc.sans.edu/images/logos/isc/large.png">
+    <meta name="description" content="Heartbleed vendor notifications, Author: Mark Hofman">
+    <meta property="og:description" content="Heartbleed vendor notifications, Author: Mark Hofman">
+    <meta name="AUTHOR" content="SANS Internet Storm Center">
+    <meta name="KEYWORDS" content="isc, sans, internet, security, threat, worm, virus, phishing, hacking, vulnerability">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="/iscfavicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<!-- <link rel="manifest" href="/site.webmanifest"> -->
+    <link rel="canonical" href="https://isc.sans.edu/diary.html?storyid=17929">
+    <link type="text/css" rel="stylesheet" href="/css/screen.css">
+    <link type="text/css" rel="stylesheet" href="/css/msft.css">
+    <link type="text/css" rel="stylesheet" href="/css/fontawesome.css">
+    <link type="text/css" rel="stylesheet" href="/3p/highlight/default.min.css">
+    
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap-modal/bootstrap-modal.min.css">
+
+
+<script language="javascript" type="text/javascript" src="/3p/jQuery/jquery.js"></script>
+<script language="javascript" type="text/javascript" src="/3p/bootstrap/popper.min.js"></script>
+<script language="javascript" type="text/javascript" src="/3p/bootstrap/bootstrap.min.js"></script>
+<script language="javascript" type="text/javascript" src="/3p/highlight/highlight.min.js"></script>
+
+<script language="javascript" type="text/javascript" src="/js/count.js"></script>
+<script src="/js/bootstrap-modal/bootstrap.min.js"></script>
+<script type="application/ld+json">
+{
+	"@context": "https://schema.org",
+	"@type": "Organization",
+	"name": "SANS Internet Storm Center",
+	"url":   "https://isc.sans.edu/",
+	"logo": "https://isc.sans.edu/images/logos/isc/large.png",
+	"email": "handlers@isc.sans.edu",
+	"address": {
+		   "streetAddress": "8120 Woodmont Avenue, Suite 310",
+		   "addressLocality": "Bethesda",
+		   "addressRegion": "Maryland",
+		   "addressCountry": "USA",
+		   "postalCode": "20814"
+        },
+ 	"sameAs": [
+	          "https://twitter.com/sans_isc"
+		  ]
+}
+</script>
+
+
+
+<link href="/3p/ckeditor4_11/plugins/codesnippet/lib/highlight/styles/default.css" rel="stylesheet">
+<script src="/3p/ckeditor4_11/plugins/codesnippet/lib/highlight/highlight.pack.js"></script>
+<!-- this is not the comment you are looking for ea1a8b6b7256a71501d -->
+</head><body class="isc">
+<div id="container">
+  <div id="topWrapper">
+    <div class="g">
+      <span class="threatLevel">
+        Threat Level: <a href="/infocon.html">green</a>
+      </span>
+      <span class="currentHandler">
+        Handler on Duty: <a title="Xavier Mertens" href="/handler_list.html#xavier-mertens">Xavier Mertens</a>
+      </span>
+    </div>
+
+  </div>
+<div class="eupopup eupopup-top"></div>
+	<h1>
+    <a href="/">SANS ISC: InfoSec Handlers Diary Blog - SANS Internet Storm Center <span></span></a>
+    <ul class="site-selector">
+      <li class="site-switcher"><a href="#"><span class="hidden">SANS Site Network</span></a>
+        <ul class="sites">
+          <li class="current-site">Current Site</li>
+          <li class="isc"><a href="https://isc.sans.edu">
+            <span></span>
+            SANS Internet Storm Center
+          </a></li>
+          <li class="selector-help">Other SANS Sites
+            <a href="https://www.sans.org/help/site-network"><span class="hidden">Help</span></a>
+          </li>
+          <li class="sti"><a href="https://www.sans.edu">
+            <span></span>
+            Graduate Degree Programs
+          </a></li>
+          <li class="sans"><a href="https://www.sans.org">
+            <span></span>
+            Security Training
+          </a></li>
+          <li class="giac"><a href="https://www.giac.org">
+            <span></span>
+            Security Certification
+          </a></li>
+          <li class="awareness"><a href="https://securingthehuman.sans.org">
+            <span></span>
+            Security Awareness Training
+          </a></li>
+          <li class="pentest"><a href="https://pen-testing.sans.org">
+            <span></span>
+            Penetration Testing
+          </a></li>
+          <li class="ics"><a href="https://ics.sans.org">
+            <span></span>
+            Industrial Control Systems
+          </a></li>
+          <li class="cyber-defense"><a href="https://cyber-defense.sans.org">
+            <span></span>
+            Cyber Defense Foundations
+          </a></li>
+          <li class="forensics"><a href="https://digital-forensics.sans.org">
+            <span></span>
+            DFIR
+          </a></li>
+          <li class="ssi"><a href="https://software-security.sans.org">
+            <span></span>
+            Software Security
+          </a></li>
+          <li class="sic"><a href="https://sic.sans.org">
+            <span></span>
+            Government OnSite Training
+          </a></li>
+        </ul>
+      </li>
+    </ul><span id="pagetitle">
+    InfoSec Handlers Diary Blog
+	</span></h1>
+	<form id="headerSearch" name="searchform" action="/search.html" method="post">
+        <input type="text" name="q" placeholder="Keyword, Domain, Port, IP or Header">
+        <input type="submit" value="Search"><input type="hidden" id="token" name="token" value="0918027729e5cd5dc425e55b06dd35bb21393b88">
+	</form>
+    <form id="headerLogin" method="post" action="/login.html" name="loginform">
+        <input type="hidden" id="token" name="token" value="0918027729e5cd5dc425e55b06dd35bb21393b88">
+        <input type="text" name="email" placeholder="Email">
+        <input type="password" name="pw" autocomplete="off" placeholder="Password">
+        <input type="submit" value="Log In"><br>
+        <a href="/register.html">Sign Up for Free!</a> &nbsp; <a href="/resetpassword.html">Forgot Password?</a>
+	</form>
+	<div id="smallHeaderLogin">
+	    <a href="/login.html">Log In</a> or <a href="/register.html">Sign Up for Free</a>!
+	</div>
+	<div id="content">
+		<div class="wrapper"><article>
+    
+		<div class="diary">
+<script>
+function maxarticle() {
+	 var article=document.getElementsByTagName('article');
+	 var cn=article[0].className;
+	 if ( article[0].className=='fullscreen' ) {
+	 	 article[0].className='normal';	 
+         } else {
+	 	 article[0].className='fullscreen';
+         }
+}
+</script>
+
+<h2><a href="/forums/diary/Heartbleed+vendor+notifications/17929/">Heartbleed vendor notifications</a></h2>
+<div class="ss-container" style="float: right; border: 0px none; margin: 8px 0px 0px 8px;">
+    <ul class="ss-share">
+    <li class="ss-share-item">
+    <a class="ss-share-link ico-fullscreen" title="Full Screen" onclick="maxarticle();"></a>
+    </li><li class="ss-share-item">
+    <a class="ss-share-link ico-facebook" title="Share on Facebook" href="http://www.facebook.com/sharer.php?u=https%3A%2F%2Fisc.sans.edu%2Fforums%2Fdiary%2F17929" rel="nofollow" target="_blank"></a>
+    </li>
+    <li class="ss-share-item">
+    <a class="ss-share-link ico-twitter" title="Share on Twitter" href="http://twitter.com/share?text=Heartbleed%20vendor%20notifications&amp;url=https%3A%2F%2Fisc.sans.edu%2Fforums%2Fdiary%2F17929&amp;via=SANS_ISC" rel="nofollow" target="_blank"></a>
+    </li>
+    </ul>
+</div>
+
+
+ 
+		<div class="diaryheader">
+<b>Published</b>: 2014-04-09<br>
+<b>Last Updated</b>: 2014-04-09 21:45:56 UTC<br>
+<b>by</b> <a href="/handler_list.html#mark-hofman">Mark Hofman</a> (Version: 1)<br>
+
+</div>
+<a class="ico-comments" href="/forums/diary/Heartbleed+vendor+notifications/17929/#comments">76 comment(s)</a>
+  <script language="javascript" type="text/javascript" src="/js/diarycount.js?diary=17929"></script>
+<div class="diarybody">
+<div>
+	As people are running around having an entertaining day we thought it might be a good idea to keep track of the various vendor notifications. &nbsp; I'd like to start a list here and either via comments or sending it let us know of vendor notifications relating to this issue. &nbsp; Please provide comments to the original article relating to the vulnerability itself, &nbsp;and use this post to only provide links to vendor notifications rather than articles etc about the issue. &nbsp;</div>
+<div>
+	&nbsp;</div>
+<div>
+	So far: &nbsp;</div>
+<ul>
+	<li>
+		CACert - https://blog.cacert.org/2014/04/openssl-heartbleed-bug/</li>
+	<li>
+		Cisco - http://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20140409-heartbleed</li>
+	<li>
+		Fortinet -&nbsp;http://www.fortiguard.com/advisory/FG-IR-14-011/</li>
+	<li>
+		Gentoo Linux -&nbsp;http://www.gentoo.org/security/en/glsa/glsa-201404-07.xml</li>
+	<li>
+		Juniper - &nbsp;http://kb.juniper.net/InfoCenter/index?page=content&amp;id=KB29004 (login required)</li>
+	<li>
+		Juniper -&nbsp;http://kb.juniper.net/InfoCenter/index?page=content&amp;id=JSA10623</li>
+	<li>
+		F5 - http://support.f5.com/kb/en-us/solutions/public/15000/100/sol15159.html</li>
+	<li>
+		Novell - http://support.novell.com/security/cve/CVE-2014-0160.html&nbsp;</li>
+	<li>
+		OpenVPN -&nbsp;https://community.openvpn.net/openvpn/wiki/heartbleed</li>
+	<li>
+		Aruba - http://www.arubanetworks.com/support/alerts/aid-040814.asc</li>
+	<li>
+		CheckPoint - https://supportcenter.checkpoint.com/supportcenter/portal?eventSubmit_doGoviewsolutiondetails=&amp;solutionid=sk100173</li>
+	<li>
+		openssl - https://www.openssl.org/news/secadv_20140407.txt</li>
+	<li>
+		redhat - https://access.redhat.com/security/cve/CVE-2014-0160</li>
+	<li>
+		Slackware -&nbsp;hxxp://www.slackware.com/security/viewer.php?l=slackware-security&amp;y=2014&amp;m=slackware-security.533622</li>
+	<li>
+		sparklabs/viscosity openvpn client - https://www.sparklabs.com/viscosity/releasenotes/</li>
+	<li>
+		watchguard -&nbsp;http://watchguardsecuritycenter.com/2014/04/08/the-heartbleed-openssl-vulnerability-patch-openssl-asap/</li>
+	<li>
+		viscosity -&nbsp;https://www.sparklabs.com/blog/</li>
+</ul>
+<div>
+	There are no doubt more please add them via comments. &nbsp; Please stick to security related products, operating systems and core infrastructure items. &nbsp;</div>
+<div>
+	&nbsp;</div>
+<div>
+	Apple users: OS X Mavericks (10.9) ships by default with OpenSSL 0.9.8. However, if you are using mac ports, OpenSSL 1.0.1 is installed. An update is available (run "sudo upgrade outdated").</div>
+<div>
+	&nbsp;</div>
+<div>
+	an NMAP script has also been released to check for the vunerability According to the tweet "<em>script ssl-heartbleed.nse committed to #nmap as rev 32798</em>" &nbsp;That should help speed up checking. &nbsp;</div>
+<div>
+	&nbsp;</div>
+<div>
+	We have started seeing active checking for this issue, so I would encourage people to hurry up and patch.&nbsp;</div>
+<div>
+	&nbsp;</div>
+<div>
+	Cheers</div>
+<div>
+	&nbsp;</div>
+<div>
+	Mark H</div>
+
+</div>
+<div class="diarykeywords">Keywords: </div>
+<a class="ico-comments" href="/forums/diary/Heartbleed+vendor+notifications/17929/">76 comment(s)</a><div class="sansoneliner">
+<small>Join us at SANS!</small>
+<a href="">Attend  with Mark Hofman in  starting </a></div>
+<div class="sansbanner"><a href="https://www.sans.org/course/defending-web-applications-security-essentials"><img src="/images/dev522horizontalbanner.png"></a></div><a href="https://www.sans.org/course/defending-web-applications-security-essentials">
+</a></div></article><a href="https://www.sans.org/course/defending-web-applications-security-essentials">
+</a><ul class="diaryPagination"><a href="https://www.sans.org/course/defending-web-applications-security-essentials">
+    </a><li><a href="https://www.sans.org/course/defending-web-applications-security-essentials"></a><a href="/diary.html?storyid=17927">previous</a></li>    <li><a href="/diary.html?storyid=17931">next</a></li></ul>
+<div class="top-link"><a href="#">Top of page</a></div><!-- / .top-link --><div id="myModal" class="modal">
+
+  <!-- The Close Button -->
+  <span class="close">×</span>
+
+  <!-- Modal Content (The Image) -->
+  <img class="modal-content" id="img01">
+
+  <!-- Modal Caption (Image Text) -->
+  <div id="caption"></div>
+</div>
+<a class="diaryArchive" href="/diaryarchive.html">Diary Archives</a>
+
+<script type="text/javascript">
+    'use strict';
+    hljs.initHighlightingOnLoad();
+    var block = $('.diary-body pre code');
+    if (block.length > 0) {
+        block.parent().wrap('<div class="code-wrapper"></div>')
+    }
+</script>
+
+
+        </div>
+    </div>
+    <div id="navigation">
+        <ul>
+	    <span id="notificationcheck">
+	    </span>
+            <li><a href="/contact.html">Contact Us</a>
+                <ul>
+		    <li class="first"><a href="/contact.html">Contact Us</a></li>
+                    <li><a href="/about.html">About Us</a></li>
+                    <li><a href="/handler_list.html">Handlers</a></li>
+                </ul>
+            </li>
+            <li class="active">
+                <a href="/diaryarchive.html">Diary</a></li>
+            <li>
+                <a href="/podcast.html">Podcasts</a></li>
+            <li>
+                <a href="/jobs">Jobs</a></li>
+            <li>
+                <a href="/tools/">Tools</a>
+                <ul>
+                    <li class="first"><a href="/howto.html">DShield Sensor</a></li>
+		    <li><a href="/tools/dnslookup.html">DNS Looking Glass</a></li>
+                    <li><a href="/honeypot.html">Honeypot (RPi/AWS)</a></li>
+                    <li><a href="/glossary.html">InfoSec Glossary</a></li>
+                    <li><a href="/fightback.html">Fightback</a></li>
+                </ul>
+            </li>
+            <li><a href="/reports.html">Data</a>
+                <ul>
+                    <li><a href="/httpheaders/">HTTP Header Activity</a></li>
+                    <li><a href="/port/80">TCP/UDP Port Activity</a></li>
+                    <li><a href="/trends.html">Port Trends</a></li>
+                    <li><a href="/presentations/">Presentations &amp; Papers</a></li>
+                    <li><a href="/ssh.html">SSH/Telnet Scanning Activity</a></li>
+                    <li><a href="/threatfeed.html">Threat Feeds Activity</a></li>
+                    <li><a href="/threatmap.html">Threat Feeds Map</a></li>
+                    <li><a href="/links.html">Useful InfoSec Links</a></li>
+		    <li><a href="/weblogs/index.html">Weblogs</a></li>
+		    <li><a href="/researchpapers.html">Research Papers</a></li>
+		    <li><a href="/api">API</a></li>
+                </ul>
+            </li>
+            <li><a href="/forums/">Forums</a>
+                <ul>
+                    <li><a href="/forums/Auditing/">Auditing</a></li>
+                    <li><a href="/forums/Diary+Discussions/">Diary Discussions</a></li>
+                    <li><a href="/forums/Forensics/">Forensics</a></li>
+                    <li><a href="/forums/General+Discussion/">General Discussions</a></li>
+                    <li><a href="/forums/Industry+News/">Industry News</a></li>
+                    <li><a href="/forums/Network+Security/">Network Security</a></li>
+                    <li><a href="/forums/Penetration+Testing/">Penetration Testing</a></li>
+                    <li><a href="/forums/Software+Security/">Software Security</a></li>
+                </ul>
+		
+            </li>
+	    <li>
+<a class="highlight" href="https://www.sans.edu/cyber-security-research">SANS.edu Research</a>	  
+	    </li>
+        </ul>
+	
+<hr>
+<div id="sentinelsidebar">
+  <a href="https://www.sans.edu"><img width="150" src="/images/sentinelsquare.png">
+<img width="150" src="/images/ncl.jpg">
+
+https://www.sans.edu</a>
+  
+</div>
+<div class="questionssidebar">
+<b>Questions? Feedback?</b><br>
+Use our <a href="/contact.html">contact form</a> or<br>
+<a href="https://github.com/jullrich/ISC-Bugs/issues">report bugs here</a><br>
+For interactive help and to chat with other users, try our 
+<a href="/slack/index.html">
+Slack</a> group.<br>
+<a href="/slack/index.html"><img class="lazyload" src="/images/slack200.png" width="100px"></a><br>
+</div>
+    </div>
+    <div id="sidebar">
+        <a href="https://www.sans.org/u/1lHr">
+            <img class="lazyload" src="/adimg.html?id=4c1df0997906527fa66b891103e6828e990f027b">
+        </a>
+    
+	</div>
+</div>
+<div id="footer">
+	<ul id="socialIconsFoot">
+        <li><a href="https://www.youtube.com/channel/UCfbOsqPmWg1H_34hTjKEW2A">YouTube<span></span></a></li>
+        <li class="twitter"><a href="https://twitter.com/sans_isc">Twitter<span></span></a></li>
+        <li class="linkedin"><a href="https://www.linkedin.com/groups?gid=35470">LinkedIn<span></span></a></li>
+        <li class="rss"><a href="/xml.html">ISC Feed<span></span></a></li>
+	</ul>
+	<a class="sans" href="https://www.sans.edu/"><span></span></a>
+	<ul id="footLinks">
+        <li><a href="https://www.cafepress.com/stormcenter">Shop</a></li>
+        <li><a href="/linkback.html">Link To Us</a></li>
+        <li><a href="/about.html">About Us</a></li>
+        <li><a href="/handler_list.html">Handlers</a></li>
+        <li><a href="/privacy.html">Privacy Policy</a></li>
+        <li><a href="#top">Back To Top</a></li>
+	</ul>
+	<strong>Developers:</strong> We have an <a href="/api/">API</a> for you! &nbsp; <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><img class="lazyload" alt="Creative Commons License" src="/images/cc.png"></a>
+</div>
+<script type="text/javascript" src="/js/main.js"></script>
+</body></html>

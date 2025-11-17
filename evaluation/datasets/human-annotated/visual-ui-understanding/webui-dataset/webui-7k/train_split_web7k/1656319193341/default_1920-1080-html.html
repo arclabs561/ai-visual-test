@@ -1,0 +1,2277 @@
+<!DOCTYPE html><html lang="en-US"><head><meta charset="UTF-8"><script>if(navigator.userAgent.match(/MSIE|Internet Explorer/i)||navigator.userAgent.match(/Trident\/7\..*?rv:11/i)){var href=document.location.href;if(!href.match(/[?&]nowprocket/)){if(href.indexOf("?")==-1){if(href.indexOf("#")==-1){document.location.href=href+"?nowprocket=1"}else{document.location.href=href.replace("#","?nowprocket=1#")}}else{if(href.indexOf("#")==-1){document.location.href=href+"&nowprocket=1"}else{document.location.href=href.replace("#","&nowprocket=1#")}}}}</script><script>class RocketLazyLoadScripts{constructor(e){this.triggerEvents=e,this.eventOptions={passive:!0},this.userEventListener=this.triggerListener.bind(this),this.delayedScripts={normal:[],async:[],defer:[]},this.allJQueries=[]}_addUserInteractionListener(e){this.triggerEvents.forEach((t=>window.addEventListener(t,e.userEventListener,e.eventOptions)))}_removeUserInteractionListener(e){this.triggerEvents.forEach((t=>window.removeEventListener(t,e.userEventListener,e.eventOptions)))}triggerListener(){this._removeUserInteractionListener(this),"loading"===document.readyState?document.addEventListener("DOMContentLoaded",this._loadEverythingNow.bind(this)):this._loadEverythingNow()}async _loadEverythingNow(){this._delayEventListeners(),this._delayJQueryReady(this),this._handleDocumentWrite(),this._registerAllDelayedScripts(),this._preloadAllScripts(),await this._loadScriptsFromList(this.delayedScripts.normal),await this._loadScriptsFromList(this.delayedScripts.defer),await this._loadScriptsFromList(this.delayedScripts.async),await this._triggerDOMContentLoaded(),await this._triggerWindowLoad(),window.dispatchEvent(new Event("rocket-allScriptsLoaded"))}_registerAllDelayedScripts(){document.querySelectorAll("script[type=rocketlazyloadscript]").forEach((e=>{e.hasAttribute("src")?e.hasAttribute("async")&&!1!==e.async?this.delayedScripts.async.push(e):e.hasAttribute("defer")&&!1!==e.defer||"module"===e.getAttribute("data-rocket-type")?this.delayedScripts.defer.push(e):this.delayedScripts.normal.push(e):this.delayedScripts.normal.push(e)}))}async _transformScript(e){return await this._requestAnimFrame(),new Promise((t=>{const n=document.createElement("script");let r;[...e.attributes].forEach((e=>{let t=e.nodeName;"type"!==t&&("data-rocket-type"===t&&(t="type",r=e.nodeValue),n.setAttribute(t,e.nodeValue))})),e.hasAttribute("src")?(n.addEventListener("load",t),n.addEventListener("error",t)):(n.text=e.text,t()),e.parentNode.replaceChild(n,e)}))}async _loadScriptsFromList(e){const t=e.shift();return t?(await this._transformScript(t),this._loadScriptsFromList(e)):Promise.resolve()}_preloadAllScripts(){var e=document.createDocumentFragment();[...this.delayedScripts.normal,...this.delayedScripts.defer,...this.delayedScripts.async].forEach((t=>{const n=t.getAttribute("src");if(n){const t=document.createElement("link");t.href=n,t.rel="preload",t.as="script",e.appendChild(t)}})),document.head.appendChild(e)}_delayEventListeners(){let e={};function t(t,n){!function(t){function n(n){return e[t].eventsToRewrite.indexOf(n)>=0?"rocket-"+n:n}e[t]||(e[t]={originalFunctions:{add:t.addEventListener,remove:t.removeEventListener},eventsToRewrite:[]},t.addEventListener=function(){arguments[0]=n(arguments[0]),e[t].originalFunctions.add.apply(t,arguments)},t.removeEventListener=function(){arguments[0]=n(arguments[0]),e[t].originalFunctions.remove.apply(t,arguments)})}(t),e[t].eventsToRewrite.push(n)}function n(e,t){let n=e[t];Object.defineProperty(e,t,{get:()=>n||function(){},set(r){e["rocket"+t]=n=r}})}t(document,"DOMContentLoaded"),t(window,"DOMContentLoaded"),t(window,"load"),t(window,"pageshow"),t(document,"readystatechange"),n(document,"onreadystatechange"),n(window,"onload"),n(window,"onpageshow")}_delayJQueryReady(e){let t=window.jQuery;Object.defineProperty(window,"jQuery",{get:()=>t,set(n){if(n&&n.fn&&!e.allJQueries.includes(n)){n.fn.ready=n.fn.init.prototype.ready=function(t){e.domReadyFired?t.bind(document)(n):document.addEventListener("rocket-DOMContentLoaded",(()=>t.bind(document)(n)))};const t=n.fn.on;n.fn.on=n.fn.init.prototype.on=function(){if(this[0]===window){function e(e){return e.split(" ").map((e=>"load"===e||0===e.indexOf("load.")?"rocket-jquery-load":e)).join(" ")}"string"==typeof arguments[0]||arguments[0]instanceof String?arguments[0]=e(arguments[0]):"object"==typeof arguments[0]&&Object.keys(arguments[0]).forEach((t=>{delete Object.assign(arguments[0],{[e(t)]:arguments[0][t]})[t]}))}return t.apply(this,arguments),this},e.allJQueries.push(n)}t=n}})}async _triggerDOMContentLoaded(){this.domReadyFired=!0,await this._requestAnimFrame(),document.dispatchEvent(new Event("rocket-DOMContentLoaded")),await this._requestAnimFrame(),window.dispatchEvent(new Event("rocket-DOMContentLoaded")),await this._requestAnimFrame(),document.dispatchEvent(new Event("rocket-readystatechange")),await this._requestAnimFrame(),document.rocketonreadystatechange&&document.rocketonreadystatechange()}async _triggerWindowLoad(){await this._requestAnimFrame(),window.dispatchEvent(new Event("rocket-load")),await this._requestAnimFrame(),window.rocketonload&&window.rocketonload(),await this._requestAnimFrame(),this.allJQueries.forEach((e=>e(window).trigger("rocket-jquery-load"))),window.dispatchEvent(new Event("rocket-pageshow")),await this._requestAnimFrame(),window.rocketonpageshow&&window.rocketonpageshow()}_handleDocumentWrite(){const e=new Map;document.write=document.writeln=function(t){const n=document.currentScript,r=document.createRange(),i=n.parentElement;let o=e.get(n);void 0===o&&(o=n.nextSibling,e.set(n,o));const a=document.createDocumentFragment();r.setStart(a,0),a.appendChild(r.createContextualFragment(t)),i.insertBefore(a,o)}}async _requestAnimFrame(){return new Promise((e=>requestAnimationFrame(e)))}static run(){const e=new RocketLazyLoadScripts(["keydown","mousemove","touchmove","touchstart","touchend","wheel"]);e._addUserInteractionListener(e)}}RocketLazyLoadScripts.run();</script>
+
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="profile" href="https://gmpg.org/xfn/11">
+
+<link rel="pingback" href="https://tesseracttheme.com/xmlrpc.php">
+
+
+
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+
+	<!-- This site is optimized with the Yoast SEO plugin v17.7.1 - https://yoast.com/wordpress/plugins/seo/ -->
+	<title>Best Free Wordpress Theme!</title><link rel="preload" as="style" href="https://fonts.googleapis.com/css?family=Aladin%7COpen%20Sans%7CPacifico%7COswald%7COpen%20Sans%3A400%2C300%2C300italic%2C400italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%7CRoboto%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CRoboto%20Slab%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7COpen%20Sans%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CPoppins%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7COswald%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7COpen%20Sans%3A300%2C300italic%2C400%2C400italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%7CRaleway%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic&amp;subset=latin%2Cgreek%2Cgreek-ext%2Cvietnamese%2Ccyrillic-ext%2Ccyrillic%2Clatin-ext,greek-ext%2Ccyrillic-ext%2Clatin%2Ccyrillic%2Clatin-ext%2Cgreek%2Cvietnamese&amp;display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Aladin%7COpen%20Sans%7CPacifico%7COswald%7COpen%20Sans%3A400%2C300%2C300italic%2C400italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%7CRoboto%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CRoboto%20Slab%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7COpen%20Sans%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CPoppins%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7COswald%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7COpen%20Sans%3A300%2C300italic%2C400%2C400italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%7CRaleway%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic&amp;subset=latin%2Cgreek%2Cgreek-ext%2Cvietnamese%2Ccyrillic-ext%2Ccyrillic%2Clatin-ext,greek-ext%2Ccyrillic-ext%2Clatin%2Ccyrillic%2Clatin-ext%2Cgreek%2Cvietnamese&amp;display=swap" media="all" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Aladin%7COpen%20Sans%7CPacifico%7COswald%7COpen%20Sans%3A400%2C300%2C300italic%2C400italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%7CRoboto%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CRoboto%20Slab%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7COpen%20Sans%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CPoppins%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7COswald%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7COpen%20Sans%3A300%2C300italic%2C400%2C400italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%7CRaleway%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic&#038;subset=latin%2Cgreek%2Cgreek-ext%2Cvietnamese%2Ccyrillic-ext%2Ccyrillic%2Clatin-ext,greek-ext%2Ccyrillic-ext%2Clatin%2Ccyrillic%2Clatin-ext%2Cgreek%2Cvietnamese&#038;display=swap" /></noscript><link rel="stylesheet" href="https://tesseracttheme.com/wp-content/cache/min/1/c01d2acd6eef28bc35b0420e32551ed0.css" media="all" data-minify="1">
+	<meta name="description" content="Download the best Wordpress theme in the world! Works with all builders like, Elementor, Bever Builder and so on. 100% free, clean and easy to use.">
+	<link rel="canonical" href="https://tesseracttheme.com/">
+	<meta property="og:locale" content="en_US">
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="Best Free Wordpress Theme!">
+	<meta property="og:description" content="Download the best Wordpress theme in the world! Works with all builders like, Elementor, Bever Builder and so on. 100% free, clean and easy to use.">
+	<meta property="og:url" content="https://tesseracttheme.com/">
+	<meta property="og:site_name" content="Tesseract Theme">
+	<meta property="article:modified_time" content="2021-07-01T06:00:25+00:00">
+	<meta property="og:image" content="https://tesseracttheme.com/wp-content/uploads/2017/12/AIR-BALLOONwp2-655x1024.png">
+	<meta name="twitter:card" content="summary">
+	<meta name="twitter:label1" content="Est. reading time">
+	<meta name="twitter:data1" content="3 minutes">
+	<script type="application/ld+json" class="yoast-schema-graph">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://tesseracttheme.com/#website","url":"https://tesseracttheme.com/","name":"Tesseract Theme","description":"Free Wordpress Theme","potentialAction":[{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://tesseracttheme.com/?s={search_term_string}"},"query-input":"required name=search_term_string"}],"inLanguage":"en-US"},{"@type":"ImageObject","@id":"https://tesseracttheme.com/#primaryimage","inLanguage":"en-US","url":"https://tesseracttheme.com/wp-content/uploads/2017/12/AIR-BALLOONwp2-655x1024.png","contentUrl":"https://tesseracttheme.com/wp-content/uploads/2017/12/AIR-BALLOONwp2-655x1024.png"},{"@type":"WebPage","@id":"https://tesseracttheme.com/#webpage","url":"https://tesseracttheme.com/","name":"Best Free Wordpress Theme!","isPartOf":{"@id":"https://tesseracttheme.com/#website"},"primaryImageOfPage":{"@id":"https://tesseracttheme.com/#primaryimage"},"datePublished":"2017-12-19T22:39:47+00:00","dateModified":"2021-07-01T06:00:25+00:00","description":"Download the best Wordpress theme in the world! Works with all builders like, Elementor, Bever Builder and so on. 100% free, clean and easy to use.","breadcrumb":{"@id":"https://tesseracttheme.com/#breadcrumb"},"inLanguage":"en-US","potentialAction":[{"@type":"ReadAction","target":["https://tesseracttheme.com/"]}]},{"@type":"BreadcrumbList","@id":"https://tesseracttheme.com/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home"}]}]}</script>
+	<!-- / Yoast SEO plugin. -->
+
+
+<link rel="dns-prefetch" href="//apis.google.com">
+<link rel="dns-prefetch" href="//platform.twitter.com">
+<link rel="dns-prefetch" href="//platform.linkedin.com">
+<link rel="dns-prefetch" href="//fonts.googleapis.com">
+<link href="https://fonts.gstatic.com" crossorigin="" rel="preconnect">
+<link rel="alternate" type="application/rss+xml" title="Tesseract Theme » Feed" href="https://tesseracttheme.com/feed/">
+<link rel="alternate" type="application/rss+xml" title="Tesseract Theme » Comments Feed" href="https://tesseracttheme.com/comments/feed/">
+
+
+
+
+
+
+
+
+<link rel="stylesheet" id="woocommerce-smallscreen-css" href="https://tesseracttheme.com/wp-content/plugins/woocommerce/assets/css/woocommerce-smallscreen.css?ver=5.9.1" type="text/css" media="only screen and (max-width: 768px)">
+
+<style id="woocommerce-inline-inline-css" type="text/css">
+.woocommerce form .form-row .required { visibility: visible; }
+</style>
+
+
+
+
+
+
+
+
+
+<style id="tesseract-site-banner-inline-css" type="text/css">
+.site-header,
+	.main-navigation ul ul a,
+	#header-right-menu ul ul a,
+	.site-header .cart-content-details { background-color: rgb(255, 255, 255) !important; }
+	.site-header .cart-content-details:after { border-bottom-color: rgb(255, 255, 255) !important; }
+	/*.site-header ul.sub-menu li{ background-color: rgb(255, 255, 255) !important; }*/
+	.home .site-header,
+	#page .site-header,
+	.home .main-navigation ul ul a,
+	.top-navigation li ul.sub-menu li a,
+	.home .site-header .cart-content-details { background-color: rgba(255, 255, 255,1) !important; }
+	.home .site-header .cart-content-details:after { border-bottom-color: rgba(255, 255, 255,1) !important; }
+	/*.site-header ul.sub-menu li{ background-color: rgba(255, 255, 255,1) !important; }*/
+	.site-header,
+	#header-button-container-inner,
+	#header-button-container-inner a,
+	.site-header h1,
+	.site-header h2,
+	.site-header h3,
+	.site-header h4,
+	.site-header h5,
+	.site-header h6,
+    .site-header h2 a{ color: #ffffff !important; }
+
+	#masthead_TesseractTheme .search-field { color: #ffffff !important; }
+	#masthead_TesseractTheme .search-field.watermark { color: #ffffff !important; }
+	.header-upper-right input[type='search'] {
+	    border-color: #ffffff !important;
+	}
+
+	.site-header a,
+	.main-navigation ul ul a,
+	#header-right-menu ul li a,
+	.menu-open,
+	.dashicons.menu-open,
+	.menu-close,
+	.dashicons.menu-close { color: #23558e; }
+
+	.site-header a:hover,
+	.main-navigation ul ul a:hover,
+	#header-right-menu ul li a:hover,
+	.menu-open:hover,
+	.dashicons.menu-open:hover,
+	.menu-close:hover,
+	.dashicons.menu-open:hover { color: #275b8e; }
+
+	/* Header logo height */
+
+	#site-banner .site-logo img {
+		height: 55px;
+		}
+
+	#site-banner {
+		padding-top: 15px !important;
+		padding-bottom: 15px !important;
+		}
+
+	/* Header width props */
+
+	#site-banner-left {
+		width: 60%;
+		}
+
+	#site-banner-right {
+		width: 40%;
+		}
+
+	.top-navigation li ul.sub-menu li a:hover{ background:#f4f4f4!important;}
+	
+		.icon-shopping-cart, .woocart-header .cart-arrow, .woocart-header .cart-contents {
+			color: #fff;
+		}
+	
+.cart-content-details-table tfoot td {
+
+		border-top: #ffffff solid 1px;
+
+	}
+
+
+
+	.cart-content-details {
+
+		background: #59bcd9;
+
+		}
+
+
+
+	.cart-content-details:after { border-bottom-color: #59bcd9; }
+
+	
+</style>
+
+<style id="tesseract-footer-banner-inline-css" type="text/css">
+.site-footer {
+		background-color: #1e73be !important;
+		color: #ffffff !important;
+	}
+	
+	.site-footer { background-color: #1e73be !important; }
+
+	.home .site-footer,
+	.home .site-footer { background-color: #1e73be !important; }
+	
+
+	#colophon_TesseractTheme .search-field { color: #ffffff !important; }
+	#colophon_TesseractTheme .search-field.watermark { color: #ccc; }
+
+	#colophon_TesseractTheme h1,
+	#colophon_TesseractTheme h2,
+	#colophon_TesseractTheme h3,
+	#colophon_TesseractTheme h4,
+	#colophon_TesseractTheme h5,
+	#colophon_TesseractTheme h6 { color: #ffffff !important; }
+	
+	
+	#bloglist_title h1.entry-title,
+	#bloglist_title h2.entry-title,
+	#bloglist_title h3.entry-title,
+	#bloglist_title h4.entry-title,
+	#bloglist_title h5.entry-title,
+	#bloglist_title h6.entry-title, 
+	#bloglist_title h2.entry-title a,
+	#blogpost_title h1.entry-title{ color: #000000 !important; display: block !important; }
+
+	
+
+	#bloglist_morebutton .blmore,
+	#bloglist_morebutton .blmore a,
+	#bloglist_morebutton .blmore a:hover{ color: #ffffff !important; }
+	
+	
+	.summary h1,
+	#prodlist_title h3, 
+	#prodlist_title h3 a{ color: #000000 !important; }
+	
+	.woocommerce div.product p.price, .woocommerce div.product span.price,
+	.wooshop-price .sales-price, .wooshop-price .regular-pricenew{ color: #000000 !important; }
+
+	.sub-details .pricing .price .woocommerce-Price-amount .sales-price{ color: #000000 !important; }
+
+	.home-featured-product .slides li .price{ color: #000000 }
+
+	
+	.home-featured-product .slides li ins{ color: #000000 !important; }
+
+	#primary .products li ins{ color: #000000 !important; }
+
+	#primary .products li .wooshop-price{ color: #000000 }
+
+	.product-type-external ins .woocommerce-Price-amount.amount{ color: #000000 !important; }
+
+	.product-type-external .wooprice-bold ins .woocommerce-Price-amount.amount{ font-weight:700 !important; }
+	
+
+	#colophon_TesseractTheme a { color: #ffffff !important; }
+	#colophon_TesseractTheme .site-title span { color: #ffffff !important; }
+	// .mobile-menu-collaps-button { color: #ffffff !important; }
+
+	#colophon_TesseractTheme a:hover { color: #d1ecff !important; }
+
+	#horizontal-menu-before,
+	#horizontal-menu-after { border-color: rgba(255, 255, 255, 0.25); }
+
+	#footer-banner.footbar-active { border-color: rgba(255, 255, 255, 0.15); }
+
+	#footer-banner .site-logo img { height: 40px ; }
+
+	#colophon_TesseractTheme {
+		padding-top: 10px;
+		padding-bottom: 10px;
+	}
+
+	#horizontal-menu-wrap {
+		width: 60%;
+		}
+		
+
+	#footer-banner-right	{
+		width: 40%;
+		}
+
+	
+</style>
+
+
+<style id="tesseract-sidr-style-inline-css" type="text/css">
+.sidr {
+		background-color: #336ca6;
+		}
+
+	// .sidr .sidr-class-menu-item a,
+	// .sidr .sidr-class-menu-item span { color: #fff; }
+	.mobile-menu-collaps-button { color: #fff !important; }
+
+
+	.sidr .sidr-class-menu-item ul li a,
+	.sidr .sidr-class-menu-item ul li span {
+		color: rgba(255, 15, , 0.8);
+	}
+
+	.sidr .sidr-class-menu-item a:hover,
+	.sidr .sidr-class-menu-item span:hover,
+	.sidr .sidr-class-menu-item:first-child a:hover,
+	.sidr .sidr-class-menu-item:first-child span:hover { color: #fff; }
+
+	.sidr .sidr-class-menu-item ul li a:hover,
+	.sidr .sidr-class-menu-item ul li span:hover,
+	.sidr .sidr-class-menu-item ul li:first-child a:hover,
+	.sidr .sidr-class-menu-item ul li:first-child span:hover { color: rgba(255, 15, , 0.8); }
+
+	.sidr ul li > a:hover,
+	.sidr ul li > span:hover,
+	.sidr > div > ul > li:first-child > a:hover,
+	.sidr > div > ul > li:first-child > span:hover,
+	.sidr ul li ul li:hover > a,
+	.sidr ul li ul li:hover > span {
+		background: rgba(0, 0, 0, 0.2);
+
+		}
+
+	/* Shadows and Separators */
+
+	
+
+	/* Header Right side content */
+
+	.sidr-class-search-field,
+	.sidr-class-search-form input[type='search'] {
+		background: rgba(255, 255, 255, 0.15);
+		color: ;
+	}
+
+	.sidr-class-hr-social {
+		background: rgba(255, 255, 255, 0.15);
+	}
+
+	#sidr-id-header-button-container-inner,
+	#sidr-id-header-button-container-inner > h1,
+	#sidr-id-header-button-container-inner > h2,
+	#sidr-id-header-button-container-inner > h3,
+	#sidr-id-header-button-container-inner > h4,
+	#sidr-id-header-button-container-inner > h5,
+	#sidr-id-header-button-container-inner > h6 {
+		background: rgba(0, 0, 0, 0.2);
+		color: ;
+	}
+
+	#sidr-id-header-button-container-inner a,
+	#sidr-id-header-button-container-inner button {
+		color: ;
+	}
+
+	#sidr-id-header-button-container-inner a:hover,
+	#sidr-id-header-button-container-inner button:hover {
+		color: ;
+	}
+
+	/*
+	.sidr ul li > a,
+	.sidr ul li > span,
+	#header-button-container *,
+	#sidr-id-header-button-container-inner button {
+		-webkit-box-shadow: inset 0 -1px rgba(255, 255, 255, 0.1);
+		-moz-box-shadow: inset 0 -1px rgba(255, 255, 255, 0.1);
+		box-shadow: inset 0 -1px rgba(255, 255, 255, 0.1);
+	}
+	*/
+	
+</style>
+
+
+
+
+<style id="elementor-frontend-inline-css" type="text/css">
+@font-face{font-family:eicons;src:url(https://tesseracttheme.com/wp-content/plugins/elementor/assets/lib/eicons/fonts/eicons.eot?5.10.0);src:url(https://tesseracttheme.com/wp-content/plugins/elementor/assets/lib/eicons/fonts/eicons.eot?5.10.0#iefix) format("embedded-opentype"),url(https://tesseracttheme.com/wp-content/plugins/elementor/assets/lib/eicons/fonts/eicons.woff2?5.10.0) format("woff2"),url(https://tesseracttheme.com/wp-content/plugins/elementor/assets/lib/eicons/fonts/eicons.woff?5.10.0) format("woff"),url(https://tesseracttheme.com/wp-content/plugins/elementor/assets/lib/eicons/fonts/eicons.ttf?5.10.0) format("truetype"),url(https://tesseracttheme.com/wp-content/plugins/elementor/assets/lib/eicons/fonts/eicons.svg?5.10.0#eicon) format("svg");font-weight:400;font-style:normal}
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-includes/js/jquery/jquery.min.js?ver=3.6.0" id="jquery-core-js" defer=""></script>
+<script type="text/javascript" id="email-newsletter-widget-scripts-js-extra">
+/* <![CDATA[ */
+var email_newsletter_widget_scripts = {"ajax_url":"https:\/\/tesseracttheme.com\/wp-admin\/admin-ajax.php","empty_email":"Please write your Email!","saving":"Saving..."};
+/* ]]> */
+</script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/cache/min/1/wp-content/plugins/newsletter-pro/email-newsletter-files/js/widget_script.js?ver=1638997457" id="email-newsletter-widget-scripts-js" defer=""></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/themes/advanced-theme/js/modernizr.custom.min.js?ver=1.0.0" id="tesseract-modernizr-js" defer=""></script>
+<script type="text/javascript" id="tesseract_helpers-js-extra">
+/* <![CDATA[ */
+var tesseract_vars = {"hpad":"15","fpad":""};
+/* ]]> */
+</script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/cache/min/1/wp-content/themes/advanced-theme/js/helpers.js?ver=1638997457" id="tesseract_helpers-js" defer=""></script>
+<link rel="https://api.w.org/" href="https://tesseracttheme.com/wp-json/"><link rel="alternate" type="application/json" href="https://tesseracttheme.com/wp-json/wp/v2/pages/11845"><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://tesseracttheme.com/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://tesseracttheme.com/wp-includes/wlwmanifest.xml"> 
+
+<link rel="shortlink" href="https://tesseracttheme.com/">
+<link rel="alternate" type="application/json+oembed" href="https://tesseracttheme.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Ftesseracttheme.com%2F">
+<link rel="alternate" type="text/xml+oembed" href="https://tesseracttheme.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Ftesseracttheme.com%2F&amp;format=xml">
+	<script type="rocketlazyloadscript" data-rocket-type="text/javascript">window.addEventListener('DOMContentLoaded', function() {
+		jQuery(document).ready(function(){
+	        jQuery('a[href^="#tesurlid="]').each(function(){ 
+	            jQuery(this).addClass("tes-eml-pop-up-link-menu"); // Get current url
+	        });
+	    });
+	});</script>
+			<style type="text/css">
+			.tes-adv-woo-menu ul li span{
+				font-weight:  ;
+				font-size: px !important ;
+				letter-spacing:  px ;
+				color: #23558e;
+			}
+			#footer-banner-right{
+				font-family:Oswald ;
+			}
+			#footer-banner-centre{
+				font-family:Oswald ;
+			}
+			.site-title span{
+				color:#000000;
+			}
+
+			.top-navigation li.current-menu-item.current_page_item a
+			{
+				color: #9ed1e2 !important;
+			}
+			.top-navigation ul li > a{
+					font-family:Open Sans ;
+					color: #23558e;
+				}
+				
+			.top-navigation li.current-menu-item.current_page_item ul li a{ color:#486a8f !important;}	
+			.top-navigation li.current-menu-item.current_page_item ul li a:hover{color:#275b8e !important;}
+				
+			#header-right-menu ul li > a{
+					font-family:Open Sans ;
+				}
+
+			.top-navigation ul ul li > a{
+				font-family:Open Sans ;
+			}
+			#header-right-menu ul ul li > a{
+				font-family:Open Sans ;
+			}
+
+			.top-navigation ul li > a{
+					letter-spacing:px ;
+				}
+			#header-right-menu ul li > a{
+					letter-spacing:px ;
+				}
+
+			.top-navigation ul li > a{
+					padding-right:10px !important ;
+					padding-left:10px !important ;
+				}
+			#header-right-menu ul li > a{
+					padding-right:10px !important ;
+					padding-left:10px !important ;
+				}
+
+			.top-navigation ul ul li > a{
+				letter-spacing:px ;
+			}
+			#header-right-menu ul ul li > a{
+				letter-spacing:px ;
+			}
+
+			.top-navigation ul li > a{
+					font-size:px !important ;
+				}
+			#header-right-menu ul li > a{
+					font-size:px !important ;
+				}
+
+			.top-navigation ul ul li > a{
+				font-size:px !important ;
+			}
+			#header-right-menu ul ul li > a{
+				font-size:px !important ;
+			}
+
+			.top-navigation ul li > a{
+					font-weight: ;
+				}
+			#header-right-menu ul li > a{
+					font-weight: ;
+				}
+
+			.top-navigation ul ul li > a{
+				font-weight: ;
+			}
+			#header-right-menu ul ul li > a{
+				font-weight: ;
+			}
+
+			.top-navigation ul li > a{
+					font-style: ;
+				}
+			#header-right-menu ul li > a{
+					font-style: ;
+				}
+
+
+			#footer-right-menu ul li > a{
+					font-family:Oswald ;
+			}
+			
+			#footer-horizontal-menu ul li > a{
+					font-family:Oswald ;
+			}
+			.banner-right.content-html{
+					font-family:Oswald ;
+			}
+			#footer-right-menu ul li > a{
+					letter-spacing:px ;
+				}
+			#footer-horizontal-menu ul li > a{
+					letter-spacing:px ;
+				}
+			#footer-banner-right{
+					letter-spacing:px ;
+				}
+			#footer-banner-centre{
+					letter-spacing:px ;
+				}
+			
+			#footer-right-menu ul li > a{
+					padding-right:px ;
+				}
+			#footer-horizontal-menu ul li > a{
+					padding-right:px ;
+				}
+			#footer-banner-centre{
+					padding-right:px ;
+				}
+			#footer-banner-right{
+					padding-right:px ;
+				}
+
+
+			#footer-right-menu ul li > a{
+					font-size:px ;
+				}
+			#footer-horizontal-menu ul li > a{
+					font-size:px ;
+				}
+			#footer-banner-centre{
+					font-size:px ;
+				}
+			#footer-banner-right{
+					font-size:px ;
+				}
+			
+			#footer-right-menu ul li > a{
+					font-weight: ;
+				}
+			#footer-horizontal-menu ul li > a{
+					font-weight: ;
+				}
+			#footer-banner-centre{
+					font-weight: ;
+				}
+			#footer-banner-right{
+					font-weight: ;
+				}
+			
+
+			#footer-right-menu ul li > a{
+					font-style: ;
+				}
+			#footer-horizontal-menu ul li > a{
+					font-style: ;
+				}
+				#footer-banner-right{
+					font-style: ;
+				}
+				#footer-banner-centre{
+					font-style: ;
+				}
+			.price del{ color: #FF0000 !important;}
+			.wooshop-price.wooprice-nonbold.price-tesseract del{ color: #FF0000 !important;}
+		</style>
+	<noscript><style>#sidebar-footer aside {border: none!important;}</style></noscript>		<style type="text/css">
+			.top-navigation ul ul li > a{
+				color:#486a8f ;
+			}
+		</style>
+		<noscript><style>.woocommerce-product-gallery{ opacity: 1 !important; }</style></noscript>
+	<style>.fb_iframe_widget_lift {width: 100% !important; height: 100% !important;}</style><style>#ulp-XIoeCGKY4qtQLUNp .ulp-submit,#ulp-XIoeCGKY4qtQLUNp .ulp-submit:visited{border-radius: 30px !important; background: #476991;border:1px solid #476991;}#ulp-XIoeCGKY4qtQLUNp .ulp-submit:hover,#ulp-XIoeCGKY4qtQLUNp .ulp-submit:active{border-radius: 30px !important; background: #3d5a7c;border:1px solid #3d5a7c;}#ulp-XIoeCGKY4qtQLUNp, #ulp-XIoeCGKY4qtQLUNp .ulp-content{width:550px;height:410px;}#ulp-XIoeCGKY4qtQLUNp .ulp-input,#ulp-XIoeCGKY4qtQLUNp .ulp-input:hover,#ulp-XIoeCGKY4qtQLUNp .ulp-input:active,#ulp-XIoeCGKY4qtQLUNp .ulp-input:focus,#ulp-XIoeCGKY4qtQLUNp .ulp-checkbox{border-width: 1px !important; border-radius: 30px !important; border-color:#ffffff;background-color:#ffffff !important;background-color:rgba(255,255,255,1) !important;}#ulp-XIoeCGKY4qtQLUNp-overlay{background:rgba(183,183,183,0.8);}#ulp-layer-199{width:550px;height:410px;}#ulp-layer-199,#ulp-layer-199 * {text-align:left;font-family:'arial',arial;font-weight:400;color:#000000;font-size:14px;}#ulp-layer-199{background-color:#ffffff;background-color:rgba(255,255,255,0.9);border-radius:0px;z-index:1000003;text-align:left;padding:0px 0px;box-shadow: rgba(32,32,32,1) 0 4px 30px;;}#ulp-layer-200{width:550px;height:410px;}#ulp-layer-200{background-color:#ffffff;background-color:rgba(255,255,255,0.9);border-radius:0px;z-index:1000004;text-align:left;padding:0px 0px;;}#ulp-layer-200:hover{background-color:#ffffff;background-color:rgba(255,255,255,0.9);}#ulp-layer-204{width:550px;height:200px;}#ulp-layer-204{background-color:#1fb3e0;background-color:rgba(31,179,224,0.9);border-radius:0px;z-index:1000005;text-align:left;padding:0px 0px;;}#ulp-layer-204:hover{background-color:#1fb3e0;background-color:rgba(31,179,224,0.9);}#ulp-layer-201{width:550px;}#ulp-layer-201,#ulp-layer-201 * {text-align:center;font-family:'Raleway',arial;font-weight:700;color:#476991;font-size:22px;}#ulp-layer-201:hover,#ulp-layer-201:focus,#ulp-layer-201:active,#ulp-layer-201 *:hover,#ulp-layer-201 *:focus,#ulp-layer-201 *:active {color:#476991;}#ulp-layer-201{border-radius:0px;z-index:1000006;text-align:center;padding:0px 0px;letter-spacing: -1;;}#ulp-layer-203{width:550px;}#ulp-layer-203,#ulp-layer-203 * {text-align:center;font-family:'Open Sans',arial;font-weight:400;color:#515151;font-size:16px;}#ulp-layer-203:hover,#ulp-layer-203:focus,#ulp-layer-203:active,#ulp-layer-203 *:hover,#ulp-layer-203 *:focus,#ulp-layer-203 *:active {color:#515151;}#ulp-layer-203{border-radius:0px;z-index:1000007;text-align:center;padding:0px 0px;letter-spacing: -1;;}#ulp-layer-208{width:550px;}#ulp-layer-208,#ulp-layer-208 * {text-align:center;font-family:'arial',arial;font-weight:400;color:#606060;font-size:13px;}#ulp-layer-208:hover,#ulp-layer-208:focus,#ulp-layer-208:active,#ulp-layer-208 *:hover,#ulp-layer-208 *:focus,#ulp-layer-208 *:active {color:#8e8e8e;}#ulp-layer-208{border-radius:0px;z-index:1000008;text-align:center;padding:0px 0px;letter-spacing: -1;;}#ulp-layer-202{width:300px;height:5px;}#ulp-layer-202{background-color:#1fb3e0;background-color:rgba(31,179,224,0.9);border-radius:0px;z-index:1000009;text-align:left;padding:0px 0px;;}#ulp-layer-205{width:480px;height:42px;}#ulp-layer-205,#ulp-layer-205 * {text-align:left;font-family:'arial',arial;font-weight:400;color:#000000;font-size:15px;}#ulp-layer-205{border-radius:0px;z-index:1000010;text-align:left;padding:0px 0px;;}#ulp-layer-206{width:480px;height:42px;}#ulp-layer-206,#ulp-layer-206 * {text-align:left;font-family:'arial',arial;font-weight:400;color:#000000;font-size:15px;}#ulp-layer-206{border-radius:0px;z-index:1000011;text-align:left;padding:0px 0px;;}#ulp-layer-207{width:400px;height:48px;}#ulp-layer-207,#ulp-layer-207 * {text-align:center;font-family:'Open Sans',arial;font-weight:400;color:#ffffff;font-size:17px;}#ulp-layer-207:hover,#ulp-layer-207:focus,#ulp-layer-207:active,#ulp-layer-207 *:hover,#ulp-layer-207 *:focus,#ulp-layer-207 *:active {color:#c6c6c6;}#ulp-layer-207{border-radius:0px;z-index:1000012;text-align:center;padding:0px 0px;;}#ulp-layer-209{width:32px;height:32px;}#ulp-layer-209,#ulp-layer-209 * {text-align:center;font-family:'arial',arial;font-weight:400;color:#ffffff;font-size:32px;}#ulp-layer-209{background-color:#1fb3e0;background-color:rgba(31,179,224,0.9);border-radius:0px;z-index:1000013;text-align:center;padding:0px 0px;line-height: 32px; border-radius: 16px;;}#ulp-layer-209:hover{background-color:#02a6d8;background-color:rgba(2,166,216,0.9);}</style>
+		<script type="rocketlazyloadscript">
+			var ulp_custom_handlers = {};
+			var ulp_cookie_value = "ilovelencha";
+			var ulp_onload_popup = "";
+			var ulp_onload_mode = "none";
+			var ulp_onload_period = "5";
+			var ulp_onscroll_popup = "";
+			var ulp_onscroll_mode = "none";
+			var ulp_onscroll_period = "5";
+			var ulp_onexit_popup = "";
+			var ulp_onexit_mode = "none";
+			var ulp_onexit_period = "5";
+			var ulp_onidle_popup = "";
+			var ulp_onidle_mode = "none";
+			var ulp_onidle_period = "5";
+			var ulp_onabd_popup = "";
+			var ulp_onabd_mode = "none";
+			var ulp_onabd_period = "5";
+			var ulp_onload_delay = "5";
+			var ulp_onload_close_delay = "0";
+			var ulp_onscroll_offset = "600";
+			var ulp_onidle_delay = "30";
+			var ulp_recaptcha_enable = "off";
+			var ulp_content_id = "11845";
+		</script>		<style type="text/css" id="wp-custom-css">
+			 .woocommerce-page form .form-row-first#billing_email_field{
+	clear:both;
+	width:100%;
+}
+#content_TesseractTheme .fl-animation{
+	opacity:1;
+}
+		</style>
+		<!-- Infinite Scroll -->
+
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript">window.addEventListener('DOMContentLoaded', function() {
+      jQuery(document).ready(function($) {
+        $('a#inifiniteLoader img').hide('fast');
+          // var count = 2;
+          // var tot_pr = '10';
+          // $(window).scroll(function(){
+          //   var scroll = parseInt($(window).scrollTop()) - parseInt(200);
+          //     if  (scroll >= $('#primary').height() - $(window).height()){
+          //        if( $('ul.products li').length != tot_pr && tot_pr > $('ul.products li').length){
+          //           //loadArticle(count);
+          //           //count++;
+          //       }
+          //     }
+          // }); 
+          $("#inifiniteLoader").click(function(){
+            var old_count     = $("#product_count_page_list").val();
+            var new_count     = parseInt(old_count)+1;
+            var max_num_page  = $("#max_num_page").val();
+            loadArticle(old_count,max_num_page,new_count);
+            $("#product_count_page_list").val(new_count);
+          });
+          function loadArticle(pageNumber,max_num_page,new_count){    
+                  $('a#inifiniteLoader img').show('fast');
+                  $.ajax({
+                      url: "https://tesseracttheme.com/wp-admin/admin-ajax.php",
+                      type:'POST',
+                      async: true,
+                      cache: false,
+                      data: "action=infinite_scroll&page_no="+ pageNumber, 
+                      success: function(html){
+                          $('a#inifiniteLoader img').hide('1000');
+                          $(".products").append(html);
+                          console.log(new_count);
+                          console.log(max_num_page);
+                          if(new_count > max_num_page){
+                            $('a#inifiniteLoader').hide('1000');  
+                          }
+                      }
+                  });
+              return false;
+          }
+   
+      });
+      
+  });</script>
+
+<!--[if gte IE 9]>
+
+  <style type="text/css">
+
+    .gradient {
+
+       filter: none;
+
+    }
+
+  </style>
+
+<![endif]-->
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript">
+            var timerStart = Date.now();
+        </script>
+</head>
+
+
+
+
+
+<body class="home page-template page-template-full-width-page page-template-full-width-page-php page page-id-11845 wp-custom-logo frontend theme-advanced-theme woocommerce-no-js full-width-page elementor-default elementor-kit-30876 elementor-page elementor-page-11845">
+
+
+
+
+
+
+<div id="page" class="hfeed site">
+
+
+
+     
+
+
+
+
+<style type="text/css">
+  .woocommerce, .woocommerce h2, .woocommerce h3, #tes-mini-cart-right-panel, .woocommerce label{font-family: Open Sans !important;}
+</style>
+
+
+
+
+    
+    
+            <header id="masthead_TesseractTheme" class="mob-view site-header pos-relative menusize-autowidth header-not-fixed  no-header-image nav-right-logo-left" role="banner">
+            <div id="site-banner" class="cf  logo">
+
+        <div id="site-banner-main" class="no-right">
+
+          <div id="mobile-menu-trigger-wrap" class="cf cf-res-menu"><a class="menu-open dashicons dashicons-menu" href="#" id="mobile-menu-trigger"></a></div>
+
+         
+          <div id="site-banner-left">
+
+            <div class="site-branding">
+
+                
+                  <h1 class="site-logo"><a href="https://tesseracttheme.com/" rel="home"><img src="https://tesseracttheme.com/wp-content/uploads/2019/01/TesseractTheme-Logo.png" alt="logo"></a></h1>
+
+                                  
+              </div>
+
+          </div>
+
+
+          <div id="" class="banner-right">
+                        <nav id="site-navigation" class="mob-showit main-navigation top-navigation autowidth" role="navigation">
+
+                <ul id="menu-main" class="nav-menu"><li id="menu-item-10741" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-10741"><a href="https://tesseracttheme.com/tutorials3/">Tutorials</a></li>
+<li id="menu-item-10743" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-10743"><a href="#">Products</a>
+<ul class="sub-menu">
+	<li id="menu-item-22523" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-22523"><a href="https://tesseracttheme.com/advanced/">Advanced Theme</a></li>
+	<li id="menu-item-12589" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-12589"><a href="https://tesseracttheme.com/gallery/">Galley Plugin</a></li>
+	<li id="menu-item-10744" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-10744"><a href="https://tesseracttheme.com/unbranding-plugin/">Unbranding</a></li>
+</ul>
+</li>
+<li id="menu-item-8870" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-8870"><a href="https://tesseracttheme.com/sample-sites/">Sample Sites</a></li>
+<li id="menu-item-25130" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-25130"><a target="_blank" rel="noopener" href="https://logomakr.com">Logo Maker</a></li>
+<li id="menu-item-6892" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-6892"><a href="https://tesseracttheme.com/?ulp=XIoeCGKY4qtQLUNp&amp;ac=ViIV83JW8fqtISdw#ulp-XIoeCGKY4qtQLUNp">Free Theme</a></li>
+</ul>
+                <div class="tes-adv-woo-menu">
+                  <ul>
+                    <li><a href="javascript:void(0);"><span id="header-menu-search" class="dashicons dashicons-search"></span></a></li>
+                    <li>
+                      <span class="dashicons dashicons-admin-users"></span>
+                      <ul class="account-submenu">
+                        <li><a href="https://tesseracttheme.com/wp-login.php?action=register">Register</a></li><li><a href="https://tesseracttheme.com/my-account/">Login</a></li>                      </ul>
+                    </li>
+                    <li>
+                      <a href="javascript:void(0);" id="header-menu-cart">                        <span class="dashicons dashicons-cart"></span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+
+              </nav>
+                        
+            
+          </div>
+
+        </div>
+
+      </div>
+
+    </header>
+
+    
+    
+
+    <!-- #masthead -->
+
+    
+    <div id="content_TesseractTheme" class="cf site-content ">
+
+    <style type="text/css">
+
+  @media screen and (max-width:1023px) {
+    #site-banner .site-logo img {
+            max-width: 100px !important;
+            height: auto !important;
+        }
+  }
+</style>
+
+
+	
+	<div id="primary" class=" full-width-page no-sidebar">
+
+		<main id="main" class="site-main" role="main">
+
+
+
+		
+
+
+			
+			
+
+
+				
+
+
+<article id="post-11845" class="post-11845 page type-page status-publish hentry">
+
+
+
+	
+    
+
+		
+	
+
+	
+
+
+	<div class="entry-content">
+
+				<div data-elementor-type="wp-post" data-elementor-id="11845" class="elementor elementor-11845" data-elementor-settings="[]">
+						<div class="elementor-inner">
+							<div class="elementor-section-wrap">
+							<section class="elementor-section elementor-top-section elementor-element elementor-element-53707478 elementor-section-stretched elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="53707478" data-element_type="section" data-settings="{&quot;background_background&quot;:&quot;gradient&quot;,&quot;stretch_section&quot;:&quot;section-stretched&quot;,&quot;shape_divider_bottom&quot;:&quot;mountains&quot;}">
+							<div class="elementor-background-overlay"></div>
+						<div class="elementor-shape elementor-shape-bottom" data-negative="false">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" preserveAspectRatio="none">
+	<path class="elementor-shape-fill" opacity="0.33" d="M473,67.3c-203.9,88.3-263.1-34-320.3,0C66,119.1,0,59.7,0,59.7V0h1000v59.7 c0,0-62.1,26.1-94.9,29.3c-32.8,3.3-62.8-12.3-75.8-22.1C806,49.6,745.3,8.7,694.9,4.7S492.4,59,473,67.3z"></path>
+	<path class="elementor-shape-fill" opacity="0.66" d="M734,67.3c-45.5,0-77.2-23.2-129.1-39.1c-28.6-8.7-150.3-10.1-254,39.1 s-91.7-34.4-149.2,0C115.7,118.3,0,39.8,0,39.8V0h1000v36.5c0,0-28.2-18.5-92.1-18.5C810.2,18.1,775.7,67.3,734,67.3z"></path>
+	<path class="elementor-shape-fill" d="M766.1,28.9c-200-57.5-266,65.5-395.1,19.5C242,1.8,242,5.4,184.8,20.6C128,35.8,132.3,44.9,89.9,52.5C28.6,63.7,0,0,0,0 h1000c0,0-9.9,40.9-83.6,48.1S829.6,47,766.1,28.9z"></path>
+</svg>		</div>
+					<div class="elementor-container elementor-column-gap-default">
+							<div class="elementor-row">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-7049bb2f" data-id="7049bb2f" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-aa128df elementor-widget elementor-widget-heading" data-id="aa128df" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-default">Best Free WordPress Theme</h2>		</div>
+				</div>
+				<div class="elementor-element elementor-element-3dedbeb elementor-aspect-ratio-169 elementor-widget elementor-widget-video" data-id="3dedbeb" data-element_type="widget" data-settings="{&quot;show_image_overlay&quot;:&quot;yes&quot;,&quot;image_overlay&quot;:{&quot;url&quot;:&quot;http:\/\/tesseracttheme.com\/wp-content\/uploads\/2017\/12\/video5.jpg&quot;,&quot;id&quot;:11847},&quot;video_type&quot;:&quot;vimeo&quot;,&quot;loop&quot;:&quot;no&quot;,&quot;aspect_ratio&quot;:&quot;169&quot;}" data-widget_type="video.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-wrapper elementor-fit-aspect-ratio elementor-open-inline">
+			<iframe class="elementor-video-iframe" allowfullscreen="" title="vimeo Video Player" src="https://player.vimeo.com/video/252427829?color&amp;autopause=0&amp;loop=1&amp;muted=0&amp;title=1&amp;portrait=1&amp;byline=1#t="></iframe>				<div class="elementor-custom-embed-image-overlay" style="background-image: url(https://tesseracttheme.com/wp-content/uploads/2017/12/video5.jpg);">
+																<div class="elementor-custom-embed-play" role="button">
+							<i class="eicon-play" aria-hidden="true"></i>
+							<span class="elementor-screen-only">Play Video</span>
+						</div>
+									</div>
+					</div>
+				</div>
+				</div>
+				<div class="elementor-element elementor-element-4a764a22 elementor-align-center elementor-widget elementor-widget-button" data-id="4a764a22" data-element_type="widget" data-widget_type="button.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-button-wrapper">
+			<a href="https://tesseracttheme.com/?ulp=XIoeCGKY4qtQLUNp&amp;ac=ViIV83JW8fqtISdw#ulp-XIoeCGKY4qtQLUNp" class="elementor-button-link elementor-button elementor-size-lg" role="button">
+						<span class="elementor-button-content-wrapper">
+						<span class="elementor-button-icon elementor-align-icon-left">
+									<i class="fa fa-download" aria-hidden="true"></i>
+							</span>
+						<span class="elementor-button-text">Download Free Theme</span>
+		</span>
+					</a>
+		</div>
+				</div>
+				</div>
+				<div class="elementor-element elementor-element-1df5558e elementor-widget elementor-widget-counter" data-id="1df5558e" data-element_type="widget" data-widget_type="counter.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-counter">
+			<div class="elementor-counter-number-wrapper">
+				<span class="elementor-counter-number-prefix"></span>
+				<span class="elementor-counter-number" data-duration="2000" data-to-value="277273" data-from-value="" data-delimiter=","></span>
+				<span class="elementor-counter-number-suffix"></span>
+			</div>
+							<div class="elementor-counter-title">Downloads</div>
+					</div>
+				</div>
+				</div>
+						</div>
+					</div>
+		</div>
+								</div>
+					</div>
+		</section>
+				<section class="elementor-section elementor-top-section elementor-element elementor-element-4c07fefb elementor-section-content-middle elementor-reverse-mobile elementor-section-stretched elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="4c07fefb" data-element_type="section" data-settings="{&quot;background_background&quot;:&quot;classic&quot;,&quot;stretch_section&quot;:&quot;section-stretched&quot;}">
+						<div class="elementor-container elementor-column-gap-no">
+							<div class="elementor-row">
+					<div class="elementor-column elementor-col-50 elementor-top-column elementor-element elementor-element-714b5f06" data-id="714b5f06" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-4659c341 elementor-hidden-phone elementor-widget elementor-widget-image" data-id="4659c341" data-element_type="widget" data-widget_type="image.default">
+				<div class="elementor-widget-container">
+								<div class="elementor-image">
+												<img width="655" height="1024" src="https://tesseracttheme.com/wp-content/uploads/2017/12/AIR-BALLOONwp2-655x1024.png" class="attachment-large size-large" alt="" loading="lazy" srcset="https://tesseracttheme.com/wp-content/uploads/2017/12/AIR-BALLOONwp2-655x1024.png 655w, https://tesseracttheme.com/wp-content/uploads/2017/12/AIR-BALLOONwp2-600x938.png 600w, https://tesseracttheme.com/wp-content/uploads/2017/12/AIR-BALLOONwp2-192x300.png 192w, https://tesseracttheme.com/wp-content/uploads/2017/12/AIR-BALLOONwp2-768x1200.png 768w, https://tesseracttheme.com/wp-content/uploads/2017/12/AIR-BALLOONwp2-300x469.png 300w, https://tesseracttheme.com/wp-content/uploads/2017/12/AIR-BALLOONwp2.png 800w" sizes="(max-width: 655px) 100vw, 655px">														</div>
+						</div>
+				</div>
+						</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-50 elementor-top-column elementor-element elementor-element-58f8b8c5" data-id="58f8b8c5" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<section class="elementor-section elementor-inner-section elementor-element elementor-element-2e05abd3 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="2e05abd3" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-no">
+							<div class="elementor-row">
+					<div class="elementor-column elementor-col-50 elementor-inner-column elementor-element elementor-element-d909e03 elementor-sm-50" data-id="d909e03" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-66f4c594 elementor-view-stacked elementor-position-left elementor-shape-circle elementor-vertical-align-top elementor-widget elementor-widget-icon-box" data-id="66f4c594" data-element_type="widget" data-widget_type="icon-box.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-icon-box-wrapper">
+						<div class="elementor-icon-box-icon">
+				<span class="elementor-icon elementor-animation-">
+				<i class="fa fa-rocket" aria-hidden="true"></i>				</span>
+			</div>
+						<div class="elementor-icon-box-content">
+				<h3 class="elementor-icon-box-title">
+					<span>
+						Fast load time					</span>
+				</h3>
+									<p class="elementor-icon-box-description">
+						We have the fastest loading page times in the world					</p>
+							</div>
+		</div>
+				</div>
+				</div>
+				<div class="elementor-element elementor-element-36868661 elementor-view-stacked elementor-position-left elementor-shape-circle elementor-vertical-align-top elementor-widget elementor-widget-icon-box" data-id="36868661" data-element_type="widget" data-widget_type="icon-box.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-icon-box-wrapper">
+						<div class="elementor-icon-box-icon">
+				<span class="elementor-icon elementor-animation-">
+				<i class="fa fa-shopping-cart" aria-hidden="true"></i>				</span>
+			</div>
+						<div class="elementor-icon-box-content">
+				<h3 class="elementor-icon-box-title">
+					<span>
+						eCommerce ready					</span>
+				</h3>
+									<p class="elementor-icon-box-description">
+						Build an e-commerce website with WooCommerce					</p>
+							</div>
+		</div>
+				</div>
+				</div>
+						</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-50 elementor-inner-column elementor-element elementor-element-22e58542 elementor-sm-50" data-id="22e58542" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-7518d2d4 elementor-view-stacked elementor-position-left elementor-shape-circle elementor-vertical-align-top elementor-widget elementor-widget-icon-box" data-id="7518d2d4" data-element_type="widget" data-widget_type="icon-box.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-icon-box-wrapper">
+						<div class="elementor-icon-box-icon">
+				<span class="elementor-icon elementor-animation-">
+				<i class="fa fa-mobile-phone" aria-hidden="true"></i>				</span>
+			</div>
+						<div class="elementor-icon-box-content">
+				<h3 class="elementor-icon-box-title">
+					<span>
+						Responsive					</span>
+				</h3>
+									<p class="elementor-icon-box-description">
+						The theme layout will adjust to various devices screens					</p>
+							</div>
+		</div>
+				</div>
+				</div>
+				<div class="elementor-element elementor-element-9bb4ca1 elementor-view-stacked elementor-position-left elementor-shape-circle elementor-vertical-align-top elementor-widget elementor-widget-icon-box" data-id="9bb4ca1" data-element_type="widget" data-widget_type="icon-box.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-icon-box-wrapper">
+						<div class="elementor-icon-box-icon">
+				<span class="elementor-icon elementor-animation-">
+				<i class="fa fa-gear" aria-hidden="true"></i>				</span>
+			</div>
+						<div class="elementor-icon-box-content">
+				<h3 class="elementor-icon-box-title">
+					<span>
+						Fully customizable					</span>
+				</h3>
+									<p class="elementor-icon-box-description">
+						You can easily customize the theme according to your needs					</p>
+							</div>
+		</div>
+				</div>
+				</div>
+						</div>
+					</div>
+		</div>
+								</div>
+					</div>
+		</section>
+						</div>
+					</div>
+		</div>
+								</div>
+					</div>
+		</section>
+				<section class="elementor-section elementor-top-section elementor-element elementor-element-6095b22 elementor-section-stretched elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="6095b22" data-element_type="section" data-settings="{&quot;stretch_section&quot;:&quot;section-stretched&quot;,&quot;background_background&quot;:&quot;classic&quot;,&quot;shape_divider_top&quot;:&quot;mountains&quot;}">
+							<div class="elementor-background-overlay"></div>
+						<div class="elementor-shape elementor-shape-top" data-negative="false">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" preserveAspectRatio="none">
+	<path class="elementor-shape-fill" opacity="0.33" d="M473,67.3c-203.9,88.3-263.1-34-320.3,0C66,119.1,0,59.7,0,59.7V0h1000v59.7 c0,0-62.1,26.1-94.9,29.3c-32.8,3.3-62.8-12.3-75.8-22.1C806,49.6,745.3,8.7,694.9,4.7S492.4,59,473,67.3z"></path>
+	<path class="elementor-shape-fill" opacity="0.66" d="M734,67.3c-45.5,0-77.2-23.2-129.1-39.1c-28.6-8.7-150.3-10.1-254,39.1 s-91.7-34.4-149.2,0C115.7,118.3,0,39.8,0,39.8V0h1000v36.5c0,0-28.2-18.5-92.1-18.5C810.2,18.1,775.7,67.3,734,67.3z"></path>
+	<path class="elementor-shape-fill" d="M766.1,28.9c-200-57.5-266,65.5-395.1,19.5C242,1.8,242,5.4,184.8,20.6C128,35.8,132.3,44.9,89.9,52.5C28.6,63.7,0,0,0,0 h1000c0,0-9.9,40.9-83.6,48.1S829.6,47,766.1,28.9z"></path>
+</svg>		</div>
+					<div class="elementor-container elementor-column-gap-no">
+							<div class="elementor-row">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-4bf0940c" data-id="4bf0940c" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-49a6d30 elementor-widget elementor-widget-heading" data-id="49a6d30" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-default">Products</h2>		</div>
+				</div>
+				<section class="elementor-section elementor-inner-section elementor-element elementor-element-266e2d8c elementor-section-content-middle elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="266e2d8c" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-no">
+							<div class="elementor-row">
+					<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-212f3589" data-id="212f3589" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-187b5d65 elementor-widget elementor-widget-price-table" data-id="187b5d65" data-element_type="widget" data-widget_type="price-table.default">
+				<div class="elementor-widget-container">
+			
+		<div class="elementor-price-table">
+							<div class="elementor-price-table__header">
+											<h3 class="elementor-price-table__heading">
+						Free Theme						</h3>
+					
+									</div>
+			
+			<div class="elementor-price-table__price">
+								<span class="elementor-price-table__currency">$</span>									<span class="elementor-price-table__integer-part">
+						0					</span>
+				
+				
+				
+							</div>
+
+							<ul class="elementor-price-table__features-list">
+											<li class="elementor-repeater-item-cd53550">
+							<div class="elementor-price-table__feature-inner">
+																		<i class="" aria-hidden="true"></i>
+																											<span>
+										Easy to use									</span>
+																</div>
+						</li>
+											<li class="elementor-repeater-item-2877694">
+							<div class="elementor-price-table__feature-inner">
+																		<i class="" aria-hidden="true"></i>
+																											<span>
+										Fast loading									</span>
+																</div>
+						</li>
+											<li class="elementor-repeater-item-f932bc2">
+							<div class="elementor-price-table__feature-inner">
+																		<i class="" aria-hidden="true"></i>
+																											<span>
+										Works with Elementor's Builder									</span>
+																</div>
+						</li>
+											<li class="elementor-repeater-item-b232cdc">
+							<div class="elementor-price-table__feature-inner">
+																		<i class="" aria-hidden="true"></i>
+																											<span>
+										Much more..									</span>
+																</div>
+						</li>
+									</ul>
+			
+							<div class="elementor-price-table__footer">
+											<a class="elementor-price-table__button elementor-button elementor-size-md" href="https://tesseracttheme.com/?ulp=XIoeCGKY4qtQLUNp&amp;ac=ViIV83JW8fqtISdw#ulp-XIoeCGKY4qtQLUNp">
+							Download						</a>
+					
+									</div>
+					</div>
+
+					<div class="elementor-price-table__ribbon elementor-ribbon-left">
+				<div class="elementor-price-table__ribbon-inner">
+					Free				</div>
+			</div>
+					</div>
+				</div>
+						</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-151aec3a" data-id="151aec3a" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-6a8411bd elementor-widget elementor-widget-price-table" data-id="6a8411bd" data-element_type="widget" data-widget_type="price-table.default">
+				<div class="elementor-widget-container">
+			
+		<div class="elementor-price-table">
+							<div class="elementor-price-table__header">
+											<h3 class="elementor-price-table__heading">
+						Advanced Theme						</h3>
+					
+									</div>
+			
+			<div class="elementor-price-table__price">
+								<span class="elementor-price-table__currency">$</span>									<span class="elementor-price-table__integer-part">
+						49					</span>
+				
+				
+				
+							</div>
+
+							<ul class="elementor-price-table__features-list">
+											<li class="elementor-repeater-item-jukx7sl">
+							<div class="elementor-price-table__feature-inner">
+																		<i class="" aria-hidden="true"></i>
+																											<span>
+										Advanced menu settings									</span>
+																</div>
+						</li>
+											<li class="elementor-repeater-item-x4drf6f">
+							<div class="elementor-price-table__feature-inner">
+																		<i class="" aria-hidden="true"></i>
+																											<span>
+										Additional upper header									</span>
+																</div>
+						</li>
+											<li class="elementor-repeater-item-xr3b5ia">
+							<div class="elementor-price-table__feature-inner">
+																		<i class="" aria-hidden="true"></i>
+																											<span>
+										Added footer settings									</span>
+																</div>
+						</li>
+											<li class="elementor-repeater-item-4xc59ex">
+							<div class="elementor-price-table__feature-inner">
+																		<i class="" aria-hidden="true"></i>
+																											<span>
+										Advanced eCommerce settings									</span>
+																</div>
+						</li>
+											<li class="elementor-repeater-item-yil2wmj">
+							<div class="elementor-price-table__feature-inner">
+																		<i class="" aria-hidden="true"></i>
+																											<span>
+										Designer video tutorials									</span>
+																</div>
+						</li>
+											<li class="elementor-repeater-item-871fe2d">
+							<div class="elementor-price-table__feature-inner">
+																		<i class="" aria-hidden="true"></i>
+																											<span>
+										Added Typography									</span>
+																</div>
+						</li>
+											<li class="elementor-repeater-item-7f626e6">
+							<div class="elementor-price-table__feature-inner">
+																		<i class="" aria-hidden="true"></i>
+																											<span>
+										Much more..									</span>
+																</div>
+						</li>
+									</ul>
+			
+							<div class="elementor-price-table__footer">
+											<a class="elementor-price-table__button elementor-button elementor-size-md" href="https://tesseracttheme.com/advanced/">
+							Learn More						</a>
+					
+											<div class="elementor-price-table__additional_info">
+							*Free theme installations included						</div>
+									</div>
+					</div>
+
+				</div>
+				</div>
+						</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-467cb152" data-id="467cb152" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-702305a2 elementor-widget elementor-widget-price-table" data-id="702305a2" data-element_type="widget" data-widget_type="price-table.default">
+				<div class="elementor-widget-container">
+			
+		<div class="elementor-price-table">
+							<div class="elementor-price-table__header">
+											<h3 class="elementor-price-table__heading">
+						Gallery Plugin						</h3>
+					
+									</div>
+			
+			<div class="elementor-price-table__price">
+								<span class="elementor-price-table__currency">$</span>									<span class="elementor-price-table__integer-part">
+						19					</span>
+				
+				
+				
+							</div>
+
+							<ul class="elementor-price-table__features-list">
+											<li class="elementor-repeater-item-3c6777e">
+							<div class="elementor-price-table__feature-inner">
+																		<i class="" aria-hidden="true"></i>
+																											<span>
+										Lightbox Popup Gallery									</span>
+																</div>
+						</li>
+											<li class="elementor-repeater-item-9533cc5">
+							<div class="elementor-price-table__feature-inner">
+																		<i class="" aria-hidden="true"></i>
+																											<span>
+										Video popup embed!									</span>
+																</div>
+						</li>
+											<li class="elementor-repeater-item-84f49cd">
+							<div class="elementor-price-table__feature-inner">
+																		<i class="" aria-hidden="true"></i>
+																											<span>
+										Image title option									</span>
+																</div>
+						</li>
+											<li class="elementor-repeater-item-45dc995">
+							<div class="elementor-price-table__feature-inner">
+																		<i class="" aria-hidden="true"></i>
+																											<span>
+										Much more...									</span>
+																</div>
+						</li>
+									</ul>
+			
+							<div class="elementor-price-table__footer">
+											<a class="elementor-price-table__button elementor-button elementor-size-md" href="https://tesseracttheme.com/gallery/">
+							Learn More						</a>
+					
+									</div>
+					</div>
+
+				</div>
+				</div>
+						</div>
+					</div>
+		</div>
+								</div>
+					</div>
+		</section>
+						</div>
+					</div>
+		</div>
+								</div>
+					</div>
+		</section>
+				<section class="elementor-section elementor-top-section elementor-element elementor-element-209f4b63 elementor-section-stretched elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="209f4b63" data-element_type="section" data-settings="{&quot;background_background&quot;:&quot;classic&quot;,&quot;stretch_section&quot;:&quot;section-stretched&quot;,&quot;shape_divider_top&quot;:&quot;waves&quot;,&quot;shape_divider_bottom&quot;:&quot;mountains&quot;}">
+					<div class="elementor-shape elementor-shape-top" data-negative="false">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" preserveAspectRatio="none">
+	<path class="elementor-shape-fill" d="M421.9,6.5c22.6-2.5,51.5,0.4,75.5,5.3c23.6,4.9,70.9,23.5,100.5,35.7c75.8,32.2,133.7,44.5,192.6,49.7
+	c23.6,2.1,48.7,3.5,103.4-2.5c54.7-6,106.2-25.6,106.2-25.6V0H0v30.3c0,0,72,32.6,158.4,30.5c39.2-0.7,92.8-6.7,134-22.4
+	c21.2-8.1,52.2-18.2,79.7-24.2C399.3,7.9,411.6,7.5,421.9,6.5z"></path>
+</svg>		</div>
+				<div class="elementor-shape elementor-shape-bottom" data-negative="false">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" preserveAspectRatio="none">
+	<path class="elementor-shape-fill" opacity="0.33" d="M473,67.3c-203.9,88.3-263.1-34-320.3,0C66,119.1,0,59.7,0,59.7V0h1000v59.7 c0,0-62.1,26.1-94.9,29.3c-32.8,3.3-62.8-12.3-75.8-22.1C806,49.6,745.3,8.7,694.9,4.7S492.4,59,473,67.3z"></path>
+	<path class="elementor-shape-fill" opacity="0.66" d="M734,67.3c-45.5,0-77.2-23.2-129.1-39.1c-28.6-8.7-150.3-10.1-254,39.1 s-91.7-34.4-149.2,0C115.7,118.3,0,39.8,0,39.8V0h1000v36.5c0,0-28.2-18.5-92.1-18.5C810.2,18.1,775.7,67.3,734,67.3z"></path>
+	<path class="elementor-shape-fill" d="M766.1,28.9c-200-57.5-266,65.5-395.1,19.5C242,1.8,242,5.4,184.8,20.6C128,35.8,132.3,44.9,89.9,52.5C28.6,63.7,0,0,0,0 h1000c0,0-9.9,40.9-83.6,48.1S829.6,47,766.1,28.9z"></path>
+</svg>		</div>
+					<div class="elementor-container elementor-column-gap-default">
+							<div class="elementor-row">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-1edfe3b9" data-id="1edfe3b9" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-27a55e40 elementor-widget elementor-widget-heading" data-id="27a55e40" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+			<h3 class="elementor-heading-title elementor-size-default">FAQ</h3>		</div>
+				</div>
+				<section class="elementor-section elementor-inner-section elementor-element elementor-element-adf2ac9 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="adf2ac9" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+							<div class="elementor-row">
+					<div class="elementor-column elementor-col-50 elementor-inner-column elementor-element elementor-element-18444d75" data-id="18444d75" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-76701bfb elementor-widget elementor-widget-heading" data-id="76701bfb" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+			<h3 class="elementor-heading-title elementor-size-default">Who uses this theme?</h3>		</div>
+				</div>
+				<div class="elementor-element elementor-element-2ec86587 elementor-widget elementor-widget-text-editor" data-id="2ec86587" data-element_type="widget" data-widget_type="text-editor.default">
+				<div class="elementor-widget-container">
+								<div class="elementor-text-editor elementor-clearfix">
+				<p>Tesseract is used around the world by thousands of WordPress supporters to build online businesses, blogs, portfolios, eCommerce stores and personal websites. Anyone from beginners, to freelancers, to web developers use this theme.</p>					</div>
+						</div>
+				</div>
+				<div class="elementor-element elementor-element-10ead3c6 elementor-widget elementor-widget-heading" data-id="10ead3c6" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+			<h3 class="elementor-heading-title elementor-size-default">Is this an established or new theme?</h3>		</div>
+				</div>
+				<div class="elementor-element elementor-element-7a4ef7e6 elementor-widget elementor-widget-text-editor" data-id="7a4ef7e6" data-element_type="widget" data-widget_type="text-editor.default">
+				<div class="elementor-widget-container">
+								<div class="elementor-text-editor elementor-clearfix">
+				<p>Tesseract is an established theme developed with lots of love for the WordPress community. Hope you love it as much as we loved making it for you!</p>					</div>
+						</div>
+				</div>
+				<div class="elementor-element elementor-element-e940de7 elementor-widget elementor-widget-heading" data-id="e940de7" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+			<h3 class="elementor-heading-title elementor-size-default">Is this theme geared towards bloggers?</h3>		</div>
+				</div>
+				<div class="elementor-element elementor-element-5b611de8 elementor-widget elementor-widget-text-editor" data-id="5b611de8" data-element_type="widget" data-widget_type="text-editor.default">
+				<div class="elementor-widget-container">
+								<div class="elementor-text-editor elementor-clearfix">
+				<p>WordPress was initially made for blogging, so yes, this theme supports all of your blogging needs.</p>					</div>
+						</div>
+				</div>
+						</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-50 elementor-inner-column elementor-element elementor-element-7db9c620" data-id="7db9c620" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-7eddc916 elementor-widget elementor-widget-heading" data-id="7eddc916" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+			<h3 class="elementor-heading-title elementor-size-default">What makes this theme so great?</h3>		</div>
+				</div>
+				<div class="elementor-element elementor-element-2ed19260 elementor-widget elementor-widget-text-editor" data-id="2ed19260" data-element_type="widget" data-widget_type="text-editor.default">
+				<div class="elementor-widget-container">
+								<div class="elementor-text-editor elementor-clearfix">
+				<p>In short… It’s simple, easy to use, reliable and best of all its free to use. Tesseract is SEO friendly, responsive, customizable, fast and secure. It has built in content pages and a page builder to help you build your site in minutes instead of months or even years.</p>					</div>
+						</div>
+				</div>
+				<div class="elementor-element elementor-element-5e9e10b6 elementor-widget elementor-widget-heading" data-id="5e9e10b6" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+			<h3 class="elementor-heading-title elementor-size-default">Is this theme geared towards small businesses?</h3>		</div>
+				</div>
+				<div class="elementor-element elementor-element-7029281d elementor-widget elementor-widget-text-editor" data-id="7029281d" data-element_type="widget" data-widget_type="text-editor.default">
+				<div class="elementor-widget-container">
+								<div class="elementor-text-editor elementor-clearfix">
+				<p>Absolutely! Tesseract is a multi-purpose theme equipped to fit any business sector.</p>					</div>
+						</div>
+				</div>
+				<div class="elementor-element elementor-element-15c657f4 elementor-widget elementor-widget-heading" data-id="15c657f4" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+			<h3 class="elementor-heading-title elementor-size-default">Can I create a store with this theme?</h3>		</div>
+				</div>
+				<div class="elementor-element elementor-element-15249718 elementor-widget elementor-widget-text-editor" data-id="15249718" data-element_type="widget" data-widget_type="text-editor.default">
+				<div class="elementor-widget-container">
+								<div class="elementor-text-editor elementor-clearfix">
+				<p>Absolutely! WooCommerce is integrated into this theme so you can start selling anything from anywhere.</p>					</div>
+						</div>
+				</div>
+						</div>
+					</div>
+		</div>
+								</div>
+					</div>
+		</section>
+						</div>
+					</div>
+		</div>
+								</div>
+					</div>
+		</section>
+				<section class="elementor-section elementor-top-section elementor-element elementor-element-256ee61e elementor-section-stretched elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="256ee61e" data-element_type="section" data-settings="{&quot;background_background&quot;:&quot;classic&quot;,&quot;stretch_section&quot;:&quot;section-stretched&quot;,&quot;shape_divider_top&quot;:&quot;mountains&quot;}">
+					<div class="elementor-shape elementor-shape-top" data-negative="false">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" preserveAspectRatio="none">
+	<path class="elementor-shape-fill" opacity="0.33" d="M473,67.3c-203.9,88.3-263.1-34-320.3,0C66,119.1,0,59.7,0,59.7V0h1000v59.7 c0,0-62.1,26.1-94.9,29.3c-32.8,3.3-62.8-12.3-75.8-22.1C806,49.6,745.3,8.7,694.9,4.7S492.4,59,473,67.3z"></path>
+	<path class="elementor-shape-fill" opacity="0.66" d="M734,67.3c-45.5,0-77.2-23.2-129.1-39.1c-28.6-8.7-150.3-10.1-254,39.1 s-91.7-34.4-149.2,0C115.7,118.3,0,39.8,0,39.8V0h1000v36.5c0,0-28.2-18.5-92.1-18.5C810.2,18.1,775.7,67.3,734,67.3z"></path>
+	<path class="elementor-shape-fill" d="M766.1,28.9c-200-57.5-266,65.5-395.1,19.5C242,1.8,242,5.4,184.8,20.6C128,35.8,132.3,44.9,89.9,52.5C28.6,63.7,0,0,0,0 h1000c0,0-9.9,40.9-83.6,48.1S829.6,47,766.1,28.9z"></path>
+</svg>		</div>
+					<div class="elementor-container elementor-column-gap-default">
+							<div class="elementor-row">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-28035589" data-id="28035589" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-38e4d69c elementor-widget elementor-widget-heading" data-id="38e4d69c" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+			<h3 class="elementor-heading-title elementor-size-default">Happy Users</h3>		</div>
+				</div>
+				<section class="elementor-section elementor-inner-section elementor-element elementor-element-dd67fe8 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="dd67fe8" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+							<div class="elementor-row">
+					<div class="elementor-column elementor-col-50 elementor-inner-column elementor-element elementor-element-6ca74a5e" data-id="6ca74a5e" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-77d89c7e elementor-widget elementor-widget-testimonial" data-id="77d89c7e" data-element_type="widget" data-widget_type="testimonial.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-testimonial-wrapper">
+							<div class="elementor-testimonial-content">Tesseract is the best theme ever! It is so simple to use and saved me so much money by me being able to do it myself! I cannot thank you guys enough!
+</div>
+			
+						<div class="elementor-testimonial-meta elementor-has-image elementor-testimonial-image-position-aside">
+				<div class="elementor-testimonial-meta-inner">
+											<div class="elementor-testimonial-image">
+							<img width="128" height="128" src="https://tesseracttheme.com/wp-content/uploads/2019/01/68.jpg" class="attachment-full size-full" alt="" loading="lazy">						</div>
+					
+										<div class="elementor-testimonial-details">
+														<div class="elementor-testimonial-name">Sophie Herris</div>
+																						<div class="elementor-testimonial-job">Product Manager</div>
+													</div>
+									</div>
+			</div>
+					</div>
+				</div>
+				</div>
+						</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-50 elementor-inner-column elementor-element elementor-element-1053f9e3" data-id="1053f9e3" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-3d7f43cc elementor-widget elementor-widget-testimonial" data-id="3d7f43cc" data-element_type="widget" data-widget_type="testimonial.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-testimonial-wrapper">
+							<div class="elementor-testimonial-content">I would just like to express extreme gratitude towards the tesseract theme team. You have truly created one of the most amazing and simple themes for wordpress. Please, continue to create and inspire. </div>
+			
+						<div class="elementor-testimonial-meta elementor-has-image elementor-testimonial-image-position-aside">
+				<div class="elementor-testimonial-meta-inner">
+											<div class="elementor-testimonial-image">
+							<img width="128" height="128" src="https://tesseracttheme.com/wp-content/uploads/2019/01/32.jpg" class="attachment-full size-full" alt="" loading="lazy">						</div>
+					
+										<div class="elementor-testimonial-details">
+														<div class="elementor-testimonial-name">Paul Foster</div>
+																						<div class="elementor-testimonial-job">UX Designer</div>
+													</div>
+									</div>
+			</div>
+					</div>
+				</div>
+				</div>
+						</div>
+					</div>
+		</div>
+								</div>
+					</div>
+		</section>
+						</div>
+					</div>
+		</div>
+								</div>
+					</div>
+		</section>
+						</div>
+						</div>
+					</div>
+		
+		
+	</div><!-- .entry-content -->
+
+
+
+</article><!-- #post-## -->
+
+
+
+
+			
+
+
+		
+
+
+		</main><!-- #main -->
+
+	</div><!-- #primary -->
+
+    
+
+
+
+
+
+    	
+	</div><!-- #content -->
+	<div id="js-heightControl" style="height: 0;">&nbsp;</div>
+<script type="rocketlazyloadscript">window.addEventListener('DOMContentLoaded', function() {
+    jQuery(function(){
+        jQuery('#js-heightControl').css('height', jQuery(window).height() - jQuery('html').height() +'px');
+    });
+});</script>
+		<style type="text/css">
+		.footer-single h2 {
+		    color: #ffffff ;
+		    display: inline-block;
+		    font-size: 14px;
+		    margin-bottom: 30px;
+		    padding: 0 !important;
+		    text-transform: uppercase;
+		    width: 100%;
+		}
+		.footer-single .entry-title a {
+		    border-bottom: 1px solid #ffffff;
+		    color: #ffffff;
+		}
+		.footer-single p a {
+		    color: #ffffff;
+		}
+
+	</style>
+
+	<footer id="colophon_TesseractTheme" class="horizantal-align site-footer pos-relative" role="contentinfo">
+
+
+
+		
+
+
+
+    	
+		<div id="footer-banner" class="cf menu-is-additional mother-branding footer-autowidth with_unbrandinglogo">
+
+			
+		    
+		             <div id="horizontal-menu-wrap" class="is-additional is-before">
+
+		                
+
+		                    <div id="horizontal-menu-before" class="switch thm-left-left"></div>
+
+
+
+		                
+		                
+
+							
+							<section id="footer-horizontal-menu" class="menu-left cf is-before"><ul id="menu-footer" class="nav-menu"><li id="menu-item-6541" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-6541"><a target="_blank" rel="noopener" href="https://tesseract.typeform.com/to/n19bbQ">Troubleshooting</a></li>
+<li id="menu-item-23967" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-23967"><a href="https://tesseracttheme.com/tutorials/">Tutorials</a></li>
+<li id="menu-item-627" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-627"><a href="https://tesseracttheme.com/terms-of-use/">Terms</a></li>
+<li id="menu-item-25129" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-25129"><a target="_blank" rel="noopener" href="http://logomakr.com">Logo Maker</a></li>
+</ul></section>
+
+		              	
+		        	</div><!-- EOF horizontal-menu-wrap -->
+		    
+
+
+            		<div id="footer-banner-right" class="banner-right content-html">
+			<div id="footer-button-container"><div id="footer-button-container-inner"><strong>Theme by <a href="https://tesseracttheme.com">Tesseract</a></strong>
+                        &nbsp;&nbsp;
+                        <strong>
+                        	<a href="https://tesseracttheme.com">
+                        		<img src="https://tylers-storage.s3-us-west-1.amazonaws.com/wp-content/uploads/2015/09/07185505/Drawing1.png" alt="Drawing" width="16" height="16">
+                            </a>
+                        </strong></div></div>		</div>
+
+	
+
+
+			
+
+
+			
+                  <style>.with_unbrandinglogo #footer-banner-right{width:40% !important;}
+
+				  #footer-banner-right.banner-right #footer-button-container{ width:100% !important; text-align:right;}</style>
+
+			
+
+
+      	</div><!-- EOF footer-banner -->
+
+
+
+	</footer><!-- #colophon -->
+</div><!-- #page -->
+<a href="#" class="tes-adv-themeScrollUp" style="display:none; background-color: #0078B9">Scroll</a>
+
+
+<div id="tes-adv-wrapper" style="display: none;"></div>
+<div id="tes-mini-cart-right-panel" class="advrightClose">
+</div>
+
+<div class="themeOverLayDiv"></div>
+<div class="themeOverLayDiv2"></div>
+
+<div id="tes-adv-getSearchForm" style="display: none;">
+  
+<div class="search-wrapper">
+    <form role="search" method="get" class="search-form" action="https://tesseracttheme.com/">
+        <label>
+            <span class="screen-reader-text">Search for:</span>            	
+            <input type="search" class="search-field placeholdit" value="" name="s" title="Search for:">
+        </label>
+        <input type="submit" class="search-submit" value="Search">
+    </form>
+    <div class="tes-adv-searchClose"><i class="fa fa-times" aria-hidden="true"></i></div>
+</div></div>
+
+
+<style type="text/css">
+#inifiniteLoader{
+	background:  !important;
+	border-radius: px !important;
+	color:   !important;
+}
+#inifiniteLoader:hover{
+	background-color:  !important;
+	color:   !important;
+}
+</style>
+<style>
+.cart .button:hover, .product_type_external:hover, #tes-more-details:hover, .add-cart-button-hover:hover, .single_add_to_cart_button:hover, .product_type_grouped:hover, .product_type_variable:hover, .add_to_cart_button:hover, .related a.button:hover, .wc-proceed-to-checkout a.wc-forward:hover{
+	background-color:  !important;
+	color:   !important;
+}
+
+.cart .button, .related a.button, .wc-proceed-to-checkout a.wc-forward{
+	background-color: !important;
+	color: !important;
+
+}
+</style>
+<style>
+	.woocommerce-page a.button, .woocommerce-error li a, .woocommerce-Message .woocommerce-Button, #commentform #submit, .woocommerce-mini-cart__buttons a, .checkout-button, .woocommerce button.button, .woocommerce-page button.button.alt, .tesseract-woo-button{
+		background-color: #49B9E6;
+		color: #ffffff;
+	}
+	.woocommerce-page a.button:hover, .woocommerce-error li a:hover,.woocommerce-Message .woocommerce-Button:hover, #commentform #submit:hover, .woocommerce-mini-cart__buttons a:hover, .checkout-button:hover, .woocommerce button.button:hover, .woocommerce-page button.button.alt:hover, #place_order:hover{
+		background-color: #1581B2;
+		color: #ffffff;
+	}
+</style>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript">window.addEventListener('DOMContentLoaded', function() {
+
+	jQuery(document).on('change',"#fl-builder-settings-section-subheading_typo .fl-font-field-font", function(){
+	//jQuery("#fl-builder-settings-section-subheading_typo").find(".fl-font-field-font").change(function(){
+		//alert(123);
+ 		var fontvalue = jQuery(this).val();
+ 		console.log('fontvalue ', fontvalue);
+ 		if(fontvalue)
+		{
+			var link = document.createElement('link');
+		    link.id = 'tesseract-sub-heading-preview';
+		    link.rel = 'stylesheet';
+		    link.href = '//fonts.googleapis.com/css?family='+fontvalue;
+		    document.head.appendChild(link);
+		    jQuery('.wpsm-heading-wrap .wpsm-subheading .wpsm-subheading-text').css('font-family',fontvalue);
+		}
+	});
+
+
+
+});</script>
+
+<!-- <link rel="stylesheet" href=""></link> -->
+
+	<div class="tes-if-wrapper" style="display: none;">
+	    <div class="tes-if-popup">
+	        <iframe src="">
+	            <p>Your browser does not support iframes.</p>
+	        </iframe>
+	        <a href="#" class="tes-if-close"><img src="https://tesseracttheme.com/wp-content/plugins/tes-iframe-popup//cross_img.png" alt=""></a>
+	    </div>
+	</div>
+
+	<style>
+	.tes-if-wrapper{
+		margin: 0;
+		padding: 0;
+		position: fixed;
+		background: rgba(0,0,0,0.5);
+		height: 100vh;
+		top:0;
+		left:0;
+		z-index: 10;
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+	.tes-if-popup{
+		margin: 0 auto;
+		padding: 15px;
+		max-width:70%;
+		min-width: 320px;
+		background: #fff;
+		border-radius: 5px;
+		box-shadow: 0px 0px 18px rgba(0,0,0,0.3);
+		position: relative;
+	}
+	.tes-if-popup .tes-if-close{
+		position: absolute;
+		top:-27px;
+		right:-19px;
+		color:#424242;
+		width: 50px;
+		height: 50px;
+		border-radius: 50%;
+		background: #fff;
+		padding: 15px;
+	}
+	@media (max-width: 320px) {
+		.tes-if-popup{
+			max-width:100%;
+			margin: 0 15px;
+			min-width: auto;
+		}
+		.tes-if-popup .tes-if-close{
+			right: -11px;
+		}
+	}
+	</style>
+
+	<script type="rocketlazyloadscript" data-rocket-type="text/javascript">window.addEventListener('DOMContentLoaded', function() {
+		var $ =jQuery.noConflict();
+		$(document).ready(function () {
+		    $(".tes-if-wrapper").hide();
+		    $(".tes-iframe-popup").click(function (e) {
+		        e.preventDefault();
+		        $("iframe").attr("src", $(this).attr('href'));
+		        $(".tes-if-wrapper").fadeIn('slow');
+		    });
+
+		    $(".tes-if-close").click(function () {
+		        $(this).parent().parent().fadeOut("slow");
+		    });
+		});
+	});</script>
+	      <script type="rocketlazyloadscript">window.addEventListener('DOMContentLoaded', function() {
+        var $ =jQuery.noConflict();
+        jQuery('.modal-dialogM input[name="email"]').keypress(function(){
+          var email =  jQuery('.modal-dialogM input[name="email"]').val();
+          //alert(email);
+          var emailRegex = new RegExp(/^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$/i);
+          var valid = emailRegex.test(email);
+          if (!valid) {
+            //jQuery('.modal-dialogM input[name="email"]').addClass('has-error');
+            jQuery('.modal-dialogM input[name="email"]').css("border", "1px solid red");
+            jQuery('.modal-dialogM input[name="email"]').css("box-shadow", "2px 3px red");
+          }else{
+            //jQuery('.modal-dialogM input[name="email"]').removeClass('has-error');
+            jQuery('.modal-dialogM input[name="email"]').css("border", "1px solid green");
+            jQuery('.modal-dialogM input[name="email"]').css("box-shadow", "2px 3px green");
+          }
+
+        });
+        function sendValues(){
+          var name  =  jQuery('.modal-dialogM input[name="name"]').val();
+          var email =  jQuery('.modal-dialogM input[name="email"]').val();
+          var cmnt  =  jQuery('.modal-dialogM textarea[name="cmnt"]').val();
+          var popupid = jQuery("#tes_pop_id").val();
+          //alert(" "+name+" "+email+" "+cmnt );
+          //return false;
+          var emailRegex = new RegExp(/^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$/i);
+          var valid = emailRegex.test(email);
+          if (!valid) {
+            jQuery(".response").remove();
+            //jQuery(".modal-contentM").append('<div class="error-msg response">Enter Valid Email Addrees.</div>');
+            jQuery('.modal-dialogM input[name="email"]').css("border", "1px solid red");
+            jQuery('.modal-dialogM input[name="email"]').css("box-shadow", "2px 3px red");
+            jQuery('.modal-dialogM input[name="email"]').focus();
+            return false;
+          }
+          
+          var ajaxurl = 'https://tesseracttheme.com/wp-admin/admin-ajax.php';
+          var data = {
+                'action': 'tes_eml_pup_form_submit',
+                'dataType': "html",
+                'popupid' : popupid,
+                'name': name,
+                'email':email,
+                'cmnt':cmnt
+          };
+          jQuery(".tes-eml-pup-message").remove();
+          
+          jQuery.ajax({
+             type : "post",
+             dataType : "json",
+             url : ajaxurl,
+             data : data,
+             success: function(response) {
+                if(response.type == "redirect") {
+                  if(response.status == 'failure-redirect'){
+                    window.location=jQuery("#tes_pop_failure_redirect_url").val();
+                  }
+
+                  if(response.status == 'success-redirect'){
+                    window.location=jQuery("#tes_pop_success_redirect_url").val();
+                  }
+                }
+                else {
+                  jQuery(".response").remove();
+                  //jQuery(".modal-contentM").append(response.msg);
+                  //alert(response.msg);
+
+
+                  if( jQuery("#tes-eml-pup-layout-id").val() == 10){
+
+                      jQuery("#pop10 .modal-contentM").append('<div style="display:none; border-radius:4px; background-color:whitesmoke; width:100%; text-align:center; margin:2px;" class="tes-eml-pup-message">'+response.msg+'</div>');
+
+                  }else{
+                    jQuery(".pop-inner-contM").append('<div style="display:none; border-radius:4px; background-color:whitesmoke; width:100%; text-align:center; margin:2px;" class="tes-eml-pup-message">'+response.msg+'</div>');
+
+                    jQuery("#pop2 .modal-contentM-left").append('<div style="display:none; border-radius:4px; background-color:whitesmoke; width:100%; text-align:center; margin:2px;" class="tes-eml-pup-message">'+response.msg+'</div>');
+
+                    jQuery("#pop4 .modal-contentM-left").append('<div style="display:none; border-radius:4px; background-color:whitesmoke; width:100%; text-align:center; margin:2px;" class="tes-eml-pup-message">'+response.msg+'</div>');
+
+                    jQuery("#pop6 .modal-contentM").append('<div style="display:none; border-radius:4px; background-color:whitesmoke; width:100%; text-align:center; margin:2px;" class="tes-eml-pup-message">'+response.msg+'</div>');
+
+                    jQuery("#pop8 .modal-contentM-right").append('<div style="display:none; border-radius:4px; background-color:whitesmoke; width:100%; text-align:center; margin:2px;" class="tes-eml-pup-message">'+response.msg+'</div>');
+
+                    jQuery("#pop12 .modal-contentM").append('<div style="display:none; border-radius:4px; background-color:whitesmoke; width:100%; text-align:center; margin:2px;" class="tes-eml-pup-message">'+response.msg+'</div>');
+
+                    jQuery("#pop13 .modal-contentM-left").append('<div style="display:none; border-radius:4px; background-color:whitesmoke; width:100%; text-align:center; margin:2px;" class="tes-eml-pup-message">'+response.msg+'</div>');
+
+                    jQuery("#pop15 .modal-contentM-left").append('<div style="display:none; border-radius:4px; background-color:whitesmoke; width:100%; text-align:center; margin:2px;" class="tes-eml-pup-message">'+response.msg+'</div>');
+
+                    jQuery("#pop16 .modal-contentM").append('<div style="display:none; border-radius:4px; background-color:whitesmoke; width:100%; text-align:center; margin:2px;" class="tes-eml-pup-message">'+response.msg+'</div>');
+                  }
+
+                  
+
+                  
+
+                  jQuery(".tes-eml-pup-message").fadeIn('slow')
+                    setTimeout(function(){
+                      jQuery('.tes-eml-pup-message').fadeOut('slow');
+                  },5000);
+                  jQuery('.modal-dialogM input[name="email"]').val('');
+                  jQuery('.modal-dialogM input[name="email"]').focus();
+                  jQuery('.modal-dialogM input[name="email"]').css("border", "none");
+                  jQuery('.modal-dialogM input[name="email"]').css("box-shadow", "none");
+                }
+             }
+          })  
+        }
+      });</script>
+        
+    <style>
+      #test-eml-btn-pup .popup-wrapperM, #test-eml-btn-pup .popup-overlayM {
+        display: block !important;
+      }
+    </style>
+      <div id="test-eml-btn-pup" style="display: none;"></div>
+      
+      <script type="rocketlazyloadscript">window.addEventListener('DOMContentLoaded', function() {
+      var $ =jQuery.noConflict();
+      jQuery(function(){
+        jQuery(".popped-up").click(function(){
+
+          var i = jQuery(this).attr("id").split("="), k = i[1];
+          var ajaxurl = 'https://tesseracttheme.com/wp-admin/admin-ajax.php';
+          var popid = k;
+          if(!popid) return;
+          var data = {
+              'action': 'tes_eml_pup_btn_show_pup',
+              'dataType': "html",
+              'popId': popid
+            };
+            jQuery.post(ajaxurl, data, function(response) {
+                //alert(response);
+                jQuery('body').addClass('fixedBodyM');
+                jQuery('#test-eml-btn-pup').html('');
+                jQuery("#test-eml-btn-pup").html(response);
+                //jQuery(".popup-wrapperM").addClass('animated slideInDown');
+            });
+        });
+
+        jQuery(".tes-eml-pop-up-link-menu").click(function(e){
+          e.preventDefault();
+          var i = jQuery(this).attr("href").split("="), k = i[1];
+          var ajaxurl = 'https://tesseracttheme.com/wp-admin/admin-ajax.php';
+          var popid = k;
+          if(!popid) return;
+          var data = {
+              'action': 'tes_eml_pup_btn_show_pup',
+              'dataType': "html",
+              'popId': popid
+            };
+            jQuery.post(ajaxurl, data, function(response) {
+                //alert(response);
+                jQuery('body').addClass('fixedBodyM');
+                jQuery('#test-eml-btn-pup').html('');
+                jQuery("#test-eml-btn-pup").css('display','none');
+                jQuery("#test-eml-btn-pup").html(response);
+                // jQuery(".popup-wrapperM").addClass('animated slideInDown');
+                jQuery("#test-eml-btn-pup").fadeIn();
+            });
+        });
+      });
+      });</script>
+    <script type="text/html" id="tmpl-fl-node-template-block">
+	<span class="fl-builder-block fl-builder-block-saved-{{data.type}}<# if ( data.global ) { #> fl-builder-block-global<# } #>" data-id="{{data.id}}">
+		<span class="fl-builder-block-title">{{data.name}}</span>
+		<# if ( data.global ) { #>
+		<div class="fl-builder-badge fl-builder-badge-global">
+			Global		</div>
+		<# } #>
+		<span class="fl-builder-node-template-actions">
+			<a class="fl-builder-node-template-edit" href="{{data.link}}" target="_blank">
+				<i class="fa fa-wrench"></i>
+			</a>
+			<a class="fl-builder-node-template-delete" href="javascript:void(0);">
+				<i class="fa fa-times"></i>
+			</a>
+		</span>
+	</span>
+</script>
+<!-- #tmpl-fl-node-template-block -->
+<!--BEGIN: TRACKING CODE MANAGER BY INTELLYWP.COM IN FOOTER//-->
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script type="rocketlazyloadscript" async="" src="https://www.googletagmanager.com/gtag/js?id=UA-72597138-1"></script>
+<script type="rocketlazyloadscript">
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-72597138-1');
+</script>
+<!--END: https://wordpress.org/plugins/tracking-code-manager IN FOOTER//-->	<style type="text/css">
+	.header-upper .left-text, .header-upper .right-text, .header-upper .centre-text{
+		font-family: Open Sans !important;
+		font-weight: 100 !important;
+		font-style: normal !important;
+		letter-spacing: 1px !important;
+		font-size: 15px !important;
+	}
+	</style>
+		<style type="text/css">
+	#inifiniteLoader{
+		background: #486a8f !important;
+		border-radius: px !important;
+		color:  #fff !important;
+	}
+	#inifiniteLoader:hover{
+		background-color: #507ca0 !important;
+		color:  #fff !important;
+	}
+	</style>
+	<style>
+	.cart .button:hover, .product_type_external:hover, #tes-more-details:hover, .add-cart-button-hover:hover, .single_add_to_cart_button:hover, .product_type_grouped:hover, .product_type_variable:hover, .add_to_cart_button:hover, .related a.button:hover, .wc-proceed-to-checkout a.wc-forward:hover{
+		background-color: #507ca0 !important;
+		color:  #fff !important;
+	}
+
+	.cart .button, .related a.button, .wc-proceed-to-checkout a.wc-forward{
+		background-color: #486a8f!important;
+		color: #fff!important;
+
+	}
+	</style>
+			<div data-elementor-type="popup" data-elementor-id="22581" class="elementor elementor-22581 elementor-bc-flex-widget elementor-location-popup" data-elementor-settings="{&quot;entrance_animation&quot;:&quot;zoomIn&quot;,&quot;entrance_animation_duration&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;size&quot;:1.1999999999999999555910790149937383830547332763671875,&quot;sizes&quot;:[]},&quot;triggers&quot;:[],&quot;timing&quot;:[]}">
+		<div class="elementor-section-wrap">
+					<section class="elementor-section elementor-top-section elementor-element elementor-element-573b55b9 elementor-section-full_width elementor-section-height-min-height elementor-section-height-default elementor-section-items-middle" data-id="573b55b9" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+							<div class="elementor-row">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-2081e126" data-id="2081e126" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-302e3ec5 elementor-widget-divider--view-line elementor-widget elementor-widget-divider" data-id="302e3ec5" data-element_type="widget" data-widget_type="divider.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-divider">
+			<span class="elementor-divider-separator">
+						</span>
+		</div>
+				</div>
+				</div>
+						</div>
+					</div>
+		</div>
+								</div>
+					</div>
+		</section>
+				<section class="elementor-section elementor-top-section elementor-element elementor-element-2df89003 elementor-section-full_width elementor-section-height-min-height elementor-section-items-stretch elementor-section-content-middle elementor-reverse-mobile elementor-section-height-default" data-id="2df89003" data-element_type="section" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+						<div class="elementor-container elementor-column-gap-default">
+							<div class="elementor-row">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-406c1015" data-id="406c1015" data-element_type="column" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-4eb9574c elementor-widget elementor-widget-heading" data-id="4eb9574c" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-default">The Keys Are<br>Under The Rug</h2>		</div>
+				</div>
+				<div class="elementor-element elementor-element-feae5e8 elementor-button-align-stretch elementor-widget elementor-widget-login" data-id="feae5e8" data-element_type="widget" data-widget_type="login.default">
+				<div class="elementor-widget-container">
+					<form class="elementor-login elementor-form" method="post" action="https://tesseracttheme.com/wp-login.php">
+			<input type="hidden" name="redirect_to" value="/">
+			<div class="elementor-form-fields-wrapper">
+				<div class="elementor-field-type-text elementor-field-group elementor-column elementor-col-100 elementor-field-required">
+										<input size="1" type="text" name="log" id="user" placeholder=" Username or Email Address" class="elementor-field elementor-field-textual elementor-size-md">
+				</div>
+				<div class="elementor-field-type-text elementor-field-group elementor-column elementor-col-100 elementor-field-required">
+										<input size="1" type="password" name="pwd" id="password" placeholder="Password" class="elementor-field elementor-field-textual elementor-size-md">
+				</div>
+
+									<div class="elementor-field-type-checkbox elementor-field-group elementor-column elementor-col-100 elementor-remember-me">
+						<label for="elementor-login-remember-me">
+							<input type="checkbox" id="elementor-login-remember-me" name="rememberme" value="forever">
+							Remember Me						</label>
+					</div>
+				
+				<div class="elementor-field-group elementor-column elementor-field-type-submit elementor-col-100">
+					<button type="submit" class="elementor-size-md elementor-button" name="wp-submit">
+															<span class="elementor-button-text">Come On In</span>
+												</button>
+				</div>
+
+									<div class="elementor-field-group elementor-column elementor-col-100">
+																				<a class="elementor-lost-password" href="https://tesseracttheme.com/my-account/lost-password/">
+								Lost your password?							</a>
+						
+											</div>
+							</div>
+		</form>
+				</div>
+				</div>
+						</div>
+					</div>
+		</div>
+								</div>
+					</div>
+		</section>
+				<section class="elementor-section elementor-top-section elementor-element elementor-element-476d486 elementor-section-full_width elementor-section-height-default elementor-section-height-default" data-id="476d486" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+							<div class="elementor-row">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-65bdd0a5" data-id="65bdd0a5" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-709d6822 animated-slow elementor-widget elementor-widget-heading animated slideInRight" data-id="709d6822" data-element_type="widget" data-settings="{&quot;_animation_delay&quot;:800}" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-default">get up &amp; get in</h2>		</div>
+				</div>
+						</div>
+					</div>
+		</div>
+								</div>
+					</div>
+		</section>
+				</div>
+		</div>
+		
+<div id="fb-root"></div>
+<script type="rocketlazyloadscript">(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.8";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, "script", "facebook-jssdk"));</script>	<script type="rocketlazyloadscript" data-rocket-type="text/javascript">
+		(function () {
+			var c = document.body.className;
+			c = c.replace(/woocommerce-no-js/, 'woocommerce-js');
+			document.body.className = c;
+		})();
+	</script>
+	
+
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-includes/js/dist/vendor/regenerator-runtime.min.js?ver=0.13.7" id="regenerator-runtime-js" defer=""></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-includes/js/dist/vendor/wp-polyfill.min.js?ver=3.15.0" id="wp-polyfill-js"></script>
+<script type="text/javascript" id="contact-form-7-js-extra">
+/* <![CDATA[ */
+var wpcf7 = {"api":{"root":"https:\/\/tesseracttheme.com\/wp-json\/","namespace":"contact-form-7\/v1"},"cached":"1"};
+/* ]]> */
+</script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/cache/min/1/wp-content/plugins/contact-form-7/includes/js/index.js?ver=1638997457" id="contact-form-7-js" defer=""></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/plugins/woocommerce/assets/js/jquery-blockui/jquery.blockUI.min.js?ver=2.7.0-wc.5.9.1" id="jquery-blockui-js" defer=""></script>
+<script type="text/javascript" id="wc-add-to-cart-js-extra">
+/* <![CDATA[ */
+var wc_add_to_cart_params = {"ajax_url":"\/wp-admin\/admin-ajax.php","wc_ajax_url":"\/?wc-ajax=%%endpoint%%","i18n_view_cart":"View cart","cart_url":"https:\/\/tesseracttheme.com\/cart\/","is_cart":"","cart_redirect_after_add":"no"};
+/* ]]> */
+</script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/plugins/woocommerce/assets/js/frontend/add-to-cart.min.js?ver=5.9.1" id="wc-add-to-cart-js" defer=""></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/plugins/woocommerce/assets/js/js-cookie/js.cookie.min.js?ver=2.1.4-wc.5.9.1" id="js-cookie-js" defer=""></script>
+<script type="text/javascript" id="woocommerce-js-extra">
+/* <![CDATA[ */
+var woocommerce_params = {"ajax_url":"\/wp-admin\/admin-ajax.php","wc_ajax_url":"\/?wc-ajax=%%endpoint%%"};
+/* ]]> */
+</script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/plugins/woocommerce/assets/js/frontend/woocommerce.min.js?ver=5.9.1" id="woocommerce-js" defer=""></script>
+<script type="text/javascript" id="wc-cart-fragments-js-extra">
+/* <![CDATA[ */
+var wc_cart_fragments_params = {"ajax_url":"\/wp-admin\/admin-ajax.php","wc_ajax_url":"\/?wc-ajax=%%endpoint%%","cart_hash_key":"wc_cart_hash_b5ddc1fdaaa5a2f677b3f87a240fac92","fragment_name":"wc_fragments_b5ddc1fdaaa5a2f677b3f87a240fac92","request_timeout":"5000"};
+/* ]]> */
+</script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/plugins/woocommerce/assets/js/frontend/cart-fragments.min.js?ver=5.9.1" id="wc-cart-fragments-js" defer=""></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" id="rocket-browser-checker-js-after">
+"use strict";var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||!1,descriptor.configurable=!0,"value"in descriptor&&(descriptor.writable=!0),Object.defineProperty(target,descriptor.key,descriptor)}}return function(Constructor,protoProps,staticProps){return protoProps&&defineProperties(Constructor.prototype,protoProps),staticProps&&defineProperties(Constructor,staticProps),Constructor}}();function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor))throw new TypeError("Cannot call a class as a function")}var RocketBrowserCompatibilityChecker=function(){function RocketBrowserCompatibilityChecker(options){_classCallCheck(this,RocketBrowserCompatibilityChecker),this.passiveSupported=!1,this._checkPassiveOption(this),this.options=!!this.passiveSupported&&options}return _createClass(RocketBrowserCompatibilityChecker,[{key:"_checkPassiveOption",value:function(self){try{var options={get passive(){return!(self.passiveSupported=!0)}};window.addEventListener("test",null,options),window.removeEventListener("test",null,options)}catch(err){self.passiveSupported=!1}}},{key:"initRequestIdleCallback",value:function(){!1 in window&&(window.requestIdleCallback=function(cb){var start=Date.now();return setTimeout(function(){cb({didTimeout:!1,timeRemaining:function(){return Math.max(0,50-(Date.now()-start))}})},1)}),!1 in window&&(window.cancelIdleCallback=function(id){return clearTimeout(id)})}},{key:"isDataSaverModeOn",value:function(){return"connection"in navigator&&!0===navigator.connection.saveData}},{key:"supportsLinkPrefetch",value:function(){var elem=document.createElement("link");return elem.relList&&elem.relList.supports&&elem.relList.supports("prefetch")&&window.IntersectionObserver&&"isIntersecting"in IntersectionObserverEntry.prototype}},{key:"isSlowConnection",value:function(){return"connection"in navigator&&"effectiveType"in navigator.connection&&("2g"===navigator.connection.effectiveType||"slow-2g"===navigator.connection.effectiveType)}}]),RocketBrowserCompatibilityChecker}();
+</script>
+<script type="text/javascript" id="rocket-preload-links-js-extra">
+/* <![CDATA[ */
+var RocketPreloadLinksConfig = {"excludeUris":"\/(.+\/)?feed\/?.+\/?|\/(?:.+\/)?embed\/|\/checkout\/|\/cart\/|\/my-account\/|\/wc-api\/v(.*)|\/(index\\.php\/)?wp\\-json(\/.*|$)|\/wp-admin\/|\/logout\/|\/wp-login.php","usesTrailingSlash":"1","imageExt":"jpg|jpeg|gif|png|tiff|bmp|webp|avif","fileExt":"jpg|jpeg|gif|png|tiff|bmp|webp|avif|php|pdf|html|htm","siteUrl":"https:\/\/tesseracttheme.com","onHoverDelay":"100","rateThrottle":"3"};
+/* ]]> */
+</script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" id="rocket-preload-links-js-after">
+(function() {
+"use strict";var r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},e=function(){function i(e,t){for(var n=0;n<t.length;n++){var i=t[n];i.enumerable=i.enumerable||!1,i.configurable=!0,"value"in i&&(i.writable=!0),Object.defineProperty(e,i.key,i)}}return function(e,t,n){return t&&i(e.prototype,t),n&&i(e,n),e}}();function i(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}var t=function(){function n(e,t){i(this,n),this.browser=e,this.config=t,this.options=this.browser.options,this.prefetched=new Set,this.eventTime=null,this.threshold=1111,this.numOnHover=0}return e(n,[{key:"init",value:function(){!this.browser.supportsLinkPrefetch()||this.browser.isDataSaverModeOn()||this.browser.isSlowConnection()||(this.regex={excludeUris:RegExp(this.config.excludeUris,"i"),images:RegExp(".("+this.config.imageExt+")$","i"),fileExt:RegExp(".("+this.config.fileExt+")$","i")},this._initListeners(this))}},{key:"_initListeners",value:function(e){-1<this.config.onHoverDelay&&document.addEventListener("mouseover",e.listener.bind(e),e.listenerOptions),document.addEventListener("mousedown",e.listener.bind(e),e.listenerOptions),document.addEventListener("touchstart",e.listener.bind(e),e.listenerOptions)}},{key:"listener",value:function(e){var t=e.target.closest("a"),n=this._prepareUrl(t);if(null!==n)switch(e.type){case"mousedown":case"touchstart":this._addPrefetchLink(n);break;case"mouseover":this._earlyPrefetch(t,n,"mouseout")}}},{key:"_earlyPrefetch",value:function(t,e,n){var i=this,r=setTimeout(function(){if(r=null,0===i.numOnHover)setTimeout(function(){return i.numOnHover=0},1e3);else if(i.numOnHover>i.config.rateThrottle)return;i.numOnHover++,i._addPrefetchLink(e)},this.config.onHoverDelay);t.addEventListener(n,function e(){t.removeEventListener(n,e,{passive:!0}),null!==r&&(clearTimeout(r),r=null)},{passive:!0})}},{key:"_addPrefetchLink",value:function(i){return this.prefetched.add(i.href),new Promise(function(e,t){var n=document.createElement("link");n.rel="prefetch",n.href=i.href,n.onload=e,n.onerror=t,document.head.appendChild(n)}).catch(function(){})}},{key:"_prepareUrl",value:function(e){if(null===e||"object"!==(void 0===e?"undefined":r(e))||!1 in e||-1===["http:","https:"].indexOf(e.protocol))return null;var t=e.href.substring(0,this.config.siteUrl.length),n=this._getPathname(e.href,t),i={original:e.href,protocol:e.protocol,origin:t,pathname:n,href:t+n};return this._isLinkOk(i)?i:null}},{key:"_getPathname",value:function(e,t){var n=t?e.substring(this.config.siteUrl.length):e;return n.startsWith("/")||(n="/"+n),this._shouldAddTrailingSlash(n)?n+"/":n}},{key:"_shouldAddTrailingSlash",value:function(e){return this.config.usesTrailingSlash&&!e.endsWith("/")&&!this.regex.fileExt.test(e)}},{key:"_isLinkOk",value:function(e){return null!==e&&"object"===(void 0===e?"undefined":r(e))&&(!this.prefetched.has(e.href)&&e.origin===this.config.siteUrl&&-1===e.href.indexOf("?")&&-1===e.href.indexOf("#")&&!this.regex.excludeUris.test(e.href)&&!this.regex.images.test(e.href))}}],[{key:"run",value:function(){"undefined"!=typeof RocketPreloadLinksConfig&&new n(new RocketBrowserCompatibilityChecker({capture:!0,passive:!0}),RocketPreloadLinksConfig).init()}}]),n}();t.run();
+}());
+</script>
+<script type="text/javascript" id="tes-advanced-theme-slidecart-js-js-extra">
+/* <![CDATA[ */
+var SLIDEAJAX = {"ajaxurl":"https:\/\/tesseracttheme.com\/wp-admin\/admin-ajax.php"};
+/* ]]> */
+</script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/cache/min/1/wp-content/themes/advanced-theme/js/tes-slide-cart.js?ver=1638997457" id="tes-advanced-theme-slidecart-js-js" defer=""></script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/cache/min/1/wp-content/themes/advanced-theme/js/jquery.fittext.js?ver=1638997457" id="tesseract-fittext-js" defer=""></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/themes/advanced-theme/js/jquery.sidr.min.js?ver=1.0.0" id="tesseract-sidr-js" defer=""></script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/cache/min/1/wp-content/themes/advanced-theme/js/responsive.js?ver=1638997457" id="tesseract-res-js" defer=""></script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/cache/min/1/wp-content/themes/advanced-theme/js/helpers-functions.js?ver=1638997457" id="tesseract-helpers-functions-js" defer=""></script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/cache/min/1/wp-content/themes/advanced-theme/js/helpers.js?ver=1638997457" id="tesseract-helpers-js" defer=""></script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/cache/min/1/wp-content/themes/advanced-theme/js/skip-link-focus-fix.js?ver=1638997457" id="tesseract-skip-link-focus-fix-js" defer=""></script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/cache/min/1/wp-content/themes/advanced-theme/woocommerce/assets/js/woocommerce-helpers.js?ver=1638997457" id="tesseract-woocommerce_helpers-js" defer=""></script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/cache/min/1/js/plusone.js?ver=1638997457" id="plusone-js" defer=""></script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/cache/min/1/widgets.js?ver=1638997457" id="twittersdk-js" defer=""></script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/cache/min/1/in.js?ver=1638997457" id="linkedin-js" defer=""></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/plugins/layered-popups/js/script.min.js?ver=6.64" id="ulp-js" defer=""></script>
+<script type="text/javascript" src="https://tesseracttheme.com/wp-includes/js/wp-embed.min.js?ver=413f9a53aeea242ecb52ac7b03805b4b" id="wp-embed-js" defer=""></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/plugins/elementor/assets/lib/jquery-numerator/jquery-numerator.min.js?ver=0.2.1" id="jquery-numerator-js" defer=""></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/plugins/elementor-pro/assets/js/webpack-pro.runtime.min.js?ver=3.5.2" id="elementor-pro-webpack-runtime-js" defer=""></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/plugins/elementor/assets/js/webpack.runtime.min.js?ver=3.4.8" id="elementor-webpack-runtime-js" defer=""></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/plugins/elementor/assets/js/frontend-modules.min.js?ver=3.4.8" id="elementor-frontend-modules-js" defer=""></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" id="elementor-pro-frontend-js-before">
+var ElementorProFrontendConfig = {"ajaxurl":"https:\/\/tesseracttheme.com\/wp-admin\/admin-ajax.php","nonce":"a31d1add69","urls":{"assets":"https:\/\/tesseracttheme.com\/wp-content\/plugins\/elementor-pro\/assets\/","rest":"https:\/\/tesseracttheme.com\/wp-json\/"},"i18n":{"toc_no_headings_found":"No headings were found on this page."},"shareButtonsNetworks":{"facebook":{"title":"Facebook","has_counter":true},"twitter":{"title":"Twitter"},"linkedin":{"title":"LinkedIn","has_counter":true},"pinterest":{"title":"Pinterest","has_counter":true},"reddit":{"title":"Reddit","has_counter":true},"vk":{"title":"VK","has_counter":true},"odnoklassniki":{"title":"OK","has_counter":true},"tumblr":{"title":"Tumblr"},"digg":{"title":"Digg"},"skype":{"title":"Skype"},"stumbleupon":{"title":"StumbleUpon","has_counter":true},"mix":{"title":"Mix"},"telegram":{"title":"Telegram"},"pocket":{"title":"Pocket","has_counter":true},"xing":{"title":"XING","has_counter":true},"whatsapp":{"title":"WhatsApp"},"email":{"title":"Email"},"print":{"title":"Print"}},"menu_cart":{"cart_page_url":"https:\/\/tesseracttheme.com\/cart\/","checkout_page_url":"https:\/\/tesseracttheme.com\/checkout\/"},"facebook_sdk":{"lang":"en_US","app_id":""},"lottie":{"defaultAnimationUrl":"https:\/\/tesseracttheme.com\/wp-content\/plugins\/elementor-pro\/modules\/lottie\/assets\/animations\/default.json"}};
+</script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/plugins/elementor-pro/assets/js/frontend.min.js?ver=3.5.2" id="elementor-pro-frontend-js" defer=""></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/plugins/elementor/assets/lib/waypoints/waypoints.min.js?ver=4.0.2" id="elementor-waypoints-js" defer=""></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-includes/js/jquery/ui/core.min.js?ver=1.12.1" id="jquery-ui-core-js" defer=""></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/plugins/elementor/assets/lib/swiper/swiper.min.js?ver=5.3.6" id="swiper-js" defer=""></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/plugins/elementor/assets/lib/share-link/share-link.min.js?ver=3.4.8" id="share-link-js" defer=""></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/plugins/elementor/assets/lib/dialog/dialog.min.js?ver=4.8.1" id="elementor-dialog-js" defer=""></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" id="elementor-frontend-js-before">
+var elementorFrontendConfig = {"environmentMode":{"edit":false,"wpPreview":false,"isScriptDebug":false},"i18n":{"shareOnFacebook":"Share on Facebook","shareOnTwitter":"Share on Twitter","pinIt":"Pin it","download":"Download","downloadImage":"Download image","fullscreen":"Fullscreen","zoom":"Zoom","share":"Share","playVideo":"Play Video","previous":"Previous","next":"Next","close":"Close"},"is_rtl":false,"breakpoints":{"xs":0,"sm":480,"md":768,"lg":1025,"xl":1440,"xxl":1600},"responsive":{"breakpoints":{"mobile":{"label":"Mobile","value":767,"default_value":767,"direction":"max","is_enabled":true},"mobile_extra":{"label":"Mobile Extra","value":880,"default_value":880,"direction":"max","is_enabled":false},"tablet":{"label":"Tablet","value":1024,"default_value":1024,"direction":"max","is_enabled":true},"tablet_extra":{"label":"Tablet Extra","value":1200,"default_value":1200,"direction":"max","is_enabled":false},"laptop":{"label":"Laptop","value":1366,"default_value":1366,"direction":"max","is_enabled":false},"widescreen":{"label":"Widescreen","value":2400,"default_value":2400,"direction":"min","is_enabled":false}}},"version":"3.4.8","is_static":false,"experimentalFeatures":{"e_import_export":true,"theme_builder_v2":true,"landing-pages":true,"elements-color-picker":true,"admin-top-bar":true,"form-submissions":true},"urls":{"assets":"https:\/\/tesseracttheme.com\/wp-content\/plugins\/elementor\/assets\/"},"settings":{"page":[],"editorPreferences":[]},"kit":{"active_breakpoints":["viewport_mobile","viewport_tablet"],"global_image_lightbox":"yes","lightbox_enable_counter":"yes","lightbox_enable_fullscreen":"yes","lightbox_enable_zoom":"yes","lightbox_enable_share":"yes","lightbox_title_src":"title","lightbox_description_src":"description"},"post":{"id":11845,"title":"Tesseract%20Theme%20%E2%80%93%20Free%20WordPress%20Theme","excerpt":"","featuredImage":false}};
+</script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/plugins/elementor/assets/js/frontend.min.js?ver=3.4.8" id="elementor-frontend-js" defer=""></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/plugins/elementor-pro/assets/js/preloaded-elements-handlers.min.js?ver=3.5.2" id="pro-preloaded-elements-handlers-js" defer=""></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/plugins/elementor/assets/js/preloaded-modules.min.js?ver=3.4.8" id="preloaded-modules-js" defer=""></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://tesseracttheme.com/wp-content/plugins/elementor-pro/assets/lib/sticky/jquery.sticky.min.js?ver=3.5.2" id="e-sticky-js" defer=""></script>
+
+				<div class="ulp-overlay" id="ulp-XIoeCGKY4qtQLUNp-overlay"></div>
+			<div class="ulp-window-container" onclick="jQuery('#ulp-XIoeCGKY4qtQLUNp-overlay').click();">
+				<div class="ulp-window ulp-window-middle-center" id="ulp-XIoeCGKY4qtQLUNp" data-title="Subscription Form - Popup #10" data-width="550" data-height="410" data-position="middle-center" data-close="on" data-enter="on" onclick="event.stopPropagation();">
+					<div class="ulp-content">
+						<div class="ulp-layer" id="ulp-layer-199" data-left="0" data-top="0" data-appearance="fade-in" data-appearance-speed="1000" data-appearance-delay="0" data-confirmation="off"><img src="https://s3-us-west-1.amazonaws.com/tesseractthemesite/wp-content/uploads/2016/11/city1__1480445398_198.8.80.90.jpg" alt=""></div>
+						<div class="ulp-layer" id="ulp-layer-200" data-left="0" data-top="0" data-appearance="fade-in" data-appearance-speed="1000" data-appearance-delay="0" data-confirmation="off"></div>
+						<div class="ulp-layer" id="ulp-layer-204" data-left="0" data-top="170" data-appearance="fade-in" data-appearance-speed="1000" data-appearance-delay="200" data-confirmation="off"></div>
+						<div class="ulp-layer" id="ulp-layer-201" data-left="0" data-top="20" data-appearance="slide-down" data-appearance-speed="1000" data-appearance-delay="200" data-confirmation="off">DOWNLOAD THE FREE THEME!</div>
+						<div class="ulp-layer" id="ulp-layer-203" data-left="0" data-top="90" data-appearance="slide-down" data-appearance-speed="1000" data-appearance-delay="200" data-confirmation="off">Enter your email and be the first to learn about new updates and features.</div>
+						<div class="ulp-layer" id="ulp-layer-208" data-left="0" data-top="380" data-appearance="slide-up" data-appearance-speed="1000" data-appearance-delay="1000" data-confirmation="off"><a href="https://s3.amazonaws.com/tesseracttheme/tesseract-free-theme.zip">No thanks, I just want to download Tesseract's Free theme.</a><a></a></div><a>
+						<div class="ulp-layer" id="ulp-layer-202" data-left="125" data-top="70" data-appearance="slide-right" data-appearance-speed="1000" data-appearance-delay="300" data-confirmation="off"></div>
+						<div class="ulp-layer" id="ulp-layer-205" data-left="35" data-top="195" data-appearance="slide-right" data-appearance-speed="1000" data-appearance-delay="700" data-confirmation="off"><input class="ulp-input ulp-input-field" type="text" autocomplete="name" name="ulp-name" placeholder="Enter your name..." value="" onfocus="jQuery(this).removeClass('ulp-input-error');"></div>
+						<div class="ulp-layer" id="ulp-layer-206" data-left="35" data-top="255" data-appearance="slide-left" data-appearance-speed="1000" data-appearance-delay="800" data-confirmation="off"><input class="ulp-input ulp-input-field" type="email" autocomplete="email" name="ulp-email" placeholder="Enter your e-mail..." value="" onfocus="jQuery(this).removeClass('ulp-input-error');"></div>
+						</a><div class="ulp-layer" id="ulp-layer-207" data-left="75" data-top="315" data-appearance="slide-up" data-appearance-speed="1000" data-appearance-delay="900" data-confirmation="off"><a></a><a href="#" class="ulp-submit" onclick="return ulp_subscribe(this);" data-label="SUBSCRIBE &amp; DOWNLOAD" data-loading="PLEASE WAIT!">SUBSCRIBE &amp; DOWNLOAD</a></div>
+						<div class="ulp-layer" id="ulp-layer-209" data-left="513" data-top="5" data-appearance="slide-down" data-appearance-speed="1000" data-appearance-delay="1000" data-confirmation="off"><a href="#" onclick="return ulp_self_close();">×</a></div>
+					</div>
+				</div>
+			</div>
+		<script type="rocketlazyloadscript">window.addEventListener('DOMContentLoaded', function() {
+			var ulp_ajax_url = "https://tesseracttheme.com/wp-admin/admin-ajax.php";
+			var ulp_count_impressions = "on";
+			var ulp_async_init = "on";
+			var ulp_css3_enable = "on";
+			var ulp_ga_tracking = "off";
+			var ulp_km_tracking = "off";
+			var ulp_onexit_limits = "off";
+			var ulp_no_preload = "off";
+			var ulp_campaigns = {"none":[""]};
+			var ulp_overlays = {"XIoeCGKY4qtQLUNp":["#b7b7b7", "0.8", "on", "middle-center", "fadeIn", "classic", "#ffffff"],"none":["", "", "", "", ""]};
+			if (typeof ulp_init == "function") { 
+				ulp_init(); jQuery(document).ready(function() {ulp_ready();});
+			} else {
+				jQuery(document).ready(function(){ulp_init(); ulp_ready();});
+			}
+		});</script><script type="rocketlazyloadscript" data-minify="1" src="https://tesseracttheme.com/wp-content/cache/min/1/wp-content/plugins/layered-popups/js/ads.js?ver=1638997457" defer=""></script>
+<script type="rocketlazyloadscript">window.addEventListener('DOMContentLoaded', function() {
+var maxheight = jQuery('#footer-banner').height();
+jQuery(document).ready(function() {
+ jQuery('#horizontal-menu-wrap, #footer-banner-right, #footer-banner-centre').css('min-height', maxheight)
+});
+});</script>
+<style>
+@media screen and (max-width:1400px) {
+	.site-info, .site-content{
+		height: inherit !important;
+	}
+}
+</style>
+
+
+
+<style>
+
+
+.woocommerce-checkout-review-order-table tr.fee th{ width:50%; }
+.woocommerce-checkout-review-order-table tr.fee td{ text-align: right; }
+@media screen and (max-width:1023px) {
+	#masthead_TesseractTheme #site-banner{ display: block; }
+	#masthead_TesseractTheme.mob-view #site-banner{ background-color:#336ca6 ;}
+	.top-navigation .nav-menu.showMenus{ background-color:#336ca6 !important;}
+	.mobile-menu-collaps-button{
+		background-color:#336ca6 !important;
+	}
+
+	#masthead_TesseractTheme.mob-view #site-banner ul.sub-menu li a{ background-color:#336ca6 !important;}
+	#masthead_TesseractTheme.mob-view #site-banner nav ul li a{ color:#fff !important;}
+	#colophon_TesseractTheme a { color:#fff !important; }
+	.mobile-menu-collaps-button.close-btns{
+		background-color:#000 !important;
+		color:#fff !important;
+	}
+	.submenuu-arrrow i{
+		color: #fff !important;
+	}
+
+	#site-navigation ul li > a{
+		font-size: 22px !important;
+		color: #fff !important;
+	}
+}
+@media (max-width: 767px){
+		#page #masthead_TesseractTheme{ background:#fff !important;}
+	}
+
+</style>
+<script type="rocketlazyloadscript">window.addEventListener('DOMContentLoaded', function() {
+
+var $ =jQuery.noConflict();
+jQuery("#left-collaps").click(function(){
+    jQuery(".menu-left ul").slideToggle();
+});
+
+jQuery("#cetre-collaps").click(function(){
+    jQuery(".menu-centre ul").slideToggle();
+});
+
+jQuery("#right-collaps").click(function(){
+    jQuery(".menu-right ul").slideToggle();
+});
+
+});</script>
+
+<script type="rocketlazyloadscript">
+function openNav() {
+    document.getElementById("mySidenav").style.width = "250px";
+    document.body.style.backgroundColor = "rgba(0,0,0,0.4)";
+}
+
+function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+    document.getElementById("main").style.marginLeft= "0";
+    document.body.style.backgroundColor = "white";
+}
+</script>
+
+
+
+<script type="rocketlazyloadscript">window.addEventListener('DOMContentLoaded', function() {
+function openNav() {
+    document.getElementById("menu-top").style.width = "100%";
+}
+
+function closeNav() {
+    document.getElementById("menu-top").style.width = "0";
+}
+var $ =jQuery.noConflict();
+
+});</script>
+
+
+<!-- For Custom scrollbar -->
+
+<script type="rocketlazyloadscript" src="https://tesseracttheme.com/wp-content/themes/advanced-theme/js/jquery.mCustomScrollbar.concat.min.js" defer=""></script>
+<script type="rocketlazyloadscript" data-minify="1" src="https://tesseracttheme.com/wp-content/cache/min/1/wp-content/themes/advanced-theme/js/number.js?ver=1638997457" defer=""></script>
+<script type="rocketlazyloadscript">window.addEventListener('DOMContentLoaded', function() {
+ jQuery('.quantity input').each(function () {
+		jQuery(this).number();
+	});
+jQuery( document.body ).on( 'updated_cart_totals', function(){
+    jQuery('.quantity input').each(function () {
+		jQuery(this).number();
+	});
+});
+});</script>
+<script type="rocketlazyloadscript">window.addEventListener('DOMContentLoaded', function() {
+    jQuery(document).on("click",".number-plus, .number-minus", function (e) {
+    	console.log("Hello");
+       	console.log(jQuery("[name='update_cart']").removeProp( 'disabled' ));
+    });
+});</script>
+<!-- For Custom scrollbar -->
+
+<script type="rocketlazyloadscript">window.addEventListener('DOMContentLoaded', function() {
+  jQuery('.dashicons-admin-users').click(function(){
+    jQuery('.tes-adv-woo-menu ul li ul').toggleClass('actiV');
+  });
+});</script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript">
+             $(document).ready(function() {
+                 console.log("Time until DOMready(miliseconds): ", Date.now()-timerStart);
+             });
+             $(window).load(function() {
+                 console.log("Time until everything loaded(miliseconds) : ", Date.now()-timerStart);
+             });
+             //console.log(window.performance);
+             window.onload = function () {
+    var loadTime = window.performance.timing.domContentLoadedEventEnd-window.performance.timing.navigationStart; 
+    console.log('Page load time is '+ loadTime + " miliseconds");
+}
+        </script>
+<script>class RocketElementorAnimation{constructor(){this.deviceMode=document.createElement("span"),this.deviceMode.id="elementor-device-mode",this.deviceMode.setAttribute("class","elementor-screen-only"),document.body.appendChild(this.deviceMode)}_detectAnimations(){let t=getComputedStyle(this.deviceMode,":after").content.replace(/"/g,"");this.animationSettingKeys=this._listAnimationSettingsKeys(t),document.querySelectorAll(".elementor-invisible[data-settings]").forEach(t=>{const e=t.getBoundingClientRect();if(e.bottom>=0&&e.top<=window.innerHeight)try{this._animateElement(t)}catch(t){}})}_animateElement(t){const e=JSON.parse(t.dataset.settings),i=e._animation_delay||e.animation_delay||0,n=e[this.animationSettingKeys.find(t=>e[t])];if("none"===n)return void t.classList.remove("elementor-invisible");t.classList.remove(n),this.currentAnimation&&t.classList.remove(this.currentAnimation),this.currentAnimation=n;let s=setTimeout(()=>{t.classList.remove("elementor-invisible"),t.classList.add("animated",n),this._removeAnimationSettings(t,e)},i);window.addEventListener("rocket-startLoading",function(){clearTimeout(s)})}_listAnimationSettingsKeys(t="mobile"){const e=[""];switch(t){case"mobile":e.unshift("_mobile");case"tablet":e.unshift("_tablet");case"desktop":e.unshift("_desktop")}const i=[];return["animation","_animation"].forEach(t=>{e.forEach(e=>{i.push(t+e)})}),i}_removeAnimationSettings(t,e){this._listAnimationSettingsKeys().forEach(t=>delete e[t]),t.dataset.settings=JSON.stringify(e)}static run(){const t=new RocketElementorAnimation;requestAnimationFrame(t._detectAnimations.bind(t))}}document.addEventListener("DOMContentLoaded",RocketElementorAnimation.run);</script>
+
+
+
+<!-- This website is like a Rocket, isn't it? Performance optimized by WP Rocket. Learn more: https://wp-rocket.me - Debug: cached@1656306070 --><span id="elementor-device-mode" class="elementor-screen-only"></span></body></html>

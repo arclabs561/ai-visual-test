@@ -1,0 +1,683 @@
+<!DOCTYPE html><html lang="en"><head>
+    <title>Welcome - Y Not Read</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://mastomedia.fra1.digitaloceanspaces.com/static/css/themes/bookwyrm-light.css" rel="stylesheet" type="text/css">
+
+    <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="Y Not Read search">
+
+    <link rel="shortcut icon" type="image/x-icon" href="https://mastomedia.fra1.digitaloceanspaces.com/images/logos/favicon.ico">
+
+    
+    <meta name="twitter:card" content="summary_large_image">
+    
+    <meta name="twitter:title" content="Y Not Read">
+    <meta name="og:title" content="Y Not Read">
+    <meta name="twitter:description" content="Read more and talk more.">
+    <meta name="og:description" content="Read more and talk more.">
+
+    
+        
+
+
+    
+        <meta name="twitter:image" content="https://mastomedia.fra1.digitaloceanspaces.com/images/">
+        <meta name="og:image" content="https://mastomedia.fra1.digitaloceanspaces.com/images/">
+    
+
+
+    
+    <meta name="twitter:image:alt" content="BookWyrm Logo">
+
+    
+</head>
+<body>
+
+<nav class="navbar" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="/">
+                <img class="image logo" src="https://mastomedia.fra1.digitaloceanspaces.com/images/logos/android-chrome-192x192.png" alt="Y Not Read home page">
+            </a>
+            <form class="navbar-item column is-align-items-start pt-5" action="/search">
+                <div class="field has-addons">
+                    <div class="control">
+                        
+                            
+                        
+                        <input aria-label="Search for a book" id="search_input" class="input" type="text" name="q" placeholder="Search for a book" value="">
+                    </div>
+                    <div class="control">
+                        <button class="button" type="submit">
+                            <span class="icon icon-search" title="Search">
+                                <span class="is-sr-only">Search</span>
+                            </span>
+                        </button>
+                    </div>
+                    <div class="control">
+                        <button class="button" type="button" data-modal-open="barcode-scanner-modal">
+                            <span class="icon icon-barcode" title="Scan Barcode">
+                                <span class="is-sr-only">Scan Barcode</span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+            
+
+<div class="modal " id="barcode-scanner-modal">
+    <div class="modal-background" data-modal-close=""></div>
+    <div class="modal-card" role="dialog" aria-modal="true" tabindex="-1" aria-described-by="barcode-scanner-modal_header">
+        <header class="modal-card-head">
+            <h2 class="modal-card-title mb-0" id="barcode-scanner-modal_header">
+                
+    
+        Scan Barcode
+    
+
+            </h2>
+            <button type="button" class="delete" aria-label="Close" data-modal-close=""></button>
+        </header>
+
+        
+        <section class="modal-card-body">
+            
+    <div class="block">
+        <div id="barcode-scanner"></div>
+    </div>
+
+    <div id="barcode-camera-list" class="select is-small">
+        <select>
+        </select>
+    </div>
+    
+    <div id="barcode-status" class="block">
+        <div class="grant-access is-hidden">
+            <span class="icon icon-lock"></span>
+            <span class="is-size-5">Requesting camera...</span><br>
+            <span>Grant access to the camera to scan a book's barcode.</span>
+        </div>
+        <div class="access-denied is-hidden">
+            <span class="icon icon-warning"></span>
+            <span class="is-size-5">Access denied</span><br>
+            <span>Could not access camera</span>
+        </div>
+        <div class="scanning is-hidden">
+            <span class="icon icon-barcode"></span>
+            <span class="is-size-5">Scanning...</span><br>
+            <span>Align your book's barcode with the camera.</span>
+        </div>
+        <div class="found is-hidden">
+            <span class="icon icon-check"></span>
+            <span class="is-size-5">ISBN scanned</span><br>
+            Searching for book: <span class="isbn"></span>...
+        </div>
+    </div>
+
+        </section>
+        <footer class="modal-card-foot">
+            
+    <button class="button" type="button" data-modal-close="">Cancel</button>
+
+        </footer>
+        
+    </div>
+    <button type="button" class="modal-close is-large" aria-label="Close" data-modal-close=""></button>
+</div>
+
+
+            <button type="button" tabindex="0" class="navbar-burger pulldown-menu my-4" data-controls="main_nav" aria-expanded="false">
+                <i class="icon icon-dots-three-vertical" aria-hidden="true"></i>
+                <span class="is-sr-only">Main navigation menu</span>
+            </button>
+        </div>
+
+        <div class="navbar-menu" id="main_nav">
+            <div class="navbar-start">
+                
+            </div>
+
+            <div class="navbar-end">
+            
+                <div class="navbar-item pt-5 pb-0">
+                    
+                    <div class="columns">
+                        <div class="column">
+                            <form name="login" method="post" action="/login?next=/">
+                                <input type="hidden" name="csrfmiddlewaretoken" value="kBAwGt4F3XcWfacCPLlqvp1zBeZGNeVVY6xy0698vgJRyQlTmrbVfjjnj35uF1DB">
+                                <div class="columns is-variable is-1">
+                                    <div class="column">
+                                        <label class="is-sr-only" for="id_localname">Username:</label>
+                                        <input type="text" name="localname" maxlength="150" class="input" required="" id="id_localname" placeholder="username">
+                                    </div>
+                                    <div class="column">
+                                        <label class="is-sr-only" for="id_password">Password:</label>
+                                        <input type="password" name="password" maxlength="128" class="input" required="" id="id_password" placeholder="password">
+                                        <p class="help"><a href="/password-reset">Forgot your password?</a></p>
+                                    </div>
+                                    <div class="column is-narrow">
+                                        <button class="button is-primary" type="submit">Log in</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+
+
+
+<main class="section is-flex-grow-1">
+    <div class="container">
+        
+        
+        
+<header class="block has-text-centered">
+    <h1 class="title">Y Not Read</h1>
+    <h2 class="subtitle">Read more and talk more.</h2>
+</header>
+
+<section class="level is-mobile">
+    <div class="level-item has-text-centered">
+        <div>
+            <p class="title has-text-weight-normal"><span class="icon icon-graphic-paperplane"></span></p>
+            <p class="heading">Decentralized</p>
+        </div>
+    </div>
+    <div class="level-item has-text-centered">
+        <div>
+            <p class="title has-text-weight-normal"><span class="icon icon-graphic-heart"></span></p>
+            <p class="heading">Friendly</p>
+        </div>
+    </div>
+    <div class="level-item has-text-centered">
+        <div>
+            <p class="title has-text-weight-normal"><span class="icon icon-graphic-banknote"></span></p>
+            <p class="heading">Anti-Corporate</p>
+        </div>
+    </div>
+</section>
+
+
+<section class="tile is-ancestor">
+    <div class="tile is-7 is-parent">
+        <div class="tile is-child box">
+            
+
+<div class="columns">
+    <div class="column is-narrow is-hidden-mobile">
+        <figure class="block is-w-xl">
+            <img src="https://mastomedia.fra1.digitaloceanspaces.com/static/images/logo.png" alt="BookWyrm logo">
+        </figure>
+    </div>
+    <div class="content">
+        <p class="block">
+            A website for book lovers.
+世上本没有不能读的书。
+        </p>
+    </div>
+</div>
+
+        </div>
+    </div>
+    <div class="tile is-5 is-parent">
+        
+        <div class="tile is-child box has-background-primary-light content">
+            <h2 class="title">
+                
+                    Request an Invitation
+                
+            </h2>
+
+            
+                
+                    <p>If your request is approved, you will receive an email with a registration link. Please allow up to 48 hrs for admin’s response.</p>
+                    <form name="invite-request" action="/invite-request" method="post">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="kBAwGt4F3XcWfacCPLlqvp1zBeZGNeVVY6xy0698vgJRyQlTmrbVfjjnj35uF1DB">
+                        <div class="block">
+                            <label for="id_request_email" class="label">Email address:</label>
+                            <input type="email" name="email" maxlength="255" class="input" required="" id="id_request_email" aria-describedby="desc_request_email">
+
+                            
+
+                        </div>
+                        
+                            <div class="block">
+                                <label for="id_answer_register" class="label">What is your favourite book?</label>
+                                <input type="answer" name="answer" maxlength="50" class="input" required="true" id="id_answer_register" aria-describedby="desc_answer_register">
+                                
+
+                            </div>
+                        
+
+                        <button type="submit" class="button is-link">Submit</button>
+                    </form>
+                
+            
+        </div>
+        
+    </div>
+</section>
+
+
+
+
+<div class="block is-hidden-tablet">
+    <h2 class="title has-text-centered">Recent Books</h2>
+</div>
+
+
+
+
+<section class="tile is-ancestor">
+    <div class="tile is-vertical is-6">
+        <div class="tile is-parent">
+            <div class="tile is-child box has-background-secondary">
+                
+
+
+
+
+
+    
+        <div class="columns is-gapless">
+            <div class="column is-7-tablet is-cover">
+                <a class="align to-b to-l" href="/book/15815/s/the-water-dragons-bride"><picture class="cover-container is-w-l-mobile is-w-auto-tablet"><img alt="The water dragon's bride (2017, Viz Media)" class="book-cover" itemprop="thumbnailUrl" src="https://mastomedia.fra1.digitaloceanspaces.com/images/covers/83529a5c-354d-42d4-b63b-aaa9ed88dbf4.jpeg"></picture>
+</a>
+
+                <span class="stars"><span class="is-sr-only">
+        
+            No rating
+        
+    </span><span class="
+                icon is-small mr-1
+                icon-star-empty
+            " aria-hidden="true"></span><span class="
+                icon is-small mr-1
+                icon-star-empty
+            " aria-hidden="true"></span><span class="
+                icon is-small mr-1
+                icon-star-empty
+            " aria-hidden="true"></span><span class="
+                icon is-small mr-1
+                icon-star-empty
+            " aria-hidden="true"></span><span class="
+                icon is-small mr-1
+                icon-star-empty
+            " aria-hidden="true"></span></span>
+
+            </div>
+
+
+            <div class="column mt-3-mobile ml-3-tablet">
+                <h3 class="title is-5">
+                    <a href="/book/15815/s/the-water-dragons-bride">The water dragon's bride</a>
+                </h3>
+
+                
+                    <p class="subtitle is-5">
+                        by
+                        <a href="/author/3341/s/rei-toma" class="author " itemprop="author" itemscope="" itemtype="https://schema.org/Thing"><span itemprop="name">Rei Tōma</span></a>
+
+                    </p>
+                
+
+                
+                    <blockquote class="content">
+                        <p>In the blink of an eye, a modern-day girl named Asahi is whisked away from her warm and happy home and stranded in a strange and mysterious world where she is sacrificed to a water dragon god! What plans are in store for her, and what will happen when she …</p>
+                    </blockquote>
+                
+            </div>
+        </div>
+    
+
+
+            </div>
+        </div>
+        <div class="tile">
+            <div class="tile is-parent is-6">
+                <div class="tile is-child box has-background-secondary">
+                    
+
+
+
+    
+        <a href="/book/15946/s/">
+            <picture class="cover-container is-w-l-mobile is-w-auto align to-b to-l"><img alt="在水中热爱火焰 (Paperback, 中文 language, 2017, 湖南文艺出版社)" class="book-cover" itemprop="thumbnailUrl" src="https://mastomedia.fra1.digitaloceanspaces.com/images/covers/8fcfb93f-63da-4d49-93fc-0524239f5212.jpeg"></picture>
+
+        </a>
+
+        <span class="stars"><span class="is-sr-only">
+        
+            5 stars
+        
+    </span><span class="
+                icon is-small mr-1
+                icon-star-full
+            " aria-hidden="true"></span><span class="
+                icon is-small mr-1
+                icon-star-full
+            " aria-hidden="true"></span><span class="
+                icon is-small mr-1
+                icon-star-full
+            " aria-hidden="true"></span><span class="
+                icon is-small mr-1
+                icon-star-full
+            " aria-hidden="true"></span><span class="
+                icon is-small mr-1
+                icon-star-full
+            " aria-hidden="true"></span></span>
+
+
+        <h3 class="title is-6">
+            <a href="/book/15946/s/">在水中热爱火焰</a>
+        </h3>
+
+        
+            <p class="subtitle is-6">
+                by
+                <a href="/author/3383/s/eugenio-de-andrade" class="author " itemprop="author" itemscope="" itemtype="https://schema.org/Thing"><span itemprop="name">Eugénio de Andrade</span></a>
+
+            </p>
+        
+    
+
+
+                </div>
+            </div>
+            <div class="tile is-parent is-6">
+                <div class="tile is-child box has-background-secondary">
+                    
+
+
+
+    
+        <a href="/book/15984/s/">
+            <picture class="cover-container is-w-l-mobile is-w-auto align to-b to-l"><img alt="斑马流浪者 (Paperback, 中文 language, 2021, 四川文艺出版社)" class="book-cover" itemprop="thumbnailUrl" src="https://mastomedia.fra1.digitaloceanspaces.com/images/covers/斑马流浪者.jpeg"></picture>
+
+        </a>
+
+        <span class="stars"><span class="is-sr-only">
+        
+            No rating
+        
+    </span><span class="
+                icon is-small mr-1
+                icon-star-empty
+            " aria-hidden="true"></span><span class="
+                icon is-small mr-1
+                icon-star-empty
+            " aria-hidden="true"></span><span class="
+                icon is-small mr-1
+                icon-star-empty
+            " aria-hidden="true"></span><span class="
+                icon is-small mr-1
+                icon-star-empty
+            " aria-hidden="true"></span><span class="
+                icon is-small mr-1
+                icon-star-empty
+            " aria-hidden="true"></span></span>
+
+
+        <h3 class="title is-6">
+            <a href="/book/15984/s/">斑马流浪者</a>
+        </h3>
+
+        
+            <p class="subtitle is-6">
+                by
+                <a href="/author/3400/s/azareen-van-der-vliet-oloomi" class="author " itemprop="author" itemscope="" itemtype="https://schema.org/Thing"><span itemprop="name">Azareen Van der Vliet Oloomi</span></a>
+
+            </p>
+        
+    
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tile is-vertical is-6">
+        <div class="tile">
+            <div class="tile is-parent is-6">
+                <div class="tile is-child box has-background-secondary">
+                    
+
+
+
+    
+        <a href="/book/15955/s/">
+            <picture class="cover-container is-w-l-mobile is-w-auto align to-b to-l"><img alt="书信中的世界史 (Paperback, 中文 language, 2020, 湖南人民出版社)" class="book-cover" itemprop="thumbnailUrl" src="https://mastomedia.fra1.digitaloceanspaces.com/images/covers/cd8cf052-762f-4cbd-9ce7-860933f3655a.jpeg"></picture>
+
+        </a>
+
+        <span class="stars"><span class="is-sr-only">
+        
+            3 stars
+        
+    </span><span class="
+                icon is-small mr-1
+                icon-star-full
+            " aria-hidden="true"></span><span class="
+                icon is-small mr-1
+                icon-star-full
+            " aria-hidden="true"></span><span class="
+                icon is-small mr-1
+                icon-star-full
+            " aria-hidden="true"></span><span class="
+                icon is-small mr-1
+                icon-star-empty
+            " aria-hidden="true"></span><span class="
+                icon is-small mr-1
+                icon-star-empty
+            " aria-hidden="true"></span></span>
+
+
+        <h3 class="title is-6">
+            <a href="/book/15955/s/">书信中的世界史</a>
+        </h3>
+
+        
+            <p class="subtitle is-6">
+                by
+                <a href="/author/3387/s/simon-motefiore" class="author " itemprop="author" itemscope="" itemtype="https://schema.org/Thing"><span itemprop="name">Simon Motefiore</span></a>
+
+            </p>
+        
+    
+
+
+                </div>
+            </div>
+            <div class="tile is-parent is-6">
+                <div class="tile is-child box has-background-secondary">
+                    
+
+
+
+    
+        <a href="/book/15957/s/">
+            <picture class="cover-container is-w-l-mobile is-w-auto align to-b to-l"><img alt="上帝之子 (Hardcover, 中文 language, 2020, 河南文艺出版社)" class="book-cover" itemprop="thumbnailUrl" src="https://mastomedia.fra1.digitaloceanspaces.com/images/covers/dc15524b-9835-4d44-ab03-fd420d1697a2.jpeg"></picture>
+
+        </a>
+
+        <span class="stars"><span class="is-sr-only">
+        
+            5 stars
+        
+    </span><span class="
+                icon is-small mr-1
+                icon-star-full
+            " aria-hidden="true"></span><span class="
+                icon is-small mr-1
+                icon-star-full
+            " aria-hidden="true"></span><span class="
+                icon is-small mr-1
+                icon-star-full
+            " aria-hidden="true"></span><span class="
+                icon is-small mr-1
+                icon-star-full
+            " aria-hidden="true"></span><span class="
+                icon is-small mr-1
+                icon-star-full
+            " aria-hidden="true"></span></span>
+
+
+        <h3 class="title is-6">
+            <a href="/book/15957/s/">上帝之子</a>
+        </h3>
+
+        
+            <p class="subtitle is-6">
+                by
+                <a href="/author/812/s/cormac-mccarthy" class="author " itemprop="author" itemscope="" itemtype="https://schema.org/Thing"><span itemprop="name">Cormac McCarthy</span></a>
+
+            </p>
+        
+    
+
+
+                </div>
+            </div>
+        </div>
+        <div class="tile is-parent">
+            <div class="tile is-child box has-background-secondary">
+                
+
+
+
+
+
+    
+        <div class="columns is-gapless">
+            <div class="column is-7-tablet is-cover">
+                <a class="align to-b to-l" href="/book/17054/s/"><picture class="cover-container is-w-l-mobile is-w-auto-tablet"><img alt="靠崩人设驰骋霸总文学" class="book-cover" itemprop="thumbnailUrl" src="https://mastomedia.fra1.digitaloceanspaces.com/images/covers/A86A6970-EA50-45C9-8226-C31C7DD2892E.jpeg"></picture>
+</a>
+
+                <span class="stars"><span class="is-sr-only">
+        
+            5 stars
+        
+    </span><span class="
+                icon is-small mr-1
+                icon-star-full
+            " aria-hidden="true"></span><span class="
+                icon is-small mr-1
+                icon-star-full
+            " aria-hidden="true"></span><span class="
+                icon is-small mr-1
+                icon-star-full
+            " aria-hidden="true"></span><span class="
+                icon is-small mr-1
+                icon-star-full
+            " aria-hidden="true"></span><span class="
+                icon is-small mr-1
+                icon-star-half
+            " aria-hidden="true"></span></span>
+
+            </div>
+
+
+            <div class="column mt-3-mobile ml-3-tablet">
+                <h3 class="title is-5">
+                    <a href="/book/17054/s/">靠崩人设驰骋霸总文学</a>
+                </h3>
+
+                
+                    <p class="subtitle is-5">
+                        by
+                        <a href="/author/3590/s/" class="author " itemprop="author" itemscope="" itemtype="https://schema.org/Thing"><span itemprop="name">小熊蹦迪</span></a>
+
+                    </p>
+                
+
+                
+                    <blockquote class="content">
+                        <p>一觉醒来，越夏穿越了，还绑定了个倒霉系统。 </p>
+<p>【你现在身处一本古早言情霸总文中。】 
+【众所周知，古早霸总文的标配除了红眼摁墙，神奇医生和温柔男二外，最重要的就是炮灰女配——而你，就是最重量级的一位。】 
+【你对男主爱而不得，逐渐扭曲，于是试图插足破坏二人感情，但每次都以失败告终。你是主角绝美爱情的催化剂，推动剧情的工具人，最后被联手整的身败名裂，销声匿迹。】 
+【你必须完成任务，促进剧情发展，否则抹杀。】 </p>
+<p>而现在的剧情正好进展到次日男主和白月光订婚，她必须马上前去大闹婚宴，抢婚失败，从此开启她颠沛流离的败犬人生。 
+越夏：……女配也有人权的好吗！ </p>
+<p>于是当天下午，男女主热闹非凡的订婚宴席中，越夏不负众望，毅然出现。 
+面对众人震惊的视线，和男主难掩嫌恶的眼神，越夏把嘴里的芥末咽了，瞬间潸然泪下：“你真的已经完全忘了我？” 
+男主：“你不要再纠缠……” 
+“书瑶！”越夏忽然转头，对一旁懵逼的白月光深情道：“跟我走，好吗？” 
+白月光：“……呃，好。” </p>
+<p>…… </p>
+<p>众人麻着脸看新娘被一个陌生女子带走，一去不回。 
+从那以后，剧情一路脱缰野马般崩坏。 </p>
+<p>对此，某嫌疑人表示—— 
+只是一个平平无奇的沙雕女配罢了。</p>
+                    </blockquote>
+                
+            </div>
+        </div>
+    
+
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+        
+    </div>
+</main>
+
+<div role="region" aria-live="polite" id="live-messages">
+    <p id="status-success-message" class="live-message is-sr-only is-hidden">Successfully posted status</p>
+    <p id="status-error-message" class="live-message notification is-danger p-3 pr-5 pl-5 is-hidden">Error posting status</p>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="columns">
+            <div class="column is-one-fifth">
+                <p>
+                <a href="/about">About Y Not Read</a>
+                </p>
+                
+                <p>
+                    <a href="mailto:yyyyyadmin@protonmail.com">Contact site admin</a>
+                </p>
+                
+                <p>
+                    <a href="https://docs.joinbookwyrm.com/">Documentation</a>
+                </p>
+            </div>
+            <div class="column content is-two-fifth">
+                
+                <p>
+                BookWyrm's source code is freely available. You can contribute or report issues on <a href="https://github.com/mouse-reeve/bookwyrm">GitHub</a>.
+                </p>
+            </div>
+            
+        </div>
+    </div>
+</footer>
+
+
+<script>
+    var csrf_token = 'kBAwGt4F3XcWfacCPLlqvp1zBeZGNeVVY6xy0698vgJRyQlTmrbVfjjnj35uF1DB';
+</script>
+
+<script src="https://mastomedia.fra1.digitaloceanspaces.com/static/js/bookwyrm.js?v=bc93172a"></script>
+<script src="https://mastomedia.fra1.digitaloceanspaces.com/static/js/localstorage.js?v=bc93172a"></script>
+<script src="https://mastomedia.fra1.digitaloceanspaces.com/static/js/status_cache.js?v=bc93172a"></script>
+<script src="https://mastomedia.fra1.digitaloceanspaces.com/static/js/vendor/quagga.min.js?v=bc93172a"></script>
+
+
+
+
+
+</body></html>

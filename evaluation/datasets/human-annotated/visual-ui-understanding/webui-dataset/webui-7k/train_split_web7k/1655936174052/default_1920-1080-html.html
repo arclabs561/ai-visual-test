@@ -1,0 +1,624 @@
+<!DOCTYPE html><html class="writer-html5" lang="en"><head>
+  <meta charset="utf-8"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Documentation — COPR  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css">
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css">
+      <link rel="stylesheet" href="_static/site.css" type="text/css">
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html">
+    <link rel="search" title="Search" href="search.html">
+    <link rel="next" title="Upstream Release Notes" href="release_notes.html">
+    <link rel="prev" title="Copr Buildsystem" href="index.html"> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+            <a href="index.html">
+            <img src="_static/copr-logo-transparent.png" class="logo" alt="Logo">
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs">
+    <input type="hidden" name="check_keywords" value="yes">
+    <input type="hidden" name="area" value="default">
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current" aria-expanded="true">
+<li class="toctree-l1 current" aria-expanded="true"><a class="reference internal current" href="#" aria-expanded="true"><button class="toctree-expand" title="Open/close menu"></button>User Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#quick-start">Quick start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tutorial">Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-enable-copr-repository">How to enable copr repository?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#build-source-types"><button class="toctree-expand" title="Open/close menu"></button>Build Source Types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#urls">URLs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#direct-upload">Direct Upload</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#scm">SCM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#distgit">DistGit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pypi">PyPI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rubygems">RubyGems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#custom-script">Custom (script)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#temporary-projects">Temporary projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#github-webhooks">GitHub Webhooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pagure-integration"><button class="toctree-expand" title="Open/close menu"></button>Pagure Integration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#auto-rebuilding">Auto-rebuilding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pr-commit-flagging">PR/commit flagging</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#custom-location-webhooks">Custom-location Webhooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#links">Links</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#multilib">Multilib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#advanced-searching">Advanced searching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#status-badges">Status Badges</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mass-rebuilds">Mass rebuilds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#build-batches">Build batches</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#automatic-run-of-fedora-review-tool">Automatic run of Fedora Review tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#faq">FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes.html">Upstream Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer_documentation.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="maintenance_documentation.html">Maintenance Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="downloads.html">Downloads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="brainstorming.html">Brainbox</a></li>
+<li class="toctree-l1"><a class="reference internal" href="features.html">Features</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">COPR</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> »</li>
+      <li>User Documentation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/user_documentation.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="user-documentation">
+<span id="id1"></span><h1>User Documentation<a class="headerlink" href="#user-documentation" title="Permalink to this headline">¶</a></h1>
+<p>This section contains information for users of Copr Build System. You can find a running Copr instance at <a class="reference external" href="http://copr.fedorainfracloud.org/">http://copr.fedorainfracloud.org/</a>.
+You may also be interested in <a class="reference internal" href="developer_documentation.html#developer-documentation"><span class="std std-ref">Developer Documentation</span></a> and <a class="reference internal" href="downloads.html#downloads"><span class="std std-ref">Downloads</span></a>.</p>
+<section id="quick-start">
+<h2>Quick start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
+<p>If you are completely new to COPR build system, those steps will get you setup quickly:</p>
+<ol class="arabic simple">
+<li><p>setup a FAS account here: <a class="reference external" href="https://accounts.fedoraproject.org">https://accounts.fedoraproject.org</a></p></li>
+<li><p>log in into COPR (link at the top right corner of COPR HP: <a class="reference external" href="https://copr.fedorainfracloud.org/">https://copr.fedorainfracloud.org/</a>)</p></li>
+<li><p>go to <a class="reference external" href="https://copr.fedorainfracloud.org/api/">https://copr.fedorainfracloud.org/api/</a></p></li>
+<li><p>copy the generated auth token into <code class="docutils literal notranslate"><span class="pre">~/.config/copr</span></code></p></li>
+<li><p>install copr-cli tool: <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">dnf</span> <span class="pre">install</span> <span class="pre">copr-cli</span></code> (if you are on Fedora)</p></li>
+<li><p>run <code class="docutils literal notranslate"><span class="pre">copr-cli</span> <span class="pre">create</span> <span class="pre">first-project</span> <span class="pre">--chroot</span> <span class="pre">fedora-rawhide-x86_64</span></code> to create your first project</p></li>
+<li><p>run <code class="docutils literal notranslate"><span class="pre">copr-cli</span> <span class="pre">build</span> <span class="pre">first-project</span> <span class="pre">&lt;path</span> <span class="pre">to</span> <span class="pre">your</span> <span class="pre">srpm&gt;</span></code> to run your first build</p></li>
+</ol>
+<p>If you don’t have an srpm yet, see <a class="reference external" href="https://pagure.io/rpkg-util">https://pagure.io/rpkg-util</a> on how to build one.</p>
+</section>
+<section id="tutorial">
+<h2>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h2>
+<p>See <a class="reference internal" href="screenshots_tutorial.html#screenshots-tutorial"><span class="std std-ref">Screenshots tutorial</span></a> for interacting with <a class="reference external" href="http://copr.fedoraproject.org/">copr.fedoraproject.org</a></p>
+</section>
+<section id="how-to-enable-copr-repository">
+<h2>How to enable copr repository?<a class="headerlink" href="#how-to-enable-copr-repository" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="how_to_enable_repo.html#how-to-enable-repo"><span class="std std-ref">How to enable repo</span></a></p>
+</section>
+<section id="build-source-types">
+<h2>Build Source Types<a class="headerlink" href="#build-source-types" title="Permalink to this headline">¶</a></h2>
+<p>Copr supports several types of build sources.</p>
+<section id="urls">
+<h3>URLs<a class="headerlink" href="#urls" title="Permalink to this headline">¶</a></h3>
+<p>This is currently the only method to submit multiple builds at once. First, you need to upload your SRPM
+package(s) on a public server and then provide the URL(s) separated by space or a newline. Note that the build
+order of the individual launched builds is not guaranteed.</p>
+<p>You can also just input a URL to an rpm .spec file (package metadata) that describe the package without
+including the actual build sources. The build sources, being again available on a public server under https,
+will be then downloaded by COPR automatically during the SRPM build process.</p>
+</section>
+<section id="direct-upload">
+<h3>Direct Upload<a class="headerlink" href="#direct-upload" title="Permalink to this headline">¶</a></h3>
+<p>In case, you have your .spec file or srpm stored locally, you can use this method to upload it directly to
+COPR from a command-line (by using copr-cli tool) or through COPR web UI.</p>
+</section>
+<section id="scm">
+<span id="scm-ref"></span><h3>SCM<a class="headerlink" href="#scm" title="Permalink to this headline">¶</a></h3>
+<p>This method allows you to build RPM(s) from any Git, DistGit, or SVN repository containing a valid .spec file.
+The only required argument is <strong>Clone URL</strong> and if the target repository places the .spec file together
+with package sources in the root directory and you want to build from master HEAD, it will simply work.
+There are more things to configure for more complex cases. E.g. you might want to specify <strong>Subdirectory</strong>
+of the target repository if that is where the repository has the package sources placed. See the following
+list for the full option description:</p>
+<ul class="simple">
+<li><p><strong>Type</strong>: SCM type of the repository being pointed to by <strong>Clone URL</strong> (in other words, whether we should use plain <cite>git</cite> or <cite>git svn</cite> for subsequent cloning).</p></li>
+<li><p><strong>Clone URL</strong>: What repository we should clone to obtain the sources.</p></li>
+<li><p><strong>Committish</strong>: What tag, branch, or commit we should check out from the history of the cloned repository. By default HEAD of master branch.</p></li>
+<li><p><strong>Subdirectory</strong>: Where the subsequent SRPM build command (see below) should be executed. The path is relative to the repository root.</p></li>
+<li><p><strong>Spec File</strong>: Path to the spec file relative to the given <strong>Subdirectory</strong>. Note that you can optionally anchor the path with <strong>/</strong> (e.g. <strong>/rpm/example.spec</strong>). If not
+specified the .spec file will be auto-located.</p></li>
+</ul>
+<p>The last optional thing to configure (except for common build configuration option) is the SRPM build method. There are four choices available:
+<strong>rpkg</strong>, <strong>tito</strong>, <strong>tito test</strong>, and <strong>make srpm</strong>:</p>
+<p><strong>rpkg</strong>: The default method.  Apart from building packages from any Git or SVN
+repository, it also supports building directly from <a class="reference external" href="https://clime.github.io/2017/05/20/DistGit-1.0.html">DistGit</a> repositories.
+Note that <strong>rpkg</strong> (as well as <strong>tito</strong> below) is not only a tool to generate
+SRPMs but, in fact, it is also a full-fledged package manager
+that you can use from your command-line to maintain your (upstream) projects.
+You can read more about this tool <a class="reference external" href="https://pagure.io/rpkg-util">here</a>.
+Note that starting from December 2021, Copr migrated to the <strong>rpkg-util v3</strong>,
+and so <a class="reference internal" href="rpkg_util_2_vs_3.html#rpkg-util-v3"><span class="std std-ref">your spec files need to use the {{{ }}} templates to comply</span></a>.</p>
+<p><strong>tito</strong>: is a robust RPM package manager with lots of features and if your project is managed with Tito, this is the tool you want to pick for SRPM generation (which is
+one of the many package manager’s features). When this option is selected, the latest package GIT tag will be used to build an SRPM. Note that this utility has currently
+no support for specifying an alternative .spec file, which means the <strong>Spec Field</strong> is simply ignored when this option is used and .spec file will be always auto-located.
+Note that the basic difference between this tool and <strong>rpkg</strong> is that the target repository needs to be initialized with <code class="docutils literal notranslate"><span class="pre">tito</span> <span class="pre">init</span></code> first before this tool can be used
+to build SRPMs from it. You can read more <a class="reference external" href="https://github.com/dgoodwin/tito">here</a>.</p>
+<p><strong>tito test</strong>: With this option selected, again the <a class="reference external" href="https://github.com/dgoodwin/tito">tito</a> utility will be used to build an SRPM but this time, the <strong>Committish</strong>
+value specified above (or HEAD of the master branch if no <strong>Committish</strong> is specified) will be used to build an SRPM. This corresponds to using <code class="docutils literal notranslate"><span class="pre">--test</span></code> switch for
+<code class="docutils literal notranslate"><span class="pre">tito</span></code> when it is invoked to generate the SRPM.</p>
+<p id="make-srpm"><strong>make srpm</strong>: With this method, the user himself/herself will provide the executable script to be used for SRPM generation. If you
+would like to use this method, you need to provide <code class="docutils literal notranslate"><span class="pre">.copr/Makefile</span></code> (path being relative to the repository root) with <code class="docutils literal notranslate"><span class="pre">srpm</span></code> target
+in your repository. Into that <code class="docutils literal notranslate"><span class="pre">srpm</span></code> target, you can put whatever it takes to generate the SRPM. You can use network and clone another
+repository, you can install new packages, and you can do pretty much everything as this is script is run with root privileges inside
+a mock chroot. Note that it is run in the mock chroot of the same OS version as the builder host’s (usually the latest released Fedora
+version). The Makefile’s target is invoked like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="o">-</span><span class="n">f</span> <span class="o">&lt;</span><span class="n">cloned_repodir</span><span class="o">&gt;/.</span><span class="n">copr</span><span class="o">/</span><span class="n">Makefile</span> <span class="n">srpm</span> <span class="n">outdir</span><span class="o">=</span><span class="s2">"&lt;outdir&gt;"</span> <span class="n">spec</span><span class="o">=</span><span class="s2">"&lt;spec_path&gt;"</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">spec</span></code> parameter is what you specify in the <strong>Spec File</strong> field for the SCM source specification and the script
+is run in the <strong>Subdirectory</strong> that you can optionally specify in the source section  as well. Note that you can just ignore
+the <code class="docutils literal notranslate"><span class="pre">spec</span></code> file parameter in the script if there is no use for it. The <code class="docutils literal notranslate"><span class="pre">outdir</span></code> parameter specifies where to put the resulting
+SRPM so that COPR can find and build it afterwards.</p>
+<p>Example of what can be put into <code class="docutils literal notranslate"><span class="pre">.copr/Makefile</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cd myrepo
+$ cat .copr/Makefile
+srpm:
+    dnf -y install tito
+    tito build --builder=SomeBuilder --test --srpm --output=$(outdir)
+</pre></div>
+</div>
+<p>Note that the other tools (<strong>tito</strong> and <strong>rpkg</strong>) are run in the specified <strong>Subdirectory</strong> as well.</p>
+</section>
+<section id="distgit">
+<span id="dist-git-method"></span><h3>DistGit<a class="headerlink" href="#distgit" title="Permalink to this headline">¶</a></h3>
+<p>There’s a new option to build from existing DistGit instances in Copr (e.g.,
+from Fedora or CentOS DistGit). To build the <cite>foo</cite> package from
+CentOS 8, one can do:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ copr build-distgit &lt;project&gt; --name foo --distgit centos --commit c8
+</pre></div>
+</div>
+<p>It’s even easier for a Fedora Rawhide package:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ copr build-distgit &lt;project&gt; --name foo
+</pre></div>
+</div>
+<p>because ‘fedora’ distgit is the default, and we automatically pick the default
+branch.</p>
+</section>
+<section id="pypi">
+<h3>PyPI<a class="headerlink" href="#pypi" title="Permalink to this headline">¶</a></h3>
+<p>With this source type, you can build python packages directly from <a class="reference external" href="https://pypi.python.org/pypi">https://pypi.python.org/pypi</a>. COPR translates those
+packages to src.rpm packages automatically by using <a class="reference external" href="https://github.com/fedora-python/pyp2rpm">pyp2rpm</a> tool.</p>
+</section>
+<section id="rubygems">
+<h3>RubyGems<a class="headerlink" href="#rubygems" title="Permalink to this headline">¶</a></h3>
+<p>Similarly to PyPI source type, this allows building gems from <a class="reference external" href="https://rubygems.org/">https://rubygems.org/</a>. The tool for package translation
+here is <a class="reference external" href="https://github.com/fedora-ruby/gem2rpm">gem2rpm</a>.</p>
+</section>
+<section id="custom-script">
+<h3>Custom (script)<a class="headerlink" href="#custom-script" title="Permalink to this headline">¶</a></h3>
+<p>This source type uses a user-defined script to generate sources (which are later
+used to create SRPM).  For more info, have a look at
+<a class="reference internal" href="custom_source_method.html#custom-source-method"><span class="std std-ref">Custom source method</span></a>.</p>
+</section>
+</section>
+<section id="temporary-projects">
+<h2>Temporary projects<a class="headerlink" href="#temporary-projects" title="Permalink to this headline">¶</a></h2>
+<p>If you want have your copr project deleted automatically after some time
+(because it is some CI/CD project, some testing stuff, etc.) you can set the
+“delete after days” option in web UI or on command-line:
+<code class="docutils literal notranslate"><span class="pre">copr-cli</span> <span class="pre">create</span> <span class="pre">your-project</span> <span class="pre">...</span> <span class="pre">--delete-after-days</span> <span class="pre">10</span></code></p>
+</section>
+<section id="github-webhooks">
+<h2>GitHub Webhooks<a class="headerlink" href="#github-webhooks" title="Permalink to this headline">¶</a></h2>
+<p>Webhooks allows you to automatically trigger build.</p>
+<p>First you need to go to your Copr project and tab “Packages” and define some package. The only source type which make sense together with webhooks is “SCM”. Check the “Webhook rebuild” option. You may hit “rebuild” and test the build actually works.</p>
+<p>Now you can navigate to “Setting” tab and then “Webhooks” There is your webhook url in the form of <cite>https://copr.fedorainfracloud.org/webhooks/github/&lt;ID&gt;/&lt;UUID&gt;/</cite>.</p>
+<p>Then in your GitHub project, go to Settings / Webhooks and services. Click on the Add webhook button.
+Fill in the Payload URL field with the url you noted previously. Set the other fields to the values: <cite>content: application/json; send just push event; no secret</cite>. Click the Add webhook button.</p>
+<p>And next time you push anything to your git, Copr will automatically rebuild your package.</p>
+</section>
+<section id="pagure-integration">
+<h2>Pagure Integration<a class="headerlink" href="#pagure-integration" title="Permalink to this headline">¶</a></h2>
+<p>For any pagure instance (including <a class="reference external" href="http://src.fedoraproject.org/">src.fedoraproject.org</a>), you can setup Copr auto-rebuilding and pr/commit flagging on new changes landing into a pagure repository and its open pull requests.</p>
+<section id="auto-rebuilding">
+<h3>Auto-rebuilding<a class="headerlink" href="#auto-rebuilding" title="Permalink to this headline">¶</a></h3>
+<p>On the Pagure side, you need to set Fedmsg to ‘active’ in your project settings (in ‘Hooks’ section almost at the bottom). For some instances
+(e.g. <a class="reference external" href="http://src.fedoraproject.org/">src.fedoraproject.org</a>), this might already be active by default so you don’t even need to perform this step.</p>
+<p>In Copr, you need an SCM package definition, which may be as simple as specifying a public clone URL of the remote Pagure repository, see <a class="reference internal" href="#scm-ref"><span class="std std-ref">SCM</span></a>
+if you need more detailed settings. Also make sure, “Auto-rebuild” checkbox is checked.</p>
+<p>Now your SCM package will get rebuilt on new commits into the main repo as well as into open PRs.</p>
+<p>Note that built changes coming from pull requests are not actually placed into the main copr repository. Instead, they are being placed into side repositories
+of the names <code class="docutils literal notranslate"><span class="pre">&lt;coprname&gt;:pr:&lt;pr_id&gt;</span></code>. <code class="docutils literal notranslate"><span class="pre">&lt;pr_id&gt;</span></code> is ID of the pull request opened in Pagure. On Fedora, you can enable the side repository to test the changes with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo dnf copr enable &lt;ownername&gt;/&lt;coprname&gt;:pr:&lt;pr_id&gt;
+</pre></div>
+</div>
+</section>
+<section id="pr-commit-flagging">
+<h3>PR/commit flagging<a class="headerlink" href="#pr-commit-flagging" title="Permalink to this headline">¶</a></h3>
+<p>If you would like to get your commits and pull requests in Pagure flagged with build results for each change, go to project settings in your Pagure project. Then:</p>
+<ul class="simple">
+<li><p>In the section “API keys”, create a new API key (check for <strong>‘Flag a …’</strong> options) if you don’t have one created already and copy it</p></li>
+<li><p>In Copr, go to <strong>Settings-&gt;Integrations</strong> and insert the copied API key into the second field in ‘Pagure’ section</p></li>
+<li><p>Into the first field, insert Pagure project URL that you can just copy from browser address bar if you are on the project homepage</p></li>
+<li><p>Click ‘Submit’ and you are done.</p></li>
+</ul>
+</section>
+</section>
+<section id="custom-location-webhooks">
+<h2>Custom-location Webhooks<a class="headerlink" href="#custom-location-webhooks" title="Permalink to this headline">¶</a></h2>
+<p>You can look here for how to do this: <a class="reference internal" href="webhook_hacking.html#webhook-hacking"><span class="std std-ref">COPR auto-rebuilds with custom Git repositories</span></a></p>
+</section>
+<section id="links">
+<h2>Links<a class="headerlink" href="#links" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>For building package from git:</p></li>
+</ul>
+<ol class="arabic simple">
+<li><p><a class="reference external" href="https://github.com/dgoodwin/tito">Tito</a> (<a class="reference external" href="http://miroslav.suchy.cz/blog/archives/2013/12/29/how_to_build_in_copr/index.html">blog post</a> and <a class="reference external" href="http://m0dlx.com/blog/Reproducible_builds_on_Copr_with_tito_and_git_annex.html">another about Tito+Git annex</a>)</p></li>
+<li><p><a class="reference external" href="https://github.com/pypingou/dgroc">dgroc</a> (<a class="reference external" href="http://blog.pingoured.fr/index.php?post/2014/03/20/Introducing-dgroc">blog post</a>)</p></li>
+</ol>
+<ul class="simple">
+<li><p><a class="reference external" href="https://wiki.jenkins-ci.org/display/JENKINS/Copr+Plugin">Jenkins plugin</a> (<a class="reference external" href="http://michal-srb.blogspot.cz/2014/04/jenkins-plugin-for-building-rpms-in-copr.html">blog post</a>)</p></li>
+</ul>
+</section>
+<section id="multilib">
+<h2>Multilib<a class="headerlink" href="#multilib" title="Permalink to this headline">¶</a></h2>
+<p>In Copr, you cannot build an i386 package into x86_64 repository (also known as
+multilib package) like e.g. in Koji.  You can though build for both
+multilib-pair chroots (e.g. <code class="docutils literal notranslate"><span class="pre">fedora-31-x86_64</span></code> and <code class="docutils literal notranslate"><span class="pre">fedora-31-i386</span></code>)
+separately, and users can enable both multilib-pair repositories - so in turn
+all built 32bit and 64bit packages will be available concurrently.</p>
+<p>If you want to automatize this, specify that your project is supposed to be
+“multilib capable”.  Either in commandline:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">copr</span> <span class="n">create</span> <span class="o">--</span><span class="n">multilib</span><span class="o">=</span><span class="n">on</span> <span class="p">[</span><span class="n">other</span> <span class="n">options</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>or by checkbox on <code class="docutils literal notranslate"><span class="pre">Project</span> <span class="pre">-&gt;</span> <span class="pre">Settings</span></code> web-UI page.</p>
+<p>When (a) this feature is enabled for project and (b) the project also contains
+multilib-pair chroots, the relevant copr web-UI project page will also provide
+multilib repo files button (aside the normal one) so user can pick those.  On
+top of that, <code class="docutils literal notranslate"><span class="pre">dnf</span> <span class="pre">copr</span> <span class="pre">enable</span> <span class="pre">&lt;owner&gt;/&lt;project&gt;</span></code> installs the multilib
+repofile automatically instead of the normal one on multilib capable system.</p>
+<p>Users can also manually install the multilib repofiles on multilib capable
+system regardless of the project settings, those repofile can e.g. look like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cat /etc/yum.repos.d/rhughes-f20-gnome-3-12.repo
+[copr:copr.fedorainfracloud.org:rhughes:gnome-3-12]
+name=Copr repo for f20-gnome-3-12 owned by rhughes
+baseurl=http://copr-be.cloud.fedoraproject.org/results/rhughes/f20-gnome-3-12/fedora-$releasever-$basearch/
+skip_if_unavailable=True
+gpgcheck=0
+enabled=1
+
+[copr:copr.fedorainfracloud.org:rhughes:gnome-3-12:ml]
+name=Copr repo for f20-gnome-3-12 owned by rhughes (i386)
+baseurl=http://copr-be.cloud.fedoraproject.org/results/rhughes/f20-gnome-3-12/fedora-$releasever-i386/
+skip_if_unavailable=True
+gpgcheck=0
+cost=1100
+enabled=1
+</pre></div>
+</div>
+</section>
+<section id="advanced-searching">
+<h2>Advanced searching<a class="headerlink" href="#advanced-searching" title="Permalink to this headline">¶</a></h2>
+<p>There is a large search box on the Copr homepage and a small search
+box at the top of every subpage. Both behave in the exact same way, so
+use which one you prefer.</p>
+<p>Input formats:</p>
+<ul class="simple">
+<li><p>A number - If the searched value is a valid build ID, the page is redirected
+to the build detail page. Otherwise, a fulltext search is performed.</p></li>
+<li><p>A string starting with <code class="docutils literal notranslate"><span class="pre">@</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">@copr</span></code>) - A fulltext search for a group
+name is performed. For example, searching <code class="docutils literal notranslate"><span class="pre">@co</span></code> finds all <code class="docutils literal notranslate"><span class="pre">@copr</span></code>,
+<code class="docutils literal notranslate"><span class="pre">@CoreOS</span></code>, <code class="docutils literal notranslate"><span class="pre">@cockpit</span></code>, etc, and all of their projects.</p></li>
+<li><p>A string without any formatting - Performs a fulltext search for user
+names, project names, summaries, descriptions, etc.</p></li>
+<li><p>A string containing a forward slash (e.g. <code class="docutils literal notranslate"><span class="pre">frostyx/foo</span></code> or
+<code class="docutils literal notranslate"><span class="pre">@copr/@copr</span></code>) - A fulltext is performed for the both owner name and the
+project name. For example, by searching <code class="docutils literal notranslate"><span class="pre">@co/co</span></code> a <code class="docutils literal notranslate"><span class="pre">@copr/copr-dev</span></code> can be
+found.</p></li>
+</ul>
+<p>Additionally, a part of the search box is a dropdown menu (a button with a caret
+symbol) with more searching options:</p>
+<ul class="simple">
+<li><p>A fulltext search limited to the user name</p></li>
+<li><p>A fulltext search limited to the group name (this option is equal to searching
+a string that starts with <code class="docutils literal notranslate"><span class="pre">@</span></code>)</p></li>
+<li><p>A fulltext search limited to the project name</p></li>
+<li><p>A fulltext search for package names within projects</p></li>
+</ul>
+</section>
+<section id="status-badges">
+<h2>Status Badges<a class="headerlink" href="#status-badges" title="Permalink to this headline">¶</a></h2>
+<p>Do you want to add such badge:</p>
+<img alt="https://copr.fedorainfracloud.org/coprs/g/mock/mock/package/mock/status_image/last_build.png" src="https://copr.fedorainfracloud.org/coprs/g/mock/mock/package/mock/status_image/last_build.png">
+<p>to your page? E.g. to GitHub README.md? You can use those urls:</p>
+<ul class="simple">
+<li><p><cite>https://copr.fedorainfracloud.org/coprs/&lt;username&gt;/&lt;coprname&gt;/package/&lt;package_name&gt;/status_image/last_build.png</cite></p></li>
+<li><p><cite>https://copr.fedorainfracloud.org/coprs/g/&lt;group_name&gt;/&lt;coprname&gt;/package/&lt;package_name&gt;/status_image/last_build.png</cite></p></li>
+</ul>
+<p>And this badge will reflect current status of your package.</p>
+</section>
+<section id="mass-rebuilds">
+<h2>Mass rebuilds<a class="headerlink" href="#mass-rebuilds" title="Permalink to this headline">¶</a></h2>
+<p>Copr can sustain mass-rebuilds and projects with thousands of packages and
+builds. A typical use-case for this can be rebuilding all Fedora packages with
+some proposal change or rebuilding programming-language modules (PyPI,
+RubyGems) as RPMs.</p>
+<p>Please follow these recommendations to have the smoothest experience:</p>
+<ul class="simple">
+<li><p>If possible, let us know in advance, so we pay closer attention to the server
+load and making sure everything functions as it should. Please see the
+preferred <a class="reference internal" href="index.html#communication"><span class="std std-ref">communication channels</span></a></p></li>
+<li><p>Creating AppStream metadata is too slow for large repositories, you might want
+to disable it. Go to your project settings and turn off the
+“Generate AppStream metadata” option, or specify <code class="docutils literal notranslate"><span class="pre">--appstream=off</span></code>
+when creating or modifying a project in <code class="docutils literal notranslate"><span class="pre">copr-cli</span></code>.</p></li>
+<li><p>When submitting builds, please use <code class="docutils literal notranslate"><span class="pre">--background</span></code> parameter to
+make them deprioritized by scheduler (compared to normal
+builds). It’s a nice gesture to other users.</p></li>
+<li><p>If possible, don’t submit all builds at once but rather 1k-5k at the time and
+wait for Copr to process them</p></li>
+<li><p>Use <a class="reference internal" href="#build-batches"><span class="std std-ref">Build batches</span></a> to specify the order of your builds in advance. This
+is useful when some of the packages use other packages in the project as
+dependencies and need to wait until they are built</p></li>
+<li><p>Use <a class="reference external" href="https://python-copr.readthedocs.io/en/latest/client_v3/pagination.html">pagination</a>
+when accessing the project packages and builds through API</p></li>
+</ul>
+</section>
+<section id="build-batches">
+<span id="id4"></span><h2>Build batches<a class="headerlink" href="#build-batches" title="Permalink to this headline">¶</a></h2>
+<p>A build batches feature allows you to define the order of your builds
+in advance.  This feature is also available in the web-UI, but it is
+more convenient from the command-line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ copr build &lt;project&gt; --no-wait &lt;first.src.rpm&gt;
+Created builds: 101010
+$ copr build &lt;project&gt; --no-wait &lt;second.src.rpm&gt; --after-build-id 101010
+Created builds: 101020
+$ copr build &lt;project&gt; --no-wait &lt;third.src.rpm&gt; --with-build-id 101020
+Created builds: 101030
+</pre></div>
+</div>
+<p>This will create two batches (first with one build 101010 and second
+with two builds 101020 and 101030), where second batch isn’t started till Copr
+finishes the first one.  This way, you can build a tree of dependant build
+batches according to your project needs.  See also a related <cite>blog post
+&lt;https://pavel.raiskup.cz/blog/build-ordering-by-batches-in-copr.html&gt;</cite>
+which goes a little bit more into detail.</p>
+</section>
+<section id="automatic-run-of-fedora-review-tool">
+<h2>Automatic run of Fedora Review tool<a class="headerlink" href="#automatic-run-of-fedora-review-tool" title="Permalink to this headline">¶</a></h2>
+<p>There’s a new per-project config option (e.g. <code class="docutils literal notranslate"><span class="pre">copr</span> <span class="pre">create</span> <span class="pre">--fedora-review</span></code>)
+that triggers an automatic run of <a class="reference external" href="https://pagure.io/FedoraReview">Fedora Review</a> after each build in such
+project, for now only in the <code class="docutils literal notranslate"><span class="pre">fedora-*</span></code> chroots.</p>
+<p>We don’t mark the build failed when the review tool fails for now, and it is up
+to the end-user to check the review results in the new <code class="docutils literal notranslate"><span class="pre">review.txt</span></code> file
+that is created in build results.</p>
+<p>Quick HOWTO for the <a class="reference external" href="https://fedoraproject.org/wiki/Package_Review_Process">Package Review</a> time:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ copr create review-foo-component --chroot fedora-rawhide-x86_64 --fedora-review
+$ copr build review-foo-component ./foo.src.rpm
+...
+# wait and see the results!
+</pre></div>
+</div>
+</section>
+<section id="faq">
+<h2>FAQ<a class="headerlink" href="#faq" title="Permalink to this headline">¶</a></h2>
+<p class="rubric" id="what-is-the-purpose-of-copr">What is the purpose of Copr? <a class="reference internal" href="#what-is-the-purpose-of-copr"><span class="std std-ref">¶</span></a></p>
+<p>Copr is a build system available for everybody. You provide the src.rpm and Copr provides a yum repository. Copr can be used for upstream builds, for continuous integration, or to provide a yum repository for users of your project, if your project is not yet included in the standard Fedora repositories.</p>
+<p>You will need a <a class="reference external" href="https://accounts.fedoraproject.org">FAS account</a> in order to get started.</p>
+<p class="rubric" id="what-i-can-build-in-copr">What I can build in Copr? <a class="reference internal" href="#what-i-can-build-in-copr"><span class="std std-ref">¶</span></a></p>
+<p>You agree not to use Copr to upload software code or other material
+(“Material”) that:</p>
+<ol class="loweralpha simple">
+<li><p>you do not have the right to upload or use, such as Material that
+infringes the rights of any third party under intellectual
+property or other applicable laws;</p></li>
+<li><p>is governed in whole or in part by a license not contained in the
+list of acceptable licenses for Fedora, currently located at
+<a class="reference external" href="https://fedoraproject.org/wiki/Licensing">https://fedoraproject.org/wiki/Licensing</a>, as that list may be
+revised from time to time by the Fedora Council;</p></li>
+<li><p>is categorized as a “Forbidden Item” at
+<a class="reference external" href="https://fedoraproject.org/wiki/Forbidden_items">https://fedoraproject.org/wiki/Forbidden_items</a>,
+as that page may be revised from time to time by the Fedora
+Council;</p></li>
+<li><p>is designed to interfere with, disable, overburden, damage,
+impair or disrupt Copr or Fedora Project infrastructure;</p></li>
+<li><p>violates any rules or guidelines of the Fedora Project - especially the Fedora Project <a class="reference external" href="https://docs.fedoraproject.org/en-US/project/code-of-conduct/index.html">Code of Conduct</a> You do <strong>not</strong> need to comply with <a class="reference external" href="https://docs.fedoraproject.org/en-US/packaging-guidelines/">Packaging Guidelines</a>.; or</p></li>
+<li><p>violates any applicable laws and regulations.</p></li>
+</ol>
+<p>It is your responsibility to check licenses and to be sure you can make the resulting yum repo public.</p>
+<p>If you think that some repo may be violating a license, you can raise a legal flag - there is a dedicated text area in each project to do so. This will send a notification to the admins and we will act accordingly.</p>
+<p>It would be nice if you stated the license of your packages in the Description or Install instructions.</p>
+<p>Packages in Copr do <strong>not</strong> need to follow the
+<a class="reference external" href="https://docs.fedoraproject.org/en-US/packaging-guidelines/">Fedora Packaging Guidelines</a>,
+though they are recommended to do so. In particular, kernel modules
+may be built in Copr, as long as they don’t violate the license
+requirements in point 2. above.</p>
+<p class="rubric" id="is-it-safe-to-use-copr">Is it safe to use Copr? <a class="reference internal" href="#is-it-safe-to-use-copr"><span class="std std-ref">¶</span></a></p>
+<p>This is a two-part question.</p>
+<p>1) Can we trust Copr as a platform?</p>
+<p>Copr is free software with its code publicly available for review by
+anyone. Internally, it uses the standard Fedora packaging toolset, and
+resulting repositories are signed. All Copr servers are deployed
+within Fedora infrastructure, and we work closely with the Fedora
+Infrastructure team.</p>
+<p>2) Can we trust the software available in Copr?</p>
+<p>Only people with FAS accounts are allowed to create projects and build
+packages in Copr. That means that you can find out more information
+about each project owner and decide for yourself whether you find them
+trustworthy or not. You can also see how exactly each build was
+submitted, download its SRPM file, and validate the sources and spec
+file for yourself.</p>
+<p class="rubric" id="how-can-i-enable-a-copr-repository">How can I enable a Copr repository? <a class="reference internal" href="#how-can-i-enable-a-copr-repository"><span class="std std-ref">¶</span></a></p>
+<p>See <a class="reference internal" href="how_to_enable_repo.html#how-to-enable-repo"><span class="std std-ref">How to enable repo</span></a>.</p>
+<p class="rubric" id="how-can-i-package-software-as-rpm">How can I package software as RPM? <a class="reference internal" href="#how-can-i-package-software-as-rpm"><span class="std std-ref">¶</span></a></p>
+<p>There are several tutorials:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://rpm-packaging-guide.github.io/">RPM Packaging Guide</a></p></li>
+<li><p><a class="reference external" href="http://youtu.be/H4vxkuoimzc">Packaging Workshop (video)</a> <a class="reference external" href="https://youtu.be/KdIsoYGSNS8">(and the same workshop from different conference)</a></p></li>
+<li><p><a class="reference external" href="https://fedoraproject.org/wiki/How_to_create_an_RPM_package">How to create an RPM package</a></p></li>
+<li><p><a class="reference external" href="http://documentation-devel.engineering.redhat.com/site/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Packagers_Guide/chap-Red_Hat_Enterprise_Linux-Packagers_Guide-Creating_and_Building_Packages.html">Creating and Building Packages</a></p></li>
+<li><p><a class="reference external" href="http://youtu.be/4J_Iksu1fgo">How To Make An RPM With Red Hat Package Manager (video)</a></p></li>
+<li><p><a class="reference external" href="http://www.rpm.org/max-rpm/">http://www.rpm.org/max-rpm/</a></p></li>
+<li><p><a class="reference external" href="https://access.redhat.com/videos/214983">Getting Started with RPMs (RH subscribers only)</a></p></li>
+<li><p><a class="reference external" href="https://youtu.be/vdWnyIbN8uw">Advanced packaging workshop (video)</a></p></li>
+</ul>
+<p class="rubric" id="can-i-build-for-different-versions-of-fedora">Can I build for different versions of Fedora? <a class="reference internal" href="#can-i-build-for-different-versions-of-fedora"><span class="std std-ref">¶</span></a></p>
+<p>Yes. Just hit the “Edit” tab in your project and select several chroots, e.g. “fedora-19-x86_64” and “fedora-18-x86_64”. After doing so, when you submit the src.rpm, your package will be built for both of those selected versions of Fedora.</p>
+<p>You can build for EPEL as well.</p>
+<p class="rubric" id="can-i-have-more-yum-repositories">Can I have more yum repositories? <a class="reference internal" href="#can-i-have-more-yum-repositories"><span class="std std-ref">¶</span></a></p>
+<p>Yes. Each user can have more than one project and each project has one yum repository - to be more precise one repository per chroot.</p>
+<p class="rubric" id="can-i-submit-multiple-builds-at-once">Can I submit multiple builds at once? <a class="reference internal" href="#can-i-submit-multiple-builds-at-once"><span class="std std-ref">¶</span></a></p>
+<p>Yes. Just separate them by a space or a new line, but keep in mind that we do not guarantee build order.</p>
+<p class="rubric" id="what-happens-when-i-try-to-build-a-package-with-the-same-version-number">What happens when I try to build a package with the same version number? <a class="reference internal" href="#what-happens-when-i-try-to-build-a-package-with-the-same-version-number"><span class="std std-ref">¶</span></a></p>
+<p>Nothing special. Your package will just be rebuilt again.</p>
+<p class="rubric" id="can-i-depend-on-other-packages-which-are-not-in-fedora-epel">Can I depend on other packages, which are not in Fedora/EPEL? <a class="reference internal" href="#can-i-depend-on-other-packages-which-are-not-in-fedora-epel"><span class="std std-ref">¶</span></a></p>
+<p>Yes, they just need to be available in some yum repository. It can either be another Copr repo or a third-party yum repo (e.g jpackage). Click on “Edit” in your project and add the appropriate repositories into the “Repos” field.
+Packages from your project are available to be used at build time as well, but only for the project you are currently building and not from your other projects.</p>
+<p class="rubric" id="can-i-give-access-to-my-repo-to-my-team-mate">Can I give access to my repo to my team mate? <a class="reference internal" href="#can-i-give-access-to-my-repo-to-my-team-mate"><span class="std std-ref">¶</span></a></p>
+<p>Yes. If somebody wants to build into your project and you want give them access, just point them to your Copr project page. They should then click on the “Permission” tab, and request the permissions they want. “Builder” can only submit builds and “Admin” can approve permissions requests. You will then have to navigate to the same “Permission” tab and either approve or reject the request.</p>
+<p class="rubric" id="do-you-have-a-command-line-client">Do you have a command-line client? <a class="reference internal" href="#do-you-have-a-command-line-client"><span class="std std-ref">¶</span></a></p>
+<p>Yes. Just do <code class="docutils literal notranslate"><span class="pre">dnf</span> <span class="pre">install</span> <span class="pre">copr-cli</span></code> and learn more by <code class="docutils literal notranslate"><span class="pre">man</span> <span class="pre">copr-cli</span></code>.</p>
+<p class="rubric" id="do-you-have-an-api">Do you have an API? <a class="reference internal" href="#do-you-have-an-api"><span class="std std-ref">¶</span></a></p>
+<p>Yes. See the link in the footer of every Copr page or jump directly to the <a class="reference external" href="https://copr.fedorainfracloud.org/api/">API page</a>.</p>
+<p class="rubric" id="how-long-do-you-keep-the-builds">How long do you keep the builds? <a class="reference internal" href="#how-long-do-you-keep-the-builds"><span class="std std-ref">¶</span></a></p>
+<p>We keep one build for each package in one project indefinitely.  All other
+builds (old packages, failed builds) are deleted after 14 days.</p>
+<p>Note that we keep the build with the greatest EPOCH:NAME-VERSION-RELEASE,
+even though that build might not be the newest one.  Also, if there are
+two builds of the same package version, it is undefined which one is going
+to be kept.</p>
+<p class="rubric" id="how-is-copr-pronounced">How is Copr pronounced? <a class="reference internal" href="#how-is-copr-pronounced"><span class="std std-ref">¶</span></a></p>
+<p>In American English Copr is pronounced /ˈkɑ.pɚ/ like the metallic element spelled “copper”.</p>
+<p class="rubric" id="why-another-buildsystem">Why another buildsystem? <a class="reference internal" href="#why-another-buildsystem"><span class="std std-ref">¶</span></a></p>
+<p>We didn’t start off to create another buildsystem. We originally just wanted to make building third party rpm repositories easier, but after talking to the koji developers and the developers who are building packages for CentOS we realized that there was a need for a maintainable, pluggable, and lightweight build system.</p>
+<p class="rubric" id="did-you-consider-obs">Did you consider OBS? <a class="reference internal" href="#did-you-consider-obs"><span class="std std-ref">¶</span></a></p>
+<p>Yes, we did. See <a class="reference external" href="http://miroslav.suchy.cz/blog/archives/2013/08/29/copr_and_integration_with_koji/index.html">Copr and integration with Koji</a> and <a class="reference external" href="http://miroslav.suchy.cz/blog/archives/2013/08/30/copr_implemented_using_obs/index.html">Copr Implemented using OBS</a>. And the <a class="reference external" href="https://lists.fedoraproject.org/pipermail/devel/2013-August/188575.html">mailing list discussion</a>, as well as the <a class="reference external" href="https://lists.fedoraproject.org/pipermail/devel/2013-September/188751.html">conclusion</a>.</p>
+<p class="rubric" id="can-i-get-notifications-from-copr-builds">Can I get notifications from Copr builds? <a class="reference internal" href="#can-i-get-notifications-from-copr-builds"><span class="std std-ref">¶</span></a></p>
+<p>Yes, you can. Enable email/irc/android notifications at <a class="reference external" href="https://apps.fedoraproject.org/notifications/">Fedora notifications service</a>.</p>
+<p>See blog post <a class="reference external" href="https://pavel.raiskup.cz/blog/copr-messsaging.html">how to consume copr messages from bus</a>.</p>
+<p class="rubric" id="what-does-copr-mean">What does Copr mean? <a class="reference internal" href="#what-does-copr-mean"><span class="std std-ref">¶</span></a></p>
+<p>Community projects (formerly Cool Other Package Repositories)</p>
+<p class="rubric" id="how-can-i-tell-yum-to-prefer-copr-packages">How can I tell yum to prefer Copr packages? <a class="reference internal" href="#how-can-i-tell-yum-to-prefer-copr-packages"><span class="std std-ref">¶</span></a></p>
+<p>Building a package with the same version-release number in Copr as the package distributed in the official Fedora repos is discouraged. You should instead bump the release number. Should you build with the same version-release number, you can tell yum to prefer the Copr packages over the distribution provided packages by adding cost=900 to the .repo file.</p>
+<p class="rubric" id="can-copr-build-directly-from-git">Can Copr build directly from git? <a class="reference internal" href="#can-copr-build-directly-from-git"><span class="std std-ref">¶</span></a></p>
+<p>Yes, it can. See <a class="reference internal" href="#scm-ref"><span class="std std-ref">SCM</span></a> source type.</p>
+<p>If you want to know more about tools to generate srpm from a Git repo, see:</p>
+<ol class="arabic simple">
+<li><p><a class="reference external" href="https://github.com/dgoodwin/tito">Tito</a> (<a class="reference external" href="http://miroslav.suchy.cz/blog/archives/2013/12/29/how_to_build_in_copr/index.html">blog post</a>)</p></li>
+<li><p><a class="reference external" href="https://github.com/pypingou/dgroc">dgroc</a> (<a class="reference external" href="http://blog.pingoured.fr/index.php?post/2014/03/20/Introducing-dgroc">blog post</a>)</p></li>
+</ol>
+<p class="rubric" id="why-doesn-t-copr-download-my-updated-package">Why doesn’t Copr download my updated package? <a class="reference internal" href="#why-doesn-t-copr-download-my-updated-package"><span class="std std-ref">¶</span></a></p>
+<p>Sometimes people report that even though they have updated the src.rpm file and submitted the new build, Copr is still using the old src.rpm. This is typically caused when changes are made to the src.rpm file, but the release number was not bumped up accordingly. As a consequence the resulting files have the same URL, so your browser does not bother to fetch new log files and continues to show those files in its cache. Therefore you are still seeing old content from the previous task.</p>
+<p>You should press Ctrl+Shift+R to invalidate your cache and reload page</p>
+<p class="rubric" id="how-can-i-create-new-group">How can I create new group? <a class="reference internal" href="#how-can-i-create-new-group"><span class="std std-ref">¶</span></a></p>
+<p>Groups membership is handled by <a class="reference external" href="https://accounts.fedoraproject.org">FAS</a>. It can add/remove members to existing group. However it cannot create new group. You can create new group by <a class="reference external" href="https://pagure.io/fedora-infrastructure/new_issue">creating new fedora-infra ticket</a>.
+You have to log out and then log in again to Copr so Copr can read your new
+settings.</p>
+<p>Once copr knows the FAS groups you belong to, you still need to activate the
+group.  Go to <a class="reference external" href="https://copr.fedorainfracloud.org/groups/list/my">my groups</a>
+page and click on the <code class="docutils literal notranslate"><span class="pre">Activate</span> <span class="pre">this</span> <span class="pre">group</span></code> button.</p>
+<p class="rubric" id="i-see-some-strange-error-about-devel-repodata-in-logs">I see some strange error about /devel/repodata/ in logs. <a class="reference internal" href="#i-see-some-strange-error-about-devel-repodata-in-logs"><span class="std std-ref">¶</span></a></p>
+<p>This is intended.
+In fact in next release there will be something like “Please ignore the error above”.</p>
+<p>This is part of feature where you can check in your settings “Create repositories manually”. This is intended for big
+projects like Gnome or KDE, which consist of hundreds of packages. And you want to release them all at the same time.
+But on the other hand it take days to build them. And of course during the buildtime you need to enable that repository,
+while at the same time have it disabled/frozen for users.</p>
+<p>So if you check “Create repositories manually”, we do not run createrepo_c in normal directory, but in ./devel/ directory.
+This is directory is always passed to mock with <code class="docutils literal notranslate"><span class="pre">skip_if_unavailable=1</span></code>.
+So if Copr have it, then it is used, otherwise ignored. But if it is missing DNF/YUM print the warning above even if it
+is ignored. Currently there is no way to tell DNF/YUM to not print this warning.</p>
+<p class="rubric" id="how-can-i-affect-the-build-order-is-there-a-chain-build-support">How can I affect the build order, is there a “chain” build support? <a class="reference internal" href="#how-can-i-affect-the-build-order-is-there-a-chain-build-support"><span class="std std-ref">¶</span></a></p>
+<p>Build batches can be used to guarantee the order in which the builds are
+processed (one build batch can depend on other build batch).
+See <a class="reference external" href="https://pavel.raiskup.cz/blog/build-ordering-by-batches-in-copr.html">blog post</a>
+with examples for more info.</p>
+<p class="rubric" id="build-succeeded-but-i-don-t-see-the-built-results">Build succeeded, but I don’t see the built results? <a class="reference internal" href="#build-succeeded-but-i-don-t-see-the-built-results"><span class="std std-ref">¶</span></a></p>
+<p>Fedora Copr uses the AWS CDN to spread the HTTP traffic on the built RPM
+repositories across the globe, and it implies a lot of caching on the AWS side.</p>
+<p>When you (or anyone else in your territory) check the build directory while
+the build is still in progress, the web server directory listing gets cached in
+CDN - and then the contents of the directory appears unchanged for some time
+(even though the build might already be finished and thus the directory updated).</p>
+<p>Don’t worry, this caching doesn’t affect the DNF/YUM behavior - so even though
+your browser is misled by caches, package managers always download the latest
+contents of the directories.  Either please ignore the inconsistency, or visit
+the <a class="reference external" href="http://copr-be.cloud.fedoraproject.org/results/">non-cached host variant</a>.</p>
+<p class="rubric" id="weird-scm-build-failure">Weird SCM build failure? <a class="reference internal" href="#weird-scm-build-failure"><span class="std std-ref">¶</span></a></p>
+<p>It worked for me before, but I newly see the <code class="docutils literal notranslate"><span class="pre">rpkg</span></code> errors like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Running</span><span class="p">:</span> <span class="n">rpkg</span> <span class="n">srpm</span> <span class="o">--</span><span class="n">outdir</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">copr</span><span class="o">-</span><span class="n">rpmbuild</span><span class="o">/</span><span class="n">results</span> <span class="o">...</span>
+<span class="n">Copr</span> <span class="n">build</span> <span class="n">error</span><span class="p">:</span> <span class="n">error</span><span class="p">:</span> <span class="n">Bad</span> <span class="n">source</span><span class="p">:</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">copr</span><span class="o">-</span><span class="n">rpmbuild</span><span class="o">/</span><span class="n">results</span><span class="o">/</span><span class="n">example</span><span class="o">-</span><span class="mf">1.0.13</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span><span class="p">:</span> <span class="n">No</span> <span class="n">such</span> <span class="n">file</span> <span class="ow">or</span> <span class="n">directory</span>
+</pre></div>
+</div>
+<p>Please take a look at <a class="reference internal" href="rpkg_util_2_vs_3.html#rpkg-util-v3"><span class="std std-ref">The rpkg-util v2 vs v3 differences</span></a>.</p>
+<p class="rubric" id="what-is-difference-between-koji-vs-copr">What is difference between Koji vs. Copr? <a class="reference internal" href="#what-is-difference-between-koji-vs-copr"><span class="std std-ref">¶</span></a></p>
+<p>See separate page <a class="reference internal" href="koji_vs_copr.html#koji-vs-copr"><span class="std std-ref">Koji vs. Copr</span></a>.</p>
+<p class="rubric" id="i-have-a-problem-and-i-need-to-talk-to-a-human">I have a problem and I need to talk to a human.  <a class="reference internal" href="#i-have-a-problem-and-i-need-to-talk-to-a-human"><span class="std std-ref">¶</span></a></p>
+<p>We do not provide support per se, but try your luck here: <a class="reference internal" href="index.html#communication"><span class="std std-ref">Communication</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Copr Buildsystem" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="release_notes.html" class="btn btn-neutral float-right" title="Upstream Release Notes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr>
+
+  <div role="contentinfo">
+    <p>© Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+
+</body></html>

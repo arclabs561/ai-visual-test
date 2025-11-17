@@ -1,0 +1,294 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Ground Control" name="title">
+    <meta content="Ground Control, a BBS running Mystic." name="description">
+    <meta content="BBS, Mystic, fsxNet, MetroNet, tqwNet, BBSLink, DoorParty" name="keywords">
+    <meta content="index, follow" name="robots">
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta content="English" name="language">
+    <meta content="7 days" name="revisit-after">
+    <meta content="Matthew Blocker" name="author">
+    <title>Ground Control - Contact</title>
+    <link href="/css/pure/pure-min.css" rel="stylesheet">
+    <link href="/css/pure/grids-responsive-min.css" rel="stylesheet">
+    <link href="/css/mystyles.css" rel="stylesheet">
+    <link href="/images/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180">
+    <link href="/images/favicon-32x32.png" rel="icon" sizes="32x32" type="image/png">
+    <link href="/images/favicon-16x16.png" rel="icon" sizes="16x16" type="image/png">
+    <link href="/images/site.webmanifest" rel="manifest">
+</head>
+<body onload="show_clock()">
+<style>
+    body {
+       font-family: "Roboto", Arial, Helvetica, sans-serif;
+       background: rgb(84,84,252);
+       background: linear-gradient(90deg, rgba(84,84,252,1) 0%, rgba(252,84,84,1) 100%) fixed; 
+        }
+.custom-wrapper {
+    background-color: #E0E0E0;
+    margin-bottom: 1em;
+    -webkit-font-smoothing: antialiased;
+    height: 2.1em;
+    overflow: hidden;
+    -webkit-transition: height 0.5s;
+    -moz-transition: height 0.5s;
+    -ms-transition: height 0.5s;
+    transition: height 0.5s;
+}
+
+.custom-wrapper.open {
+    height: 14em;
+}
+
+.custom-menu-3 {
+    text-align: right;
+}
+
+.custom-toggle {
+    width: 34px;
+    height: 34px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: none;
+}
+
+.custom-toggle .bar {
+    background-color: #777;
+    display: block;
+    width: 20px;
+    height: 2px;
+    border-radius: 100px;
+    position: absolute;
+    top: 18px;
+    right: 7px;
+    -webkit-transition: all 0.5s;
+    -moz-transition: all 0.5s;
+    -ms-transition: all 0.5s;
+    transition: all 0.5s;
+}
+
+.custom-toggle .bar:first-child {
+    -webkit-transform: translateY(-6px);
+    -moz-transform: translateY(-6px);
+    -ms-transform: translateY(-6px);
+    transform: translateY(-6px);
+}
+
+.custom-toggle.x .bar {
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+.custom-toggle.x .bar:first-child {
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+}
+
+@media (max-width: 47.999em) {
+
+    .custom-menu-3 {
+        text-align: left;
+    }
+
+    .custom-toggle {
+        display: block;
+    }
+
+}
+</style>
+<div class="custom-wrapper pure-g" id="menu">
+    <div class="pure-u-1 pure-u-md-1-3">
+        <div class="pure-menu">
+            <a href="#" class="pure-menu-heading custom-brand">Ground Control</a>
+            <a href="#" class="custom-toggle" id="toggle"><s class="bar"></s><s class="bar"></s></a>
+        </div>
+    </div>
+    <div class="pure-u-1 pure-u-md-1-3">
+        <div class="pure-menu pure-menu-horizontal custom-can-transform">
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item"><a href="index.php" class="pure-menu-link">Home</a></li>
+                <li class="pure-menu-item"><a href="bbslink.php" class="pure-menu-link">BBSLink Scores</a></li>
+                <li class="pure-menu-item"><a href="access.php" class="pure-menu-link">How to Access</a></li>
+                <li class="pure-menu-item pure-menu-selected"><a href="#" class="pure-menu-link">Contact</a></li>
+                <li class="pure-menu-item pure-menu-disabled"><a href="#" class="pure-menu-link">More Coming Soon</a></li>
+            </ul>
+        </div>
+    </div>
+     <div class="pure-u-1 pure-u-md-1-3">
+        <div class="pure-menu pure-menu-horizontal custom-menu-3 custom-can-transform">
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item pure-menu-disabled"><a href="#" class="pure-menu-link"></a></li>
+                <li class="pupure-menu-item pure-menu-disabled"><a href="#" class="pure-menu-link"></a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<script>
+(function (window, document) {
+var menu = document.getElementById('menu'),
+    rollback,
+    WINDOW_CHANGE_EVENT = ('onorientationchange' in window) ? 'orientationchange':'resize';
+
+function toggleHorizontal() {
+    menu.classList.remove('closing');
+    [].forEach.call(
+        document.getElementById('menu').querySelectorAll('.custom-can-transform'),
+        function(el){
+            el.classList.toggle('pure-menu-horizontal');
+        }
+    );
+};
+
+function toggleMenu() {
+    // set timeout so that the panel has a chance to roll up
+    // before the menu switches states
+    if (menu.classList.contains('open')) {
+        menu.classList.add('closing');
+        rollBack = setTimeout(toggleHorizontal, 500);
+    }
+    else {
+        if (menu.classList.contains('closing')) {
+            clearTimeout(rollBack);
+        } else {
+            toggleHorizontal();
+        }
+    }
+    menu.classList.toggle('open');
+    document.getElementById('toggle').classList.toggle('x');
+};
+
+function closeMenu() {
+    if (menu.classList.contains('open')) {
+        toggleMenu();
+    }
+}
+
+document.getElementById('toggle').addEventListener('click', function (e) {
+    toggleMenu();
+    e.preventDefault();
+});
+
+window.addEventListener(WINDOW_CHANGE_EVENT, closeMenu);
+})(this, this.document);
+
+</script>
+<style>
+ .main {
+     color: white;
+ }
+.main a:link {
+     color: deepskyblue;
+ }
+.main a:visited {
+     color: darkturquoise;
+ }
+.main a:hover {
+     color: cornflowerblue;
+ }
+.main a:active {
+     color: blue;
+ }
+</style>
+ <div class="main">
+    <h1>
+      Contact Me
+    </h1>
+    <form id="contact_form" action="https://formspree.io/giantfromjax@gmail.com" method="post" name="contact_form">
+      <div class="row">
+        <label for="name">Your name:</label><br>
+        <input id="name" class="input" name="name" type="text" value="" size="30"><br>
+      </div>
+      <div class="row">
+        <label for="email">Your email:</label><br>
+        <input id="email" class="input" name="email" type="text" value="" size="30"><br>
+      </div>
+      <div class="row">
+        <label for="message">Your message:</label><br>
+        <textarea id="message" class="input" name="message" rows="7" cols="30"></textarea><br>
+      </div><input id="submit_button" type="submit" value="Send email">
+    </form>
+   <br>
+  <style type="text/css">
+    .mobileShow { display: none;}
+    /* Smartphone Portrait and Landscape */
+    @media only screen
+    and (min-device-width : 320px)
+    and (max-device-width : 480px){ .mobileShow { display: inline;}}
+  </style>
+ <style type="text/css">
+    .mobileHide { display: inline;}
+    /* Smartphone Portrait and Landscape */
+    @media only screen
+    and (min-device-width : 320px)
+     and (max-device-width : 480px){  .mobileHide { display: none;}}
+ </style>
+<script language="javascript" src="includes/liveclock.js">
+
+/*
+Live Clock Script-
+By Mark Plachetta (astro@bigpond.net.au(c)) based on code from DynamicDrive.com
+For full source code, 100's more DHTML scripts, and Terms Of Use,
+visit http://www.dynamicdrive.com
+*/
+
+</script>
+<div class="footer">
+	<a href="http://phone.giant.rocks/prohibitive.php"><!-- haughty --></a>
+	<a href="http://phone.giant.rocks/prohibitive.php"><img src="haughty.gif" height="1" width="1" border="0"></a>
+	<a href="http://phone.giant.rocks/prohibitive.php" style="display: none;">haughty</a>
+	<div style="display: none;"><a href="http://phone.giant.rocks/prohibitive.php">haughty</a></div>
+	<a href="http://phone.giant.rocks/prohibitive.php"></a>
+	<!-- <a href="http://phone.giant.rocks/prohibitive.php">haughty</a> -->
+	<div style="position: absolute; top: -250px; left: -250px;"><a href="http://phone.giant.rocks/prohibitive.php">haughty</a></div>
+	<a href="http://phone.giant.rocks/prohibitive.php"><span style="display: none;">haughty</span></a>
+	<a href="http://phone.giant.rocks/prohibitive.php"><div style="height: 0px; width: 0px;"></div></a>
+<br>
+<div class="mobileHide">
+         <table style="margin-left:auto;margin-right:auto;">
+                 <tbody><tr>
+                          <td colspan="2">
+                        </td>
+                 </tr>
+                         <tr>
+                         <th>
+<a href="https://www.digitalocean.com/?refcode=356d62aee748&amp;utm_campaign=Referral_Invite&amp;utm_medium=Referral_Program&amp;utm_source=badge"><img src="https://web-platforms.sfo2.cdn.digitaloceanspaces.com/WWW/Badge%201.svg" alt="DigitalOcean Referral Badge"></a>
+                        </th>
+                         <th>
+                        <a href="https://www.abuseipdb.com/user/67523" title="AbuseIPDB is an IP address blacklist for webmasters and sysadmins to report IP addresses engaging in abusive behavior on their networks">
+	<img src="https://www.abuseipdb.com/contributor/67523.svg" alt="AbuseIPDB Contributor Badge" style="width: 391px;background: #35c246 linear-gradient(rgba(255,255,255,0), rgba(255,255,255,.3) 50%, rgba(0,0,0,.2) 51%, rgba(0,0,0,0));padding: 5px;">
+</a>
+                         </th>
+                 </tr>
+                 <tr>
+                         <td colspan="2"></td>
+                </tr>
+        </tbody></table>
+ </div>
+<div class="mobileShow">
+                 <table style="margin-left:auto;margin-right:auto;">
+                 <tbody><tr>
+                 <td>
+                <a href="https://www.digitalocean.com/?refcode=356d62aee748&amp;utm_campaign=Referral_Invite&amp;utm_medium=Referral_Program&amp;utm_source=badge"><img src="https://web-platforms.sfo2.cdn.digitaloceanspaces.com/WWW/Badge%201.svg" alt="DigitalOcean Referral Badge"></a>
+                 </td>
+                 </tr>
+                 <tr>
+                         <td>
+                     <a href="https://www.abuseipdb.com/user/67523" title="AbuseIPDB is an IP address blacklist for webmasters and sysadmins to report IP addresses engaging in abusive behavior on their networks">
+	<img src="https://www.abuseipdb.com/contributor/67523.svg" alt="AbuseIPDB Contributor Badge" style="width: 391px;background: #35c246 linear-gradient(rgba(255,255,255,0), rgba(255,255,255,.3) 50%, rgba(0,0,0,.2) 51%, rgba(0,0,0,0));padding: 5px;">
+</a>            
+
+                        </td>
+        </tr></tbody></table>
+ </div>
+           
+ 
+</div>
+
+
+
+</div></body></html>

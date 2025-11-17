@@ -1,0 +1,828 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang=""><head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Fediring.net</title>
+  <style>
+    html {
+      line-height: 1.5;
+      font-family: sans-serif;
+      font-size: 20px;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 1em;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: blue;
+    }
+    a:visited {
+      color: blue;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+      font-size: 85%;
+      margin: 0;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; }  
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; }  
+    code span.at { color: #7d9029; }  
+    code span.bn { color: #40a070; }  
+    code span.bu { }  
+    code span.cf { color: #007020; font-weight: bold; }  
+    code span.ch { color: #4070a0; }  
+    code span.cn { color: #880000; }  
+    code span.co { color: #60a0b0; font-style: italic; }  
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; }  
+    code span.do { color: #ba2121; font-style: italic; }  
+    code span.dt { color: #902000; }  
+    code span.dv { color: #40a070; }  
+    code span.er { color: #ff0000; font-weight: bold; }  
+    code span.ex { }  
+    code span.fl { color: #40a070; }  
+    code span.fu { color: #06287e; }  
+    code span.im { }  
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; }  
+    code span.kw { color: #007020; font-weight: bold; }  
+    code span.op { color: #666666; }  
+    code span.ot { color: #007020; }  
+    code span.pp { color: #bc7a00; }  
+    code span.sc { color: #4070a0; }  
+    code span.ss { color: #bb6688; }  
+    code span.st { color: #4070a0; }  
+    code span.va { color: #19177c; }  
+    code span.vs { color: #4070a0; }  
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; }  
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Fediring.net</h1>
+<p class="subtitle">Webring for fedizens</p>
+</header>
+
+<p>Welcome o/</p>
+<p>This <a href="https://en.wikipedia.org/wiki/Webring">webring</a> is
+for the personal sites of any member of the <a href="https://en.wikipedia.org/wiki/Fediverse">fediverse</a> (also known
+as fedizens). Head towards the bottom of the page to see a <a href="#table-of-members">table of members</a> or continue on to read the
+rules and how to join :)</p>
+<form action="https://search.fediring.net/" method="get">
+<input aria-label="Search the fediring" name="q" type="text" placeholder="🔎 Search the fediring" style="font-family: inherit; font-size: inherit; text-align: center; height: 35px; box-sizing: border-box; box-shadow: 0 1px 1px rgba(12,13,14,0.15),inset 0 1px 0 0 #fff; width: 100%; border: 1px solid #9fa6ad; border-radius: 3px;">
+</form>
+<h2 id="membership-rules">Membership Rules</h2>
+<p>We accept pretty much any site as long as the owner has an account on
+fedi. However, we do draw the line at…</p>
+<ul>
+<li>Hate speech</li>
+<li>Racism, sexism, any kind of bigotry</li>
+<li>Advertisement-focused sites</li>
+</ul>
+<p>As it is impossible to list <em>everything</em> that would not be
+acceptable, we do reserve the right to deny requests. If you want to
+know whether your site is suitable for inclusion, send an email to the
+ticket tracker (address below) and we’ll take a look at it!</p>
+<p>One of our requirements for joining is that you <em>must</em> have an
+HTTPS (TLS encryption is required) site on a clearnet domain. Paths are
+acceptable, e.g. <code>sometilde.service/~username</code>, but
+<em>this</em> webring is dedicated to clearnet, HTTPS sites. See our
+other *rings below for more platforms/protocols, such as Gemini.</p>
+<h2 id="joining">Joining</h2>
+<p>First, add the fediring links to your site’s homepage, replacing
+<code>YOURDOMAIN</code> with your site’s domain.</p>
+<table>
+<colgroup>
+<col style="width: 15%">
+<col style="width: 84%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Destination</th>
+<th>Link</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Previous member</td>
+<td><a href="https://fediring.net/previous?host=YOURDOMAIN">https://fediring.net/previous?host=YOURDOMAIN</a></td>
+</tr>
+<tr class="even">
+<td>Next member</td>
+<td><a href="https://fediring.net/next?host=YOURDOMAIN">https://fediring.net/next?host=YOURDOMAIN</a></td>
+</tr>
+<tr class="odd">
+<td>Home page</td>
+<td><a href="https://fediring.net">https://fediring.net</a></td>
+</tr>
+</tbody>
+</table>
+<p>If you would like, you can also link to <a href="https://fediring.net/random">fediring.net/random</a>; it directs
+visitors to a random site in the ring. This one is optional though.</p>
+<p>Here’s some example HTML for linking to the next and previous ring
+members.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;p&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;a</span> <span class="er">href</span><span class="ot">=</span><span class="st">"https://fediring.net/previous?host=example.com"</span><span class="kw">&gt;</span>←<span class="kw">&lt;/a&gt;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;a</span> <span class="er">href</span><span class="ot">=</span><span class="st">"https://fediring.net/"</span><span class="kw">&gt;</span>Fediring<span class="kw">&lt;/a&gt;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;a</span> <span class="er">href</span><span class="ot">=</span><span class="st">"https://fediring.net/next?host=example.com"</span><span class="kw">&gt;</span>→<span class="kw">&lt;/a&gt;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;/p&gt;</span></span></code></pre></div>
+<p>It will look like this:</p>
+<p>
+<a href="https://fediring.net/previous?host=example.com">←</a>
+<a href="https://fediring.net/">Fediring</a>
+<a href="https://fediring.net/next?host=example.com">→</a>
+</p>
+<p>If your site is on a <em>path</em> rather than the root domain,
+you’ll need to URL-encode any special characters. For example, if Sam’s
+site is <code>sometilde.com/~sam</code>, she will need the following
+links on her page.</p>
+<ul>
+<li><code>https://fediring.net/next?host=sometilde.com%2F~sam</code></li>
+<li><code>https://fediring.net/previous?host=sometilde.com%2F~sam</code></li>
+</ul>
+<p>After that, simply send an email to <a href="mailto:~amolith/fediring@todo.sr.ht">~amolith/fediring@todo.sr.ht</a>
+(yes, that’s an email address) containing the following:</p>
+<ul>
+<li>A link to your website</li>
+<li>A link to your Fediverse account</li>
+<li>The location on your site where you’ve added the fediring links</li>
+</ul>
+<p>This will create a new ticket in <a href="https://todo.sr.ht/~amolith/fediring">our public issue tracker</a>
+and notify maintainers so they can review it and get it added!</p>
+<p>Please note that sites listed on the fediring <em>without</em> the
+links above are subject to removal. Removing these links from your site
+breaks the ring and ruins the experience for everyone; if ring
+administrators traverse the ring and notice that the links have been
+removed, they’ll remove your site from the ring and send you an email
+about it.</p>
+<h2 id="additional-rings">Additional *rings</h2>
+<p>We also operate a <a href="https://geminiquickst.art/">Gemini</a>
+ring that’s accessible over this same domain: <a href="gemini://fediring.net">fediring.net</a>.</p>
+<p>If there’s interest, we might set up an Onionring for sites
+accessible over Tor, but we are unlikely to consider operating *rings
+for alternative protocols such as I2P, Freenet, Dat, Hypercore, etc.</p>
+<h2 id="table-of-members">Table of members</h2>
+<table>
+<tbody><tr>
+<th>
+Fedi handle
+</th>
+<th>
+Site
+</th>
+</tr>
+  <tr>
+    <td>@Craftplacer@pl.craftplacer.moe</td>
+    <td><a href="https://craftplacer.moe">craftplacer.moe</a></td>
+  </tr>
+  <tr>
+    <td>@amolith@nixnet.social</td>
+    <td><a href="https://secluded.site">secluded.site</a></td>
+  </tr>
+  <tr>
+    <td>@rand@port.mk</td>
+    <td><a href="https://random.chars.jp">random.chars.jp</a></td>
+  </tr>
+  <tr>
+    <td>@sfr@ralsei.moe</td>
+    <td><a href="https://cronut.cafe/~sfr">cronut.cafe/~sfr</a></td>
+  </tr>
+  <tr>
+    <td>@eric@federation.krowverse.services</td>
+    <td><a href="https://www.krowverse.services">www.krowverse.services</a></td>
+  </tr>
+  <tr>
+    <td>@jbauer@bsd.network</td>
+    <td><a href="https://www.paritybit.ca">www.paritybit.ca</a></td>
+  </tr>
+  <tr>
+    <td>@cnx@nixnet.social</td>
+    <td><a href="https://cnx.srht.site">cnx.srht.site</a></td>
+  </tr>
+  <tr>
+    <td>@spelk@linuxrocks.online</td>
+    <td><a href="https://spelk.online">spelk.online</a></td>
+  </tr>
+  <tr>
+    <td>@trechnex@mstdn.social</td>
+    <td><a href="https://trechnex.com">trechnex.com</a></td>
+  </tr>
+  <tr>
+    <td>@chjara@mk.absturztau.be</td>
+    <td><a href="https://tuxcrafting.online">tuxcrafting.online</a></td>
+  </tr>
+  <tr>
+    <td>@jlj@social.nfld.uk</td>
+    <td><a href="https://nfld.uk">nfld.uk</a></td>
+  </tr>
+  <tr>
+    <td>@volpeon@mk.vulpes.one</td>
+    <td><a href="https://volpeon.ink">volpeon.ink</a></td>
+  </tr>
+  <tr>
+    <td>@izaya@social.shadowkat.net</td>
+    <td><a href="https://shadowkat.net">shadowkat.net</a></td>
+  </tr>
+  <tr>
+    <td>@meduelelateta@mk.nixnet.social</td>
+    <td><a href="https://yari.fai.st">yari.fai.st</a></td>
+  </tr>
+  <tr>
+    <td>@puniko@mk.absturztau.be</td>
+    <td><a href="https://absturztau.be">absturztau.be</a></td>
+  </tr>
+  <tr>
+    <td>@dendy@fedi.fai.st</td>
+    <td><a href="https://dendy.cat">dendy.cat</a></td>
+  </tr>
+  <tr>
+    <td>@blog@blog.gijsgobje.nl</td>
+    <td><a href="https://blog.gijsgobje.nl">blog.gijsgobje.nl</a></td>
+  </tr>
+  <tr>
+    <td>@cosminh@mastodon.social</td>
+    <td><a href="https://cosmin.hume.ro">cosmin.hume.ro</a></td>
+  </tr>
+  <tr>
+    <td>@bbbhltz@fosstodon.org</td>
+    <td><a href="https://bbbhltz.codeberg.page">bbbhltz.codeberg.page</a></td>
+  </tr>
+  <tr>
+    <td>@awesomesheep48@fosstodon.org</td>
+    <td><a href="https://awesomesheep48.me">awesomesheep48.me</a></td>
+  </tr>
+  <tr>
+    <td>@Linux_in_a_Bit@linuxrocks.online</td>
+    <td><a href="https://sites.google.com/view/linuxinabit/">sites.google.com/view/linuxinabit/</a></td>
+  </tr>
+  <tr>
+    <td>@flavigula@sonomu.club</td>
+    <td><a href="https://flavigula.net">flavigula.net</a></td>
+  </tr>
+  <tr>
+    <td>@joel@fosstodon.org</td>
+    <td><a href="https://joelchrono12.xyz">joelchrono12.xyz</a></td>
+  </tr>
+  <tr>
+    <td>@kubikpixel@chaos.social</td>
+    <td><a href="https://thunix.net/~kubikpixel">thunix.net/~kubikpixel</a></td>
+  </tr>
+  <tr>
+    <td>@bob@epicyon.libreserver.org</td>
+    <td><a href="https://libreserver.org">libreserver.org</a></td>
+  </tr>
+  <tr>
+    <td>@jan_wagemakers@social.linux.pizza</td>
+    <td><a href="https://www.janwagemakers.be">www.janwagemakers.be</a></td>
+  </tr>
+  <tr>
+    <td>@dsyates@fosstodon.org</td>
+    <td><a href="https://lottalinuxlinks.com">lottalinuxlinks.com</a></td>
+  </tr>
+  <tr>
+    <td>@dusk@awoo.fai.st</td>
+    <td><a href="https://dusk.fai.st">dusk.fai.st</a></td>
+  </tr>
+  <tr>
+    <td>@babelcarp@social.tchncs.de</td>
+    <td><a href="https://babelcarp.org">babelcarp.org</a></td>
+  </tr>
+  <tr>
+    <td>@prijks@mastodon.technology</td>
+    <td><a href="https://www.esgeroth.org">www.esgeroth.org</a></td>
+  </tr>
+  <tr>
+    <td>@vyivel@outerheaven.club</td>
+    <td><a href="https://eclair.cafe">eclair.cafe</a></td>
+  </tr>
+  <tr>
+    <td>@tdarb@fosstodon.org</td>
+    <td><a href="https://tdarb.org">tdarb.org</a></td>
+  </tr>
+  <tr>
+    <td>@Wivik@fosstodon.org</td>
+    <td><a href="https://blog.zedas.fr">blog.zedas.fr</a></td>
+  </tr>
+  <tr>
+    <td>@klaatu@mastodon.xyz</td>
+    <td><a href="https://gnuworldorder.info">gnuworldorder.info</a></td>
+  </tr>
+  <tr>
+    <td>@pepecyb8806@hub.pericles.hu</td>
+    <td><a href="https://pepecyb.hu">pepecyb.hu</a></td>
+  </tr>
+  <tr>
+    <td>@mit_der_bolt_durch_bayern@mastodon.bayern</td>
+    <td><a href="https://mit.der.bolt.durch.bayern">mit.der.bolt.durch.bayern</a></td>
+  </tr>
+  <tr>
+    <td>@rick@mk.n0id.space</td>
+    <td><a href="https://n0id.space">n0id.space</a></td>
+  </tr>
+  <tr>
+    <td>@andrewkdinh@fosstodon.org</td>
+    <td><a href="https://andrewkdinh.com">andrewkdinh.com</a></td>
+  </tr>
+  <tr>
+    <td>@vulonkaaz@v2.flyingcube.tech</td>
+    <td><a href="https://vulonkaaz.flyingcube.tech">vulonkaaz.flyingcube.tech</a></td>
+  </tr>
+  <tr>
+    <td>@fristi@mk.toast.cafe</td>
+    <td><a href="https://comfitu.re">comfitu.re</a></td>
+  </tr>
+  <tr>
+    <td>@zachary@mastodon.online</td>
+    <td><a href="https://zacharyzollman.com">zacharyzollman.com</a></td>
+  </tr>
+  <tr>
+    <td>@aoi@miruku.cafe</td>
+    <td><a href="https://geshii.moe">geshii.moe</a></td>
+  </tr>
+  <tr>
+    <td>@maya@occult.institute</td>
+    <td><a href="https://maya.land">maya.land</a></td>
+  </tr>
+  <tr>
+    <td>@edel@fosstodon.org</td>
+    <td><a href="https://erzadel.net">erzadel.net</a></td>
+  </tr>
+  <tr>
+    <td>@sanelkukic@im-in.space</td>
+    <td><a href="https://www.sanelk.dev">www.sanelk.dev</a></td>
+  </tr>
+  <tr>
+    <td>@supergrizzlybear@fosstodon.org</td>
+    <td><a href="https://grizzlybear.site">grizzlybear.site</a></td>
+  </tr>
+  <tr>
+    <td>@theo@soc.webair.xyz</td>
+    <td><a href="https://webair.xyz">webair.xyz</a></td>
+  </tr>
+  <tr>
+    <td>@shibao@misskey.bubbletea.dev</td>
+    <td><a href="https://bubbletea.dev">bubbletea.dev</a></td>
+  </tr>
+  <tr>
+    <td>@cidney@social.city-of-glass.net</td>
+    <td><a href="https://cidney.org">cidney.org</a></td>
+  </tr>
+  <tr>
+    <td>@werwolf@fosstodon.org</td>
+    <td><a href="https://blackgnu.net">blackgnu.net</a></td>
+  </tr>
+  <tr>
+    <td>@lemon@udongein.xyz</td>
+    <td><a href="https://tilde.team/~lemon">tilde.team/~lemon</a></td>
+  </tr>
+  <tr>
+    <td>@yarmo@fosstodon.org</td>
+    <td><a href="https://yarmo.eu">yarmo.eu</a></td>
+  </tr>
+  <tr>
+    <td>@faehnrich@bsd.network</td>
+    <td><a href="https://faehnri.ch">faehnri.ch</a></td>
+  </tr>
+  <tr>
+    <td>@Amber@toot.site</td>
+    <td><a href="https://cyborgtrees.com">cyborgtrees.com</a></td>
+  </tr>
+  <tr>
+    <td>@Seirdy@pleroma.envs.net</td>
+    <td><a href="https://seirdy.one">seirdy.one</a></td>
+  </tr>
+  <tr>
+    <td>@zweiblatt@tilde.zone</td>
+    <td><a href="https://janw.name">janw.name</a></td>
+  </tr>
+  <tr>
+    <td>@hamblingreen@fosstodon.org</td>
+    <td><a href="https://hamblingreen.gitlab.io">hamblingreen.gitlab.io</a></td>
+  </tr>
+  <tr>
+    <td>@neXtTech@nerdculture.de</td>
+    <td><a href="https://xwave.neocities.org">xwave.neocities.org</a></td>
+  </tr>
+  <tr>
+    <td>@baschdel@fedi.absturztau.be</td>
+    <td><a href="https://slatecave.net">slatecave.net</a></td>
+  </tr>
+  <tr>
+    <td>@kura@z0ne.social</td>
+    <td><a href="https://kurabloodlust.eu">kurabloodlust.eu</a></td>
+  </tr>
+  <tr>
+    <td>@remi@snug.moe</td>
+    <td><a href="https://remiiiiii.online">remiiiiii.online</a></td>
+  </tr>
+  <tr>
+    <td>@twinkle@mk.absturztau.be</td>
+    <td><a href="https://mg138.github.io">mg138.github.io</a></td>
+  </tr>
+  <tr>
+    <td>@mkf@functional.cafe</td>
+    <td><a href="https://a.mikf.pl">a.mikf.pl</a></td>
+  </tr>
+  <tr>
+    <td>@cri@mastodon.uy</td>
+    <td><a href="https://cri.cl">cri.cl</a></td>
+  </tr>
+  <tr>
+    <td>@pixouls@post.lurk.org</td>
+    <td><a href="https://pixouls.xyz">pixouls.xyz</a></td>
+  </tr>
+  <tr>
+    <td>@wandering_girl@tech.lgbt</td>
+    <td><a href="https://wandering-girl.neocities.org">wandering-girl.neocities.org</a></td>
+  </tr>
+  <tr>
+    <td>@cb@planet.chrisbeckstrom.com</td>
+    <td><a href="https://chrisbeckstrom.com">chrisbeckstrom.com</a></td>
+  </tr>
+  <tr>
+    <td>@kayden@fedi.nullob.si</td>
+    <td><a href="https://nullob.si">nullob.si</a></td>
+  </tr>
+  <tr>
+    <td>@Anselm@social.dev-wiki.de</td>
+    <td><a href="https://blog.tfiu.de">blog.tfiu.de</a></td>
+  </tr>
+  <tr>
+    <td>@crashserver@mamot.fr</td>
+    <td><a href="https://crashserver.fr">crashserver.fr</a></td>
+  </tr>
+  <tr>
+    <td>@forever@fedi.nullob.si</td>
+    <td><a href="https://me.amongtech.cc/fedi">me.amongtech.cc/fedi</a></td>
+  </tr>
+  <tr>
+    <td>@itzzenxx@pleroma.itzzen.net</td>
+    <td><a href="https://www.itzzen.net">www.itzzen.net</a></td>
+  </tr>
+  <tr>
+    <td>@xeras@stop.voring.me</td>
+    <td><a href="https://xeras.amongtech.cc">xeras.amongtech.cc</a></td>
+  </tr>
+  <tr>
+    <td>@jenett@mastodon.online</td>
+    <td><a href="https://simply.jenett.org">simply.jenett.org</a></td>
+  </tr>
+  <tr>
+    <td>@foxhkron@cybre.club</td>
+    <td><a href="https://sigsegv.cc">sigsegv.cc</a></td>
+  </tr>
+  <tr>
+    <td>@m2m@indieweb.social</td>
+    <td><a href="https://minutestomidnight.co.uk">minutestomidnight.co.uk</a></td>
+  </tr>
+  <tr>
+    <td>@koyuchan@koyu.space</td>
+    <td><a href="https://web.koyu.space">web.koyu.space</a></td>
+  </tr>
+  <tr>
+    <td>@vegardskjefstad@mastodon.social</td>
+    <td><a href="https://vegard.net">vegard.net</a></td>
+  </tr>
+  <tr>
+    <td>@getimiskon@udongein.xyz</td>
+    <td><a href="https://getimiskon.xyz">getimiskon.xyz</a></td>
+  </tr>
+  <tr>
+    <td>@eslerm@mastodon.social</td>
+    <td><a href="https://markesler.com">markesler.com</a></td>
+  </tr>
+  <tr>
+    <td>@roytang@mastodon.technology</td>
+    <td><a href="https://roytang.net">roytang.net</a></td>
+  </tr>
+  <tr>
+    <td>@fakefred@mastodon.technology</td>
+    <td><a href="https://fkfd.me">fkfd.me</a></td>
+  </tr>
+  <tr>
+    <td>@leo_of_the_tisane@disqordia.space</td>
+    <td><a href="https://entangled-lydian-pleonasm.neocities.org">entangled-lydian-pleonasm.neocities.org</a></td>
+  </tr>
+  <tr>
+    <td>@af@mas.to</td>
+    <td><a href="https://afhub.dev">afhub.dev</a></td>
+  </tr>
+  <tr>
+    <td>@ru@fosstodon.org</td>
+    <td><a href="https://rusingh.com">rusingh.com</a></td>
+  </tr>
+  <tr>
+    <td>@polarhive@mastodon.social</td>
+    <td><a href="https://polarhive.ml">polarhive.ml</a></td>
+  </tr>
+  <tr>
+    <td>@obspogon@social.yesterweb.org</td>
+    <td><a href="https://obspogon.neocities.org">obspogon.neocities.org</a></td>
+  </tr>
+  <tr>
+    <td>@oklomsy@social.linux.pizza</td>
+    <td><a href="https://oklomsy.com">oklomsy.com</a></td>
+  </tr>
+  <tr>
+    <td>@vib@snug.moe</td>
+    <td><a href="https://vibb.ro">vibb.ro</a></td>
+  </tr>
+  <tr>
+    <td>@drwho@hackers.town</td>
+    <td><a href="https://drwho.virtadpt.net">drwho.virtadpt.net</a></td>
+  </tr>
+  <tr>
+    <td>@Gray@indieweb.social</td>
+    <td><a href="https://graystea.neocities.org">graystea.neocities.org</a></td>
+  </tr>
+  <tr>
+    <td>@ninja@pl.nudie.social</td>
+    <td><a href="https://nudeninja.blog">nudeninja.blog</a></td>
+  </tr>
+  <tr>
+    <td>@kev@fosstodon.org</td>
+    <td><a href="https://kevq.uk">kevq.uk</a></td>
+  </tr>
+  <tr>
+    <td>@swatantra@fosstodon.org</td>
+    <td><a href="https://rohitfarmer.github.io">rohitfarmer.github.io</a></td>
+  </tr>
+  <tr>
+    <td>@fury@koyu.space</td>
+    <td><a href="https://fury.hk">fury.hk</a></td>
+  </tr>
+  <tr>
+    <td>@dusnm@fosstodon.org</td>
+    <td><a href="https://dusanmitrovic.xyz">dusanmitrovic.xyz</a></td>
+  </tr>
+  <tr>
+    <td>@revi@planet.moe</td>
+    <td><a href="https://revi.wiki">revi.wiki</a></td>
+  </tr>
+  <tr>
+    <td>@stardust@fosstodon.org</td>
+    <td><a href="https://www.cynicusrex.com">www.cynicusrex.com</a></td>
+  </tr>
+  <tr>
+    <td>@ashshuota@fosstodon.org</td>
+    <td><a href="https://asleepbynine.dev">asleepbynine.dev</a></td>
+  </tr>
+  <tr>
+    <td>@JamesMcK@fosstodon.org</td>
+    <td><a href="https://mck.is">mck.is</a></td>
+  </tr>
+  <tr>
+    <td>@hamefang@weirder.earth</td>
+    <td><a href="https://hamefang.neocities.org">hamefang.neocities.org</a></td>
+  </tr>
+  <tr>
+    <td>@hifumi@snug.moe</td>
+    <td><a href="https://lhfm.neocities.org">lhfm.neocities.org</a></td>
+  </tr>
+  <tr>
+    <td>@folliehiyuki@fosstodon.org</td>
+    <td><a href="https://www.folliehiyuki.com">www.folliehiyuki.com</a></td>
+  </tr>
+  <tr>
+    <td>@darthkilroy@social.sturtz.cf</td>
+    <td><a href="https://darthkilroy.cf">darthkilroy.cf</a></td>
+  </tr>
+  <tr>
+    <td>@pixelroiber@mastodon.social</td>
+    <td><a href="https://pixelroiber.de/blog">pixelroiber.de/blog</a></td>
+  </tr>
+  <tr>
+    <td>@kepic@mk.nixnet.social</td>
+    <td><a href="https://kepic.win">kepic.win</a></td>
+  </tr>
+  <tr>
+    <td>@mardijker@sun.minuscule.space</td>
+    <td><a href="https://minuscule.space">minuscule.space</a></td>
+  </tr>
+  <tr>
+    <td>@TheAndSys@koyu.space</td>
+    <td><a href="https://ampersandia.net">ampersandia.net</a></td>
+  </tr>
+  <tr>
+    <td>@austin@ieji.de</td>
+    <td><a href="https://austinhuang.me">austinhuang.me</a></td>
+  </tr>
+  <tr>
+    <td>@melyanna@tilde.zone</td>
+    <td><a href="https://tilde.club/~melyanna">tilde.club/~melyanna</a></td>
+  </tr>
+  <tr>
+    <td>@alexandra@mk.nixnet.social</td>
+    <td><a href="https://www.alm.website">www.alm.website</a></td>
+  </tr>
+  <tr>
+    <td>@keith@anarchism.space</td>
+    <td><a href="https://keithhacks.cyou">keithhacks.cyou</a></td>
+  </tr>
+  <tr>
+    <td>@slips@fedi.slipfox.xyz</td>
+    <td><a href="https://whois.slipfox.xyz">whois.slipfox.xyz</a></td>
+  </tr>
+  <tr>
+    <td>@pfefferle@notiz.blog</td>
+    <td><a href="https://notiz.blog">notiz.blog</a></td>
+  </tr>
+  <tr>
+    <td>@Tika@stop.voring.me</td>
+    <td><a href="https://pro.togen.xyz">pro.togen.xyz</a></td>
+  </tr>
+  <tr>
+    <td>@dorian@troet.social</td>
+    <td><a href="https://dorian.im">dorian.im</a></td>
+  </tr>
+  <tr>
+    <td>@emanuel@fosstodon.org</td>
+    <td><a href="https://emanuelpina.pt">emanuelpina.pt</a></td>
+  </tr>
+  <tr>
+    <td>@cyberpsych0siis@mastodon.lol</td>
+    <td><a href="https://cyberpsych0si.is">cyberpsych0si.is</a></td>
+  </tr>
+  <tr>
+    <td>@imposter@stop.voring.me</td>
+    <td><a href="https://onomadek.neocities.org">onomadek.neocities.org</a></td>
+  </tr>
+
+</tbody></table>
+<h2 id="contributing">Contributing</h2>
+<ul>
+<li>Source for the website: <a href="https://git.sr.ht/~amolith/fediring.net">~amolith/fediring.net</a></li>
+<li>Source for the backend: <a href="https://sr.ht/~amolith/go-webring">~amolith/go-webring</a></li>
+<li>Source for search.fediring.net: <a href="https://github.com/cblgh/lieu">cblgh/lieu</a></li>
+</ul>
+<h2 id="changelog">Changelog</h2>
+<h3 id="section">2022-05-16</h3>
+<ul>
+<li>Clarified that fediring links must be on the site’s homepage</li>
+<li>Mentioned the <code>/random</code> feature for directing visitors to
+random sites in the ring</li>
+<li>Removed the cute fediring at Craftplacer’s request</li>
+</ul>
+
+
+</body></html>

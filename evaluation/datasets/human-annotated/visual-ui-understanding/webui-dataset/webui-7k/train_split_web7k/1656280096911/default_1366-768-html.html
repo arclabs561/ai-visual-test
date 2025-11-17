@@ -1,0 +1,333 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+
+
+
+
+
+
+<script type="text/javascript">
+   var ctxStatic = "/static";
+   var ctx = "";
+   var global_supplierId = ""
+	var i18n="zh_CN";
+</script>
+
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<link rel="shortcut icon" href="/static/new/images/favicon.ico">
+<title data-locale="i18n_Home_title">Project Purchase and Management Platform</title>
+<script src="/static/new/js/jquery.min.js"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/api?key=&amp;v=1.1&amp;services=true"></script>
+
+<link rel="stylesheet" href="/static/new/css/reset.css">
+<link rel="stylesheet" href="/static/new/css/index.css">
+
+</head>
+
+<body>
+
+
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<meta http-equiv="Cache-Control" content="no-store">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<!-- 使用IE最高版本兼容模式 -->
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+<script src="/static/js/jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/static/new/js/jquery.i18n.properties.js" type="text/javascript"></script>
+<script src="/static/js/bootstrap/js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+	var vmi18n=$.i18n;
+	$(function() {
+		var lan;
+		lan = getCookie("cmec_language");
+		if (lan == null || lan === undefined) {
+		    debugger;
+            //判断访问终端
+            var browser={
+                versions: function () {
+                    var u = navigator.userAgent,
+                        app = navigator.appVersion
+                    return { // 移动终端浏览器版本信息
+                        trident: u.indexOf('Trident') > -1, // IE内核
+                        presto: u.indexOf('Presto') > -1, // opera内核
+                        webKit: u.indexOf('AppleWebKit') > -1, // 苹果、谷歌内核
+                        gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, // 火狐内核
+                        mobile: !!u.match(/AppleWebKit.*Mobile.*/)||!!u.match(/AppleWebKit/), // 是否为移动终端
+                        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), // ios终端
+                        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, // android终端或者uc浏览器
+                        iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, // 是否为iPhone或者QQ HD浏览器
+                        iPad: u.indexOf('iPad') > -1, // 是否iPad
+                        webApp: u.indexOf('Safari') == -1 // 是否web应该程序，没有头部与底部
+                    }
+                }(),
+                language: (navigator.language || navigator.browserLanguage).toLowerCase()
+            }
+            if(browser.language.indexOf('zh')>-1){
+                lan="zh_CN";
+            }else if(browser.language.indexOf('en')>-1){
+                lan="en_US";
+            }else{
+                lan="zh_CN";
+            }
+		}
+		else
+		{
+			if(lan=="en_US")
+			{
+				//隐藏英文 显示中文
+				$("#English").addClass("hide");
+				$("#Chinese").removeClass("hide");
+			}
+			else if(lan=="zh_CN")
+			{
+				$("#English").removeClass("hide");
+				$("#Chinese").addClass("hide");
+			}
+		}
+		vmi18n.properties({
+			name: 'web',
+			path: ctxStatic + "/new/i18n/",
+			mode: 'map',
+			language: lan,
+			callback: function () {
+				$("[data-locale]").each(function () {
+					var a = $(this).text();
+					$(this).html(vmi18n.prop($(this).data("locale")));
+				});
+				$('input').each(function (){
+					if(($(this).attr("placeholder"))!=undefined&&($(this).attr("placeholder-locale"))!=undefined){
+						$(this).attr("placeholder",vmi18n.prop($(this).attr("placeholder-locale")));
+					}
+					if(($(this).attr("button-locale"))!=undefined){
+                        $(this).val(vmi18n.prop($(this).attr("button-locale")));
+                    }
+				});
+                $('textarea').each(function (){
+                    if(($(this).attr("placeholder"))!=undefined&&($(this).attr("placeholder-locale"))!=undefined){
+                        $(this).attr("placeholder",vmi18n.prop($(this).attr("placeholder-locale")));
+                    }
+                });
+                $("[data-localize]").each(function() {
+                    var elem = $(this),
+                        localizedValue = jQuery.i18n.map[elem.data("localize")];
+                    //alert(elem[0].previousSibling);
+                    if (elem.is("input[type=textarea]") || elem.is("input[type=text]") || elem.is("input[type=password]") || elem.is("input[type=email]")) {
+                        elem.attr("placeholder", localizedValue);
+                    } else if (elem.is("input[type=button]") || elem.is("input[type=submit]")) {
+                        elem.attr("value", localizedValue);
+                    } else {
+                        elem.text(localizedValue);
+                    }
+                });
+			}
+		});
+	});
+	function getCookie(name) {
+			var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+			if (arr = document.cookie.match(reg)) {
+				return unescape(arr[2]);
+			}
+			return null;
+	}
+	function loadPropertiesalert(alsss){
+		var lan;
+		lan = getCookie("cmec_language");
+		if (lan == null || lan === undefined) {
+			lan = "zh_CN"
+		}
+		vmi18n.properties({
+			name:'js',
+			path:ctxStatic + "/new/i18n/",
+			mode:'map',
+			language:lan,
+			callback:function(){
+				vel=vmi18n.prop(alsss);
+			}
+		});
+		return vel;
+	}
+
+</script>
+
+
+<!--头部代码开始-->
+<div class="header header1">
+    <div class="content">
+        <a class="l logo" href="/" target="_self"><img src="/static/new/images/logo-blue-zh_CN.svg"></a>
+        <div class="r nav">
+            <a class="index " href="/" target="_self" data-locale="i18n_Home">Home</a>
+            <a href="/new/inform" target="_self" data-locale="i18n_Notices">Notices</a>
+            <a href="/new/work" target="_self" data-locale="i18n_Businesses">Businesses</a>
+            <a href="/new/supplier" target="_self" data-locale="i18n_Suppliers">Suppliers</a>
+            <a href="/new/policy" target="_self" data-locale="i18n_Regulations">Regulations</a>
+            <a href="/new/about" target="_self" data-locale="i18n_ContactUS">Contact US</a>
+        </div>
+     
+    </div>
+</div>
+<!--头部代码结束-->
+
+
+
+
+<!--页面内容部分开始-->
+<div class="policy-content inform-content" id="form-cn">
+	<div class="banner"></div>
+    <div class="content policy-list">
+        <h3 class="h3-english "><img src="/static/new/images/tu-right.svg"><span data-locale="i18n_Notices">Notices</span><img src="/static/new/images/tb-left.svg"></h3>
+        <div class="policy-box clearfix">
+        	
+            <div class="l zcfg">
+            	<span data-locale="i18n_Notices">Notices</span>
+            </div>
+            <ul class="r policy-box-list" id="notice"></ul>
+        	<div class="page">
+            	<a class="left" onclick="prePage0()"></a>
+                <p><span id="currPage0">1</span>/<span id="pageTotal0">0</span>页&nbsp;&nbsp;</p>
+                <a class="right" onclick="nextPage0()"></a>
+            </div>
+        </div>
+
+    </div>
+     <!--英文版通知公告隐藏开始-->
+    <!--
+    <div class="content policy-list hide" id="form-en">
+    	
+        <h3 class="h3-english "><img src="/static/new/images/tu-right.svg" /><span>Notices</span><img src="/static/new/images/tb-left.svg" /></h3>
+        <div class="policy-box clearfix ">
+        	
+            <div class="l zcfg zcfg-english">
+                <span style="text-align:center">Notices</span>
+            </div>
+            <ul class="r policy-box-list">
+            	<li>
+                	<a href="#" target="_blank">
+                    	<h4>Vice President Zhang Jianguo Inspects CMEC Jiangxi Company</h4>
+                        <p>2019年9月5日</p>
+                    </a>
+                 </li>   
+                 <li>
+                	<a href="#" target="_blank">
+                    	<h4>Vice President Zhang Jianguo Inspects CMEC Jiangxi Company</h4>
+                        <p>2019年9月5日</p>
+                    </a>
+                 </li>  
+                 <li>
+                	<a href="#" target="_blank">
+                    	<h4>Vice President Zhang Jianguo Inspects CMEC Jiangxi Company</h4>
+                        <p>2019年9月5日</p>
+                    </a>
+                 </li>  
+                 <li>
+                	<a href="#" target="_blank">
+                    	<h4>Vice President Zhang Jianguo Inspects CMEC Jiangxi Company</h4>
+                        <p>2019年9月5日</p>
+                    </a>
+                 </li>  
+                 <li>
+                	<a href="#" target="_blank">
+                    	<h4>Vice President Zhang Jianguo Inspects CMEC Jiangxi Company</h4>
+                        <p>2019年9月5日</p>
+                    </a>
+                 </li>  
+                 <li>
+                	<a href="#" target="_blank">
+                    	<h4>Vice President Zhang Jianguo Inspects CMEC Jiangxi Company</h4>
+                        <p>2019年9月5日</p>
+                    </a>
+                 </li>  
+                 <li>
+                	<a href="#" target="_blank">
+                    	<h4>Vice President Zhang Jianguo Inspects CMEC Jiangxi Company</h4>
+                        <p>2019年9月5日</p>
+                    </a>
+                 </li>  
+                 <li>
+                	<a href="#" target="_blank">
+                    	<h4>Vice President Zhang Jianguo Inspects CMEC Jiangxi Company</h4>
+                        <p>2019年9月5日</p>
+                    </a>
+                 </li>  
+                 
+                 <li>
+                	<a href="#" target="_blank">
+                    	<h4>Vice President Zhang Jianguo Inspects CMEC Jiangxi Company</h4>
+                        <p>2019年9月5日</p>
+                    </a>
+                 </li>  
+                 <li>
+                	<a href="#" target="_blank">
+                    	<h4>Vice President Zhang Jianguo Inspects CMEC Jiangxi Company</h4>
+                        <p>2019年9月5日</p>
+                    </a>
+                 </li>  
+               
+            </ul>
+        	<div class="page">
+            	<a class="left"></a>
+                <p>1/3page</p>
+                <a class="right"></a>
+            </div>
+        </div>
+    	 
+    </div>
+    -->
+    <!--英文版通知公告隐藏结束-->
+</div>
+
+<!--页面内容部分结束-->
+
+
+<div class="footer">
+    <div class="content">
+        <!-- <img class="l" src="/static/new/images/footer-logo.svg" /> -->
+        <div class="footer-nav l">
+            <a href="http://www.cmec.com" target="_blank" data-locale="i18n_Companyhomepage">Company homepage</a>
+            <a href="/new/privacy" target="_blank" data-locale="i18n_Privacyclause">Privacy clause</a>
+        </div>
+        <p class="r"><span class="vsersion">V2.0</span><span data-locale="i18n_Copyright">Beijing ICP 05020580 Beijing public security No. 110 401 300 026 <br>Copyright © China  Machinery Engineering Co., Ltd.</span></p>
+    </div>
+    <div style="display:none">
+	    <script type="text/javascript">
+		var cnzz_protocol = (("https:" == document.location.protocol) ? "https://" : "http://");
+		document.write(unescape("%3Cspan id='cnzz_stat_icon_1278017428'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1278017428%26show%3Dpic1' type='text/javascript'%3E%3C/script%3E"));
+	</script><span id="cnzz_stat_icon_1278017428"></span><script src="https://v1.cnzz.com/z_stat.php?id=1278017428&amp;show=pic1" type="text/javascript"></script>
+    </div>
+</div>
+
+<!--页面底部结束-->
+
+<!--页面底部英文开始-->
+<!--
+<div class="footer hide">
+    <div class="content">
+        <img class="l" src="/static/new/images/footer-logo.svg" />
+        <div class="footer-nav l">
+            <a href="index.html" target="_blank">Company homepage</a>
+            <a href="#" target="_blank">Privacy clause</a>
+        </div>
+        <p class="r"><span class="vsersion">V2.0</span>Beijing ICP 05020580 Beijing public security No. 110 401 300 026 <br />Copyright &copy China
+            Machinery Engineering Co., Ltd.</p>
+    </div>
+</div>
+-->
+
+
+<!--页面底部英文结束-->
+<script src="/static/js/form.js" type="text/javascript"></script>
+<script src="/static/new/js/common.js" type="text/javascript"></script>
+<script>
+    $(function () {
+        showNoticeDetails();
+    });
+</script>
+
+
+</body></html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html><html><head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tile Usage Policy</title>
+
+    <!-- syntax highlighting CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Bootstrap and overrides -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/overrides.css">
+
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+
+    <!-- link to Atom feed -->
+    <link type="application/atom+xml" rel="alternate" href="https://operations.osmfoundation.org/feed.xml" title="owg-log">
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="navbar navbar-default">
+        <div class="container-fluid">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <div class="navbar-header">
+            <a class="navbar-brand" href="/">OSMF OWG</a>
+          </div>
+          <ul class="nav navbar-nav">
+            <li><a href="/">Home</a></li>
+            <li><a href="/reports/">Reports</a></li>
+            <li><a href="/policies/">Policies</a></li>
+            <li><a href="/meetings/">Meetings</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <h1 id="tile-usage-policy">Tile Usage Policy</h1>
+
+<p>We are in principle happy for our map tiles to be used by external users for creative and unexpected uses – in contrast to most web mapping providers, which insist that you use only their supplied API.</p>
+
+<p>However, <strong>OpenStreetMap’s own servers are run entirely on donated resources.</strong> They have strictly limited capacity. Heavy use of OSM tiles adversely affects people’s ability to edit the map, and is an abuse of the individual donations and sponsorship which provide hardware and bandwidth. As a result, we require that users of the tiles abide by this tile usage policy.</p>
+
+<p><strong>OpenStreetMap data is <a href="https://wiki.openstreetmap.org/wiki/OpenStreetMap_License">free for everyone to use</a>. Our tile servers are not.</strong></p>
+
+<p>Below are the minimum requirements that users of tile.openstreetmap.org must adhere to. These may change in future, depending on available resources. Should any users or patterns of usage nevertheless cause problems to the service, access may still be blocked without prior notice. We will try to contact relevant parties if possible, but cannot guarantee this.</p>
+
+<p>But because OpenStreetMap data is free, many other organisations provide map tiles made from OSM data. If your project doesn’t meet these requirements, you can get OSM-derived map tiles elsewhere.</p>
+
+<p>Use of any OSMF provided service is further governed by the <a href="https://wiki.osmfoundation.org/wiki/Terms_of_Use">OSMF Terms of Use</a>.</p>
+
+<h2 id="requirements">Requirements</h2>
+
+<ul>
+  <li>Heavy use (e.g. distributing an app that uses tiles from openstreetmap.org) is <strong>forbidden</strong> without prior permission from the <a href="https://wiki.osmfoundation.org/wiki/Operations_Working_Group">Operations Working Group</a>. See below for alternatives.</li>
+  <li>Clearly display <a href="https://wiki.openstreetmap.org/wiki/License">license</a> <a href="https://wiki.osmfoundation.org/wiki/Licence/Attribution_Guidelines">attribution</a>.</li>
+  <li>Do not actively or passively encourage copyright infringement.</li>
+  <li>Calls to <strong>/cgi-bin/export</strong> may only be triggered by direct end-user action. (For example: “click here to export”.) The export call is an expensive (CPU+RAM) function to run and will frequently reject when server is under high load.</li>
+  <li>Recommended: Do not hardcode any URL at tile.openstreetmap.org as doing so will limit your ability to react quickly if the service is disrupted or blocked.</li>
+  <li>Recommended: add a link to <a href="https://www.openstreetmap.org/fixthemap">https://www.openstreetmap.org/fixthemap</a> to allow your users to report and fix problems in our data.</li>
+</ul>
+
+<h2 id="technical-usage-requirements">Technical Usage Requirements</h2>
+
+<ul>
+  <li><strong>Valid <a href="http://en.wikipedia.org/wiki/en:User_agent">HTTP User-Agent</a></strong> identifying application. Faking another app’s User-Agent WILL get you blocked.</li>
+  <li>If known, a <strong>valid <a href="http://en.wikipedia.org/wiki/en:HTTP_Referer">HTTP Referer</a></strong>.</li>
+  <li><strong>DO NOT send no-cache headers</strong>. (“Cache-Control: no-cache”, “Pragma: no-cache” etc.)</li>
+  <li><strong>Cache Tile</strong> downloads locally according to HTTP Expiry Header, alternatively a minimum of 7 days.</li>
+  <li><strong>Maximum of 2 download threads</strong>. (Unmodified web browsers’ download thread limits are acceptable.)</li>
+</ul>
+
+<p>Note: modern web browsers in standard configuration generally pass all the above technical requirements.</p>
+
+<h2 id="bulk-downloading">Bulk Downloading</h2>
+
+<p>Bulk downloading is <strong>strongly discouraged</strong>. Do not download <a href="https://wiki.openstreetmap.org/wiki/Tiles">tiles</a> unnecessarily.</p>
+
+<p>In particular, downloading an area of over 250 tiles at zoom level 13 or higher for offline or later usage is <strong>forbidden</strong>. These tiles are generally not available (cached) on the server in advance, and have to be rendered specifically for those requests, putting an unjustified burden on the available resources.</p>
+
+<h2 id="privacy">Privacy</h2>
+
+<p>Use of all services is subject to the <a href="http://wiki.osmfoundation.org/wiki/Privacy_Policy">OpenStreetMap Foundation privacy policy</a>. Please do not submit personal data or other confidential material to any of our services.</p>
+
+<h2 id="changes-to-this-policy">Changes to this policy</h2>
+
+<p>This policy may change at any time subject to the needs and constraints of the project. Commercial services, or those that seek donations, should be especially aware that access may be withdrawn at any point: you may no longer be able to serve your paying customers if access is withdrawn.</p>
+
+<h2 id="alternative-openstreetmap-tile-providers">Alternative OpenStreetMap Tile Providers</h2>
+
+<p>Tile servers based on OSM data:</p>
+
+<ul>
+  <li><a href="https://wiki.openstreetmap.org/wiki/Tile_servers">Wiki tile server list</a></li>
+  <li><a href="https://wiki.openstreetmap.org/wiki/TMS">Wiki TMS page</a></li>
+</ul>
+
+<p>Paid-for tile servers:</p>
+
+<ul>
+  <li>See <a href="https://wiki.openstreetmap.org/wiki/Commercial_OSM_Software_and_Services">Commercial OSM Software and Services</a></li>
+</ul>
+
+<p>Setting up your own tile server:</p>
+
+<ul>
+  <li><a href="http://switch2osm.org/">the switch2osm website, with up to date information on running your own OSM based services</a></li>
+</ul>
+
+<hr>
+
+<p><em>This policy relates to the Standard (“Mapnik”) tiles rendered and served by {a,b,c}.<strong>tile.openstreetmap.org</strong> as part of the OpenStreetMap project. It does not relate to other tiles that are viewable on the OpenStreetMap.org homepage, which may have their own usage policies. You should contact the individual projects, such as <a href="https://wiki.openstreetmap.org/wiki/OpenCycleMap">OpenCycleMap</a>, if you wish to use their tiles.</em></p>
+
+
+      <footer class="footer">
+        <div class="container">
+          <p>You can contribute to this website at <a href="https://github.com/openstreetmap/owg-website">github.com/openstreetmap/owg-website</a></p>
+        </div>
+      </footer>
+    </div>
+  
+
+</body></html>

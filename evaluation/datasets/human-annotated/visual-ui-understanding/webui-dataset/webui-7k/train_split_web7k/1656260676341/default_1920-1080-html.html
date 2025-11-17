@@ -1,0 +1,63 @@
+<!DOCTYPE html><html><head>
+        <title>JS1K 2016-Gliese_581_c</title>
+        <meta charset="utf-8">
+        <style>
+            #fps {
+                position: absolute;
+                top: 0;
+                left: 10px;
+            }
+        </style>
+    </head>
+    <body style="margin: 0px; overflow: hidden; background-color: #fff">
+        <canvas width="1920" height="1080" style="width: 1920px; height: 1080px;"></canvas>
+        <script>
+            var a = document.getElementsByTagName('canvas')[0];
+            var b = document.body;
+            var d = function(e){ return function(){ e.parentNode.removeChild(e); }; }(a);
+
+            // unprefix some popular vendor prefixed things (but stick to their original name)
+            var AudioContext =
+                  window.AudioContext ||
+                  window.webkitAudioContext;
+            var requestAnimationFrame =
+                  window.requestAnimationFrame ||
+                  window.mozRequestAnimationFrame ||
+                  window.webkitRequestAnimationFrame ||
+                  window.msRequestAnimationFrame ||
+                  function(f){ setTimeout(f, 1000/30); };
+
+            // fix bug in safari: http://qfox.nl/weblog/218
+            document.body.clientWidth;
+
+            // auto resize (original) canvas. call `onresize(w,h) to limit the size of the canvas
+            (window.onorientationchange = window.onresize = function(a){
+                var mw = Infinity;
+                var mh = Infinity;
+                var min = Math.min;
+
+                return function(w,h){
+                    if (arguments.length === 2) {
+                        mw = w;
+                        mh = h;
+                    }
+                    a.style.width = (a.width = min(mw, innerWidth)) + 'px';
+                    a.style.height = (a.height = min(mh, innerHeight)) + 'px';
+                };
+            }(a))();
+
+            var c = a.getContext('2d');
+            var demo = '2016-Gliese_581_c';
+
+            // Set demo name as document title
+            document.title = 'JS1K '+demo;
+
+            // add javascript code of requested demo
+            var s = document.createElement('script');
+            s.type = 'text/javascript';
+            s.src = '/assets/js1k/6470cd8/2016-Gliese_581_c/plain.js';
+            document.body.appendChild(s);
+        </script><script type="text/javascript" src="/assets/js1k/6470cd8/2016-Gliese_581_c/plain.js"></script>
+    
+
+</body></html>

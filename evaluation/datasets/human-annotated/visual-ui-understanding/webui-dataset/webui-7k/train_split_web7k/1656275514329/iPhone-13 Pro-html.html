@@ -1,0 +1,101 @@
+<html><head></head><body><div id="content">
+<h2>About SBUs</h2>
+
+<p>Standard Build Units (SBUs) are a method of predicting approximately how long it
+will take to compile and install a package when building according to the instructions
+in the <span class="title">Linux from Scratch</span> (LFS) or <span class="title">Beyond 
+Linux from Scratch</span> (BLFS) books.</p>
+
+<p>In the books, we would like to give build times for each package, but it is not possible to 
+give actual times that are anywhere near accurate.  For example, the biggest
+package in LFS, glibc,  won't take more than twenty minutes on the fastest systems, 
+but will take something like three days on the slowest—no kidding. So instead 
+of giving actual times, we've come up with the idea of using SBUs.</p>
+
+<p>The concept of the SBU is simple: measure the time for building the first package in LFS
+and use that as a standard.  This is designated 1.0 SBU.  Then divide all the other times
+by the standard time to determine each package's SBU time.</p>
+
+<p>For example, if the time it takes to build GCC for the first time is 3.9 SBU and on
+your system it took 10 minutes to compile and install the first program, Binutils, then 
+you know it will take nearly 40 minutes to build the static GCC. Fortunately, most build 
+times are much shorter than the one of Binutils.</p>
+
+<p>Originally, the term SBU stood for <em>Static Bash Unit</em> becasue the Bash package
+was the first to be compiled in LFS and this package was compiled with static linking.  
+Later the first package was changed to Binutils, so the acroynm stayed the same, but
+now stood for <em>Static Binutils Unit</em>.  I have chosen to rename the term SBU 
+to <em>Standard Build Unit</em> to make it a general term independent of the name of 
+the first package to be installed.</p>
+
+<h3>How to measure SBUs</h3>
+
+<p>When we measure the time it takes to build a package, we use the time function built
+into bash.  We do not include the time it takes to unpack the compressed source, but
+we do include everything else.  The braces group the commands for both the time function 
+and the redirection of all the output to a log file.</p>
+
+<pre><code>
+TIMEFORMAT='%1R Elapsed Time - $PROGRAM'
+tar -zxvf $PROGRAM.tar.gz
+pushd $PROGRAM
+{ time \
+  { 
+    ./configure &amp;&amp;
+    make &amp;&amp;
+    make install
+  }
+} 2&gt;&amp;1 | tee ../build.log
+popd
+</code></pre>
+
+<p>Of course the instructions and the $PROGRAM need to be customized for each package.</p>
+
+<h3>About this site</h3>
+<p>The purpose of this site is to provide more information about package SBUs.  Here you can 
+look at averages and also see the details of what other LFSers have done.  You can
+also add your data to the database.</p>
+
+<h4>On the main page - Averages - Standard Deviations</h4>
+
+<p>On the main page is a table of the SBUs for LFS and BLFS.  For each package, the average SBU
+measurement and the standard deviation of the measurement is listed for each package.  The
+standard deviation is a measure of consistency.  For instance, about 68% of all results fall
+within one standard deviation of the average and 95% fall within two standard deviations.
+The more values we have, the more meaningful are the results.</p>
+
+<h4>You can look for a specific system similar to yours</h4>
+<p>When you look at the data on the main page, you may want to find some data on a system
+similar to yours.  You can look at the raw data for each system by selecting the "View" link
+on this page.</p>
+
+<h4>You can enter your times</h4>
+<p>Finally, you can help others.  If, as you compile your packages, you measure the times 
+on your system, you can enter them here.  The averages on the main page will be updated
+immediately. You can enter more than one system if you choose.  In the end, the data we
+have is only as good as what the LFS community make it.  Your help is appreciated.</p>
+
+
+<!--?php
+connect_mysql();
+
+$query    = "select count(ip), sum(count) from access";
+$result   = query_db($query);
+$row      = mysql_fetch_row($result);
+$ip       = $row[0];
+$accesses = $row[1];
+?-->
+
+
+<div class="footer">
+<p>Comments or questions?  Contact <a href="mailto:bdubbs@linuxfromscratch.org">Bruce Dubbs</a></p>
+<table>
+<tbody><tr><td>Total site accesess:</td><td><!--?php echo $accesses; ?--></td></tr>
+<tr><td>Unique IP addresses:</td><td><!--?php echo $ip; ?--></td></tr>
+</tbody></table>
+</div>
+</div>
+
+
+
+</body></html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head>
+  <link rel="stylesheet" href="/DAV/VAD/cartridges/sponger_front_page/skin/ss/sponger_frontpage.css" type="text/css">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <title>URIBurner - Sponge Your Profile</title>
+  
+  <link rel="shortcut icon" href="/DAV/VAD/cartridges/sponger_front_page/skin/i/uriburner.ico">
+  
+  <script type="text/javascript">
+    var el_user_id;
+    var el_about_sponge_uri;
+    var el_describe_sponge_uri;
+    var el_fb_ds_links_no_token;
+    var user_id = "";
+
+    function build_sponge_links (site_name, host, entity_uri, about_sponge_uri)
+    {
+      var describe_href;
+      var protocol;
+
+      protocol = window.location.protocol;
+      el_user_id = el_user_id || document.getElementById('fld_user_id');
+      el_about_sponge_uri = el_about_sponge_uri || document.getElementById('about_sponge_uri');
+      el_describe_sponge_uri = el_describe_sponge_uri || document.getElementById('describe_sponge_uri');
+      el_fb_ds_links_no_token = el_fb_ds_links_no_token || document.getElementById('fb_ds_links_no_token');
+
+      user_id = el_user_id.value;
+      // TO DO - Check the entered user ID is valid
+      if (user_id.length == 0)
+      {
+        alert ('Please enter your ' + site_name + ' ID');
+        el_fb_ds_links_no_token.style.display = 'none';
+        return false;
+      }
+
+      switch (site_name)
+      {
+        case 'Twitter':
+          el_about_sponge_uri.href = about_sponge_uri.replace(/twitter.com\/.*sponger:get/, 'twitter.com/' + user_id + '?sponger:get');
+          entity_uri = entity_uri.replace(/twitter.com\/.*/, 'twitter.com/' + user_id);
+          describe_href = protocol + '//' + host + '/describe/?url=' + encodeURIComponent(entity_uri) + '&sponger:get=add&sr=0';
+          el_describe_sponge_uri.href = describe_href;
+          break;
+        case 'Slideshare':
+          el_about_sponge_uri.href = about_sponge_uri.replace(/twitter.com\/.*sponger:get/, 'www.slideshare.net/' + user_id + '?sponger:get');
+          entity_uri = entity_uri.replace(/twitter.com\/.*/, 'www.slideshare.net/' + user_id);
+          describe_href = protocol + '//' + host + '/describe/?url=' + encodeURIComponent(entity_uri) + '&sponger:get=add&sr=0';
+          el_describe_sponge_uri.href = describe_href;
+          break;
+        case 'Delicious':
+          el_about_sponge_uri.href = about_sponge_uri.replace(/twitter.com\/.*sponger:get/, 'www.delicious.com/' + user_id + '?sponger:get');
+          entity_uri = entity_uri.replace(/twitter.com\/.*/, 'www.delicious.com/' + user_id);
+          describe_href = protocol + '//' + host + '/describe/?url=' + encodeURIComponent(entity_uri) + '&sponger:get=add&sr=0';
+          el_describe_sponge_uri.href = describe_href;
+          break;
+        case 'Disqus':
+          el_about_sponge_uri.href = about_sponge_uri.replace(/twitter.com\/.*sponger:get/, 'disqus.com/' + user_id + '?sponger:get');
+          entity_uri = entity_uri.replace(/twitter.com\/.*/, 'disqus.com/' + user_id);
+          describe_href = protocol + '//' + host + '/describe/?url=' + encodeURIComponent(entity_uri) + '&sponger:get=add&sr=0';
+          el_describe_sponge_uri.href = describe_href;
+          break;
+        case 'Google+':
+	  var matches = /\/(\d{5,})/.exec (user_id);
+	  // Guard against a user entering their full Google+ profile URI instead of just their user ID
+	  if (matches != null)
+	    user_id = matches[1];
+	  else
+	  {
+	    matches = /^\d{5,}$/.exec (user_id);
+	    if (matches != null)
+	      user_id = matches[0];
+	    else
+	    {
+	      alert ('Please enter your ' + site_name + ' ID');
+	      el_fb_ds_links_no_token.style.display = 'none';
+	      return false;
+	    }
+	  }
+          el_about_sponge_uri.href = about_sponge_uri.replace(/https?\/twitter.com\/.*sponger:get/, 
+                  'https/plus.google.com/' + user_id + '?sponger:get');
+          entity_uri = entity_uri.replace(/https?\/twitter.com\/.*/, 'https/plus.google.com/' + user_id);
+          describe_href = protocol + '//' + host + '/describe/?url=' + encodeURIComponent(entity_uri) + '&sponger:get=add&sr=0';
+          el_describe_sponge_uri.href = describe_href;
+          break;
+      }
+      el_about_sponge_uri.innerHTML = el_describe_sponge_uri.innerHTML = site_name + " ID: " + user_id;
+      el_fb_ds_links_no_token.style.display = 'inline';
+
+      return false;
+    }
+  </script>
+
+</head>
+
+<body onload="page_load_hndlr()">
+<div id="outer">
+      <div id="header">
+        <div id="header_logo">
+        <a href="http://www.openlinksw.com/"><img id="openlink_logo" title="OpenLink Software" alt="[OpenLink Software logo]" src="/DAV/VAD/cartridges/sponger_front_page/skin/i/openlinklogo_wstrap_2008_100h.png"></a> 
+        </div>
+        <div id="header_text">
+          
+            <img id="banner_logo" alt="[Sponger instance logo]" src="/DAV/VAD/cartridges/sponger_front_page/skin/i/uriburnerlogo.png"><br>
+          
+          Virtuoso Linked Data Middleware
+        </div>
+      </div>
+
+      <div id="navbar">
+        <a href="index.vsp">Home</a> | 
+        <a href="sponger_architecture.vsp#how_it_works">How It Works</a> | 
+        <a href="sponger_architecture.vsp">Architecture</a> | 
+        <a href="sponger_setup.vsp">Sponger Setup</a> | 
+        <a href="examples.vsp">Live Sponger Examples</a> | 
+        <a href="http://virtuoso.openlinksw.com/dataspace/dav/wiki/Main/VirtSpongerCartridgeProgrammersGuide"> Developer API Guide</a>  |
+		<a href="http://virtuoso.openlinksw.com/">Virtuoso</a>
+      </div>
+
+      <div id="content">
+        <div class="topic-text">
+          <div id="lmargin">
+            <div id="token_confirmation">
+
+              <h2>Sponge Your Disqus Profile</h2>
+
+
+
+
+
+  <form action="#" method="post">
+    <div>
+<label for="fld_user_id">Disqus username:&nbsp;</label>
+      <input type="text" maxlength="80" size="42" id="fld_user_id" name="fld_user_id">
+      <input type="submit" name="cmd_submit_FB_ID" id="cmd_submit_user_id" value="Submit" onclick="return build_sponge_links('Disqus', 'linkeddata.uriburner.com', 'http://linkeddata.uriburner.com/about/id/entity/http/twitter.com/UNKNOWN_USER_ID', 'http://linkeddata.uriburner.com/about/html/http/linkeddata.uriburner.com/about/id/entity/http/twitter.com/UNKNOWN_USER_ID?sponger:get=add&amp;@Lookup@=&amp;refresh=0');">
+
+    </div>
+  </form>
+
+  <div id="fb_ds_links_no_token">
+    <h3>View Your Disqus Linked Data Space</h3>
+      <p>Here are a variety of Linked Data oriented views derived from your Disqus profile:</p> 
+      <ul>
+      <li>
+        <a id="about_sponge_uri" href="http://linkeddata.uriburner.com/about/html/http/linkeddata.uriburner.com/about/id/entity/http/twitter.com/UNKNOWN_USER_ID?sponger:get=add&amp;@Lookup@=&amp;refresh=0">
+          <script type="text/javascript">
+            document.write('Disqus ID: UNKNOWN_USER_ID');
+          </script>Disqus ID: UNKNOWN_USER_ID
+        </a><br>A simple page for follow-your-nose exploration
+      </li>
+      <li>
+        <a id="describe_sponge_uri" href="http://linkeddata.uriburner.com/describe/?url=http://linkeddata.uriburner.com/about/id/entity/http/twitter.com/UNKNOWN_USER_ID&amp;sponger:get=add&amp;sr=0">
+          <script type="text/javascript">
+            document.write('Disqus ID: UNKNOWN_USER_ID');
+          </script>Disqus ID: UNKNOWN_USER_ID
+        </a><br>A powerful faceted navigation and exploration page
+      </li>
+      </ul>
+  </div>
+ <!-- fi api_key_missing -->
+            </div><!-- token confirmation-->
+          </div><!-- lmargin -->
+
+          <div id="rmargin">
+      <h2>Other OpenLink Tools &amp; Services</h2>
+      <div>
+      <ul>
+      <li><a href="http://linkeddata.uriburner.com/">URIBurner.com</a><br>A service that delivers RDF-based structured descriptions of Web addressable resources (documents or real world objects)</li>
+      <li><a href="http://ode.openlinksw.com/">OpenLink Data Explorer (ODE)</a><br>A browser extension for viewing Linked Data Sources</li>
+      <li><a href="http://oat.openlinksw.com/">OpenLink AJAX Toolkit (OAT)</a><br>A JavaScript-based toolkit for browser-independent Rich Internet Application development</li>
+      </ul>
+      </div>
+          </div> <!--rmargin -->
+
+        </div><!-- topic-text -->
+      </div><!-- content -->
+
+      <div class="reset">
+        <div id="footer">
+          Copyright (C) 2011-2022 OpenLink Software. All rights reserved.
+        </div>
+      </div>
+</div><!-- outer -->
+
+
+</body></html>

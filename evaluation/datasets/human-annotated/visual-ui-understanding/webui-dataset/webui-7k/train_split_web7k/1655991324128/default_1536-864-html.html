@@ -1,0 +1,297 @@
+<!DOCTYPE html><html lang="en"><head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="profile" href="http://gmpg.org/xfn/11">
+<link rel="pingback" href="http://www.recoded.co/xmlrpc.php">
+
+<title>Recoded – Research Code Design</title>
+<link rel="dns-prefetch" href="//maxcdn.bootstrapcdn.com">
+<link rel="dns-prefetch" href="//fonts.googleapis.com">
+<link rel="dns-prefetch" href="//s.w.org">
+<link rel="alternate" type="application/rss+xml" title="Recoded » Feed" href="http://www.recoded.co/feed/">
+<link rel="alternate" type="application/rss+xml" title="Recoded » Comments Feed" href="http://www.recoded.co/comments/feed/">
+		<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/svg\/","svgExt":".svg","source":{"concatemoji":"http:\/\/www.recoded.co\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.9.13"}};
+			!function(a,b,c){function d(a,b){var c=String.fromCharCode;l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,a),0,0);var d=k.toDataURL();l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,b),0,0);var e=k.toDataURL();return d===e}function e(a){var b;if(!l||!l.fillText)return!1;switch(l.textBaseline="top",l.font="600 32px Arial",a){case"flag":return!(b=d([55356,56826,55356,56819],[55356,56826,8203,55356,56819]))&&(b=d([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]),!b);case"emoji":return b=d([55358,56760,9792,65039],[55358,56760,8203,9792,65039]),!b}return!1}function f(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var g,h,i,j,k=b.createElement("canvas"),l=k.getContext&&k.getContext("2d");for(j=Array("flag","emoji"),c.supports={everything:!0,everythingExceptFlag:!0},i=0;i<j.length;i++)c.supports[j[i]]=e(j[i]),c.supports.everything=c.supports.everything&&c.supports[j[i]],"flag"!==j[i]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[j[i]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(h=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",h,!1),a.addEventListener("load",h,!1)):(a.attachEvent("onload",h),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),g=c.source||{},g.concatemoji?f(g.concatemoji):g.wpemoji&&g.twemoji&&(f(g.twemoji),f(g.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script><script src="http://www.recoded.co/wp-includes/js/wp-emoji-release.min.js?ver=4.9.13" type="text/javascript" defer=""></script>
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<link rel="stylesheet" id="dashicons-css" href="http://www.recoded.co/wp-includes/css/dashicons.min.css?ver=4.9.13" type="text/css" media="all">
+<link rel="stylesheet" id="obfx-module-pub-css-menu-icons-0-css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css?ver=2.8.4" type="text/css" media="all">
+<link rel="stylesheet" id="obfx-module-pub-css-menu-icons-1-css" href="http://www.recoded.co/wp-content/plugins/themeisle-companion/obfx_modules/menu-icons/css/public.css?ver=2.8.4" type="text/css" media="all">
+<link rel="stylesheet" id="zerif_font-css" href="//fonts.googleapis.com/css?family=Lato%3A300%2C400%2C700%2C400italic%7CMontserrat%3A400%2C700%7CHomemade+Apple&amp;subset=latin%2Clatin-ext" type="text/css" media="all">
+<link rel="stylesheet" id="zerif_font_all-css" href="//fonts.googleapis.com/css?family=Open+Sans%3A300%2C300italic%2C400%2C400italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic&amp;subset=latin&amp;ver=4.9.13" type="text/css" media="all">
+<link rel="stylesheet" id="zerif_bootstrap_style-css" href="http://www.recoded.co/wp-content/themes/zerif-lite/css/bootstrap.css?ver=4.9.13" type="text/css" media="all">
+<link rel="stylesheet" id="zerif_fontawesome-css" href="http://www.recoded.co/wp-content/themes/zerif-lite/css/font-awesome.min.css?ver=v1" type="text/css" media="all">
+<link rel="stylesheet" id="zerif_style-css" href="http://www.recoded.co/wp-content/themes/zerif-lite/style.css?ver=v1" type="text/css" media="all">
+<style id="zerif_style-inline-css" type="text/css">
+body.home.page:not(.page-template-template-frontpage) {
+			background-image: none !important;
+		}
+
+		.page-template-builder-fullwidth {
+			overflow: hidden;
+		}
+		@media (min-width: 768px) {
+			.page-template-builder-fullwidth-std .header > .elementor {
+				padding-top: 76px;
+			}
+		}
+
+</style>
+<link rel="stylesheet" id="zerif_responsive_style-css" href="http://www.recoded.co/wp-content/themes/zerif-lite/css/responsive.css?ver=v1" type="text/css" media="all">
+<!--[if lt IE 9]>
+<link rel='stylesheet' id='zerif_ie_style-css'  href='http://www.recoded.co/wp-content/themes/zerif-lite/css/ie.css?ver=v1' type='text/css' media='all' />
+<![endif]-->
+<script type="text/javascript" src="http://www.recoded.co/wp-includes/js/jquery/jquery.js?ver=1.12.4"></script>
+<script type="text/javascript" src="http://www.recoded.co/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.4.1"></script>
+<!--[if lt IE 9]>
+<script type='text/javascript' src='http://www.recoded.co/wp-content/themes/zerif-lite/js/html5.js?ver=4.9.13'></script>
+<![endif]-->
+<link rel="https://api.w.org/" href="http://www.recoded.co/wp-json/">
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.recoded.co/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.recoded.co/wp-includes/wlwmanifest.xml"> 
+<meta name="generator" content="WordPress 4.9.13">
+		<style type="text/css">.recentcomments a{display:inline !important;padding:0 !important;margin:0 !important;}</style>
+		<style type="text/css" id="custom-background-css">
+body.custom-background { background-image: url("http://www.recoded.co/wp-content/themes/zerif-lite/images/bg.jpg"); background-position: left top; background-size: auto; background-repeat: repeat; background-attachment: scroll; }
+</style>
+
+</head>
+
+
+	<body class="home blog custom-background wp-custom-logo group-blog">
+
+<div class="preloader" style="display: none;"><div class="status" style="display: none;">&nbsp;</div></div>
+
+<div id="mobilebgfix">
+	<div class="mobile-bg-fix-img-wrap">
+		<div class="mobile-bg-fix-img"></div>
+	</div>
+	<div class="mobile-bg-fix-whole-site">
+
+
+<header id="home" class="header" itemscope="itemscope" itemtype="http://schema.org/WPHeader" style="min-height: 76px;">
+
+	<div id="main-nav" class="navbar navbar-inverse bs-docs-nav" role="banner" style="min-height: 76px;">
+
+		<div class="container">
+
+			
+			<div class="navbar-header responsive-logo">
+
+				<button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+
+				<span class="sr-only">Toggle navigation</span>
+
+				<span class="icon-bar"></span>
+
+				<span class="icon-bar"></span>
+
+				<span class="icon-bar"></span>
+
+				</button>
+
+					<div class="navbar-brand" itemscope="" itemtype="http://schema.org/Organization">
+
+						<a href="http://www.recoded.co/" class="custom-logo-link" rel="home" itemprop="url"><img width="450" height="150" src="http://www.recoded.co/wp-content/uploads/2016/01/logo-recoded-02-bw.png" class="custom-logo" alt="Recoded" itemprop="logo" srcset="http://www.recoded.co/wp-content/uploads/2016/01/logo-recoded-02-bw.png 450w, http://www.recoded.co/wp-content/uploads/2016/01/logo-recoded-02-bw-300x100.png 300w" sizes="(max-width: 450px) 100vw, 450px"></a>
+					</div> <!-- /.navbar-brand -->
+
+				</div> <!-- /.navbar-header -->
+
+					<nav class="navbar-collapse bs-navbar-collapse collapse" id="site-navigation" itemscope="" itemtype="http://schema.org/SiteNavigationElement" style="">
+			<a class="screen-reader-text skip-link" href="#content">Skip to content</a>
+					</nav>
+		
+		</div> <!-- /.container -->
+
+		
+	</div> <!-- /#main-nav -->
+	<!-- / END TOP BAR -->
+<div class=" home-header-wrap"><div class="header-content-wrap "><div class="container"><h1 class="intro-text">we are the group of problem solvers</h1><div class="buttons"><a href="http://www.recoded.co/#focus" class="btn btn-primary custom-button red-btn">Our service</a><a href="http://www.recoded.co/#aboutus" class="btn btn-primary custom-button green-btn">About us</a></div></div></div><!-- .header-content-wrap --><div class="clear"></div>
+</div>
+
+</header> <!-- / END HOME SECTION  -->
+<div id="content" class="site-content">
+
+<section class="focus " id="focus">
+	
+	<div class="container">
+
+		<!-- SECTION HEADER -->
+
+		<div class="section-header">
+
+			<!-- SECTION TITLE AND SUBTITLE -->
+
+			<h2 class="dark-text">Our Service</h2><div class="section-legend">We develop Internet and mobile applications for science, industry and NGOs.</div>
+		</div>
+
+		<div class="row">
+
+				<span id="ctup-ads-widget-1" class="">
+			<div class="col-lg-3 col-sm-3 focus-box" data-scrollreveal="enter left after 0.15s over 1s" style="-webkit-transform: translatex(-60px);-moz-transform: translatex(-60px);-ms-transform: translatex(-60px);transform: translatex(-60px);opacity: 0;" data-sr-init="true">
+
+										<a href="http://www.recoded.co/geoankieta-2/" class="service-icon">
+															<span class="sr-only">
+			                    Go to			                    Geo-questionnaire		                    </span>
+								
+							<i class="pixeden" style="background:url(http://www.recoded.co/wp-content/uploads/2016/01/geoankieta.jpg) no-repeat center;width:100%; height:100%;"></i>
+						</a>
+						
+
+				
+				<h3 class="red-border-bottom">Geo-questionnaire</h3>
+				<!-- FOCUS HEADING -->
+
+				<p>Geo-questionnaire is an online questionnaire coupled with an interactive map, that allows for the collection of two types of data; the data directly linked to geographical features and the data without spatial reference. Spatial attributes are collected through sketching on an interactive map points, lines, or polygons vector features. Each geographical features may be linked to a set of questions linked to its location. </p>
+			</div>
+
+			</span><span id="ctup-ads-widget-2" class="">
+			<div class="col-lg-3 col-sm-3 focus-box" data-scrollreveal="enter left after 0.15s over 1s" style="-webkit-transform: translatex(-60px);-moz-transform: translatex(-60px);-ms-transform: translatex(-60px);transform: translatex(-60px);opacity: 0;" data-sr-init="true">
+
+										<a href="#" class="service-icon">
+															<span class="sr-only">
+			                    Go to			                    DeepSleep		                    </span>
+								
+							<i class="pixeden" style="background:url(http://www.recoded.co/wp-content/uploads/2016/02/deepsleep.png) no-repeat center;width:100%; height:100%;"></i>
+						</a>
+						
+
+				
+				<h3 class="red-border-bottom">DeepSleep</h3>
+				<!-- FOCUS HEADING -->
+
+				<p>DeepSleep is an innovative solution assisting parents and child therapists in monitoring, analyzing and improving sleep patterns in children aged 0-6. It consists of three separate elements: a sleep monitoring device, dedicated smartphone application and cloud based web services which together provide therapeutic tips in real time, aid to correct improper behaviour patterns and stabilize sleep and wake cycles.</p>
+			</div>
+
+			</span><span id="ctup-ads-widget-3" class="">
+			<div class="col-lg-3 col-sm-3 focus-box" data-scrollreveal="enter left after 0.15s over 1s" style="-webkit-transform: translatex(-60px);-moz-transform: translatex(-60px);-ms-transform: translatex(-60px);transform: translatex(-60px);opacity: 0;" data-sr-init="true">
+
+										<a href="#" class="service-icon">
+															<span class="sr-only">
+			                    Go to			                    AdWise		                    </span>
+								
+							<i class="pixeden" style="background:url(http://www.recoded.co/wp-content/uploads/2016/02/adwise.png) no-repeat center;width:100%; height:100%;"></i>
+						</a>
+						
+
+				
+				<h3 class="red-border-bottom">AdWise</h3>
+				<!-- FOCUS HEADING -->
+
+				<p>AdWise is a loyalty system with multi level marketing discount commisioning. Users collect virtual discount cards and get bonuses on every usage.
+</p>
+			</div>
+
+			</span>
+		</div>
+
+	</div> <!-- / END CONTAINER -->
+
+	
+</section>  <!-- / END FOCUS SECTION -->
+
+<section class="about-us " id="aboutus">
+	
+	<div class="container">
+
+		<!-- SECTION HEADER -->
+
+		<div class="section-header">
+
+			<h2 class="white-text">About us</h2><div class="white-text section-legend">We develop Internet and mobile applications for science, industry and NGOs.</div>
+		</div><!-- / END SECTION HEADER -->
+
+		<!-- 3 COLUMNS OF ABOUT US-->
+
+		<div class="row">
+
+			<!-- COLUMN 1 - BIG MESSAGE ABOUT THE COMPANY-->
+
+		<div class="col-lg-4 col-md-4 column zerif-rtl-big-title"><div class="big-intro" data-scrollreveal="enter left after 0s over 1s" style="-webkit-transform: translatex(-60px);-moz-transform: translatex(-60px);-ms-transform: translatex(-60px);transform: translatex(-60px);opacity: 0;" data-sr-init="true">blockchain, crypto currency, machine learning, multiple criteria decision analysis, sharing economy, metaheuristics optimization</div></div><div class="col-lg-4 col-md-4 column zerif_about_us_center text_and_skills" data-scrollreveal="enter bottom after 0s over 1s" style="-webkit-transform: translatey(60px);-moz-transform: translatey(60px);-ms-transform: translatey(60px);transform: translatey(60px);opacity: 0;" data-sr-init="true"><p></p><p>Our research interests include: blockchain, machine learning, knowledge discovery, image and sound recognition, metaheuristics optimization, multiple criteria decision analysis, investor wallets‘ optimization, cryptocurrency markets and participatory economy. </p><p>We love Python, Java, Javascript, React, Angular, C++ and all great related frameworks.</p><p>Together with our clients, we build our solutions based on Design Thinking methodology. This approach gives us a deep understanding of our customer’s background and his/her real issues. Getting more and more empathy, we brainstorm solutions and choose best options to make prototype. After several iterations, we start building the final product according to Scrum methodology, with technologies suitable for a particular solution.</p><p></p></div><div class="col-lg-4 col-md-4 column zerif-rtl-skills ">
+
+<ul class="skills" data-scrollreveal="enter right after 0s over 1s" style="-webkit-transform: translatex(60px);-moz-transform: translatex(60px);-ms-transform: translatex(60px);transform: translatex(60px);opacity: 0;" data-sr-init="true">
+
+<!-- SKILL ONE -->
+<li class="skill skill_1"><div class="skill-count"><div style="display: inline; width: 64px; height: 200px;"><canvas width="64" height="200"></canvas><input role="presentation" type="text" id="python" value="90" data-thickness=".2" class="skill1" tabindex="-1" readonly="readonly" style="width: 36px; height: 21px; position: absolute; vertical-align: middle; margin-top: 21px; margin-left: -50px; border: 0px; background: none; font: bold 12px Arial; text-align: center; color: rgb(255, 255, 255); padding: 0px; appearance: none;"></div></div><div class="section-legend"><label for="python">Python</label></div><p>Django, NumPy, SciPy</p></li>
+<!-- SKILL TWO -->
+
+<li class="skill skill_2"><div class="skill-count"><div style="display: inline; width: 64px; height: 200px;"><canvas width="64" height="200"></canvas><input role="presentation" type="text" id="javascript" value="85" data-thickness=".2" class="skill2" tabindex="-1" readonly="readonly" style="width: 36px; height: 21px; position: absolute; vertical-align: middle; margin-top: 21px; margin-left: -50px; border: 0px; background: none; font: bold 12px Arial; text-align: center; color: rgb(255, 255, 255); padding: 0px; appearance: none;"></div></div><div class="section-legend"><label for="javascript">Javascript</label></div><p>AngularJS, JQuery, React</p></li>
+<!-- SKILL THREE -->
+
+<li class="skill skill_3"><div class="skill-count"><div style="display: inline; width: 64px; height: 200px;"><canvas width="64" height="200"></canvas><input role="presentation" type="text" id="mobile" value="88" data-thickness=".2" class="skill3" tabindex="-1" readonly="readonly" style="width: 36px; height: 21px; position: absolute; vertical-align: middle; margin-top: 21px; margin-left: -50px; border: 0px; background: none; font: bold 12px Arial; text-align: center; color: rgb(255, 255, 255); padding: 0px; appearance: none;"></div></div><div class="section-legend"><label for="mobile">Mobile</label></div><p>Android, iOS, Xamarin</p></li>
+<!-- SKILL FOUR -->
+
+<li class="skill skill_4"><div class="skill-count"><div style="display: inline; width: 64px; height: 200px;"><canvas width="64" height="200"></canvas><input role="presentation" type="text" id="other" value="70" data-thickness=".2" class="skill4" tabindex="-1" readonly="readonly" style="width: 36px; height: 21px; position: absolute; vertical-align: middle; margin-top: 21px; margin-left: -50px; border: 0px; background: none; font: bold 12px Arial; text-align: center; color: rgb(255, 255, 255); padding: 0px; appearance: none;"></div></div><div class="section-legend"><label for="other">Other</label></div><p>C, C#, Go, Java (Play, Eclipse RCP)</p></li>
+			</ul>
+
+		</div> <!-- / END SKILLS COLUMN-->
+
+		
+	</div> <!-- / END 3 COLUMNS OF ABOUT US-->
+
+	<!-- CLIENTS -->
+	
+	</div> <!-- / END CONTAINER -->
+
+	
+</section> <!-- END ABOUT US SECTION -->
+
+<section class="contact-us " id="contact"><div class="container">
+	<!-- SECTION HEADER -->
+	<div class="section-header">
+
+			</div>
+	<!-- / END SECTION HEADER -->
+
+	
+				</div> <!-- / END CONTAINER -->
+
+			</section> <!-- / END CONTACT US SECTION-->
+			
+</div><!-- .site-content -->
+
+
+<footer id="footer" itemscope="itemscope" itemtype="http://schema.org/WPFooter">
+
+	
+	<div class="container">
+
+		
+		<div class="col-md-3 company-details"><div class="zerif-footer-address">Malta Office Park, 
+ul. Baraniaka 88E/F
+61-131 Poznań</div></div><div class="col-md-3 company-details"><div class="zerif-footer-email"><a href="mailto:contact@recoded.co">contact@recoded.co</a></div></div><div class="col-md-3 company-details"><div class="zerif-footer-phone"><a href="tel:+48503697437">+48 503 697 437</a></div></div><div class="col-md-3 copyright"><ul class="social"><li id="facebook"><a target="_blank" href="https://www.facebook.com/Recoded-724151117793452/?ref=settings"><span class="sr-only">Facebook link</span> <i class="fa fa-facebook"></i></a></li><li id="linkedin"><a target="_blank" href="https://www.linkedin.com/company/5385698"><span class="sr-only">Linkedin link</span> <i class="fa fa-linkedin"></i></a></li></ul><!-- .social --><div class="zerif-copyright-box"><a class="zerif-copyright" rel="nofollow">Zerif Lite </a>developed by <a class="zerif-copyright" href="https://themeisle.com" target="_blank" rel="nofollow">ThemeIsle</a></div></div>	</div> <!-- / END CONTAINER -->
+
+</footer> <!-- / END FOOOTER  -->
+
+
+	</div><!-- mobile-bg-fix-whole-site -->
+</div><!-- .mobile-bg-fix-wrap -->
+
+
+<script type="text/javascript" src="http://www.recoded.co/wp-content/themes/zerif-lite/js/bootstrap.min.js?ver=20120206"></script>
+<script type="text/javascript" src="http://www.recoded.co/wp-content/themes/zerif-lite/js/jquery.knob.js?ver=20120206"></script>
+<script type="text/javascript" src="http://www.recoded.co/wp-content/themes/zerif-lite/js/smoothscroll.js?ver=20120206"></script>
+<script type="text/javascript" src="http://www.recoded.co/wp-content/themes/zerif-lite/js/scrollReveal.js?ver=20120206"></script>
+<script type="text/javascript" src="http://www.recoded.co/wp-content/themes/zerif-lite/js/zerif.js?ver=20120207"></script>
+<script type="text/javascript" src="http://www.recoded.co/wp-includes/js/wp-embed.min.js?ver=4.9.13"></script>
+
+
+
+
+
+</body></html>

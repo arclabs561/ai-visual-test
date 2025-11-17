@@ -1,0 +1,1473 @@
+<!DOCTYPE html><html lang="en-US"><!--<![endif]--><head><script>if(navigator.userAgent.match(/MSIE|Internet Explorer/i)||navigator.userAgent.match(/Trident\/7\..*?rv:11/i)){var href=document.location.href;if(!href.match(/[?&]nowprocket/)){if(href.indexOf("?")==-1){if(href.indexOf("#")==-1){document.location.href=href+"?nowprocket=1"}else{document.location.href=href.replace("#","?nowprocket=1#")}}else{if(href.indexOf("#")==-1){document.location.href=href+"&nowprocket=1"}else{document.location.href=href.replace("#","&nowprocket=1#")}}}}</script><script>class RocketLazyLoadScripts{constructor(e){this.triggerEvents=e,this.eventOptions={passive:!0},this.userEventListener=this.triggerListener.bind(this),this.delayedScripts={normal:[],async:[],defer:[]},this.allJQueries=[]}_addUserInteractionListener(e){this.triggerEvents.forEach((t=>window.addEventListener(t,e.userEventListener,e.eventOptions)))}_removeUserInteractionListener(e){this.triggerEvents.forEach((t=>window.removeEventListener(t,e.userEventListener,e.eventOptions)))}triggerListener(){this._removeUserInteractionListener(this),"loading"===document.readyState?document.addEventListener("DOMContentLoaded",this._loadEverythingNow.bind(this)):this._loadEverythingNow()}async _loadEverythingNow(){this._delayEventListeners(),this._delayJQueryReady(this),this._handleDocumentWrite(),this._registerAllDelayedScripts(),this._preloadAllScripts(),await this._loadScriptsFromList(this.delayedScripts.normal),await this._loadScriptsFromList(this.delayedScripts.defer),await this._loadScriptsFromList(this.delayedScripts.async),await this._triggerDOMContentLoaded(),await this._triggerWindowLoad(),window.dispatchEvent(new Event("rocket-allScriptsLoaded"))}_registerAllDelayedScripts(){document.querySelectorAll("script[type=rocketlazyloadscript]").forEach((e=>{e.hasAttribute("src")?e.hasAttribute("async")&&!1!==e.async?this.delayedScripts.async.push(e):e.hasAttribute("defer")&&!1!==e.defer||"module"===e.getAttribute("data-rocket-type")?this.delayedScripts.defer.push(e):this.delayedScripts.normal.push(e):this.delayedScripts.normal.push(e)}))}async _transformScript(e){return await this._requestAnimFrame(),new Promise((t=>{const n=document.createElement("script");let r;[...e.attributes].forEach((e=>{let t=e.nodeName;"type"!==t&&("data-rocket-type"===t&&(t="type",r=e.nodeValue),n.setAttribute(t,e.nodeValue))})),e.hasAttribute("src")?(n.addEventListener("load",t),n.addEventListener("error",t)):(n.text=e.text,t()),e.parentNode.replaceChild(n,e)}))}async _loadScriptsFromList(e){const t=e.shift();return t?(await this._transformScript(t),this._loadScriptsFromList(e)):Promise.resolve()}_preloadAllScripts(){var e=document.createDocumentFragment();[...this.delayedScripts.normal,...this.delayedScripts.defer,...this.delayedScripts.async].forEach((t=>{const n=t.getAttribute("src");if(n){const t=document.createElement("link");t.href=n,t.rel="preload",t.as="script",e.appendChild(t)}})),document.head.appendChild(e)}_delayEventListeners(){let e={};function t(t,n){!function(t){function n(n){return e[t].eventsToRewrite.indexOf(n)>=0?"rocket-"+n:n}e[t]||(e[t]={originalFunctions:{add:t.addEventListener,remove:t.removeEventListener},eventsToRewrite:[]},t.addEventListener=function(){arguments[0]=n(arguments[0]),e[t].originalFunctions.add.apply(t,arguments)},t.removeEventListener=function(){arguments[0]=n(arguments[0]),e[t].originalFunctions.remove.apply(t,arguments)})}(t),e[t].eventsToRewrite.push(n)}function n(e,t){let n=e[t];Object.defineProperty(e,t,{get:()=>n||function(){},set(r){e["rocket"+t]=n=r}})}t(document,"DOMContentLoaded"),t(window,"DOMContentLoaded"),t(window,"load"),t(window,"pageshow"),t(document,"readystatechange"),n(document,"onreadystatechange"),n(window,"onload"),n(window,"onpageshow")}_delayJQueryReady(e){let t=window.jQuery;Object.defineProperty(window,"jQuery",{get:()=>t,set(n){if(n&&n.fn&&!e.allJQueries.includes(n)){n.fn.ready=n.fn.init.prototype.ready=function(t){e.domReadyFired?t.bind(document)(n):document.addEventListener("rocket-DOMContentLoaded",(()=>t.bind(document)(n)))};const t=n.fn.on;n.fn.on=n.fn.init.prototype.on=function(){if(this[0]===window){function e(e){return e.split(" ").map((e=>"load"===e||0===e.indexOf("load.")?"rocket-jquery-load":e)).join(" ")}"string"==typeof arguments[0]||arguments[0]instanceof String?arguments[0]=e(arguments[0]):"object"==typeof arguments[0]&&Object.keys(arguments[0]).forEach((t=>{delete Object.assign(arguments[0],{[e(t)]:arguments[0][t]})[t]}))}return t.apply(this,arguments),this},e.allJQueries.push(n)}t=n}})}async _triggerDOMContentLoaded(){this.domReadyFired=!0,await this._requestAnimFrame(),document.dispatchEvent(new Event("rocket-DOMContentLoaded")),await this._requestAnimFrame(),window.dispatchEvent(new Event("rocket-DOMContentLoaded")),await this._requestAnimFrame(),document.dispatchEvent(new Event("rocket-readystatechange")),await this._requestAnimFrame(),document.rocketonreadystatechange&&document.rocketonreadystatechange()}async _triggerWindowLoad(){await this._requestAnimFrame(),window.dispatchEvent(new Event("rocket-load")),await this._requestAnimFrame(),window.rocketonload&&window.rocketonload(),await this._requestAnimFrame(),this.allJQueries.forEach((e=>e(window).trigger("rocket-jquery-load"))),window.dispatchEvent(new Event("rocket-pageshow")),await this._requestAnimFrame(),window.rocketonpageshow&&window.rocketonpageshow()}_handleDocumentWrite(){const e=new Map;document.write=document.writeln=function(t){const n=document.currentScript,r=document.createRange(),i=n.parentElement;let o=e.get(n);void 0===o&&(o=n.nextSibling,e.set(n,o));const a=document.createDocumentFragment();r.setStart(a,0),a.appendChild(r.createContextualFragment(t)),i.insertBefore(a,o)}}async _requestAnimFrame(){return new Promise((e=>requestAnimationFrame(e)))}static run(){const e=new RocketLazyLoadScripts(["keydown","mousemove","touchmove","touchstart","touchend","wheel"]);e._addUserInteractionListener(e)}}RocketLazyLoadScripts.run();
+</script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="profile" href="https://gmpg.org/xfn/11">
+	<title>Spacious Pro Counseling – WordPress Template Site with professional looking design for promoting Psychologist, Therapist, and Counselor services</title><style id="rocket-critical-css">:root{--wp-admin-theme-color:#007cba;--wp-admin-theme-color-darker-10:#006ba1;--wp-admin-theme-color-darker-20:#005a87}:root{--wp-admin-theme-color:#007cba;--wp-admin-theme-color-darker-10:#006ba1;--wp-admin-theme-color-darker-20:#005a87}.clearfix::after,.clearfix::before{display:table;content:''}.clearfix::after{clear:both}.screen-reader-text{clip:rect(1px,1px,1px,1px);height:1px;overflow:hidden;position:absolute!important;width:1px;word-wrap:normal!important}.tgdc-wrap{display:flex;flex-direction:column;position:fixed;right:-1px;top:85px;z-index:99999;overflow:hidden}.tgdc-wrap .btn{background-color:#fff;border:1px solid #e9ecef;color:#000;font-size:14px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";text-align:center;text-transform:uppercase;margin:3px 0;padding:7px 10px;text-decoration:none}*{box-sizing:border-box}html,body,div,span,h1,h3,p,a,ul,li{border:0;font:inherit;font-size:100%;font-style:inherit;font-weight:inherit;margin:0;outline:0;padding:0;vertical-align:baseline}html{overflow-y:scroll;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}header,nav,section{display:block}ul{list-style:none}a img{border:0}body{color:#666666;font:16px 'Lato',sans-serif;line-height:20px;word-wrap:break-word}body{background:#eaeaea}h1,h3{padding-bottom:18px;color:#222222;font-weight:normal;font-family:'Lato',sans-serif}h1{font-size:30px;line-height:36px}h3{font-size:26px;line-height:32px}p{line-height:24px;margin-bottom:15px;font-family:'Lato',sans-serif;font-size:16px}ul{list-style:none}a{color:#0FBE7C;text-decoration:none}img{max-width:100%;height:auto;vertical-align:top;margin-bottom:18px}.clearfix::before,.clearfix::after{display:table;content:""}.clearfix::after{clear:both}body{padding-top:30px;padding-bottom:30px}body.page-template-page-builder #main{padding-top:0;padding-bottom:0}body.no-sidebar-content-stretched #main .inner-wrap{width:100%;max-width:100%}body.no-sidebar-content-stretched #main .inner-wrap #primary{float:none;width:100%}#page{max-width:1268px;margin:0 auto;background-color:#FFFFFF;box-shadow:0 2px 6px rgba(100,100,100,0.3)}.wide-1218{padding-top:0;padding-bottom:0}.wide-1218 #page{max-width:100%}.inner-wrap{margin:0 auto;max-width:1218px}.wide-1218 .inner-wrap{max-width:1218px}#main{padding:40px 0 10px 0}.home #main{position:relative;overflow:hidden}.screen-reader-text{border:0;clip:rect(1px,1px,1px,1px);clip-path:inset(50%);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute!important;width:1px;word-wrap:normal!important}#primary{float:left;width:61.5763547%}#header-text-nav-container{border-bottom:1px solid #EAEAEA}#header-text-nav-wrap{padding-top:15px;padding-bottom:15px}#header-left-section{float:left;margin-right:25px}#header-logo-image{float:left;padding:0 20px 0 0;max-width:100%}#header-logo-image img{margin-bottom:0px}#header-text{float:left;padding:10px 20px 0 0}#site-title a{color:#444444;font-size:36px}h1#site-title{padding-bottom:5px;font-size:30px;line-height:36px}#site-description{line-height:24px;font-size:16px;padding-bottom:0;color:#666666}#header-right-section{float:right}.main-navigation{float:right;padding-top:20px}.main-navigation li{float:left;position:relative;margin:0 0 0 25px;font-family:'Lato',sans-serif}.main-navigation a{color:#444444;display:block;float:left;line-height:1.875}.main-navigation .menu-primary-container>ul::after{content:'';display:block;clear:both}.main-navigation ul li:not(.tg-header-button-wrap){padding-top:5px;padding-bottom:5px}.main-navigation ul li a{font-size:16px}.main-navigation ul li.current-menu-item a,.main-navigation ul li.current_page_item a{color:#0FBE7C}.menu-toggle{display:none}.site-header .menu-toggle{background:#3A3A3A;color:#fff;font-size:20px;font-weight:300;padding:5px 22px;margin:0;text-align:center}.site-header .menu-toggle:before{content:'\f0c9';margin-right:10px;font-family:FontAwesome}.header-action{position:relative;float:right;padding-top:20px}a#scroll-up{bottom:20px;position:fixed;right:20px;display:none;-webkit-font-smoothing:antialiased;font:normal 26px/1 'FontAwesome';vertical-align:top;color:#FFFFFF;background-color:#0FBE7C;opacity:0.5;filter:alpha(opacity=50);border-radius:3px;padding:6px 12px}a#scroll-up:before{content:'\f106'}@media screen and (max-width:1308px){#page{width:97%}.wide-1218 #page{width:100%}.inner-wrap{width:94%}}@media screen and (max-width:1078px){body{padding:15px 0}}@media screen and (max-width:768px){#primary{float:none;width:100%;margin:0}#header-left-section{float:none;max-width:100%;margin-right:0px}#header-right-section{float:none}#site-description{padding-bottom:5px}.menu-toggle{display:block}.main-navigation{float:none}.main-navigation ul{display:none}.better-responsive-menu .site-header .menu-toggle{background:#3a3a3a none repeat scroll 0 0;color:#fff;font:0px/0 a;height:36px;padding:0;position:relative;text-align:center;width:40px}.better-responsive-menu #site-navigation{float:left}.better-responsive-menu #header-text-nav-wrap{padding:0}.better-responsive-menu .site-header .menu-toggle::before{font-size:21px;left:50%;line-height:25px;margin-right:0;position:absolute;top:50%;-webkit-transform:translate(-50%,-50%);-moz-transform:translate(-50%,-50%);-ms-transform:translate(-50%,-50%);-o-transform:translate(-50%,-50%);transform:translate(-50%,-50%)}.better-responsive-menu #header-text-nav-container{position:relative;padding-bottom:15px;border:none}.better-responsive-menu #site-navigation .menu-primary-container{left:0;position:absolute;top:100%;width:100%;z-index:9999}.better-responsive-menu #header-text{float:left;text-align:left}.better-responsive-menu #header-right-section{float:right;margin-top:15px;max-width:100%}.better-responsive-menu #site-navigation{float:right;margin-top:10px;padding:0}.better-responsive-menu #header-logo-image{float:left;margin-bottom:0;margin-right:10px}.better-responsive-menu #header-left-section{float:left;margin-top:10px}.better-responsive-menu #header-text{float:left;margin:13px 0 0;text-align:left}.better-responsive-menu #site-description{font-size:13px;margin-bottom:0}.better-responsive-menu #site-title a{font-size:28px}}@media screen and (max-width:767px){#primary{float:none;width:100%;margin:0}}@media screen and (max-width:600px){#header-logo-image{float:none;padding:0;text-align:center}#header-text{float:none;padding:10px 20px 0 0;text-align:center}.better-responsive-menu #header-logo-image{display:block;float:none;padding-right:0;margin-right:0}.better-responsive-menu #header-text{display:block;float:none;margin-top:12px;padding:0;text-align:center}.better-responsive-menu #header-left-section{padding-top:10px;text-align:center;float:none}.better-responsive-menu #header-right-section{float:none}.better-responsive-menu #header-right-section .header-action{padding-top:0}.better-responsive-menu #site-navigation{float:left;margin-top:0}}@media only screen and (max-width:420px){#page{width:97%}.inner-wrap{width:95%}}.elementor-screen-only,.screen-reader-text{position:absolute;top:-10000em;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);border:0}.elementor{-webkit-hyphens:manual;-ms-hyphens:manual;hyphens:manual}.elementor *,.elementor :after,.elementor :before{-webkit-box-sizing:border-box;box-sizing:border-box}.elementor a{-webkit-box-shadow:none;box-shadow:none;text-decoration:none}.elementor .elementor-background-overlay{height:100%;width:100%;top:0;left:0;position:absolute}:root{--page-title-display:block}.elementor-section{position:relative}.elementor-section .elementor-container{display:-webkit-box;display:-ms-flexbox;display:flex;margin-right:auto;margin-left:auto;position:relative}@media (max-width:1024px){.elementor-section .elementor-container{-ms-flex-wrap:wrap;flex-wrap:wrap}}.elementor-section.elementor-section-boxed>.elementor-container{max-width:1140px}.elementor-widget-wrap{position:relative;width:100%;-ms-flex-wrap:wrap;flex-wrap:wrap;-ms-flex-line-pack:start;align-content:flex-start}.elementor:not(.elementor-bc-flex-widget) .elementor-widget-wrap{display:-webkit-box;display:-ms-flexbox;display:flex}.elementor-widget-wrap>.elementor-element{width:100%}.elementor-widget{position:relative}.elementor-column{min-height:1px}.elementor-column{position:relative;display:-webkit-box;display:-ms-flexbox;display:flex}.elementor-column-gap-default>.elementor-column>.elementor-element-populated{padding:10px}@media (min-width:768px){.elementor-column.elementor-col-100{width:100%}}@media (max-width:767px){.elementor-column{width:100%}}@media (min-width:1025px){#elementor-device-mode:after{content:"desktop"}}@media (min-width:768px) and (max-width:1024px){#elementor-device-mode:after{content:"tablet"}}@media (max-width:767px){#elementor-device-mode:after{content:"mobile"}}.elementor-kit-4{--e-global-color-primary:#6EC1E4;--e-global-color-secondary:#54595F;--e-global-color-text:#7A7A7A;--e-global-color-accent:#61CE70;--e-global-typography-primary-font-family:"Roboto";--e-global-typography-primary-font-weight:600;--e-global-typography-secondary-font-family:"Roboto Slab";--e-global-typography-secondary-font-weight:400;--e-global-typography-text-font-family:"Roboto";--e-global-typography-text-font-weight:400;--e-global-typography-accent-font-family:"Roboto";--e-global-typography-accent-font-weight:500}.elementor-section.elementor-section-boxed>.elementor-container{max-width:1140px}@media (max-width:1024px){.elementor-section.elementor-section-boxed>.elementor-container{max-width:1024px}}@media (max-width:767px){.elementor-section.elementor-section-boxed>.elementor-container{max-width:767px}}.ec-service-box{text-align:center;padding:60px}.ec-service-box .ec-service-box-content{word-break:break-word}.ec-service-box .ec-service-box-content .ec-caption{color:#d18426;display:inline-block;margin-bottom:6px}.ec-service-box .ec-service-box-content .ec-title{margin-bottom:10px}.ec-service-box .ec-service-box-cta{margin:10px 0 0}.ec-service-box .ec-service-box-cta.ec-cta-btn a{display:inline-block;color:#fff;padding:8px 24px;background-color:#269bd1;border-radius:20px}.elementor-283 .elementor-element.elementor-element-3c65140a:not(.elementor-motion-effects-element-type-background){background-image:url("https://spacious-counseling.sites.qsandbox.com/wp-content/uploads/2021/06/Banner.jpg");background-repeat:no-repeat;background-size:cover}.elementor-283 .elementor-element.elementor-element-3c65140a>.elementor-background-overlay{background-color:#23AB70;opacity:0.8}.elementor-283 .elementor-element.elementor-element-76275c7f>.elementor-element-populated{padding:150px 150px 150px 150px}.elementor-283 .elementor-element.elementor-element-d69cca6 .ec-service-box{text-align:center;padding:0px 150px 0px 150px}.elementor-283 .elementor-element.elementor-element-d69cca6 .ec-service-box-content .ec-caption{color:#FFFFFF;font-family:"Lora",Sans-serif;font-size:64px;font-weight:400;text-transform:capitalize;line-height:1.3em}.elementor-283 .elementor-element.elementor-element-d69cca6 .ec-service-box-content .ec-title{color:#FFFFFF;font-family:"Lora",Sans-serif;font-size:64px;font-weight:500;text-transform:capitalize;line-height:1.3em;margin:-14px 0px 0px 0px}.elementor-283 .elementor-element.elementor-element-d69cca6 .ec-service-box-content .ec-description{color:#FFFFFF;font-family:"Rubik",Sans-serif;font-size:18px;font-weight:400;line-height:1.8em;margin:9px 0px 0px 0px}.elementor-283 .elementor-element.elementor-element-d69cca6 .ec-service-box-cta{font-family:"Lora",Sans-serif;font-size:18px;font-weight:600;text-transform:uppercase;line-height:1.8em;letter-spacing:0.8px;margin:50px 0px 0px 0px}.elementor-283 .elementor-element.elementor-element-d69cca6 .ec-service-box-cta.ec-cta-btn a{padding:8px 16px 8px 16px;background-color:#02010100}.elementor-283 .elementor-element.elementor-element-d69cca6 .ec-service-box-cta.ec-cta-btn a{border-style:solid;border-width:2px 2px 2px 2px;border-color:#FFFFFF;border-radius:4px 4px 4px 4px}.elementor-283 .elementor-element.elementor-element-cdfcfa8{margin-top:120px;margin-bottom:110px}@media (max-width:1024px){.elementor-283 .elementor-element.elementor-element-76275c7f>.elementor-element-populated{padding:80px 0px 80px 0px}.elementor-283 .elementor-element.elementor-element-d69cca6 .ec-service-box{padding:0px 0px 0px 0px}.elementor-283 .elementor-element.elementor-element-d69cca6 .ec-service-box-content .ec-caption{font-size:52px;line-height:1.8em}.elementor-283 .elementor-element.elementor-element-d69cca6 .ec-service-box-content .ec-title{font-size:52px;line-height:1.8em}.elementor-283 .elementor-element.elementor-element-d69cca6>.elementor-widget-container{margin:0px 0px 0px 0px;padding:0px 0px 0px 0px}.elementor-283 .elementor-element.elementor-element-cdfcfa8{margin-top:120px;margin-bottom:110px}}@media (max-width:767px){.elementor-283 .elementor-element.elementor-element-76275c7f>.elementor-element-populated{padding:80px 10px 80px 10px}.elementor-283 .elementor-element.elementor-element-d69cca6 .ec-service-box{padding:0px 0px 0px 0px}.elementor-283 .elementor-element.elementor-element-d69cca6 .ec-service-box-content .ec-caption{font-size:32px}.elementor-283 .elementor-element.elementor-element-d69cca6 .ec-service-box-content .ec-title{font-size:32px}.elementor-283 .elementor-element.elementor-element-d69cca6 .ec-service-box-content .ec-description{font-size:16px}.elementor-283 .elementor-element.elementor-element-cdfcfa8{margin-top:120px;margin-bottom:110px;padding:0px 0px 0px 0px}}</style><link rel="preload" as="style" href="https://fonts.googleapis.com/css?family=Rubik%7CLora%7CRoboto%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CRoboto%20Slab%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CLora%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CRubik%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic&amp;display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Rubik%7CLora%7CRoboto%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CRoboto%20Slab%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CLora%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CRubik%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic&amp;display=swap" media="all" onload="this.media='all'"><noscript><link rel="preload" href="https://fonts.googleapis.com/css?family=Rubik%7CLora%7CRoboto%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CRoboto%20Slab%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CLora%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CRubik%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic&#038;display=swap" data-rocket-async="style" as="style" onload="this.onload=null;this.rel='stylesheet'" /></noscript><link rel="stylesheet" href="https://themegrilldemos.com/spacious-pro-counseling/wp-content/cache/min/166/5ea07a6b251c5512b99b35e98ab41943.css" data-rocket-async="style" as="style" onload="this.onload=null;this.rel='stylesheet'" media="all" data-minify="1">
+<meta name="robots" content="max-image-preview:large">
+<link rel="dns-prefetch" href="//fonts.googleapis.com">
+<link href="https://fonts.gstatic.com" crossorigin="" rel="preconnect">
+<link rel="alternate" type="application/rss+xml" title="Spacious Pro Counseling » Feed" href="https://themegrilldemos.com/spacious-pro-counseling/feed/">
+		<!-- This site uses the Google Analytics by MonsterInsights plugin v7.18.0 - Using Analytics tracking - https://www.monsterinsights.com/ -->
+		<!-- Note: MonsterInsights is not currently configured on this site. The site owner needs to authenticate with Google Analytics in the MonsterInsights settings panel. -->
+					<!-- No UA code set -->
+				<!-- / Google Analytics by MonsterInsights -->
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 0.07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	
+<style id="wp-block-library-theme-inline-css" type="text/css">
+.wp-block-audio figcaption{color:#555;font-size:13px;text-align:center}.is-dark-theme .wp-block-audio figcaption{color:hsla(0,0%,100%,.65)}.wp-block-code>code{font-family:Menlo,Consolas,monaco,monospace;color:#1e1e1e;padding:.8em 1em;border:1px solid #ddd;border-radius:4px}.wp-block-embed figcaption{color:#555;font-size:13px;text-align:center}.is-dark-theme .wp-block-embed figcaption{color:hsla(0,0%,100%,.65)}.blocks-gallery-caption{color:#555;font-size:13px;text-align:center}.is-dark-theme .blocks-gallery-caption{color:hsla(0,0%,100%,.65)}.wp-block-image figcaption{color:#555;font-size:13px;text-align:center}.is-dark-theme .wp-block-image figcaption{color:hsla(0,0%,100%,.65)}.wp-block-pullquote{border-top:4px solid;border-bottom:4px solid;margin-bottom:1.75em;color:currentColor}.wp-block-pullquote__citation,.wp-block-pullquote cite,.wp-block-pullquote footer{color:currentColor;text-transform:uppercase;font-size:.8125em;font-style:normal}.wp-block-quote{border-left:.25em solid;margin:0 0 1.75em;padding-left:1em}.wp-block-quote cite,.wp-block-quote footer{color:currentColor;font-size:.8125em;position:relative;font-style:normal}.wp-block-quote.has-text-align-right{border-left:none;border-right:.25em solid;padding-left:0;padding-right:1em}.wp-block-quote.has-text-align-center{border:none;padding-left:0}.wp-block-quote.is-large,.wp-block-quote.is-style-large,.wp-block-quote.is-style-plain{border:none}.wp-block-search .wp-block-search__label{font-weight:700}.wp-block-group:where(.has-background){padding:1.25em 2.375em}.wp-block-separator{border:none;border-bottom:2px solid;margin-left:auto;margin-right:auto;opacity:.4}.wp-block-separator:not(.is-style-wide):not(.is-style-dots){width:100px}.wp-block-separator.has-background:not(.is-style-dots){border-bottom:none;height:1px}.wp-block-separator.has-background:not(.is-style-wide):not(.is-style-dots){height:2px}.wp-block-table thead{border-bottom:3px solid}.wp-block-table tfoot{border-top:3px solid}.wp-block-table td,.wp-block-table th{padding:.5em;border:1px solid;word-break:normal}.wp-block-table figcaption{color:#555;font-size:13px;text-align:center}.is-dark-theme .wp-block-table figcaption{color:hsla(0,0%,100%,.65)}.wp-block-video figcaption{color:#555;font-size:13px;text-align:center}.is-dark-theme .wp-block-video figcaption{color:hsla(0,0%,100%,.65)}.wp-block-template-part.has-background{padding:1.25em 2.375em;margin-top:0;margin-bottom:0}
+</style>
+
+<style id="global-styles-inline-css" type="text/css">
+body{--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--duotone--dark-grayscale: url('#wp-duotone-dark-grayscale');--wp--preset--duotone--grayscale: url('#wp-duotone-grayscale');--wp--preset--duotone--purple-yellow: url('#wp-duotone-purple-yellow');--wp--preset--duotone--blue-red: url('#wp-duotone-blue-red');--wp--preset--duotone--midnight: url('#wp-duotone-midnight');--wp--preset--duotone--magenta-yellow: url('#wp-duotone-magenta-yellow');--wp--preset--duotone--purple-green: url('#wp-duotone-purple-green');--wp--preset--duotone--blue-orange: url('#wp-duotone-blue-orange');--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+</style>
+
+
+
+<style id="spacious_style-inline-css" type="text/css">
+.main-navigation ul li ul li a{color:#666666;}.main-navigation ul li.tg-header-button-wrap.button-one a{color:#ffffff;}.main-navigation ul li.tg-header-button-wrap.button-one a:hover{color:#ffffff;}.main-navigation ul li.tg-header-button-wrap.button-two a{color:#ffffff;}.main-navigation ul li.tg-header-button-wrap.button-two a:hover{color:#ffffff;}.entry-meta{color:#1a1a1a;}.entry-meta a, .type-page .entry-meta a{color:#1a1a1a;}.entry-meta .read-more-link{background-color:#23ab70;}#secondary h3.widget-title, #tertiary h3.widget-title, .widget_service_block .widget-title a, .widget_featured_single_post .widget-title a, .widget_testimonial .widget-title, .widget_recent_work .tg-one-half .widget-title, .widget_recent_work .tg-one-third .widget-title, .widget_recent_work .tg-one-fourth .widget-title, .widget_our_clients .widget-title, .widget_featured_posts .widget-title{color:#1a1a1a;}#comments{background-color:#FFFFFF;}.header-post-title-class{color:#23ab70;}.breadcrumb, .breadcrumb a{color:#23ab70;}.call-to-action-button{color:#FFFFFF;}.footer-widgets-area, .footer-widgets-area .tg-one-fourth p{color:#ffffff;}#colophon .widget-title{color:#ffffff;}.footer-socket-wrapper .copyright, .footer-socket-wrapper .copyright a{color:#ffffff;}#colophon .small-menu a{color:#ffffff;}.footer-socket-wrapper{background-color:#23ab70;}.footer-widgets-wrapper{border-color:#333333;}body, button, input, select, textarea, p, .entry-meta, .read-more, .more-link, .widget_testimonial .testimonial-author, #featured-slider .slider-read-more-button{font-family:Rubik;}h1, h2, h3, h4, h5, h6{font-family:Lora;}.main-navigation ul li a{font-family:Lora;}.main-navigation ul li ul li a, .main-navigation ul li ul li a, .main-navigation ul li.current-menu-item ul li a, .main-navigation ul li ul li.current-menu-item a, .main-navigation ul li.current_page_ancestor ul li a, .main-navigation ul li.current-menu-ancestor ul li a, .main-navigation ul li.current_page_item ul li a{font-size:18px;}.breadcrumb{font-size:16px;}#secondary h3.widget-title, #tertiary h3.widget-title, .widget_service_block .widget-title, .widget_featured_single_post .widget-title, .widget_testimonial .widget-title, .widget_recent_work .tg-one-half .widget-title, .widget_recent_work .tg-one-third .widget-title, .widget_recent_work .tg-one-fourth .widget-title{font-size:18px;}#colophon, #colophon p{font-size:16px;}#colophon .widget-title{font-size:24px;}#colophon .footer-socket-wrapper .copyright, #colophon .footer-socket-wrapper .copyright p{font-size:14px;}.footer-widgets-wrapper {background-color:transparent}#colophon {background-color:#333333}
+</style>
+
+
+
+
+
+
+
+
+
+<style id="rocket-lazyload-inline-css" type="text/css">
+.rll-youtube-player{position:relative;padding-bottom:56.23%;height:0;overflow:hidden;max-width:100%;}.rll-youtube-player iframe{position:absolute;top:0;left:0;width:100%;height:100%;z-index:100;background:0 0}.rll-youtube-player img{bottom:0;display:block;left:0;margin:auto;max-width:100%;width:100%;position:absolute;right:0;top:0;border:none;height:auto;cursor:pointer;-webkit-transition:.4s all;-moz-transition:.4s all;transition:.4s all}.rll-youtube-player img:hover{-webkit-filter:brightness(75%)}.rll-youtube-player .play{height:72px;width:72px;left:50%;top:50%;margin-left:-36px;margin-top:-36px;position:absolute;background:url(https://themegrilldemos.com/spacious-pro-counseling/wp-content/plugins/wp-rocket/assets/img/youtube.png) no-repeat;cursor:pointer}.wp-has-aspect-ratio .rll-youtube-player{position:absolute;padding-bottom:0;width:100%;height:100%;top:0;bottom:0;left:0;right:0}
+</style>
+
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://themegrilldemos.com/spacious-pro-counseling/wp-includes/js/jquery/jquery.min.js?ver=3.6.0" id="jquery-core-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://themegrilldemos.com/spacious-pro-counseling/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.3.2" id="jquery-migrate-js"></script>
+<!--[if lte IE 8]>
+<script type='text/javascript' src='https://themegrilldemos.com/spacious-pro-counseling/wp-content/themes/spacious-pro/js/html5shiv.min.js?ver=5.9.3' id='html5-js'></script>
+<![endif]-->
+<link rel="https://api.w.org/" href="https://themegrilldemos.com/spacious-pro-counseling/wp-json/"><link rel="alternate" type="application/json" href="https://themegrilldemos.com/spacious-pro-counseling/wp-json/wp/v2/pages/283"><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://themegrilldemos.com/spacious-pro-counseling/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://themegrilldemos.com/spacious-pro-counseling/wp-includes/wlwmanifest.xml"> 
+<meta name="generator" content="WordPress 5.9.3">
+<meta name="generator" content="Everest Forms 1.8.5">
+<link rel="canonical" href="https://themegrilldemos.com/spacious-pro-counseling/">
+<link rel="shortlink" href="https://themegrilldemos.com/spacious-pro-counseling/">
+<noscript><style id="rocket-lazyload-nojs-css">.rll-youtube-player, [data-lazy-src]{display:none !important;}</style></noscript><script type="rocketlazyloadscript">
+/*! loadCSS rel=preload polyfill. [c]2017 Filament Group, Inc. MIT License */
+(function(w){"use strict";if(!w.loadCSS){w.loadCSS=function(){}}
+var rp=loadCSS.relpreload={};rp.support=(function(){var ret;try{ret=w.document.createElement("link").relList.supports("preload")}catch(e){ret=!1}
+return function(){return ret}})();rp.bindMediaToggle=function(link){var finalMedia=link.media||"all";function enableStylesheet(){link.media=finalMedia}
+if(link.addEventListener){link.addEventListener("load",enableStylesheet)}else if(link.attachEvent){link.attachEvent("onload",enableStylesheet)}
+setTimeout(function(){link.rel="stylesheet";link.media="only x"});setTimeout(enableStylesheet,3000)};rp.poly=function(){if(rp.support()){return}
+var links=w.document.getElementsByTagName("link");for(var i=0;i<links.length;i++){var link=links[i];if(link.rel==="preload"&&link.getAttribute("as")==="style"&&!link.getAttribute("data-loadcss")){link.setAttribute("data-loadcss",!0);rp.bindMediaToggle(link)}}};if(!rp.support()){rp.poly();var run=w.setInterval(rp.poly,500);if(w.addEventListener){w.addEventListener("load",function(){rp.poly();w.clearInterval(run)})}else if(w.attachEvent){w.attachEvent("onload",function(){rp.poly();w.clearInterval(run)})}}
+if(typeof exports!=="undefined"){exports.loadCSS=loadCSS}
+else{w.loadCSS=loadCSS}}(typeof global!=="undefined"?global:this))
+</script></head>
+
+<body data-rsssl="1" class="home page-template page-template-page-templates page-template-page-builder page-template-page-templatespage-builder-php page page-id-283 wp-custom-logo wp-embed-responsive everest-forms-no-js no-sidebar-content-stretched better-responsive-menu wide-1218 woocommerce-sale-style-default woocommerce-add-to-cart-default elementor-default elementor-kit-4 elementor-page elementor-page-283">
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-dark-grayscale"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></feColorMatrix><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0 0.49803921568627"></feFuncR><feFuncG type="table" tableValues="0 0.49803921568627"></feFuncG><feFuncB type="table" tableValues="0 0.49803921568627"></feFuncB><feFuncA type="table" tableValues="1 1"></feFuncA></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-grayscale"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></feColorMatrix><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0 1"></feFuncR><feFuncG type="table" tableValues="0 1"></feFuncG><feFuncB type="table" tableValues="0 1"></feFuncB><feFuncA type="table" tableValues="1 1"></feFuncA></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-purple-yellow"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></feColorMatrix><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0.54901960784314 0.98823529411765"></feFuncR><feFuncG type="table" tableValues="0 1"></feFuncG><feFuncB type="table" tableValues="0.71764705882353 0.25490196078431"></feFuncB><feFuncA type="table" tableValues="1 1"></feFuncA></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-blue-red"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></feColorMatrix><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0 1"></feFuncR><feFuncG type="table" tableValues="0 0.27843137254902"></feFuncG><feFuncB type="table" tableValues="0.5921568627451 0.27843137254902"></feFuncB><feFuncA type="table" tableValues="1 1"></feFuncA></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-midnight"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></feColorMatrix><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0 0"></feFuncR><feFuncG type="table" tableValues="0 0.64705882352941"></feFuncG><feFuncB type="table" tableValues="0 1"></feFuncB><feFuncA type="table" tableValues="1 1"></feFuncA></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-magenta-yellow"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></feColorMatrix><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0.78039215686275 1"></feFuncR><feFuncG type="table" tableValues="0 0.94901960784314"></feFuncG><feFuncB type="table" tableValues="0.35294117647059 0.47058823529412"></feFuncB><feFuncA type="table" tableValues="1 1"></feFuncA></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-purple-green"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></feColorMatrix><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0.65098039215686 0.40392156862745"></feFuncR><feFuncG type="table" tableValues="0 1"></feFuncG><feFuncB type="table" tableValues="0.44705882352941 0.4"></feFuncB><feFuncA type="table" tableValues="1 1"></feFuncA></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-blue-orange"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></feColorMatrix><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0.098039215686275 1"></feFuncR><feFuncG type="table" tableValues="0 0.66274509803922"></feFuncG><feFuncB type="table" tableValues="0.84705882352941 0.41960784313725"></feFuncB><feFuncA type="table" tableValues="1 1"></feFuncA></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs></svg>
+
+<div id="page" class="hfeed site">
+	<a class="skip-link screen-reader-text" href="#main">Skip to content</a>
+
+	
+		<header id="masthead" class="site-header clearfix spacious-header-display-one">
+
+		
+		
+		
+		<div id="header-text-nav-container" class="">
+
+			<div class="inner-wrap clearfix" id="spacious-header-display-one">
+
+				<div id="header-text-nav-wrap" class="clearfix">
+					<div id="header-left-section">
+													<div id="header-logo-image">
+
+								<a href="https://themegrilldemos.com/spacious-pro-counseling/" class="custom-logo-link" rel="home" aria-current="page"><img width="195" height="41" src="https://themegrilldemos.com/spacious-pro-counseling/wp-content/uploads/sites/166/2021/06/Logo.png" class="custom-logo lazyloaded" alt="Spacious Pro Counseling" data-ll-status="loaded"><noscript><img width="195" height="41" src="https://themegrilldemos.com/spacious-pro-counseling/wp-content/uploads/sites/166/2021/06/Logo.png" class="custom-logo" alt="Spacious Pro Counseling" /></noscript></a>
+							</div><!-- #header-logo-image -->
+													<div id="header-text" class="screen-reader-text">
+															<h1 id="site-title">
+									<a href="https://themegrilldemos.com/spacious-pro-counseling/" title="Spacious Pro Counseling" rel="home">Spacious Pro Counseling</a>
+								</h1>
+															<p id="site-description">WordPress Template Site with professional looking design for promoting Psychologist, Therapist, and Counselor services</p>
+													</div><!-- #header-text -->
+					</div><!-- #header-left-section -->
+
+					<div id="header-right-section">
+						
+													<div class="header-action">
+															</div>
+						
+						
+		<nav id="site-navigation" class="main-navigation clearfix  " role="navigation">
+			<p class="menu-toggle">Menu</p>
+			<div class="menu-primary-container"><ul id="menu-main" class="nav-menu"><li id="menu-item-300" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-home current-menu-item page_item page-item-283 current_page_item menu-item-300"><a href="https://themegrilldemos.com/spacious-pro-counseling/" aria-current="page">Home</a></li>
+<li id="menu-item-296" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-296"><a href="https://themegrilldemos.com/spacious-pro-counseling/about-me/">About Me</a></li>
+<li id="menu-item-297" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-297"><a href="https://themegrilldemos.com/spacious-pro-counseling/events/">Events</a></li>
+<li id="menu-item-295" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-295"><a href="https://themegrilldemos.com/spacious-pro-counseling/blog/">Blog</a></li>
+<li id="menu-item-309" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-309"><a href="https://themegrilldemos.com/spacious-pro-counseling/contact/">Contact</a></li>
+</ul></div>		</nav>
+
+							</div><!-- #header-right-section -->
+
+				</div><!-- #header-text-nav-wrap -->
+
+				
+			</div><!-- .inner-wrap -->
+
+			
+		</div><!-- #header-text-nav-container -->
+
+		
+			</header>
+		<div id="main" class="clearfix">
+		<div class="inner-wrap">
+
+	
+	<div id="primary">
+		<div id="content" class="clearfix">
+					<div data-elementor-type="wp-page" data-elementor-id="283" class="elementor elementor-283">
+									<section class="elementor-section elementor-top-section elementor-element elementor-element-3c65140a elementor-section-full_width elementor-section-height-default elementor-section-height-default" data-id="3c65140a" data-element_type="section" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+							<div class="elementor-background-overlay"></div>
+							<div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-76275c7f" data-id="76275c7f" data-element_type="column" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-d69cca6 ec-service-box--top elementor-widget elementor-widget-elementor-companion-service-box" data-id="d69cca6" data-element_type="widget" data-settings="{&quot;icon_position&quot;:&quot;top&quot;}" data-widget_type="elementor-companion-service-box.default">
+				<div class="elementor-widget-container">
+			
+		<div class="ec-service-box-wrapper">
+			<div class="ec-service-box">
+
+				
+									<div class="ec-icon">
+													<span class="ec-icon-inner">
+								
+																	<i class="" aria-hidden="true"></i>
+								
+															</span> <!-- /.ec-icon-inner -->
+
+											</div> <!-- /.ec-icon -->
+				
+				<div class="ec-service-box-content">
+										<span class="ec-caption">
+					we make				</span>
+			
+				
+								<h3 class="ec-title">
+									Your life happier								</h3>
+			
+			
+							<div class="ec-description">
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do. At labore et dolore magna aliqua. Lorem ipsum dolor sit amet				</div>
+			
+							<div class="ec-service-box-cta ec-cta-btn ">
+										<a href="#">
+						
+													<span class="ec-cta-text">get an appointment</span>
+						
+											</a>
+				
+				</div> <!-- /.ec-service-box-cta -->
+					</div> <!-- /.ec-service-box-content -->
+
+		</div> <!-- /.ec-service-box -->
+		</div> <!-- /.ec-service-box-wrapper -->
+				</div>
+				</div>
+					</div>
+		</div>
+							</div>
+		</section>
+				<section class="elementor-section elementor-top-section elementor-element elementor-element-cdfcfa8 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="cdfcfa8" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-30abe49" data-id="30abe49" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<section class="elementor-section elementor-inner-section elementor-element elementor-element-93b48ad elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="93b48ad" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-670237d elementor-hidden-mobile" data-id="670237d" data-element_type="column">
+			<div class="elementor-widget-wrap">
+									</div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-ede009f" data-id="ede009f" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-e1b637d ec-service-box--top elementor-widget elementor-widget-elementor-companion-service-box" data-id="e1b637d" data-element_type="widget" data-settings="{&quot;icon_position&quot;:&quot;top&quot;}" data-widget_type="elementor-companion-service-box.default">
+				<div class="elementor-widget-container">
+			
+		<div class="ec-service-box-wrapper">
+			<div class="ec-service-box">
+
+				
+									<div class="ec-icon">
+													<span class="ec-icon-inner">
+								
+																	<i class="" aria-hidden="true"></i>
+								
+															</span> <!-- /.ec-icon-inner -->
+
+											</div> <!-- /.ec-icon -->
+				
+				<div class="ec-service-box-content">
+					
+				
+								<h3 class="ec-title">
+									I can help you								</h3>
+			
+							<div class="ec-sep ec-sep-title">
+					<div class="ec-sep-inner"></div>
+				</div>
+			
+							<div class="ec-description">
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.				</div>
+			
+					</div> <!-- /.ec-service-box-content -->
+
+		</div> <!-- /.ec-service-box -->
+		</div> <!-- /.ec-service-box-wrapper -->
+				</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-7447a30" data-id="7447a30" data-element_type="column">
+			<div class="elementor-widget-wrap">
+									</div>
+		</div>
+							</div>
+		</section>
+				<section class="elementor-section elementor-inner-section elementor-element elementor-element-2f0fc65 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="2f0fc65" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-25 elementor-inner-column elementor-element elementor-element-5d0d532" data-id="5d0d532" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-f9d1e0c ec-service-box--top elementor-widget elementor-widget-elementor-companion-service-box" data-id="f9d1e0c" data-element_type="widget" data-settings="{&quot;icon_position&quot;:&quot;top&quot;}" data-widget_type="elementor-companion-service-box.default">
+				<div class="elementor-widget-container">
+			
+		<div class="ec-service-box-wrapper">
+			<div class="ec-service-box">
+
+				
+									<div class="ec-icon">
+													<div class="ec-image-inner">
+								<img src="https://themegrilldemos.com/spacious-counseling/wp-content/uploads/sites/166/2021/06/psycology-therapy.jpg" alt="Psychology Therapy" class="lazyloaded" data-ll-status="loaded"><noscript><img src="https://themegrilldemos.com/spacious-counseling/wp-content/uploads/sites/166/2021/06/psycology-therapy.jpg" alt="Psychology Therapy"></noscript>
+							</div> <!-- /.ec-image-inner -->
+											</div> <!-- /.ec-icon -->
+				
+				<div class="ec-service-box-content">
+					
+				
+								<h3 class="ec-title">
+									Psychology Therapy								</h3>
+			
+			
+							<div class="ec-description">
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor  				</div>
+			
+							<div class="ec-service-box-cta ec-cta-btn ">
+										<a href="#">
+						
+													<span class="ec-cta-text">learn more</span>
+						
+											</a>
+				
+				</div> <!-- /.ec-service-box-cta -->
+					</div> <!-- /.ec-service-box-content -->
+
+		</div> <!-- /.ec-service-box -->
+		</div> <!-- /.ec-service-box-wrapper -->
+				</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-25 elementor-inner-column elementor-element elementor-element-a16577f" data-id="a16577f" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-efb7832 ec-service-box--top elementor-widget elementor-widget-elementor-companion-service-box" data-id="efb7832" data-element_type="widget" data-settings="{&quot;icon_position&quot;:&quot;top&quot;}" data-widget_type="elementor-companion-service-box.default">
+				<div class="elementor-widget-container">
+			
+		<div class="ec-service-box-wrapper">
+			<div class="ec-service-box">
+
+				
+									<div class="ec-icon">
+													<div class="ec-image-inner">
+								<img src="https://themegrilldemos.com/spacious-counseling/wp-content/uploads/sites/166/2021/06/confidence-restoration-1.jpg" alt="Confidence Restoration" class="lazyloaded" data-ll-status="loaded"><noscript><img src="https://themegrilldemos.com/spacious-counseling/wp-content/uploads/sites/166/2021/06/confidence-restoration-1.jpg" alt="Confidence Restoration"></noscript>
+							</div> <!-- /.ec-image-inner -->
+											</div> <!-- /.ec-icon -->
+				
+				<div class="ec-service-box-content">
+					
+				
+								<h3 class="ec-title">
+									Confidence Restoration								</h3>
+			
+			
+							<div class="ec-description">
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor  				</div>
+			
+							<div class="ec-service-box-cta ec-cta-btn ">
+										<a href="#">
+						
+													<span class="ec-cta-text">learn more</span>
+						
+											</a>
+				
+				</div> <!-- /.ec-service-box-cta -->
+					</div> <!-- /.ec-service-box-content -->
+
+		</div> <!-- /.ec-service-box -->
+		</div> <!-- /.ec-service-box-wrapper -->
+				</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-25 elementor-inner-column elementor-element elementor-element-42a829b" data-id="42a829b" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-9c883d2 ec-service-box--top elementor-widget elementor-widget-elementor-companion-service-box" data-id="9c883d2" data-element_type="widget" data-settings="{&quot;icon_position&quot;:&quot;top&quot;}" data-widget_type="elementor-companion-service-box.default">
+				<div class="elementor-widget-container">
+			
+		<div class="ec-service-box-wrapper">
+			<div class="ec-service-box">
+
+				
+									<div class="ec-icon">
+													<div class="ec-image-inner">
+								<img src="https://themegrilldemos.com/spacious-counseling/wp-content/uploads/sites/166/2021/06/work-improvement.jpg" alt="Work Life improvement" class="lazyloaded" data-ll-status="loaded"><noscript><img src="https://themegrilldemos.com/spacious-counseling/wp-content/uploads/sites/166/2021/06/work-improvement.jpg" alt="Work Life improvement"></noscript>
+							</div> <!-- /.ec-image-inner -->
+											</div> <!-- /.ec-icon -->
+				
+				<div class="ec-service-box-content">
+					
+				
+								<h3 class="ec-title">
+									Work Life improvement								</h3>
+			
+			
+							<div class="ec-description">
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor  				</div>
+			
+							<div class="ec-service-box-cta ec-cta-btn ">
+										<a href="#">
+						
+													<span class="ec-cta-text">learn more</span>
+						
+											</a>
+				
+				</div> <!-- /.ec-service-box-cta -->
+					</div> <!-- /.ec-service-box-content -->
+
+		</div> <!-- /.ec-service-box -->
+		</div> <!-- /.ec-service-box-wrapper -->
+				</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-25 elementor-inner-column elementor-element elementor-element-c7bebb6" data-id="c7bebb6" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-2c49304 ec-service-box--top elementor-widget elementor-widget-elementor-companion-service-box" data-id="2c49304" data-element_type="widget" data-settings="{&quot;icon_position&quot;:&quot;top&quot;}" data-widget_type="elementor-companion-service-box.default">
+				<div class="elementor-widget-container">
+			
+		<div class="ec-service-box-wrapper">
+			<div class="ec-service-box">
+
+				
+									<div class="ec-icon">
+													<div class="ec-image-inner">
+								<img src="https://themegrilldemos.com/spacious-counseling/wp-content/uploads/sites/166/2021/06/couple.jpg" alt="relationships problem" class="lazyloaded" data-ll-status="loaded"><noscript><img src="https://themegrilldemos.com/spacious-counseling/wp-content/uploads/sites/166/2021/06/couple.jpg" alt="relationships problem"></noscript>
+							</div> <!-- /.ec-image-inner -->
+											</div> <!-- /.ec-icon -->
+				
+				<div class="ec-service-box-content">
+					
+				
+								<h3 class="ec-title">
+									relationships problem								</h3>
+			
+			
+							<div class="ec-description">
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor  				</div>
+			
+							<div class="ec-service-box-cta ec-cta-btn ">
+										<a href="#">
+						
+													<span class="ec-cta-text">learn more</span>
+						
+											</a>
+				
+				</div> <!-- /.ec-service-box-cta -->
+					</div> <!-- /.ec-service-box-content -->
+
+		</div> <!-- /.ec-service-box -->
+		</div> <!-- /.ec-service-box-wrapper -->
+				</div>
+				</div>
+					</div>
+		</div>
+							</div>
+		</section>
+					</div>
+		</div>
+							</div>
+		</section>
+				<section class="elementor-section elementor-top-section elementor-element elementor-element-3efbbae elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="3efbbae" data-element_type="section" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+						<div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-50 elementor-top-column elementor-element elementor-element-0bc408c" data-id="0bc408c" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-9b9ad6b elementor-widget elementor-widget-elementor-companion-advanced-image" data-id="9b9ad6b" data-element_type="widget" data-widget_type="elementor-companion-advanced-image.default">
+				<div class="elementor-widget-container">
+			
+		<div class="ec-advanced-image-wrapper">
+
+			
+							<img class="ec-image" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E" data-lazy-src="https://themegrilldemos.com/spacious-counseling/wp-content/uploads/sites/166/2021/06/about.jpg"><noscript><img class="ec-image" src="https://themegrilldemos.com/spacious-counseling/wp-content/uploads/sites/166/2021/06/about.jpg"></noscript>
+			
+			
+			<div class="ec-content">
+
+							</div>
+
+		</div> <!-- /.ec-advanced-image-wrapper -->
+
+				</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-50 elementor-top-column elementor-element elementor-element-793e849" data-id="793e849" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-c03f196 ec-service-box--top elementor-widget elementor-widget-elementor-companion-service-box" data-id="c03f196" data-element_type="widget" data-settings="{&quot;icon_position&quot;:&quot;top&quot;}" data-widget_type="elementor-companion-service-box.default">
+				<div class="elementor-widget-container">
+			
+		<div class="ec-service-box-wrapper">
+			<div class="ec-service-box">
+
+				
+									<div class="ec-icon">
+													<span class="ec-icon-inner">
+								
+																	<i class="" aria-hidden="true"></i>
+								
+															</span> <!-- /.ec-icon-inner -->
+
+											</div> <!-- /.ec-icon -->
+				
+				<div class="ec-service-box-content">
+										<span class="ec-caption">
+					Together we				</span>
+			
+				
+								<h3 class="ec-title">
+									make your life better								</h3>
+			
+							<div class="ec-sep ec-sep-title">
+					<div class="ec-sep-inner"></div>
+				</div>
+			
+							<div class="ec-description">
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, 				</div>
+			
+							<div class="ec-service-box-cta ec-cta-btn ">
+										<a href="#">
+						
+													<span class="ec-cta-text">about me</span>
+						
+											</a>
+				
+				</div> <!-- /.ec-service-box-cta -->
+					</div> <!-- /.ec-service-box-content -->
+
+		</div> <!-- /.ec-service-box -->
+		</div> <!-- /.ec-service-box-wrapper -->
+				</div>
+				</div>
+					</div>
+		</div>
+							</div>
+		</section>
+				<section class="elementor-section elementor-top-section elementor-element elementor-element-31b6b13 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="31b6b13" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-99e7f18" data-id="99e7f18" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<section class="elementor-section elementor-inner-section elementor-element elementor-element-c93052c elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="c93052c" data-element_type="section" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+						<div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-20 elementor-inner-column elementor-element elementor-element-091c8ab" data-id="091c8ab" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-651d99c ec-service-box--top elementor-widget elementor-widget-elementor-companion-service-box" data-id="651d99c" data-element_type="widget" data-settings="{&quot;icon_position&quot;:&quot;top&quot;}" data-widget_type="elementor-companion-service-box.default">
+				<div class="elementor-widget-container">
+			
+		<div class="ec-service-box-wrapper">
+			<div class="ec-service-box">
+
+				
+									<div class="ec-icon">
+													<span class="ec-icon-inner">
+								
+																	<i class="" aria-hidden="true"></i>
+								
+															</span> <!-- /.ec-icon-inner -->
+
+											</div> <!-- /.ec-icon -->
+				
+				<div class="ec-service-box-content">
+										<span class="ec-caption">
+					Let the				</span>
+			
+				
+								<h3 class="ec-title">
+									Numbers Speak								</h3>
+			
+							<div class="ec-sep ec-sep-title">
+					<div class="ec-sep-inner"></div>
+				</div>
+			
+							<div class="ec-description">
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore 				</div>
+			
+					</div> <!-- /.ec-service-box-content -->
+
+		</div> <!-- /.ec-service-box -->
+		</div> <!-- /.ec-service-box-wrapper -->
+				</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-20 elementor-inner-column elementor-element elementor-element-d9b1519" data-id="d9b1519" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-d6bee11 elementor-widget elementor-widget-elementor-companion-counter" data-id="d6bee11" data-element_type="widget" data-widget_type="elementor-companion-counter.default">
+				<div class="elementor-widget-container">
+			
+		<div class="ec-counter-wrapper">
+			<div class="ec-counter">
+
+				<div class="ec-icon">
+											<i class="" aria-hidden="true"></i>
+									</div> <!-- /.ec-icon -->
+
+				<div class="ec-counter-number-wrap">
+					<span class="ec-number-prefix"></span>
+					<span class="ec-number" data-duration="4000" data-to-value="600" data-delimiter=",">0</span>
+					<span class="ec-number-postfix"></span>
+				</div> <!-- /.ec-counter-items-wrap -->
+
+				<h3 class="ec-title">total clients Consulted</h3> <!-- /.ec-title -->
+
+			</div> <!-- /.ec-counter -->
+		</div> <!-- /.ec-counter-wrapper -->
+
+				</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-20 elementor-inner-column elementor-element elementor-element-62a13c2" data-id="62a13c2" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-9fc7aa1 elementor-widget elementor-widget-elementor-companion-counter" data-id="9fc7aa1" data-element_type="widget" data-widget_type="elementor-companion-counter.default">
+				<div class="elementor-widget-container">
+			
+		<div class="ec-counter-wrapper">
+			<div class="ec-counter">
+
+				<div class="ec-icon">
+											<i class="" aria-hidden="true"></i>
+									</div> <!-- /.ec-icon -->
+
+				<div class="ec-counter-number-wrap">
+					<span class="ec-number-prefix"></span>
+					<span class="ec-number" data-duration="4000" data-to-value="15" data-delimiter=",">0</span>
+					<span class="ec-number-postfix"></span>
+				</div> <!-- /.ec-counter-items-wrap -->
+
+				<h3 class="ec-title">total Awards received</h3> <!-- /.ec-title -->
+
+			</div> <!-- /.ec-counter -->
+		</div> <!-- /.ec-counter-wrapper -->
+
+				</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-20 elementor-inner-column elementor-element elementor-element-ad35ead" data-id="ad35ead" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-6a0c727 elementor-widget elementor-widget-elementor-companion-counter" data-id="6a0c727" data-element_type="widget" data-widget_type="elementor-companion-counter.default">
+				<div class="elementor-widget-container">
+			
+		<div class="ec-counter-wrapper">
+			<div class="ec-counter">
+
+				<div class="ec-icon">
+											<i class="" aria-hidden="true"></i>
+									</div> <!-- /.ec-icon -->
+
+				<div class="ec-counter-number-wrap">
+					<span class="ec-number-prefix"></span>
+					<span class="ec-number" data-duration="4000" data-to-value="589" data-delimiter=",">0</span>
+					<span class="ec-number-postfix"></span>
+				</div> <!-- /.ec-counter-items-wrap -->
+
+				<h3 class="ec-title">Successful counseling</h3> <!-- /.ec-title -->
+
+			</div> <!-- /.ec-counter -->
+		</div> <!-- /.ec-counter-wrapper -->
+
+				</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-20 elementor-inner-column elementor-element elementor-element-1ef0b7b" data-id="1ef0b7b" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-c1d3d21 elementor-widget elementor-widget-elementor-companion-counter" data-id="c1d3d21" data-element_type="widget" data-widget_type="elementor-companion-counter.default">
+				<div class="elementor-widget-container">
+			
+		<div class="ec-counter-wrapper">
+			<div class="ec-counter">
+
+				<div class="ec-icon">
+											<i class="" aria-hidden="true"></i>
+									</div> <!-- /.ec-icon -->
+
+				<div class="ec-counter-number-wrap">
+					<span class="ec-number-prefix"></span>
+					<span class="ec-number" data-duration="4000" data-to-value="7" data-delimiter=",">0</span>
+					<span class="ec-number-postfix"></span>
+				</div> <!-- /.ec-counter-items-wrap -->
+
+				<h3 class="ec-title">total experience gained (year) </h3> <!-- /.ec-title -->
+
+			</div> <!-- /.ec-counter -->
+		</div> <!-- /.ec-counter-wrapper -->
+
+				</div>
+				</div>
+					</div>
+		</div>
+							</div>
+		</section>
+					</div>
+		</div>
+							</div>
+		</section>
+				<section class="elementor-section elementor-top-section elementor-element elementor-element-64ce0d2 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="64ce0d2" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-dc9e6bd" data-id="dc9e6bd" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<section class="elementor-section elementor-inner-section elementor-element elementor-element-e00c4eb elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="e00c4eb" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-d8e16dc elementor-hidden-mobile" data-id="d8e16dc" data-element_type="column">
+			<div class="elementor-widget-wrap">
+									</div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-4a6ec56" data-id="4a6ec56" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-37c5e9c ec-service-box--top elementor-widget elementor-widget-elementor-companion-service-box" data-id="37c5e9c" data-element_type="widget" data-settings="{&quot;icon_position&quot;:&quot;top&quot;}" data-widget_type="elementor-companion-service-box.default">
+				<div class="elementor-widget-container">
+			
+		<div class="ec-service-box-wrapper">
+			<div class="ec-service-box">
+
+				
+									<div class="ec-icon">
+													<span class="ec-icon-inner">
+								
+																	<i class="" aria-hidden="true"></i>
+								
+															</span> <!-- /.ec-icon-inner -->
+
+											</div> <!-- /.ec-icon -->
+				
+				<div class="ec-service-box-content">
+					
+				
+								<h3 class="ec-title">
+									for whom i serve								</h3>
+			
+							<div class="ec-sep ec-sep-title">
+					<div class="ec-sep-inner"></div>
+				</div>
+			
+							<div class="ec-description">
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.				</div>
+			
+					</div> <!-- /.ec-service-box-content -->
+
+		</div> <!-- /.ec-service-box -->
+		</div> <!-- /.ec-service-box-wrapper -->
+				</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-2054be3" data-id="2054be3" data-element_type="column">
+			<div class="elementor-widget-wrap">
+									</div>
+		</div>
+							</div>
+		</section>
+				<section class="elementor-section elementor-inner-section elementor-element elementor-element-712fa2a elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="712fa2a" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-25 elementor-inner-column elementor-element elementor-element-0f1d971" data-id="0f1d971" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-4ffd1e6 ec-service-box--top elementor-widget elementor-widget-elementor-companion-service-box" data-id="4ffd1e6" data-element_type="widget" data-settings="{&quot;icon_position&quot;:&quot;top&quot;}" data-widget_type="elementor-companion-service-box.default">
+				<div class="elementor-widget-container">
+			
+		<div class="ec-service-box-wrapper">
+			<div class="ec-service-box">
+
+				
+									<div class="ec-icon">
+													<div class="ec-image-inner">
+								<img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E" alt="Families" data-lazy-src="https://themegrilldemos.com/spacious-counseling/wp-content/uploads/sites/166/2021/06/family.jpg"><noscript><img src="https://themegrilldemos.com/spacious-counseling/wp-content/uploads/sites/166/2021/06/family.jpg" alt="Families"></noscript>
+							</div> <!-- /.ec-image-inner -->
+											</div> <!-- /.ec-icon -->
+				
+				<div class="ec-service-box-content">
+					
+				
+								<h3 class="ec-title">
+									Families								</h3>
+			
+			
+							<div class="ec-description">
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor  				</div>
+			
+							<div class="ec-service-box-cta ec-cta-btn ">
+										<a href="#">
+						
+													<span class="ec-cta-text">learn more</span>
+						
+											</a>
+				
+				</div> <!-- /.ec-service-box-cta -->
+					</div> <!-- /.ec-service-box-content -->
+
+		</div> <!-- /.ec-service-box -->
+		</div> <!-- /.ec-service-box-wrapper -->
+				</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-25 elementor-inner-column elementor-element elementor-element-c06fb10" data-id="c06fb10" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-c7f8f49 ec-service-box--top elementor-widget elementor-widget-elementor-companion-service-box" data-id="c7f8f49" data-element_type="widget" data-settings="{&quot;icon_position&quot;:&quot;top&quot;}" data-widget_type="elementor-companion-service-box.default">
+				<div class="elementor-widget-container">
+			
+		<div class="ec-service-box-wrapper">
+			<div class="ec-service-box">
+
+				
+									<div class="ec-icon">
+													<div class="ec-image-inner">
+								<img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E" alt="teenagers" data-lazy-src="https://themegrilldemos.com/spacious-counseling/wp-content/uploads/sites/166/2021/06/teenagers.jpg"><noscript><img src="https://themegrilldemos.com/spacious-counseling/wp-content/uploads/sites/166/2021/06/teenagers.jpg" alt="teenagers"></noscript>
+							</div> <!-- /.ec-image-inner -->
+											</div> <!-- /.ec-icon -->
+				
+				<div class="ec-service-box-content">
+					
+				
+								<h3 class="ec-title">
+									teenagers								</h3>
+			
+			
+							<div class="ec-description">
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor  				</div>
+			
+							<div class="ec-service-box-cta ec-cta-btn ">
+										<a href="#">
+						
+													<span class="ec-cta-text">learn more</span>
+						
+											</a>
+				
+				</div> <!-- /.ec-service-box-cta -->
+					</div> <!-- /.ec-service-box-content -->
+
+		</div> <!-- /.ec-service-box -->
+		</div> <!-- /.ec-service-box-wrapper -->
+				</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-25 elementor-inner-column elementor-element elementor-element-06a4460" data-id="06a4460" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-20e009c ec-service-box--top elementor-widget elementor-widget-elementor-companion-service-box" data-id="20e009c" data-element_type="widget" data-settings="{&quot;icon_position&quot;:&quot;top&quot;}" data-widget_type="elementor-companion-service-box.default">
+				<div class="elementor-widget-container">
+			
+		<div class="ec-service-box-wrapper">
+			<div class="ec-service-box">
+
+				
+									<div class="ec-icon">
+													<div class="ec-image-inner">
+								<img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E" alt="individual" data-lazy-src="https://themegrilldemos.com/spacious-counseling/wp-content/uploads/sites/166/2021/06/work-improvement.jpg"><noscript><img src="https://themegrilldemos.com/spacious-counseling/wp-content/uploads/sites/166/2021/06/work-improvement.jpg" alt="individual"></noscript>
+							</div> <!-- /.ec-image-inner -->
+											</div> <!-- /.ec-icon -->
+				
+				<div class="ec-service-box-content">
+					
+				
+								<h3 class="ec-title">
+									individual								</h3>
+			
+			
+							<div class="ec-description">
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor  				</div>
+			
+							<div class="ec-service-box-cta ec-cta-btn ">
+										<a href="#">
+						
+													<span class="ec-cta-text">learn more</span>
+						
+											</a>
+				
+				</div> <!-- /.ec-service-box-cta -->
+					</div> <!-- /.ec-service-box-content -->
+
+		</div> <!-- /.ec-service-box -->
+		</div> <!-- /.ec-service-box-wrapper -->
+				</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-25 elementor-inner-column elementor-element elementor-element-65327c8" data-id="65327c8" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-20e48ec ec-service-box--top elementor-widget elementor-widget-elementor-companion-service-box" data-id="20e48ec" data-element_type="widget" data-settings="{&quot;icon_position&quot;:&quot;top&quot;}" data-widget_type="elementor-companion-service-box.default">
+				<div class="elementor-widget-container">
+			
+		<div class="ec-service-box-wrapper">
+			<div class="ec-service-box">
+
+				
+									<div class="ec-icon">
+													<div class="ec-image-inner">
+								<img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E" alt="couples" data-lazy-src="https://themegrilldemos.com/spacious-counseling/wp-content/uploads/sites/166/2021/06/couple.jpg"><noscript><img src="https://themegrilldemos.com/spacious-counseling/wp-content/uploads/sites/166/2021/06/couple.jpg" alt="couples"></noscript>
+							</div> <!-- /.ec-image-inner -->
+											</div> <!-- /.ec-icon -->
+				
+				<div class="ec-service-box-content">
+					
+				
+								<h3 class="ec-title">
+									couples								</h3>
+			
+			
+							<div class="ec-description">
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor  				</div>
+			
+							<div class="ec-service-box-cta ec-cta-btn ">
+										<a href="#">
+						
+													<span class="ec-cta-text">learn more</span>
+						
+											</a>
+				
+				</div> <!-- /.ec-service-box-cta -->
+					</div> <!-- /.ec-service-box-content -->
+
+		</div> <!-- /.ec-service-box -->
+		</div> <!-- /.ec-service-box-wrapper -->
+				</div>
+				</div>
+					</div>
+		</div>
+							</div>
+		</section>
+					</div>
+		</div>
+							</div>
+		</section>
+				<section class="elementor-section elementor-top-section elementor-element elementor-element-a5bddd7 elementor-hidden-phone elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="a5bddd7" data-element_type="section" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+							<div class="elementor-background-overlay"></div>
+							<div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-33 elementor-top-column elementor-element elementor-element-3424668" data-id="3424668" data-element_type="column">
+			<div class="elementor-widget-wrap">
+									</div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-top-column elementor-element elementor-element-7f5c666" data-id="7f5c666" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-adbabf7 ec-service-box--top elementor-widget elementor-widget-elementor-companion-service-box" data-id="adbabf7" data-element_type="widget" data-settings="{&quot;icon_position&quot;:&quot;top&quot;}" data-widget_type="elementor-companion-service-box.default">
+				<div class="elementor-widget-container">
+			
+		<div class="ec-service-box-wrapper">
+			<div class="ec-service-box">
+
+				
+									<div class="ec-icon">
+													<span class="ec-icon-inner">
+								
+																	<i class="" aria-hidden="true"></i>
+								
+															</span> <!-- /.ec-icon-inner -->
+
+											</div> <!-- /.ec-icon -->
+				
+				<div class="ec-service-box-content">
+										<span class="ec-caption">
+					the best thing				</span>
+			
+				
+								<h3 class="ec-title">
+									about being a psychologist								</h3>
+			
+							<div class="ec-sep ec-sep-title">
+					<div class="ec-sep-inner"></div>
+				</div>
+			
+							<div class="ec-description">
+					" Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo. "				</div>
+			
+					</div> <!-- /.ec-service-box-content -->
+
+		</div> <!-- /.ec-service-box -->
+		</div> <!-- /.ec-service-box-wrapper -->
+				</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-top-column elementor-element elementor-element-7da639d" data-id="7da639d" data-element_type="column">
+			<div class="elementor-widget-wrap">
+									</div>
+		</div>
+							</div>
+		</section>
+				<section class="elementor-section elementor-top-section elementor-element elementor-element-a10ac39 elementor-reverse-tablet elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="a10ac39" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-50 elementor-top-column elementor-element elementor-element-9be104d" data-id="9be104d" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-8838b7f ec-service-box--top elementor-widget elementor-widget-elementor-companion-service-box" data-id="8838b7f" data-element_type="widget" data-settings="{&quot;icon_position&quot;:&quot;top&quot;}" data-widget_type="elementor-companion-service-box.default">
+				<div class="elementor-widget-container">
+			
+		<div class="ec-service-box-wrapper">
+			<div class="ec-service-box">
+
+				
+									<div class="ec-icon">
+													<span class="ec-icon-inner">
+								
+																	<i class="" aria-hidden="true"></i>
+								
+															</span> <!-- /.ec-icon-inner -->
+
+											</div> <!-- /.ec-icon -->
+				
+				<div class="ec-service-box-content">
+										<span class="ec-caption">
+					online session				</span>
+			
+				
+								<h3 class="ec-title">
+									get a counseling right now								</h3>
+			
+							<div class="ec-sep ec-sep-title">
+					<div class="ec-sep-inner"></div>
+				</div>
+			
+							<div class="ec-description">
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit,.				</div>
+			
+							<div class="ec-service-box-cta ec-cta-btn ">
+										<a href="#">
+						
+													<span class="ec-cta-text">get an appointment</span>
+						
+											</a>
+				
+				</div> <!-- /.ec-service-box-cta -->
+					</div> <!-- /.ec-service-box-content -->
+
+		</div> <!-- /.ec-service-box -->
+		</div> <!-- /.ec-service-box-wrapper -->
+				</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-50 elementor-top-column elementor-element elementor-element-a312bb3" data-id="a312bb3" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-3c8abe1 elementor-aspect-ratio-169 elementor-widget elementor-widget-video" data-id="3c8abe1" data-element_type="widget" data-settings="{&quot;video_type&quot;:&quot;vimeo&quot;,&quot;show_image_overlay&quot;:&quot;yes&quot;,&quot;image_overlay&quot;:{&quot;url&quot;:&quot;https:\/\/themegrilldemos.com\/spacious-counseling\/wp-content\/uploads\/sites\/166\/2021\/06\/Banner.jpg&quot;,&quot;id&quot;:70},&quot;aspect_ratio&quot;:&quot;169&quot;}" data-widget_type="video.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-wrapper elementor-fit-aspect-ratio elementor-open-inline">
+			<div class="rll-youtube-player" data-src="https://www.youtube.com/embed/AVmheum7cAk" data-id="AVmheum7cAk" data-query="feature=oembed&amp;color=FFFFFF&amp;autopause=0&amp;loop=0&amp;muted=0&amp;title=1&amp;portrait=1&amp;byline=1"><div data-id="AVmheum7cAk" data-query="feature=oembed&amp;color=FFFFFF&amp;autopause=0&amp;loop=0&amp;muted=0&amp;title=1&amp;portrait=1&amp;byline=1" data-src="https://www.youtube.com/embed/AVmheum7cAk"><img loading="lazy" data-lazy-src="https://i.ytimg.com/vi/AVmheum7cAk/hqdefault.jpg" alt="" width="480" height="360"><noscript><img src="https://i.ytimg.com/vi/ID/hqdefault.jpg" alt="" width="480" height="360"></noscript><div class="play"></div></div></div><noscript><iframe class="elementor-video-iframe" allowfullscreen title="youtube Video Player" src="https://www.youtube.com/embed/AVmheum7cAk?feature=oembed&amp;color=FFFFFF&amp;autopause=0&amp;loop=0&amp;muted=0&amp;title=1&amp;portrait=1&amp;byline=1"></iframe></noscript>				<div data-bg="https://themegrilldemos.com/spacious-pro-counseling/wp-content/uploads/sites/166/2021/06/Banner.jpg" class="elementor-custom-embed-image-overlay rocket-lazyload" style="">
+																<div class="elementor-custom-embed-play" role="button" aria-label="Play Video" tabindex="0">
+							<i aria-hidden="true" class="eicon-play"></i>							<span class="elementor-screen-only">Play Video</span>
+						</div>
+									</div>
+					</div>
+				</div>
+				</div>
+					</div>
+		</div>
+							</div>
+		</section>
+				<section class="elementor-section elementor-top-section elementor-element elementor-element-c254fb4 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="c254fb4" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-075f7ff" data-id="075f7ff" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<section class="elementor-section elementor-inner-section elementor-element elementor-element-95b9215 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="95b9215" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-7bdb3cc elementor-hidden-mobile" data-id="7bdb3cc" data-element_type="column">
+			<div class="elementor-widget-wrap">
+									</div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-d4c8b32" data-id="d4c8b32" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-6069204 ec-service-box--top elementor-widget elementor-widget-elementor-companion-service-box" data-id="6069204" data-element_type="widget" data-settings="{&quot;icon_position&quot;:&quot;top&quot;}" data-widget_type="elementor-companion-service-box.default">
+				<div class="elementor-widget-container">
+			
+		<div class="ec-service-box-wrapper">
+			<div class="ec-service-box">
+
+				
+									<div class="ec-icon">
+													<span class="ec-icon-inner">
+								
+																	<i class="" aria-hidden="true"></i>
+								
+															</span> <!-- /.ec-icon-inner -->
+
+											</div> <!-- /.ec-icon -->
+				
+				<div class="ec-service-box-content">
+					
+				
+								<h3 class="ec-title">
+									review from clients								</h3>
+			
+							<div class="ec-sep ec-sep-title">
+					<div class="ec-sep-inner"></div>
+				</div>
+			
+							<div class="ec-description">
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.				</div>
+			
+					</div> <!-- /.ec-service-box-content -->
+
+		</div> <!-- /.ec-service-box -->
+		</div> <!-- /.ec-service-box-wrapper -->
+				</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-38f0cda" data-id="38f0cda" data-element_type="column">
+			<div class="elementor-widget-wrap">
+									</div>
+		</div>
+							</div>
+		</section>
+				<section class="elementor-section elementor-inner-section elementor-element elementor-element-2f23abb elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="2f23abb" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-100 elementor-inner-column elementor-element elementor-element-88174d8" data-id="88174d8" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-6132464 ec-testimonial-carousel--left elementor-widget elementor-widget-elementor-companion-testimonial-carousel" data-id="6132464" data-element_type="widget" data-settings="{&quot;spv&quot;:&quot;2&quot;,&quot;imageinfo_infobox_position&quot;:&quot;down&quot;,&quot;imageinfo_image_position&quot;:&quot;left&quot;,&quot;spv_tablet&quot;:&quot;1&quot;,&quot;spv_mobile&quot;:1}" data-widget_type="elementor-companion-testimonial-carousel.default">
+				<div class="elementor-widget-container">
+			
+		<div class="ec-testimonial-carousel-wrapper">
+			<div class="ec-testimonial-carousel swiper-container   ec-imageinfo-image--left ec-imageinfo-box--down" data-carousel_options="{&quot;spv&quot;:&quot;2&quot;,&quot;spvTablet&quot;:&quot;1&quot;,&quot;spvMobile&quot;:1,&quot;autoplay&quot;:&quot;&quot;,&quot;delay&quot;:null,&quot;loop&quot;:&quot;&quot;,&quot;speed&quot;:500,&quot;spaceBetween&quot;:30,&quot;spaceBetweenTablet&quot;:20,&quot;spaceBetweenMobile&quot;:10,&quot;arrows&quot;:false,&quot;dots&quot;:false}">
+				<div class="swiper-wrapper">
+
+											<div class="swiper-slide elementor-repeater-item-5fd9e9e">
+									<div class="ec-testimonial">
+
+			<div class="ec-author">
+									<div class="ec-author-image">
+						<img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E" alt="John Doe" data-lazy-src="https://themegrilldemos.com/spacious-pro-counseling/wp-content/uploads/sites/166/2021/06/confidence-restoration.jpg"><noscript><img src="https://themegrilldemos.com/spacious-pro-counseling/wp-content/uploads/sites/166/2021/06/confidence-restoration.jpg" alt="John Doe"></noscript>
+					</div> <!-- /.ec-author-image -->
+				
+				<div class="ec-author-info">
+											<span class="ec-author-name">
+										John Doe									</span> <!-- /.ec-author-name -->
+					
+									</div> <!-- /.ec-author-info -->
+			</div> <!-- /.ec-author -->
+
+							<div class="ec-message">
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do.				</div> <!-- /.ec-message -->
+			
+		</div> <!-- /.ec-testimonial -->
+								</div> <!-- /.swiper-slide -->
+											<div class="swiper-slide elementor-repeater-item-0d87e69">
+									<div class="ec-testimonial">
+
+			<div class="ec-author">
+									<div class="ec-author-image">
+						<img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E" alt="Amar Sidel" data-lazy-src="https://themegrilldemos.com/spacious-pro-counseling/wp-content/uploads/sites/166/2021/06/work-improvement.jpg"><noscript><img src="https://themegrilldemos.com/spacious-pro-counseling/wp-content/uploads/sites/166/2021/06/work-improvement.jpg" alt="Amar Sidel"></noscript>
+					</div> <!-- /.ec-author-image -->
+				
+				<div class="ec-author-info">
+											<span class="ec-author-name">
+										Amar Sidel									</span> <!-- /.ec-author-name -->
+					
+									</div> <!-- /.ec-author-info -->
+			</div> <!-- /.ec-author -->
+
+							<div class="ec-message">
+					Click edit button to change this text. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.				</div> <!-- /.ec-message -->
+			
+		</div> <!-- /.ec-testimonial -->
+								</div> <!-- /.swiper-slide -->
+					
+				</div> <!-- /.swiper-wrapper -->
+
+				
+							</div> <!-- /.ec-testimonial-carousel -->
+		</div> <!-- /.ec-testimonial-carousel-wrapper -->
+
+				</div>
+				</div>
+					</div>
+		</div>
+							</div>
+		</section>
+				<section class="elementor-section elementor-inner-section elementor-element elementor-element-ad7eee5 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="ad7eee5" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-100 elementor-inner-column elementor-element elementor-element-79e3156" data-id="79e3156" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-a8a348f ec-testimonial-carousel--left elementor-widget elementor-widget-elementor-companion-testimonial-carousel" data-id="a8a348f" data-element_type="widget" data-settings="{&quot;spv&quot;:&quot;2&quot;,&quot;imageinfo_infobox_position&quot;:&quot;down&quot;,&quot;imageinfo_image_position&quot;:&quot;left&quot;,&quot;spv_tablet&quot;:&quot;1&quot;,&quot;spv_mobile&quot;:1}" data-widget_type="elementor-companion-testimonial-carousel.default">
+				<div class="elementor-widget-container">
+			
+		<div class="ec-testimonial-carousel-wrapper">
+			<div class="ec-testimonial-carousel swiper-container   ec-imageinfo-image--left ec-imageinfo-box--down" data-carousel_options="{&quot;spv&quot;:&quot;2&quot;,&quot;spvTablet&quot;:&quot;1&quot;,&quot;spvMobile&quot;:1,&quot;autoplay&quot;:&quot;&quot;,&quot;delay&quot;:null,&quot;loop&quot;:&quot;&quot;,&quot;speed&quot;:500,&quot;spaceBetween&quot;:30,&quot;spaceBetweenTablet&quot;:20,&quot;spaceBetweenMobile&quot;:10,&quot;arrows&quot;:false,&quot;dots&quot;:false}">
+				<div class="swiper-wrapper">
+
+											<div class="swiper-slide elementor-repeater-item-5fd9e9e">
+									<div class="ec-testimonial">
+
+			<div class="ec-author">
+									<div class="ec-author-image">
+						<img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E" alt="Jane doe" data-lazy-src="https://themegrilldemos.com/spacious-pro-counseling/wp-content/uploads/sites/166/2021/06/portait-1.jpg"><noscript><img src="https://themegrilldemos.com/spacious-pro-counseling/wp-content/uploads/sites/166/2021/06/portait-1.jpg" alt="Jane doe"></noscript>
+					</div> <!-- /.ec-author-image -->
+				
+				<div class="ec-author-info">
+											<span class="ec-author-name">
+										Jane doe									</span> <!-- /.ec-author-name -->
+					
+									</div> <!-- /.ec-author-info -->
+			</div> <!-- /.ec-author -->
+
+							<div class="ec-message">
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do.				</div> <!-- /.ec-message -->
+			
+		</div> <!-- /.ec-testimonial -->
+								</div> <!-- /.swiper-slide -->
+											<div class="swiper-slide elementor-repeater-item-0d87e69">
+									<div class="ec-testimonial">
+
+			<div class="ec-author">
+									<div class="ec-author-image">
+						<img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E" alt="Sona marry" data-lazy-src="https://themegrilldemos.com/spacious-pro-counseling/wp-content/uploads/sites/166/2021/06/portrait-2.jpg"><noscript><img src="https://themegrilldemos.com/spacious-pro-counseling/wp-content/uploads/sites/166/2021/06/portrait-2.jpg" alt="Sona marry"></noscript>
+					</div> <!-- /.ec-author-image -->
+				
+				<div class="ec-author-info">
+											<span class="ec-author-name">
+										Sona marry									</span> <!-- /.ec-author-name -->
+					
+									</div> <!-- /.ec-author-info -->
+			</div> <!-- /.ec-author -->
+
+							<div class="ec-message">
+					Click edit button to change this text. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.				</div> <!-- /.ec-message -->
+			
+		</div> <!-- /.ec-testimonial -->
+								</div> <!-- /.swiper-slide -->
+					
+				</div> <!-- /.swiper-wrapper -->
+
+				
+							</div> <!-- /.ec-testimonial-carousel -->
+		</div> <!-- /.ec-testimonial-carousel-wrapper -->
+
+				</div>
+				</div>
+					</div>
+		</div>
+							</div>
+		</section>
+					</div>
+		</div>
+							</div>
+		</section>
+				<section class="elementor-section elementor-top-section elementor-element elementor-element-13aecd4 elementor-hidden-phone elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="13aecd4" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-7d4ffc5" data-id="7d4ffc5" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-451b416 ec-service-box--top elementor-widget elementor-widget-elementor-companion-service-box" data-id="451b416" data-element_type="widget" data-settings="{&quot;icon_position&quot;:&quot;top&quot;}" data-widget_type="elementor-companion-service-box.default">
+				<div class="elementor-widget-container">
+			
+		<div class="ec-service-box-wrapper">
+			<div class="ec-service-box">
+
+				
+									<div class="ec-icon">
+													<span class="ec-icon-inner">
+								
+																	<i class="" aria-hidden="true"></i>
+								
+															</span> <!-- /.ec-icon-inner -->
+
+											</div> <!-- /.ec-icon -->
+				
+				<div class="ec-service-box-content">
+					
+				
+								<h3 class="ec-title">
+									Request a free consultation								</h3>
+			
+							<div class="ec-sep ec-sep-title">
+					<div class="ec-sep-inner"></div>
+				</div>
+			
+							<div class="ec-description">
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.  Sed do eiusmod tempor  Lorem ipsum dolor sit ame				</div>
+			
+							<div class="ec-service-box-cta ec-cta-btn ">
+										<a href="#">
+						
+													<span class="ec-cta-text">get an appointment</span>
+						
+											</a>
+				
+				</div> <!-- /.ec-service-box-cta -->
+					</div> <!-- /.ec-service-box-content -->
+
+		</div> <!-- /.ec-service-box -->
+		</div> <!-- /.ec-service-box-wrapper -->
+				</div>
+				</div>
+					</div>
+		</div>
+							</div>
+		</section>
+				<section class="elementor-section elementor-top-section elementor-element elementor-element-f8bb3f1 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="f8bb3f1" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-32ba596" data-id="32ba596" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<section class="elementor-section elementor-inner-section elementor-element elementor-element-9d3a220 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="9d3a220" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-1825f25 elementor-hidden-mobile" data-id="1825f25" data-element_type="column">
+			<div class="elementor-widget-wrap">
+									</div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-1c5b2e5" data-id="1c5b2e5" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-3bfdbb5 ec-service-box--top elementor-widget elementor-widget-elementor-companion-service-box" data-id="3bfdbb5" data-element_type="widget" data-settings="{&quot;icon_position&quot;:&quot;top&quot;}" data-widget_type="elementor-companion-service-box.default">
+				<div class="elementor-widget-container">
+			
+		<div class="ec-service-box-wrapper">
+			<div class="ec-service-box">
+
+				
+									<div class="ec-icon">
+													<span class="ec-icon-inner">
+								
+																	<i class="" aria-hidden="true"></i>
+								
+															</span> <!-- /.ec-icon-inner -->
+
+											</div> <!-- /.ec-icon -->
+				
+				<div class="ec-service-box-content">
+					
+				
+								<h3 class="ec-title">
+									latest articles								</h3>
+			
+							<div class="ec-sep ec-sep-title">
+					<div class="ec-sep-inner"></div>
+				</div>
+			
+							<div class="ec-description">
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.				</div>
+			
+					</div> <!-- /.ec-service-box-content -->
+
+		</div> <!-- /.ec-service-box -->
+		</div> <!-- /.ec-service-box-wrapper -->
+				</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-2fba675" data-id="2fba675" data-element_type="column">
+			<div class="elementor-widget-wrap">
+									</div>
+		</div>
+							</div>
+		</section>
+				<section class="elementor-section elementor-inner-section elementor-element elementor-element-a6845e2 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="a6845e2" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-100 elementor-inner-column elementor-element elementor-element-d272d44" data-id="d272d44" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-27b70ff ec-posts--top elementor-widget elementor-widget-elementor-companion-posts" data-id="27b70ff" data-element_type="widget" data-settings="{&quot;classic_image_position&quot;:&quot;top&quot;}" data-widget_type="elementor-companion-posts.classic">
+				<div class="elementor-widget-container">
+					<div class="ec-posts-wrapper ec-grid__3 ec-grid__tablet-2 ec-grid__mobile-1 ec-post__skin-classic">
+						<div class="ec-grid">
+				<article class="ec-post ec-grid-item">
+	
+	<div class="ec-post__content-wrap">
+					<h3 class="ec-post__title"><a href="https://themegrilldemos.com/spacious-pro-counseling/2021/06/25/mental-health-and-sucidial-prevention/">Mental Health and Sucidial Prevention</a></h3>
+			
+		
+		
+		<div class="ec-post__excerpt">
+			<p>There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by …</p>
+		</div>
+
+		
+							<a href="https://themegrilldemos.com/spacious-pro-counseling/2021/06/25/mental-health-and-sucidial-prevention/" class="ec-post__read-more ec-cta-btn">
+				learn more			</a>
+					</div>
+</article>
+<article class="ec-post ec-grid-item">
+	
+	<div class="ec-post__content-wrap">
+					<h3 class="ec-post__title"><a href="https://themegrilldemos.com/spacious-pro-counseling/2021/06/25/dealing-with-sadness-and-depression/">Dealing With Sadness and Depression</a></h3>
+			
+		
+		
+		<div class="ec-post__excerpt">
+			<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem …</p>
+		</div>
+
+		
+							<a href="https://themegrilldemos.com/spacious-pro-counseling/2021/06/25/dealing-with-sadness-and-depression/" class="ec-post__read-more ec-cta-btn">
+				learn more			</a>
+					</div>
+</article>
+<article class="ec-post ec-grid-item">
+	
+	<div class="ec-post__content-wrap">
+					<h3 class="ec-post__title"><a href="https://themegrilldemos.com/spacious-pro-counseling/2021/06/25/mental-health-today-and-stress-management/">Mental Health Today and Stress Management</a></h3>
+			
+		
+		
+		<div class="ec-post__excerpt">
+			<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem …</p>
+		</div>
+
+		
+							<a href="https://themegrilldemos.com/spacious-pro-counseling/2021/06/25/mental-health-today-and-stress-management/" class="ec-post__read-more ec-cta-btn">
+				learn more			</a>
+					</div>
+</article>
+			</div> <!-- /.ec-grid -->
+					</div> <!-- /.ec-posts-wrapper -->
+				</div>
+				</div>
+					</div>
+		</div>
+							</div>
+		</section>
+					</div>
+		</div>
+							</div>
+		</section>
+							</div>
+				</div>
+	</div>
+	
+
+</div><!-- .inner-wrap -->
+</div><!-- #main -->
+
+<footer id="colophon" class="clearfix">
+	
+<div class="footer-widgets-wrapper">
+	<div class="inner-wrap">
+		<div class="footer-widgets-area  clearfix">
+
+																												
+					<div class="tg-one-fourth tg-column-1">
+						<aside id="text-1" class="widget widget_text">			<div class="textwidget"><p><img class="alignnone wp-image-282 size-full" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20195%2041'%3E%3C/svg%3E" alt="" width="195" height="41" data-lazy-src="https://themegrilldemos.com/spacious-counseling/wp-content/uploads/sites/166/2021/06/white.png"><noscript><img class="alignnone wp-image-282 size-full" src="https://themegrilldemos.com/spacious-counseling/wp-content/uploads/sites/166/2021/06/white.png" alt="" width="195" height="41" /></noscript></p>
+<p>Scelerisque imperdiet ridiculus arcu scelerisque lobortis vel hendrerit aliquam eget sed purus risus eu nunc massa, arcu odio eget iaculis eget sed purus risus . Arcu scelerisque lobortis vel hendrerit</p>
+</div>
+		</aside>					</div>
+
+											<div class="tg-one-fourth tg-column-2">
+							<aside id="nav_menu-1" class="widget widget_nav_menu"><h3 class="widget-title"><span>Services</span></h3><div class="menu-services-container"><ul id="menu-services" class="menu"><li id="menu-item-310" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-310"><a href="https://themegrilldemos.com/spacious-pro-counseling/career-coaching/">Career Coaching</a></li>
+<li id="menu-item-298" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-298"><a href="https://themegrilldemos.com/spacious-pro-counseling/mental-health-workshop/">Mental Health Workshop</a></li>
+<li id="menu-item-299" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-299"><a href="https://themegrilldemos.com/spacious-pro-counseling/work-improvement/">Work Improvement</a></li>
+<li id="menu-item-301" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-301"><a href="https://themegrilldemos.com/spacious-pro-counseling/stress-management/">Stress Management</a></li>
+</ul></div></aside>						</div>
+					
+											<div class="tg-one-fourth tg-after-two-blocks-clearfix tg-column-3">
+							<aside id="nav_menu-2" class="widget widget_nav_menu"><h3 class="widget-title"><span>Useful Links</span></h3><div class="menu-useful-links-container"><ul id="menu-useful-links" class="menu"><li id="menu-item-290" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-290"><a href="https://themegrilldemos.com/spacious-pro-counseling/about-me/">About Me</a></li>
+<li id="menu-item-305" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-305"><a href="https://themegrilldemos.com/spacious-pro-counseling/success-stories/">Success Stories</a></li>
+<li id="menu-item-306" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-306"><a href="https://themegrilldemos.com/spacious-pro-counseling/career-plans/">Career Plans</a></li>
+<li id="menu-item-307" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-307"><a href="https://themegrilldemos.com/spacious-pro-counseling/contact/">Contact</a></li>
+</ul></div></aside>						</div>
+					
+											<div class="tg-one-fourth tg-one-fourth-last tg-column-4">
+							<aside id="text-2" class="widget widget_text"><h3 class="widget-title"><span>Contact info</span></h3>			<div class="textwidget"><p>123 Fifth Avenue, New York, NY 12004. United States.</p>
+<p>mail@example.com</p>
+<p>+01 – 123 456 78 90</p>
+</div>
+		</aside>						</div>
+					
+																																																								
+					</div>
+	</div>
+</div>
+	<div class="footer-socket-wrapper clearfix copyright-center">
+		<div class="inner-wrap">
+			<div class="footer-socket-area">
+				<div class="copyright">Copyright © 2022 <a href="https://themegrilldemos.com/spacious-pro-counseling/" title="Spacious Pro Counseling"><span>Spacious Pro Counseling</span></a> Theme by: <a href="https://themegrill.com/themes/spacious/" target="_blank" title="Spacious Pro" rel="nofollow"><span>Spacious Pro</span></a> Powered by: <a href="https://wordpress.org" target="_blank" title="WordPress" rel="nofollow"><span>WordPress</span></a></div>				<nav class="small-menu clearfix">
+					<div class="menu-useful-links-container"><ul id="menu-useful-links-1" class="menu"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-290"><a href="https://themegrilldemos.com/spacious-pro-counseling/about-me/">About Me</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-305"><a href="https://themegrilldemos.com/spacious-pro-counseling/success-stories/">Success Stories</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-306"><a href="https://themegrilldemos.com/spacious-pro-counseling/career-plans/">Career Plans</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-307"><a href="https://themegrilldemos.com/spacious-pro-counseling/contact/">Contact</a></li>
+</ul></div>				</nav>
+			</div>
+		</div>
+	</div>
+</footer>
+
+	<a href="#masthead" id="scroll-up"></a>
+
+
+</div><!-- #page -->
+
+	<script type="rocketlazyloadscript" data-rocket-type="text/javascript">
+		var c = document.body.className;
+		c = c.replace( /everest-forms-no-js/, 'everest-forms-js' );
+		document.body.className = c;
+	</script>
+	<script type="rocketlazyloadscript" data-rocket-type="text/javascript" id="rocket-browser-checker-js-after">
+"use strict";var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||!1,descriptor.configurable=!0,"value"in descriptor&&(descriptor.writable=!0),Object.defineProperty(target,descriptor.key,descriptor)}}return function(Constructor,protoProps,staticProps){return protoProps&&defineProperties(Constructor.prototype,protoProps),staticProps&&defineProperties(Constructor,staticProps),Constructor}}();function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor))throw new TypeError("Cannot call a class as a function")}var RocketBrowserCompatibilityChecker=function(){function RocketBrowserCompatibilityChecker(options){_classCallCheck(this,RocketBrowserCompatibilityChecker),this.passiveSupported=!1,this._checkPassiveOption(this),this.options=!!this.passiveSupported&&options}return _createClass(RocketBrowserCompatibilityChecker,[{key:"_checkPassiveOption",value:function(self){try{var options={get passive(){return!(self.passiveSupported=!0)}};window.addEventListener("test",null,options),window.removeEventListener("test",null,options)}catch(err){self.passiveSupported=!1}}},{key:"initRequestIdleCallback",value:function(){!1 in window&&(window.requestIdleCallback=function(cb){var start=Date.now();return setTimeout(function(){cb({didTimeout:!1,timeRemaining:function(){return Math.max(0,50-(Date.now()-start))}})},1)}),!1 in window&&(window.cancelIdleCallback=function(id){return clearTimeout(id)})}},{key:"isDataSaverModeOn",value:function(){return"connection"in navigator&&!0===navigator.connection.saveData}},{key:"supportsLinkPrefetch",value:function(){var elem=document.createElement("link");return elem.relList&&elem.relList.supports&&elem.relList.supports("prefetch")&&window.IntersectionObserver&&"isIntersecting"in IntersectionObserverEntry.prototype}},{key:"isSlowConnection",value:function(){return"connection"in navigator&&"effectiveType"in navigator.connection&&("2g"===navigator.connection.effectiveType||"slow-2g"===navigator.connection.effectiveType)}}]),RocketBrowserCompatibilityChecker}();
+</script>
+<script type="text/javascript" id="rocket-preload-links-js-extra">
+/* <![CDATA[ */
+var RocketPreloadLinksConfig = {"excludeUris":"\/(.+\/)?feed\/?.+\/?|\/(?:.+\/)?embed\/|(\/[^\/]+)?\/(index\\.php\/)?wp\\-json(\/.*|$)|\/wp-admin\/|\/logout\/|\/wp-login.php","usesTrailingSlash":"1","imageExt":"jpg|jpeg|gif|png|tiff|bmp|webp|avif","fileExt":"jpg|jpeg|gif|png|tiff|bmp|webp|avif|php|pdf|html|htm","siteUrl":"https:\/\/themegrilldemos.com\/spacious-pro-counseling","onHoverDelay":"100","rateThrottle":"3"};
+/* ]]> */
+</script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" id="rocket-preload-links-js-after">
+(function() {
+"use strict";var r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},e=function(){function i(e,t){for(var n=0;n<t.length;n++){var i=t[n];i.enumerable=i.enumerable||!1,i.configurable=!0,"value"in i&&(i.writable=!0),Object.defineProperty(e,i.key,i)}}return function(e,t,n){return t&&i(e.prototype,t),n&&i(e,n),e}}();function i(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}var t=function(){function n(e,t){i(this,n),this.browser=e,this.config=t,this.options=this.browser.options,this.prefetched=new Set,this.eventTime=null,this.threshold=1111,this.numOnHover=0}return e(n,[{key:"init",value:function(){!this.browser.supportsLinkPrefetch()||this.browser.isDataSaverModeOn()||this.browser.isSlowConnection()||(this.regex={excludeUris:RegExp(this.config.excludeUris,"i"),images:RegExp(".("+this.config.imageExt+")$","i"),fileExt:RegExp(".("+this.config.fileExt+")$","i")},this._initListeners(this))}},{key:"_initListeners",value:function(e){-1<this.config.onHoverDelay&&document.addEventListener("mouseover",e.listener.bind(e),e.listenerOptions),document.addEventListener("mousedown",e.listener.bind(e),e.listenerOptions),document.addEventListener("touchstart",e.listener.bind(e),e.listenerOptions)}},{key:"listener",value:function(e){var t=e.target.closest("a"),n=this._prepareUrl(t);if(null!==n)switch(e.type){case"mousedown":case"touchstart":this._addPrefetchLink(n);break;case"mouseover":this._earlyPrefetch(t,n,"mouseout")}}},{key:"_earlyPrefetch",value:function(t,e,n){var i=this,r=setTimeout(function(){if(r=null,0===i.numOnHover)setTimeout(function(){return i.numOnHover=0},1e3);else if(i.numOnHover>i.config.rateThrottle)return;i.numOnHover++,i._addPrefetchLink(e)},this.config.onHoverDelay);t.addEventListener(n,function e(){t.removeEventListener(n,e,{passive:!0}),null!==r&&(clearTimeout(r),r=null)},{passive:!0})}},{key:"_addPrefetchLink",value:function(i){return this.prefetched.add(i.href),new Promise(function(e,t){var n=document.createElement("link");n.rel="prefetch",n.href=i.href,n.onload=e,n.onerror=t,document.head.appendChild(n)}).catch(function(){})}},{key:"_prepareUrl",value:function(e){if(null===e||"object"!==(void 0===e?"undefined":r(e))||!1 in e||-1===["http:","https:"].indexOf(e.protocol))return null;var t=e.href.substring(0,this.config.siteUrl.length),n=this._getPathname(e.href,t),i={original:e.href,protocol:e.protocol,origin:t,pathname:n,href:t+n};return this._isLinkOk(i)?i:null}},{key:"_getPathname",value:function(e,t){var n=t?e.substring(this.config.siteUrl.length):e;return n.startsWith("/")||(n="/"+n),this._shouldAddTrailingSlash(n)?n+"/":n}},{key:"_shouldAddTrailingSlash",value:function(e){return this.config.usesTrailingSlash&&!e.endsWith("/")&&!this.regex.fileExt.test(e)}},{key:"_isLinkOk",value:function(e){return null!==e&&"object"===(void 0===e?"undefined":r(e))&&(!this.prefetched.has(e.href)&&e.origin===this.config.siteUrl&&-1===e.href.indexOf("?")&&-1===e.href.indexOf("#")&&!this.regex.excludeUris.test(e.href)&&!this.regex.images.test(e.href))}}],[{key:"run",value:function(){"undefined"!=typeof RocketPreloadLinksConfig&&new n(new RocketBrowserCompatibilityChecker({capture:!0,passive:!0}),RocketPreloadLinksConfig).init()}}]),n}();t.run();
+}());
+</script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://themegrilldemos.com/spacious-pro-counseling/wp-content/themes/spacious-pro/js/navigation.min.js?ver=5.9.3" id="spacious-navigation-js"></script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://themegrilldemos.com/spacious-pro-counseling/wp-content/cache/min/166/spacious-pro-counseling/wp-content/themes/spacious-pro/js/skip-link-focus-fix.js?ver=1626579448" id="spacious-skip-link-focus-fix-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://themegrilldemos.com/spacious-pro-counseling/wp-content/themes/spacious-pro/js/spacious-custom.min.js?ver=5.9.3" id="spacious-custom-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://themegrilldemos.com/spacious-pro-counseling/wp-content/plugins/elementor/assets/lib/jquery-numerator/jquery-numerator.min.js?ver=0.2.1" id="jquery-numerator-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://themegrilldemos.com/spacious-pro-counseling/wp-includes/js/imagesloaded.min.js?ver=4.1.4" id="imagesloaded-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://themegrilldemos.com/spacious-pro-counseling/wp-content/plugins/elementor/assets/js/webpack.runtime.min.js?ver=3.6.3" id="elementor-webpack-runtime-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://themegrilldemos.com/spacious-pro-counseling/wp-content/plugins/elementor/assets/js/frontend-modules.min.js?ver=3.6.3" id="elementor-frontend-modules-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://themegrilldemos.com/spacious-pro-counseling/wp-content/plugins/elementor/assets/lib/waypoints/waypoints.min.js?ver=4.0.2" id="elementor-waypoints-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://themegrilldemos.com/spacious-pro-counseling/wp-includes/js/jquery/ui/core.min.js?ver=1.13.1" id="jquery-ui-core-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" id="elementor-frontend-js-before">
+var elementorFrontendConfig = {"environmentMode":{"edit":false,"wpPreview":false,"isScriptDebug":false},"i18n":{"shareOnFacebook":"Share on Facebook","shareOnTwitter":"Share on Twitter","pinIt":"Pin it","download":"Download","downloadImage":"Download image","fullscreen":"Fullscreen","zoom":"Zoom","share":"Share","playVideo":"Play Video","previous":"Previous","next":"Next","close":"Close"},"is_rtl":false,"breakpoints":{"xs":0,"sm":480,"md":768,"lg":1025,"xl":1440,"xxl":1600},"responsive":{"breakpoints":{"mobile":{"label":"Mobile","value":767,"default_value":767,"direction":"max","is_enabled":true},"mobile_extra":{"label":"Mobile Extra","value":880,"default_value":880,"direction":"max","is_enabled":false},"tablet":{"label":"Tablet","value":1024,"default_value":1024,"direction":"max","is_enabled":true},"tablet_extra":{"label":"Tablet Extra","value":1200,"default_value":1200,"direction":"max","is_enabled":false},"laptop":{"label":"Laptop","value":1366,"default_value":1366,"direction":"max","is_enabled":false},"widescreen":{"label":"Widescreen","value":2400,"default_value":2400,"direction":"min","is_enabled":false}}},"version":"3.6.3","is_static":false,"experimentalFeatures":{"e_dom_optimization":true,"e_optimized_assets_loading":true,"a11y_improvements":true,"e_import_export":true,"e_hidden_wordpress_widgets":true,"landing-pages":true,"elements-color-picker":true,"favorite-widgets":true,"admin-top-bar":true},"urls":{"assets":"https:\/\/themegrilldemos.com\/spacious-pro-counseling\/wp-content\/plugins\/elementor\/assets\/"},"settings":{"page":[],"editorPreferences":[]},"kit":{"active_breakpoints":["viewport_mobile","viewport_tablet"],"global_image_lightbox":"yes","lightbox_enable_counter":"yes","lightbox_enable_fullscreen":"yes","lightbox_enable_zoom":"yes","lightbox_enable_share":"yes","lightbox_title_src":"title","lightbox_description_src":"description"},"post":{"id":283,"title":"Spacious%20Pro%20Counseling%20%E2%80%93%20WordPress%20Template%20Site%20with%20professional%20looking%20design%20for%20promoting%20Psychologist%2C%20Therapist%2C%20and%20Counselor%20services","excerpt":"","featuredImage":false}};
+</script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://themegrilldemos.com/spacious-pro-counseling/wp-content/plugins/elementor/assets/js/frontend.min.js?ver=3.6.3" id="elementor-frontend-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://themegrilldemos.com/spacious-pro-counseling/wp-content/plugins/companion-elementor/assets/js/magnific-popup/jquery.magnific-popup.min.js?ver=1.2.5" id="magnific-popup-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://themegrilldemos.com/spacious-pro-counseling/wp-content/plugins/companion-elementor/assets/js/isotope/isotope.pkgd.min.js?ver=1.2.5" id="isotope-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://themegrilldemos.com/spacious-pro-counseling/wp-content/plugins/companion-elementor/assets/js/frontend.min.js?ver=1.2.5" id="companion-elementor-frontend-js"></script>
+<script>window.lazyLoadOptions={elements_selector:"img[data-lazy-src],.rocket-lazyload,iframe[data-lazy-src]",data_src:"lazy-src",data_srcset:"lazy-srcset",data_sizes:"lazy-sizes",class_loading:"lazyloading",class_loaded:"lazyloaded",threshold:300,callback_loaded:function(element){if(element.tagName==="IFRAME"&&element.dataset.rocketLazyload=="fitvidscompatible"){if(element.classList.contains("lazyloaded")){if(typeof window.jQuery!="undefined"){if(jQuery.fn.fitVids){jQuery(element).parent().fitVids()}}}}}};window.addEventListener('LazyLoad::Initialized',function(e){var lazyLoadInstance=e.detail.instance;if(window.MutationObserver){var observer=new MutationObserver(function(mutations){var image_count=0;var iframe_count=0;var rocketlazy_count=0;mutations.forEach(function(mutation){for(i=0;i<mutation.addedNodes.length;i++){if(typeof mutation.addedNodes[i].getElementsByTagName!=='function'){continue}
+if(typeof mutation.addedNodes[i].getElementsByClassName!=='function'){continue}
+images=mutation.addedNodes[i].getElementsByTagName('img');is_image=mutation.addedNodes[i].tagName=="IMG";iframes=mutation.addedNodes[i].getElementsByTagName('iframe');is_iframe=mutation.addedNodes[i].tagName=="IFRAME";rocket_lazy=mutation.addedNodes[i].getElementsByClassName('rocket-lazyload');image_count+=images.length;iframe_count+=iframes.length;rocketlazy_count+=rocket_lazy.length;if(is_image){image_count+=1}
+if(is_iframe){iframe_count+=1}}});if(image_count>0||iframe_count>0||rocketlazy_count>0){lazyLoadInstance.update()}});var b=document.getElementsByTagName("body")[0];var config={childList:!0,subtree:!0};observer.observe(b,config)}},!1)</script><script data-no-minify="1" async="" src="https://themegrilldemos.com/spacious-pro-counseling/wp-content/plugins/wp-rocket/assets/js/lazyload/16.1/lazyload.min.js"></script><script>function lazyLoadThumb(e){var t='<img loading="lazy" data-lazy-src="https://i.ytimg.com/vi/ID/hqdefault.jpg" alt="" width="480" height="360"><noscript><img src="https://i.ytimg.com/vi/ID/hqdefault.jpg" alt="" width="480" height="360"></noscript>',a='<div class="play"></div>';return t.replace("ID",e)+a}function lazyLoadYoutubeIframe(){var e=document.createElement("iframe"),t="ID?autoplay=1";t+=0===this.dataset.query.length?'':'&'+this.dataset.query;e.setAttribute("src",t.replace("ID",this.dataset.src)),e.setAttribute("frameborder","0"),e.setAttribute("allowfullscreen","1"),e.setAttribute("allow", "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"),this.parentNode.replaceChild(e,this)}document.addEventListener("DOMContentLoaded",function(){var e,t,a=document.getElementsByClassName("rll-youtube-player");for(t=0;t<a.length;t++)e=document.createElement("div"),e.setAttribute("data-id",a[t].dataset.id),e.setAttribute("data-query", a[t].dataset.query),e.setAttribute("data-src", a[t].dataset.src),e.innerHTML=lazyLoadThumb(a[t].dataset.id),e.onclick=lazyLoadYoutubeIframe,a[t].appendChild(e)});</script>
+<script type="rocketlazyloadscript">"use strict";var wprRemoveCPCSS=function wprRemoveCPCSS(){var elem;document.querySelector('link[data-rocket-async="style"][rel="preload"]')?setTimeout(wprRemoveCPCSS,200):(elem=document.getElementById("rocket-critical-css"))&&"remove"in elem&&elem.remove()};window.addEventListener?window.addEventListener("load",wprRemoveCPCSS):window.attachEvent&&window.attachEvent("onload",wprRemoveCPCSS);</script><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Rubik%7CLora%7CRoboto%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CRoboto%20Slab%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CLora%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CRubik%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic&#038;display=swap" /><link rel="stylesheet" href="https://themegrilldemos.com/spacious-pro-counseling/wp-content/cache/min/166/5ea07a6b251c5512b99b35e98ab41943.css" media="all" data-minify="1" /></noscript>
+
+
+<!-- This website is like a Rocket, isn't it? Performance optimized by WP Rocket. Learn more: https://wp-rocket.me - Debug: cached@1656002833 --></body></html>

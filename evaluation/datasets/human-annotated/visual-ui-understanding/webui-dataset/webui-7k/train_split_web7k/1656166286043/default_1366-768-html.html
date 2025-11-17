@@ -1,0 +1,1250 @@
+<!DOCTYPE html><html lang="en"><head>
+<script type="text/javascript" id="www-widgetapi-script" src="https://www.youtube.com/s/player/9c24c545/www-widgetapi.vflset/www-widgetapi.js" async=""></script><script src="//www.youtube.com/iframe_api"></script><script async="" src="https://www.clarity.ms/eus2/s/0.6.34/clarity.js"></script><script async="" src="https://www.clarity.ms/tag/uet/17534276"></script><script async="" src="//www.google-analytics.com/analytics.js"></script><script type="text/javascript" async="" src="https://bat.bing.com/bat.js"></script><script type="text/javascript" async="" src="https://www.googleadservices.com/pagead/conversion_async.js"></script><script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script><script type="text/javascript" async="" src="https://snap.licdn.com/li.lms-analytics/insight.min.js"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=G-CNWQ54SDD8&amp;l=dataLayer&amp;cx=c"></script><script type="text/javascript" async="" src="//munchkin.marketo.net/161/munchkin.js"></script><script async="" src="https://www.googletagmanager.com/gtm.js?id=GTM-WXRH9C"></script><script>(function(b,d,e,a,g){b[a]=b[a]||[],b[a].push({'gtm.start':(new Date).getTime(),event:'gtm.js'});var f=d.getElementsByTagName(e)[0],c=d.createElement(e),h=a!='dataLayer'?'&l='+a:'';c.async=!0,c.src='https://www.googletagmanager.com/gtm.js?id='+g+h,f.parentNode.insertBefore(c,f)})(window,document,'script','dataLayer','GTM-WXRH9C')</script>
+<meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="IE=edge,chrome=1">
+<title>InfluxDB line protocol tutorial | InfluxDB OSS 1.8 Documentation</title>
+<meta name="description" content="Tutorial for using InfluxDB line protocol.">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<link rel="shortcut icon" href="/img/favicon.png" type="image/png" sizes="32x32">
+<link rel="canonical" href="https://docs.influxdata.com/influxdb/v1.8/write_protocols/line_protocol_tutorial/">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css">
+<link rel="stylesheet" title="light-theme" type="text/css" href="/light-theme.c837a3e2d7a3dfa8c81606aeaaeb752b6fc85aa8fbb1fb3a1cd14df9fd8d76e0.css">
+<link rel="alternate stylesheet" title="dark-theme" type="text/css" href="/dark-theme.3cf3e3224dfad70bca29d0a6e1bbe0dbf871de5c7e264ef08e1b93268a4d463c.css">
+<link rel="stylesheet" title="sidebar-open" type="text/css" href="/dark-theme.56ede7c71d3385876a1c762e207372a1699e829612d789f952885f820d50394a.css">
+<link rel="alternate stylesheet" title="sidebar-closed" type="text/css" href="/light-theme.b9796198db2f4e595588f9612cc06faa5b6f61322119b20af095d82a792468f7.css">
+<link rel="stylesheet" type="text/css" href="/api.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,500;0,700;1,500;1,700&amp;family=Rubik:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&amp;display=swap" rel="stylesheet">
+<script type="text/javascript" src="/js/header.bundle.4b70807d8751241611718c633f2afad781467972f9ec796b340b8431446c187d.js"></script>
+<script type="text/javascript">set_style_from_cookie()</script>
+<script type="text/javascript">set_sidebar_state()</script>
+<meta name="docsearch:searchTag" content="influxdb-v1.8">
+<meta name="latest" content="false">
+<meta name="last-modified" content="2021-08-20 16:22:37 -0700 -0700">
+<script type="text/javascript">(function(){var b=!1,a;function c(){b===!1&&(b=!0,Munchkin.init('972-GDU-533'))}a=document.createElement('script'),a.type='text/javascript',a.async=!0,a.src='//munchkin.marketo.net/munchkin.js',a.onreadystatechange=function(){(this.readyState=='complete'||this.readyState=='loaded')&&c()},a.onload=c,document.getElementsByTagName('head')[0].appendChild(a)})()</script><script type="text/javascript" async="" src="//munchkin.marketo.net/munchkin.js"></script>
+<script>window._dtPixelLayer={orgId:"6266e28c3aae2400137ae93b"};var script=document.createElement("script");script.setAttribute("src","https://pixel.dealtale.com/pixel.bundle.js"),script.setAttribute("type","text/javascript"),document.getElementsByTagName("head")[0].appendChild(script)</script><script src="https://pixel.dealtale.com/pixel.bundle.js" type="text/javascript"></script>
+<meta name="Copyright" content="InfluxData Inc.">
+<meta http-equiv="origin-trial" content="A9wkrvp9y21k30U9lU7MJMjBj4USjLrGwV+Z8zO3J3ZBH139DOnCv3XLK2Ii40S94HG1SZ/Zeg2GSHOD3wlWngYAAAB7eyJvcmlnaW4iOiJodHRwczovL3d3dy5nb29nbGV0YWdtYW5hZ2VyLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjYxMjk5MTk5LCJpc1RoaXJkUGFydHkiOnRydWV9"><script src="https://googleads.g.doubleclick.net/pagead/viewthroughconversion/866720798/?random=1656166291847&amp;cv=9&amp;fst=1656166291847&amp;num=1&amp;bg=ffffff&amp;guid=ON&amp;resp=GooglemKTybQhCsO&amp;u_h=600&amp;u_w=800&amp;u_ah=600&amp;u_aw=800&amp;u_cd=24&amp;u_his=2&amp;u_tz=0&amp;u_java=false&amp;u_nplug=0&amp;u_nmime=0&amp;gtm=2wg6m0&amp;sendb=1&amp;ig=1&amp;frm=0&amp;url=https%3A%2F%2Fdocs.influxdata.com%2Finfluxdb%2Fv1.8%2Fwrite_protocols%2Fline_protocol_tutorial%2F&amp;tiba=InfluxDB%20line%20protocol%20tutorial%20%7C%20InfluxDB%20OSS%201.8%20Documentation&amp;hn=www.googleadservices.com&amp;async=1&amp;rfmt=3&amp;fmt=4"></script><script src="https://bat.bing.com/p/action/17534276.js" type="text/javascript" async="" data-ueto="ueto_68da2ef434"></script></head>
+<body class="influxdb v1">
+<noscript>
+<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WXRH9C" height=0 width=0 style=display:none;visibility:hidden></iframe>
+</noscript>
+<div class="topnav">
+<div class="topnav-left">
+<a class="influx-home" href="https://www.influxdata.com" title="InfluxData"><span class="icon-influx-logo"></span><span class="icon-influx-logotype"></span></a>
+<span class="divider"></span>
+<a class="docs-home" href="/"><span class="short">Doc</span><span class="long">umentation</span></a>
+</div>
+<div class="topnav-right">
+<div class="selector-dropdowns">
+<div class="dropdown">
+<p class="selected">InfluxDB OSS</p>
+<ul class="item-list products">
+<li>
+</li><li class="flux">
+<a href="/flux/v0.x/">Flux</a>
+</li>
+<li>
+</li><li>
+<a href="/kapacitor/v1.6/">Kapacitor</a>
+</li>
+<li>
+</li><li>
+<a href="/chronograf/v1.9/">Chronograf</a>
+</li>
+<li>
+</li><li>
+<a href="/telegraf/v1.23/">Telegraf</a>
+</li>
+<li>
+</li><li>
+<a href="/enterprise_influxdb/v1.9/">InfluxDB Enterprise</a>
+</li>
+<li>
+</li><li>
+<a href="" class="active">InfluxDB OSS</a>
+</li>
+<li>
+</li><li>
+<a href="/influxdb/cloud/">InfluxDB Cloud</a>
+</li>
+</ul>
+</div>
+<div class="dropdown">
+<p class="selected">v1.8</p>
+<ul class="item-list versions">
+<li><a href="https://archive.docs.influxdata.com/influxdb/" class="legacy" target="_blank">older</a></li>
+<li>
+<a href="/influxdb/v1.3/write_protocols/line_protocol_tutorial/">v1.3</a>
+</li>
+<li>
+<a href="/influxdb/v1.4/write_protocols/line_protocol_tutorial/">v1.4</a>
+</li>
+<li>
+<a href="/influxdb/v1.5/write_protocols/line_protocol_tutorial/">v1.5</a>
+</li>
+<li>
+<a href="/influxdb/v1.6/write_protocols/line_protocol_tutorial/">v1.6</a>
+</li>
+<li>
+<a href="/influxdb/v1.7/write_protocols/line_protocol_tutorial/">v1.7</a>
+</li>
+<li>
+<a href="/influxdb/v1.8/write_protocols/line_protocol_tutorial/" class="active">v1.8</a>
+</li>
+<li>
+<a href="/influxdb/v2.0/">v2.0</a>
+</li>
+<li>
+<a href="/influxdb/v2.1/">v2.1</a>
+</li>
+<li>
+<a href="/influxdb/v2.2/">v2.2</a>
+</li>
+<li>
+<a href="/influxdb/v2.3/">v2.3</a>
+</li>
+</ul>
+</div>
+</div>
+<div class="buttons">
+<div class="search-btn">
+<button id="search-btn" onclick="return toggle_sidebar('sidebar-open'),document.getElementById('algolia-search-input').focus(),!1"><span class="icon-search"></span></button>
+</div>
+<button class="url-trigger" href="#"><span class="cf-icon cog-solid-new"></span></button>
+<button class="theme-switcher" id="theme-switch-light" onclick="return switch_style('light-theme'),!1"><span class="cf-icon light-mode-new"></span></button>
+<button class="theme-switcher" id="theme-switch-dark" onclick="return switch_style('dark-theme'),!1"><span class="cf-icon dark-mode-new"></span></button>
+</div>
+</div>
+</div>
+<div class="page-wrapper">
+<aside class="sidebar">
+<div class="sidebar-toggle" onclick="return toggle_sidebar('sidebar-closed'),!1"><a href="#"><span class="cf-icon sidebar-close-new"></span></a></div>
+<div class="search-and-nav-toggle">
+<div class="sidebar--search">
+<span class="algolia-autocomplete" style="position: relative; display: inline-block; direction: ltr;"><input class="sidebar--search-field ds-hint" type="text" accesskey="s" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" dir="auto" readonly="" aria-hidden="true" tabindex="-1" style="position: absolute; top: 0px; left: 0px; border-color: transparent; box-shadow: none; opacity: 1; background: none 0% 0% / auto repeat scroll padding-box border-box rgb(255, 255, 255);"><input class="sidebar--search-field ds-input" id="algolia-search-input" type="text" accesskey="s" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" dir="auto" placeholder="Search InfluxDB v1.8 &amp; Flux" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-label="search input" aria-owns="algolia-autocomplete-listbox-0" style="position: relative; vertical-align: top; background-color: transparent;"><pre aria-hidden="true" style="position: absolute; visibility: hidden; white-space: pre; font-family: &quot;Proxima Nova&quot;, sans-serif; font-size: 17.6px; font-style: normal; font-variant: normal; font-weight: 500; word-spacing: 0px; letter-spacing: normal; text-indent: 0px; text-rendering: auto; text-transform: none;"></pre><span class="ds-dropdown-menu" role="listbox" id="algolia-autocomplete-listbox-0" style="position: absolute; top: 100%; z-index: 100; display: none; left: 0px; right: auto;"><div class="search-all-content"><a href="https://support.influxdata.com" target="_blank">Search all InfluxData content <span class="icon-arrow-up-right"></span></a></div><div class="ds-empty" style="display: none;"></div><div class="ds-dataset-1"></div></span></span>
+</div>
+<a id="contents-toggle-btn" href="#">
+<span class="toggle-hamburger"></span>
+</a>
+</div>
+<ul id="nav-tree">
+<li class="nav-category">
+<a href="/influxdb/v1.8/">InfluxDB v1.8</a>
+</li>
+<li class="nav-category">
+<a href="#" class="children-toggle"></a>
+<a href="/influxdb/v1.8/about_the_project/">About the project</a>
+<ul class="children">
+<li class="nav-item">
+<a href="/influxdb/v1.8/about_the_project/releasenotes-changelog/">Release notes</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/about_the_project/contributing/">Contribute to InfluxDB</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/about_the_project/cla/">Contributor license agreement</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/about_the_project/licenses/">InfluxDB license</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/about_the_project/third-party/">Third party software</a>
+</li>
+</ul>
+</li>
+<li class="nav-category">
+<a href="#" class="children-toggle"></a>
+<a href="/influxdb/v1.8/introduction/">Introduction</a>
+<ul class="children">
+<li class="nav-item">
+<a href="/influxdb/v1.8/introduction/download/">Download InfluxDB</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/introduction/install/">Install InfluxDB</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/introduction/get-started/">Get started with InfluxDB</a>
+</li>
+</ul>
+</li>
+<li class="nav-category">
+<a href="#" class="children-toggle"></a>
+<a href="/influxdb/v1.8/concepts/">Concepts</a>
+<ul class="children">
+<li class="nav-item">
+<a href="/influxdb/v1.8/concepts/key_concepts/">Key concepts</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/concepts/glossary/">Glossary</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/concepts/crosswalk/">Compare InfluxDB to SQL databases</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/concepts/insights_tradeoffs/">InfluxDB design insights and tradeoffs</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/concepts/schema_and_data_layout/">Schema design and data layout</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/concepts/storage_engine/">In-memory indexing with TSM</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/concepts/time-series-index/">Time Series Index (TSI) overview</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/concepts/tsi-details/">Time Series Index (TSI) details</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/concepts/file-system-layout/">File system layout</a>
+</li>
+</ul>
+</li>
+<li class="nav-category">
+<a href="#" class="children-toggle"></a>
+<a href="/influxdb/v1.8/guides/">Guides</a>
+<ul class="children">
+<li class="nav-item">
+<a href="/influxdb/v1.8/tools/shell/">Using influx</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/guides/write_data/">Write data with the InfluxDB API</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/guides/query_data/">Query data with the InfluxDB API</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/guides/downsample_and_retain/">Downsample and retain data</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/guides/hardware_sizing/">Hardware sizing guidelines</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/guides/calculate_percentages/">Calculate percentages</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/guides/migrate-to-enterprise/">Migrate to InfluxDB Enterprise</a>
+</li>
+</ul>
+</li>
+<li class="nav-category">
+<a href="#" class="children-toggle"></a>
+<a href="/influxdb/v1.8/administration/">Administration</a>
+<ul class="children">
+<li class="nav-item">
+<a href="/influxdb/v1.8/administration/config/">Configure InfluxDB</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/administration/authentication_and_authorization/">Manage authentication and authorization</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/administration/upgrading/">Upgrade InfluxDB</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/administration/https_setup/">Enable HTTPS</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/administration/logs/">Log and trace</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/administration/ports/">Ports</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/administration/backup_and_restore/">Back up and restore</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/administration/rebuild-tsi-index/">Rebuild the TSI index</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/administration/compact-series-file/">Compact a series file</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/administration/security/">Manage security</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/administration/server_monitoring/">Monitor InfluxDB</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/administration/stability_and_compatibility/">Stability and compatibility</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/administration/subscription-management/">Manage subscriptions</a>
+</li>
+</ul>
+</li>
+<li class="nav-category">
+<a href="#" class="children-toggle"></a>
+<a href="/influxdb/v1.8/tools/">Tools</a>
+<ul class="children">
+<li class="nav-item">
+<a href="/influxdb/v1.8/tools/influx-cli/">influx</a>
+</li>
+<li class="nav-item">
+<a href="#" class="children-toggle"></a>
+<a href="/influxdb/v1.8/tools/influxd/">influxd</a>
+<ul class="children">
+<li class="nav-item">
+<a href="/influxdb/v1.8/tools/influxd/backup/">influxd backup</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/tools/influxd/config/">influxd config</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/tools/influxd/restore/">influxd restore</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/tools/influxd/run/">influxd run</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/tools/influxd/version/">influxd version</a>
+</li>
+</ul>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/tools/api/">InfluxDB API reference</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/tools/api_client_libraries/">InfluxDB client libraries</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/tools/influx_inspect/">Influx Inspect disk utility</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/tools/inch/">InfluxDB inch tool</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/tools/flux-vscode/">Flux VS Code extension</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/tools/grafana/">Grafana</a>
+</li>
+</ul>
+</li>
+<li class="nav-category">
+<a href="#" class="children-toggle"></a>
+<a href="/influxdb/v1.8/query_language/">Influx Query Language (InfluxQL)</a>
+<ul class="children">
+<li class="nav-item">
+<a href="/influxdb/v1.8/query_language/sample-data/">Sample data</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/query_language/explore-data/">Explore data</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/query_language/explore-schema/">Explore your schema</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/query_language/manage-database/">Manage your database</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/query_language/continuous_queries/">Continuous Queries</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/query_language/functions/">Functions</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/query_language/math_operators/">Mathematical operators</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/query_language/spec/">InfluxQL reference</a>
+</li>
+</ul>
+</li>
+<li class="nav-category">
+<a href="#" class="children-toggle"></a>
+<a href="/influxdb/v1.8/flux/">Flux</a>
+<ul class="children">
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/installation/">Enable Flux</a>
+</li>
+<li class="nav-item">
+<a href="#" class="children-toggle"></a>
+<a href="/influxdb/v1.8/flux/get-started/">Get started with Flux</a>
+<ul class="children">
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/get-started/query-influxdb/">Query InfluxDB</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/get-started/transform-data/">Transform your data</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/get-started/syntax-basics/">Syntax basics</a>
+</li>
+</ul>
+</li>
+<li class="nav-item">
+<a href="#" class="children-toggle"></a>
+<a href="/influxdb/v1.8/flux/guides/">Query with Flux</a>
+<ul class="children">
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/guides/execute-queries/">Execute Flux queries</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/guides/query-fields/">Query fields and tags</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/guides/group-data/">Group</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/guides/sort-limit/">Sort and limit</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/guides/window-aggregate/">Window &amp; aggregate</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/guides/mathematic-operations/">Transform data with math</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/guides/calculate-percentages/">Calculate percentages</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/guides/cumulativesum/">Cumulative sum</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/guides/fill/">Fill</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/guides/first-last/">First &amp; last</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/guides/histograms/">Histograms</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/guides/increase/">Increase</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/guides/join/">Join</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/guides/median/">Median</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/guides/moving-average/">Moving Average</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/guides/percentile-quantile/">Percentile &amp; quantile</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/guides/rate/">Rate</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/guides/conditional-logic/">Conditional logic</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/guides/exists/">Exists</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/guides/scalar-values/">Extract scalar values</a>
+</li>
+<li class="nav-item">
+<a href="#" class="children-toggle"></a>
+<a href="/influxdb/v1.8/flux/guides/geo/">Geo-temporal data</a>
+<ul class="children">
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/guides/geo/shape-geo-data/">Shape geo-temporal data</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/guides/geo/filter-by-region/">Filter by region</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/guides/geo/group-geo-data/">Group geo-temporal data</a>
+</li>
+</ul>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/guides/manipulate-timestamps/">Manipulate timestamps</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/guides/monitor-states/">Monitor states</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/guides/sql/">Query SQL data sources</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/guides/regular-expressions/">Regular expressions</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/guides/optimize-queries/">Optimize queries</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/guides/flux-in-dashboards/">Use Flux in dashboards</a>
+</li>
+</ul>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/flux/flux-vs-influxql/">Flux vs InfluxQL</a>
+</li>
+</ul>
+</li>
+<li class="nav-category">
+<a href="#" class="children-toggle open"></a>
+<a href="/influxdb/v1.8/write_protocols/">Write protocols</a>
+<ul class="children open">
+<li class="nav-item">
+<a href="/influxdb/v1.8/write_protocols/line_protocol_reference/">InfluxDB line protocol reference</a>
+</li>
+<li class="nav-item active">
+<a href="/influxdb/v1.8/write_protocols/line_protocol_tutorial/">InfluxDB line protocol tutorial</a>
+</li>
+</ul>
+</li>
+<li class="nav-category">
+<a href="#" class="children-toggle"></a>
+<a href="/influxdb/v1.8/supported_protocols/">Supported protocols</a>
+<ul class="children">
+<li class="nav-item">
+<a href="/influxdb/v1.8/supported_protocols/collectd/">CollectD</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/supported_protocols/graphite/">Graphite</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/supported_protocols/opentsdb/">OpenTSDB</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/supported_protocols/prometheus/">Prometheus</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/supported_protocols/udp/">UDP</a>
+</li>
+</ul>
+</li>
+<li class="nav-category">
+<a href="/influxdb/v1.8/high_availability/">High availability</a>
+</li>
+<li class="nav-category">
+<a href="#" class="children-toggle"></a>
+<a href="/influxdb/v1.8/troubleshooting/">Troubleshoot</a>
+<ul class="children">
+<li class="nav-item">
+<a href="/influxdb/v1.8/troubleshooting/frequently-asked-questions/">Frequently asked questions (FAQs)</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/troubleshooting/query_management/">Query management</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/troubleshooting/errors/">Error messages</a>
+</li>
+</ul>
+</li>
+<li class="nav-category">
+<a href="/influxdb/v1.8/additional_resources/additional_resources/">Additional resources</a>
+</li>
+<h4 class="flux">Flux</h4>
+<li class="nav-category"><a href="/flux/v0.x/">Flux v0.x Documentation</a></li>
+<li class="nav-category"><a href="/flux/v0.x/get-started/">Get started with Flux</a></li>
+<li class="nav-category"><a href="/flux/v0.x/stdlib/">Flux standard library</a></li>
+<h4 class="platform">InfluxData Platform</h4>
+<li class="nav-category">
+<a href="/platform/">Introduction</a>
+</li>
+<li class="nav-category">
+<a href="/platform/getting-started/">Get started</a>
+</li>
+<li class="nav-category">
+<a href="#" class="children-toggle"></a>
+<a href="/platform/install-and-deploy/">Install and deploy</a>
+<ul class="children">
+<li class="nav-item">
+<a href="#" class="children-toggle"></a>
+<a href="/platform/install-and-deploy/install/">Install the InfluxData Platform</a>
+<ul class="children">
+<li class="nav-item">
+<a href="/platform/install-and-deploy/install/oss-install/">TICK stack (OSS)</a>
+</li>
+</ul>
+</li>
+<li class="nav-item">
+<a href="#" class="children-toggle"></a>
+<a href="/platform/install-and-deploy/deploying/">Deploy InfluxData Platform</a>
+<ul class="children">
+<li class="nav-item">
+<a href="/platform/install-and-deploy/deploying/sandbox-install/">Docker sandbox</a>
+</li>
+<li class="nav-item">
+<a href="/platform/install-and-deploy/deploying/google-cloud-platform/">Google Cloud Platform</a>
+</li>
+<li class="nav-item">
+<a href="/platform/install-and-deploy/deploying/amazon-web-services/">AWS</a>
+</li>
+<li class="nav-item">
+<a href="/platform/install-and-deploy/deploying/kubernetes/">Kubernetes</a>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-category">
+<a href="#" class="children-toggle"></a>
+<a href="/platform/monitoring/">Monitor</a>
+<ul class="children">
+<li class="nav-item">
+<a href="#" class="children-toggle"></a>
+<a href="/platform/monitoring/influxdata-platform/">Monitor the InfluxData Platform</a>
+<ul class="children">
+<li class="nav-item">
+<a href="/platform/monitoring/influxdata-platform/internal-vs-external/">Configurations for monitoring</a>
+</li>
+<li class="nav-item">
+<a href="/platform/monitoring/influxdata-platform/monitoring-dashboards/">Monitoring dashboards</a>
+</li>
+<li class="nav-item">
+<a href="/platform/monitoring/influxdata-platform/external-monitor-setup/">Configure a watcher of watchers</a>
+</li>
+<li class="nav-item">
+<a href="#" class="children-toggle"></a>
+<a href="/platform/monitoring/influxdata-platform/tools/">Other monitoring tools</a>
+<ul class="children">
+<li class="nav-item">
+<a href="/platform/monitoring/influxdata-platform/tools/measurements-internal/">InfluxDB _internal measurements</a>
+</li>
+<li class="nav-item">
+<a href="/platform/monitoring/influxdata-platform/tools/kapacitor-measurements/">Kapacitor measurements</a>
+</li>
+<li class="nav-item">
+<a href="/platform/monitoring/influxdata-platform/tools/show-diagnostics/">SHOW DIAGNOSTICS</a>
+</li>
+<li class="nav-item">
+<a href="/platform/monitoring/influxdata-platform/tools/show-stats/">SHOW STATS</a>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-item">
+<a href="#" class="children-toggle"></a>
+<a href="/platform/monitoring/containers/">Monitor containers</a>
+<ul class="children">
+<li class="nav-item">
+<a href="/platform/monitoring/containers/kubernetes/">Monitor Kubernetes</a>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-category">
+<a href="#" class="children-toggle"></a>
+<a href="/platform/integrations/">Integrate</a>
+<ul class="children">
+<li class="nav-item">
+<a href="/platform/integrations/docker/">Docker</a>
+</li>
+<li class="nav-item">
+<a href="/platform/integrations/kubernetes/">Kubernetes</a>
+</li>
+</ul>
+</li>
+<li class="nav-category">
+<a href="#" class="children-toggle"></a>
+<a href="/platform/troubleshoot/">Troubleshoot</a>
+<ul class="children">
+<li class="nav-item">
+<a href="/platform/troubleshoot/oom-loops/">Out-of-memory loops</a>
+</li>
+<li class="nav-item">
+<a href="/influxdb/v1.8/troubleshooting/systemd/">systemd errors</a>
+</li>
+<li class="nav-item">
+<a href="/platform/troubleshoot/disk-usage/">Disk usage</a>
+</li>
+</ul>
+</li>
+<li class="nav-category">
+<a href="/platform/faq/">Frequently asked questions</a>
+</li>
+<h4 class="resources">Additional resources</h4>
+<li class="nav-category"><a href="/resources/videos/">Videos</a></li>
+</ul>
+</aside>
+<div class="content-wrapper">
+<div class="sidebar-toggle" onclick="return toggle_sidebar('sidebar-open'),!1"><a href="#"><span class="cf-icon sidebar-open-new"></span></a></div>
+<div class="article">
+<article class="article--content">
+<div class="title">
+<h1>InfluxDB line protocol tutorial</h1>
+</div>
+<div class="warn block old-version">
+<p>
+This page documents an earlier version of InfluxDB.
+<a href="/influxdb/v2.3/">InfluxDB v2.3</a> is the latest stable version.
+<span style="margin-right:.25rem">See the equivalent <strong>InfluxDB v2.3</strong> documentation:</span> <a href="/influxdb/v2.3/reference/syntax/line-protocol/">Line protocol</a>.
+</p>
+</div>
+<p>The InfluxDB line protocol is a text-based format for writing points to the
+database.
+Points must be in line protocol format for InfluxDB to successfully parse and
+write points (unless you’re using a <a href="/influxdb/v1.8/supported_protocols/">service plugin</a>).</p>
+<p>Using fictional temperature data, this page introduces InfluxDB line protocol.
+It covers:</p>
+<table style="width:100%">
+<tbody><tr>
+<td><a href="#syntax">Syntax</a></td>
+<td><a href="#data-types">Data Types</a></td>
+<td><a href="#quoting">Quoting</a></td>
+<td><a href="#special-characters-and-keywords">Special Characters and Keywords</a></td>
+</tr>
+</tbody></table>
+<p>The final section, <a href="#writing-data-to-influxdb">Writing data to InfluxDB</a>,
+describes how to get data into InfluxDB and how InfluxDB handles Line
+Protocol duplicates.</p>
+<h2 id="syntax"><a href="#syntax">Syntax</a></h2>
+<p>A single line of text in line protocol format represents one data point in InfluxDB.
+It informs InfluxDB of the point’s measurement, tag set, field set, and
+timestamp.
+The following code block shows a sample of line protocol and breaks it into its
+individual components:</p>
+<div class="codeblock"><pre tabindex="0"><code>weather,location=us-midwest temperature=82 1465839830100400200
+  |    -------------------- --------------  |
+  |             |             |             |
+  |             |             |             |
++-----------+--------+-+---------+-+---------+
+|measurement|,tag_set| |field_set| |timestamp|
++-----------+--------+-+---------+-+---------+
+</code></pre><a class="fullscreen-toggle"><span class="cf-icon expand-new"></span></a></div><p>Moving across each element in the diagram:</p>
+<h3 id="measurement"><a href="#measurement">Measurement</a></h3>
+<p>The name of the <a href="/influxdb/v1.8/concepts/glossary/#measurement">measurement</a>
+that you want to write your data to.
+The measurement is required in line protocol.</p>
+<p>In the example, the measurement name is <code>weather</code>.</p>
+<h3 id="tag-set"><a href="#tag-set">Tag set</a></h3>
+<p>The <a href="/influxdb/v1.8/concepts/glossary/#tag">tag(s)</a> that you want to include
+with your data point.
+Tags are optional in line protocol.</p>
+<blockquote>
+<p><strong>Note:</strong> Avoid using the reserved keys <code>_field</code>, <code>_measurement</code>, and <code>time</code>. If reserved keys are included as a tag or field key, the associated point is discarded.</p>
+</blockquote>
+<p>Notice that the measurement and tag set are separated by a comma and no spaces.</p>
+<p>Separate tag key-value pairs with an equals sign <code>=</code> and no spaces:</p>
+<pre tabindex="0"><code>&lt;tag_key&gt;=&lt;tag_value&gt;
+</code></pre><p>Separate multiple tag-value pairs with a comma and no spaces:</p>
+<pre tabindex="0"><code>&lt;tag_key&gt;=&lt;tag_value&gt;,&lt;tag_key&gt;=&lt;tag_value&gt;
+</code></pre><p>In the example, the tag set consists of one tag: <code>location=us-midwest</code>.
+Adding another tag (<code>season=summer</code>) to the example looks like this:</p>
+<div class="codeblock"><pre tabindex="0"><code>weather,location=us-midwest,season=summer temperature=82 1465839830100400200
+</code></pre><a class="fullscreen-toggle"><span class="cf-icon expand-new"></span></a></div><p>When using quotes in tag sets, line protocol supports single and double quotes as described in the following table:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Element</th>
+<th style="text-align:center">Double quotes</th>
+<th style="text-align:center">Single quotes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Measurement</td>
+<td style="text-align:center"><em>Limited</em> <sup class="required">*</sup></td>
+<td style="text-align:center"><em>Limited</em> <sup class="required">*</sup></td>
+</tr>
+<tr>
+<td style="text-align:left">Tag key</td>
+<td style="text-align:center"><em>Limited</em> <sup class="required">*</sup></td>
+<td style="text-align:center"><em>Limited</em> <sup class="required">*</sup></td>
+</tr>
+<tr>
+<td style="text-align:left">Tag value</td>
+<td style="text-align:center"><em>Limited</em> <sup class="required">*</sup></td>
+<td style="text-align:center"><em>Limited</em> <sup class="required">*</sup></td>
+</tr>
+<tr>
+<td style="text-align:left">Field key</td>
+<td style="text-align:center"><em>Limited</em> <sup class="required">*</sup></td>
+<td style="text-align:center"><em>Limited</em> <sup class="required">*</sup></td>
+</tr>
+<tr>
+<td style="text-align:left">Field value</td>
+<td style="text-align:center"><strong>Strings only</strong></td>
+<td style="text-align:center">Never</td>
+</tr>
+<tr>
+<td style="text-align:left">Timestamp</td>
+<td style="text-align:center">Never</td>
+<td style="text-align:center">Never</td>
+</tr>
+</tbody>
+</table>
+<p><sup class="required">*</sup> <em>Line protocol accepts double and single quotes in
+measurement names, tag keys, tag values, and field keys, but interprets them as
+part of the name, key, or value.</em></p>
+<div class="note block">
+<p><em>Always double quote string field values.</em></p>
+<div class="highlight"><div class="codeblock"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">measurementName <span class="nv">fieldKey</span><span class="o">=</span><span class="s2">"field string value"</span> <span class="m">1556813561098000000</span>
+</code></pre><a class="fullscreen-toggle"><span class="cf-icon expand-new"></span></a></div></div>
+</div>
+<p>For best performance you should sort tags by key before sending them to the
+database.
+The sort should match the results from the
+<a href="http://golang.org/pkg/bytes/#Compare">Go bytes.Compare function</a>.</p>
+<h3 id="whitespace-i"><a href="#whitespace-i">Whitespace I</a></h3>
+<p>Separate the measurement and the field set or, if you’re including a tag set
+with your data point, separate the tag set and the field set with a whitespace.
+The whitespace is required in line protocol.</p>
+<p>Valid line protocol with no tag set:</p>
+<pre tabindex="0"><code>weather temperature=82 1465839830100400200
+</code></pre><h3 id="field-set"><a href="#field-set">Field set</a></h3>
+<p>The <a href="/influxdb/v1.8/concepts/glossary/#field">field(s)</a> for your data point.
+Every data point requires at least one field in line protocol.</p>
+<p>Separate field key-value pairs with an equals sign <code>=</code> and no spaces:</p>
+<pre tabindex="0"><code>&lt;field_key&gt;=&lt;field_value&gt;
+</code></pre><p>Separate multiple field-value pairs with a comma and no spaces:</p>
+<pre tabindex="0"><code>&lt;field_key&gt;=&lt;field_value&gt;,&lt;field_key&gt;=&lt;field_value&gt;
+</code></pre><p>In the example, the field set consists of one field: <code>temperature=82</code>.
+Adding another field (<code>humidity=71</code>) to the example looks like this:</p>
+<div class="codeblock"><pre tabindex="0"><code>weather,location=us-midwest temperature=82,humidity=71 1465839830100400200
+</code></pre><a class="fullscreen-toggle"><span class="cf-icon expand-new"></span></a></div><h3 id="whitespace-ii"><a href="#whitespace-ii">Whitespace II</a></h3>
+<p>Separate the field set and the optional timestamp with a whitespace.
+The whitespace is required in line protocol if you’re including a timestamp.</p>
+<h3 id="timestamp"><a href="#timestamp">Timestamp</a></h3>
+<p>The <a href="/influxdb/v1.8/concepts/glossary/#timestamp">timestamp</a> for your data
+point in nanosecond-precision Unix time.
+The timestamp is optional in line protocol.
+If you do not specify a timestamp for your data point InfluxDB uses the server’s
+local nanosecond timestamp in UTC.</p>
+<p>In the example, the timestamp is <code>1465839830100400200</code> (that’s
+<code>2016-06-13T17:43:50.1004002Z</code> in RFC3339 format).
+The line protocol below is the same data point but without the timestamp.
+When InfluxDB writes it to the database it uses your server’s
+local timestamp instead of <code>2016-06-13T17:43:50.1004002Z</code>.</p>
+<pre tabindex="0"><code>weather,location=us-midwest temperature=82
+</code></pre><p>Use the InfluxDB API to specify timestamps with a precision other than nanoseconds,
+such as microseconds, milliseconds, or seconds.
+We recommend using the coarsest precision possible as this can result in
+significant improvements in compression.
+See the <a href="/influxdb/v1.8/tools/api/#write-http-endpoint">API Reference</a> for more information.</p>
+<div class="note block">
+<h4 id="setup-tip"><a href="#setup-tip">Setup Tip:</a></h4>
+<p>Use the Network Time Protocol (NTP) to synchronize time between hosts.
+InfluxDB uses a host’s local time in UTC to assign timestamps to data; if
+hosts' clocks aren’t synchronized with NTP, the timestamps on the data written
+to InfluxDB can be inaccurate.</p>
+</div>
+<h2 id="data-types"><a href="#data-types">Data types</a></h2>
+<p>This section covers the data types of line protocol’s major components:
+<a href="/influxdb/v1.8/concepts/glossary/#measurement">measurements</a>,
+<a href="/influxdb/v1.8/concepts/glossary/#tag-key">tag keys</a>,
+<a href="/influxdb/v1.8/concepts/glossary/#tag-value">tag values</a>,
+<a href="/influxdb/v1.8/concepts/glossary/#field-key">field keys</a>,
+<a href="/influxdb/v1.8/concepts/glossary/#field-value">field values</a>, and
+<a href="/influxdb/v1.8/concepts/glossary/#timestamp">timestamps</a>.</p>
+<p>Measurements, tag keys, tag values, and field keys are always strings.</p>
+<blockquote>
+<p><strong>Note:</strong>
+Because InfluxDB stores tag values as strings, InfluxDB cannot perform math on
+tag values.
+In addition, InfluxQL <a href="/influxdb/v1.8/query_language/functions/">functions</a>
+do not accept a tag value as a primary argument.
+It’s a good idea to take into account that information when designing your
+<a href="/influxdb/v1.8/concepts/glossary/#schema">schema</a>.</p>
+</blockquote>
+<p>Timestamps are UNIX timestamps.
+The minimum valid timestamp is <code>-9223372036854775806</code> or <code>1677-09-21T00:12:43.145224194Z</code>.
+The maximum valid timestamp is <code>9223372036854775806</code> or <code>2262-04-11T23:47:16.854775806Z</code>.
+As mentioned above, by default, InfluxDB assumes that timestamps have
+nanosecond precision.
+See the <a href="/influxdb/v1.8/tools/api/#write-http-endpoint">API Reference</a> for how to specify
+alternative precisions.</p>
+<p>Field values can be floats, integers, strings, or Booleans:</p>
+<ul>
+<li>
+<p>Floats - by default, InfluxDB assumes all numerical field values are floats.</p>
+<p>Store the field value <code>82</code> as a float:</p>
+<div class="codeblock"><pre tabindex="0"><code>weather,location=us-midwest temperature=82 1465839830100400200
+</code></pre><a class="fullscreen-toggle"><span class="cf-icon expand-new"></span></a></div></li>
+<li>
+<p>Integers - append an <code>i</code> to the field value to tell InfluxDB to store the
+number as an integer.</p>
+<p>Store the field value <code>82</code> as an integer:</p>
+<div class="codeblock"><pre tabindex="0"><code>weather,location=us-midwest temperature=82i 1465839830100400200
+</code></pre><a class="fullscreen-toggle"><span class="cf-icon expand-new"></span></a></div></li>
+<li>
+<p>Strings - double quote string field values (more on quoting in line protocol
+<a href="#quoting">below</a>).</p>
+<p>Store the field value <code>too warm</code> as a string:</p>
+<div class="codeblock"><pre tabindex="0"><code>weather,location=us-midwest temperature="too warm" 1465839830100400200
+</code></pre><a class="fullscreen-toggle"><span class="cf-icon expand-new"></span></a></div></li>
+<li>
+<p>Booleans - specify TRUE with <code>t</code>, <code>T</code>, <code>true</code>, <code>True</code>, or <code>TRUE</code>. Specify
+FALSE with <code>f</code>, <code>F</code>, <code>false</code>, <code>False</code>, or <code>FALSE</code>.</p>
+<p>Store the field value <code>true</code> as a Boolean:</p>
+<div class="codeblock"><pre tabindex="0"><code>weather,location=us-midwest too_hot=true 1465839830100400200
+</code></pre><a class="fullscreen-toggle"><span class="cf-icon expand-new"></span></a></div><blockquote>
+<p><strong>Note:</strong> Acceptable Boolean syntax differs for data writes and data
+queries. See
+<a href="/influxdb/v1.8/troubleshooting/frequently-asked-questions/#why-can-t-i-query-boolean-field-values">Frequently Asked Questions</a>
+for more information.</p>
+</blockquote>
+</li>
+</ul>
+<p>Within a measurement, a field’s type cannot differ within a
+<a href="/influxdb/v1.8/concepts/glossary/#shard">shard</a>, but it can differ across
+shards. For example, writing an integer to a field that previously accepted
+floats fails if InfluxDB attempts to store the integer in the same shard as the
+floats:</p>
+<div class="highlight"><div class="codeblock"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="o">&gt;</span><span class="w"> </span><span class="k">INSERT</span><span class="w"> </span><span class="n">weather</span><span class="p">,</span><span class="k">location</span><span class="o">=</span><span class="n">us</span><span class="o">-</span><span class="n">midwest</span><span class="w"> </span><span class="n">temperature</span><span class="o">=</span><span class="mi">82</span><span class="w"> </span><span class="mi">1465839830100400200</span><span class="w">
+</span><span class="w"></span><span class="o">&gt;</span><span class="w"> </span><span class="k">INSERT</span><span class="w"> </span><span class="n">weather</span><span class="p">,</span><span class="k">location</span><span class="o">=</span><span class="n">us</span><span class="o">-</span><span class="n">midwest</span><span class="w"> </span><span class="n">temperature</span><span class="o">=</span><span class="mi">81</span><span class="n">i</span><span class="w"> </span><span class="mi">1465839830100400300</span><span class="w">
+</span><span class="w"></span><span class="n">ERR</span><span class="p">:</span><span class="w"> </span><span class="err">{</span><span class="s2">"error"</span><span class="p">:</span><span class="s2">"field type conflict: input field \"</span><span class="n">temperature</span><span class="err">\</span><span class="s2">" on measurement \"</span><span class="n">weather</span><span class="err">\</span><span class="s2">" is type int64, already exists as type float"</span><span class="err">}</span><span class="w">
+</span></code></pre><a class="fullscreen-toggle"><span class="cf-icon expand-new"></span></a></div></div><p>But, writing an integer to a field that previously accepted floats succeeds if
+InfluxDB stores the integer in a new shard:</p>
+<div class="highlight"><div class="codeblock"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="o">&gt;</span><span class="w"> </span><span class="k">INSERT</span><span class="w"> </span><span class="n">weather</span><span class="p">,</span><span class="k">location</span><span class="o">=</span><span class="n">us</span><span class="o">-</span><span class="n">midwest</span><span class="w"> </span><span class="n">temperature</span><span class="o">=</span><span class="mi">82</span><span class="w"> </span><span class="mi">1465839830100400200</span><span class="w">
+</span><span class="w"></span><span class="o">&gt;</span><span class="w"> </span><span class="k">INSERT</span><span class="w"> </span><span class="n">weather</span><span class="p">,</span><span class="k">location</span><span class="o">=</span><span class="n">us</span><span class="o">-</span><span class="n">midwest</span><span class="w"> </span><span class="n">temperature</span><span class="o">=</span><span class="mi">81</span><span class="n">i</span><span class="w"> </span><span class="mi">1467154750000000000</span><span class="w">
+</span><span class="w"></span><span class="o">&gt;</span><span class="w">
+</span></code></pre><a class="fullscreen-toggle"><span class="cf-icon expand-new"></span></a></div></div><p>See
+<a href="/influxdb/v1.8/troubleshooting/frequently-asked-questions/#how-does-influxdb-handle-field-type-discrepancies-across-shards">Frequently Asked Questions</a>
+for how field value type discrepancies can affect <code>SELECT *</code> queries.</p>
+<h2 id="quoting"><a href="#quoting">Quoting</a></h2>
+<p>This section covers when not to and when to double (<code>"</code>) or single (<code>'</code>)
+quote in line protocol.
+Moving from never quote to please do quote:</p>
+<ul>
+<li>
+<p>Never double or single quote the timestamp.
+It’s not valid line protocol.</p>
+<p>Example:</p>
+<div class="codeblock"><pre tabindex="0"><code>&gt; INSERT weather,location=us-midwest temperature=82 "1465839830100400200"
+ERR: {"error":"unable to parse 'weather,location=us-midwest temperature=82 \"1465839830100400200\"': bad timestamp"}
+</code></pre><a class="fullscreen-toggle"><span class="cf-icon expand-new"></span></a></div></li>
+<li>
+<p>Never single quote field values (even if they’re strings!).
+It’s also not valid line protocol.</p>
+<p>Example:</p>
+<div class="codeblock"><pre tabindex="0"><code>&gt; INSERT weather,location=us-midwest temperature='too warm'
+ERR: {"error":"unable to parse 'weather,location=us-midwest temperature='too warm'': invalid boolean"}
+</code></pre><a class="fullscreen-toggle"><span class="cf-icon expand-new"></span></a></div></li>
+<li>
+<p>Do not double or single quote measurement names, tag keys, tag values, and field
+keys.
+It is valid line protocol but InfluxDB assumes that the quotes are part of the
+name.</p>
+<p>Example:</p>
+<div class="codeblock"><pre tabindex="0"><code>&gt; INSERT weather,location=us-midwest temperature=82 1465839830100400200
+&gt; INSERT "weather",location=us-midwest temperature=87 1465839830100400200
+&gt; SHOW MEASUREMENTS
+name: measurements
+------------------
+name
+"weather"
+weather
+</code></pre><a class="fullscreen-toggle"><span class="cf-icon expand-new"></span></a></div><p>To query data in <code>"weather"</code> you need to double quote the measurement name and
+escape the measurement’s double quotes:</p>
+<div class="codeblock"><pre tabindex="0"><code>&gt; SELECT * FROM "\"weather\""
+name: "weather"
+---------------
+time				            location	 temperature
+2016-06-13T17:43:50.1004002Z	us-midwest	 87
+</code></pre><a class="fullscreen-toggle"><span class="cf-icon expand-new"></span></a></div></li>
+<li>
+<p>Do not double quote field values that are floats, integers, or Booleans.
+InfluxDB will assume that those values are strings.</p>
+<p>Example:</p>
+<pre tabindex="0"><code>&gt; INSERT weather,location=us-midwest temperature="82"
+&gt; SELECT * FROM weather WHERE temperature &gt;= 70
+&gt;
+</code></pre></li>
+<li>
+<p>Do double quote field values that are strings.</p>
+<p>Example:</p>
+<div class="codeblock"><pre tabindex="0"><code>&gt; INSERT weather,location=us-midwest temperature="too warm"
+&gt; SELECT * FROM weather
+name: weather
+-------------
+time				            location	 temperature
+2016-06-13T19:10:09.995766248Z	us-midwest	 too warm
+</code></pre><a class="fullscreen-toggle"><span class="cf-icon expand-new"></span></a></div></li>
+</ul>
+<h2 id="special-characters-and-keywords"><a href="#special-characters-and-keywords">Special characters and keywords</a></h2>
+<h3 id="special-characters"><a href="#special-characters">Special characters</a></h3>
+<p>For tag keys, tag values, and field keys always use a backslash character <code>\</code>
+to escape:</p>
+<ul>
+<li>
+<p>commas <code>,</code></p>
+<div class="codeblock"><pre tabindex="0"><code>weather,location=us\,midwest temperature=82 1465839830100400200
+</code></pre><a class="fullscreen-toggle"><span class="cf-icon expand-new"></span></a></div></li>
+<li>
+<p>equal signs <code>=</code></p>
+<div class="codeblock"><pre tabindex="0"><code>weather,location=us-midwest temp\=rature=82 1465839830100400200
+</code></pre><a class="fullscreen-toggle"><span class="cf-icon expand-new"></span></a></div></li>
+<li>
+<p>spaces</p>
+<div class="codeblock"><pre tabindex="0"><code>weather,location\ place=us-midwest temperature=82 1465839830100400200
+</code></pre><a class="fullscreen-toggle"><span class="cf-icon expand-new"></span></a></div></li>
+</ul>
+<p>For measurements always use a backslash character <code>\</code> to escape:</p>
+<ul>
+<li>
+<p>commas <code>,</code></p>
+<div class="codeblock"><pre tabindex="0"><code>wea\,ther,location=us-midwest temperature=82 1465839830100400200
+</code></pre><a class="fullscreen-toggle"><span class="cf-icon expand-new"></span></a></div></li>
+<li>
+<p>spaces</p>
+<div class="codeblock"><pre tabindex="0"><code>wea\ ther,location=us-midwest temperature=82 1465839830100400200
+</code></pre><a class="fullscreen-toggle"><span class="cf-icon expand-new"></span></a></div></li>
+</ul>
+<p>For string field values use a backslash character <code>\</code> to escape:</p>
+<ul>
+<li>
+<p>double quotes <code>"</code></p>
+<div class="codeblock"><pre tabindex="0"><code>weather,location=us-midwest temperature="too\"hot\"" 1465839830100400200
+</code></pre><a class="fullscreen-toggle"><span class="cf-icon expand-new"></span></a></div></li>
+</ul>
+<p>line protocol does not require users to escape the backslash character <code>\</code> but
+will not complain if you do. For example, inserting the following:</p>
+<div class="codeblock"><pre tabindex="0"><code>weather,location=us-midwest temperature_str="too hot/cold" 1465839830100400201
+weather,location=us-midwest temperature_str="too hot\cold" 1465839830100400202
+weather,location=us-midwest temperature_str="too hot\\cold" 1465839830100400203
+weather,location=us-midwest temperature_str="too hot\\\cold" 1465839830100400204
+weather,location=us-midwest temperature_str="too hot\\\\cold" 1465839830100400205
+weather,location=us-midwest temperature_str="too hot\\\\\cold" 1465839830100400206
+</code></pre><a class="fullscreen-toggle"><span class="cf-icon expand-new"></span></a></div><p>Will be interpreted as follows (notice that a single and double backslash produce the same record):</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="o">&gt;</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="s2">"weather"</span><span class="w">
+</span><span class="w"></span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="n">weather</span><span class="w">
+</span><span class="w"></span><span class="n">time</span><span class="w">                </span><span class="k">location</span><span class="w">   </span><span class="n">temperature_str</span><span class="w">
+</span><span class="w"></span><span class="c1">----                --------   ---------------
+</span><span class="c1"></span><span class="mi">1465839830100400201</span><span class="w"> </span><span class="n">us</span><span class="o">-</span><span class="n">midwest</span><span class="w"> </span><span class="n">too</span><span class="w"> </span><span class="n">hot</span><span class="o">/</span><span class="n">cold</span><span class="w">
+</span><span class="w"></span><span class="mi">1465839830100400202</span><span class="w"> </span><span class="n">us</span><span class="o">-</span><span class="n">midwest</span><span class="w"> </span><span class="n">too</span><span class="w"> </span><span class="n">hot</span><span class="err">\</span><span class="n">cold</span><span class="w">
+</span><span class="w"></span><span class="mi">1465839830100400203</span><span class="w"> </span><span class="n">us</span><span class="o">-</span><span class="n">midwest</span><span class="w"> </span><span class="n">too</span><span class="w"> </span><span class="n">hot</span><span class="err">\</span><span class="n">cold</span><span class="w">
+</span><span class="w"></span><span class="mi">1465839830100400204</span><span class="w"> </span><span class="n">us</span><span class="o">-</span><span class="n">midwest</span><span class="w"> </span><span class="n">too</span><span class="w"> </span><span class="n">hot</span><span class="err">\\</span><span class="n">cold</span><span class="w">
+</span><span class="w"></span><span class="mi">1465839830100400205</span><span class="w"> </span><span class="n">us</span><span class="o">-</span><span class="n">midwest</span><span class="w"> </span><span class="n">too</span><span class="w"> </span><span class="n">hot</span><span class="err">\\</span><span class="n">cold</span><span class="w">
+</span><span class="w"></span><span class="mi">1465839830100400206</span><span class="w"> </span><span class="n">us</span><span class="o">-</span><span class="n">midwest</span><span class="w"> </span><span class="n">too</span><span class="w"> </span><span class="n">hot</span><span class="err">\\\</span><span class="n">cold</span><span class="w">
+</span></code></pre></div><p>All other special characters also do not require escaping.
+For example, line protocol handles emojis with no problem:</p>
+<div class="highlight"><div class="codeblock"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="o">&gt;</span><span class="w"> </span><span class="k">INSERT</span><span class="w"> </span><span class="n">we</span><span class="err">⛅️</span><span class="n">ther</span><span class="p">,</span><span class="k">location</span><span class="o">=</span><span class="n">us</span><span class="o">-</span><span class="n">midwest</span><span class="w"> </span><span class="n">temper</span><span class="err">🔥</span><span class="n">ture</span><span class="o">=</span><span class="mi">82</span><span class="w"> </span><span class="mi">1465839830100400200</span><span class="w">
+</span><span class="w"></span><span class="o">&gt;</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="s2">"we⛅️ther"</span><span class="w">
+</span><span class="w"></span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="n">we</span><span class="err">⛅️</span><span class="n">ther</span><span class="w">
+</span><span class="w"></span><span class="c1">------------------
+</span><span class="c1"></span><span class="n">time</span><span class="w">			              </span><span class="k">location</span><span class="w">	   </span><span class="n">temper</span><span class="err">🔥</span><span class="n">ture</span><span class="w">
+</span><span class="w"></span><span class="mi">1465839830100400200</span><span class="w">	 </span><span class="n">us</span><span class="o">-</span><span class="n">midwest</span><span class="w">	 </span><span class="mi">82</span><span class="w">
+</span></code></pre><a class="fullscreen-toggle"><span class="cf-icon expand-new"></span></a></div></div><h3 id="keywords"><a href="#keywords">Keywords</a></h3>
+<p>Line protocol accepts
+<a href="/influxdb/v1.8/query_language/spec/#keywords">InfluxQL keywords</a>
+as <a href="/influxdb/v1.8/concepts/glossary/#identifier">identifier</a> names.
+In general, we recommend avoiding using InfluxQL keywords in your schema as
+it can cause
+<a href="/influxdb/v1.8/troubleshooting/errors/#error-parsing-query-found-expected-identifier-at-line-char">confusion</a> when querying the data.</p>
+<p>The keyword <code>time</code> is a special case.
+<code>time</code> can be a
+<a href="/influxdb/v1.8/concepts/glossary/#continuous-query-cq">continuous query</a> name,
+database name,
+<a href="/influxdb/v1.8/concepts/glossary/#measurement">measurement</a> name,
+<a href="/influxdb/v1.8/concepts/glossary/#retention-policy-rp">retention policy</a> name,
+<a href="/influxdb/v1.8/concepts/glossary/#subscription">subscription</a> name, and
+<a href="/influxdb/v1.8/concepts/glossary/#user">user</a> name.
+In those cases, <code>time</code> does not require double quotes in queries.
+<code>time</code> cannot be a <a href="/influxdb/v1.8/concepts/glossary/#field-key">field key</a> or
+<a href="/influxdb/v1.8/concepts/glossary/#tag-key">tag key</a>;
+InfluxDB rejects writes with <code>time</code> as a field key or tag key and returns an error.
+See <a href="/influxdb/v1.8/troubleshooting/frequently-asked-questions/#time">Frequently Asked Questions</a> for more information.</p>
+<h2 id="writing-data-to-influxdb"><a href="#writing-data-to-influxdb">Writing data to InfluxDB</a></h2>
+<h3 id="getting-data-in-the-database"><a href="#getting-data-in-the-database">Getting data in the database</a></h3>
+<p>Now that you know all about the InfluxDB line protocol, how do you actually get the
+line protocol to InfluxDB?
+Here, we’ll give two quick examples and then point you to the
+<a href="/influxdb/v1.8/tools/">Tools</a> sections for further
+information.</p>
+<h4 id="influxdb-api"><a href="#influxdb-api">InfluxDB API</a></h4>
+<p>Write data to InfluxDB using the InfluxDB API.
+Send a <code>POST</code> request to the <code>/write</code> endpoint and provide your line protocol in
+the request body:</p>
+<div class="highlight"><div class="codeblock"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">curl -i -XPOST <span class="s2">"http://localhost:8086/write?db=science_is_cool"</span> --data-binary <span class="s1">'weather,location=us-midwest temperature=82 1465839830100400200'</span>
+</code></pre><a class="fullscreen-toggle"><span class="cf-icon expand-new"></span></a></div><div class="select-url" style="display: block;"><a class="url-trigger" href="#">Change InfluxDB URL</a></div></div><p>For in-depth descriptions of query string parameters, status codes, responses,
+and more examples, see the <a href="/influxdb/v1.8/tools/api/#write-http-endpoint">API Reference</a>.</p>
+<h4 id="cli"><a href="#cli">CLI</a></h4>
+<p>Write data to InfluxDB using the InfluxDB command line interface (CLI).
+<a href="/influxdb/v1.8/tools/shell/#launch-influx">Launch</a> the CLI, use the relevant
+database, and put <code>INSERT</code> in
+front of your line protocol:</p>
+<div class="highlight"><div class="codeblock"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">INSERT</span><span class="w"> </span><span class="n">weather</span><span class="p">,</span><span class="k">location</span><span class="o">=</span><span class="n">us</span><span class="o">-</span><span class="n">midwest</span><span class="w"> </span><span class="n">temperature</span><span class="o">=</span><span class="mi">82</span><span class="w"> </span><span class="mi">1465839830100400200</span><span class="w">
+</span></code></pre><a class="fullscreen-toggle"><span class="cf-icon expand-new"></span></a></div></div><p>You can also use the CLI to
+<a href="/influxdb/v1.8/tools/shell/#import-data-from-a-file-with-import">import</a> Line
+Protocol from a file.</p>
+<p>There are several ways to write data to InfluxDB.
+See the <a href="/influxdb/v1.8/tools/">Tools</a> section for more
+on the <a href="/influxdb/v1.8/tools/api/#write-http-endpoint">InfluxDB API</a>, the
+<a href="/influxdb/v1.8/tools/shell/">CLI</a>, and the available Service Plugins (
+<a href="/influxdb/v1.8/tools/udp/">UDP</a>,
+<a href="/influxdb/v1.8/tools/graphite/">Graphite</a>,
+<a href="/influxdb/v1.8/tools/collectd/">CollectD</a>, and
+<a href="/influxdb/v1.8/tools/opentsdb/">OpenTSDB</a>).</p>
+<h3 id="duplicate-points"><a href="#duplicate-points">Duplicate points</a></h3>
+<p>A point is uniquely identified by the measurement name, tag set, and timestamp.
+If you submit line protocol with the same measurement, tag set, and timestamp,
+but with a different field set, the field set becomes the union of the old
+field set and the new field set, where any conflicts favor the new field set.</p>
+<p>For a complete example of this behavior and how to avoid it, see
+<a href="/influxdb/v1.8/troubleshooting/frequently-asked-questions/#how-does-influxdb-handle-duplicate-points">How does InfluxDB handle duplicate point?</a></p>
+<hr>
+<div class="helpful">
+<p>Was this page helpful?</p>
+<form onsubmit="return submitFeedbackForm('pagefeedback')" id="pagefeedback">
+<input type="text" name="fname" class="bowlofsweets" placeholder="First Name">
+<label class="radio-btns" id="helpful"><input type="radio" name="helpful" value="true">Yes</label>
+<label class="radio-btns" id="not-helpful"><input type="radio" name="helpful" value="false">No</label>
+</form>
+<div id="thank-you">
+<p>Thank you for your feedback!</p>
+</div>
+<div class="loader-wrapper">
+<div class="loader"></div>
+</div>
+</div>
+<hr>
+<div class="feedback block">
+<div class="support">
+<h4 id="bug-reports-and-feedback"><a href="#bug-reports-and-feedback">Support and feedback</a></h4>
+<p>
+Thank you for being part of our community!
+We welcome and encourage your feedback and bug reports for InfluxDB and this documentation.
+To find support, use the following resources:
+</p>
+<ul>
+<li><a class="community" href="https://community.influxdata.com/" target="_blank">InfluxData Community</a></li>
+<li><a class="slack" href="https://influxdata.com/slack" target="_blank">InfluxDB Community Slack</a></li>
+</ul>
+<p><strong>InfluxDB Cloud and InfluxDB Enterprise customers</strong> can <a href="mailto:support@influxdata.com" target="_blank">contact InfluxData Support</a>.</p>
+</div>
+<div class="actions">
+<a href="https://github.com/influxdata/docs-v2/edit/master/content/influxdb/v1.8/write_protocols/line_protocol_tutorial.md" class="btn edit" target="_blank">Edit this page</a>
+<a href="https://github.com/influxdata/docs-v2/issues/new?body=_Describe%20the%20issue%20here._%0a%0a%23%23%23%23%23%20Relevant%20URLs%0a-%20https://docs.influxdata.com/influxdb/v1.8/write_protocols/line_protocol_tutorial/%0a-%20_Provide%20other%20relevant%20URLs%20%28project%20issues,%20community%20threads,%20etc.%29_%0a" class="btn issue" target="_blank">Submit docs issue</a>
+<a href="https://github.com/influxdata/influxdb/issues/new/choose/" class="btn issue" target="_blank">Submit InfluxDB issue</a>
+</div>
+</div>
+</article>
+</div>
+<div class="copyright">© 2022 InfluxData, Inc.</div>
+</div>
+</div>
+<div class="modal">
+<div class="modal-overlay"></div>
+<div class="modal-wrapper">
+<div class="modal-body">
+<a id="modal-close" href="#"><span class="icon-remove"></span></a>
+<div class="modal-content" id="influxdb-url-list">
+<h3>What is your InfluxDB OSS URL?</h3>
+<p>Customize your <strong>InfluxDB OSS URL</strong> and we’ll update code examples for you.</p>
+<div class="products">
+<div class="product" id="oss-urls">
+<div class="providers">
+<div class="provider">
+<h5>Default</h5>
+<ul>
+<li class="region-group">
+<label for="localhost8086">
+<input type="radio" name="influxdb-oss-url" id="localhost8086" value="http://localhost:8086" checked="">
+<span class="radio"></span>
+localhost:8086
+</label>
+</li>
+</ul>
+</div>
+<div class="provider">
+<h5>Custom</h5>
+<ul>
+<li class="custom">
+<label for="custom">
+<input type="radio" name="influxdb-oss-url" id="custom" value="http://example.com:8080" checked="">
+<span class="radio"></span>
+</label>
+<form action="#" id="custom-url" data-message="">
+<input type="text" name="custom-url-field" id="custom-url-field" placeholder="http://example.com:8080">
+</form>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+<p class="note">For more information, see <a href="/influxdb/v2.3/reference/urls/">InfluxDB OSS URLs</a>.</p>
+</div>
+<div class="modal-content" id="page-feedback">
+<h3>Thank you for your feedback!</h3>
+<p>Let us know what we can do better:</p>
+<form id="pagefeedbacktext">
+<input type="text" name="fname" class="bowlofsweets" placeholder="First Name">
+<div class="lifecycle-wrapper">
+<textarea name="feedback-text" placeholder="Missing information? Unclear explanations? Help us improve this page!"></textarea>
+<div id="thank-you">
+<p>Thank you!</p>
+</div>
+<div class="loader-wrapper">
+<div class="loader"></div>
+</div>
+</div>
+<div class="form-buttons">
+<div id="no-thanks">
+No thanks
+</div>
+<div class="submit-wrapper">
+<input type="submit" value="Submit" onclick="return submitLifeCycleAndClose()">
+</div>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+<div class="feature-callout" id="callout-url-selector" style="display: block;">
+<p>Set your InfluxDB URL <a href="#" class="close"><span class="icon-remove"></span></a></p>
+</div>
+<div class="fullscreen-code highlight">
+<div id="fullscreen-code-placeholder"></div>
+<a class="fullscreen-close"><span class="icon-x"></span></a>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script>
+<script>docsearch({apiKey:'ba4435a9d456ac0d954cc276206eac06',appId:'WHM9UWMP6M',indexName:'influxdata',inputSelector:'#algolia-search-input',debug:!0,transformData:function(a){function b(a){return a==null?'':a==='cloud'?'Cloud':/v\d\./.test(a)?a:''}return productNames={influxdb:'InfluxDB',enterprise_influxdb:'InfluxDB Enterprise',flux:'Flux',telegraf:'Telegraf',chronograf:'Chronograf',kapacitor:'Kapacitor',platform:'InfluxData Platform',resources:'Additional Resources'},a.map(a=>{pathData=new URL(a.url).pathname.split('/').filter(a=>a),product=productNames[pathData[0]],version=b(pathData[1]),a.product=product,a.version=version,a.hierarchy.lvl0=a.hierarchy.lvl0+` <span class=\"search-product-version\">${product} ${version}</span>`,a._highlightResult.hierarchy.lvl0.value=a._highlightResult.hierarchy.lvl0.value+` <span class=\"search-product-version\">${product} ${version}</span>`}),a},algoliaOptions:{hitsPerPage:10,facetFilters:[['searchTag: influxdb-v1.8','flux:true','resources:true']]},autocompleteOptions:{templates:{header:'<div class="search-all-content"><a href="https://support.influxdata.com" target="_blank">Search all InfluxData content <span class="icon-arrow-up-right"></span></a>',empty:'<div class="search-no-results"><p>Not finding what you\'re looking for?</p> <a href="https://support.influxdata.com" target="_blank">Search all InfluxData content <span class="icon-arrow-up-right"></span></a></div>'}}})</script>
+<div id="docs-notifications">
+<div class="notification note" id="v2-cloud-upgrade" data-scope="/influxdb/v1" style="display: block; right: 0px; opacity: 1;">
+<div class="notification-content">
+<h3 id="upgrade-to-influxdb-cloud-or-influxdb-20">Upgrade to InfluxDB Cloud or InfluxDB 2.0!</h3>
+<p><strong>InfluxDB Cloud</strong> and <strong>InfluxDB OSS 2.0</strong> ready for production.</p>
+<ul>
+<li><a href="/influxdb/cloud/upgrade/v1-to-cloud/">Upgrade to InfluxDB Cloud</a></li>
+<li><a href="/influxdb/v2.0/upgrade/v1-to-v2/">Upgrade to InfluxDB OSS 2.0</a></li>
+</ul>
+</div>
+<div class="close-notification"><span class="icon-remove"></span></div>
+</div>
+</div>
+
+<script type="text/javascript">cloudUrls=["https://us-west-2-1.aws.cloud2.influxdata.com","https://us-east-1-1.aws.cloud2.influxdata.com","https://eu-central-1-1.aws.cloud2.influxdata.com","https://ap-southeast-2-1.aws.cloud2.influxdata.com","https://us-central1-1.gcp.cloud2.influxdata.com","https://europe-west1-1.gcp.cloud2.influxdata.com","https://westeurope-1.azure.cloud2.influxdata.com","https://eastus-1.azure.cloud2.influxdata.com"]</script>
+<script type="text/javascript" src="/js/footer.bundle.2355251fe01c7f64e86c06cf2f6187f6aae4779cc3791d33b560c90b5e39f42b.js"></script>
+<script type="text/javascript" id="">window.GTM_UTILS={};</script><script type="text/javascript" id="">GTM_UTILS.setCookie=function(d,e,b,a,f){f=f||"/";var c=window.location.hostname,g=/([\w\d]+\.[\w]+)$/gm;c=g.exec(c)[1];a=a||"."+c;b?(c=new Date,c.setTime(c.getTime()+6E4*b)):c=new Date("2031-01-01");b="expires\x3d"+c.toUTCString();document.cookie=d+"\x3d"+e+"; path\x3d"+f+"; domain\x3d"+a+"; "+b};GTM_UTILS.getCookie=function(d){d+="\x3d";for(var e=document.cookie.split(";"),b=0;b<e.length;b++){for(var a=e[b];" "==a.charAt(0);)a=a.substring(1);if(0==a.indexOf(d))return a.substring(d.length,a.length)}return""};</script><script type="text/javascript" id="">GTM_UTILS.getParameterByName=function(a,b){b||(b=window.location.href);a=a.replace(/[\[\]]/g,"\\$\x26");var c=new RegExp("[?\x26]"+a+"(\x3d([^\x26#]*)|\x26|#|$)");return(c=c.exec(b))?c[2]?decodeURIComponent(c[2].replace(/\+/g," ")):"":null};
+GTM_UTILS.updateQueryStringParameter=function(a,b,c){var d=a.indexOf("#"),e=-1===d?"":a.substr(d);a=-1===d?a:a.substr(0,d);d=new RegExp("([?\x26])"+b+"\x3d.*?(\x26|$)","i");var f=-1!==a.indexOf("?")?"\x26":"?";a=a.match(d)?a.replace(d,"$1"+b+"\x3d"+c+"$2"):a+f+b+"\x3d"+c;return a+e};</script><script type="text/javascript" id="">GTM_UTILS.uuid=function(){return"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,function(a){var b=16*Math.random()|0;a="x"==a?b:b&3|8;return a.toString(16)})};</script><script type="text/javascript" id="">(function(){var a=google_tag_manager["GTM-WXRH9C"].macro(5),b=google_tag_manager["GTM-WXRH9C"].macro(6);GTM_UTILS.getCookie(b)||(GTM_UTILS.getCookie(a)?(b=GTM_UTILS.getCookie(a),GTM_UTILS.setCookie(a,parseInt(b)+1,3504E3)):GTM_UTILS.setCookie(a,1,3504E3))})();</script><script type="text/javascript" id="gtm-jq-ajax-listen">(function(){function h(b){"undefined"!==typeof jQuery?(k=jQuery,n()):20>b&&setTimeout(h,500)}function n(){k(document).bind("ajaxComplete",function(b,a,f){var c=document.createElement("a");c.href=f.url;var g="/"===c.pathname[0]?c.pathname:"/"+c.pathname,d="?"===c.search[0]?c.search.slice(1):c.search;d=l(d,"\x26","\x3d",!0);var e=l(a.getAllResponseHeaders(),"\n",":");dataLayer.push({event:"ajaxComplete",attributes:{type:f.type||"",url:c.href||"",queryParameters:d,pathname:g||"",hostname:c.hostname||
+"",protocol:c.protocol||"",fragment:c.hash||"",statusCode:a.status||"",statusText:a.statusText||"",headers:e,timestamp:b.timeStamp||"",contentType:f.contentType||"",response:a.responseJSON||a.responseXML||a.responseText||""}})})}function l(b,a,f,c){var g={};if(!b||!a||!f)return{};if(b=b.split(a))for(a=0;a<b.length;a++){var d=c?decodeURIComponent(b[a]):b[a],e=d.split(f);d=m(e[0]);e=m(e[1]);d&&e&&(g[d]=e)}return g}function m(b){if(b)return b.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g,"")}var k;h()})();</script><script type="text/javascript" id="">(function(){var b=window.XMLHttpRequest.prototype.open,d=window.XMLHttpRequest.prototype.send;window.XMLHttpRequest.prototype.open=function(){this.method=arguments[0];this.url=arguments[1];return b.apply(this,[].slice.call(arguments))};window.XMLHttpRequest.prototype.send=function(){var a=this,c=arguments[0],b=window.setInterval(function(){4==a.readyState&&(dataLayer.push({event:"ajaxSuccess",eventCategory:"AJAX "+a.method,eventAction:a.url+("POST"==a.method&&c?";"+c:""),eventLabel:a.responseText}),
+clearInterval(b))},1);return d.apply(this,[].slice.call(arguments))}})();</script><script type="text/javascript" id="gtm-jq-ajax-listen">(function(){function e(a,b,f,h,g){this._url=b;return k.apply(this,arguments)}function l(a){this.onreadystatechange&&(this._onreadystatechange=this.onreadystatechange);dataLayer.push({event:"xhrSent",attributes:{url:this._url,data:a}});this.onreadystatechange=m;return n.apply(this,arguments)}function m(){4===this.readyState&&dataLayer.push({event:"xhrComplete",attributes:{response:this.response,url:this.responseURL,headers:p(this.getAllResponseHeaders(),"\n",":"),status:this.status,statusText:this.statusText,
+statusCode:this.statusCode}});if(this._onreadystatechange)return this._onreadystatechange.apply(this,arguments)}function p(a,b,f,e){var g={};if(!a||!b||!f)return{};if(a=a.split(b))for(b=0;b<a.length;b++){var d=e?decodeURIComponent(a[b]):a[b],c=d.split(f);d=h(c[0]);c=h(c[1]);d&&c&&(g[d]=c)}return g}function h(a){if(a)return a.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g,"")}var k=window.XMLHttpRequest.prototype.open,n=window.XMLHttpRequest.prototype.send;window.XMLHttpRequest.prototype.open=e;window.XMLHttpRequest.prototype.send=
+l})();</script><script type="text/javascript" id="">(function(){var a=google_tag_manager["GTM-WXRH9C"].macro(17);if(GTM_UTILS.getCookie("_documentReferrerSet")){var b=GTM_UTILS.getCookie("_documentReferrerSet");GTM_UTILS.setCookie("_documentReferrerSet",b,a)}else dataLayer.push({event:"setDocumentReferrer"}),GTM_UTILS.setCookie("_documentReferrerSet",document.referrer?document.referrer:"(not set)",a)})();</script><script type="text/javascript" id="">(function(a,e,f,g,b,c,d){a.GoogleAnalyticsObject=b;a[b]=a[b]||function(){(a[b].q=a[b].q||[]).push(arguments)};a[b].l=1*new Date;c=e.createElement(f);d=e.getElementsByTagName(f)[0];c.async=1;c.src=g;d.parentNode.insertBefore(c,d)})(window,document,"script","//www.google-analytics.com/analytics.js","ga");ga("create","UA-45024174-4","auto");ga(function(a){dataLayer.push({event:"trackerReady",cid:a.get("clientId")})});</script><script type="text/javascript" id="">(function(){var a=GTM_UTILS.getCookie("gclid");!a&&(a=GTM_UTILS.getParameterByName("gclid"))&&(dataLayer.push({event:"gclidReturned",gclid:a}),GTM_UTILS.setCookie("gclid",a,5256E3))})();</script><script type="text/javascript" id="">var cname="localHour",cookieCheck=GTM_UTILS.getCookie(cname);if(!cookieCheck){var date=new Date,dateStr=date.toString(),dateArr=dateStr.split(" "),localHour=dateArr[4].split(":")[0],localTime=localHour;dataLayer.push({event:"setLocalTime",localHour:localTime});GTM_UTILS.setCookie(cname,localTime,google_tag_manager["GTM-WXRH9C"].macro(18))};</script><script type="text/javascript" id="">(function(){var a=GTM_UTILS.getCookie("msclkid");!a&&(a=GTM_UTILS.getParameterByName("msclkid"))&&(dataLayer.push({event:"msclkidReturned",msclkid:a}),GTM_UTILS.setCookie("msclkid",a,5256E3))})();</script><script type="text/javascript" id="" src="https://admind-cloud-storage.firebaseapp.com/assets/js/app.bundle.js"></script><script type="text/javascript" id="">(function(a,b){if(!a.inflx_cname)return!1;var c=a.inflx_cname;if(b.cookie.match(c)){b=a.marketo_form_id;c=a.marketo_content_name;var d="ungatedContentAccess";a.dataLayer=a.dataLayer||[];a.dataLayer.push({event:d,ungatedContentMetaData:{formId:b,assetName:c}})}})(window,document);</script><script type="text/javascript" id="">(function(){var b=google_tag_manager["GTM-WXRH9C"].macro(19),a=GTM_UTILS.getCookie(b);a||(a=GTM_UTILS.uuid());GTM_UTILS.setCookie(b,a,google_tag_manager["GTM-WXRH9C"].macro(20));dataLayer.push({event:"sessionLogicComplete"})})();</script><script type="text/javascript" id="">function getIP(a){dataLayer.push({event:"ipReturned",ip:a.ip});setTimeout(function(){GTM_UTILS.setCookie("_ipReturned",1,30)},0)}if(!GTM_UTILS.getCookie("_ipReturned")){var script=document.createElement("script");script.src="https://api.ipify.org?format\x3djsonp\x26callback\x3dgetIP";document.body.append(script)};</script><script src="https://api.ipify.org?format=jsonp&amp;callback=getIP"></script>
+
+
+               <div style="width:0px; height:0px; display:none; visibility:hidden;" id="batBeacon373224094397"><img style="width:0px; height:0px; display:none; visibility:hidden;" id="batBeacon769479952728" width="0" height="0" alt="" src="https://bat.bing.com/action/0?ti=17534276&amp;tm=gtm002&amp;Ver=2&amp;mid=ef7cbd55-18f8-4eac-a909-bb8c0886d835&amp;sid=b6d37830f49011ecb538b78829411a16&amp;vid=b6d3cdc0f49011eca576d9cfa372dc52&amp;vids=1&amp;pi=0&amp;lg=en-US&amp;sw=800&amp;sh=600&amp;sc=24&amp;nwd=1&amp;tl=InfluxDB%20line%20protocol%20tutorial%20%7C%20InfluxDB%20OSS%201.8%20Documentation&amp;p=https%3A%2F%2Fdocs.influxdata.com%2Finfluxdb%2Fv1.8%2Fwrite_protocols%2Fline_protocol_tutorial%2F&amp;r=&amp;lt=3802&amp;evt=pageLoad&amp;msclkid=N&amp;sv=1&amp;rn=453333"></div><script type="text/javascript" id="gtm-vimeo-tracking">(function(l,f,n){function q(){var a=r(v("iframe"),w);a.length&&x(function(){m(a,y)})}function w(a){return-1<a.src.indexOf("player.vimeo.com/video/")}function x(a){p(f.Vimeo)?z("https://player.vimeo.com/api/player.js",a):a()}function y(a){if(!a.__vimeoTracked){a.__vimeoTracked=!0;var d=new Vimeo.Player(a),b=n._track.percentages,c={Play:"play",Pause:"pause","Watch to End":"ended"},e={};d.getVideoTitle().then(function(k){m(["Play","Pause","Watch to End"],function(g){if(n.events[g])d.on(c[g],function(){t(g,
+k)})});if(b)d.on("timeupdate",function(g){g=g.percent;for(var h in b)g>=b[h]&&!e[h]&&(e[h]=!0,t(h,k))})})}}function A(a){a=B({},{events:{Play:!0,Pause:!0,"Watch to End":!0},percentages:{each:[],every:[]}},a);m(["each","every"],function(c){var e=a.percentages[c];u(e)||(e=[e]);e&&(a.percentages[c]=C(e,Number))});var d=[].concat(a.percentages.each);a.percentages.every&&m(a.percentages.every,function(c){var e=100/c,k=[],g;for(g=1;g<e;g++)k.push(c*g);d=d.concat(r(k,function(h){return 0<h&&100>h}))});var b=
+D(d,function(c,e){c[e+"%"]=e/100;return c},{});a._track={percentages:b};return a}function E(a){a=a||{};var d=a.name||"dataLayer",b=a.name||f.GoogleAnalyticsObject||"ga",c="_gaq",e={gtm:function(g,h){k.push({event:"vimeoTrack",attributes:{videoAction:g,videoName:h}})},cl:function(g,h){f[c].push(["_trackEvent","Videos",g,h])},ua:function(g,h){f[b]("send","event","Videos",g,h)}};switch(a.type){case "gtm":var k=f[d]=f[d]||[];break;case "ua":f[b]=f[b]||function(){(f[b].q=f[b].q||[]).push(arguments)};f[b].l=
++new Date;break;case "cl":f[c]=f[c]||[];break;default:p(f[d])?b&&!p(f[b])?a.type="ua":p(f[c])||p(f[c].push)||(a.type="cl"):(a.type="gtm",k=f[d]=f[d]||[])}return e[a.type]}function B(){var a=[].slice.call(arguments),d=a.shift(),b,c;for(c=0;c<a.length;c++){var e=a[c];for(b in e)d[b]=e[b]}return d}function u(a){return Array.isArray_?Array.isArray_(a):"[object Array]"===Object.prototype.toString.call(a)}function m(a,d){if(Array.prototype.forEach_)return a.forEach.call(a,d);var b;for(b=0;b<a.length;b++)d.call(f,
+a[b],b,a)}function C(a,d){if(Array.prototype.map_)return a.map.call(a,d);var b=[];m(a,function(c,e,k){b.push(d.call(f,c,e,k))});return b}function r(a,d){if(Array.prototype.filter)return a.filter.call(a,d);var b=[];m(a,function(c,e,k){d.call(f,c,e,k)&&b.push(c)});return b}function D(a,d,b){if(Array.prototype.reduce)return a.reduce.call(a,d,b);var c;for(c=0;c<a.length;c++){var e=a[c];b=d.call(f,b,e,a,c)}return b}function p(a){return"undefined"===typeof a}function v(a){u(a)||(a=[a]);return[].slice.call(l.querySelectorAll(a.join()))}
+function z(a,d){function b(){d&&(d(),e.onload=null)}var c=l.getElementsByTagName("script")[0];var e=l.createElement("script");e.onload=b;e.src=a;e.async=!0;c.parentNode.insertBefore(e,c)}if(!navigator.userAgent.match(/MSIE [678]\./gi)){n=A(n);var t=E(n.syntax);"loading"!==l.readyState?q():l.addEventListener("DOMContentLoaded",function(){q();l.addEventListener("load",q,!0)})}})(document,window,{events:{Play:!0,Pause:!0,"Watch to End":!0},percentages:{every:25,each:[10,90]}});</script><script type="text/javascript" id="">(function(){function f(){d>=g?clearInterval(e):"object"===typeof MktoForms2?(clearInterval(e),MktoForms2.whenReady(function(a){a={};a.utm_source_lt={fields:document.querySelectorAll('input[name\x3d"utm_source_lt__c"]'),name:"source",attribution:"last"};a.utm_medium_lt={fields:document.querySelectorAll('input[name\x3d"utm_medium_lt__c"]'),name:"medium",attribution:"last"};a.utm_campaign_lt={fields:document.querySelectorAll('input[name\x3d"utm_campaign_lt__c"]'),name:"campaign",attribution:"last"};
+a.utm_content_lt={fields:document.querySelectorAll('input[name\x3d"utm_content_lt__c"]'),name:"content",attribution:"last"};a.utm_term={fields:document.querySelectorAll('input[name\x3d"utm_term__c"]'),name:"term",attribution:"last"};a.utm_source_ft={fields:document.querySelectorAll('input[name\x3d"utm_source_ft__c"]'),name:"source",attribution:"first"};a.utm_medium_ft={fields:document.querySelectorAll('input[name\x3d"utm_medium_ft__c"]'),name:"medium",attribution:"first"};a.utm_campaign_ft={fields:document.querySelectorAll('input[name\x3d"utm_campaign_ft__c"]'),
+name:"campaign",attribution:"first"};a.utm_content_ft={fields:document.querySelectorAll('input[name\x3d"utm_content_ft__c"]'),name:"content",attribution:"first"};a.gclid={fields:document.querySelectorAll('input[name\x3d"GCLID__c"]'),name:"gclid",attribution:"last"};a.cid={fields:document.querySelectorAll('input[name\x3d"cid__c"]'),name:"cid",attribution:"first"};a.msclkid={fields:document.querySelectorAll('input[name\x3d"msclkid__c"]'),name:"msclkid",attribution:"last"};a.fbclid={fields:document.querySelectorAll('input[name\x3d"fbclid__c"]'),
+name:"fbclid",attribution:"last"};var b=JSON.parse(localStorage.getItem("__storejs_adMind_sources"));for(prop in a)if(a.hasOwnProperty(prop))for(inputListIdx=0;inputListIdx<a[prop].fields.length;inputListIdx++)if(input=a[prop].fields[inputListIdx],b&&!input.hasAttribute("data-sfdc"))if("last"==a[prop].attribution){if(b[b.length-1][a[prop].name])try{var c=b[b.length-1][a[prop].name];input.value=c?c:"";input.setAttribute("data-sfdc","true")}catch(h){}}else if(b[0][a[prop].name])try{c=b[0][a[prop].name],
+input.value=c?c:"",input.setAttribute("data-sfdc","true")}catch(h){}})):d++}var e=setInterval(function(){f()},300),d=0,g=10})();</script><script type="text/javascript" id="">var _handleAnalyticsFormSuccess=function(d){if(d){Object.entries||(Object.entries=function(a){for(var c=Object.keys(a),e=c.length,g=Array(e);e--;)g[e]=[c[e],a[c[e]]];return g});var h=Object.entries(d),b={knownUser:!0,formType:"General"},k="mktoFormSubmission",f=d.formid;d=[{formid:1212,formType:"Newsletter Sign Up"},{formid:1105,formType:"Register Your Download"},{formid:2252,formType:"Contact Sales"},{formid:1135,formType:"General Inquiries"},{formid:"form_contact-form",formType:"Careers"},{formid:"new_user",
+formType:"Enterprise New User"},{formid:1651,formType:"Partners"},{formid:1843,formType:"Sidebar - Flux Office Hours Webinar Registration"},{formid:1606,formType:"Blog - Newsletter"},{formid:1108,formType:"Cloud Trial"},{formid:"apply_form",formType:"Careers"},{formid:1829,formType:"Get Quote"},{formid:2107,formType:"Case Study - Hulu"},{formid:2096,formType:"Case Study - Capital One"},{formid:2091,formType:"Case Study - Wayfair"},{formid:2671,formType:"Free KubeCon Pass"},{formid:1195,formType:"Get Hoodie"}];
+h.forEach(function(a){var c=a[0].toLowerCase();if(/email/i.test(c)||/firstname/i.test(c))b.knownUser=!1;"form-type"==c&&(b.formType=a[1]);"mkto_content_name"==c&&(b.assetName=a[1])});f&&d.forEach(function(a){a.formid==f&&(b.formType=a.formType,b.formid=f)});b.formType||(b.formType="(not set)");window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:k,formMetaData:b});b.knownUser||window.dataLayer.push({event:"firstTimeEmailCapture"})}},mktoformsTimeout=setInterval(checkForMarketo,250),
+mktoMaxChecks=10,mktoCurChecks=0;function checkForMarketo(){"undefined"===typeof MktoForms2?(mktoCurChecks++,mktoCurChecks>=mktoMaxChecks&&(clearInterval(mktoformsTimeout),console.log("Can't add MKTO form submission success handler"))):(clearInterval(mktoformsTimeout),MktoForms2.whenReady(function(d){d.onSuccess(_handleAnalyticsFormSuccess)}))};</script><script type="text/javascript" id="">(function(l,f,y){function z(){"loading"!==l.readyState?w():"addEventListener"in l?A(l,"DOMContentLoaded",w):A(f,"load",w)}function w(){var a=[].slice.call(l.getElementsByTagName("iframe")).concat([].slice.call(l.getElementsByTagName("embed")));B(a);"addEventListener"in l&&l.addEventListener("load",I,!0)}function B(a){var b;for(b=0;b<a.length;b++){var d=C(a[b]);if(d){d=a[b];var c=f.location,e=l.createElement("a");e.href=d.getAttribute("data-src")||d.src;var g="/"===e.pathname.charAt(0)?e.pathname:
+"/"+e.pathname;x(e.search)||(e.search=(0<e.search.length?e.search+"\x26":"")+"enablejsapi\x3d1");if(!(-1<e.search.indexOf("origin"))&&-1===c.hostname.indexOf("localhost")){var p=c.port?":"+c.port:"";c=c.protocol+"%2F%2F"+c.hostname+p;e.search=e.search+"\x26origin\x3d"+c}"application/x-shockwave-flash"===d.type&&(c=l.createElement("iframe"),c.height=d.height,c.width=d.width,g=g.replace("/v/","/embed/"),d.parentNode.parentNode.replaceChild(c,d.parentNode),d=c);e.pathname=g;d.src!==e.href+e.hash&&(d.src=
+e.href+e.hash);D(d)}}}function C(a){var b=a.src||"";a=a.getAttribute("data-src")||"";return-1<b.indexOf("youtube.com/embed/")||-1<b.indexOf("youtube.com/v/")||-1<a.indexOf("youtube.com/embed/")||-1<a.indexOf("youtube.com/v/")?!0:!1}function x(a){return-1<a.indexOf("enablejsapi")}function D(a){var b=YT.get(a.id);b||(b=new YT.Player(a,{}));"undefined"===typeof a.pauseFlag&&(a.pauseFlag=!1,b.addEventListener("onStateChange",function(d){J(d,a)}))}function K(a){var b={};h.events["Watch to End"]&&(b["Watch to End"]=
+Math.min(a-3,Math.floor(.99*a)));if(h.percentageTracking){var d=[],c;h.percentageTracking.each&&(d=d.concat(h.percentageTracking.each));if(h.percentageTracking.every){var e=parseInt(h.percentageTracking.every,10),g=100/e;for(c=1;c<g;c++)d.push(c*e)}for(c=0;c<d.length;c++)g=d[c],e=g+"%",g=a*g/100,b[e]=Math.floor(g)}return b}function J(a,b){var d=a.data,c=a.target;a=c.getVideoUrl();a=a.match(/[?&]v=([^&#]*)/)[1];var e=c.getPlayerState(),g=Math.floor(c.getDuration()),p=K(g);g=c.getVideoData().title;
+var m={1:"Play",2:"Pause"};m=m[d];b.playTracker=b.playTracker||{};1!==e||b.timer?(clearInterval(b.timer),b.timer=!1):(clearInterval(b.timer),b.timer=setInterval(function(){var k=c,u=p,n=b.videoId,r=k.getCurrentTime(),t;k[n]=k[n]||{};var L=k.getVideoData().title;for(t in u)u[t]<=r&&!k[n][t]&&(k[n][t]=!0,E(n,t,L))},1E3),b.counter?b.counter.resume():b.counter=new M(15E3,a,g));2===e&&b.counter&&b.counter.pause();0===e&&b.counter&&b.counter.end();1===d&&(b.playTracker[a]=!0,b.videoId=a,b.pauseFlag=!1);
+if(!b.playTracker[b.videoId])return!1;if(2===d){if(b.pauseFlag)return!1;b.pauseFlag=!0}F[m]&&(c.getVideoData&&(g=c.getVideoData().title),E(b.videoId,m,g))}function E(a,b,d){a="https://www.youtube.com/watch?v\x3d"+a;var c=f.GoogleAnalyticsObject;if("undefined"===typeof f[v]||h.forceSyntax)if("function"===typeof f[c]&&"function"===typeof f[c].getAll&&2!==h.forceSyntax)f[c]("send","event","Videos",b,a);else"undefined"!==typeof f._gaq&&1!==G&&f._gaq.push(["_trackEvent","Videos",b,a]);else f[v].push({event:"youTubeTrack",
+attributes:{videoUrl:a,videoAction:b,videoTitle:d}})}function A(a,b,d){if(a.addEventListener)a.addEventListener(b,d);else if(a.attachEvent)a.attachEvent("on"+b,function(c){c.target=c.target||c.srcElement;d.call(a,c)});else if("undefined"===typeof a["on"+b]||null===a["on"+b])a["on"+b]=function(c){c.target=c.target||c.srcElement;d.call(a,c)}}function I(a){a=a.target||a.srcElement;var b=C(a);b&&!x(a.src)&&(console.log("Got new video, not js enabled."),y.enableJsAPI&&(console.log("enabling new video."),
+B([a])));"IFRAME"===a.tagName&&b&&x(a.src)&&-1<a.src.indexOf("origin")&&D(a)}function M(a,b,d){var c=b,e,g=a,p=this;this.pause=function(){f.clearTimeout(c);g-=new Date-e};var m=function(){e=new Date;c=f.setTimeout(function(){g=a;m();p.analyticsEvent(b,d,a)},g)};this.resume=m;this.end=function(){f.clearTimeout(c);g-=new Date-e;remainingSeconds=(new Date(g)).getTime();p.analyticsEvent(b,d,remainingSeconds)};this.analyticsEvent=function(k,u,n){k="https://www.youtube.com/watch?v\x3d"+k;var r=f.GoogleAnalyticsObject;
+if("undefined"===typeof f[v]||h.forceSyntax)if("function"===typeof f[r]&&"function"===typeof f[r].getAll&&2!==h.forceSyntax)f[r]("send","event","Videos","Timer",k);else"undefined"!==typeof f._gaq&&1!==G&&f._gaq.push(["_trackEvent","Videos","Timer",k]);else f[v].push({event:"youTubeTimer",attributes:{videoUrl:k,videoAction:"Timer",videoTitle:u,videoTimePlayed:Math.floor(n/1E3)}})};this.resume()}console.log("loaded");"use strict";if(!navigator.userAgent.match(/MSIE [67]\./gi)){var h=y||{},G=h.forceSyntax||
+0,v=h.dataLayerName||"dataLayer",F={Play:!0,Pause:!0,"Watch to End":!0};for(q in h.events)h.events.hasOwnProperty(q)&&(F[q]=h.events[q]);if(f.YT)z();else{var H=l.createElement("script");H.src="//www.youtube.com/iframe_api";var q=l.getElementsByTagName("script")[0];q.parentNode.insertBefore(H,q);f.onYouTubeIframeAPIReady=function(a){return function(){a&&a.apply(this,arguments);z()}}(f.onYouTubeIframeAPIReady)}f.GTMYTStateChangeHandler=function(a){console.log("state changed",a)}}})(document,window,
+{events:{Play:!0,Pause:!0,"Watch to End":!0},percentageTracking:{every:25,each:[]},enableJsAPI:!0});</script><script type="text/javascript" id="">/*
+ Author: Upgrow
+ Company: Upgrow
+ Copyright: Upgrow Inc.
+ License: Released under MIT License. This notice must be included in all uses of this software.
+ Revised: 2022-03-28
+*/
+"undefined"!==typeof MktoForms2&&MktoForms2.whenReady(function(b){b.onSuccess(function(a){console.log(a);window.dataLayer=window.dataLayer||[];dataLayer.push({event:"marketo-form-submission",formId:a.formid})})});</script></body></html>

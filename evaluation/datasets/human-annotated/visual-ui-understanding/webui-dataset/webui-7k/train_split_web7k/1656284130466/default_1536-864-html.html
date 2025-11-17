@@ -1,0 +1,681 @@
+<!DOCTYPE html><html><head>
+        <title>Ascio AWS Tools and Documentation</title>
+        <link href="/resources/css/awskit.css" rel="stylesheet" type="text/css">
+        <link href="/resources/css/highlight/railscasts.css" rel="stylesheet" type="text/css">
+        <link href="/resources/images/favicon.svg" type="image/x-icon" rel="shortcut icon">
+        <script async="" src="https://www.google-analytics.com/analytics.js"></script><script type="text/javascript" src="$shared/resources/scripts/jquery/jquery-1.7.1.min.js"></script>
+        <script type="text/javascript" src="$shared/resources/scripts/bootstrap-3.0.3.min.js"></script>
+        <script type="text/javascript" src="/resources/js/highlight.pack.js"></script>
+        <script type="text/javascript" src="/code-generator/code-generator.js"></script>
+        <script type="text/javascript" src="/resources/js/security.js"></script>
+        <script type="text/javascript" src="/support/support.js"></script>
+        <script type="text/javascript">hljs.initHighlightingOnLoad();</script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    </head>
+    <body>
+        <div class="logo"></div>
+        <div class="clearfix"></div>
+        <nav>
+    <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="/" class="">
+                        <span class="glyphicon glyphicon-home"></span> Home</a>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">API v2 <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="/domains-api-v2/php5/login-session.html" class="">Login and Sessions</a>
+                        </li>
+                        <li>
+                            <a href="/domains-api-v2/php5/messaging.html" class="">Messaging and Polling</a>
+                        </li>
+                        <li>
+                            <a href="/domains-api-v2/php5/expired-domain-name-auctions.html" class="">Expired domain name auctions</a>
+                        </li>
+                        <li>
+                            <a href="/domains-api-v2/php5/availability-check.html" class="">Availability Check</a>
+                        </li>
+                        <li>
+                            <a href="/gdpr.html" class="">GDPR</a>
+                        </li>
+                        <li>
+                            <a href="/domains-api-v2/php5/registrant-verification.html" class="">Registrant Verification</a>
+                        </li>
+                        <li>
+                            <a href="/domains-api-v2/php5/errp.html" class="" title="Expired Registration Recovery Policy">ERRP</a>
+                        </li>
+                        <li>
+                            <a href="/domains-api-v2/php5/templates.html" class="" title="Message templates">Message Templates</a>
+                        </li>
+                        <li role="separator" class="divider"></li>
+                        <li>
+                            <a href="/domains-api-v2/php5/domain-status.html" class="" title="API status codes">Status Codes</a>
+                        </li>
+                        <li>
+                            <a href="/domains-api-v2/php5/tld-properties.html" class="" title="TLD Properties">TLD Assistant</a>
+                        </li>
+                        <li>
+                            <a href="/domains-api-v2/php5/login" class="">Domains</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">API v3 <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="/api-v3/php5/domains-introduction.html" class="">Domains</a>
+                        </li>
+                        <li>
+                            <a href="/api-v3/php5/ssl-introduction.html" class="">SSL</a>
+                        </li>
+
+                        <li>
+                            <a href="/api-v3/php5/domain-monitoring-introduction.html" class="" title="Domain Monitoring API">Domain Monitoring</a>
+                        </li>
+                        <li>
+                            <a href="/api-v3/php5/tmch-introduction.html" class="">TradeMark Clearing House</a>
+                        </li>
+                        <li>
+                            <a href="/api-v3/php5/defensive-introduction.html" class="">Defensive (DPML)</a>
+                        </li>
+                        <li role="separator" class="divider"></li>
+                        <li>
+                            <a href="/api-v3/php5/registrant-class.html" class="">Registrants (Owners)</a>
+                        </li>
+                        <li>
+                            <a href="/api-v3/php5/contact-class.html" class="">Contacts</a>
+                        </li>
+                         <li>
+                            <a href="/api-v3/php5/messaging.html" class="">Polling / Callbacks</a>
+                        </li>
+                         <li>
+                            <a href="/api-v3/php5/order-introduction.html" class="">Orders</a>
+                        </li>
+                         <li>
+                            <a href="/api-v3/php5/getaccountbalance" class="">Account</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">DNS <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="/AscioDns/php5/introduction.html" class="">Introduction</a>
+                        </li>
+                         <li>
+                            <a href="/AscioDns/php5/createzone" class="">Zone</a>
+                        </li>
+                        <li>
+                            <a href="/AscioDns/php5/createrecord" class="">Record</a>
+                        </li>
+                    </ul>
+                </li>
+                 <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">TLD Knowledge <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                          <li>
+                            <a target="ascio" href="https://portal.ascio.com/productdb/external/tldkit/q.aspx">TLD-Kit Website</a>
+                        </li>
+                         <li>
+                            <a href="/api-v3/php5/tldkit.html" class="">TLD-Kit API</a>
+                        </li>
+                         <li>
+                            <a href="/api-v3/php5/tld-properties.html" class="">TLD Assistant</a>
+                        </li>
+                    </ul>
+                </li>
+                                              
+                <li>
+                    <a href="/cg.html" class=" active">
+                        <span class="glyphicon glyphicon-cog"></span>  Code Generator</a>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                    <li>
+                    <a href="/news" class="">
+                        <span class="glyphicon glyphicon-list"></span> News</a>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        <span class="glyphicon glyphicon-wrench"></span> Plug-ins <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a target="thirdparty" href="http://www.atomia.com/">Atomia</a>
+                        </li>
+                        <li>
+                            <a href="/dominic.html" class="">Dominic</a>
+                        </li>
+                        <li>
+                            <a href="/hostbill.html" class="">Hostbill</a>
+                        </li>
+                        <li>
+                            <a target="thirdparty" href="https://www.ispsystem.com/">ISP System</a>
+                        </li>
+                        <li>
+                            <a target="thirdparty" href="https://www.netzentwickler.de">Domainmanager</a>
+                        </li>
+                        <li>
+                            <a href="/odin.html" class="">Odin OBAS (former PBAS)</a>
+                        </li>
+                        <li>
+                            <a href="/whmcs.html" class="">WHMCS Domains</a>
+                        </li>
+                        <li>
+                            <a href="/whmcs-autoinstaller-ssl.html" class="">WHMCS Autoinstaller SSL</a>
+                        </li>
+                        <li>
+                            <a href="/php-framework.html" class="">PHP Framework and Sync</a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        <span class="glyphicon glyphicon-wrench"></span> Management <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a target="ascio" href="https://portal.ascio.com/productdb/external/tldkit/q.aspx">Tld-Kit</a>
+                        </li>
+                        <li>
+                            <a target="ascio" href="https://portal.ascio.com/">Partner Portal</a>
+                        </li>
+                        <li>
+                            <a target="ascio" href="https://dns.ascio.com">DNS Management</a>
+                        </li>
+                        <li>
+                            <a target="ascio" href="http://www.ascio.com">Ascio Website</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#" class="login" data-toggle="modal" data-target="#login">
+                        <span class="glyphicon glyphicon-log-in"></span> Login</a>
+                </li>
+                <form class="navbar-form navbar-right" action="/search.html" role="search">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q">
+                        <input type="hidden" class="form-control  templates:form-control" name="field" value="all">
+                        <input type="hidden" class="form-control" name="view" value="summary">
+                    </div>
+                    <button type="submit" class="btn btn-default">Submit</button>
+                </form>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+        <div id="content">
+    <div class="col-lg-9">
+        <h1>
+            <span class=" glyphicon glyphicon-cog"></span> Ascio Code Assistant  <span id="wait" style="display: none;">
+                <svg width="25px" height="25px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" class="uil-default">
+                    <rect x="0" y="0" width="100" height="100" fill="none" class="bk"></rect>
+                    <rect x="46.5" y="40" width="7" height="20" rx="5" ry="5" fill="#DC3B00" transform="rotate(0 50 50) translate(0 -30)">
+                        <animate attributeName="opacity" from="1" to="0" dur="1s" begin="0s" repeatCount="indefinite"></animate>
+                    </rect>
+                    <rect x="46.5" y="40" width="7" height="20" rx="5" ry="5" fill="#DC3B00" transform="rotate(30 50 50) translate(0 -30)">
+                        <animate attributeName="opacity" from="1" to="0" dur="1s" begin="0.08333333333333333s" repeatCount="indefinite"></animate>
+                  </rect>
+                    <rect x="46.5" y="40" width="7" height="20" rx="5" ry="5" fill="#DC3B00" transform="rotate(60 50 50) translate(0 -30)">
+                        <animate attributeName="opacity" from="1" to="0" dur="1s" begin="0.16666666666666666s" repeatCount="indefinite"></animate>
+                    </rect>
+                    <rect x="46.5" y="40" width="7" height="20" rx="5" ry="5" fill="#DC3B00" transform="rotate(90 50 50) translate(0 -30)">
+                        <animate attributeName="opacity" from="1" to="0" dur="1s" begin="0.25s" repeatCount="indefinite"></animate>
+                    </rect>
+                    <rect x="46.5" y="40" width="7" height="20" rx="5" ry="5" fill="#DC3B00" transform="rotate(120 50 50) translate(0 -30)">
+                        <animate attributeName="opacity" from="1" to="0" dur="1s" begin="0.3333333333333333s" repeatCount="indefinite"></animate>
+                    </rect>
+                    <rect x="46.5" y="40" width="7" height="20" rx="5" ry="5" fill="#DC3B00" transform="rotate(150 50 50) translate(0 -30)">
+                        <animate attributeName="opacity" from="1" to="0" dur="1s" begin="0.4166666666666667s" repeatCount="indefinite"></animate>
+                    </rect>
+                    <rect x="46.5" y="40" width="7" height="20" rx="5" ry="5" fill="#DC3B00" transform="rotate(180 50 50) translate(0 -30)">
+                        <animate attributeName="opacity" from="1" to="0" dur="1s" begin="0.5s" repeatCount="indefinite"></animate>
+                    </rect>
+                    <rect x="46.5" y="40" width="7" height="20" rx="5" ry="5" fill="#DC3B00" transform="rotate(210 50 50) translate(0 -30)">
+                        <animate attributeName="opacity" from="1" to="0" dur="1s" begin="0.5833333333333334s" repeatCount="indefinite"></animate>
+                    </rect>
+                    <rect x="46.5" y="40" width="7" height="20" rx="5" ry="5" fill="#DC3B00" transform="rotate(240 50 50) translate(0 -30)">
+                        <animate attributeName="opacity" from="1" to="0" dur="1s" begin="0.6666666666666666s" repeatCount="indefinite"></animate>
+                    </rect>
+                    <rect x="46.5" y="40" width="7" height="20" rx="5" ry="5" fill="#DC3B00" transform="rotate(270 50 50) translate(0 -30)">
+                        <animate attributeName="opacity" from="1" to="0" dur="1s" begin="0.75s" repeatCount="indefinite"></animate>
+                    </rect>
+                    <rect x="46.5" y="40" width="7" height="20" rx="5" ry="5" fill="#DC3B00" transform="rotate(300 50 50) translate(0 -30)">
+                        <animate attributeName="opacity" from="1" to="0" dur="1s" begin="0.8333333333333334s" repeatCount="indefinite"></animate>
+                    </rect>
+                    <rect x="46.5" y="40" width="7" height="20" rx="5" ry="5" fill="#DC3B00" transform="rotate(330 50 50) translate(0 -30)">
+                        <animate attributeName="opacity" from="1" to="0" dur="1s" begin="0.9166666666666666s" repeatCount="indefinite"></animate>
+                    </rect>
+                </svg>
+            </span>
+        </h1>
+        <h2>Configurable code examples for multiple programming languages</h2>
+    </div>
+    <div class="col-lg-3">
+        <a class="download-lib btn btn-success" style="color:white; margin-top:20px" href="/ascio-code-examples.zip">
+            <span class="glyphicon glyphicon-download-alt"></span> Download libraries and examples</a>
+    </div>
+    <div class="clearfix"></div>
+    <div class="col-lg-12">
+        <div class="form-inline" id="inputs"><div class="form-group cg-selects"><label for="lang">Language</label><br> <select id="lang" onchange="send('lang')" class="choice form-control" name="lang">undefined<option value="php5">PHP5</option><option value="php5-stub">PHP5 classes</option><option value="java-axis" selected="selected">Java</option><option value="csharp">C#</option><option value="perl">Perl</option><option value="python">Python</option><option value="nodejs">NodeJS</option><option value="soap">SOAP</option></select></div><div class="form-group cg-selects"><label for="api">Api</label><br> <select id="api" onchange="send('api')" class="choice form-control" name="api">undefined<option value="v2" selected="selected">v2</option><option value="v3">v3</option><option value="AscioDns">AscioDns</option></select></div><div class="form-group cg-selects"><label for="method">Method</label><br> <select id="method" onchange="send('method')" class="choice form-control" name="method">undefined<option value="AckMessage">AckMessage</option><option value="AvailabilityCheck">AvailabilityCheck</option><option value="AvailabilityInfo">AvailabilityInfo</option><option value="CreateApprovalDocumentation">CreateApprovalDocumentation</option><option value="CreateContact">CreateContact</option><option value="CreateDnsSecKey">CreateDnsSecKey</option><option value="CreateDocumentation">CreateDocumentation</option><option value="CreateNameServer">CreateNameServer</option><option value="CreateOrder" selected="selected">CreateOrder</option><option value="CreateRegistrant">CreateRegistrant</option><option value="CreateSupportOrder">CreateSupportOrder</option><option value="DeleteContact">DeleteContact</option><option value="DeleteNameServer">DeleteNameServer</option><option value="DeleteRegistrant">DeleteRegistrant</option><option value="DoRegistrantVerification">DoRegistrantVerification</option><option value="GetContact">GetContact</option><option value="GetDnsSecKey">GetDnsSecKey</option><option value="GetDomain">GetDomain</option><option value="GetMessageQueue">GetMessageQueue</option><option value="GetMessages">GetMessages</option><option value="GetNameServer">GetNameServer</option><option value="GetOrder">GetOrder</option><option value="GetRegistrant">GetRegistrant</option><option value="GetRegistrantVerificationInfo">GetRegistrantVerificationInfo</option><option value="GetRegistrantVerificationStatus">GetRegistrantVerificationStatus</option><option value="LogIn">LogIn</option><option value="LogOut">LogOut</option><option value="PollMessage">PollMessage</option><option value="SearchContact">SearchContact</option><option value="SearchDnsSecKey">SearchDnsSecKey</option><option value="SearchDomain">SearchDomain</option><option value="SearchNameServer">SearchNameServer</option><option value="SearchOrder">SearchOrder</option><option value="SearchRegistrant">SearchRegistrant</option><option value="UpdateContact">UpdateContact</option><option value="UploadDocumentation">UploadDocumentation</option><option value="UploadMessage">UploadMessage</option><option value="UploadRegistrantVerificationMessage">UploadRegistrantVerificationMessage</option><option value="ValidateOrder">ValidateOrder</option><option value="Whois">Whois</option></select></div></div>
+        <div id="tlds" style="display: none;"><b>Tld group:</b> undefined</div>
+        <div id="tldkit" style="display:none"></div>
+    </div>
+    <div class="col-lg-12">
+        <div class="form-inline clearfix cg-options">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" id="codeview" onclick="send()">
+                        <span> View optional properties</span>
+                    
+                </label>
+            </div>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" id="handleview" onclick="send()">
+                        <span> Use handles</span>
+                    
+                </label>
+            </div>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" id="commentsview" onclick="send()">
+                        <span> Show comments</span>
+                    
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+      <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active">
+            <a href="#code" aria-controls="code" role="tab" data-toggle="tab">
+                <span class="glyphicon glyphicon-cog"></span> Code</a>
+        </li>
+        <li role="presentation">
+            <a id="documentation-link" href="#documentation" aria-controls="documentation" role="tab" data-toggle="tab" style="color: rgb(220, 59, 0);">
+                <span class="glyphicon glyphicon-info-sign documentation"></span> Documentation</a>
+        </li>
+    </ul>
+
+  <!-- Tab panes -->
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="code">
+            <pre>                <code id="coderesult" class="hljs v2 cs">package ascio.v2.examples;
+import java.util.Calendar;
+import com.ascio.www._2007._01.*;
+import com.ascio.www._2007._01.holders.*;
+import ascio.lib.*;
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Register_DomainExample</span> {
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Response <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>{
+		AscioConfig config = <span class="hljs-keyword">new</span> AscioConfig();
+		V2 env = config.getTesting().getV2();
+
+		Registrant registrant =  <span class="hljs-keyword">new</span> Registrant();
+		registrant.setName(<span class="hljs-string">"ascio-is-great.com"</span>);
+		registrant.setOrgName(<span class="hljs-string">"Ascio"</span>);
+		registrant.setAddress1(<span class="hljs-string">"Address1Test"</span>);
+		registrant.setAddress2(<span class="hljs-string">"Address2Test"</span>);
+		registrant.setCity(<span class="hljs-string">"CityTest"</span>);
+		registrant.setState(<span class="hljs-string">"StateTest"</span>);
+		registrant.setPostalCode(<span class="hljs-string">"888349"</span>);
+		registrant.setCountryCode(<span class="hljs-string">"DK"</span>);
+		registrant.setEmail(config.getEmail());
+		registrant.setPhone(<span class="hljs-string">"+45.123456789"</span>);
+		registrant.setFax(<span class="hljs-string">"+45.987654321"</span>);
+		registrant.setRegistrantType(<span class="hljs-string">"C1"</span>);
+		registrant.setVatNumber(<span class="hljs-string">"VatNumberTest"</span>);
+		registrant.setNexusCategory(<span class="hljs-string">"NexusCategoryTest"</span>);
+		registrant.setRegistrantNumber(<span class="hljs-string">"abc123445"</span>);
+		registrant.setDetails(<span class="hljs-string">"DetailsTest"</span>);
+
+		Contact adminContact =  <span class="hljs-keyword">new</span> Contact();
+		adminContact.setStatus(<span class="hljs-string">"StatusTest"</span>);
+		adminContact.setHandle(<span class="hljs-string">"JD123"</span>);
+		adminContact.setFirstName(<span class="hljs-string">"John"</span>);
+		adminContact.setLastName(<span class="hljs-string">"Doe"</span>);
+		adminContact.setOrgName(<span class="hljs-string">"Ascio"</span>);
+		adminContact.setAddress1(<span class="hljs-string">"Address1Test"</span>);
+		adminContact.setAddress2(<span class="hljs-string">"Address2Test"</span>);
+		adminContact.setPostalCode(<span class="hljs-string">"888349"</span>);
+		adminContact.setCity(<span class="hljs-string">"CityTest"</span>);
+		adminContact.setState(<span class="hljs-string">"StateTest"</span>);
+		adminContact.setCountryCode(<span class="hljs-string">"DK"</span>);
+		adminContact.setEmail(config.getEmail());
+		adminContact.setPhone(<span class="hljs-string">"+45.123456789"</span>);
+		adminContact.setFax(<span class="hljs-string">"+45.987654321"</span>);
+		adminContact.setType(<span class="hljs-string">"owner"</span>);
+		adminContact.setDetails(<span class="hljs-string">"DetailsTest"</span>);
+		adminContact.setOrganisationNumber(<span class="hljs-string">"OrganisationNumberTest"</span>);
+
+		Contact techContact =  <span class="hljs-keyword">new</span> Contact();
+		techContact.setStatus(<span class="hljs-string">"StatusTest"</span>);
+		techContact.setHandle(<span class="hljs-string">"JD123"</span>);
+		techContact.setFirstName(<span class="hljs-string">"John"</span>);
+		techContact.setLastName(<span class="hljs-string">"Doe"</span>);
+		techContact.setOrgName(<span class="hljs-string">"Ascio"</span>);
+		techContact.setAddress1(<span class="hljs-string">"Address1Test"</span>);
+		techContact.setAddress2(<span class="hljs-string">"Address2Test"</span>);
+		techContact.setPostalCode(<span class="hljs-string">"888349"</span>);
+		techContact.setCity(<span class="hljs-string">"CityTest"</span>);
+		techContact.setState(<span class="hljs-string">"StateTest"</span>);
+		techContact.setCountryCode(<span class="hljs-string">"DK"</span>);
+		techContact.setEmail(config.getEmail());
+		techContact.setPhone(<span class="hljs-string">"+45.123456789"</span>);
+		techContact.setFax(<span class="hljs-string">"+45.987654321"</span>);
+		techContact.setType(<span class="hljs-string">"owner"</span>);
+		techContact.setDetails(<span class="hljs-string">"DetailsTest"</span>);
+		techContact.setOrganisationNumber(<span class="hljs-string">"OrganisationNumberTest"</span>);
+
+		Contact billingContact =  <span class="hljs-keyword">new</span> Contact();
+		billingContact.setStatus(<span class="hljs-string">"StatusTest"</span>);
+		billingContact.setHandle(<span class="hljs-string">"JD123"</span>);
+		billingContact.setFirstName(<span class="hljs-string">"John"</span>);
+		billingContact.setLastName(<span class="hljs-string">"Doe"</span>);
+		billingContact.setOrgName(<span class="hljs-string">"Ascio"</span>);
+		billingContact.setAddress1(<span class="hljs-string">"Address1Test"</span>);
+		billingContact.setAddress2(<span class="hljs-string">"Address2Test"</span>);
+		billingContact.setPostalCode(<span class="hljs-string">"888349"</span>);
+		billingContact.setCity(<span class="hljs-string">"CityTest"</span>);
+		billingContact.setState(<span class="hljs-string">"StateTest"</span>);
+		billingContact.setCountryCode(<span class="hljs-string">"DK"</span>);
+		billingContact.setEmail(config.getEmail());
+		billingContact.setPhone(<span class="hljs-string">"+45.123456789"</span>);
+		billingContact.setFax(<span class="hljs-string">"+45.987654321"</span>);
+		billingContact.setType(<span class="hljs-string">"owner"</span>);
+		billingContact.setDetails(<span class="hljs-string">"DetailsTest"</span>);
+		billingContact.setOrganisationNumber(<span class="hljs-string">"OrganisationNumberTest"</span>);
+
+		NameServer nameServer1 =  <span class="hljs-keyword">new</span> NameServer();
+		nameServer1.setHostName(<span class="hljs-string">"ns1.ascio.net"</span>);
+		nameServer1.setIpAddress(<span class="hljs-string">"64.98.148.24"</span>);
+		nameServer1.setStatus(<span class="hljs-string">"StatusTest"</span>);
+		nameServer1.setIpV6Address(<span class="hljs-string">"xxxx:xxxx:xxx:xxx:xxxx"</span>);
+		nameServer1.setDetails(<span class="hljs-string">"DetailsTest"</span>);
+
+		NameServer nameServer2 =  <span class="hljs-keyword">new</span> NameServer();
+		nameServer2.setHostName(<span class="hljs-string">"ns2.ascio.net"</span>);
+		nameServer2.setIpAddress(<span class="hljs-string">"216.40.47.100"</span>);
+		nameServer2.setStatus(<span class="hljs-string">"StatusTest"</span>);
+		nameServer2.setIpV6Address(<span class="hljs-string">"xxxx:xxxx:xxx:xxx:xxxx"</span>);
+		nameServer2.setDetails(<span class="hljs-string">"DetailsTest"</span>);
+
+		NameServer nameServer3 =  <span class="hljs-keyword">new</span> NameServer();
+		nameServer3.setHostName(<span class="hljs-string">"ns3.ascio.net"</span>);
+		nameServer3.setIpAddress(<span class="hljs-string">"64.98.148.25"</span>);
+		nameServer3.setStatus(<span class="hljs-string">"StatusTest"</span>);
+		nameServer3.setIpV6Address(<span class="hljs-string">"xxxx:xxxx:xxx:xxx:xxxx"</span>);
+		nameServer3.setDetails(<span class="hljs-string">"DetailsTest"</span>);
+
+		NameServer nameServer4 =  <span class="hljs-keyword">new</span> NameServer();
+		nameServer4.setHostName(<span class="hljs-string">"ns4.ascio.net"</span>);
+		nameServer4.setIpAddress(<span class="hljs-string">"216.40.47.101"</span>);
+		nameServer4.setStatus(<span class="hljs-string">"StatusTest"</span>);
+		nameServer4.setIpV6Address(<span class="hljs-string">"xxxx:xxxx:xxx:xxx:xxxx"</span>);
+		nameServer4.setDetails(<span class="hljs-string">"DetailsTest"</span>);
+
+		NameServer nameServer5 =  <span class="hljs-keyword">new</span> NameServer();
+		nameServer5.setHostName(<span class="hljs-string">"HostNameTest"</span>);
+		nameServer5.setIpAddress(<span class="hljs-string">"IpAddressTest"</span>);
+		nameServer5.setStatus(<span class="hljs-string">"StatusTest"</span>);
+		nameServer5.setIpV6Address(<span class="hljs-string">"IpV6AddressTest"</span>);
+		nameServer5.setDetails(<span class="hljs-string">"DetailsTest"</span>);
+
+		NameServer nameServer6 =  <span class="hljs-keyword">new</span> NameServer();
+		nameServer6.setHostName(<span class="hljs-string">"HostNameTest"</span>);
+		nameServer6.setIpAddress(<span class="hljs-string">"IpAddressTest"</span>);
+		nameServer6.setStatus(<span class="hljs-string">"StatusTest"</span>);
+		nameServer6.setIpV6Address(<span class="hljs-string">"IpV6AddressTest"</span>);
+		nameServer6.setDetails(<span class="hljs-string">"DetailsTest"</span>);
+
+		NameServer nameServer7 =  <span class="hljs-keyword">new</span> NameServer();
+		nameServer7.setHostName(<span class="hljs-string">"HostNameTest"</span>);
+		nameServer7.setIpAddress(<span class="hljs-string">"IpAddressTest"</span>);
+		nameServer7.setStatus(<span class="hljs-string">"StatusTest"</span>);
+		nameServer7.setIpV6Address(<span class="hljs-string">"IpV6AddressTest"</span>);
+		nameServer7.setDetails(<span class="hljs-string">"DetailsTest"</span>);
+
+		NameServer nameServer8 =  <span class="hljs-keyword">new</span> NameServer();
+		nameServer8.setHostName(<span class="hljs-string">"HostNameTest"</span>);
+		nameServer8.setIpAddress(<span class="hljs-string">"IpAddressTest"</span>);
+		nameServer8.setStatus(<span class="hljs-string">"StatusTest"</span>);
+		nameServer8.setIpV6Address(<span class="hljs-string">"IpV6AddressTest"</span>);
+		nameServer8.setDetails(<span class="hljs-string">"DetailsTest"</span>);
+
+		NameServer nameServer9 =  <span class="hljs-keyword">new</span> NameServer();
+		nameServer9.setHostName(<span class="hljs-string">"HostNameTest"</span>);
+		nameServer9.setIpAddress(<span class="hljs-string">"IpAddressTest"</span>);
+		nameServer9.setStatus(<span class="hljs-string">"StatusTest"</span>);
+		nameServer9.setIpV6Address(<span class="hljs-string">"IpV6AddressTest"</span>);
+		nameServer9.setDetails(<span class="hljs-string">"DetailsTest"</span>);
+
+		NameServer nameServer10 =  <span class="hljs-keyword">new</span> NameServer();
+		nameServer10.setHostName(<span class="hljs-string">"HostNameTest"</span>);
+		nameServer10.setIpAddress(<span class="hljs-string">"IpAddressTest"</span>);
+		nameServer10.setStatus(<span class="hljs-string">"StatusTest"</span>);
+		nameServer10.setIpV6Address(<span class="hljs-string">"IpV6AddressTest"</span>);
+		nameServer10.setDetails(<span class="hljs-string">"DetailsTest"</span>);
+
+		NameServer nameServer11 =  <span class="hljs-keyword">new</span> NameServer();
+		nameServer11.setHostName(<span class="hljs-string">"HostNameTest"</span>);
+		nameServer11.setIpAddress(<span class="hljs-string">"IpAddressTest"</span>);
+		nameServer11.setStatus(<span class="hljs-string">"StatusTest"</span>);
+		nameServer11.setIpV6Address(<span class="hljs-string">"IpV6AddressTest"</span>);
+		nameServer11.setDetails(<span class="hljs-string">"DetailsTest"</span>);
+
+		NameServer nameServer12 =  <span class="hljs-keyword">new</span> NameServer();
+		nameServer12.setHostName(<span class="hljs-string">"HostNameTest"</span>);
+		nameServer12.setIpAddress(<span class="hljs-string">"IpAddressTest"</span>);
+		nameServer12.setStatus(<span class="hljs-string">"StatusTest"</span>);
+		nameServer12.setIpV6Address(<span class="hljs-string">"IpV6AddressTest"</span>);
+		nameServer12.setDetails(<span class="hljs-string">"DetailsTest"</span>);
+
+		NameServers nameServers =  <span class="hljs-keyword">new</span> NameServers();
+		nameServers.setNameServer1(nameServer1);
+		nameServers.setNameServer2(nameServer2);
+		nameServers.setNameServer3(nameServer3);
+		nameServers.setNameServer4(nameServer4);
+		nameServers.setNameServer5(nameServer5);
+		nameServers.setNameServer6(nameServer6);
+		nameServers.setNameServer7(nameServer7);
+		nameServers.setNameServer8(nameServer8);
+		nameServers.setNameServer9(nameServer9);
+		nameServers.setNameServer10(nameServer10);
+		nameServers.setNameServer11(nameServer11);
+		nameServers.setNameServer12(nameServer12);
+
+		TradeMark trademark =  <span class="hljs-keyword">new</span> TradeMark();
+		trademark.setName(<span class="hljs-string">"ascio-is-great.com"</span>);
+		trademark.setCountry(<span class="hljs-string">"DK"</span>);
+		trademark.setDate(Calendar.getInstance());
+		trademark.setNumber(<span class="hljs-string">"NumberTest"</span>);
+		trademark.setType(<span class="hljs-string">"owner"</span>);
+		trademark.setContact(<span class="hljs-string">"ContactTest"</span>);
+		trademark.setContactLanguage(<span class="hljs-string">"ContactLanguageTest"</span>);
+		trademark.setDocumentationLanguage(<span class="hljs-string">"DocumentationLanguageTest"</span>);
+		trademark.setSecondContact(<span class="hljs-string">"SecondContactTest"</span>);
+		trademark.setThirdContact(<span class="hljs-string">"ThirdContactTest"</span>);
+		trademark.setRegDate(Calendar.getInstance());
+
+		DnsSecKey dnsSecKey1 =  <span class="hljs-keyword">new</span> DnsSecKey();
+		dnsSecKey1.setHandle(<span class="hljs-string">"JD123"</span>);
+
+		DnsSecKey dnsSecKey2 =  <span class="hljs-keyword">new</span> DnsSecKey();
+		dnsSecKey2.setHandle(<span class="hljs-string">"JD123"</span>);
+
+		DnsSecKey dnsSecKey3 =  <span class="hljs-keyword">new</span> DnsSecKey();
+		dnsSecKey3.setHandle(<span class="hljs-string">"JD123"</span>);
+
+		DnsSecKey dnsSecKey4 =  <span class="hljs-keyword">new</span> DnsSecKey();
+		dnsSecKey4.setHandle(<span class="hljs-string">"JD123"</span>);
+
+		DnsSecKey dnsSecKey5 =  <span class="hljs-keyword">new</span> DnsSecKey();
+		dnsSecKey5.setHandle(<span class="hljs-string">"JD123"</span>);
+
+		DnsSecKeys dnsSecKeys =  <span class="hljs-keyword">new</span> DnsSecKeys();
+		dnsSecKeys.setDnsSecKey1(dnsSecKey1);
+		dnsSecKeys.setDnsSecKey2(dnsSecKey2);
+		dnsSecKeys.setDnsSecKey3(dnsSecKey3);
+		dnsSecKeys.setDnsSecKey4(dnsSecKey4);
+		dnsSecKeys.setDnsSecKey5(dnsSecKey5);
+
+		Extension extension =  <span class="hljs-keyword">new</span> Extension();
+		extension.setKey(<span class="hljs-string">"Title"</span>);
+		extension.setValue(<span class="hljs-string">"Mr."</span>);
+
+		ExtensionsExtension extensions[] =  <span class="hljs-keyword">new</span> ExtensionsExtension[]{extension};
+
+		PrivacyProxy privacyProxy =  <span class="hljs-keyword">new</span> PrivacyProxy();
+		privacyProxy.setType(PrivacyProxyType.None);
+		privacyProxy.setPrivacyAdmin(<span class="hljs-keyword">false</span>);
+		privacyProxy.setPrivacyTech(<span class="hljs-keyword">false</span>);
+		privacyProxy.setPrivacyBilling(<span class="hljs-keyword">false</span>);
+		privacyProxy.setExtensions(extensions);
+
+		Domain domain =  <span class="hljs-keyword">new</span> Domain();
+		domain.setDomainName(<span class="hljs-string">"ascio-test-domain"</span>+System.currentTimeMillis()+<span class="hljs-string">".com"</span>);
+		domain.setRegPeriod(<span class="hljs-number">1</span>);
+		domain.setRenewPeriod(<span class="hljs-number">1</span>);
+		domain.setDomainPurpose(<span class="hljs-string">"DomainPurposeTest"</span>);
+		domain.setTransferLock(<span class="hljs-string">"Unlock"</span>);
+		domain.setDeleteLock(<span class="hljs-string">"Unlock"</span>);
+		domain.setUpdateLock(<span class="hljs-string">"Unlock"</span>);
+		domain.setRegistrant(registrant);
+		domain.setAdminContact(adminContact);
+		domain.setTechContact(techContact);
+		domain.setBillingContact(billingContact);
+		domain.setNameServers(nameServers);
+		domain.setTrademark(trademark);
+		domain.setDnsSecKeys(dnsSecKeys);
+		domain.setPrivacyProxy(privacyProxy);
+		domain.setDiscloseSocialData(<span class="hljs-string">"true"</span>);
+
+		Order order =  <span class="hljs-keyword">new</span> Order();
+		order.setType(OrderType.Register_Domain);
+		order.setAccountReference(<span class="hljs-string">"AccountReferenceTest"</span>);
+		order.setTransactionComment(<span class="hljs-string">"TransactionCommentTest"</span>);
+		order.setComments(<span class="hljs-string">"CommentsTest"</span>);
+		order.setOptions(<span class="hljs-string">"OptionsTest"</span>);
+		order.setLocalPresence(<span class="hljs-keyword">false</span>);
+		order.setBatch(<span class="hljs-string">"BatchTest"</span>);
+		order.setDocumentation(<span class="hljs-string">"DocumentationTest"</span>);
+		order.setDomain(domain);
+		order.setAgreedPrice(<span class="hljs-number">1</span>);
+
+		<span class="hljs-keyword">try</span> {
+			<span class="hljs-comment">/**inputs holders*/</span>
+
+			OrderHolder orderHolder = <span class="hljs-keyword">new</span> OrderHolder(order);
+
+			Response response = env.getClient().createOrder(env.getSessionId(), orderHolder);
+
+
+			System.<span class="hljs-keyword">out</span>.println(<span class="hljs-string">"CreateOrder ResultCode\t: "</span> + response.getResultCode().toString());
+			System.<span class="hljs-keyword">out</span>.println(<span class="hljs-string">"CreateOrder Message\t: "</span> + response.getMessage());
+			System.<span class="hljs-keyword">out</span>.println(<span class="hljs-string">"Created OrderId\t\t: "</span> + orderHolder.<span class="hljs-keyword">value</span>.getOrderId());
+			<span class="hljs-keyword">if</span>(response.getResultCode() == <span class="hljs-number">400</span>) {
+				<span class="hljs-keyword">for</span>( String <span class="hljs-keyword">value</span> : response.getValues()) {
+					System.<span class="hljs-keyword">out</span>.println(<span class="hljs-string">"Error:	"</span> + <span class="hljs-keyword">value</span>);
+				}
+			}
+			env.repeatSync(orderHolder.<span class="hljs-keyword">value</span>.getOrderId(), <span class="hljs-number">10</span>);
+			<span class="hljs-keyword">return</span> response;
+		} <span class="hljs-keyword">catch</span> (Exception e) {
+			System.<span class="hljs-keyword">out</span>.print(e);
+		}
+		<span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Response();</code>
+            </pre>
+            <div class="col-lg-2">
+                <a class="btn btn-success download-lib " style="color:white" href="/ascio-code-examples.zip">
+                    <span class="glyphicon glyphicon-download-alt"></span> Download libraries and examples</a>
+            </div>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="documentation">
+            <div class="col-lg-12" id="contentresult"><div class="col-lg-8 code-title"><h1>Java Axis <b>CreateOrder</b> - Register_Domain</h1><p><description>
+            </description></p><p>Registers a domain. Please look at the <a href="https://portal.ascio.com/productdb/external/tldkit/q.aspx">TLD-Kit</a> for special rules. </p>
+        <p></p></div><div class="col-lg-4 code-title "><div class="pull-right"><img class="langlogo" src="/resources/images/logos/java-axis.png"></div></div><div class="clearfix"></div><pre><code class="hljs v2 vbnet">Response CreateOrder(<span class="hljs-built_in">string</span> sessionId,<span class="hljs-keyword">Order</span> <span class="hljs-keyword">order</span>)</code></pre><h2>Response codes</h2><table class="table"><thead><tr><th>ResultCode</th><th>Message</th><th>Value</th></tr></thead><tbody><tr><th>200</th><td>Order validated</td><td></td></tr><tr><th>200</th><td>Order received</td><td></td></tr><tr><th>400</th><td>Order not validated</td><td>Messages</td></tr><tr><th>401</th><td>Authorization failed</td><td></td></tr><tr><th>405</th><td>Access denied</td><td></td></tr></tbody></table><h2>CreateOrder Request</h2><table class="table table-thin"><tbody><tr><th style="width:150px">Property</th><th>Description</th></tr><tr><th><span class="label label-info value-Type">sessionId</span></th><td><span class="value-Type">Example: o58t9fjgw9bjarp6q7byv13e</span></td></tr><tr><th><span class="label label-info value-Type"><a href="/domains-api-v2/java-axis/order-class.html">order</a></span></th><td><span class="value-Type"></span></td></tr></tbody></table><h2>CreateOrderResponse</h2><table class="table table-thin"><tbody><tr><th style="width:150px">Property</th></tr><tr><th><span class="label label-info value-Type"><a href="/domains-api-v2/java-axis/schema/Response">CreateOrderResult</a></span></th></tr><tr><th><span class="label label-info value-Type"><a href="/domains-api-v2/java-axis/order-class.html">order</a></span></th></tr></tbody></table><div class="alert alert-warning" style="margin-top:50px;"><b>WSDL for AWS v2</b><br>https://aws.demo.ascio.com/2012/01/01/AscioService.wsdl (OTE)
+            <br>https://aws.ascio.com/2012/01/01/AscioService.wsdl (Live)
+        </div></div>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="messages">...</div>
+        <div role="tabpanel" class="tab-pane" id="settings">...</div>
+    </div>
+    <div class="clearfix"></div>
+</div>
+        <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-98157908-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+    <!-- Modal -->
+        <div class="modal fade" id="login" tabindex="-1" role="dialog" aria-labelledby="loginLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                        <h4 class="modal-title" id="loginLabel">Login</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="u">Account</label>
+                                <input type="text" class="form-control" id="u" placeholder="Ascio account">
+                            </div>
+                            <div class="form-group">
+                                <label for="p">Password</label>
+                                <input type="password" class="form-control" id="p">
+                            </div>
+                            <div class="form-group">
+                                <label for="env">Environment</label>
+                                <br>
+                                <div class="btn-group" data-toggle="buttons">
+                                    <label class="btn btn-primary active">
+                                        <input type="radio" name="options" id="testing" value="testing" autocomplete="off" checked="">Test environment
+                                </label>
+                                    <label class="btn btn-primary">
+                                        <input type="radio" name="options" id="live" value="live" autocomplete="off">Live environment
+                                 </label>
+                                </div>
+                            </div>
+                        </form>
+                        <div id="login-message"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="login-button">Login</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+</body></html>

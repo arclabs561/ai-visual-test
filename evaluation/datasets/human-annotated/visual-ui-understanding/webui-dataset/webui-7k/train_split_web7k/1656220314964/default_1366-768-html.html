@@ -1,0 +1,809 @@
+<!DOCTYPE html><html><head>
+    <title>Learn to change history with git rebase!</title>
+    <link rel="stylesheet" type="text/css" href="index.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+  </head>
+  <body>
+    <div class="container">
+      <h1>git rebase in depth</h1>
+      <div class="intro">
+        <p>
+          One of <a target="_blank" rel="noopener" href="https://git-scm.com">Git</a>'s core value-adds is the ability to <em>edit history</em>.
+          Unlike other version control systems that treat the history as a sacred
+          record, in git we can change history to suit our needs. This gives us
+          a lot of powerful tools and allows us to curate a good commit history
+          in the same way we use refactoring to uphold good software design
+          practices. These tools can be a little bit intimidating to the
+          novice or even intermediate git user, but this guide will help to
+          demystify the powerful
+          <a target="_blank" href="https://git-scm.com/docs/git-rebase" rel="noopener">git-rebase</a>.
+        </p>
+        <div class="alert">
+          <strong>A word of caution</strong>: changing the history of public,
+          shared, or stable branches is generally advised against. Editing the
+          history of feature branches and personal forks is fine, and editing
+          commits that you haven't pushed yet is always okay. Use <code>git
+          push -f</code> to force push your changes to a personal fork or
+          feature branch after editing your commits.
+        </div>
+        <p>
+          Despite the scary warning, it's worth mentioning that everything
+          mentioned in this guide is a <em>non-destructive</em> operation. It's
+          actually pretty difficult to permanently lose data in git. Fixing
+          things when you make mistakes is covered at the end of this guide.
+        </p>
+      </div>
+      <footer>
+        This guide brought to you courtesy of
+        <a href="https://sourcehut.org">sourcehut</a>, the hacker's forge. 100%
+        open source Git &amp; Mercurial hosting, continuous integration,
+        mailing lists, and <strong>no JavaScript</strong>!
+        <a href="https://meta.sr.ht/register">Try it today</a>!
+      </footer>
+      <div class="content">
+        <h2>Setting up a sandbox</h2>
+        <p>
+          We don't want to mess up any of your actual repositories, so
+          throughout this guide we'll be working with a sandbox repo. Run these
+          commands to get started:
+        </p>
+        <pre>git init /tmp/rebase-sandbox
+<!--      -->cd /tmp/rebase-sandbox
+<!--      -->git commit --allow-empty -m"Initial commit" <a id="ref-1" href="#note-1"><sup># 1</sup></a></pre>
+        <p>
+          If you run into trouble, just run <code>rm -rf
+            /tmp/rebase-sandbox</code> and run these steps again to start over.
+          Each step of this guide can be run on a fresh sandbox, so it's not
+          necessary to re-do every task.
+        </p>
+      </div>
+      <div class="intro" style="padding: 1rem 0">
+        <h3>Table of Contents</h3>
+        <ol>
+          <li><a href="#amending">Amending your last commit</a></li>
+          <li><a href="#fixup">Fixing up older commits</a></li>
+          <li><a href="#autosquash">Using git rebase --autosquash</a></li>
+          <li><a href="#squash">Squashing several commits into one</a></li>
+          <li><a href="#edit">Splitting one commit into several</a></li>
+          <li><a href="#reorder">Reordering commits</a></li>
+          <li><a href="#pull">git pull --rebase</a></li>
+          <li><a href="#rebase">Using git rebase to... rebase</a></li>
+          <li><a href="#conflicts">Resolving conflicts</a></li>
+          <li><a href="#reflog">Help! I broke it!</a></li>
+        </ol>
+      </div>
+      <div class="content">
+        <h2 id="amending">Amending your last commit</h2>
+        <p>
+          Let's start with something simple: fixing your most recent commit.
+          Let's add a file to our sandbox — and make a mistake:
+        </p>
+        <pre>echo "Hello wrold!" &gt;greeting.txt
+<!--      -->git add greeting.txt
+<!--      -->git commit -m"Add greeting.txt"</pre>
+        <p>
+          Fixing this mistake is pretty easy. We can just edit the file and
+          commit with <code>--amend</code>, like so:
+        </p>
+        <pre>echo "Hello world!" &gt;greeting.txt
+<!--      -->git commit -a --amend</pre>
+        <p>
+          Specifying <code>-a</code> automatically stages (i.e. <code>git
+            add</code>'s) all files that git already knows about, and
+          <code>--amend</code> will <em>squash</em> the changes into the most
+          recent commit. Save and quit your editor (you have a chance to change
+          the commit message now if you'd like). You can see the fixed commit
+          by running <code>git show</code>:
+        </p>
+        <pre><!--
+--><span style="color: #A80">commit f5f19fbf6d35b2db37dcac3a55289ff9602e4d00 (</span><span style="color: blue">HEAD -&gt;</span> <span style="color:green">master</span><span style="color: #A80">)</span>
+Author: Drew DeVault &lt;sir@cmpwn.com&gt;
+Date:   Sun Apr 28 11:09:47 2019 -0400
+
+    Add greeting.txt
+
+<strong>diff --git a/greeting.txt b/greeting.txt
+new file mode 100644
+index 0000000..cd08755
+--- /dev/null
++++ b/greeting.txt</strong>
+<span style="color: #06C">@@ -0,0 +1 @@</span>
+<span style="color: green">+Hello world!</span></pre>
+        <h2 id="fixup">Fixing up older commits</h2>
+        <p>
+          Amending only works for the most recent commit. What happens if you
+          need to correct an older commit? Let's start by setting up our sandbox
+          accordingly:
+        </p>
+        <pre>echo "Hello!" &gt;greeting.txt
+git add greeting.txt
+git commit -m"Add greeting.txt"
+
+echo "Goodbye world!" &gt;farewell.txt
+git add farewell.txt
+git commit -m"Add farewell.txt"</pre>
+        <p>
+          Looks like <code>greeting.txt</code> is missing "world". Let's write a
+          commit normally which fixes that:
+        </p>
+        <pre>echo "Hello world!" &gt;greeting.txt
+git commit -a -m"fixup greeting.txt"</pre>
+        <p>
+          So now the files look correct, but our history could be better — let's
+          use the new commit to "fixup" the last one. For this, we need to
+          introduce a new tool: the interactive rebase. We're going to edit the
+          last three commits this way, so we'll run <code>git rebase -i
+            HEAD~3</code> (<code>-i</code> for interactive). This'll open your
+          text editor with something like this:
+        </p>
+        <pre><!--
+--><span style="color: #A80">pick</span> <span style="color: #06c">8d3fc77</span> <span style="color: purple">Add greeting.txt</span>
+<span style="color: #A80">pick</span> <span style="color: #06c">2a73a77</span> <span style="color: purple">Add farewell.txt</span>
+<span style="color: #A80">pick</span> <span style="color: #06c">0b9d0bb</span> <span style="color: purple">fixup greeting.txt</span>
+
+<span style="color: grey"># Rebase f5f19fb..0b9d0bb onto f5f19fb (3 commands)
+#
+# Commands:
+# p, pick &lt;commit&gt; = use commit
+# f, fixup &lt;commit&gt; = like "squash", but discard this commit's log message</span></pre>
+        <p>
+          This is the rebase plan, and by editing this file you can instruct
+          git on how to edit history. I've trimmed the summary to just the
+          details relevant to this part of the rebase guide, but feel free to
+          skim the full summary in your text editor.
+        </p>
+        <p>
+          When we save and close our editor, git is going to remove all of these
+          commits from its history, then execute each line one at a time. By
+          default, it's going to <em>pick</em> each commit, summoning it from
+          the heap and adding it to the branch. If we don't edit this file at
+          all, we'll end up right back where we started, picking every commit
+          as-is. We're going to use one of my favorite features now: fixup. Edit
+          the third line to change the operation from "pick" to "fixup" and move
+          it to immediately after the commit we want to "fix up":
+        </p>
+        <pre><!--
+--><span style="color: #A80">pick</span> <span style="color: #06c">8d3fc77</span> <span style="color: purple">Add greeting.txt</span>
+<span style="color: #A80">fixup</span> <span style="color: #06c">0b9d0bb</span> <span style="color: purple">fixup greeting.txt</span>
+<span style="color: #A80">pick</span> <span style="color: #06c">2a73a77</span> <span style="color: purple">Add farewell.txt</span></pre>
+        <div class="tip">
+          <strong>Tip</strong>: We can also abbreviate this with just "f" to
+          speed things up next time.
+        </div>
+        <p>
+          Save and quit your editor — git will run these commands. We can check
+          the log to verify the result:
+        </p>
+        <pre>$ git log -2 --oneline
+<span style="color: #A80">fcff6ae (</span><span style="color: blue">HEAD -&gt;</span> <span style="color: green">master</span><span style="color: #cc9000">)</span> Add farewell.txt
+<span style="color: #A80">a479e94</span> Add greeting.txt</pre>
+
+        <h2 id="autosquash">Using git rebase --autosquash</h2>
+        <p>
+          The steps described above can also be performed in a more automated
+          manner by taking advantage of the <code>--autosquash</code> option
+          of <code>git rebase</code> in combination with the
+          <code>--fixup</code> option of <code>git commit</code>:
+        </p>
+        <pre>git commit -a --fixup HEAD^
+git rebase -i --autosquash HEAD~3</pre>
+        <p>
+          This will prepare the rebase plan with commits reordered and
+          actions set up:
+        </p>
+        <pre><!--
+--><span style="color: #A80">pick</span> <span style="color: #06c">8d3fc77</span> <span style="color: purple">Add greeting.txt</span>
+<span style="color: #A80">fixup</span> <span style="color: #06c">0b9d0bb</span> <span style="color: purple">fixup! Add greeting.txt</span>
+<span style="color: #A80">pick</span> <span style="color: #06c">2a73a77</span> <span style="color: purple">Add farewell.txt</span>
+
+<span style="color: grey"># Rebase f5f19fb..0b9d0bb onto f5f19fb (3 commands)
+#
+# Commands:
+# p, pick &lt;commit&gt; = use commit
+# f, fixup &lt;commit&gt; = like "squash", but discard this commit's log message</span>
+        </pre>
+        <p>
+          In addition to <code>--fixup</code>, the <code>--squash</code>
+          option for <code>git commit</code> also exists and will allow you to
+          edit the commit message.
+        </p>
+        <p>
+          Finally, the <code>--autosquash</code> option can be omitted by
+          setting this behavior as the default through configuration:
+        </p>
+        <pre>git config --global rebase.autosquash true</pre>
+
+        <h2 id="squash">Squashing several commits into one</h2>
+        <p>
+          As you work, you may find it useful to write lots of commits as you
+          reach small milestones or fix bugs in previous commits. However, it
+          may be useful to "squash" these commits together, to make a cleaner
+          history before merging your work into master. For this, we'll use the
+          "squash" operation. Let's start by writing a bunch of commits — just
+          copy and paste this if you want to speed it up:
+        </p>
+        <pre>git checkout -b squash
+for c in H e l l o , ' ' w o r l d; do
+    echo "$c" &gt;&gt;squash.txt
+    git add squash.txt
+    git commit -m"Add '$c' to squash.txt"
+done</pre>
+        <p>
+          That's a lot of commits to make a file that says "Hello, world"! Let's
+          start another interactive rebase to squash them together. Note that we
+          checked out a branch to try this on, first. Because of that, we can
+          quickly rebase all of the commits since we branched by using <code>git
+            rebase -i master</code>. The result:
+        </p>
+        <pre><!--
+--><span style="color: #A80">pick</span> <span style="color: #06c">1e85199</span> <span style="color: purple">Add 'H' to squash.txt</span>
+<span style="color: #A80">pick</span> <span style="color: #06c">fff6631</span> <span style="color: purple">Add 'e' to squash.txt</span>
+<span style="color: #A80">pick</span> <span style="color: #06c">b354c74</span> <span style="color: purple">Add 'l' to squash.txt</span>
+<span style="color: #A80">pick</span> <span style="color: #06c">04aaf74</span> <span style="color: purple">Add 'l' to squash.txt</span>
+<span style="color: #A80">pick</span> <span style="color: #06c">9b0f720</span> <span style="color: purple">Add 'o' to squash.txt</span>
+<span style="color: #A80">pick</span> <span style="color: #06c">66b114d</span> <span style="color: purple">Add ',' to squash.txt</span>
+<span style="color: #A80">pick</span> <span style="color: #06c">dc158cd</span> <span style="color: purple">Add ' ' to squash.txt</span>
+<span style="color: #A80">pick</span> <span style="color: #06c">dfcf9d6</span> <span style="color: purple">Add 'w' to squash.txt</span>
+<span style="color: #A80">pick</span> <span style="color: #06c">7a85f34</span> <span style="color: purple">Add 'o' to squash.txt</span>
+<span style="color: #A80">pick</span> <span style="color: #06c">c275c27</span> <span style="color: purple">Add 'r' to squash.txt</span>
+<span style="color: #A80">pick</span> <span style="color: #06c">a513fd1</span> <span style="color: purple">Add 'l' to squash.txt</span>
+<span style="color: #A80">pick</span> <span style="color: #06c">6b608ae</span> <span style="color: purple">Add 'd' to squash.txt</span>
+
+<span style="color: grey"># Rebase 1af1b46..6b608ae onto 1af1b46 (12 commands)
+#
+# Commands:
+# p, pick &lt;commit&gt; = use commit
+# s, squash &lt;commit&gt; = use commit, but meld into previous commit</span></pre>
+        <div class="tip">
+          <strong>Tip</strong>: your local master branch evolves independently
+          of the remote master branch, and git stores the remote branch as
+          <code>origin/master</code>. Combined with this trick, <code>git
+            rebase -i origin/master</code> is often a very convenient way to
+          rebase all of the commits which haven't been merged upstream yet!
+        </div>
+        <p>
+          We're going to squash all of these changes into the first commit. To
+          do this, change every "pick" operation to "squash", except for the
+          first line, like so:
+        </p>
+        <pre><!--
+--><span style="color: #A80">pick</span> <span style="color: #06c">1e85199</span> <span style="color: purple">Add 'H' to squash.txt</span>
+<span style="color: #A80">squash</span> <span style="color: #06c">fff6631</span> <span style="color: purple">Add 'e' to squash.txt</span>
+<span style="color: #A80">squash</span> <span style="color: #06c">b354c74</span> <span style="color: purple">Add 'l' to squash.txt</span>
+<span style="color: #A80">squash</span> <span style="color: #06c">04aaf74</span> <span style="color: purple">Add 'l' to squash.txt</span>
+<span style="color: #A80">squash</span> <span style="color: #06c">9b0f720</span> <span style="color: purple">Add 'o' to squash.txt</span>
+<span style="color: #A80">squash</span> <span style="color: #06c">66b114d</span> <span style="color: purple">Add ',' to squash.txt</span>
+<span style="color: #A80">squash</span> <span style="color: #06c">dc158cd</span> <span style="color: purple">Add ' ' to squash.txt</span>
+<span style="color: #A80">squash</span> <span style="color: #06c">dfcf9d6</span> <span style="color: purple">Add 'w' to squash.txt</span>
+<span style="color: #A80">squash</span> <span style="color: #06c">7a85f34</span> <span style="color: purple">Add 'o' to squash.txt</span>
+<span style="color: #A80">squash</span> <span style="color: #06c">c275c27</span> <span style="color: purple">Add 'r' to squash.txt</span>
+<span style="color: #A80">squash</span> <span style="color: #06c">a513fd1</span> <span style="color: purple">Add 'l' to squash.txt</span>
+<span style="color: #A80">squash</span> <span style="color: #06c">6b608ae</span> <span style="color: purple">Add 'd' to squash.txt</span></pre>
+        <p>
+          When you save and close your editor, git will think about this for a
+          moment, then open your editor again to revise the final commit
+          message. You'll see something like this:
+        </p>
+        <pre style="max-height: 200px; overflow-y: scroll"><!--
+--><span style="color: grey"># This is a combination of 12 commits.
+# This is the 1st commit message:</span>
+
+Add 'H' to squash.txt
+
+<span style="color: grey"># This is the commit message #2:</span>
+
+Add 'e' to squash.txt
+
+<span style="color: grey"># This is the commit message #3:</span>
+
+Add 'l' to squash.txt
+
+<span style="color: grey"># This is the commit message #4:</span>
+
+Add 'l' to squash.txt
+
+<span style="color: grey"># This is the commit message #5:</span>
+
+Add 'o' to squash.txt
+
+<span style="color: grey"># This is the commit message #6:</span>
+
+Add ',' to squash.txt
+
+<span style="color: grey"># This is the commit message #7:</span>
+
+Add ' ' to squash.txt
+
+<span style="color: grey"># This is the commit message #8:</span>
+
+Add 'w' to squash.txt
+
+<span style="color: grey"># This is the commit message #9:</span>
+
+Add 'o' to squash.txt
+
+<span style="color: grey"># This is the commit message #10:</span>
+
+Add 'r' to squash.txt
+
+<span style="color: grey"># This is the commit message #11:</span>
+
+Add 'l' to squash.txt
+
+<span style="color: grey"># This is the commit message #12:</span>
+
+Add 'd' to squash.txt
+
+<span style="color: grey"># Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# Date:      Sun Apr 28 14:21:56 2019 -0400
+#
+# interactive rebase in progress; onto 1af1b46
+# Last commands done (12 commands done):
+#    squash a513fd1 Add 'l' to squash.txt
+#    squash 6b608ae Add 'd' to squash.txt
+# No commands remaining.
+# You are currently rebasing branch 'squash' on '1af1b46'.
+#
+# Changes to be committed:
+#	<span style="color: green">new file</span>:   <span style="color: purple">squash.txt</span>
+#</span></pre>
+        <p>
+          This defaults to a combination of all of the commit messages which
+          were squashed, but leaving it like this is almost always not what you
+          want. The old commit messages may be useful for reference when writing
+          the new one, though.
+        </p>
+        <div class="tip">
+          <strong>Tip</strong>: the "fixup" command you learned about in the
+          previous section can be used for this purpose, too — but it discards
+          the messages of the squashed commits.
+        </div>
+        <p>
+          Let's delete everything and replace it with a better commit message,
+          like this:
+        </p>
+        <pre><!--
+--><span style="color: #A80">Add squash.txt with contents "Hello, world"</span>
+
+<span style="color: grey"># Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# Date:      Sun Apr 28 14:21:56 2019 -0400
+#
+# interactive rebase in progress; onto 1af1b46
+# Last commands done (12 commands done):
+#    squash a513fd1 Add 'l' to squash.txt
+#    squash 6b608ae Add 'd' to squash.txt
+# No commands remaining.
+# You are currently rebasing branch 'squash' on '1af1b46'.
+#
+# Changes to be committed:
+#	<span style="color: green">new file</span>:   <span style="color: purple">squash.txt</span>
+#</span></pre>
+        <p>
+          Save and quit your editor, then examine your git log — success!
+        </p>
+        <pre><!--
+--><span style="color: #A80">commit c785f476c7dff76f21ce2cad7c51cf2af00a44b6 (<span style="color: blue">HEAD -&gt;</span> <span style="color: green">squash</span>)</span>
+Author: Drew DeVault &lt;sir@cmpwn.com&gt;
+Date:   Sun Apr 28 14:21:56 2019 -0400
+
+    Add squash.txt with contents "Hello, world"
+</pre>
+        <p>
+          Before we move on, let's pull our changes into the master branch and
+          get rid of this scratch one. We can use <code>git rebase</code> like
+          we use <code>git merge</code>, but it avoids making a merge commit:
+        </p>
+        <pre>git checkout master
+git rebase squash
+git branch -D squash</pre>
+        <p>
+          We generally prefer to avoid using git merge unless we're actually
+          merging unrelated histories. If you have two divergent branches, a
+          git merge is useful to have a record of when they were... merged. In
+          the course of your normal work, rebase is often more appropriate.
+        </p>
+        <h2 id="edit">Splitting one commit into several</h2>
+        <p>
+          Sometimes the opposite problem happens — one commit is just too big.
+          Let's look into splitting it up. This time, let's write some actual
+          code. Start with a simple C program<sup><a href="#note-2" id="ref-2">2</a></sup> (you can still copy+paste this snippet into
+          your shell to do this quickly):
+        </p>
+        <pre><span style="color: grey">cat &lt;&lt;EOF &gt;main.c</span>
+<span style="color: blue">int</span> <strong>main</strong>(<span style="color: blue">int</span> argc, <span style="color: blue">char</span> *argv[]) {
+    <span style="color: maroon">return</span> 0;
+}
+<span style="color: grey">EOF</span></pre>
+        <p>We'll commit this first.</p>
+        <pre>git add main.c
+git commit -m"Add C program skeleton"</pre>
+        <p>
+          Next, let's extend the program a bit:
+        </p>
+        <pre><span style="color: grey">cat &lt;&lt;EOF &gt;main.c</span>
+<span style="color: maroon">#include</span> &lt;stdio.h&gt;
+
+<span style="color: blue">const char</span> *<strong>get_name</strong>() {
+    <span style="color: blue">static char</span> buf[128];
+    scanf(<span style="color: red">"%s"</span>, buf);
+    <span style="color: maroon">return</span> buf;
+}
+
+<span style="color: blue">int</span> <strong>main</strong>(<span style="color: blue">int</span> argc, <span style="color: blue">char</span> *argv[]) {
+    printf(<span style="color: red">"What's your name? "</span>);
+    <span style="color: blue">const char</span> *name = get_name();
+    printf(<span style="color: red">"Hello, %s!\n"</span>, name);
+    <span style="color: maroon">return</span> 0;
+}
+<span style="color: grey">EOF</span></pre>
+        <p>
+          After we commit this, we'll be ready to learn how to split it up.
+        </p>
+        <pre>git commit -a -m"Flesh out C program"</pre>
+        <p>
+          The first step is to start an interactive rebase. Let's rebase both
+          commits with <code>git rebase -i HEAD~2</code>, giving us this rebase
+          plan:
+        </p>
+        <pre><!--
+--><span style="color: #A80">pick</span> <span style="color: #06c">237b246</span> <span style="color: purple">Add C program skeleton</span>
+<span style="color: #A80">pick</span> <span style="color: #06c">b3f188b</span> <span style="color: purple">Flesh out C program</span>
+
+<span style="color: grey"># Rebase c785f47..b3f188b onto c785f47 (2 commands)
+#
+# Commands:
+# p, pick &lt;commit&gt; = use commit
+# e, edit &lt;commit&gt; = use commit, but stop for amending</span></pre>
+        <p>
+          Change the second commit's command from "pick" to "edit", then save
+          and close your editor. Git will think about this for a second, then
+          present you with this:
+        </p>
+        <pre>Stopped at b3f188b...  Flesh out C program
+You can amend the commit now, with
+
+  git commit --amend
+
+Once you are satisfied with your changes, run
+
+  git rebase --continue</pre>
+        <p>
+          We could follow these instructions to <em>add</em> new changes to the
+          commit, but instead let's do a "soft reset"<sup><a href="#note-3" id="ref-3">3</a></sup> by running <code>git
+            reset HEAD^</code>. If you run <code>git status</code> after this,
+          you'll see that it un-commits the latest commit and adds its changes
+          to the working tree:
+        </p>
+        <pre><span style="color: grey">Last commands done (2 commands done):
+   pick 237b246 Add C program skeleton
+   edit b3f188b Flesh out C program
+No commands remaining.
+You are currently splitting a commit while rebasing branch 'master' on 'c785f47'.
+  (Once your working directory is clean, run "git rebase --continue")</span>
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+
+  <span style="color: red">modified:   main.c</span>
+
+no changes added to commit (use "git add" and/or "git commit -a")</file></file></pre>
+        <p>
+          To split this up, we're going to do an <em>interactive commit</em>.
+          This allows us to selectively commit only specific changes from the
+          working tree. Run <code>git commit -p</code> to start this process,
+          and you'll be presented with the following prompt:
+        </p>
+        <pre><strong>diff --git a/main.c b/main.c
+index b1d9c2c..3463610 100644
+--- a/main.c
++++ b/main.c</strong>
+<span style="color: #06C">@@ -1,3 +1,14 @@</span>
+<span style="color: green">+#include &lt;stdio.h&gt;
++
++const char *get_name() {
++    static char buf[128];
++    scanf("%s", buf);
++    return buf;
++}
++</span>
+ int main(int argc, char *argv[]) {
+<span style="color: green">+    printf("What's your name? ");
++    const char *name = get_name();
++    printf("Hello, %s!\n", name);</span>
+     return 0;
+ }
+<strong style="color: #06C">Stage this hunk [y,n,q,a,d,s,e,?]? </strong></pre>
+        <p>
+          Git has presented you with just one "hunk" (i.e. a single change) to
+          consider committing. This one is too big, though — let's use the "s"
+          command to "split" up the hunk into smaller parts.
+        </p>
+        <pre><strong>Split into 2 hunks.</strong>
+<span style="color: #06C">@@ -1 +1,9 @@</span>
+<span style="color: green">+#include &lt;stdio.h&gt;
++
++const char *get_name() {
++    static char buf[128];
++    scanf("%s", buf);
++    return buf;
++}
++</span>
+ int main(int argc, char *argv[]) {
+<strong style="color: #06C">Stage this hunk [y,n,q,a,d,j,J,g,/,e,?]? </strong></pre>
+        <div class="tip">
+          <strong>Tip</strong>: If you're curious about the other options, press
+          "?" to summarize them.
+        </div>
+        <p>
+          This hunk looks better — a single, self-contained change. Let's hit
+          "y" to answer the question (and stage that "hunk"), then "q" to "quit"
+          the interactive session and proceed with the commit. Your editor will
+          pop up to ask you to enter a suitable commit message.
+        </p>
+        <pre><span style="color: #A80">Add get_name function to C program</span>
+
+<span style="color: grey"># Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# interactive rebase in progress; onto c785f47
+# Last commands done (2 commands done):
+#    pick 237b246 Add C program skeleton
+#    edit b3f188b Flesh out C program
+# No commands remaining.
+# You are currently splitting a commit while rebasing branch 'master' on 'c785f47'.
+#
+# Changes to be committed:
+#	<span style="color: green">modified</span>:   <span style="color: purple">main.c</span>
+#
+# Changes not staged for commit:
+#	<span style="color: green">modified</span>:   <span style="color: purple">main.c</span>
+#</span></pre>
+        <p>
+          Save and close your editor, then we'll make the second commit. We
+          could do another interactive commit, but since we just want to include
+          the rest of the changes in this commit we'll just do this:
+        </p>
+        <pre>git commit -a -m"Prompt user for their name"
+git rebase --continue</pre>
+        <p>
+          That last command tells git that we're done editing this commit, and
+          to continue to the next rebase command. That's it! Run <code>git
+          log</code> to see the fruits of your labor:
+        </p>
+        <pre>$ git log -3 --oneline
+<span style="color: #A80">fe19cc3 (<span style="color: blue">HEAD -&gt;</span> <span style="color: green">master</span>)</span> Prompt user for their name
+<span style="color: #A80">659a489</span> Add get_name function to C program
+<span style="color: #A80">237b246</span> Add C program skeleton</pre>
+        <h2 id="reorder">Reordering commits</h2>
+        <p>
+          This one is pretty easy. Let's start by setting up our sandbox:
+        </p>
+        <pre>echo "Goodbye now!" &gt;farewell.txt
+git add farewell.txt
+git commit -m"Add farewell.txt"
+
+echo "Hello there!" &gt;greeting.txt
+git add greeting.txt
+git commit -m"Add greeting.txt"
+
+echo "How're you doing?" &gt;inquiry.txt
+git add inquiry.txt
+git commit -m"Add inquiry.txt"</pre>
+        <p>
+          The git log should now look like this:
+        </p>
+        <pre><span style="color: #A80">f03baa5 (<span style="color: blue">HEAD -&gt;</span> <span style="color: green">master</span>)</span> Add inquiry.txt
+<span style="color: #A80">a4cebf7</span> Add greeting.txt
+<span style="color: #A80">90bb015</span> Add farewell.txt</pre>
+        <p>
+          Clearly, this is all out of order. Let's do an interactive rebase of
+          the past 3 commits to resolve this. Run <code>git rebase -i
+            HEAD~3</code> and this rebase plan will appear:
+        </p>
+        <pre><!--
+--><span style="color: #A80">pick</span> <span style="color: #06c">90bb015</span> <span style="color: purple">Add farewell.txt</span>
+<span style="color: #A80">pick</span> <span style="color: #06c">a4cebf7</span> <span style="color: purple">Add greeting.txt</span>
+<span style="color: #A80">pick</span> <span style="color: #06c">f03baa5</span> <span style="color: purple">Add inquiry.txt</span>
+
+<span style="color: grey"># Rebase fe19cc3..f03baa5 onto fe19cc3 (3 commands)
+#
+# Commands:
+# p, pick &lt;commit&gt; = use commit
+#
+# These lines can be re-ordered; they are executed from top to bottom.</span></pre>
+        <p>
+          The fix is now straightforward: just reorder these lines in the order
+          you wish for the commits to appear. Should look something like this:
+        </p>
+        <pre><!--
+--><span style="color: #A80">pick</span> <span style="color: #06c">a4cebf7</span> <span style="color: purple">Add greeting.txt</span>
+<span style="color: #A80">pick</span> <span style="color: #06c">f03baa5</span> <span style="color: purple">Add inquiry.txt</span>
+<span style="color: #A80">pick</span> <span style="color: #06c">90bb015</span> <span style="color: purple">Add farewell.txt</span></pre>
+        <p>
+          Save and close your editor and git will do the rest for you. Note that
+          it's possible to end up with conflicts when you do this in practice -
+          <a href="#conflicts">click here for help resolving conflicts</a>.
+        </p>
+        <h2 id="pull">git pull --rebase</h2>
+        <p>
+          If you've been writing some commits on a branch <code>&lt;branch&gt;</code> which has been updated
+          upstream, say on remote <code>origin</code>, normally <code>git pull</code> will create a merge commit.
+          In this respect, <code>git pull</code>'s behavior by default is
+          equivalent to:
+        </p>
+        <pre>git fetch origin &lt;branch&gt;
+git merge origin/&lt;branch&gt;</pre>
+        <p>
+          This assumes that the local branch <code>&lt;branch&gt;</code> is configured to track the <code>&lt;branch&gt;</code> branch
+          from the <code>origin</code> remote, i.e.:
+        </p>
+          <pre>$ git config branch.&lt;branch&gt;.remote
+origin
+$ git config branch.&lt;branch&gt;.merge
+refs/heads/&lt;branch&gt;</pre>
+        <p>
+          There's another option, which is often more useful and leads to a much
+          cleaner history: <code>git pull --rebase</code>. Unlike the merge
+          approach, this is mostly<sup><a id="ref-4" href="#note-4">4</a></sup>
+          equivalent to the following:
+        </p>
+        <pre>git fetch origin
+git rebase origin/&lt;branch&gt;</pre>
+        <p>
+          The merge approach is simpler and easier to understand, but the rebase
+          approach is almost always what you want to do if you understand how to
+          use git rebase. If you like, you can set it as the default behavior
+          like so:
+        </p>
+        <pre>git config --global pull.rebase true</pre>
+        <p>
+          When you do this, technically you're applying the procedure we
+          discuss in the next section... so let's explain what it means to do
+          that deliberately, too.
+        </p>
+        <h2 id="rebase">Using git rebase to... rebase</h2>
+        <p>
+          Ironically, the feature of git rebase that I use the least is the one
+          it's named for: rebasing branches. Say you have the following
+          branches:
+        </p>
+        <pre>A--B--C--D--&gt; master
+   \--E--F--&gt; feature-1
+      \--G--&gt; feature-2</pre>
+        <p>
+          It turns out feature-2 doesn't depend on any of the changes
+          in feature-1, that is, on commit E, so you can just base it
+          off of master. The fix is thus:
+        </p>
+        <pre>git rebase --onto master feature-1 feature-2</pre>
+        <p>
+          The non-interactive rebase does the default operation for all
+          implicated commits ("pick")<sup><a id="ref-5" href="#note-5">5</a></sup>, which simply replays the
+          commits in feature-2 that are not in feature-1 on top of
+          master. Your history now looks like this:
+        </p>
+        <pre>A--B--C--D--&gt; master
+   |     \--G--&gt; feature-2
+   \--E--F--&gt; feature-1</pre>
+        <h2 id="conflicts">Resolving conflicts</h2>
+        <p>
+          The details on resolving merge conflicts are beyond the scope of
+          this guide — keep your eye out for another guide for this in the
+          future. Assuming you're familiar with resolving conflicts in general,
+          here are the specifics that apply to rebasing.
+        </p>
+        <p>
+          Sometimes you'll get a merge conflict when doing a rebase, which you
+          can handle just like any other merge conflict. Git will set up the
+          conflict markers in the affected files, <code>git status</code> will
+          show you what you need to resolve, and you can mark files as resolved
+          with <code>git add</code> or <code>git rm</code>. However, in the
+          context of a git rebase, there are a few options you should be aware of.
+        </p>
+        <p>
+          The first is how you complete the conflict resolution. Rather than
+          <code>git commit</code> like you'll use when addressing conflicts that
+          arise from <code>git merge</code>, the appropriate command for
+          rebasing is <code>git rebase --continue</code>. However, there's
+          another option available to you: <code>git rebase --skip</code>. This
+          will skip the commit you're working on, and it won't be included in
+          the rebase. This is most common when doing a non-interactive rebase,
+          when git doesn't realize that a commit it's pulled from the "other"
+          branch is an updated version of the commit that it conflicts with on
+          "our" branch.
+        </p>
+        <p>
+          If you want to take a look at the diff of the commit that Git failed to
+          replay, and which resulted in a merge conflict, you can use
+          <code>git rebase --show-current-patch</code>, or its
+          equivalent <code>git show REBASE_HEAD</code>.
+        </p>
+        <p>
+          Finally, it's worth noting that when using <code>git checkout --ours</code>
+          or <code>--theirs</code> to quickly resolve
+          conflicted paths by checking out a specific version from the index,
+          the meaning of those options is reversed compared to a regular <code>git merge</code>
+          merge conflict: during rebase, <code>--theirs</code> refers to the changes
+          from the branch being rebased (<code>REBASE_HEAD</code>), and <code>--ours</code>
+          refers to the changes from the branch onto which we are rebasing
+          (<code>HEAD</code>)<sup><a id="ref-6" href="#note-6">6</a></sup>.
+        </p>
+        <h2 id="reflog">Help! I broke it!</h2>
+        <p>
+          No doubt about it — rebasing can be hard sometimes. If you've made a
+          mistake and in so doing lost commits which you needed, then <code>git
+            reflog</code> is here to save the day. Running this command will
+          show you every operation which changed a <em>ref</em>, or reference -
+          that is, branches and tags. Each line shows you what the old reference
+          pointed to, and you can <code>git cherry-pick</code>, <code>git
+            checkout</code>, <code>git show</code>, or use any other operation
+          on git commits once thought lost.
+        </p>
+      </div>
+      <footer>
+        <div>
+          <sup id="note-1">
+            1: We add an empty initial commit to simplify the rest of the
+            tutorial, because rebasing the initial commit of your repository
+            requires special commands (namely <code>git rebase --root</code>).
+            <a href="#ref-1">↩</a>
+          </sup>
+        </div>
+        <div>
+          <sup id="note-2">
+            2: If you want to compile this program, run <strong><code>cc -o main
+                main.c</code></strong>, then
+            <strong><code>./main</code></strong> to run the result.
+            <a href="#ref-2">↩</a>
+          </sup>
+        </div>
+        <div>
+          <sup id="note-3">
+            3: Actually, it's a "mixed reset". A "soft reset" (done with
+            <code>git reset --soft</code>) would keep the changes staged,
+            so that you don't need to <code>git add</code> them again,
+            and can commit them all in one go. This is not what we want
+            here. We want to selectively stage parts of the changes
+            in order to split the commit.
+            <a href="#ref-3">↩</a>
+          </sup>
+        </div>
+        <div>
+          <sup id="note-4">
+            4: Actually, it depends if the upstream branch was itself rebased
+            or dropped/squashed some commits.
+            <a href="https://git-scm.com/docs/git-pull#Documentation/git-pull.txt--r"><code>git pull --rebase</code></a>
+            tries to recover from that situation by using the "fork-point" machinery in
+            <a href="https://git-scm.com/docs/git-rebase#Documentation/git-rebase.txt---fork-point"><code>git rebase</code></a>
+            and <a href="https://git-scm.com/docs/git-merge-base#_discussion_on_fork_point_mode"><code>git merge-base</code></a>
+            to avoid rebasing non-local commits. <a href="#ref-4">↩</a>
+          </sup>
+        </div>
+        <div>
+          <sup id="note-5">
+            5: Actually, it depends on the version of git. The default
+            non-interactive behavior used to differ slightly from the
+            interactive behavior until
+            <a href="https://raw.githubusercontent.com/git/git/master/Documentation/RelNotes/2.26.0.txt">version 2.26.0</a>,
+            in a way which is generally not important. <a href="#ref-5">↩</a>
+          </sup>
+        </div>
+        <div>
+          <sup id="note-6">
+            6: If you're having a hard time remembering that, a nice trick
+            is to choose either one of the two options, and then recreate the
+            conflict with <code>git checkout --merge .</code>. The conflict markers
+            will be rewritten and will now clearly be labeled as "ours" and "theirs".
+          </sup>
+        </div>
+      </footer>
+    </div>
+  
+
+</body></html>

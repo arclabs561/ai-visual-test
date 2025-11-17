@@ -1,0 +1,198 @@
+<!DOCTYPE html><html lang="en"><head>
+	<meta charset="UTF-8">
+	<title>Lichen</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="/assets/stylesheet.css">
+</head>
+<body>
+<header>
+	</header>
+<main>
+<img src="/assets/lichen.svg" alt="Lichen">
+<h1 id="Lichen">Lichen</h1>
+<p>Lichen is the simplest possible CMS for the web that is friendly enough for non-technical users. It is extremely lightweight.</p>
+<p>To get started, download Lichen, unzip it, and upload the contents to your web host's public directory. Follow the setups below.</p>
+<a href="/lichen.zip" rel="noreferrer">Download</a>
+<a href="#Setup" rel="noreferrer">Setup Steps</a>
+<br>
+<p>See sites made with Lichen and share your own on the Lichen Webring.</p>
+<a href="/webring.gmi" rel="noreferrer">Lichen Webring</a>
+<h2 id="Usage">Usage</h2>
+<h3 id="Demo">Demo</h3>
+<video controls="" preload="none" src="/assets/demo.mp4"></video><h3 id="Logging+In">Logging In</h3>
+<p>Once you've completed the setup steps and Lichen is running on your web server, navigate your browser to:</p>
+<pre>/cms/edit.php
+</pre>
+<h2 id="Rationale">Rationale</h2>
+<p>Many people reach for WordPress or something similar, which is overkill in many cases. Plugins, security updates, and a SQL database are a lot of overhead for sharing text and images online. On the other hand, writing HTML and CSS by hand is so complex these days that the layperson has no time or interest to learn to do it, not to mention understanding what a SSH key is and how to edit the site over SFTP. Installing dependencies, compiling a static site, and managing a Git repo involves similar complexity.</p>
+<p>Lichen is designed to hit the sweet spot between WordPress and manually editing HTML. A technically-inclined person can easily set up many Lichen sites for friends with minimal effort and maintenance (it's only 3 PHP files) without having to worry about the technical burden of maintaining a database-driven CMS.</p>
+<p>Content is stored as Gemtext, the lightweight markup language of the Gemini protocol. Why Gemtext?</p>
+<ol start="1">
+<li>It's easier to learn and more forgiving than Markdown.</li>
+<li>You don't need a heavy JavaScript-enabled rich-text WYSIWYG editor.</li>
+<li>It's simple to parse and render (no Markdown library necessary).</li>
+<li>Constraints breed creativity.</li>
+<li>As an added bonus, content authored in Gemtext is automatically Gemini-friendly.</li>
+</ol>
+<a href="https://gemini.circumlunar.space/docs/gemtext.gmi" rel="noreferrer">Gemtext Introduction</a>
+<p>The content is the most important part of a site. When your content is constrained to a single column of text with hand-edited links, it is more intimate and intentional. The writer is required to make the content good enough to be worth reading without relying on the crutch of complex layouts and fancy web widgets everywhere. The reader is no longer burdened with heavy web pages and distracting/buggy UI. All of this adds up to an extremely lightweight environment: low cost, low resources, low cognitive overhead, low environmental impact.</p>
+<h2 id="Hosting+Requirements">Hosting Requirements</h2>
+<p>The only hosting requirement is a bog-standard Apache web host that supports PHP 7. libgd must be installed for image resizing.</p>
+<p>We prefer NearlyFreeSpeech. Their prices are pay-for-what-you-use (very low), and you can very easily setup many domains on a single low-cost server.</p>
+<a href="https://nearlyfreespeech.net/" rel="noreferrer">NearlyFreeSpeech.net</a>
+<h2 id="Setup">Setup</h2>
+<ol start="1">
+<li>Copy everything in this directory to your server's public directory.</li>
+<li>Modify 'theme/layout.php' to your liking. Upload any additional assets you may need, like stylesheets.</li>
+<li>🚨 Important! 🚨 Create a htpasswd file and set its path in the 'cms/.htaccess' file.</li>
+</ol>
+<a href="https://httpd.apache.org/docs/2.4/programs/htpasswd.html" rel="noreferrer">htpasswd Documentation</a>
+<h3 id="Directory+Structure">Directory Structure</h3>
+<pre>.
+├── cms
+│   ├── edit.php
+│   ├── gemtext.php
+│   └── render.php
+├── theme
+│   └── layout.php
+├── .htaccess
+├── index.gmi
+└── assets
+	├── image.jpg
+	└── stylesheet.css
+</pre>
+<ol start="1">
+<li>'cms' contains the Lichen code</li>
+<li>'theme' contains the layout templates (not publicly accessible)</li>
+<li>'.htaccess' configures Apache to render Gemtext files as HTML and configures access control</li>
+<li>Everything else is free-form static hosting</li>
+</ol>
+<h2 id="Nginx">Nginx</h2>
+<p>If you'd like to use Nginx instead of Apache, delete all of the .htaccess files and use this configuration:</p>
+<pre alt="lichen-nginx.conf">map $is_redirected $auth_type {
+	default "Restricted";
+	true "off";
+}
+
+server {
+	listen 80;
+	root /var/www/html;
+
+	include mime.types;
+	index index.gmi;
+
+	location / {
+		# --- discard .gmi extensions and redirect
+		rewrite (.*)\.gmi$ $1 permanent;
+
+		# --- try .gmi files without extensions
+		if (-f ${document_root}${uri}.gmi) {
+			set $redirect_url ${uri}.gmi;
+			set $is_redirected true;
+			rewrite ^(.*)$ /cms/render.php?${redirect_url} last;
+		}
+		# --- try index files
+		if (-f ${document_root}${uri}index.gmi) {
+			set $redirect_url ${uri}index.gmi;
+			set $is_redirected true;
+			rewrite ^(.*)$ /cms/render.php?${redirect_url} last;
+		}
+		try_files $uri $uri/ =404;
+	}
+
+	location /cms/ {
+		auth_basic $auth_type;
+		auth_basic_user_file /home/private/lichen.htpasswd;
+
+		fastcgi_split_path_info ^(.+\.php)(/.+)$;
+		set $path_info $fastcgi_path_info;
+
+		fastcgi_pass unix:/run/php/php-fpm.sock;
+		include fastcgi_params;
+
+
+		fastcgi_param REDIRECT_URL $redirect_url if_not_empty;
+		fastcgi_param SCRIPT_FILENAME ${document_root}${fastcgi_script_name};
+		fastcgi_param PATH_INFO $path_info;
+
+		try_files $fastcgi_script_name =404;
+	}
+
+	location /theme/ {
+		return 404;
+	}
+}
+
+</pre>
+<h2 id="Layout">Layout</h2>
+<p>The main HTML template is 'theme/layout.php'. This template is rendered with the content of the current Gemtext file. The following PHP variables are provided:</p>
+<ol start="1">
+<li>$path: the absolute path of the Gemtext file being requested (e.g. '/index.gmi')</li>
+<li>$title: the content of the first heading, useful for placing in the HTML &lt;title&gt; tag</li>
+<li>$body: the content of the Gemtext rendered to HTML</li>
+</ol>
+<h2 id="Image+Processing">Image Processing</h2>
+<p>Not everyone is familiar with appropriate resolutions and image optimization for the web, so PHP's GD can be used to automatically resize uploaded images. The original source image will be discarded when this is enabled. Use the following environment variables:</p>
+<ol start="1">
+<li>IMG_RESIZE_ENABLE: 'true' to enable (disabled by default)</li>
+<li>IMG_RESIZE_FORMAT: 'source' to use the same format as the original, or force everything to 'jpeg', 'gif', 'png', 'bmp', 'webp', or 'avif' (default 'source')</li>
+<li>IMG_RESIZE_MAX_WIDTH: number in pixels, images larger than this width will be reduced (default 800)</li>
+<li>IMG_RESIZE_JPEG_QUALITY: quality from 0 to 100 (library default is ~75)</li>
+<li>IMG_RESIZE_PNG_COMPRESSION: compression level from 0 to 9</li>
+<li>IMG_RESIZE_AVIF_QUALITY: quality from 0 to 100 (library default is 30)</li>
+<li>IMG_RESIZE_AVIF_SPEED: speed from 0 (slow, smaller file) to 10 (fast, larger file) (library default is 6)</li>
+<li>IMG_RESIZE_WEBP_QUALITY: quality from 0 to 100</li>
+</ol>
+<p>These environment variables can be set in .htaccess if Apache's mod_env is enabled. See the provided .htaccess file.</p>
+<p>Note that filenames must not have spaces in order to be compatible with the Gemtext link format. To facilitate this, spaces in filenames are automatically replaced with underscores when uploading via the editor UI.</p>
+<h2 id="Changelog">Changelog</h2>
+<h3 id="2022-05-20">2022-05-20</h3>
+<ol start="1">
+<li>Documented sample nginx configuration (@flyingrub@merveilles.town)</li>
+</ol>
+<h3 id="2022-05-15">2022-05-15</h3>
+<ol start="1">
+<li>Editor textarea forced to monospace typeface</li>
+<li>Better checking to ignore CMS directories</li>
+<li>Fixed syntax error (@milofultz@merveilles.town)</li>
+<li>Headers are limited to level 3 (@aw@merveilles.town)</li>
+<li>List items require space between asterisk and content (@aw@merveilles.town)</li>
+<li>No whitespace is tolerated before directives (@aw@merveilles.town)</li>
+<li>Nested directives are no longer allowed (@aw@merveilles.town)</li>
+<li>Alt tags are supported for preformatted blocks (@aw@merveilles.town)</li>
+<li>Blockquotes are limited to single line (@aw@merveilles.town)</li>
+<li>Ability to create new directories</li>
+<li>Ability to delete directories</li>
+<li>Empty directories are now displayed</li>
+<li>Improved file manager iconography</li>
+</ol>
+<h3 id="2022-05-10">2022-05-10</h3>
+<ol start="1">
+<li>Case-insensitive file extension handling</li>
+<li>PHP7 support (@scops@social.tchncs.de)</li>
+</ol>
+<h3 id="2022-05-09">2022-05-09</h3>
+<p>Initial release.</p>
+<h2 id="License">License</h2>
+<pre>The MIT License (MIT)
+
+Copyright © 2022 Sensor Station LLC
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+</pre>
+</main>
+<footer>
+	<p>Low consumption website • No trackers</p>
+	<a class="lichen-plug" href="https://lichen.sensorstation.co/">
+		<img src="/assets/lichen-small.svg" width="16" height="16" alt="Lichen" style="margin-bottom: 0.25rem;">
+		<p><small>Built with Lichen</small></p>
+	</a>
+</footer>
+
+
+</body></html>

@@ -1,0 +1,526 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-us" lang="en-us"><head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+<title>Floobits News: Adding setTimeout to Vim</title>
+
+<meta name="author" content="Floobits">
+<meta name="viewport" content="width=1000">
+<link rel="shortcut icon" href="https://floobits.com/favicon.ico">
+<link rel="canonical" href="https://news.floobits.com/2013/09/17/adding-settimeout-to-vim/">
+<link rel="me" href="https://twitter.com/Floobits">
+<link rel="alternate" type="application/atom+xml" href="/feed.atom" title="Floobits News">
+<link id="main-css" rel="stylesheet" type="text/css" media="all" href="https://floobits.com/static/css/build/main_v2.css">
+<style type="text/css">
+.container {
+  max-width: 700px;
+  margin: auto;
+}
+.post {
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size: 16px;
+  max-width: 700px;
+  color: #333;
+}
+.author {
+  margin-bottom: 15px;
+}
+.post p {
+  margin: 15px 0 30px 0;
+}
+.post img {
+  max-width: 100%;
+}
+code {
+  font-family: Menlo, "Deja Vu Sans Mono", Consolas, monospace;
+  background-color: inherit;
+}
+pre {
+  line-height: 120%;
+  padding: 0.5em;
+  overflow: auto;
+  background: inherit;
+  font-size: 14px;
+}
+.highlight {
+  background-color: #ffffdd;
+  margin: 1em 0;
+}
+
+/* Generated with pygments using the solarized style: */
+.hll { background-color: #ffffcc }
+.c { color: #93a1a1; font-style: italic } /* Comment */
+.g { color: #d33682 } /* Generic */
+.k { color: #859900 } /* Keyword */
+.l { color: #2aa198 } /* Literal */
+.n { color: #268bd2 } /* Name */
+.cm { color: #93a1a1; font-style: italic } /* Comment.Multiline */
+.cp { color: #93a1a1; font-style: italic } /* Comment.Preproc */
+.c1 { color: #93a1a1; font-style: italic } /* Comment.Single */
+.cs { color: #93a1a1; font-style: italic } /* Comment.Special */
+.gd { color: #d33682 } /* Generic.Deleted */
+.ge { color: #d33682 } /* Generic.Emph */
+.gr { color: #d33682 } /* Generic.Error */
+.gh { color: #d33682 } /* Generic.Heading */
+.gi { color: #d33682 } /* Generic.Inserted */
+.go { color: #d33682 } /* Generic.Output */
+.gp { color: #d33682 } /* Generic.Prompt */
+.gs { color: #d33682 } /* Generic.Strong */
+.gu { color: #d33682 } /* Generic.Subheading */
+.gt { color: #d33682 } /* Generic.Traceback */
+.kc { color: #859900 } /* Keyword.Constant */
+.kd { color: #859900 } /* Keyword.Declaration */
+.kn { color: #dc322f } /* Keyword.Namespace */
+.kp { color: #859900 } /* Keyword.Pseudo */
+.kr { color: #859900 } /* Keyword.Reserved */
+.kt { color: #859900 } /* Keyword.Type */
+.ld { color: #2aa198 } /* Literal.Date */
+.m { color: #2aa198 } /* Literal.Number */
+.s { color: #2aa198 } /* Literal.String */
+.na { color: #268bd2 } /* Name.Attribute */
+.nb { color: #cb4b16 } /* Name.Builtin */
+.nc { color: #cb4b16 } /* Name.Class */
+.no { color: #268bd2 } /* Name.Constant */
+.nd { color: #268bd2 } /* Name.Decorator */
+.ni { color: #268bd2 } /* Name.Entity */
+.ne { color: #268bd2 } /* Name.Exception */
+.nf { color: #268bd2 } /* Name.Function */
+.nl { color: #268bd2 } /* Name.Label */
+.nn { color: #268bd2 } /* Name.Namespace */
+.nx { color: #268bd2 } /* Name.Other */
+.py { color: #268bd2 } /* Name.Property */
+.nt { color: #268bd2 } /* Name.Tag */
+.nv { color: #268bd2 } /* Name.Variable */
+.ow { color: #859900 } /* Operator.Word */
+.w { color: #586e75 } /* Text.Whitespace */
+.mf { color: #2aa198 } /* Literal.Number.Float */
+.mh { color: #2aa198 } /* Literal.Number.Hex */
+.mi { color: #2aa198 } /* Literal.Number.Integer */
+.mo { color: #2aa198 } /* Literal.Number.Oct */
+.sb { color: #2aa198 } /* Literal.String.Backtick */
+.sc { color: #2aa198 } /* Literal.String.Char */
+.sd { color: #2aa198 } /* Literal.String.Doc */
+.s2 { color: #2aa198 } /* Literal.String.Double */
+.se { color: #2aa198 } /* Literal.String.Escape */
+.sh { color: #2aa198 } /* Literal.String.Heredoc */
+.si { color: #2aa198 } /* Literal.String.Interpol */
+.sx { color: #2aa198 } /* Literal.String.Other */
+.sr { color: #2aa198 } /* Literal.String.Regex */
+.s1 { color: #2aa198 } /* Literal.String.Single */
+.ss { color: #2aa198 } /* Literal.String.Symbol */
+.bp { color: #cb4b16 } /* Name.Builtin.Pseudo */
+.vc { color: #268bd2 } /* Name.Variable.Class */
+.vg { color: #268bd2 } /* Name.Variable.Global */
+.vi { color: #268bd2 } /* Name.Variable.Instance */
+.il { color: #2aa198 } /* Literal.Number.Integer.Long */
+</style>
+<script async="" src="//www.google-analytics.com/analytics.js"></script><script type="text/javascript" src="https://floobits.com/static/js/extern/jquery-2.2.0.min.js"></script>
+<script type="text/javascript" src="https://floobits.com/static/js/extern/bootstrap-3.3.6.min.js"></script>
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:creator" content="@Floobits">
+<meta name="twitter:site" content="@Floobits">
+
+<meta property="og:title" content="Adding setTimeout to Vim">
+<meta property="og:url" content="https://news.floobits.com/2013/09/17/adding-settimeout-to-vim/">
+<meta property="og:type" content="article">
+<meta property="og:article:published_time" content="2013-09-17 09:31:23 -0700">
+<meta property="og:image" content="https://floobits.com/static/images/logos/logo.png">
+<meta property="og:description" content="At the end of the previous post, Matt and I finally got the bright idea to patch Vim. Both of us had experience contributing to open source projects, but we knew very little about contributing to Vi…">
+
+</head>
+<body>
+  <main>
+  <nav class="navbar navbar-default fl-navbar" role="navigation">
+  <div class="container">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a href="https://floobits.com/">
+          <img src="https://floobits.com/static/images/v2/fl_logo146_30.png" alt="Floobits logo" title="Floobits" style="height: 30px; width: 146px;">
+        </a>
+      </div>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a class="fl-nav-link" href="https://floobits.com/plans">plans</a></li>
+        <li><a class="fl-nav-link" href="https://floobits.com/active">explore</a></li>
+        <li><a class="fl-nav-link" href="https://floobits.com/help">help</a></li>
+        <li class="active"><a class="fl-nav-link" href="/">news</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  <div class="content-container">
+  <div class="container">
+    <br class="separator">
+    <h3>
+      <a href="/2013/09/17/adding-settimeout-to-vim/">Adding setTimeout to Vim</a>
+    </h3>
+    <p>
+      <small>
+        17 Sep 2013
+        
+          by
+        
+        ggreer
+      </small>
+    </p>
+    <hr>
+    <div class="post">
+      <p>At the end of <a href="/2013/09/16/adding-settimeout-to-vim/">the previous post</a>, Matt and I finally got the bright idea to patch Vim. Both of us had experience contributing to open source projects, but we knew very little about contributing to Vim. To maximize our chance of success, we decided on a few guidelines:</p>
+
+<ul>
+  <li>Our patch should make Vim better for everyone, not just us.</li>
+  <li>Any new API we create should be familiar to as many developers as possible.</li>
+  <li>We should make the minimum necessary change.</li>
+</ul>
+
+<p>After some deliberation, we decided to build a JavaScript-style <a href="https://developer.mozilla.org/en-US/docs/Web/API/window.setTimeout"><code>setTimeout()</code></a>.</p>
+
+<p><br class="separator"></p>
+
+<h3 id="understanding-vim">Understanding Vim</h3>
+
+<p>Step 0 was to clone Vim and start poking around. The Vim codebase is intimidating, to put it mildly. A quarter-century of development has created a text editor that, while powerful and extensible, is not without cruft. Vim was originally written for Amiga, and <code>os_amiga.c</code> still exists. There appears to be support for VMX, 16-bit Windows, BeOS, and even MS-DOS.</p>
+
+<p>As mentioned previously, Vim is input-driven. For the most part, Vim reacts to input from the user. There’s no easy way to tell Vim, “run this in 500 milliseconds” or “run this <em>every</em> 500 milliseconds.” There’s only, “run this after the user does X.” This assumption is built into every level of Vim, down to the architecture-specific input functions. We discovered this by following the code.</p>
+
+<p>If you want to see for yourself, try building Vim and running it in <code>gdb</code>. This example is slightly simplified. Most of the time, we used <code>gdb attach</code> to avoid corrupting Vim’s terminal.</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">ggreer@lithium:~/code/vim% CFLAGS="-g -DDEBUG" ./configure --with-features=huge
+...
+ggreer@lithium:~/code/vim% make
+...
+ggreer@lithium:~/code/vim% gdb ./src/vim
+Reading symbols from /home/ggreer/code/vim/src/vim...done.
+(gdb) break RealWaitForChar
+Breakpoint 1 at 0x54efba: file os_unix.c, line 5069.
+(gdb) run
+Breakpoint 1, RealWaitForChar (fd=0, msec=0, check_for_gpm=0x0) at os_unix.c:5069
+5069        int         nb_fd = netbeans_filedesc();
+(gdb) c
+Continuing.
+(gdb) c
+Continuing.
+(gdb) c
+Continuing.
+(gdb) c
+Continuing.
+...</code></pre></figure>
+
+<p>You’ll have to do this for a little while to get past Vim’s initialization code. You may also have to hit backspace to get rid of some control characters.</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">...
+(gdb) c
+Continuing.
+Breakpoint 1, RealWaitForChar (fd=0, msec=4000, check_for_gpm=0x0) at os_unix.c:5069
+5069        int         nb_fd = netbeans_filedesc();
+(gdb) bt
+#0  RealWaitForChar (fd=0, msec=0, check_for_gpm=0x0) at os_unix.c:5069
+#1  0x000000000054eea0 in mch_breakcheck () at os_unix.c:4963
+#2  0x00000000005e1a9d in ui_breakcheck () at ui.c:367
+#3  0x00000000004cdd35 in vgetorpeek (advance=1) at getchar.c:2026
+#4  0x00000000004cd54a in vgetc () at getchar.c:1590
+#5  0x00000000004cda92 in safe_vgetc () at getchar.c:1795
+#6  0x000000000051e0ac in normal_cmd (oap=0x7fffffffe2d0, toplevel=1) at normal.c:666
+#7  0x000000000062ab2c in main_loop (cmdwin=0, noexmode=0) at main.c:1329
+#8  0x000000000062a438 in main (argc=1, argv=0x7fffffffe5d8) at main.c:1020
+(gdb)</code></pre></figure>
+
+<p>After playing around more in <code>gdb</code>, we got a good idea of Vim’s <a href="http://en.wikipedia.org/wiki/Control_flow">control flow</a>. Vim’s main loop is, naturally, a function called <code>main_loop()</code> in <code>main.c</code>. There are a few ways the main loop can call low-level input functions, but eventually control is passed to <code>RealWaitForChar()</code> in <code>os_unix.c</code>. <code>RealWaitForChar()</code> calls <code>select()</code>, or falls back to <code>poll()</code> if <code>select()</code> isn’t available.</p>
+
+<p>Running Vim in a GUI follows a different path, but it still boils down to one function: <code>gui_wait_for_chars()</code> in <code>gui.c</code>.</p>
+
+<p>Armed with our newfound knowledge, we set off to build <code>setTimeout()</code>.</p>
+
+<!-- main.c main_loop has a while loop which calls
+getchar.c vgetc
+which calls inchar
+which calls ui_inchar
+which calls:
+  if gui:
+    gui_wait_for_chars (gui.c)
+      gui_mch_wait_for_chars
+        uses gui-specific waiting (usually not select())
+  no gui:
+    mch_inchar (os-specific, os_unix.c)
+      which calls WaitForChar
+        which calls RealWaitForChar -->
+
+<p><br class="separator"></p>
+
+<h3 id="settimeout">Settimeout</h3>
+
+<p>Our desired API was simple. The plan was to make three new Vimscript functions:</p>
+
+<ul>
+  <li><code>settimeout()</code></li>
+  <li><code>setinterval()</code></li>
+  <li><code>canceltimeout()</code></li>
+</ul>
+
+<p>Like their JavaScript counterparts, Vim’s <code>settimeout()</code> and <code>setinterval()</code> would take a number in milliseconds and a command to evaluate. For example…</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">let timeout_id = settimeout(2000, 'echo("hello")')</code></pre></figure>
+
+<p>…would print “hello” after two seconds. Calling…</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">canceltimeout(timeout_id)</code></pre></figure>
+
+<p>…would cancel the timeout. Nothing too crazy there.</p>
+
+<p><br class="separator"></p>
+
+<h3 id="timeouts">Timeouts</h3>
+
+<p>Representing timeouts is pretty straightforward. Timeouts are run in order, so a <a href="http://en.wikipedia.org/wiki/Linked_list">linked-list</a> sorted by time makes a lot of sense. There are more efficient data structures for timeouts, but this is a decent first-pass.</p>
+
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="k">struct</span> <span class="n">timeout_T</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">id</span><span class="p">;</span>                     <span class="cm">/* timeout/interval id */</span>
+    <span class="kt">int</span> <span class="n">interval</span><span class="p">;</span>               <span class="cm">/* interval period if interval, otherwise -1 */</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span> <span class="n">tm</span><span class="p">;</span>      <span class="cm">/* time to fire (epoch milliseconds) */</span>
+    <span class="n">char_u</span> <span class="o">*</span><span class="n">cmd</span><span class="p">;</span>                <span class="cm">/* vim command to run */</span>
+    <span class="k">struct</span> <span class="n">timeout_T</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>     <span class="cm">/* pointer to next timeout in linked list */</span>
+<span class="p">};</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">timeout_T</span> <span class="n">timeout_T</span><span class="p">;</span>
+
+<span class="n">timeout_T</span> <span class="o">*</span><span class="n">timeouts</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span></code></pre></figure>
+
+<p>Ordered insertion is <code>O(n)</code>, but fortunately <code>n</code> is very small in most cases.</p>
+
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="cm">/*</span>
+<span class="cm"> * Insert a new timeout into the timeout linked list.</span>
+<span class="cm"> * This is called by set_timeout() in eval.c</span>
+<span class="cm"> */</span>
+<span class="kt">void</span> <span class="n">insert_timeout</span><span class="p">(</span><span class="n">to</span><span class="p">)</span>
+    <span class="n">timeout_T</span> <span class="o">*</span><span class="n">to</span><span class="p">;</span>  <span class="cm">/* timeout to insert */</span>
+<span class="p">{</span>
+    <span class="n">timeout_T</span> <span class="o">*</span><span class="n">cur</span> <span class="o">=</span> <span class="n">timeouts</span><span class="p">;</span>
+    <span class="n">timeout_T</span> <span class="o">*</span><span class="n">prev</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">timeouts</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">timeouts</span> <span class="o">=</span> <span class="n">to</span><span class="p">;</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">while</span> <span class="p">(</span><span class="n">cur</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">cur</span><span class="o">-&gt;</span><span class="n">tm</span> <span class="o">&gt;</span> <span class="n">to</span><span class="o">-&gt;</span><span class="n">tm</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">prev</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">prev</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="n">to</span><span class="p">;</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="n">timeouts</span> <span class="o">=</span> <span class="n">to</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="n">to</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="n">cur</span><span class="p">;</span>
+            <span class="k">return</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="n">prev</span> <span class="o">=</span> <span class="n">cur</span><span class="p">;</span>
+        <span class="n">cur</span> <span class="o">=</span> <span class="n">cur</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">prev</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="n">to</span><span class="p">;</span>
+    <span class="n">to</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Calling timeouts isn’t too complicated either. Just go through list until there’s an interval in the future.</p>
+
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="cm">/*</span>
+<span class="cm"> * Execute timeouts that are due.</span>
+<span class="cm"> * This is called every ticktime milliseconds by low-level input functions.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span> <span class="nf">call_timeouts</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span> <span class="n">tm</span> <span class="o">=</span> <span class="n">get_monotonic_time</span><span class="p">();</span>
+    <span class="n">timeout_T</span> <span class="o">*</span><span class="n">tmp</span><span class="p">;</span>
+
+    <span class="k">while</span> <span class="p">(</span><span class="n">timeouts</span> <span class="o">!=</span> <span class="nb">NULL</span> <span class="o">&amp;&amp;</span> <span class="n">timeouts</span><span class="o">-&gt;</span><span class="n">tm</span> <span class="o">&lt;</span> <span class="n">tm</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">do_cmdline_cmd</span><span class="p">(</span><span class="n">timeouts</span><span class="o">-&gt;</span><span class="n">cmd</span><span class="p">);</span>  <span class="cm">/* Execute Vim command */</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">timeouts</span><span class="p">;</span>
+        <span class="n">timeouts</span> <span class="o">=</span> <span class="n">timeouts</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">tmp</span><span class="o">-&gt;</span><span class="n">interval</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">free</span><span class="p">(</span><span class="n">tmp</span><span class="o">-&gt;</span><span class="n">cmd</span><span class="p">);</span>
+            <span class="n">free</span><span class="p">(</span><span class="n">tmp</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="cm">/* This is an interval, not a timeout. Re-add it. */</span>
+            <span class="n">tmp</span><span class="o">-&gt;</span><span class="n">tm</span> <span class="o">=</span> <span class="n">tm</span> <span class="o">+</span> <span class="n">tmp</span><span class="o">-&gt;</span><span class="n">interval</span><span class="p">;</span>
+            <span class="n">insert_timeout</span><span class="p">(</span><span class="n">tmp</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Now all we have to do is run <code>call_timeouts()</code> often enough and the job is done!</p>
+
+<p><br class="separator"></p>
+
+<h3 id="select-loops">Select Loops</h3>
+
+<p>Vim’s <code>RealWaitForChar()</code> can take a timeout, or it can block until there’s user input. The initial plan was to put a loop in <code>RealWaitForChar()</code> and periodically run <code>call_timeouts()</code> while waiting for user input.</p>
+
+<p>Once we delved deeper into the code, we noticed much of our work was already done. <code>RealWaitForChar()</code> had a loop in it. It even called <code>select()</code>. To make our lives easier and minimize the number of changes, we decided to take advantage of this <code>select()</code> loop.</p>
+
+<p>The idea behind the loop is pretty simple: until <code>RealWaitForChar()</code>’s timeout is reached, run <code>call_timeouts()</code> every 100 milliseconds. The implementation in Vim is a little tricky, but a typical <code>select()</code> loop looks like this:</p>
+
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="kt">int</span> <span class="n">rv</span><span class="p">;</span>
+<span class="n">fd_set</span> <span class="n">read_fds</span><span class="p">;</span>
+<span class="k">struct</span> <span class="n">timeval</span> <span class="n">tv</span><span class="p">;</span>
+
+<span class="n">FD_ZERO</span><span class="p">(</span><span class="o">&amp;</span><span class="n">read_fds</span><span class="p">);</span>
+<span class="n">FD_SET</span><span class="p">(</span><span class="n">STDIN</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">read_fds</span><span class="p">);</span>
+
+<span class="n">tv</span><span class="p">.</span><span class="n">tv_sec</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="n">tv</span><span class="p">.</span><span class="n">tv_usec</span> <span class="o">=</span> <span class="mi">100000</span><span class="p">;</span> <span class="cm">/* 100 milliseconds */</span>
+
+<span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">rv</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">STDIN</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">read_fds</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">tv</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">rv</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"Error in select: %s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">));</span>
+        <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="n">call_timeouts</span><span class="p">();</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">FD_ISSET</span><span class="p">(</span><span class="n">STDIN</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">read_fds</span><span class="p">))</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"Somebody typed something.</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>This loop runs <code>call_timeouts()</code> every 100 milliseconds, or more often if the user types something. Reducing <code>tv</code> will give more accurate timer resolution at the cost of more CPU usage. It’s also possible to set <code>tv</code> based on the next timeout in the linked list. If there are a few widely-spaced timeouts, this can be more efficient. On the other hand, it also makes it easier to waste tons of CPU time.</p>
+
+<p><br class="separator"></p>
+
+<h3 id="submitting-the-patch">Submitting the Patch</h3>
+
+<p>Once we thought our work was ready for others to see, <a href="https://groups.google.com/d/msg/vim_dev/-4pqDJfHCsM/LkYNCpZjQ70J">we posted the patch to Vim-dev</a>. After some healthy discussion (and a little bikeshedding), we followed some suggestions to improve our patch. The biggest change was implementing cross-platform monotonic timers. It’s often forgotten that <code>gettimeofday()</code> is not required to increase. A user can change the clock, causing timeouts to be called too early or too late. Worse, services like <a href="http://en.wikipedia.org/wiki/Ntpd"><code>ntpd</code></a> can tweak the system clock without the user noticing. There is no cross-platform monotonic clock API, so we had to write code specific to Linux, OS X, BSD, and Windows.</p>
+
+<p><a href="https://github.com/Floobits/vim/compare/835cc6e85d8fbc14c4e659a4c0452ca5f699d805...master">Our latest patch</a> is the culmination of all our research, hard work, and wild flailing-about. If you’d like to play around with <code>settimeout()</code>, clone <a href="https://github.com/Floobits/vim">our Vim fork on GitHub</a>.</p>
+
+<p>We’ve learned a lot from this project, but we’re glad the finish line is in sight. There is no shortage of editors we want to support.</p>
+
+    </div>
+    <hr>
+    <div class="row">
+      <div class="col-md-6">
+        <ul class="list-inline">
+  <li>
+    <a href="https://news.ycombinator.com/submitlink?u=https://news.floobits.com/2013/09/17/adding-settimeout-to-vim/&amp;t=Adding%20setTimeout%20to%20Vim">
+      <img src="/images/hn.png" style="height:20px; width:20px;">
+      Discuss on Hacker News
+    </a>
+  </li>
+  <li>
+    <a href="https://twitter.com/share">
+      <img src="/images/tweet.png" style="height: 20px; width: 56px;" alt="Tweet">
+    </a>
+  </li>
+</ul>
+
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        
+        
+        <h3>About the Author</h3>
+        
+        
+        <div class="author">
+      
+        <div class="row">
+  <div class="col-md-3">
+    <img style="height: 80px; width: 80px;" src="https://floobits.com/static/images/geoff.jpg">
+  </div>
+  <div class="col-md-9">
+    <small>I’m <a href="http://geoff.greer.fm/">Geoff Greer</a>, CEO &amp; co-founder of <a href="https://floobits.com/">Floobits</a>.</small>
+  </div>
+</div>
+
+      
+        </div>
+        
+      </div>
+      <div class="col-md-6">
+        <h3>About Floobits</h3>
+<p>
+  Floobits lets you collaborate on code like you're in the same room. Think Etherpad or Google Docs, but in Sublime Text, Vim, Emacs, or IntelliJ.
+</p>
+<p>
+  If you're interested, <a href="https://floobits.com/">sign up</a>.
+</p>
+
+      </div>
+    </div>
+
+    <hr>
+    <div class="row">
+      <div class="col-md-6">
+      
+        <span class="pull-left">
+          <a class="nav-left" href="/2013/09/16/adding-settimeout-to-vim/">←&nbsp;Adding Realtime Collaboration to Vim</a>
+        </span>
+      
+      </div>
+      <div class="col-md-6">
+      
+        <span class="pull-right">
+          <a class="nav-right" href="/2013/10/16/bjorn-tipling-works-at-floobits/">Bjorn Tipling works at Floobits!&nbsp;→</a>
+        </span>
+      
+      </div>
+    </div>
+
+  </div>
+  </div>
+  <div class="fl-footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-3">
+        <h5>Info</h5>
+        <ul>
+          <li><a href="https://floobits.com/about">About Us</a></li>
+          <li><a href="https://floobits.com/pledge">Pledge</a></li>
+          <li><a href="https://floobits.com/security">Security</a></li>
+          <li><a href="https://floobits.com/edu">Education</a></li>
+          <li><a href="https://floobits.com/privacy">Privacy Policy</a></li>
+          <li><a href="https://floobits.com/tos">Terms of Service</a></li>
+          <li><a href="https://floobits.com/credits">Credits</a></li>
+        </ul>
+      </div>
+
+      <div class="col-md-3">
+        <h5>Help</h5>
+        <ul>
+          <li><a href="https://floobits.com/help/faq">FAQ</a></li>
+          <li><a href="https://floobits.com/help/plugins">Editor Plugins</a></li>
+          <li><a href="https://floobits.com/help/floorc">~/.floorc</a></li>
+          <li><a href="https://floobits.com/help/floomatic">Floomatic</a></li>
+          <li><a href="https://floobits.com/help/flootty">FlooTTY</a></li>
+        </ul>
+      </div>
+
+      <div class="col-md-3">
+        <h5>Explore</h5>
+        <ul>
+          <li><a href="https://floobits.com/active">Active Workspaces</a></li>
+          <li><a href="https://floobits.com/code_roulette">Code Roulette</a></li>
+        </ul>
+      </div>
+
+      <div class="col-md-3">
+        <h5>Talk to us</h5>
+        <ul>
+          <li><a href="irc://irc.freenode.net:6667/#floobits">IRC</a></li>
+          <li><a href="https://twitter.com/Floobits">Twitter</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+  </main>
+  <script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-35691554-2', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+</body></html>

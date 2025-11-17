@@ -1,0 +1,176 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"><html><head>
+    <title>LZMA Streams in Java - contrapunctus</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="generator" content="gauz">
+    <meta name="generated" content="2015-06-09 13:09:05.266690">
+    <link href="http://fonts.googleapis.com/css?family=Crimson+Text:400,700,400italic|Fjord+One|Inconsolata:400,700" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="/style/dix/style.css">
+    <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/blog/feed">
+    
+  </head>
+
+  <body>
+    
+    <div id="headWrap">
+      <div id="headContainer" class="container_9 clearfix">
+        <div id="headGrid" class="grid_9">
+          <div id="headPic" class="grid_1">
+            <div id="headFrame" style="background: white">
+              <a href="http://www.flickr.com/photos/chrisleague/4470378226/" title="Untitled by chris league, on Flickr"><img src="/pix/me/4470378226_88964ff495_s.jpg" width="75" height="75" alt=""></a>
+            </div> 
+          </div>   
+          <div id="headLogo" class="unlink grid_3 alpha">
+            <a href="/">
+              <h1>contrapunctus.net</h1>
+              <h2>Christopher League</h2>
+            </a>
+          </div> 
+          <div id="headNav" class="grid_5 omega">
+            <ul>
+              
+              <li>
+                <a href="/blog/">journal</a>
+              </li>
+              <li>
+                <a href="/league/haques/">projects</a>
+              </li>
+              <li>
+                <a href="/league/research/">publications</a>
+              </li>
+              <li>
+                <a href="/league/talks">talks</a>
+              </li>
+              <li>
+                <a href="/contact">contact</a>
+              </li>
+            </ul>
+            <p class="icons">
+              <a title="twitter.com/chrisleague" href="http://twitter.com/chrisleague"><img src="/pix/social/twitter.png" width="16" height="16"></a>
+              <a title="linkedin.com" href="http://www.linkedin.com/pub/christopher-league/0/a2/32"><img src="/pix/social/linkedin.png"></a>
+              <a title="facebook.com/chrisleague" href="http://www.facebook.com/chrisleague"><img src="/pix/social/facebook.png" width="16" height="16"></a>
+              <a title="Google+" href="https://plus.google.com/118313690567349746762/posts"><img src="/pix/social/google-plus.png" width="16" height="16"></a>
+              <a title="github.com/league/" href="http://github.com/league/"><img src="/pix/social/github.png"></a>
+              <a title="flickr.com" href="http://www.flickr.com/photos/chrisleague/"><img src="/pix/social/flickr.png" width="16" height="16"></a>
+              <a title="pinboard.in" href="http://pinboard.in/u:league"><img src="/pix/social/pinboard.png"></a>
+              <a title="RSS feed" href="/blog/feed"><img src="/pix/silk/feed.png" width="16" height="16"></a>
+            </p>
+          </div> 
+        </div>   
+      </div>     
+    </div>       
+    
+    <div id="bodyWrap">
+      <div class="container_9 clearfix guides">
+        
+    <div class="grid_9">
+      <h1>LZMA Streams in Java</h1>
+    </div>
+    <div class="grid_6">
+
+      <p>The <a href="http://en.wikipedia.org/wiki/LZMA">Lempel-Ziv
+          Markov-chain Algorithm</a> is a very effective and
+          relatively fast compression technique used in the ‘7z’
+          format of the <a href="http://www.7-zip.org/">7-Zip</a>
+          archiver.  There are implementations of LZMA in C/C++, Java,
+          C#, Python, and other languages.
+      </p>
+
+      <p>I needed a Java implementation of LZMA for a particular
+        project.  In Java, there is a quasi-standard for
+        FilterOutputStreams — streams that transparently compress or
+        encrypt data sent to them (and in reverse for
+        FilterInputStreams).  Unfortunately, the SevenZip
+        implementation did not conform to this standard.  It was
+        written in a completely different (and far more natural!)
+        style.</p>
+
+      <p>So, the package <code>net.contrapunctus.lzma</code> provides
+        implementations of <code>LzmaInputStream</code> and
+        <code>LzmaOutputStream</code> that interact with underlying LZMA
+        encoders and decoders running in separate threads.  This way I could
+        get the desired interface without having to restructure the LZMA
+        implementation, which would undoubtedly introduce bugs.
+      </p>
+
+      <p><b>Note:</b> These streams are not directly compatible with
+        the 7-zip files!  The 7z format is a container for multiple
+        files (and their metadata) that are individually compressed
+        using LZMA. These streams support the compression format but
+        not the container format. It's the same reason that
+        GZipInputStream cannot open .zip files.  There are
+        command-line tools lzma and unlzma that compress only, and
+        those <em>are</em> compatible with the LZMA streams.</p>
+
+      <p>The Jar file available for download includes the compiled classes
+        for the (unmodified) LZMA SDK and for my interface, so that may be all
+        you need.  Try this, for a simple test:
+        </p><pre> $ java -cp lzmajio.jar net.contrapunctus.lzma.RoundTrip
+        </pre>
+        It should show some compressed bytes and output a short text message
+        twice.
+      <p></p>
+
+      <p>Please don't hesitate to <a href="/contact">contact me</a>
+        with any bug reports, questions, or feature requests.</p>
+    </div>
+    <div class="grid_3 small">
+       <div class="frame_240_3 unlink">
+        <a href="http://www.flickr.com/photos/chrisleague/4527644639/" title="Dancers on Soviet submarine by chris league, on Flickr"><img src="http://farm5.static.flickr.com/4061/4527644639_f7d6f27b19_m.jpg" width="240" height="160" alt="Dancers on Soviet submarine"></a>
+      </div>
+
+      <p>Visit <a href="http://github.com/league/lzmajio">lzmajio on
+          github</a><br>
+        Download <a href="http://github.com/league/lzmajio/downloads">bundled
+          releases</a></p>
+
+      <p>There is not much documentation, but
+          see <a href="/blog/2007/pushmi-pullyu">this post</a>.</p>
+
+      <p>Like the original LZMA SDK, this code is available under the
+        GNU LGPL or the Common Public License.</p>
+
+    </div>
+
+  
+      </div>
+    </div>
+    
+    <div id="footWrap">
+      <div id="footContainer" class="container_9 clearfix">
+        <div id="footLeft" class="grid_5">
+          ©<span class="thinsp"></span>2002<span class="thinsp"></span>–<span class="thinsp"></span>2015
+          <span class="thinsp"></span>Christopher League
+        </div>
+        <div id="footRight" class="grid_4">
+          <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/">some rights reserved</a>
+        </div>
+      </div>
+    </div>
+    
+    <script type="text/javascript">
+      //<![CDATA[
+      (function() {
+        var links = document.getElementsByTagName('a');
+        var query = '?';
+        for(var i = 0; i < links.length; i++) {
+          if(links[i].href.indexOf('#disqus_thread') >= 0) {
+            query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+          }
+        }
+        document.write('<script charset="utf-8" type="text/javascript" src="http://disqus.com/forums/contrapunctus/get_num_replies.js' + query + '"></' + 'script>');
+      })();
+      //]]>
+    </script><script charset="utf-8" type="text/javascript" src="http://disqus.com/forums/contrapunctus/get_num_replies.js?"></script>
+    
+    <script type="text/javascript">
+      var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+      document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script><script src="https://ssl.google-analytics.com/ga.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      try {
+        var pageTracker = _gat._getTracker("UA-5040653-1");
+        pageTracker._trackPageview();
+      } catch(err) {}</script>
+  
+
+</body></html>

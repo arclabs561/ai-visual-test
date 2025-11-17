@@ -1,0 +1,464 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN"><html><head>
+<title>rsync</title>
+<style>
+.security { color: red; }
+h3 { margin-bottom: 0px; }
+.date { color: #D25A0B; }
+</style>
+</head>
+<body bgcolor="#ffffff" text="#000000" style="margin-top: 0">
+<table border="0" width="640" align="CENTER">
+  <tbody><tr valign="middle">
+    <td align="left">
+	<ul>
+      <li><small><a href=".">home</a></small>
+      </li><li><small><a href="FAQ.html">FAQ</a></small>
+      </li><li><small><a href="resources.html">resources</a></small>
+      </li><li><small><a href="features.html">features</a></small>
+      </li><li><small><a href="examples.html">examples</a></small>
+      </li><li><small><a href="lists.html">mailing&nbsp;lists</a></small>
+	</li></ul>
+    </td>
+    <td align="center">
+      <a href="."><img src="newrsynclogo.jpg" border="0" alt="rsync"></a>
+    </td>
+    <td align="left">
+      <ul>
+      <li><small><a href="bug-tracking.html">bug-tracking</a></small>
+      </li><li><small><a href="issues.html">current&nbsp;issues and&nbsp;debugging</a></small>
+      </li><li><small><a href="download.html">download</a></small>
+      </li><li><small><a href="documentation.html">documentation</a></small>
+      </li><li><small><a href="find.html">search</a></small>
+      </li></ul>
+    </td>
+  </tr>
+
+  <tr align="center">
+    <td colspan="3">
+    <img src="bar1.jpg" width="493" height="26" border="0" alt="=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=">
+    </td>
+  </tr>
+</tbody></table>
+
+<table border="0" width="640" align="CENTER">
+  <tbody><tr valign="middle">
+    <td align="left">
+
+
+<h2 align="center">Welcome to the rsync web pages</h2>
+
+rsync is an <a href="https://www.opensource.org/">open source</a>
+utility that provides fast incremental file transfer. rsync is freely
+available under the <a href="GPL.html">GNU General Public
+License</a> and is currently being maintained by
+<a href="https://opencoder.net/">Wayne Davison</a>.
+
+<p><i>If you are running
+(1) an rsync older than 3.2.4 that uses the bundled zlib,
+(2) an rsync client older than 3.1.3 with --xattrs enabled,
+(3) a writable rsync daemon older than 3.1.3,
+or (4) a version of rsync older than 2.6.6, please see the
+<a href="security.html" class="security">rsync security advisory page</a>.</i>
+
+</p><p>A full changelog of all the releases, including upcoming releases, is in the
+<a href="https://download.samba.org/pub/rsync/NEWS">NEWS file</a>.
+
+</p><div style="float: right">
+<a href="https://github.com/WayneD/rsync/actions">
+<img src="badge.svg">
+</a></div>
+
+<p></p><hr>
+<h3>Rsync version 3.2.4 released</h3>
+<i class="date">April 15th, 2022</i>
+
+<p>Rsync version 3.2.4 has been released.
+Another typical release with both bug fixes and some enhancements. It also contains a 
+<a href="security.html#s3_2_4" class="security">security fix</a>
+for the bundled zlib 1.2.8, which may or may not be used in your particular build configuration.
+
+</p><p><b>NOTE:</b> a <a href="https://download.samba.org/pub/rsync/rsync-schar-fix-3.2.4.diff">patch is now available</a>
+that fixes the configure check for "signed char" when "-pedantic-errors" is in effect.
+This is for systems where a "char" defaults to "unsigned char" (such as ARM systems)
+and returns the rsync algorithm back to full efficiency (without the patch, the transfer
+sends more literal data instead of finding matched local data).</p>
+
+<p>See the <a href="https://download.samba.org/pub/rsync/NEWS#3.2.4">3.2.4 NEWS</a>
+for a detailed changelog.
+The latest manpages are also available for:</p><ul>
+<li><a href="https://download.samba.org/pub/rsync/rsync.1"><b>rsync</b>(1)</a>
+</li><li><a href="https://download.samba.org/pub/rsync/rsync-ssl.1"><b>rsync-ssl</b>(1)</a>
+</li><li><a href="https://download.samba.org/pub/rsync/rsyncd.conf.5"><b>rsyncd.conf</b>(5)</a>
+</li><li><a href="https://download.samba.org/pub/rsync/rrsync.1"><b>rrsync</b>(1)</a>
+</li></ul>
+
+<p>The source tar is available here:
+<b><a href="https://download.samba.org/pub/rsync/src/rsync-3.2.4.tar.gz">rsync-3.2.4.tar.gz</a>
+(<a href="https://download.samba.org/pub/rsync/src/rsync-3.2.4.tar.gz.asc">signature</a>)</b>,
+with a tar file of the "patches" directory released in a separate file:
+<b><a href="https://download.samba.org/pub/rsync/src/rsync-patches-3.2.4.tar.gz">rsync-patches-3.2.4.tar.gz</a>
+(<a href="https://download.samba.org/pub/rsync/src/rsync-patches-3.2.4.tar.gz.asc">signature</a>)</b>,
+and the diffs from version 3.2.2 are available here:
+<b><a href="https://download.samba.org/pub/rsync/src-diffs/rsync-3.2.3-3.2.4.diffs.gz">rsync-3.2.3-3.2.4.diffs.gz</a>
+(<a href="https://download.samba.org/pub/rsync/src-diffs/rsync-3.2.3-3.2.4.diffs.gz.asc">signature</a>)</b>.
+
+</p><p></p><hr>
+<h3>Rsync version 3.2.3 released</h3>
+<i class="date">August 6th, 2020</i>
+
+<p>Rsync version 3.2.3 has been released.
+It contains a smattering of bug fixes and various enhancements.
+
+</p><p>See the <a href="https://download.samba.org/pub/rsync/NEWS#3.2.3">3.2.3 NEWS</a>
+for a detailed changelog.
+
+</p><p></p><hr>
+<h3>Rsync version 3.2.2 released</h3>
+<i class="date">July 4th, 2020</i>
+
+<p>Rsync version 3.2.2 has been released.
+This is a few more portability fixes, some improvements to the newest features, and some
+other simple changes.  Hopefully this will be the last of these recent touch-up releases.
+
+</p><p>See the <a href="https://download.samba.org/pub/rsync/NEWS#3.2.2">3.2.2 NEWS</a>
+for a detailed changelog.
+
+</p><p></p><hr>
+<h3>Rsync version 3.2.1 released</h3>
+<i class="date">June 22th, 2020</i>
+
+<p>Rsync version 3.2.1 has been released.
+This is mainly a few fixes for some release issues and portability problems.
+There's also a couple new features, just for good measure.
+
+</p><p>See the <a href="https://download.samba.org/pub/rsync/NEWS#3.2.1">3.2.1 NEWS</a>
+for a detailed changelog.
+
+</p><p></p><hr>
+<h3>Rsync version 3.2.0 released</h3>
+<i class="date">June 19th, 2020</i>
+
+<p>Rsync version 3.2.0 has been released.
+This release has a good number of a few new features and various bug fixes.
+
+</p><p>See the <a href="https://download.samba.org/pub/rsync/NEWS#3.2.0">3.2.0 NEWS</a>
+for a detailed changelog.
+
+</p><p></p><hr>
+<h3>Rsync version 3.1.3 released</h3>
+<i class="date">January 28th, 2018</i>
+
+<p>Rsync version 3.1.3 has been released.
+This release has a
+<a href="security.html#s3_1_3" class="security">couple security fixes</a>,
+a few new features, and various bug fixes.
+
+</p><p>See the <a href="https://download.samba.org/pub/rsync/NEWS#3.1.3">3.1.3 NEWS</a>
+for a detailed changelog.
+
+</p><p></p><hr>
+<h3>Rsync version 3.1.2 released</h3>
+<i class="date">December 21st, 2015</i>
+
+<p>Rsync version 3.1.2 has been released.  This is a bug-fix release.
+It includes a <a href="security.html#s3_1_2" class="security">security fix</a>
+for a transfer from a sender that you don't fully trust.
+
+</p><p>See the <a href="https://download.samba.org/pub/rsync/NEWS#3.1.2">3.1.2 NEWS</a>
+for a detailed changelog.
+
+</p><p></p><hr>
+<h3>Rsync version 3.1.1 released</h3>
+<i class="date">June 22nd, 2014</i>
+
+<p>Rsync version 3.1.1 has been released.  This is a bug-fix release.
+
+</p><p>See the <a href="https://download.samba.org/pub/rsync/NEWS#3.1.1">3.1.1 NEWS</a>
+for a detailed changelog.
+
+</p><p></p><hr>
+<h3>Rsync version 3.1.0 released</h3>
+<i class="date">September 28th, 2013</i>
+
+<p>Rsync version 3.1.0 has been released.  This is a
+feature release that improves performance, provides several new options, and
+fixes a few bugs along the way.
+
+</p><p>See the <a href="https://download.samba.org/pub/rsync/NEWS#3.1.0">3.1.0 NEWS</a>
+for a detailed changelog.
+
+</p><p></p><hr>
+<h3>Rsync version 3.0.9 released</h3>
+<i class="date">September 23th, 2011</i>
+
+<p>Rsync version 3.0.9 has been released.  This is a bug-fix release.
+
+</p><p>See the <a href="https://download.samba.org/pub/rsync/NEWS#3.0.9">3.0.9 NEWS</a>
+for a detailed changelog.
+
+</p><p></p><hr>
+<h3>Rsync version 3.0.8 released</h3>
+<i class="date">March 26th, 2011</i>
+
+<p>Rsync version 3.0.8 has been released.  This is a bug-fix release.
+
+</p><p>See the <a href="https://download.samba.org/pub/rsync/NEWS#3.0.8">3.0.8 NEWS</a>
+for a detailed changelog.
+
+</p><p></p><hr>
+<h3>Rsync version 3.0.7 released</h3>
+<i class="date">December 31th, 2009</i>
+
+<p>Rsync version 3.0.7 has been released.  This is a bug-fix release.
+
+</p><p>See the <a href="https://download.samba.org/pub/rsync/NEWS#3.0.7">3.0.7 NEWS</a>
+for a detailed changelog.
+
+</p><p></p><hr>
+<h3>Rsync version 3.0.6 released</h3>
+<i class="date">May 8th, 2009</i>
+
+<p>Rsync version 3.0.6 has been released.  This is a bug-fix release.
+
+</p><p>See the <a href="https://download.samba.org/pub/rsync/NEWS#3.0.6">3.0.6 NEWS</a>
+for a detailed changelog.
+
+</p><p></p><hr>
+<h3>Rsync version 3.0.5 released</h3>
+<i class="date">December 28th, 2008</i>
+
+<p>Rsync version 3.0.5 has been released.  This is another bug-fix release.
+
+</p><p>See the <a href="https://download.samba.org/pub/rsync/NEWS#3.0.5">3.0.5 NEWS</a>
+for a detailed changelog.
+
+</p><p></p><hr>
+<h3>Rsync version 3.0.4 released</h3>
+<i class="date">September 6th, 2008</i>
+
+<p>Rsync version 3.0.4 has been released.  This is a bug-fix release with the
+only enhancement being the adding of a way to interact with an
+overly-restrictive server that refuses rsync's behind-the-scenes use of the -e
+option.
+
+</p><p>See the <a href="https://download.samba.org/pub/rsync/NEWS#3.0.4">3.0.4 NEWS</a>
+for a detailed changelog.
+
+</p><p></p><hr>
+<h3>Rsync version 3.0.3 released</h3>
+<i class="date">June 29th, 2008</i>
+
+<p>Rsync version 3.0.3 has been released.  This is a bug-fix release that has
+no new features (though it does have one new script in the support directory).
+
+</p><p>See the <a href="https://download.samba.org/pub/rsync/NEWS#3.0.3">3.0.3 NEWS</a>
+for a detailed changelog.
+
+</p><p></p><hr>
+<h3>Rsync version 3.0.2 released</h3>
+<i class="date">April 8th, 2008</i>
+
+<p>Rsync version 3.0.2 has been released.  This is a 
+<a href="security.html#s3_0_2" class="security">security release</a>
+that fixes a potential buffer-overflow issue.
+
+</p><p>See the <a href="https://download.samba.org/pub/rsync/NEWS#3.0.2">3.0.2 NEWS</a>
+for a detailed changelog.
+
+</p><p></p><hr>
+<h3>Rsync version 3.0.1 released</h3>
+<i class="date">April 3rd, 2008</i>
+
+<p>Rsync version 3.0.1 has been released.  This is a bug-fix release, which also
+includes fixes/improvements for several issues in the daemon-exclude code.
+
+</p><p>See the <a href="https://download.samba.org/pub/rsync/NEWS#3.0.1">3.0.1 NEWS</a>
+for a detailed changelog.
+
+</p><p></p><hr>
+<h3>Rsync version 3.0.0 released</h3>
+<i class="date">March 1st, 2008</i>
+
+<p>Rsync version 3.0.0 is finally here!  This is a feature release that
+also includes quite a few bug fixes.
+
+</p><p>The 3.0.0 version number is such a large bump up from 2.6.9 due to the
+addition of an
+incremental recursion scan (which helps a lot with large transfers) and the
+official arrival of several other new features, including ACL support, extended
+attribute support, filename character-set conversion, etc. 
+
+</p><p>See the <a href="https://download.samba.org/pub/rsync/NEWS#3.0.0">3.0.0 NEWS</a>
+for a detailed changelog.
+
+</p><p></p><hr>
+<h3>Rsync version 2.6.9 released</h3>
+<i class="date">November 6th, 2006</i>
+
+<p>Rsync version 2.6.9 has been released.  This is primarily a bug-fix
+release with a few minor new features.
+
+</p><p>See the <a href="https://download.samba.org/pub/rsync/NEWS#2.6.9">2.6.9 NEWS</a>
+for a detailed changelog.
+
+</p><p></p><hr>
+<h3>Rsync version 2.6.8 released</h3>
+<i class="date">April 22th, 2006</i>
+
+<p>Rsync version 2.6.8 has been released.  This is a bug-fix release that
+primarily addresses an exclude problem that affected the --relative option,
+but also includes a <a href="security.html#s2_6_8" class="security">security fix</a> for
+the xattrs.diff patch (which is not an
+official part of rsync, but some packagers include it in their release).
+
+</p><p>See the <a href="https://download.samba.org/pub/rsync/NEWS#2.6.8">2.6.8 NEWS</a>
+for a detailed changelog.
+
+</p><p></p><hr>
+<h3>Rsync 2.6.7 released</h3>
+<i class="date">March 11th, 2006</i>
+
+<p>Rsync version 2.6.7 has been released.  This release has both several new
+features and the usual accompaniment of bug fixes.
+
+</p><p>See the <a href="https://download.samba.org/pub/rsync/NEWS#2.6.7">2.6.7 NEWS</a>
+for a detailed changelog.
+
+</p><p></p><hr>
+<h3>Rsync 2.6.6 released</h3>
+<i class="date">July 28th, 2005</i>
+
+<p>Rsync version 2.6.6 has been released.  This release is a bug-fix release
+which contains a <a href="security.html#s2_6_6" class="security">security fix</a>
+to handle a null-pointer bug that turned up in rsync's version of zlib
+1.1.4 (this is not the recent zlib 1.2.2 security fix, which did not
+affect rsync) and to squash a few other minor bugs.  To deal with the
+zlib issue, rsync has been upgraded to include zlib 1.2.3.
+
+</p><p>See the <a href="https://download.samba.org/pub/rsync/NEWS#2.6.6">2.6.6 NEWS</a>
+for a detailed changelog.
+
+</p><p></p><hr>
+<h3>Rsync 2.6.5 released</h3>
+<i class="date">June 1st, 2005</i>
+
+<p>Rsync version 2.6.5 has been released.  This release is primarily a bug-fix
+release to squash some annoying problems that made it into the (feature-filled)
+release of 2.6.4, plus a few minor enhancements.
+
+</p><p>See the <a href="https://download.samba.org/pub/rsync/NEWS#2.6.5">2.6.5 NEWS</a>
+for a detailed changelog.
+
+</p><p></p><hr>
+<h3>Rsync 2.6.4 released</h3>
+<i class="date">March 30th, 2005</i>
+
+<p>Rsync version 2.6.4 has been released.  This release combines quite a
+few new features, some improved delete efficiency, and the usual array of
+bug fixes.
+
+</p><p>See the <a href="https://download.samba.org/pub/rsync/NEWS#2.6.4">2.6.4 NEWS</a>
+for a detailed changelog.
+
+</p><p></p><hr>
+<h3>Rsync 2.6.3 released</h3>
+<i class="date">September 30th, 2004</i>
+
+<p>Rsync version 2.6.3 has been released.  It contains several new features
+and quite a few bug fixes, including a <a href="security.html#s2_6_3" class="security">security
+fix</a> for a patch-sanitizing bug in the daemon code.
+
+</p><p>See the <a href="https://download.samba.org/pub/rsync/NEWS#2.6.3">2.6.3 NEWS</a>
+for a detailed changelog.
+
+</p><p></p><hr>
+<h3>Rsync 2.6.2 released</h3>
+<i class="date">April 30th, 2004</i>
+
+<p>Rsync version 2.6.2 has been released.  It is a bugfix release that mainly
+fixes <b>a bug with the --relative option (-R) in 2.6.1</b>
+that could cause files to be transferred incorrectly.  This only affected a
+source right at the root of the filesystem, such as "/" or "/*" (if you
+first "cd /" and then copy from ".", it would not tickle the bug).
+
+</p><p>See the <a href="https://download.samba.org/pub/rsync/NEWS#2.6.2">2.6.2 NEWS</a>
+for a detailed changelog.
+
+</p><p></p><hr>
+<h3>Rsync 2.6.1 released</h3>
+<i class="date">April 26th, 2004</i>
+
+<p>Rsync version 2.6.1 has been released.  It is primarily a performance
+release that requires less memory to run, makes fewer write calls to the socket
+(lowering the system CPU time), does less string copying (lowering the user CPU
+time), and also reduces the amount of data that is transmitted over the wire.
+There have also been quite a few bug fixes, including a
+<a href="security.html#s2_6_1" class="security">security fix</a> for a daemon problem when chroot
+is not enabled.  See the
+<a href="https://download.samba.org/pub/rsync/NEWS#2.6.1">2.6.1 NEWS</a>
+for a detailed changelog.
+
+</p><p></p><hr>
+<h3>One Cygwin hang-problem resolved</h3>
+
+<p>The problem with rsync hanging at the end of the transfer on
+<a href="https://www.cygwin.com/">Cygwin</a> had been previously traced to a
+signal-handling bug in their compatibility DLL.  This bug appears to now be
+fixed in DLL version 1.5.7-1, and Cygwin users are reporting that upgrading the
+DLL removes the hang-at-end-of-transfer problem for their existing rsync executable.
+(Note that this doesn't solve a hang that some folks see in the middle of a
+transfer -- using daemon mode instead of ssh can work around that one.)
+
+</p><p></p><hr>
+<h3>Rsync 2.6.0 released</h3>
+<i class="date">January 1st, 2004</i>
+
+<p> Two important things to note in the new release:
+
+</p><ol>
+
+<li>The default remote shell is now "ssh" unless you tell configure you want to
+make something else the default.
+
+</li><li>Some bug fixes in the include/exclude code, while making things work
+properly, have resulted in some user-visible changes for certain wildcard
+strings.  Read the BUG FIXES section in the
+<a href="https://download.samba.org/pub/rsync/NEWS#2.6.0">2.6.0 NEWS</a>
+to see if any of these changes apply to you.
+(Most people should be unaffected.)
+
+</li></ol>
+
+<p>One other item of note is that the oft-requested option "--files-from" is now
+available.  This option lets you specify a list of files to transfer, and can
+be much more efficient than a recursive descent using include/exclude
+statements (if you know in advance what files you want to transfer).  The list
+of files can come from either side of the connection, so it is possible for a
+server to provide the file-list that lets someone grab a server-specified set of
+files, for example.  See the <a href="https://download.samba.org/pub/rsync/rsync.1">rsync man page</a>
+for more details.
+
+</p><p>See the <a href="https://download.samba.org/pub/rsync/NEWS#2.6.0">2.6.0 NEWS</a>
+for a detailed changelog.
+
+</p></td>
+</tr>
+
+  <tr align="center">
+    <td><br><a name="search"></a><img src="bar1.jpg" width="493" height="26" border="0" alt="=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=">
+
+<!-- SiteSearch Google -->
+<form action="https://www.google.com/cse" id="cse-search-box"><div>
+<input type="hidden" name="cx" value="partner-pub-1444957896811922:vxjk7n-bst5">
+<input type="hidden" name="ie" value="ISO-8859-1">
+<input type="text" name="q" size="31" placeholder="" style="background: url(&quot;https://www.google.com/cse/static/images/1x/en/branding.png&quot;) left 9px top 50% no-repeat rgb(255, 255, 255);">
+<input type="submit" name="sa" value="Search">
+</div><input name="siteurl" value="rsync.samba.org/" type="hidden"><input name="ref" value="" type="hidden"><input name="ss" value="" type="hidden"></form>
+<script type="text/javascript" src="https://www.google.com/cse/brand?form=cse-search-box&amp;lang=en"></script>
+<!-- SiteSearch Google -->
+
+  </td>
+  </tr>
+</tbody></table>
+
+</body></html>

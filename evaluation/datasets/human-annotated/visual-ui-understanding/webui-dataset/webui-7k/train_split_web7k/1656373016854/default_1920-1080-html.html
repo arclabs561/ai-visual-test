@@ -1,0 +1,1027 @@
+<!DOCTYPE html><html lang="en-US"><head prefix="og: http://ogp.me/ns#">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        
+        <meta name="viewport" content="initial-scale = 1.0">
+        <!--Added bootstrap dependancies-->
+        <link rel="stylesheet" href="https://franklin.biblio.org/opac/deps/node_modules/bootstrap/dist/css/bootstrap.min.css?572456">
+        <link rel="stylesheet" href="https://franklin.biblio.org/opac/deps/node_modules/@fortawesome/fontawesome-free/css/all.css?572456">
+        <link rel="stylesheet" href="https://franklin.biblio.org/opac/deps/node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker.css?572456">
+        <link rel="stylesheet" href="https://franklin.biblio.org/css/skin/default/opac/semiauto.css?572456">
+        <link rel="stylesheet" href="/eg/opac/css/style.css?572456&amp;dir=ltr">
+          <link rel="stylesheet" href="/eg/opac/css/mediaQuery.css?572456">
+        
+
+           
+
+        <title>               Account Login - Janet Carlson Calvert Library</title>
+        <link rel="unapi-server" type="application/xml" title="unAPI" href="/opac/extras/unapi">
+        <link type="application/opensearchdescription+xml" rel="search" title="Janet Carlson Calvert Library OpenSearch" href="/opac/extras/opensearch/1.1/JCCLSYS/-/osd.xml">
+        <meta property="og:title" content="Account Login">
+<meta property="og:site_name" content="Janet Carlson Calvert Library">
+        
+
+        
+            
+
+
+
+        
+        
+
+
+
+
+<script src="https://franklin.biblio.org/opac/deps/node_modules/jquery/dist/jquery.min.js"></script>
+
+		<script>
+			$(document).ready(function(){
+				$("#loginModal").on('shown.bs.modal', function(){
+					$(this).find('#username_field').focus();
+				});
+			});
+		</script>
+
+    </head>
+    <body class="tundra d-flex flex-column min-vh-100">
+        <h1 class="sr-only">Catalog</h1>
+        
+       <div class="mb-3">
+        
+
+<div id="header-wrap">
+<nav class="navbar navbar-expand-lg navbar-dark ">
+<!--Home-->
+  <a class="navbar-brand" href="/eg/opac/"></a><div id="topnav_logo"><a class="navbar-brand" href="/eg/opac/"> </a><a href="/"><img alt="Evergreen Logo" src="https://franklin.biblio.org/opac/images/small_logo173.jpg?572456"></a></div>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+  <!--Left Links-->
+
+
+   <ul class="navbar-nav nav-fl px-3">
+      <li class="nav-item">      </li>
+      <!--Link 1-->
+      <li class="nav-item">
+        <a class="nav-link" href="/eg/opac/awards">Best Sellers &amp; Award Winners<span class="sr-only">(current)</span></a>
+      </li>
+        <!--Link 2-->
+      <li class="nav-item">
+        <a class="nav-link" href="/eg/opac/nutmeg">Nutmeg Awards &amp; Nominees</a>
+      </li>
+        <!--Link 3-->
+      <li class="nav-item">
+        <a class="nav-link" href="/eg/opac/cocba">Charter Oak Children's Book Award</a>
+      </li>
+        <!--Link 4-->
+      <li class="nav-item">
+        <a class="nav-link" href="/eg/kpac/home">Kids Catalog</a>
+      </li>
+
+      		    </ul>
+
+    <!--Right Links-->
+    <ul class="navbar-nav ml-auto nav-fr px-3">
+      <!--If not signed in, show sign in button-->
+    
+        <li class="nav-item">
+            <a href="/eg/opac/login" class="nav-link login">
+             Login </a>
+        </li>
+      <!--User is signed in-->
+    
+</ul>
+</div>
+</nav>
+
+
+
+</div>
+
+<div id="subheader-wrap">
+ <div class="container-fluid">
+<div class="row">
+<div class="col">
+    <nav class="nav secondary-nav">
+        
+        <a href="/eg/opac/home?redirect_to=%2Feg%2Fopac%2Fmyopac%2Flists%3Fmove_cart_by_default%3D1%3Bfrom_basket%3D1" class="nav-link search_catalog_lbl">Basic Search</a>
+        
+
+        
+        <a href="/eg/opac/browse?redirect_to=%2Feg%2Fopac%2Fmyopac%2Flists%3Fmove_cart_by_default%3D1%3Bfrom_basket%3D1" class="nav-link browse_the_catalog_lbl">Browse the Catalog</a>
+        
+
+        
+        <a href="/eg/opac/advanced?redirect_to=%2Feg%2Fopac%2Fmyopac%2Flists%3Fmove_cart_by_default%3D1%3Bfrom_basket%3D1" id="home_adv_search_link" class="nav-link adv_search_catalog_lbl">Advanced Search</a>
+        
+
+        
+        
+    </nav>
+</div>
+ 
+    <div class="col-auto">
+        
+  <div id="basket_actions">
+  <div id="select_basket_action" class="dropdown" disabled="disabled">
+      <a href="#" class="no-dec" id="cartDropdown" data-toggle="dropdown">
+        <img src="https://franklin.biblio.org/images/cart-sm.png?572456" alt="View Basket">
+         <div id="record_basket_count_floater">
+            <span id="record_basket_count">0</span>
+            <span class="sr-only">Records In Basket</span>
+        </div>
+      </a>
+      <div class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="cartDropdown">
+        <a class="dropdown-item" role="menuitem" href="/eg/opac/mylist?redirect_to=%2Feg%2Fopac%2Fmyopac%2Flists%3Fmove_cart_by_default%3D1%3Bfrom_basket%3D1"><i class="fas fa-glasses" aria-hidden="true"></i> View Basket</a>
+        <a class="dropdown-item" role="menuitem" href="/eg/opac/mylist/move?redirect_to=%2Feg%2Fopac%2Fmyopac%2Flists%3Fmove_cart_by_default%3D1%3Bfrom_basket%3D1;action=place_hold;entire_list=1"><i class="fas fa-book" aria-hidden="true"></i> Place Holds</a>
+        <a class="dropdown-item" role="menuitem" href="/eg/opac/mylist/print?redirect_to=%2Feg%2Fopac%2Fmyopac%2Flists%3Fmove_cart_by_default%3D1%3Bfrom_basket%3D1"><i class="fas fa-print" aria-hidden="true"></i> Print Title Details</a>
+        <a class="dropdown-item" role="menuitem" href="/eg/opac/mylist/email?redirect_to=%2Feg%2Fopac%2Fmyopac%2Flists%3Fmove_cart_by_default%3D1%3Bfrom_basket%3D1"><i class="fas fa-envelope" aria-hidden="true"></i> Email Title Details</a>
+        
+        <a class="dropdown-item" role="menuitem" href="/eg/opac/myopac/lists?redirect_to=%2Feg%2Fopac%2Fmyopac%2Flists%3Fmove_cart_by_default%3D1%3Bfrom_basket%3D1;from_basket=1;move_cart_by_default=1"><i class="fas fa-list" aria-hidden="true"></i> Add Basket to Saved List</a>
+        
+        
+        <a class="dropdown-item" role="menuitem" href="/eg/opac/mylist/clear?redirect_to=%2Feg%2Fopac%2Fmyopac%2Flists%3Fmove_cart_by_default%3D1%3Bfrom_basket%3D1"><i class="fas fa-trash" aria-hidden="true"></i> Clear Basket</a>
+      </div>
+    </div>
+  </div>
+
+    </div>
+</div>
+</div>
+
+ </div>
+
+    <h2 class="sr-only">Account Login</h2>
+    <div class="mobile_hide">
+        <h3 class="sr-only">Catalog Search</h3>
+
+
+
+<div id="search-wrapper" class="container-fluid">
+        <form action="/eg/opac/results" method="get">
+    
+    
+    <div class="m-5">
+    <div class="row">
+     <!--Keyword-->
+        <div class="col-sm-12 col-md">
+        <span class="search_box_wrapper">
+            <label id="search_box_label" for="search_box" class="w-100">Search: 
+            <input class="form-control form-control-sm" type="text" id="search_box" name="query" aria-label="Enter search query:" value="">
+            </label>
+        </span>
+        </div>
+
+        <!--Type-->
+        <div class="col-sm-12 col-md">
+        <label id="search_qtype_label" for="qtype" class="w-100">Type: 
+<select class="form-control w-100" name="qtype" id="qtype" title="Select query type:">
+        <option value="keyword" selected="selected">Keyword</option>
+        <option value="title">Title</option>
+        <option value="jtitle">Journal Title</option>
+        <option value="author">Author</option>
+        <option value="subject">Subject</option>
+        <option value="series">Series</option>
+        <option value="bookplate">Digital Bookplate</option>
+    </select>
+        </label>
+        </div>
+
+
+        <!-- Force next columns to break to new line below md breakpoint -->
+        <div class="w-100 d-block d-md-none"></div>
+
+         <!--Format-->
+        <div class="col-sm-12 col-md">
+        <label id="search_itype_label" for="search_itype_selector" class="w-100">Format: 
+<select class="form-control form-control-sm w-100" id="search_itype_selector" name="fi:search_format" title="Select item type:">
+
+    <option value="">All Formats</option>
+
+    <option value="book">All Books</option>
+
+    <option value="music">All Music</option>
+
+    <option value="casmusic">Audiocassette music recording</option>
+
+    <option value="blu-ray">Blu-ray</option>
+
+    <option value="braille">Braille</option>
+
+    <option value="casaudiobook">Cassette audiobook</option>
+
+    <option value="cdaudiobook">CD Audiobook</option>
+
+    <option value="cdmusic">CD Music recording</option>
+
+    <option value="eaudio">Downloadable audiobooks</option>
+
+    <option value="ebook">Downloadable ebooks</option>
+
+    <option value="emag">Downloadable magazines</option>
+
+    <option value="emusic">Downloadable music</option>
+
+    <option value="evideo">Downloadable video</option>
+
+    <option value="dvd">DVD</option>
+
+    <option value="equip">Equipment, games, toys</option>
+
+    <option value="graphicnovel">Graphic novels and comic books</option>
+
+    <option value="kit">Kit or Mixed materials</option>
+
+    <option value="lpbook">Large Print Material</option>
+
+    <option value="magazine">Magazines</option>
+
+    <option value="map">Map</option>
+
+    <option value="microform">Microform</option>
+
+    <option value="mp3audio">MP3 CD Audiobook</option>
+
+    <option value="score">Music Score</option>
+
+    <option value="phonomusic">Phonograph music recording</option>
+
+    <option value="phonospoken">Phonograph spoken recording</option>
+
+    <option value="picture">Picture</option>
+
+    <option value="playaway_views">Playaway Views</option>
+
+    <option value="playaway">Playaway,  Wonderbooks, Vox read-alongs</option>
+
+    <option value="preloadedaudio">Preloaded Audio</option>
+
+    <option value="serial">Serials and magazines</option>
+
+    <option value="software">Software and video games</option>
+
+    <option value="vhs">VHS</option>
+</select>
+
+        </label>
+        </div>
+
+         <!--Library-->
+        <div class="col-sm-12 col-md">
+        <label id="search_locg_label" for="search_org_selector" class="w-100">Library: 
+    <select id="search_org_selector" title="Select search library" name="locg" class="form-control w-100">
+
+            <option value="1" class="org_unit">
+                &nbsp;Bibliomation
+            </option>
+
+
+            <option value="27" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Ansonia Public Library
+            </option>
+
+
+            <option value="183" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Babcock Library - Ashford
+            </option>
+
+
+            <option value="3" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Beacon Falls Public Library
+            </option>
+
+
+            <option value="193" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Beekley Community Library - New Hartford
+            </option>
+
+
+            <option value="31" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Bentley Memorial Library - Bolton
+            </option>
+
+
+            <option value="29" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Bethel Public Library
+            </option>
+
+
+            <option value="132" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Bolton Schools
+            </option>
+
+
+            <option value="134" class="org_unit">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bolton High School
+            </option>
+
+
+            <option value="191" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Booth &amp; Dimock Library - Coventry
+            </option>
+
+
+            <option value="32" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Bridgeport Public Library
+            </option>
+
+
+            <option value="33" class="org_unit">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Black Rock Branch - Bridgeport
+            </option>
+
+
+            <option value="37" class="org_unit">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Burroughs-Saden Main - Bridgeport
+            </option>
+
+
+            <option value="36" class="org_unit">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;East Side Branch - Bridgeport
+            </option>
+
+
+            <option value="34" class="org_unit">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Newfield Branch - Bridgeport
+            </option>
+
+
+            <option value="35" class="org_unit">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;North Branch - Bridgeport
+            </option>
+
+
+            <option value="39" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Brookfield Library
+            </option>
+
+
+            <option value="185" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Burnham Library - Bridgewater
+            </option>
+
+
+            <option value="67" class="org_unit">
+                &nbsp;&nbsp;&nbsp;C.H. Booth Library - Newtown
+            </option>
+
+
+            <option value="194" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Canterbury
+            </option>
+
+
+            <option value="196" class="org_unit">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Canterbury Elementary School
+            </option>
+
+
+            <option value="195" class="org_unit">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Canterbury Public Library
+            </option>
+
+
+            <option value="197" class="org_unit">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dr. Helen Baldwin Middle School
+            </option>
+
+
+            <option value="189" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Chester Public Library
+            </option>
+
+
+            <option value="19" class="org_unit">
+                &nbsp;&nbsp;&nbsp;David M. Hunt Library - Falls Village
+            </option>
+
+
+            <option value="187" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Deep River Public Library
+            </option>
+
+
+            <option value="45" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Derby Public Library
+            </option>
+
+
+            <option value="43" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Derby Neck Library
+            </option>
+
+
+            <option value="5" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Douglas Library of Hebron
+            </option>
+
+
+            <option value="21" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Douglas Library - North Canaan
+            </option>
+
+
+            <option value="47" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Easton Public Library
+            </option>
+
+
+            <option value="61" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Edith Wheeler Memorial Library - Monroe
+            </option>
+
+
+            <option value="203" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Frank L. McGuire Maritime Library - New London
+            </option>
+
+
+            <option value="121" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Guilford Smith Library - South Windham
+            </option>
+
+
+            <option value="127" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Gunn Memorial Library - Washington
+            </option>
+
+
+            <option value="25" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Hagaman Memorial Library - East Haven
+            </option>
+
+
+            <option value="49" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Hall Memorial Library - Ellington
+            </option>
+
+
+            <option value="95" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Hotchkiss Library - Sharon
+            </option>
+
+
+            <option value="65" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Howard Whittemore Library - Naugatuck
+            </option>
+
+
+            <option value="173" selected="selected" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Janet Carlson Calvert Library
+            </option>
+
+
+            <option value="174" class="org_unit">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Franklin Elementary School
+            </option>
+
+
+            <option value="175" class="org_unit">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Janet Carlson Calvert Library - Franklin
+            </option>
+
+
+            <option value="179" class="org_unit">
+                &nbsp;&nbsp;&nbsp;John P. Webster Library - West Hartford
+            </option>
+
+
+            <option value="11" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Jonathan Trumbull Library - Lebanon
+            </option>
+
+
+            <option value="51" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Kent Library Association - Kent
+            </option>
+
+
+            <option value="107" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Kent Memorial Library - Suffield
+            </option>
+
+
+            <option value="53" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Killingly Library
+            </option>
+
+
+            <option value="207" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Killingworth Library Association
+            </option>
+
+
+            <option value="205" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Litchfield Historical Society - Ingraham Library
+            </option>
+
+
+            <option value="12" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Lebanon Schools
+            </option>
+
+
+            <option value="13" class="org_unit">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Lebanon Elementary School
+            </option>
+
+
+            <option value="14" class="org_unit">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Lebanon Middle School
+            </option>
+
+
+            <option value="15" class="org_unit">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Lyman Memorial High School
+            </option>
+
+
+            <option value="79" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Mark Twain Library Association - Redding
+            </option>
+
+
+            <option value="181" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Milford Public Library
+            </option>
+
+
+            <option value="85" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Minor Memorial Library - Roxbury
+            </option>
+
+
+            <option value="63" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Morris Public Library
+            </option>
+
+
+            <option value="71" class="org_unit">
+                &nbsp;&nbsp;&nbsp;New Milford Public Library
+            </option>
+
+
+            <option value="69" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Norfolk Library
+            </option>
+
+
+            <option value="54" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Oliver Wolcott Library
+            </option>
+
+
+            <option value="55" class="org_unit">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Oliver Wolcott Library - Litchfield
+            </option>
+
+
+            <option value="169" class="org_unit">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Owl Box - Litchfield
+            </option>
+
+
+            <option value="73" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Oxford Public Library
+            </option>
+
+
+            <option value="75" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Putnam Public Library
+            </option>
+
+
+            <option value="77" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Ridgefield Library
+            </option>
+
+
+            <option value="81" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Rockville Public Library
+            </option>
+
+
+            <option value="83" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Rowayton Library
+            </option>
+
+
+            <option value="87" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Salem Free Public Library
+            </option>
+
+
+            <option value="101" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Scoville Memorial Library - Salisbury
+            </option>
+
+
+            <option value="91" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Seymour Public Library
+            </option>
+
+
+            <option value="96" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Shelton
+            </option>
+
+
+            <option value="98" class="org_unit">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Plumb Memorial Library - Huntington Branch
+            </option>
+
+
+            <option value="97" class="org_unit">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Plumb Memorial Library - Shelton
+            </option>
+
+
+            <option value="105" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Sherman Library
+            </option>
+
+
+            <option value="128" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Silas Bronson Library
+            </option>
+
+
+            <option value="130" class="org_unit">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Silas Bronson Library - Bunker Hill Branch
+            </option>
+
+
+            <option value="129" class="org_unit">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Silas Bronson Library - Waterbury
+            </option>
+
+
+            <option value="9" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Slater Public Library - Griswold
+            </option>
+
+
+            <option value="103" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Somers Public Library
+            </option>
+
+
+            <option value="89" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Southbury Public Library
+            </option>
+
+
+            <option value="17" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Sprague Public Library - Baltic
+            </option>
+
+
+            <option value="93" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Stafford Library
+            </option>
+
+
+            <option value="109" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Terryville Public Library
+            </option>
+
+
+            <option value="113" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Thomaston Public Library
+            </option>
+
+
+            <option value="111" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Thompson Public Library
+            </option>
+
+
+            <option value="140" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Thompson Schools
+            </option>
+
+
+            <option value="141" class="org_unit">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mary R Fisher School
+            </option>
+
+
+            <option value="142" class="org_unit">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Thompson Middle School
+            </option>
+
+
+            <option value="143" class="org_unit">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tourtellotte Memorial High School
+            </option>
+
+
+            <option value="115" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Tolland Public Library
+            </option>
+
+
+            <option value="171" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Union Free Public Library
+            </option>
+
+
+            <option value="23" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Warren Public Library
+            </option>
+
+
+            <option value="119" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Weston Public Library
+            </option>
+
+
+            <option value="123" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Willimantic Public Library
+            </option>
+
+
+            <option value="7" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Windham Free Library - Windham Center
+            </option>
+
+
+            <option value="125" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Wolcott Public Library
+            </option>
+
+
+            <option value="117" class="org_unit">
+                &nbsp;&nbsp;&nbsp;Woodbury Public Library
+            </option>
+
+    </select>        </label>
+        </div>
+
+        <!-- Force next columns to break to new line below md breakpoint -->
+        <div class="w-100 d-block d-md-none"></div>
+
+        <div class="col-auto ml-auto ml-md-1">
+        <input id="detail" type="hidden" name="detail_record_view" value="1">
+        <button id="search-submit-go" type="submit" class="btn btn-sm btn-opac" onclick="setTimeout(function(){$(&quot;search-submit-spinner&quot;).className=&quot;&quot;; $(&quot;search-submit-go&quot;).className=&quot;hidden&quot;; $(&quot;search-submit-go-depth&quot;).className=&quot;hidden&quot;;}, 2000)"><i class="fas fa-search" aria-hidden="true"></i> Search</button>
+        </div>
+        <div class="col-auto mr-auto mr-md-1">
+        <button id="search-submit-go-depth" type="submit" value="0" name="depth" class="btn btn-sm btn-opac" onclick="setTimeout(function(){$(&quot;search-submit-spinner&quot;).className=&quot;&quot;; $(&quot;search-submit-go&quot;).className=&quot;hidden&quot;; $(&quot;search-submit-go-depth&quot;).className=&quot;hidden&quot;;}, 2000)" title="Select this option to expand your results to all libraries while retaining the priority of your selected librarys holdings."><i class="fas fa-globe" aria-hidden="true"></i> All Libraries</button>
+        <img id="search-submit-spinner" src="https://franklin.biblio.org/opac/images/progressbar_green.gif?572456" style="height:16px;width:16px;" class="hidden" alt="Search In Progress">
+        </div>
+    </div>
+    </div>
+
+    
+    
+    
+        
+            <input type="hidden" name="sort" value="poprel">
+        
+        </form>
+    
+    
+    
+
+
+    <script>
+    function getAdvLimits() {
+        var AdvLimitsClass = document.getElementById('adv_filter_results_block').classList;
+        if (AdvLimitsClass.contains("adv_filter_results_hide")) {
+           AdvLimitsClass.remove("adv_filter_results_hide");
+        } else {
+           AdvLimitsClass.add("adv_filter_results_hide");
+        }
+        if (AdvLimitsClass.contains("adv_filter_results_show")) {
+           AdvLimitsClass.remove("adv_filter_results_show");
+        } else {
+           AdvLimitsClass.add("adv_filter_results_show");
+        }
+     }
+     </script>
+    <!-- Canonicalized query:
+
+    
+
+    -->
+    <!--
+    <div id="breadcrumb">
+        <a href="/eg/opac/home">Catalog Home</a> &gt;
+    </div>
+    -->
+</div>
+
+    </div>
+    <div id="content-wrapper">
+        <div id="main-content">
+            <h3 class="sr-only">Account Login Form</h3>
+            
+
+<div class="container">
+<hr>
+    <h3 class="text-center">Log in to Your Account</h3>
+    <form method="post">
+   <div class="row text-center"></div>
+    
+
+<div class="table table-borderless table-sm">
+       <div class="row">
+               <div class="col-sm w-50">
+                       <label for="username_field" class="lbl1">Library Card Number or Username
+                       <a href="#" title="" data-html="true" data-toggle="tooltip" data-original-title="<div>
+Please enter your full library card number.
+<br>
+Example: 12340001234567
+</div>">
+                       <i class="fas fa-question-circle"></i></a></label>
+               </div>
+               <div class="col-sm w-50">
+                       <label for="password_field" class="lbl1">Password
+                       <a href="#" title="" data-html="true" data-toggle="tooltip" data-original-title="<div>
+First time logging in?<br> Click the 'Get Password' link to get an email.
+</div>
+">
+            <i class="fas fa-question-circle"></i></a></label>
+               </div>
+       </div>
+       <div class="row">
+               <div class="col-sm w-50">
+                       <input class="form-control" type="text" id="username_field" name="username" autofocus="">
+               </div>
+               <div class="col-sm w-50">
+                       <input class="form-control" id="password_field" name="password" type="password">
+               </div>
+       </div>
+       <div class="row">
+               <div class="col-sm w-50">
+                    
+               </div>
+               <div class="col-sm w-50">
+                       
+                               <a href="/eg/opac/password_reset">Forgot Your Password?  </a>
+                       
+               </div>
+       </div>
+       <div class="row">
+               <div class="col-sm w-50">
+                       <input type="checkbox" value="" id="rememberMe">
+            <label class="form-check-label" for="rememberMe">
+               Stay logged in?
+            </label>
+               </div>
+               <div class="col-sm w-50">
+                       <button type="submit" class="btn btn-confirm my-2"><i class="fas fa-sign-in-alt" aria-hidden="true"></i> Log in</button>
+               </div>
+       </div>
+</div>
+
+        <div style="clear: both; padding-top: 15px;" class="col-12 text-center">
+        
+            <input type="hidden" name="redirect_to" value="/eg/opac/myopac/lists?move_cart_by_default=1;from_basket=1">
+
+        </div>
+        <input id="client_tz_id" name="client_tz" type="hidden">
+    </form>
+
+</div>
+
+
+            <div class="clear-both very-big-height"></div>
+        </div>
+    </div>
+        </div>
+        
+        <h2 class="sr-only">Additional Resources</h2>
+        
+<div id="footer-wrap" class="mt-auto">
+<div id="footer">
+<div class="row mx-0">
+<div class="col-12 col-lg-3">
+    
+</div>
+<div class="col-12 col-lg-6">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+    <div class="row w-100">
+        <div class="col-12">
+            <ul class="navbar-nav" align="center">
+                <li class="nav-item"><a class="nav-link" href="http://biblio.org/opac-help/">Help</a></li>
+                <li class="nav-item"><a class="nav-link" href="http://biblio.org">About Bibliomation</a></li>
+                <li class="nav-item"><a class="nav-link" href="/eg/opac/biblio_map">Bibliomation Libraries Map</a></li>
+                <li class="nav-item"><a class="nav-link" href="/eg/opac/biblio_map"><img src="https://franklin.biblio.org/opac/images/map_mini.png"></a></li>
+            </ul>
+        </div>
+    </div>
+    </nav>
+     
+
+      <div id="copyright_text" class="mt-3">
+        Copyright © 2006-2022 Georgia Public Library Service, and others
+    <div id="footer_logo">
+        Powered by
+        <a href="http://evergreen-ils.org">
+            <img src="https://franklin.biblio.org/opac/images/eg_tiny_logo.png?572456" alt="Evergreen">
+        </a>
+    </div>
+    </div>
+   
+</div>
+ <div class="col-12 col-lg-3">
+</div>
+
+    </div>
+    </div>
+</div>
+
+
+
+        
+
+
+<script src="https://franklin.biblio.org/js/ui/default/opac/simple.js?572456"></script>
+<!--
+This file allows us to bring TT2 i18n'ized strings
+to js source files, via js blob.
+-->
+<script>
+    // Add a boost-style format function to JavaScript string.
+    // Implementation stolen from StackOverflow:
+    // https://stackoverflow.com/questions/610406/javascript-equivalent-to-printf-string-format
+    String.prototype.format = function() {
+        var args = arguments;
+        return this.replace(/{(\d+)}/g, function(match, number) {
+        return typeof args[number] != 'undefined'
+            ? args[number]
+            : match;
+        });
+    };
+
+    var eg_opac_i18n = {};
+
+    eg_opac_i18n.EG_MISSING_REQUIRED_INPUT = "Please fill out all required fields";
+    eg_opac_i18n.EG_INVALID_DATE = "That is not a valid date in the future.";
+    // For multiple holds placement confirmation dialog. {0} is replaced by number of copies requested.
+    eg_opac_i18n.EG_MULTIHOLD_MESSAGE = "Do you really want to place {0} holds for this title?";
+</script>
+
+ 
+
+
+
+
+
+
+<!-- DOB validation for Patron Registration in OPAC -->
+<script>
+    function dobValidate(input) {
+        var validformat = /^(19|20)\d\d([- /.])(0[1-9]|1[012])\2(0[1-9]|[12][0-9]|3[01])$/
+        var returnval = false
+        if (!validformat.test(input.value))
+            alert("You have entered an invalid date, or an improperly formatted date.  Please enter Date of Birth in YYYY-MM-DD or YYYY/MM/DD format and try again.")
+        else
+            returnval = true
+        if (returnval == false) input.select()
+        return returnval
+}
+</script>
+
+
+
+<script>
+    window.egStrings = [];
+    window.egStrings['CONFIRM_BASKET_EMPTY'] = "Remove all records from basket?";
+</script>
+<script src="https://franklin.biblio.org/js/ui/default/opac/record_selectors.js?572456" async="" defer=""></script>
+
+<!-- Require some inputs and selections for browsers that don't support required form field element -->
+
+
+<script>var max_cart_size = 500;</script>
+
+
+<link rel="stylesheet" href="https://franklin.biblio.org/js/ui/default/common/build/js/glide/css/glide.core.min.css?572456">
+<link rel="stylesheet" href="https://franklin.biblio.org/js/ui/default/common/build/js/glide/css/glide.theme.min.css?572456">
+<!-- JS imports, etc.  -->
+<script src="https://franklin.biblio.org/opac/deps/node_modules/jquery/dist/jquery.min.js?572456"></script>
+<script src="https://franklin.biblio.org/opac/deps/node_modules/popper.js/dist/umd/popper.min.js?572456"></script>
+<script src="https://franklin.biblio.org/opac/deps/node_modules/bootstrap/dist/js/bootstrap.min.js?572456"></script>
+<script src="https://franklin.biblio.org/opac/deps/node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.js?572456"></script>
+
+  <script>
+    $(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
+
+        <script>
+    $(document).ready(function(){
+    $('.tooltip').tooltip();
+    });
+</script>
+
+
+
+    
+
+
+</body></html>

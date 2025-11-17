@@ -1,0 +1,201 @@
+<!DOCTYPE html><html lang="en-us"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <base href="https://jfm.carcosa.net/">
+    <meta name="description" content="The personal site of Jason McBrayer">
+
+    <link rel="icon" type="image/png" href="https://jfm.carcosa.net/images/favicon-16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="https://jfm.carcosa.net/images/favicon-32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="https://jfm.carcosa.net/images/favicon-128.png" sizes="128x128">
+
+    <link rel="stylesheet" type="text/css" href="https://jfm.carcosa.net/css/site.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="https://jfm.carcosa.net/css/fonts.css" media="screen">
+
+    <link rel="preload" as="image" type="image/jpeg" href="https://jfm.carcosa.net/images/vlyp-600x400.jpg">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@jfmcbrayer">
+    <meta name="twitter:url" property="og:url" content="https://jfm.carcosa.net/blog/computing/hugo-gopher/">
+    <meta name="twitter:title" property="og:title" content="Generating a Gopher site with Hugo">
+    
+    <meta property="og:type" content="article">
+    
+    
+    <meta name="twitter:image" property="og:image" content="https://jfm.carcosa.net/images/ys.png">
+    
+    <meta name="twitter:description" property="og:description" content="This blog is produced with hugo, a static site generator, and the articles are written in Markdown, a plain text markup format. Since the articles are fundamentally plain text, for some time I’ve been wanting to make them available over gopher, a simple protocol that was created around the same time as the first versions of the World Wide Web. I used gopher before I used the WWW in Lynx and Mosaic, and even after the web was dominant, I used GNOFN’s free dial-up gopher as my access point to the internet.">
+
+    <title>
+        
+        
+         Generating a Gopher site with Hugo 
+        
+    </title>
+    <link rel="canonical" href="https://jfm.carcosa.net/blog/computing/hugo-gopher/">
+
+    <link href="" rel="alternate" type="application/rss+xml" title="An Inhabitant of Carcosa">
+    <link href="" rel="feed" type="application/rss+xml" title="An Inhabitant of Carcosa">
+  </head>
+
+  <body>
+    <section id="nav">
+      <h1><a href="https://jfm.carcosa.net/">An Inhabitant of Carcosa</a></h1>
+      <ul>
+        
+          <li><a href="https://jfm.carcosa.net/about/">About</a> <a href="https://jfm.carcosa.net/about//index.xml"><img src="https://jfm.carcosa.net/images/feed-icon-14x14.png" alt="(feed)"></a></li>
+        
+          <li><a href="https://jfm.carcosa.net/blog/">Blog</a> <a href="https://jfm.carcosa.net/blog//index.xml"><img src="https://jfm.carcosa.net/images/feed-icon-14x14.png" alt="(feed)"></a></li>
+        
+          <li><a href="https://jfm.carcosa.net/links/">Link Blog</a> <a href="https://jfm.carcosa.net/links//index.xml"><img src="https://jfm.carcosa.net/images/feed-icon-14x14.png" alt="(feed)"></a></li>
+        
+          <li><a href="https://jfm.carcosa.net/projects/">Projects</a> <a href="https://jfm.carcosa.net/projects//index.xml"><img src="https://jfm.carcosa.net/images/feed-icon-14x14.png" alt="(feed)"></a></li>
+        
+      </ul>
+    </section>
+
+
+<section id="content">
+  <h2> Generating a Gopher site with Hugo </h2>
+
+  <div id="sub-header">
+      <p>March 14, 2019 · 4 minute read</p>
+      
+      <p>
+          Posted in: 
+          
+          <a href="https://jfm.carcosa.net/tags/hugo">hugo</a>
+          
+          <a href="https://jfm.carcosa.net/tags/gopher">gopher</a>
+          
+          <a href="https://jfm.carcosa.net/tags/retrocomputing">retrocomputing</a>
+          
+      </p>
+      
+      
+  </div>
+
+  <div class="entry-content">
+      <p>This blog is produced with <a href="https://gohugo.io/">hugo</a>, a static site generator, and the
+articles are written in <a href="https://daringfireball.net/projects/markdown/">Markdown</a>, a plain text markup format. Since the
+articles are fundamentally plain text, for some time I’ve been wanting to
+make them available over <a href="https://en.wikipedia.org/wiki/Gopher_%28protocol%29">gopher</a>, a simple protocol that was created
+around the same time as the first versions of the World Wide Web. I used
+gopher before I used the WWW in Lynx and Mosaic, and even after the web was
+dominant, I used <a href="http://www.gnofn.org/">GNOFN</a>’s free dial-up gopher as my access point to the
+internet. Gopher is currently undergoing a renaissance, partly driven by
+disgust with the current state of the WWW, and there is a thriving community
+of <a href="https://en.wikipedia.org/wiki/Phlog">phloggers</a>, people writing blogs and serving them over gopher.</p>
+<h2 id="hugo-configuration">Hugo configuration</h2>
+<h3 id="configtoml-site-config-file">config.toml (site config file)</h3>
+<p>I created a custom output format by adding this to my config.toml:</p>
+<pre><code>[outputs]
+  home = ["HTML", "gopher", "RSS"]
+  section = ["HTML", "gopher", "RSS"]
+  taxonomy = ["HTML", "gopher", "RSS"]
+  taxonomyTerm = ["HTML", "gopher", "RSS"]
+  page = ["HTML", "gopher"]
+
+[outputFormats.gopher]
+  mediaType = "text/plain"
+  baseName = "gophermap"
+  isPlainText = true
+  protocol = "gopher://"
+  noUgly = false
+</code></pre><p>This says to keep generating HTML and RSS in the same places as the default
+configuration, but also generate gopher maps and plain text files for
+everything. The one caveat here: the gophermap for the home directory is
+going to be named ‘gophermap.txt’ rather than ‘gophermap’, and the gopher
+server will have to be configured accordingly.</p>
+<h2 id="templates">Templates</h2>
+<p>I needed to make three templates in order to get the gopher output format to
+actually generate anything: one for the one page, one for list pages, and
+one for articles. If you copy and paste these, you will probably need to
+manually re-insert the tabs in the gophermap lines, because they will have
+gotten mangled by Markdown-&gt;HTML-&gt;browser.</p>
+<h3 id="layoutsindexgophertxt">layouts/index.gopher.txt</h3>
+<pre><code>!{{ .Title }}
+
+{{ .RawContent }}
+
+Site sections:
+{{ range .Site.Menus.main }}
+1{{ .Name }}	{{ .Identifier }}	{{ $.Site.Params.hostname }}	70
+{{ end }}
+
+Most recent articles
+{{ range first 3 .Pages.ByPublishDate.Reverse }}
+0{{ .Title }}	{{ with .OutputFormats.Get "gopher" -}}{{ .RelPermalink }}	{{ $.Site.Params.hostname }}	70 {{ end }}
+{{ end }}
+
+</code></pre><h3 id="layouts_defaultlistgophertxt">layouts/_default/list.gopher.txt</h3>
+<pre><code>!{{ .Title }}
+
+{{ .RawContent }}
+
+{{ range .Pages.ByPublishDate.Reverse }}
+0{{ .Title }}	{{ with .OutputFormats.Get "gopher" -}}{{ .RelPermalink }}	{{ $.Site.Params.hostname}}	70 {{ end }}
+{{ end }}
+
+</code></pre><h3 id="layouts_defaultsinglegophertxt">layouts/_default/single.gopher.txt</h3>
+<pre><code># {{ .Title }}
+
+{{ .Date.Format (.Site.Params.dateform | default "January 2006") }} · {{ .ReadingTime }} minute read
+{{ if .Params.tags }}      
+Posted in:  {{ range .Params.tags }}{{ . }} {{ end }}
+{{ end }}
+      
+{{ .RawContent }}
+
+</code></pre><h3 id="running-hugo">Running hugo</h3>
+<p>I have to run hugo a separate time to generate my phlog, because it has to
+run with a different option from my blog. It needs the <code>uglyURLs</code> option
+set, while my blog needs it unset. That could be set in <code>config.toml</code>, but I
+use it on the command line.</p>
+<h2 id="setting-up-the-gopher-server">Setting up the gopher server</h2>
+<p>I chose to use <a href="https://github.com/kimholviala/gophernicus">gophernicus</a> as my gopher server, because it was easy to
+set up with systemd and seems to be popular. The only tweak to the default
+configuration was that it has to be started with <code>-d gophermap.txt</code>, so it
+knows to look for the gophermap in the file by that name (with the .txt
+extension).</p>
+<h2 id="changing-the-way-i-write-markdown">Changing the way I write Markdown</h2>
+<p>In writing my blog, I’ve been used to soft-wrapping lines in my Markdown
+files. That is, each paragraph is a single line of text, and my editor
+(emacs) displays the long lines as paragraphs. This is nice for
+version-control purposes, as changes within a paragraph only change one line
+and don’t introduce irrelevant formatting changes. But gopher clients often
+don’t line-wrap, or don’t do it well, so it’s better for me to hard line
+wrap my source files at less than 80 characters.</p>
+<p>I’ve also gotten used to the [title](link) style of links. I need to get
+back into the habit of footnote-style links, because they look better when
+reading the Markdown source as text.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>So, my <a href="https://jfm.carcosa.net/">blog</a> is now also available as a <a href="gopher://jfm.carcosa.net:70/">phlog</a>! A lot of the
+existing stuff isn’t formatted that greatly on gopher, and I may or may not
+put in the effort to clean that up. But I was impressed with how little work
+it really took to make this gopher site.</p>
+
+  </div>
+
+  <hr> 
+  <div id="links">
+      
+      <a class="basic-alignment left" href="https://jfm.carcosa.net/blog/computing/federated-facebook-reconsidered/">« More thoughts on a federated replacement for Facebook</a>
+      
+      
+      <a class="basic-alignment left" href="https://jfm.carcosa.net/blog/computing/gopher-and-the-lynx-web/">Gopher and the Lynx Web »</a>
+      
+  </div>
+</section>
+
+  
+  <script src="https://jfm.carcosa.net/js/mastodon-embed.js" async="async"></script>
+
+
+
+
+
+</body></html>

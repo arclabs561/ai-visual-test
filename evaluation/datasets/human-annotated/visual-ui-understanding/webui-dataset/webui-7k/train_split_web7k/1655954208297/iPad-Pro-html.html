@@ -1,0 +1,315 @@
+<html><head>
+	<meta charset="utf-8">
+
+	<title>SuRF Demo</title>
+
+	<!-- For diagnostic messages -->
+	<!-- <script src="vue/dist/vue.js"></script>
+	<script src="vue2vis/dist/vue2vis.js"></script>
+	<link rel="stylesheet" href="vue2vis/dist/vue2vis.css" /> -->
+
+	<script src="vue/dist/vue.min.js"></script>
+	<script src="vue2vis/dist/vue2vis.min.js"></script>
+	<link rel="stylesheet" href="vue2vis/dist/vue2vis.css">
+
+	<link type="text/css" rel="stylesheet" href="bootstrap-vue/dist/bootstrap.min.css">
+	<link type="text/css" rel="stylesheet" href="bootstrap-vue/dist/bootstrap-vue.css">
+	<script src="bootstrap-vue/dist/polyfill.min.js"></script>
+	<script src="bootstrap-vue/dist/bootstrap-vue.js"></script>
+
+	<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+	<script type="text/x-template" id="surf-template">
+		<b-container fluid>
+			<b-row class="h-100">
+				<b-col style="max-width: 20em;">
+					<div class="float-right">
+						<b-badge variant="primary" href="https://doi.org/10.1145/3183713.3196931" target="_new">PDF</b-badge>
+						<b-badge variant="primary" href="https://github.com/efficient/SuRF" target="_new">GitHub</b-badge>
+						<b-badge variant="dark" href="#" @click="show_help = true">Info</b-badge>
+					</div>
+
+					<h1>SuRF</h1>
+
+					<b-modal v-model="show_help" ok-only title="SuRF Information">
+						<p>
+							The Succinct Range Filter (SuRF) is a fast and compact data structure for approximate membership tests. It answers:
+						</p>
+						<ul>
+							<li> Does a query key likely exist in the input keys?</li>
+							<li> Does a query key range likely have any matching key in the input keys?</li>
+						</ul>
+
+						<p>
+							SuRF may return a false positive ("True" for no match). Using (especially long) suffixes may reduce false positives.
+						</p>
+
+						<p>
+							<a href="https://github.com/efficient/SuRF-demo" target="_new">This demo</a> uses <a href="https://github.com/efficient/SuRF" target="_new">the SuRF C++ implementation</a> compiled into Javascript.
+						</p>
+
+						<p>
+							Please see <a href="https://doi.org/10.1145/3183713.3196931" target="_new">our SIGMOD paper</a> for more information.
+						</p>
+
+						<p>
+							Copyright 2018, Carnegie Mellon University
+						</p>
+					</b-modal>
+
+					<div>
+						Input (one key per line):
+						<b-form-textarea v-model="input" max-rows="15"></b-form-textarea>
+					</div>
+
+					<div>
+						Suffix type:
+						<b-form-checkbox-group v-model="suffix_type">
+							<b-form-checkbox value="hash">Hash</b-form-checkbox>
+							<b-form-checkbox value="real">Real</b-form-checkbox>
+						</b-form-checkbox-group>
+					</div>
+
+					<div>
+						Suffix length (bits):
+						<b-form-input v-model="suffix_len" type="number" :disabled="suffix_type.length == 0"></b-form-input>
+						<b-badge variant="danger" v-if="!(this.suffix_len >= 1 && this.suffix_len <= 64)">Must be an integer between 1 and 64</b-badge>
+						<b-badge variant="info" v-if="this.suffix_type == 'real' && this.suffix_len % 8 != 0">Need a multiple of 8 to display suffixes as letters</b-badge>
+					</div>
+
+					<hr/>
+
+					<div>
+						Query type:
+						<b-form-radio-group v-model="query_type">
+							<b-form-radio value="none">None</b-form-radio>
+							<b-form-radio value="point">Point</b-form-radio>
+							<b-form-radio value="range">Range</b-form-radio>
+						</b-form-radio-group>
+					</div>
+
+					<div v-if="query_type == 'point'">
+						<div>
+							Lookup key:
+							<b-form-input v-model="point_query_key"></b-form-input>
+						</div>
+						<div>
+							Answer: {{ lookupKeyResult ? 'True' : 'False' }}
+							<b-badge pill variant="success" v-if="lookupKeyResult == exactLookupKeyResult">correct</b-badge>
+							<b-badge pill variant="warning" v-else>
+								{{ lookupKeyResult == true ? 'false positive' : 'false negative' }}
+							</b-badge>
+						</div>
+					</div>
+
+					<div v-if="query_type == 'range'">
+						<div>
+							Range start key:
+							<!-- <b-form-checkbox v-model="range_query_begin_inclusive">inclusive</b-form-checkbox> -->
+							<b-form-input v-model="range_query_begin_key"></b-form-input>
+						</div>
+						<div>
+							Range end key:
+							<!-- <b-form-checkbox v-model="range_query_end_inclusive">inclusive</b-form-checkbox> -->
+							<b-form-input v-model="range_query_end_key"></b-form-input>
+						</div>
+						<div>
+							Answer: {{ lookupRangeResult[0] ? 'True' : 'False' }}
+							<b-badge pill variant="success" v-if="lookupRangeResult[0] == exactLookupRangeResult[0]">correct</b-badge>
+							<b-badge pill variant="warning" v-else>
+								{{ lookupRangeResult[0] == true ? 'false positive' : 'false negative' }}
+							</b-badge>
+						</div>
+					</div>
+
+					<hr/>
+
+					<b-form-checkbox v-model="show_tree">Show tree</b-form-checkbox>
+					<b-form-checkbox v-model="show_details">Show details</b-form-checkbox>
+				</b-col>
+
+				<b-col v-if="show_tree" class="h-100">
+					<b-row class="h-100">
+						<b-col class="h-100">
+							<network ref="network" :nodes="nodes_edges[0]" :edges="nodes_edges[1]" :options="options"></network>
+						</b-col>
+					</b-row>
+
+					<b-row style="position: relative; top: -4em; text-align: center; z-index: -1;">
+						<b-col>
+							Serialized size: {{ serialized_size }} bytes<br/> Memory use (including overhead): {{ memory_usage }} bytes
+						</b-col>
+					</b-row>
+				</b-col>
+
+				<b-col v-if="show_details" class="h-100" style="overflow: scroll;">
+					<b-container>
+						Keys:
+						<b-container v-for="(key, index) in keys">
+							#{{ index }}: {{ key }}
+						</b-container>
+					</b-container>
+
+					<b-container>
+						<b-form-checkbox v-model="include_dense">Include LOUDS-Dense (disabling this is experimental)</b-form-checkbox>
+					</b-container>
+
+					<b-container>
+						Sparse-dense ratio:
+						<b-form-input v-model.number="sparse_dense_ratio" type="number" :disabled="!include_dense"></b-form-input>
+						<b-badge variant="danger" v-if="!(this.sparse_dense_ratio >= 0)">Must be a non-negative integer</b-badge>
+					</b-container>
+
+					<hr/>
+
+					<b-container>
+						Tree height: {{ tree_height }}
+					</b-container>
+
+					<b-container>
+						Sparse start level: {{ sparse_start_level }}
+					</b-container>
+
+					<hr/>
+
+					<b-container>
+						D-Labels:
+						<b-container>
+							<template v-for="(array, index) in bitmap_labels">
+								{{ formatBitvector(array, 256) }}
+							</template>
+						</b-container>
+					</b-container>
+
+					<b-container>
+						D-HasChild:
+						<b-container>
+							<template v-for="(array, index) in bitmap_child_indicator_bits">
+								{{ formatBitvector(array, 256) }}
+							</template>
+						</b-container>
+					</b-container>
+
+					<b-container>
+						D-IsPrefixKey:
+						<b-container>
+							<template v-for="(array, index) in prefixkey_indicator_bits">
+								{{ formatBitvectorPartial(array, bitmap_labels[index].length * 32 / 256, 1) }}
+							</template>
+						</b-container>
+					</b-container>
+
+					<b-container>
+						D-Values:
+						<b-container>
+							<template v-for="(array, index) in suffixes" v-if="index < sparse_start_level"> {{ formatBitvectorPartial(array, suffix_counts[index] * actual_suffix_len, actual_suffix_len) }}
+							</template>
+							<!-- <template v-for="(array, index) in getSuffixLabels()" v-if="index < sparse_start_level">
+								<template v-for="label in array">
+									{{ label }}
+								</template>
+							</template> -->
+						</b-container>
+					</b-container>
+
+					<hr/>
+
+					<b-container>
+						S-Labels:
+						<b-container>
+							<template v-for="(array, index) in labels" v-if="index >= sparse_start_level">
+								<template v-for="value in array">
+									{{ value != getTerminator() ? String.fromCharCode(value) : '$' }}
+								</template>
+							</template>
+						</b-container>
+					</b-container>
+
+					<b-container>
+						S-HasChild:
+						<b-container>
+							<template v-for="(array, index) in child_indicator_bits" v-if="index >= sparse_start_level">
+								{{ formatBitvectorPartial(array, labels[index].length, 1) }}
+							</template>
+						</b-container>
+					</b-container>
+
+					<b-container>
+						S-LOUDS:
+						<b-container>
+							<template v-for="(array, index) in louds_bits" v-if="index >= sparse_start_level">
+								{{ formatBitvectorPartial(array, labels[index].length, 1) }}
+							</template>
+						</b-container>
+					</b-container>
+
+					<b-container>
+						S-Values:
+						<b-container>
+							<template v-for="(array, index) in suffixes" v-if="index >= sparse_start_level">
+								{{ formatBitvectorPartial(array, suffix_counts[index] * actual_suffix_len, actual_suffix_len) }}
+							</template>
+							<!-- <template v-for="(array, index) in getSuffixLabels()" v-if="index >= sparse_start_level">
+								<template v-for="label in array">
+									{{ label }}
+								</template>
+							</template> -->
+						</b-container>
+					</b-container>
+
+					<!-- <hr/>
+
+					<b-container>
+						Suffix counts:
+						<b-container v-for="(value, index) in suffix_counts">
+							Level-{{ index }}:&nbsp;{{ value }}
+						</b-container>
+					</b-container>
+
+					<b-container>
+						Node counts:
+						<b-container v-for="(value, index) in node_counts">
+							Level-{{ index }}:&nbsp;{{ value }}
+						</b-container>
+					</b-container> -->
+				</b-col>
+			</b-row>
+		</b-container>
+	</script>
+
+	<div id="app" class="container-fluid"><div class="container-fluid"><div class="row h-100"><div class="col" style="max-width: 20em;"><div class="float-right"><a href="https://doi.org/10.1145/3183713.3196931" target="_new" class="badge badge-primary">PDF</a> <a href="https://github.com/efficient/SuRF" target="_new" class="badge badge-primary">GitHub</a> <a href="#" target="_self" class="badge badge-dark">Info</a></div> <h1>SuRF</h1> <div><div id="__BVID__2___BV_modal_outer_"><div id="__BVID__2" role="dialog" aria-hidden="true" class="modal fade" style="display: none;"><div class="modal-dialog modal-md"><div tabindex="-1" role="document" aria-labelledby="__BVID__2___BV_modal_header_" aria-describedby="__BVID__2___BV_modal_body_" class="modal-content"><header id="__BVID__2___BV_modal_header_" class="modal-header"><h5 class="modal-title">SuRF Information</h5><button type="button" aria-label="Close" class="close">×</button></header><div id="__BVID__2___BV_modal_body_" class="modal-body"><p>
+							The Succinct Range Filter (SuRF) is a fast and compact data structure for approximate membership tests. It answers:
+						</p> <ul><li> Does a query key likely exist in the input keys?</li> <li> Does a query key range likely have any matching key in the input keys?</li></ul> <p>
+							SuRF may return a false positive ("True" for no match). Using (especially long) suffixes may reduce false positives.
+						</p> <p><a href="https://github.com/efficient/SuRF-demo" target="_new">This demo</a> uses <a href="https://github.com/efficient/SuRF" target="_new">the SuRF C++ implementation</a> compiled into Javascript.
+						</p> <p>
+							Please see <a href="https://doi.org/10.1145/3183713.3196931" target="_new">our SIGMOD paper</a> for more information.
+						</p> <p>
+							Copyright 2018, Carnegie Mellon University
+						</p></div><footer id="__BVID__2___BV_modal_footer_" class="modal-footer"><!----><button type="button" class="btn btn-primary">OK</button></footer></div></div></div><!----></div></div> <div>
+						Input (one key per line):
+						<textarea id="__BVID__4" rows="11" wrap="soft" class="form-control"></textarea></div> <div>
+						Suffix type:
+						<div id="__BVID__5" role="group" tabindex="-1" class=""><div class="custom-control custom-checkbox custom-control-inline"><input id="__BVID__6" type="checkbox" name="__BVID__5" autocomplete="off" true-value="hash" class="custom-control-input" value="hash"><label for="__BVID__6" class="custom-control-label">Hash</label></div> <div class="custom-control custom-checkbox custom-control-inline"><input id="__BVID__7" type="checkbox" name="__BVID__5" autocomplete="off" true-value="real" class="custom-control-input" value="real"><label for="__BVID__7" class="custom-control-label">Real</label></div></div></div> <div>
+						Suffix length (bits):
+						<input id="__BVID__8" type="number" disabled="disabled" class="form-control"> <!----> <!----></div> <hr> <div>
+						Query type:
+						<div id="__BVID__9" role="radiogroup" tabindex="-1" class=""><div class="custom-control custom-radio custom-control-inline"><input id="__BVID__10" type="radio" name="__BVID__9" autocomplete="off" class="custom-control-input" value="none"><label for="__BVID__10" class="custom-control-label">None</label></div> <div class="custom-control custom-radio custom-control-inline"><input id="__BVID__11" type="radio" name="__BVID__9" autocomplete="off" class="custom-control-input" value="point"><label for="__BVID__11" class="custom-control-label">Point</label></div> <div class="custom-control custom-radio custom-control-inline"><input id="__BVID__12" type="radio" name="__BVID__9" autocomplete="off" class="custom-control-input" value="range"><label for="__BVID__12" class="custom-control-label">Range</label></div></div></div> <!----> <div><div>
+							Range start key:
+							 <input id="__BVID__13" type="text" class="form-control"></div> <div>
+							Range end key:
+							 <input id="__BVID__14" type="text" class="form-control"></div> <div>
+							Answer: True
+							<span class="badge badge-success badge-pill">correct</span></div></div> <hr> <div class="custom-control custom-checkbox custom-control-inline"><input id="__BVID__15" type="checkbox" autocomplete="off" true-value="true" class="custom-control-input" value="true"><label for="__BVID__15" class="custom-control-label">Show tree</label></div> <div class="custom-control custom-checkbox custom-control-inline"><input id="__BVID__16" type="checkbox" autocomplete="off" true-value="true" class="custom-control-input" value="true"><label for="__BVID__16" class="custom-control-label">Show details</label></div></div> <div class="h-100 col"><div class="row h-100"><div class="h-100 col"><div><div class="vis-network" tabindex="900" style="position: relative; overflow: hidden; touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); width: 100%; height: 100%;"><canvas width="1288" style="position: relative; touch-action: none; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); width: 100%; height: 100%;" height="2732"></canvas><div class="vis-navigation"><div class="vis-button vis-up" style="touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></div><div class="vis-button vis-down" style="touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></div><div class="vis-button vis-left" style="touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></div><div class="vis-button vis-right" style="touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></div><div class="vis-button vis-zoomIn" style="touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></div><div class="vis-button vis-zoomOut" style="touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></div><div class="vis-button vis-zoomExtends" style="touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></div></div></div></div></div></div> <div class="row" style="position: relative; top: -4em; text-align: center; z-index: -1;"><div class="col">
+							Serialized size: 248 bytes<br> Memory use (including overhead): 388 bytes
+						</div></div></div> <!----></div></div></div>
+
+	<script src="surf.js"></script>
+
+	<script src="main.js"></script>
+
+
+
+</body></html>

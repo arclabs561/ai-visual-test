@@ -1,0 +1,391 @@
+<html class="wf-fftisawebpro-n4-active wf-active"><head>
+    <style>
+      /* http://meyerweb.com/eric/tools/css/reset/
+       v2.0 | 20110126
+       License: none (public domain)
+      */
+      html,
+      body,
+      div,
+      span,
+      applet,
+      object,
+      iframe,
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      p,
+      blockquote,
+      pre,
+      a {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        font-size: 100%;
+        font: inherit;
+        vertical-align: baseline;
+        line-height: 1;
+      }
+      body {
+        font-family: "Tisa Pro";
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        perspective: 500px;
+      }
+      #card {
+        width: 340px;
+        height: 500px;
+        margin-top: 10%;
+        margin-bottom: 10%;
+        margin: 0 auto;
+        background: #f8f8f8;
+        text-align: center;
+        box-shadow: 0px 0px 80px rgba(0, 0, 0, 0.2), 1px 1px white inset;
+        color: #777;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        padding: 50px 10px;
+        box-sizing: border-box;
+        flex-direction: column;
+        z-index: 10;
+        /* transition: linear transform 0.2s; */
+        /* will-change: box-shadow, transform; */
+      }
+      #logo {
+        margin-bottom: 40px;
+        margin-top: 20px;
+      }
+      h1,
+      h2,
+      p {
+        margin: 10px 0;
+      }
+      h1 {
+        font-size: 40px;
+        font-weight: normal;
+        margin-top: 30px;
+        margin-bottom: 40px;
+      }
+      h2 {
+        font-weight: normal;
+        font-size: 18px;
+      }
+      a {
+        color: magenta;
+      }
+      svg {
+        overflow: auto;
+        padding: 10px;
+        fill: #fff;
+      }
+      #me {
+        width: 240px;
+        height: 240px;
+      }
+      #overlay-wrapper {
+        flex-shrink: 0;
+        margin-bottom: 10px;
+        position: relative;
+        border-radius: 50%;
+        overflow: hidden;
+        width: 240px;
+        height: 240px;
+        box-sizing: border-box;
+      }
+      #overlay {
+        opacity: 0.4;
+        border: none;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        width: 240px;
+        height: 240px;
+      }
+      #me {
+        background-image: url("https://cdn.getforge.com/elliottkember.com/1550169010/me.jpg");
+        background-size: 100% 100%;
+      }
+      @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+        #me {
+          background-image: url("https://cdn.getforge.com/elliottkember.com/1550169010/me2x.jpg");
+        }
+      }
+      @media (-webkit-min-device-pixel-ratio: 3), (min-resolution: 288dpi) {
+        #me {
+          background-image: url("https://cdn.getforge.com/elliottkember.com/1550169010/me3x.jpg");
+        }
+      }
+      #card-overlay {
+        background: white;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 1;
+        content: "";
+        opacity: 0;
+        z-index: 10;
+        will-change: transform;
+        /* transition: linear opacity 0.2s; */
+      }
+      #texture1 {
+        /*background: url('whirlpool.png');*/
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cg fill-rule='evenodd'%3E%3Cg id='hexagons' fill='rgba(255, 255, 255, 1)' fill-opacity='0.2' fill-rule='nonzero'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31h-.01L17 6.35V0h-2zm0 49v-8l12.99-7.5H28v2.31h-.01L17 42.15V49h-2z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        transform-origin: center center;
+        will-change: transform;
+      }
+      #overlay-wrapper {
+        /* transition: linear transform 0.2s; */
+      }
+      #card {
+        perspective: 400px;
+      }
+    </style>
+
+    <meta name="viewport" content="width=600; height=900; initial-scale: 1;">
+
+    <script src="https://x.clearbitjs.com/v2/pk_494eebd06f2f2bf8cf3250b8c78b757a/tracking.min.js" async=""></script><script src="https://x.clearbitjs.com/v2/pk_494eebd06f2f2bf8cf3250b8c78b757a/destinations.min.js" async=""></script><script async="" src="https://www.google-analytics.com/analytics.js"></script><script async="" src="http://x.clearbit.com/v1/pk_494eebd06f2f2bf8cf3250b8c78b757a/clearbit.js"></script><script>
+      window.location.origin === "file://" &&
+        document.write(
+          '<script src="http://' +
+            (location.host || "localhost").split(":")[0] +
+            ':35729/livereload.js?snipver=1"></' +
+            "script>"
+        );
+    </script>
+
+    <script src="https://use.typekit.net/ydx2xry.js"></script>
+    <style type="text/css">.tk-ff-tisa-web-pro,body{font-family:"ff-tisa-web-pro",serif;}</style><style type="text/css">@font-face{font-family:tk-ff-tisa-web-pro-n4;src:url(https://use.typekit.net/af/d3823a/000000000000000000017087/27/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3) format("woff2"),url(https://use.typekit.net/af/d3823a/000000000000000000017087/27/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3) format("woff"),url(https://use.typekit.net/af/d3823a/000000000000000000017087/27/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3) format("opentype");font-weight:400;font-style:normal;font-stretch:normal;font-display:auto;}</style><script>
+      try {
+        Typekit.load({ async: true });
+      } catch (e) {}
+    </script>
+    
+    <meta name="viewport" content="width=device-width">
+    <script>
+      !(function() {
+        var clearbit = (window.clearbit = window.clearbit || []);
+        if (!clearbit.initialize)
+          if (clearbit.invoked)
+            window.console &&
+              console.error &&
+              console.error("Clearbit snippet included twice.");
+          else {
+            clearbit.invoked = !0;
+            clearbit.methods = [
+              "trackSubmit",
+              "trackClick",
+              "trackLink",
+              "trackForm",
+              "pageview",
+              "identify",
+              "reset",
+              "group",
+              "track",
+              "ready",
+              "alias",
+              "page",
+              "once",
+              "off",
+              "on"
+            ];
+            clearbit.factory = function(t) {
+              return function() {
+                var e = Array.prototype.slice.call(arguments);
+                e.unshift(t);
+                clearbit.push(e);
+                return clearbit;
+              };
+            };
+            for (var t = 0; t < clearbit.methods.length; t++) {
+              var e = clearbit.methods[t];
+              clearbit[e] = clearbit.factory(e);
+            }
+            clearbit.load = function(t) {
+              var e = document.createElement("script");
+              e.async = !0;
+              e.src =
+                ("https:" === document.location.protocol
+                  ? "https://"
+                  : "http://") +
+                "x.clearbit.com" +
+                "/v1/" +
+                t +
+                "/clearbit.js";
+              var n = document.getElementsByTagName("script")[0];
+              n.parentNode.insertBefore(e, n);
+            };
+            clearbit.SNIPPET_VERSION = "3.1.0";
+            clearbit.load("pk_494eebd06f2f2bf8cf3250b8c78b757a");
+            clearbit.page();
+          }
+      })();
+    </script>
+  <style type="text/css">@font-face{font-family:ff-tisa-web-pro;src:url(https://use.typekit.net/af/d3823a/000000000000000000017087/27/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3) format("woff2"),url(https://use.typekit.net/af/d3823a/000000000000000000017087/27/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3) format("woff"),url(https://use.typekit.net/af/d3823a/000000000000000000017087/27/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3) format("opentype");font-weight:400;font-style:normal;font-stretch:normal;font-display:auto;}</style><link type="image/x-icon" rel="shortcut icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAMdJREFUOE+dU8sKwjAQ3LH9/y8QBEE8iAfxUIpKhar4AAX9nmYkNak1VN30EHJYMq/MYvggEyNSH4oMKpHU3kYkNcHdMcfoTibV63ED5AEdqJ93gWJ8I/swezBMri0LEcy1zUoE0wsZ4/nDBkUwOwcKbBYuE02QmB9JTdohs5Vvs8Pi4BREMntSLHctBcoetL8cWfnugcZzaBf51v2CooFdZcOmIPswNz0o1v978KvmKFeBAmWQvnzY5997oFkwnDKnIJLZb+4T8Rkoe231jJoAAAAASUVORK5CYII="></head>
+
+  <body class="tk-ff-tisa-web-pro" style="background: linear-gradient(450deg, rgb(153, 213, 255), rgb(229, 153, 255));">
+    <div id="texture1" style="background-position: 100px 100px; opacity: 1.22465e-16;"></div>
+    <div id="card">
+      <div id="card-overlay"></div>
+      <div id="overlay-wrapper">
+        <div id="overlay" style="background: linear-gradient(450deg, rgb(153, 230, 255), rgb(162, 255, 153));"></div>
+        <div id="me"></div>
+      </div>
+      <div id="contents">
+        <h1>Elliott Kember</h1>
+        <h2>Software developer / LED artist</h2>
+        <p>
+          Software Engineer at <a href="https://www.clearbit.com/" style="color: rgb(229, 153, 255);">Clearbit</a>.
+        </p>
+      </div>
+    </div>
+  <meta name="forge-tag" value="forge-token:1550169010">
+  <script>
+    (function(i, s, o, g, r, a, m) {
+      i["GoogleAnalyticsObject"] = r;
+      (i[r] =
+        i[r] ||
+        function() {
+          (i[r].q = i[r].q || []).push(arguments);
+        }),
+        (i[r].l = 1 * new Date());
+      (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+      a.async = 1;
+      a.src = g;
+      m.parentNode.insertBefore(a, m);
+    })(
+      window,
+      document,
+      "script",
+      "https://www.google-analytics.com/analytics.js",
+      "ga"
+    );
+
+    ga("create", "UA-6594483-1", "auto");
+    ga("send", "pageview");
+  </script>
+  <script type="text/javascript">
+    const cardOverlay = document.getElementById("card-overlay");
+    const card = document.getElementById("card");
+    const me = document.getElementById("overlay-wrapper");
+
+    document.addEventListener("mousemove", function(e) {
+      const x = e.clientX;
+      const y = e.clientY;
+      const boxX = card.offsetLeft;
+      const boxY = card.offsetTop;
+      const left = boxX - x;
+      const top = boxY - y;
+      const k = 100;
+      const transform = `rotateX(${top / k}deg) rotateY(${left / -k}deg)`;
+      card.style.transform = transform;
+      // me.style.transform = `rotateX(${top/k}deg) rotateY(${left/-k}deg)`;
+      cardOverlay.style.opacity = (top / k) * 0.2;
+    });
+
+    var deg = 100;
+    var hue = Math.random() * 255;
+    const s = "100%";
+    const l = "80%";
+    const difference = 80;
+    const a = document.querySelectorAll("a");
+    const svg = document.querySelector("svg");
+    const path = document.querySelectorAll("path");
+    let change = 1;
+    let changeUp = true;
+    let f = document.getElementById("favicon");
+    let overlayWrapper = document.getElementById("overlay-wrapper");
+    var canvas = document.createElement("canvas");
+    canvas.width = 16;
+    canvas.height = 16;
+    var ctx = canvas.getContext("2d");
+    var img = new Image();
+    var grd = ctx.createLinearGradient(0, 0, 16, 16);
+
+    let first = "white";
+    let second = "white";
+
+    const changeMultiplier = 30;
+
+    setInterval(function() {
+      hue += change;
+      deg += change;
+
+      // if (changeUp) {
+      //   change += 0.001 * changeMultiplier;
+      //   if (change > 1.5 * changeMultiplier) {
+      //     changeUp = false;
+      //   }
+      // } else {
+      //   change -= 0.001  * changeMultiplier;
+      //   if (change < -1.5 * changeMultiplier) {
+      //     changeUp = true;
+      //   }
+      // }
+
+      const sin = Math.abs(Math.sin((deg / 180) * Math.PI));
+      const cos = Math.abs(Math.cos((deg / 180) * Math.PI));
+
+      first = `hsl(${hue}, ${s}, ${l})`;
+      second = `hsl(${hue + difference}, ${s}, ${l})`;
+
+      const logo = `hsl(${hue + difference - 90}, ${s}, ${l})`;
+      const logoSecond = `hsl(${hue - 90}, ${s}, ${l})`;
+
+      document.body.style.background =
+        "linear-gradient(" + deg + "deg, " + first + ", " + second + ")";
+
+      // document.body.style.boxShadow = `
+      //   ${cos}px ${sin}px ${sin * 100}px ${first} inset,
+      //   ${cos}px ${sin}px ${cos * 100}px ${second} inset
+      // `;
+
+      // card.style.boxShadow = `
+      //   ${cos}px ${sin}px 100px ${second},
+      //   ${cos}px ${sin}px 100px ${first}
+      // `;
+
+      overlay.style.background =
+        "linear-gradient(" + deg + "deg, " + logo + ", " + logoSecond + ")";
+
+      // overlayWrapper.style.boxShadow = `
+      //   ${cos}px ${sin}px ${sin * 20}px ${first},
+      //   ${cos}px ${sin}px ${cos * 20}px ${second}
+      // `;
+
+      texture1.style.backgroundPosition = `${change * 100}px ${change * 100}px`;
+      texture1.style.opacity = cos * 0.4;
+
+      a.forEach(a => {
+        a.style.color = second;
+      });
+      path.forEach(path => {
+        path.style.fill = logo;
+      });
+
+      grd.addColorStop(0, first);
+      grd.addColorStop(1, second);
+      ctx.fillStyle = grd;
+      ctx.fillRect(0, 0, 16 + cos * 16, 16 + sin * 16);
+      var link = document.createElement("link");
+      link.type = "image/x-icon";
+      link.rel = "shortcut icon";
+      link.href = canvas.toDataURL("image/x-icon");
+      f.parentElement.removeChild(f);
+      document.getElementsByTagName("head")[0].appendChild(link);
+      f = link;
+    }, 100);
+  </script>
+
+</body></html>

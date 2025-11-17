@@ -1,0 +1,78 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="shortcut icon" href="/idp/images/favicon.ico">
+
+    <title>University of Iowa HawkID Login with Shibboleth</title>
+
+    <script type="text/javascript">
+        function removeIowaUPNSuffix() {
+            var usernameOld = document.getElementById("j_username").value.toLowerCase();
+            var usernameNew = usernameOld.replace(/@(?:sandbox\.)?uiowa\.edu/, "");
+            document.getElementById("j_username").value = usernameNew;
+        }
+    </script>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="/idp/bs-3.3.6/bootstrap.min.css">
+    <link rel="stylesheet" href="/idp/css/simple-login.css">
+
+    <script src="/idp/scripts/jquery-1.12.4.min.js"></script>
+    <script src="/idp/bs-3.3.6/bootstrap.min.js"></script>
+
+    <!-- The following style and script prevents clickjacking by preventing the page
+         from being placed inside a frame - https://www.codemagi.com/blog/post/194 -->
+    
+
+    <script type="text/javascript">
+        if (self === top) {
+            var antiClickjack = document.getElementById("antiClickjack");
+            antiClickjack.parentNode.removeChild(antiClickjack);
+        } else {
+            top.location = self.location;
+        }
+    </script>
+
+  </head>
+  <body>
+    <div class="container">
+      <div class="alert-message"></div>
+      <div class="panel panel-default login-panel">
+
+          <div class="panel-heading"><h1>HawkID Login for saml.prod.drupal.uiowa.edu</h1></div>
+          <div class="panel-body">
+              <div class="brand uiowa-dome" title="University of Iowa Logo"></div>
+
+              <div class="form-container">
+                  <form class="form-signin" role="form" action="/idp/profile/SAML2/Redirect/SSO?execution=e1s2" method="post" onsubmit="removeIowaUPNSuffix()">
+                      <div class="form-group">
+                          <label for="j_username">HawkID</label>
+                          <input name="j_username" type="text" class="form-control" id="j_username" value="" required="" autofocus="" autocapitalize="off" autocorrect="off" spellcheck="false">
+                      </div>
+                      <div class="form-group">
+                          <label for="j_password">Password</label>
+                          <input name="j_password" type="password" class="form-control" id="j_password" value="" required="">
+                      </div>
+
+                      <div class="login-error">
+
+                      </div>
+
+                      <input type="submit" id="login" name="_eventId_proceed" value=" Log In " class="btn btn-primary login-button">
+
+                      <div class="help-text">
+                          <a href="https://apps.its.uiowa.edu/pwtool/reset">Forgot your HawkID or password?</a>
+                      </div>
+                  </form>
+              </div>
+          </div>
+          <div class="panel-footer"><p>You will be logged in to this service securely. Information which will allow you to access the site you requested will be transmitted to the site. This information will be encrypted before it is sent. Please see the ITS Help Desk <a href="http://its.uiowa.edu/shibboleth" target="_blank">Shibboleth support pages</a> for additional information.</p></div>
+      </div>
+      <div class="custom-text">
+        <p>Please contact the <a href="http://its.uiowa.edu/contact" target="_blank">ITS Help Desk</a> for assistance, questions, or concerns.</p>
+      </div>
+    </div>   
+  
+</body></html>

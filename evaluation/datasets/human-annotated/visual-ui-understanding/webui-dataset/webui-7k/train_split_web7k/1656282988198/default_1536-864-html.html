@@ -1,0 +1,275 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head>
+
+<meta charset="utf-8">
+<title>running your own</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="icon" href="../favicon.ico" type="image/x-icon">
+
+<link rel="stylesheet" href="../style.css" type="text/css">
+
+<link rel="stylesheet" href="../local.css" type="text/css">
+
+
+
+
+<link rel="alternate" type="application/x-wiki" title="Edit this page" href="/ikiwiki.cgi?do=edit&amp;page=running_your_own">
+
+
+<link rel="vcs-git" href="ssh://b-libravatar@libravatar.branchable.com/" title="wiki git repository">
+<link rel="vcs-git" href="git://libravatar.branchable.com/" title="wiki git repository">
+
+
+
+
+</head>
+<body>
+
+<article class="page">
+
+<section class="pageheader">
+<header class="header">
+<span>
+<span class="parentlinks">
+
+<a href="../">Libravatar Wiki</a>/ 
+
+</span>
+<span class="title">
+running your own
+
+</span>
+</span>
+
+
+<form method="get" action="/ikiwiki.cgi" id="searchform">
+<div>
+<input type="text" id="searchbox" name="P" value="" size="16" placeholder="search">
+</div>
+</form>
+
+
+
+</header>
+
+
+<nav class="actions">
+<ul>
+
+<li><a href="/ikiwiki.cgi?do=edit&amp;page=running_your_own" rel="nofollow">Edit</a></li>
+
+
+<li><a href="../recentchanges/">RecentChanges</a></li>
+
+
+
+
+<li><a rel="nofollow" href="/ikiwiki.cgi?do=prefs">Preferences</a></li>
+
+
+
+
+
+</ul>
+</nav>
+
+
+
+
+
+
+
+
+</section>
+
+
+
+
+
+<div id="pagebody">
+
+<section id="content" role="main">
+<p>Libravatar was designed so that domain owners can choose to host themselves the profile pictures for their domain. For example, an organisation may want to have control over the pictures use for their employees.</p>
+
+<h1>Server implementations</h1>
+
+<p>There currently exist the following Libravatar image server implementations:</p>
+
+<table class="border">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th> Description</th>
+            <th> Administration</th>
+            <th> Programming language</th>
+            <th> License</th>
+            <th> Support for</th>
+            <th> Default modes</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>libravatar</td>
+            <td> The software that runs libravatar.org until 2019</td>
+            <td> web-based</td>
+            <td> Python</td>
+            <td> Affero GPLv3</td>
+            <td> Email, OpenID</td>
+            <td> 404, mm, identicon, monsterid, wavatar, retro</td>
+        </tr>
+        <tr>
+            <td><a href="https://sourceforge.net/p/surrogator/">Surrogator</a></td>
+            <td> very simple avatar server</td>
+            <td> command line only</td>
+            <td> PHP</td>
+            <td> Affero GPLv3</td>
+            <td> Email, OpenID</td>
+            <td> 404, mm</td>
+        </tr>
+        <tr>
+            <td><a href="http://pusling.com/blog/?p=274">Simple Libravatar service</a></td>
+            <td> Quick hack to serve static files</td>
+            <td> command line only</td>
+            <td> Shell script</td>
+            <td> None needed</td>
+            <td> Email</td>
+            <td> none (always returns a static image)</td>
+        </tr>
+        <tr>
+            <td><a href="https://git.linux-kernel.at/oliver/ivatar">ivatar</a></td>
+            <td> The software that runs the current libravatar.org</td>
+            <td> web-based</td>
+            <td> Python</td>
+            <td> Affero GPLv3</td>
+            <td> Email, OpenID</td>
+            <td> 404, mm (and its alias mp), identicon, monsterid, wavatar, retro, robohash, pagan</td>
+        </tr>
+        <tr>
+            <td><a href="https://github.com/Aversiste/libravatar.cgi">libravatar.cgi</a></td>
+            <td> Simple CGI implementation</td>
+            <td> none</td>
+            <td> C</td>
+            <td> ISC</td>
+            <td> Email</td>
+            <td> 404, mm (and its alias mp), blank</td>
+        </tr>
+        <tr>
+            <td><a href="https://schlomp.space/tastytea/libravatarserv">libravatarserv</a></td>
+            <td> Simple libravatar server</td>
+            <td> none</td>
+            <td> C++</td>
+            <td> GPLv3</td>
+            <td> Email</td>
+            <td> 404, mm (and its alias mp), identicon (=retro), retro; optionally returns a default image instead</td>
+        </tr>
+        <tr>
+            <td><a href="https://git.shivering-isles.com/shivering-isles/libravatar-nginx">libravatar-nginx</a></td>
+            <td> Simple static service with fallback to libravatar.org</td>
+            <td> none</td>
+            <td> Docker &amp; nginx</td>
+            <td> AGPLv3</td>
+            <td> Email</td>
+            <td> supports size and default params (urls, 404)</td>
+        </tr>
+    </tbody>
+</table>
+
+
+<h1>Installation</h1>
+
+<p>Please refer to the README or INSTALL file of the implementation you want to use.</p>
+
+<h1>DNS setup</h1>
+
+<p>Once your instance is running on a publicly-accessible server (<tt>avatars.example.com</tt> in this example), add the following records to your DNS zone file:</p>
+
+<pre><code>_avatars._tcp.example.com.     IN SRV 0 0 80  avatars.example.com
+_avatars-sec._tcp.example.com. IN SRV 0 0 443 avatars.example.com
+</code></pre>
+
+<p>The first entry (<tt>_avatars._tcp</tt>) should point to an HTTP server whereas the second one (<tt>_avatars-sec._tcp</tt>) is for an HTTPS server. Nowadays unencrypted HTTP traffic is frowned upon so feel free to redirect your HTTP endpoints to the HTTPS one.</p>
+
+<p>This step is the same whatever the implementation.</p>
+
+<h1>TTL</h1>
+
+<p>XXX: Currently not true, see <a href="https://git.linux-kernel.at/oliver/ivatar/issues/50">ivatar's issue #50</a>.</p>
+
+<p>The time-to-live (cache expiry) should be set to <strong>at least 1 day</strong> (86400 seconds).</p>
+
+<p>If you choose a TTL smaller than 1 day, Libravatar clients are allowed (and encouraged) to ignore it and cache your entry for a day.</p>
+
+<h1>Subdomains</h1>
+
+<p>If you use full hostnames or subdomains in your email addresses, for example bob@foo.example.com and bob@bar.example.com, then you need to have a set of SRV records for each of them:</p>
+
+<pre><code>_avatars._tcp.foo.example.com.     IN SRV 0 0 80  avatars.example.com
+_avatars-sec._tcp.foo.example.com. IN SRV 0 0 443 avatars.example.com
+_avatars._tcp.bar.example.com.     IN SRV 0 0 80  avatars.example.com
+_avatars-sec._tcp.bar.example.com. IN SRV 0 0 443 avatars.example.com
+</code></pre>
+
+<h1>SRV weights and priorities (optional)</h1>
+
+<p>All SRV entries should have the same priority. Lower priority ones will be ignored by Libravatar clients.</p>
+
+<p>You may however use weights to spread the load across more than one avatar server.</p>
+
+<h1>Testing</h1>
+
+<p>Once you have these records, have a look at the <a href="https://www.libravatar.org/tools/check">domain check tool</a> to make sure everything is working.</p>
+
+</section>
+
+
+
+
+
+
+
+</div>
+
+<footer id="footer" class="pagefooter" role="contentinfo">
+
+<nav id="pageinfo">
+
+
+
+
+
+
+<nav id="backlinks">
+Links:
+
+<a href="../api/">api</a>
+
+<a href="../description/">description</a>
+
+<a href="../">index</a>
+
+
+</nav>
+
+
+
+
+
+
+<div class="pagedate">
+Last edited <time datetime="2022-06-25T12:01:15Z" class="relativedate" title="Sat Jun 25 12:01:15 2022">1 day and 10 hours ago</time>
+<!-- Created <time datetime="2011-04-24T04:02:47Z" pubdate="pubdate" class="relativedate" title="Sun, 24 Apr 2011 04:02:47 +0000">Sun Apr 24 04:02:47 2011</time> -->
+</div>
+
+</nav>
+
+
+<!-- from Libravatar Wiki -->
+</footer>
+
+</article>
+<script src="../ikiwiki/ikiwiki.js" type="text/javascript" charset="utf-8"></script>
+<script src="../ikiwiki/toggle.js" type="text/javascript" charset="utf-8"></script><style type="text/css">div.toggleable { display: none; }</style>
+<script src="../ikiwiki/ikiwiki.js" type="text/javascript" charset="utf-8"></script>
+<script src="../ikiwiki/relativedate.js" type="text/javascript" charset="utf-8"></script>
+
+</body></html>

@@ -1,0 +1,202 @@
+<html><head>
+    <title>local tests</title>
+    <link rel="stylesheet" href="/_/style.css">
+  </head>
+  <body>
+    <div id="stripes"><div id="stripes-a" class="stripes other">
+  <div class="row"></div>
+  <div class="row"></div>
+  <div class="row"></div>
+  <div class="row"></div>
+</div>
+
+<div id="stripes-b" class="stripes">
+  <div class="row"></div>
+  <div class="row"></div>
+  <div class="row"></div>
+  <div class="row"></div>
+</div>
+
+<div id="stripes-c" class="stripes other">
+  <div class="row"></div>
+  <div class="row"></div>
+  <div class="row"></div>
+  <div class="row"></div>
+</div>
+
+<div id="stripes-d" class="stripes">
+  <div class="row"></div>
+  <div class="row"></div>
+  <div class="row"></div>
+  <div class="row"></div>
+</div>
+</div>
+    <div id="guide-header" class="header">
+      <a href="/"><img src="/_/images/guide_header.png"></a>
+    </div>
+    <div id="article">
+      <div class="title">local tests</div>
+      <div class="body" x=""><p>If your test suite plays nicely with
+<a href="http://nodejs.org/docs/latest/api/modules.html#modules_modules">node-style modules</a>
+and writes <a href="http://testanything.org">TAP output</a> with <code>console.log()</code>,
+running your tests locally is super simple!</p>
+<p><a href="/guide/tape">tape</a> is a really simple test library you can use that plays very
+nicely with testling, but you could also use <a href="/guide/mocha">mocha</a> or you can
+<a href="/guide/custom_libraries">roll your own test library</a>.</p>
+<h1 id="testing-in-node">testing in node</h1>
+<p>If you're using <a href="/guide/tape">tape</a> or a similar TAP-producing library
+and your code works in both node and the browser,  you can just:</p>
+<pre><code>$ node test.js</code></pre>
+<p>to run your tests! You get <a href="http://testanything.org">TAP output</a> and a non-zero
+exit code when a test fails.</p>
+<p>For mocha or other libraries that require a custom harness, just type:</p>
+<pre><code>$ mocha</code></pre>
+<p>or equivalent to run the tests as you normally would.</p>
+<h1 id="browserify-your-tests">browserify your tests</h1>
+<p>To get your tests running in browsers, first install
+<a href="http://browserify.org">browserify</a> (<code>npm install -g browserify</code>),
+then do:</p>
+<pre><code>$ browserify test.js &gt; bundle.js</code></pre>
+<p>drop a script tag into a <code>test.html</code> file:</p>
+<pre><code class="lang-html">&lt;script src="/bundle.js"&gt;&lt;/script&gt;</code></pre>
+<p>then open <code>test.html</code> in your local browser. The test output will appear in your
+browser's debugger.</p>
+<p>Yay!</p>
+<h1 id="using-the-testling-command">using the testling command</h1>
+<p>For even more extra goodness, you can <code>npm install -g testling</code>, then do:</p>
+<pre><code>$ testling</code></pre>
+<p>which will find and launch a real local browser on your system and copy the
+<code>console.log()</code> output from your tests to your terminal. It even gives you a
+non-zero exit code if there were errors!</p>
+<p>You can launch a custom browser command with <code>testling --bcmd=CMD</code> or if you
+want to visit the urls manually you can just use <code>testling -u</code> to print the urls
+to visit.</p>
+<p>The testling command parses the <code>package.json</code> field the same way as
+testling-ci, so it will look at the <code>html</code>, <code>files</code>, <code>scripts</code>, and <code>harness</code>
+fields in order to run your tests the same as on testling-ci.</p>
+<h1 id="testing-individual-files">testing individual files</h1>
+<p>If you want to run an individual test file and are using a test library that
+doesn't require a custom harness (like <a href="/guide/tape">tape</a>), you can do:</p>
+<pre><code>$ browserify test/somefile.js | testling</code></pre>
+<p>You can run multiple files this way too if you like:</p>
+<pre><code>$ browserify test/*.js | testling</code></pre>
+</div>
+    </div>
+    <div id="panels"><div>
+  <a href="/guide/quick_start"><div class="panel">
+    <div class="title">
+      quick start guide
+    </div>
+    <div class="image">
+      <img src="/_/images/badge.png">
+    </div>
+    
+    <div class="desc">
+      Create a github hook to run your tests on every push.
+      Get a browser badge.
+    </div>
+  </div></a>
+  
+  <a href="/guide/tape"><div class="panel other">
+    <div class="title">
+      writing tests with tape
+    </div>
+    
+    <div class="image">
+      <img src="/_/images/tape_drive.png">
+    </div>
+    
+    <div class="desc">
+      Write tests with a minimal test api
+      that works in both node and browsers.
+    </div>
+  </div></a>
+  
+  <a href="/guide/local_tests"><div class="panel">
+    <div class="title">testing locally</div>
+    
+    <div class="image">
+      <img src="/_/images/locally.png">
+    </div>
+    
+    <div class="desc">
+      Run your tests in node and your local browsers.
+    </div>
+  </div></a>
+  
+  <a href="/guide/mocha"><div class="panel other">
+    <div class="title">
+      writing tests with mocha
+    </div>
+    
+    <div class="image">
+      <img src="/_/images/mocha.png">
+    </div>
+    
+    <div class="desc">
+      Run tests in mocha for qunit, tdd, bdd, and exports-style tests.
+    </div>
+  </div></a>
+  
+  <a href="/guide/module_driven_development"><div class="panel">
+    <div class="title">
+      module-driven development
+    </div>
+    
+    <div class="image">
+      <img src="/_/images/wizard_hat.png">
+    </div>
+    
+    <div class="desc">
+      Write code that is easier to maintain and easier to test
+      with browserify.
+    </div>
+  </div></a>
+  
+  <a href="/guide/dependency_management"><div class="panel other">
+    <div class="title">
+      dependency management
+    </div>
+    
+    <div class="image">
+      <img src="/_/images/npm.png">
+    </div>
+    
+    <div class="desc">
+      Use npm to manage your front-end dependencies.
+    </div>
+  </div></a>
+  
+  <a href="/guide/advanced_configuration"><div class="panel">
+    <div class="title">
+      advanced configuration
+    </div>
+    
+    <div class="image">
+      <img src="/_/images/advanced_configuration.png">
+    </div>
+    
+    <div class="desc">
+      Read in-depth about the package.json "testling" field.
+    </div>
+  </div></a>
+  
+  <a href="/guide/custom_libraries"><div class="panel other">
+    <div class="title">
+      custom test libraries
+    </div>
+    
+    <div class="image">
+      <img src="/_/images/tap_output.png">
+    </div>
+    
+    <div class="desc">
+      Use your own test library
+      by outputting TAP with `console.log()`.
+    </div>
+  </div></a>
+</div>
+</div>
+  
+
+</body></html>

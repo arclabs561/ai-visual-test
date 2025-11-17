@@ -1,0 +1,95 @@
+<!DOCTYPE html><html lang="en-gb"><head>
+        <meta charset="utf-8">
+        <meta name="author" content="Simonas Kazlauskas">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <meta name="keywords" content="simonas, kazlauskas, simukis, nagisa, open source">
+        <title>When droplets go missing</title>
+        <link rel="stylesheet" type="text/css" href="../data/sandwich.17.css">
+        <link rel="alternate" type="application/atom+xml" href="../feed.atom">
+        <script async="" type="text/javascript" src="../data/site.3.js"></script>
+    </head>
+    <body>
+        <div id="hdr">
+        <header>
+            <span id="title">Simonas Kazlauskas’ blog</span>
+            <nav><ul>
+                <li><a href="../">Index</a></li>
+                <li><a href="../about-contact">About / Contact</a></li>
+            </ul></nav>
+        </header>
+        </div>
+        <main role="main">
+            <aside id="metadata">
+    <h1>When droplets go missing</h1>
+    <span><time pubdate="">2014-05-12</time></span>
+</aside>
+<article id="entry">
+    <p>It does not take much ef­fort to lock your­self out­side a re­mote vir­tual ma­chine: as soon as you lose ssh ac­cess to your server, most of them are as good as lost. Some VPS pro­viders, in­clud­ing Di­gita­lOcean, make it pos­sible to ac­cess the con­sole of the server even if the server is off­line, which makes re­cov­er­ing a failed droplet pos­sible.</p><p>Given the ter­rible Dig­it­al­Ocean ker­nel hand­ling, mess­ing up a droplet is very easy. Chan­ging a ker­nel the droplet boots up into is a mat­ter of 5 clicks. One will en­counter no warn­ings along the way and a single power cycle later the droplet will be gone from the In­ter­net. Up­grad­ing the ker­nel pack­age in­side the droplet will lead to the same out­come. Al­though I knew this after get­ting burnt try­ing to up­grade the ker­nel on my droplet more than a year ago, I still com­mit­ted the same mis­take twice since then. Yes­ter­day, when the init dae­mon seg­faul­ted after 11 months of up­time and the ma­chine be­came un­reach­able, some­thing in­side me fi­nally snapped and I set off look­ing for the reason be­hind miss­ing <code>eth0</code> after a ker­nel up­grade.</p><section id="droplet-kernel-versus-boot-kernel" class="level1">
+<h2>Droplet ker­nel versus boot ker­nel</h2>
+<p>Droplets boot with ker­nel other than one in­stalled in­side the droplet some­times caus­ing com­pat­ib­il­ity is­sues between two. There­fore, dis­tinc­tion between the boot and the droplet ker­nels is im­port­ant in this art­icle:</p>
+<ul>
+<li><em>Droplet ker­nel</em> shall mean ker­nel resid­ing in­side the droplet and usu­ally man­aged by OS pack­age man­ager;</li>
+<li><em>Boot ker­nel</em> is the ker­nel a droplet boots with.</li>
+</ul>
+<p>Change of the boot ker­nel is ac­com­plished through Dig­it­al­Ocean droplet man­age­ment in­ter­face:</p>
+<figure>
+<img src="../images/recovering-digitalocean-kernel-change/kernel.png" alt="Con­trol panel sec­tion for chan­ging the ker­nel"><figcaption aria-hidden="true">Con­trol panel sec­tion for chan­ging the ker­nel</figcaption>
+</figure>
+<p>If you only changed the boot ker­nel and did not up­grade the droplet ker­nel, chan­ging the boot ker­nel back should fix any prob­lems you have.</p>
+<p>If you up­graded the droplet ker­nel, fix­ing it is more com­plic­ated and is the fo­cus of this art­icle. First of all, check whether you can change to a boot ker­nel with ex­actly the same ver­sion as your droplet ker­nel and power cycle the droplet after chan­ging. If there is no match­ing ver­sion, pick the closest ver­sion avail­able and fol­low the in­struc­tions.</p>
+</section><section id="accessing-the-droplet" class="level1">
+<h2>Ac­cess­ing the droplet</h2>
+<p>Dig­it­al­Ocean provides a simple way to ac­cess your droplet through the VNC con­sole. Ac­tu­ally, it is prob­ably the only way one can ac­cess a droplet by one­self when it loses the ac­cess to the In­ter­net. You can open it by click­ing on the “Con­sole Ac­cess” but­ton avail­able in the droplet con­trol pan­el:</p>
+<figure>
+<img src="../images/recovering-digitalocean-kernel-change/vnc.png" alt="Con­trol panel sec­tion with “Con­sole Ac­cess” but­ton vis­ible"><figcaption aria-hidden="true">Con­trol panel sec­tion with “Con­sole Ac­cess” but­ton vis­ible</figcaption>
+</figure>
+<p>This con­sole provides the same amount of con­trol over a droplet one would get through ssh, al­though the ex­per­i­ence is not as smooth.</p>
+</section><section id="understanding-the-underlying-cause" class="level1">
+<h2>Un­der­stand­ing the un­der­ly­ing cause</h2>
+<p>Ker­nels in­ter­act with hard­ware through a well spe­cified API via drivers. Linux drivers are usu­ally im­ple­men­ted as ker­nel mod­ules which are loaded dur­ing runtime. Usu­ally, when the ker­nel is un­able to load some mod­ule it will not fail and boot just fine, but some fea­tures, such as the Eth­er­net, might be un­avail­able.</p>
+<p>In my case droplet ker­nel up­grade caused a change of mod­ules’ loc­a­tion in the file sys­tem and made the boot ker­nel un­able to find mod­ules ne­ces­sary for nor­mal op­er­a­tion.</p>
+</section><section id="quick-and-dangerous" class="level1">
+<h2>Quick and dan­ger­ous</h2>
+<p>Ker­nel mod­ules reside at a well defined path and in case of a ver­sion mis­match between the boot and the droplet ker­nel this loc­a­tion has an in­fin­itely big chance of not ex­ist­ing. Given a <code>3.14.1-1</code> ker­nel re­lease mod­ules are loc­ated at <code>/usr/lib/modules/3.14.1-1</code> and you can find the path where your boot ker­nel ex­pects to find them with <code>sh -c 'echo /usr/lib/modules/$(uname -r)'</code>. As mod­ules don’t change much, you can at­tempt us­ing mod­ules of your droplet ker­nel with the boot ker­nel even if the ker­nel ver­sions do not match:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> <span class="at">-R</span> /usr/lib/modules/<span class="va">$DROPLET_KERNEL_VERSION</span> /usr/lib/modules/<span class="va">$(</span><span class="fu">uname</span> <span class="at">-r</span><span class="va">)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">reboot</span></span></code></pre></div>
+<p>If everything is all right, after a re­boot the boot ker­nel should load all the ne­ces­sary mod­ules and <code>eth0</code> along with the In­ter­net con­nec­tion should be back.</p>
+</section><section id="slower-and-safer" class="level1">
+<h2>Slower and safer</h2>
+<p>You can also load mod­ules manu­ally which is slower and in case of an ac­ci­dent will not make your droplet un­boot­able:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /usr/lib/modules/<span class="va">$DROPLET_KERNEL_VERSION</span>/kernel/drivers</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">insmod</span> net/mii.ko<span class="pp">*</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">insmod</span> net/ethernet/realtek/8139cp.ko<span class="pp">*</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ex">insmod</span> virtio/virtio.ko<span class="pp">*</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ex">insmod</span> virtio/virtio_ring.ko<span class="pp">*</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="ex">insmod</span> net/virtio_net.ko<span class="pp">*</span></span></code></pre></div>
+<p>Once the mod­ules are loaded without any er­rors, you can try con­nect­ing to the In­ter­net. <code>$YOUR_IP</code> and <code>$GATEWAY_IP</code> are con­veni­ently provided be­low the con­sole win­dow.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ifconfig</span> eth0 <span class="va">$YOUR_IP</span> netmask 255.255.255.0 up</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">route</span> add default gw <span class="va">$GATEWAY_IP</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ping</span> <span class="va">$GATEWAY_IP</span> <span class="at">-c</span> 1</span></code></pre></div>
+<p>At this point your droplet will have full In­ter­net con­nec­tion mak­ing data re­cov­ery pos­sible, but will not have DNS which im­plies no do­main res­ol­u­tion.</p>
+</section><section id="signed-modules" class="level1">
+<h2>Signed mod­ules</h2>
+<p>De­pend­ing on dis­tri­bu­tion setup <code>insmod</code> might also fail with an er­ror about mod­ule hav­ing a bad sig­na­ture when you try to in­sert them (or after re­boot if you used the dan­ger­ous meth­od). Re­mov­ing the sig­na­ture is an ef­fect­ive way to cir­cum­vent the check:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">objcopy</span> <span class="at">-R</span> .note.module.sig module.ko module.ko</span></code></pre></div>
+<p>In case the fail­ing mod­ule is com­pressed (<code>.ko.gz</code>), you’ll need to de­com­press it with <code>gzip -d</code> first.</p>
+</section><section id="fin" class="level1">
+<h2>Fin</h2>
+<p>Us­ing the sys­tem in pro­duc­tion after patch­ing like this is dis­cour­aged. This art­icle is only meant to help people to re­cover data locked into the droplet. After the In­ter­net con­nec­tion is re­covered, you by all means want to move everything from failed droplet to a pristine one.</p>
+</section>
+</article>
+
+
+        </main>
+        <footer>
+            <div id="generator">
+                <a href="http://jaspervdj.be/hakyll" class="hakyll">Hakyll</a>
+            </div>
+            <span id="copy">
+                <!-- TODO -->
+                <a href="http://creativecommons.org/licenses/by/3.0/deed.en_GB" title="Creative Commons Attribution 3.0 Unported">CC BY 3.0</a>
+            </span>
+        </footer>
+    
+
+</body></html>

@@ -1,0 +1,230 @@
+<!DOCTYPE html><html lang="en"><head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+      <link rel="shortcut icon" type="image/x-icon" href="https://alexeyzabelin.com/favicon.ico/">
+
+      <title>Alexey's blog</title>
+
+      
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="https://alexeyzabelin.com/rss.xml/">
+      
+
+      
+          <link rel="stylesheet" href="https://alexeyzabelin.com/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="container">
+        
+  
+      
+	        
+                    <header>
+                      <div id="site-title">
+			<h1>Alexey's blog</h1>
+		      </div>
+                    </header>
+                
+                
+                    <header class="main-header">
+                        <nav itemscope="" itemtype="http://schema.org/SiteNavigationElement">
+                        
+                            <a itemprop="url" href="https://hotlinewebring.club/alexey/previous">
+                                <span itemprop="name">&lt;-
+                                </span></a>
+                        
+                            <a itemprop="url" href="https://alexeyzabelin.com">
+                                <span itemprop="name">Home
+                                </span></a>
+                        
+                            <a itemprop="url" href="https://github.com/alexeyzab">
+                                <span itemprop="name">GitHub
+                                </span></a>
+                        
+                            <a itemprop="url" href="https://alexeyzabelin.com/about">
+                                <span itemprop="name">About
+                                </span></a>
+                        
+                            <a itemprop="url" href="https://alexeyzabelin.com/resume.pdf">
+                                <span itemprop="name">Resume
+                                </span></a>
+                        
+                            <a itemprop="url" href="https://alexeyzabelin.com/tags">
+                                <span itemprop="name">Tags
+                                </span></a>
+                        
+                            <a itemprop="url" href="https://hotlinewebring.club/alexey/next">
+                                <span itemprop="name">-&gt;
+                                </span></a>
+                        
+                        </nav>
+                    </header>
+                
+            
+  
+
+<article itemscope="" itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">Ballast, a library for talking to Shipwire</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32" width="16" height="16" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"></circle>
+        <path d="M16 8 L16 16 20 20"></path>
+    </svg>
+    <span>3 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32" width="16" height="16" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"></path>
+    </svg>
+
+    Published: 2017-01-17
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p>After finishing the wonderful <a href="http://haskellbook.com">Haskellbook</a>, the first
+"real world" project I've started writing is a Haskell API wrapper for
+<a href="https://www.shipwire.com">Shipwire</a> called
+<a href="https://github.com/bitemyapp/ballast">Ballast</a>. While doing that, I was
+following the general architecture of <a href="https://github.com/dmjio/stripe">dmjio's Stripe API
+wrapper</a>. In this post I will try to describe
+an overview of how both the <code>stripe</code> library and <code>Ballast</code> are built.</p>
+<p><a name="continue-reading"></a></p>
+<h3 id="making-an-easy-to-use-library">Making an easy to use library</h3>
+<p>A goal of Ballast was to make it easy to use. Here's some example code:</p>
+<pre style="background-color:#ffffff"><span style="background-color:#ffffff;color:#a15001;">main </span><span style="background-color:#ffffff;color:#016692;">:: </span><span style="background-color:#ffffff;color:#877611;">IO </span><span style="background-color:#ffffff;color:#582b00;">()
+</span><span style="background-color:#ffffff;color:#010101;">main </span><span style="background-color:#ffffff;color:#016692;">= do
+</span><span style="background-color:#ffffff;color:#010101;">  </span><span style="background-color:#ffffff;color:#016692;">let</span><span style="background-color:#ffffff;color:#010101;"> config </span><span style="background-color:#ffffff;color:#016692;">&lt;-</span><span style="background-color:#ffffff;color:#010101;"> sandboxEnvConfig
+</span><span style="background-color:#ffffff;color:#010101;">  </span><span style="background-color:#ffffff;color:#010101;">result </span><span style="background-color:#ffffff;color:#016692;">&lt;-</span><span style="background-color:#ffffff;color:#010101;"> shipwire config </span><span style="background-color:#ffffff;color:#016692;">$</span><span style="background-color:#ffffff;color:#010101;"> getReceivings </span><span style="background-color:#ffffff;color:#016692;">-</span><span style="background-color:#ffffff;color:#010101;">&amp;</span><span style="background-color:#ffffff;color:#016692;">-</span><span style="background-color:#ffffff;color:#010101;"> (</span><span style="background-color:#ffffff;color:#333366;">ExpandReceivingsParam</span><span style="background-color:#ffffff;color:#010101;"> [</span><span style="background-color:#ffffff;color:#333366;">ExpandAll</span><span style="background-color:#ffffff;color:#010101;">])
+</span><span style="background-color:#ffffff;color:#010101;">  </span><span style="background-color:#ffffff;color:#010101;">return result
+</span></pre>
+<p>A couple of things:</p>
+<p><code>sandboxEnvConfig</code> gets environment variables and is needed for authentication
+with Shipwire.  <code>getReceivings</code> is a function defined in the <code>Client</code> module
+that corresponds to a specific endpoint and accepts optional query parameters via <code>(-&amp;-)</code>.</p>
+<p>You can find similar functions for all the other endpoints.</p>
+<h3 id="simplicity-through-type-families">Simplicity through type families</h3>
+<p>I wanted to be able to vary return type based on what sort of request I made. To do this I used <a href="https://wiki.haskell.org/GHC/Type_families">type families</a>.</p>
+<pre style="background-color:#ffffff"><span style="background-color:#ffffff;color:#010101;">shipwire
+</span><span style="background-color:#ffffff;color:#010101;">  </span><span style="background-color:#ffffff;color:#016692;">::</span><span style="background-color:#ffffff;color:#010101;"> (</span><span style="background-color:#ffffff;color:#333366;">FromJSON</span><span style="background-color:#ffffff;color:#010101;"> (</span><span style="background-color:#ffffff;color:#333366;">ShipwireReturn</span><span style="background-color:#ffffff;color:#010101;"> a))
+</span><span style="background-color:#ffffff;color:#010101;">  </span><span style="background-color:#ffffff;color:#016692;">=&gt; </span><span style="background-color:#ffffff;color:#333366;">ShipwireConfig
+</span><span style="background-color:#ffffff;color:#010101;">  </span><span style="background-color:#ffffff;color:#016692;">-&gt; </span><span style="background-color:#ffffff;color:#333366;">ShipwireRequest</span><span style="background-color:#ffffff;color:#010101;"> a </span><span style="background-color:#ffffff;color:#333366;">TupleBS8 BSL</span><span style="background-color:#ffffff;color:#016692;">.</span><span style="background-color:#ffffff;color:#333366;">ByteString
+</span><span style="background-color:#ffffff;color:#010101;">  </span><span style="background-color:#ffffff;color:#016692;">-&gt; </span><span style="background-color:#ffffff;color:#333366;">IO</span><span style="background-color:#ffffff;color:#010101;"> (</span><span style="background-color:#ffffff;color:#333366;">Either ShipwireError</span><span style="background-color:#ffffff;color:#010101;"> (</span><span style="background-color:#ffffff;color:#333366;">ShipwireReturn</span><span style="background-color:#ffffff;color:#010101;"> a)) </span><span style="background-color:#ffffff;color:#898989;">-- This part right here
+</span><span style="background-color:#ffffff;color:#010101;">shipwire config request </span><span style="background-color:#ffffff;color:#016692;">= do
+</span><span style="background-color:#ffffff;color:#010101;">  </span><span style="background-color:#ffffff;color:#010101;">response </span><span style="background-color:#ffffff;color:#016692;">&lt;-</span><span style="background-color:#ffffff;color:#010101;"> shipwire' config request
+</span><span style="background-color:#ffffff;color:#010101;">  </span><span style="background-color:#ffffff;color:#016692;">let</span><span style="background-color:#ffffff;color:#010101;"> result </span><span style="background-color:#ffffff;color:#016692;">=</span><span style="background-color:#ffffff;color:#010101;"> eitherDecode </span><span style="background-color:#ffffff;color:#016692;">$</span><span style="background-color:#ffffff;color:#010101;"> responseBody response
+</span><span style="background-color:#ffffff;color:#010101;">  </span><span style="background-color:#ffffff;color:#016692;">case</span><span style="background-color:#ffffff;color:#010101;"> result </span><span style="background-color:#ffffff;color:#016692;">of
+</span><span style="background-color:#ffffff;color:#010101;">    </span><span style="background-color:#ffffff;color:#333366;">Left</span><span style="background-color:#ffffff;color:#010101;"> s </span><span style="background-color:#ffffff;color:#016692;">-&gt;</span><span style="background-color:#ffffff;color:#010101;"> return (</span><span style="background-color:#ffffff;color:#333366;">Left</span><span style="background-color:#ffffff;color:#010101;"> (</span><span style="background-color:#ffffff;color:#333366;">ShipwireError</span><span style="background-color:#ffffff;color:#010101;"> s response))
+</span><span style="background-color:#ffffff;color:#010101;">    </span><span style="background-color:#ffffff;color:#010101;">(</span><span style="background-color:#ffffff;color:#333366;">Right</span><span style="background-color:#ffffff;color:#010101;"> r) </span><span style="background-color:#ffffff;color:#016692;">-&gt;</span><span style="background-color:#ffffff;color:#010101;"> return (</span><span style="background-color:#ffffff;color:#333366;">Right</span><span style="background-color:#ffffff;color:#010101;"> r)
+</span></pre>
+<p><code>shipwire</code> needs to return <code>ShipwireReturn a</code> where <code>a</code> is dependent on the type of <code>ShipwireRequest</code> we have submitted.</p>
+<p>Because of that restriction I define the following type family:</p>
+<pre style="background-color:#ffffff"><span style="background-color:#ffffff;color:#016692;">type</span><span style="background-color:#ffffff;color:#010101;"> family </span><span style="background-color:#ffffff;color:#333366;">ShipwireReturn</span><span style="background-color:#ffffff;color:#010101;"> a </span><span style="background-color:#ffffff;color:#016692;">::</span><span style="background-color:#ffffff;color:#010101;"> *
+</span></pre>
+<p>This lets us specify a particular <code>request</code> and <code>response</code> type for each endpoint. We can generate a real-time shipping quote with the <code>Rate</code> endpoint like so:</p>
+<pre style="background-color:#ffffff"><span style="background-color:#ffffff;color:#016692;">data </span><span style="background-color:#ffffff;color:#333366;">ShipwireRequest</span><span style="background-color:#ffffff;color:#010101;"> a b c </span><span style="background-color:#ffffff;color:#016692;">= </span><span style="background-color:#ffffff;color:#333366;">ShipwireRequest
+</span><span style="background-color:#ffffff;color:#010101;">  </span><span style="background-color:#ffffff;color:#010101;">{ rMethod  </span><span style="background-color:#ffffff;color:#016692;">:: </span><span style="background-color:#ffffff;color:#333366;">Method </span><span style="background-color:#ffffff;color:#898989;">-- ^ Method of ShipwireRequest
+</span><span style="background-color:#ffffff;color:#010101;">  </span><span style="background-color:#ffffff;color:#010101;">, endpoint </span><span style="background-color:#ffffff;color:#016692;">:: </span><span style="background-color:#ffffff;color:#333366;">Text </span><span style="background-color:#ffffff;color:#898989;">-- ^ Endpoint of ShipwireRequest
+</span><span style="background-color:#ffffff;color:#010101;">  </span><span style="background-color:#ffffff;color:#010101;">, params   </span><span style="background-color:#ffffff;color:#016692;">::</span><span style="background-color:#ffffff;color:#010101;"> [</span><span style="background-color:#ffffff;color:#333366;">Params TupleBS8 BSL</span><span style="background-color:#ffffff;color:#016692;">.</span><span style="background-color:#ffffff;color:#333366;">ByteString</span><span style="background-color:#ffffff;color:#010101;">] </span><span style="background-color:#ffffff;color:#898989;">-- ^ Request params of ShipwireRequest
+</span><span style="background-color:#ffffff;color:#010101;">  </span><span style="background-color:#ffffff;color:#010101;">}
+</span><span style="background-color:#ffffff;color:#010101;">
+</span><span style="background-color:#ffffff;color:#016692;">data </span><span style="background-color:#ffffff;color:#333366;">RateRequest
+</span><span style="background-color:#ffffff;color:#016692;">type instance </span><span style="background-color:#ffffff;color:#877611;">ShipwireReturn RateRequest</span><span style="background-color:#ffffff;color:#010101;"> = </span><span style="background-color:#ffffff;color:#877611;">RateResponse
+</span></pre>
+<p>With that in place, I can now define our <code>GetRate</code> datatype, whose JSON representation will be sent to this endpoint:</p>
+<pre style="background-color:#ffffff"><span style="background-color:#ffffff;color:#016692;">data </span><span style="background-color:#ffffff;color:#333366;">GetRate </span><span style="background-color:#ffffff;color:#016692;">= </span><span style="background-color:#ffffff;color:#333366;">GetRate
+</span><span style="background-color:#ffffff;color:#010101;">  </span><span style="background-color:#ffffff;color:#010101;">{ rateOptions </span><span style="background-color:#ffffff;color:#016692;">:: </span><span style="background-color:#ffffff;color:#333366;">RateOptions
+</span><span style="background-color:#ffffff;color:#010101;">  </span><span style="background-color:#ffffff;color:#010101;">, rateOrder   </span><span style="background-color:#ffffff;color:#016692;">:: </span><span style="background-color:#ffffff;color:#333366;">RateOrder
+</span><span style="background-color:#ffffff;color:#010101;">  </span><span style="background-color:#ffffff;color:#010101;">} </span><span style="background-color:#ffffff;color:#016692;">deriving</span><span style="background-color:#ffffff;color:#010101;"> (</span><span style="background-color:#ffffff;font-style:italic;color:#d19264;">Eq</span><span style="background-color:#ffffff;color:#010101;">, </span><span style="background-color:#ffffff;font-style:italic;color:#d19264;">Show</span><span style="background-color:#ffffff;color:#010101;">)
+</span><span style="background-color:#ffffff;color:#010101;">
+</span><span style="background-color:#ffffff;color:#016692;">instance </span><span style="background-color:#ffffff;color:#877611;">ToJSON GetRate </span><span style="background-color:#ffffff;color:#016692;">where
+</span><span style="background-color:#ffffff;color:#010101;">  </span><span style="background-color:#ffffff;color:#010101;">toJSON </span><span style="background-color:#ffffff;color:#333366;">GetRate</span><span style="background-color:#ffffff;color:#010101;"> {</span><span style="background-color:#ffffff;color:#016692;">..</span><span style="background-color:#ffffff;color:#010101;">} </span><span style="background-color:#ffffff;color:#016692;">=</span><span style="background-color:#ffffff;color:#010101;"> object [</span><span style="background-color:#ffffff;color:#009f78;">"options" </span><span style="background-color:#ffffff;color:#016692;">.=</span><span style="background-color:#ffffff;color:#010101;"> rateOptions
+</span><span style="background-color:#ffffff;color:#010101;">                               </span><span style="background-color:#ffffff;color:#010101;">,</span><span style="background-color:#ffffff;color:#009f78;">"order"   </span><span style="background-color:#ffffff;color:#016692;">.=</span><span style="background-color:#ffffff;color:#010101;"> rateOrder]
+</span></pre>
+<p>Ballast uses the following function to perform the HTTP request:</p>
+<pre style="background-color:#ffffff"><span style="background-color:#ffffff;color:#a15001;">createRateRequest </span><span style="background-color:#ffffff;color:#016692;">:: </span><span style="background-color:#ffffff;color:#877611;">GetRate </span><span style="background-color:#ffffff;color:#016692;">-&gt; </span><span style="background-color:#ffffff;color:#877611;">ShipwireRequest RateRequest TupleBS8 BSL</span><span style="background-color:#ffffff;color:#010101;">.</span><span style="background-color:#ffffff;color:#877611;">ByteString
+</span><span style="background-color:#ffffff;color:#010101;">createRateRequest getRate </span><span style="background-color:#ffffff;color:#016692;">= </span><span style="background-color:#ffffff;color:#010101;">mkShipwireRequest </span><span style="background-color:#ffffff;color:#333366;">NHTM</span><span style="background-color:#ffffff;color:#016692;">.</span><span style="background-color:#ffffff;color:#010101;">methodPost url params
+</span><span style="background-color:#ffffff;color:#010101;">  </span><span style="background-color:#ffffff;color:#016692;">where
+</span><span style="background-color:#ffffff;color:#010101;">    </span><span style="background-color:#ffffff;color:#010101;">url </span><span style="background-color:#ffffff;color:#016692;">= </span><span style="background-color:#ffffff;color:#009f78;">"/rate"
+</span><span style="background-color:#ffffff;color:#010101;">    </span><span style="background-color:#ffffff;color:#010101;">params </span><span style="background-color:#ffffff;color:#016692;">=</span><span style="background-color:#ffffff;color:#010101;"> [</span><span style="background-color:#ffffff;color:#333366;">Body</span><span style="background-color:#ffffff;color:#010101;"> (encode getRate)]
+</span></pre>
+<p><code>mkShipwirerequest</code> is a constructor that creates our request, <code>NHTM.methodPost</code> is <code>http-client</code>'s POST method.</p>
+<h3 id="handling-optional-query-parameters">Handling optional query parameters</h3>
+<p>You might be wondering what <code>TupleBS8 BSL.ByteString</code> is. That's how we pass optional parameters to an endpoint.</p>
+<p>Here's how I set that up:</p>
+<pre style="background-color:#ffffff"><span style="background-color:#ffffff;color:#898989;">-- | Parameters for each request which include both the query and the body of a
+</span><span style="background-color:#ffffff;color:#898989;">-- request
+</span><span style="background-color:#ffffff;color:#016692;">data </span><span style="background-color:#ffffff;color:#333366;">Params</span><span style="background-color:#ffffff;color:#010101;"> b c
+</span><span style="background-color:#ffffff;color:#010101;">  </span><span style="background-color:#ffffff;color:#016692;">= </span><span style="background-color:#ffffff;color:#333366;">Query TupleBS8
+</span><span style="background-color:#ffffff;color:#010101;">  </span><span style="background-color:#ffffff;color:#016692;">| </span><span style="background-color:#ffffff;color:#333366;">Body BSL</span><span style="background-color:#ffffff;color:#016692;">.</span><span style="background-color:#ffffff;color:#333366;">ByteString
+</span><span style="background-color:#ffffff;color:#010101;">  </span><span style="background-color:#ffffff;color:#016692;">deriving</span><span style="background-color:#ffffff;color:#010101;"> (</span><span style="background-color:#ffffff;font-style:italic;color:#d19264;">Show</span><span style="background-color:#ffffff;color:#010101;">)
+</span><span style="background-color:#ffffff;color:#010101;">
+</span><span style="background-color:#ffffff;color:#898989;">-- | Type alias for query parameters
+</span><span style="background-color:#ffffff;color:#016692;">type </span><span style="background-color:#ffffff;color:#333366;">TupleBS8 </span><span style="background-color:#ffffff;color:#016692;">=</span><span style="background-color:#ffffff;color:#010101;"> (</span><span style="background-color:#ffffff;color:#333366;">BS8</span><span style="background-color:#ffffff;color:#016692;">.</span><span style="background-color:#ffffff;color:#333366;">ByteString</span><span style="background-color:#ffffff;color:#010101;">, </span><span style="background-color:#ffffff;color:#333366;">BS8</span><span style="background-color:#ffffff;color:#016692;">.</span><span style="background-color:#ffffff;color:#333366;">ByteString</span><span style="background-color:#ffffff;color:#010101;">)
+</span><span style="background-color:#ffffff;color:#010101;">
+</span><span style="background-color:#ffffff;color:#898989;">-- | Convert a parameter to a key/value
+</span><span style="background-color:#ffffff;color:#016692;">class </span><span style="background-color:#ffffff;font-style:italic;color:#d19264;">ToShipwireParam </span><span style="background-color:#ffffff;color:#696989;">param </span><span style="background-color:#ffffff;color:#016692;">where
+</span><span style="background-color:#ffffff;color:#010101;">  </span><span style="background-color:#ffffff;color:#a15001;">toShipwireParam </span><span style="background-color:#ffffff;color:#016692;">:: </span><span style="background-color:#ffffff;color:#696989;">param </span><span style="background-color:#ffffff;color:#016692;">-&gt;</span><span style="background-color:#ffffff;color:#010101;"> [</span><span style="background-color:#ffffff;color:#877611;">Params TupleBS8 </span><span style="background-color:#ffffff;color:#696989;">c</span><span style="background-color:#ffffff;color:#010101;">] </span><span style="background-color:#ffffff;color:#016692;">-&gt;</span><span style="background-color:#ffffff;color:#010101;"> [</span><span style="background-color:#ffffff;color:#877611;">Params TupleBS8 </span><span style="background-color:#ffffff;color:#696989;">c</span><span style="background-color:#ffffff;color:#010101;">]
+</span><span style="background-color:#ffffff;color:#010101;">
+</span><span style="background-color:#ffffff;color:#016692;">class </span><span style="background-color:#ffffff;color:#010101;">(</span><span style="background-color:#ffffff;color:#333366;">ToShipwireParam</span><span style="background-color:#ffffff;color:#010101;"> param) </span><span style="background-color:#ffffff;color:#016692;">=&gt; </span><span style="background-color:#ffffff;color:#333366;">ShipwireHasParam</span><span style="background-color:#ffffff;color:#010101;"> request param </span><span style="background-color:#ffffff;color:#016692;">where
+</span><span style="background-color:#ffffff;color:#010101;">
+</span><span style="background-color:#ffffff;color:#898989;">-- | Add an optional query parameter
+</span><span style="background-color:#ffffff;color:#010101;">(</span><span style="background-color:#ffffff;color:#016692;">-</span><span style="background-color:#ffffff;color:#010101;">&amp;</span><span style="background-color:#ffffff;color:#016692;">-</span><span style="background-color:#ffffff;color:#010101;">)
+</span><span style="background-color:#ffffff;color:#010101;">  </span><span style="background-color:#ffffff;color:#016692;">:: </span><span style="background-color:#ffffff;color:#333366;">ShipwireHasParam</span><span style="background-color:#ffffff;color:#010101;"> request param
+</span><span style="background-color:#ffffff;color:#010101;">  </span><span style="background-color:#ffffff;color:#016692;">=&gt; </span><span style="background-color:#ffffff;color:#333366;">ShipwireRequest</span><span style="background-color:#ffffff;color:#010101;"> request b c </span><span style="background-color:#ffffff;color:#016692;">-&gt;</span><span style="background-color:#ffffff;color:#010101;"> param </span><span style="background-color:#ffffff;color:#016692;">-&gt; </span><span style="background-color:#ffffff;color:#333366;">ShipwireRequest</span><span style="background-color:#ffffff;color:#010101;"> request b c
+</span><span style="background-color:#ffffff;color:#010101;">stripeRequest </span><span style="background-color:#ffffff;color:#016692;">-</span><span style="background-color:#ffffff;color:#010101;">&amp;</span><span style="background-color:#ffffff;color:#016692;">-</span><span style="background-color:#ffffff;color:#010101;"> param </span><span style="background-color:#ffffff;color:#016692;">=
+</span><span style="background-color:#ffffff;color:#010101;">  </span><span style="background-color:#ffffff;color:#010101;">stripeRequest
+</span><span style="background-color:#ffffff;color:#010101;">  </span><span style="background-color:#ffffff;color:#010101;">{ params </span><span style="background-color:#ffffff;color:#016692;">=</span><span style="background-color:#ffffff;color:#010101;"> toShipwireParam param (params stripeRequest)
+</span><span style="background-color:#ffffff;color:#010101;">  </span><span style="background-color:#ffffff;color:#010101;">}
+</span></pre>
+<p>That allows us to specify which endpoint might have optional query parameters like so:</p>
+<pre style="background-color:#ffffff"><span style="background-color:#ffffff;color:#016692;">instance </span><span style="background-color:#ffffff;color:#877611;">ShipwireHasParam StockRequest SKU
+</span><span style="background-color:#ffffff;color:#010101;">
+</span><span style="background-color:#ffffff;color:#016692;">instance </span><span style="background-color:#ffffff;color:#877611;">ToShipwireParam SKU </span><span style="background-color:#ffffff;color:#016692;">where
+</span><span style="background-color:#ffffff;color:#010101;">  </span><span style="background-color:#ffffff;color:#010101;">toShipwireParam (</span><span style="background-color:#ffffff;color:#333366;">SKU</span><span style="background-color:#ffffff;color:#010101;"> i) </span><span style="background-color:#ffffff;color:#016692;">=
+</span><span style="background-color:#ffffff;color:#010101;">    </span><span style="background-color:#ffffff;color:#010101;">(</span><span style="background-color:#ffffff;color:#333366;">Query</span><span style="background-color:#ffffff;color:#010101;"> (</span><span style="background-color:#ffffff;color:#009f78;">"sku"</span><span style="background-color:#ffffff;color:#010101;">, </span><span style="background-color:#ffffff;color:#333366;">TE</span><span style="background-color:#ffffff;color:#016692;">.</span><span style="background-color:#ffffff;color:#010101;">encodeUtf8 i) </span><span style="background-color:#ffffff;color:#016692;">:</span><span style="background-color:#ffffff;color:#010101;">)
+</span></pre>
+<p>You can chain multiple parameters with <code>(-&amp;-)</code>:</p>
+<pre style="background-color:#ffffff"><span style="background-color:#ffffff;color:#010101;">result </span><span style="background-color:#ffffff;color:#016692;">&lt;-</span><span style="background-color:#ffffff;color:#010101;"> shipwire config </span><span style="background-color:#ffffff;color:#016692;">$</span><span style="background-color:#ffffff;color:#010101;"> getReceivings </span><span style="background-color:#ffffff;color:#016692;">-</span><span style="background-color:#ffffff;color:#010101;">&amp;</span><span style="background-color:#ffffff;color:#016692;">-</span><span style="background-color:#ffffff;color:#010101;"> (</span><span style="background-color:#ffffff;color:#333366;">ExpandReceivingsParam</span><span style="background-color:#ffffff;color:#010101;"> [</span><span style="background-color:#ffffff;color:#333366;">ExpandAll</span><span style="background-color:#ffffff;color:#010101;">])
+</span><span style="background-color:#ffffff;color:#010101;">                                          </span><span style="background-color:#ffffff;color:#016692;">-</span><span style="background-color:#ffffff;color:#010101;">&amp;</span><span style="background-color:#ffffff;color:#016692;">-</span><span style="background-color:#ffffff;color:#010101;"> (</span><span style="background-color:#ffffff;color:#333366;">ReceivingStatusParams</span><span style="background-color:#ffffff;color:#010101;"> [</span><span style="background-color:#ffffff;color:#333366;">StatusCanceled</span><span style="background-color:#ffffff;color:#010101;">])
+</span><span style="background-color:#ffffff;color:#010101;">                                          </span><span style="background-color:#ffffff;color:#016692;">-</span><span style="background-color:#ffffff;color:#010101;">&amp;</span><span style="background-color:#ffffff;color:#016692;">-</span><span style="background-color:#ffffff;color:#010101;"> (</span><span style="background-color:#ffffff;color:#333366;">WarehouseIdParam</span><span style="background-color:#ffffff;color:#010101;"> [</span><span style="background-color:#ffffff;color:#009f78;">"TEST 1"</span><span style="background-color:#ffffff;color:#010101;">])
+</span><span style="background-color:#ffffff;color:#010101;">                                          </span><span style="background-color:#ffffff;color:#016692;">-</span><span style="background-color:#ffffff;color:#010101;">&amp;</span><span style="background-color:#ffffff;color:#016692;">-</span><span style="background-color:#ffffff;color:#010101;"> (</span><span style="background-color:#ffffff;color:#333366;">UpdatedAfter </span><span style="background-color:#ffffff;color:#016692;">$</span><span style="background-color:#ffffff;color:#010101;"> (read </span><span style="background-color:#ffffff;color:#009f78;">"2017-11-19 18:28:52 UTC" </span><span style="background-color:#ffffff;color:#016692;">:: </span><span style="background-color:#ffffff;color:#333366;">UTCTime</span><span style="background-color:#ffffff;color:#010101;">)) </span><span style="background-color:#ffffff;color:#898989;">-- Note: using `read` for UTCTime is not a good idea, this code exists in tests only.
+</span></pre><h3 id="conclusion">Conclusion</h3>
+<p>This proved to be a pleasant way to structure a client API wrapper. It's straightforward and flexible and I believe I will reuse this in my future projects.</p>
+<p>Further reading material:</p>
+<p><a href="https://www.schoolofhaskell.com/school/to-infinity-and-beyond/pick-of-the-week/type-families-and-pokemon">Type Families and Pokemon</a></p>
+<p><a href="https://stackoverflow.com/a/20871880/4260046">type family vs data family, in brief?</a></p>
+<p><a href="http://web.cecs.pdx.edu/%7Empj/pubs/fundeps-esop2000.pdf">Type Classes with Functional Dependencies</a></p>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                    Published by Alexey
+                
+                
+                
+                    and tagged
+                    
+                        <a href="https://alexeyzabelin.com/tags/haskell/">haskell</a>
+                        
+                    
+                
+            </p>
+        </footer>
+    
+</article>
+
+
+    
+
+
+</body></html>

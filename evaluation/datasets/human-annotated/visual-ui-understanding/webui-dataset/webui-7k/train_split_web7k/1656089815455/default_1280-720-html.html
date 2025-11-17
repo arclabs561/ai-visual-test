@@ -1,0 +1,300 @@
+<!DOCTYPE html><html class=" js flexbox canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers no-applicationcache svg inlinesvg smil svgclippaths" lang="en" style=""><!--<![endif]--><head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Payloads — coreboot 4.17-353-ge910fba5aa
+ documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css">
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css">
+  <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css">
+    <link rel="index" title="Index" href="genindex.html">
+    <link rel="search" title="Search" href="search.html">
+    <link rel="next" title="Distributions" href="distributions.html">
+    <link rel="prev" title="Conferences" href="community/conferences.html"> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> coreboot
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                4.17
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs">
+    <input type="hidden" name="check_keywords" value="yes">
+    <input type="hidden" name="area" value="default">
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing/index.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="community/index.html">Community</a></li>
+<li class="toctree-l1 current"><a class="reference internal current" href="#"><span class="toctree-expand"></span>Payloads</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#seabios">SeaBIOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tianocore">Tianocore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#grub2">GRUB2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#linux">Linux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#heads">Heads</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="distributions.html">Distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="technotes/index.html">Technotes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acpi/index.html">ACPI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gfx/libgfxinit.html">Native Graphics Initialization with libgfxinit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gfx/display-panel.html">Display panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arch/index.html">CPU Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="drivers/index.html">Platform independent drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="northbridge/index.html">Northbridge</a></li>
+<li class="toctree-l1"><a class="reference internal" href="soc/index.html">System on Chip</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mainboard/index.html">Mainboard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lib/payloads/index.html">Payloads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lib/index.html">Libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lib/option.html">Option API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lib/option.html#mainboard-specific-option-backend">Mainboard-specific option backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="security/index.html">Security</a></li>
+<li class="toctree-l1"><a class="reference internal" href="superio/index.html">SuperIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vendorcode/index.html">Vendorcode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="util.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="infrastructure/index.html">Project infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releases/boards_supported_on_branches.html">Boards supported in each release directory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releases/index.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acronyms.html">Acronyms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation_license.html">Documentation License</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">coreboot</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> »</li>
+        
+      <li>Payloads</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/payloads.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="payloads">
+<h1>Payloads<a class="headerlink" href="#payloads" title="Permalink to this headline">¶</a></h1>
+<p>coreboot doesn’t try to mandate how the boot process should look, it merely
+does hardware init and then passes on control to another piece of software
+that we carry along in firmware storage, the <em>payload</em>.</p>
+<p>There is various software in that space that is either explicitly written as
+payload or can be made to work as one.</p>
+<div class="section" id="seabios">
+<h2>SeaBIOS<a class="headerlink" href="#seabios" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://www.seabios.org">SeaBIOS</a> is an open source implementation of
+the PCBIOS API that exists since the original IBM PC and was extended
+since. While originally written for emulators such as QEMU, it can be built
+as a coreboot payload. It supports executing Option ROMs in a more complete
+fashion than coreboot. It also supports Multiboot.</p>
+<p>When chainloaded from GRUB2, the following menuentry could be used:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">menuentry</span> <span class="s2">"SeaBIOS"</span> <span class="o">--</span><span class="n">unrestricted</span> <span class="p">{</span>
+    <span class="n">root</span><span class="o">=</span><span class="p">(</span><span class="n">cbfsdisk</span><span class="p">)</span>
+    <span class="n">multiboot</span> <span class="o">/</span><span class="n">img</span><span class="o">/</span><span class="n">seabios</span>
+    <span class="n">module</span> <span class="o">/</span><span class="n">vgaroms</span><span class="o">/</span><span class="n">seavgabios</span><span class="o">.</span><span class="n">bin</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="tianocore">
+<h2>Tianocore<a class="headerlink" href="#tianocore" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://www.tianocore.org">Tianocore</a> is the open source reference
+implementation of the UEFI Specifications that modern firmware for PCs is
+based on. There were various projects in the past to make it suitable as a
+coreboot payload, but these days this function is available directly in the
+UefiPayloadPkg part of its source tree.</p>
+</div>
+<div class="section" id="grub2">
+<h2>GRUB2<a class="headerlink" href="#grub2" title="Permalink to this headline">¶</a></h2>
+<p>GRUB2 was originally written as a bootloader and that’s its most popular
+purpose, but it can also be compiled as a coreboot payload.</p>
+</div>
+<div class="section" id="linux">
+<h2>Linux<a class="headerlink" href="#linux" title="Permalink to this headline">¶</a></h2>
+<p>There are several projects using Linux as a payload (which was the
+configuration that gave coreboot its original name, LinuxBIOS). That kernel is
+often rather small and serves to load a current kernel from somewhere, e.g.
+disk or network, and run that through the kexec mechanism.</p>
+<p>Two aspects emphasized by proponents of Linux-as-a-payload are the
+availability of well-tested, battle-hardened drivers (as compared to
+firmware project drivers that often reinvent the wheel) and the ability to
+define boot policy with familiar tools, no matter if those are shell scripts
+or compiled userland programs written in C, Go or other programming languages.</p>
+</div>
+<div class="section" id="heads">
+<h2>Heads<a class="headerlink" href="#heads" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://github.com/osresearch/heads">Heads</a> is a distribution that bundles coreboot, Linux, busybox and custom
+tools to provide reproducible ROMs. <a class="reference external" href="https://github.com/osresearch/heads">Heads</a> aims to provide a secure and
+flexible boot environment for laptops and servers.
+It supports features like measured boot, kexec, GPG, OTP, TLS, firmware
+updates, but only works on a limited amount of mainboards.
+For more details have a look at <a class="reference external" href="http://osresearch.net/">heads-wiki</a>.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="distributions.html" class="btn btn-neutral float-right" title="Distributions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="community/conferences.html" class="btn btn-neutral" title="Conferences" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr>
+
+  <div role="contentinfo">
+    <p>
+        © Copyright CC-by 4.0 the coreboot project
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+
+</body></html>

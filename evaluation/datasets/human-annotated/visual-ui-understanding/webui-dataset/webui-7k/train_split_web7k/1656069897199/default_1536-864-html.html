@@ -1,0 +1,872 @@
+<!DOCTYPE html><html><head>
+    <link href="/package/hakyll-4.15.1.1/docs/quick-jump.css" rel="stylesheet" type="text/css" title="QuickJump">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css?family=PT+Sans:400,400i,700" rel="stylesheet">
+<link rel="stylesheet" href="/static/hackage.css" type="text/css">
+<link rel="icon" type="image/png" href="/static/favicon.png">
+<link rel="search" type="application/opensearchdescription+xml" title="Hackage" href="/packages/opensearch.xml">
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script><script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-83290513-3"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-83290513-3');
+</script>
+
+  <title>
+    hakyll: A static website compiler library
+  </title>
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="@hackage">
+  <meta property="og:url" content="//hackage.haskell.org/package/hakyll">
+  <meta property="og:site_name" content="Hackage">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="hakyll">
+  <meta property="og:description" content="A static website compiler library">
+  
+  <link rel="canonical" href="https://hackage.haskell.org/package/hakyll">
+  <script src="/static/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script><style type="text/css">.CtxtMenu_InfoClose {  top:.2em; right:.2em;}
+.CtxtMenu_InfoContent {  overflow:auto; text-align:left; font-size:80%;  padding:.4em .6em; border:1px inset; margin:1em 0px;  max-height:20em; max-width:30em; background-color:#EEEEEE;  white-space:normal;}
+.CtxtMenu_Info.CtxtMenu_MousePost {outline:none;}
+.CtxtMenu_Info {  position:fixed; left:50%; width:auto; text-align:center;  border:3px outset; padding:1em 2em; background-color:#DDDDDD;  color:black;  cursor:default; font-family:message-box; font-size:120%;  font-style:normal; text-indent:0; text-transform:none;  line-height:normal; letter-spacing:normal; word-spacing:normal;  word-wrap:normal; white-space:nowrap; float:none; z-index:201;  border-radius: 15px;                     /* Opera 10.5 and IE9 */  -webkit-border-radius:15px;               /* Safari and Chrome */  -moz-border-radius:15px;                  /* Firefox */  -khtml-border-radius:15px;                /* Konqueror */  box-shadow:0px 10px 20px #808080;         /* Opera 10.5 and IE9 */  -webkit-box-shadow:0px 10px 20px #808080; /* Safari 3 & Chrome */  -moz-box-shadow:0px 10px 20px #808080;    /* Forefox 3.5 */  -khtml-box-shadow:0px 10px 20px #808080;  /* Konqueror */  filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color="gray", Positive="true"); /* IE */}
+</style><style type="text/css">.CtxtMenu_MenuClose {  position:absolute;  cursor:pointer;  display:inline-block;  border:2px solid #AAA;  border-radius:18px;  -webkit-border-radius: 18px;             /* Safari and Chrome */  -moz-border-radius: 18px;                /* Firefox */  -khtml-border-radius: 18px;              /* Konqueror */  font-family: "Courier New", Courier;  font-size:24px;  color:#F0F0F0}
+.CtxtMenu_MenuClose span {  display:block; background-color:#AAA; border:1.5px solid;  border-radius:18px;  -webkit-border-radius: 18px;             /* Safari and Chrome */  -moz-border-radius: 18px;                /* Firefox */  -khtml-border-radius: 18px;              /* Konqueror */  line-height:0;  padding:8px 0 6px     /* may need to be browser-specific */}
+.CtxtMenu_MenuClose:hover {  color:white!important;  border:2px solid #CCC!important}
+.CtxtMenu_MenuClose:hover span {  background-color:#CCC!important}
+.CtxtMenu_MenuClose:hover:focus {  outline:none}
+</style><style type="text/css">.CtxtMenu_Menu {  position:absolute;  background-color:white;  color:black;  width:auto; padding:5px 0px;  border:1px solid #CCCCCC; margin:0; cursor:default;  font: menu; text-align:left; text-indent:0; text-transform:none;  line-height:normal; letter-spacing:normal; word-spacing:normal;  word-wrap:normal; white-space:nowrap; float:none; z-index:201;  border-radius: 5px;                     /* Opera 10.5 and IE9 */  -webkit-border-radius: 5px;             /* Safari and Chrome */  -moz-border-radius: 5px;                /* Firefox */  -khtml-border-radius: 5px;              /* Konqueror */  box-shadow:0px 10px 20px #808080;         /* Opera 10.5 and IE9 */  -webkit-box-shadow:0px 10px 20px #808080; /* Safari 3 & Chrome */  -moz-box-shadow:0px 10px 20px #808080;    /* Forefox 3.5 */  -khtml-box-shadow:0px 10px 20px #808080;  /* Konqueror */}
+.CtxtMenu_MenuItem {  padding: 1px 2em;  background:transparent;}
+.CtxtMenu_MenuArrow {  position:absolute; right:.5em; padding-top:.25em; color:#666666;  font-family: null; font-size: .75em}
+.CtxtMenu_MenuActive .CtxtMenu_MenuArrow {color:white}
+.CtxtMenu_MenuArrow.CtxtMenu_RTL {left:.5em; right:auto}
+.CtxtMenu_MenuCheck {  position:absolute; left:.7em;  font-family: null}
+.CtxtMenu_MenuCheck.CtxtMenu_RTL { right:.7em; left:auto }
+.CtxtMenu_MenuRadioCheck {  position:absolute; left: .7em;}
+.CtxtMenu_MenuRadioCheck.CtxtMenu_RTL {  right: .7em; left:auto}
+.CtxtMenu_MenuInputBox {  padding-left: 1em; right:.5em; color:#666666;  font-family: null;}
+.CtxtMenu_MenuInputBox.CtxtMenu_RTL {  left: .1em;}
+.CtxtMenu_MenuComboBox {  left:.1em; padding-bottom:.5em;}
+.CtxtMenu_MenuSlider {  left: .1em;}
+.CtxtMenu_SliderValue {  position:absolute; right:.1em; padding-top:.25em; color:#333333;  font-size: .75em}
+.CtxtMenu_SliderBar {  outline: none; background: #d3d3d3}
+.CtxtMenu_MenuLabel {  padding: 1px 2em 3px 1.33em;  font-style:italic}
+.CtxtMenu_MenuRule {  border-top: 1px solid #DDDDDD;  margin: 4px 3px;}
+.CtxtMenu_MenuDisabled {  color:GrayText}
+.CtxtMenu_MenuActive {  background-color: #606872;  color: white;}
+.CtxtMenu_MenuDisabled:focus {  background-color: #E8E8E8}
+.CtxtMenu_MenuLabel:focus {  background-color: #E8E8E8}
+.CtxtMenu_ContextMenu:focus {  outline:none}
+.CtxtMenu_ContextMenu .CtxtMenu_MenuItem:focus {  outline:none}
+.CtxtMenu_SelectionMenu {  position:relative; float:left;  border-bottom: none; -webkit-box-shadow:none; -webkit-border-radius:0px; }
+.CtxtMenu_SelectionItem {  padding-right: 1em;}
+.CtxtMenu_Selection {  right: 40%; width:50%; }
+.CtxtMenu_SelectionBox {  padding: 0em; max-height:20em; max-width: none;  background-color:#FFFFFF;}
+.CtxtMenu_SelectionDivider {  clear: both; border-top: 2px solid #000000;}
+.CtxtMenu_Menu .CtxtMenu_MenuClose {  top:-10px; left:-10px}
+</style>
+  <base href="//hackage.haskell.org/package/hakyll-4.15.1.1/">
+<style id="MJX-CHTML-styles">
+mjx-container[jax="CHTML"] {
+  line-height: 0;
+}
+
+mjx-container [space="1"] {
+  margin-left: .111em;
+}
+
+mjx-container [space="2"] {
+  margin-left: .167em;
+}
+
+mjx-container [space="3"] {
+  margin-left: .222em;
+}
+
+mjx-container [space="4"] {
+  margin-left: .278em;
+}
+
+mjx-container [space="5"] {
+  margin-left: .333em;
+}
+
+mjx-container [rspace="1"] {
+  margin-right: .111em;
+}
+
+mjx-container [rspace="2"] {
+  margin-right: .167em;
+}
+
+mjx-container [rspace="3"] {
+  margin-right: .222em;
+}
+
+mjx-container [rspace="4"] {
+  margin-right: .278em;
+}
+
+mjx-container [rspace="5"] {
+  margin-right: .333em;
+}
+
+mjx-container [size="s"] {
+  font-size: 70.7%;
+}
+
+mjx-container [size="ss"] {
+  font-size: 50%;
+}
+
+mjx-container [size="Tn"] {
+  font-size: 60%;
+}
+
+mjx-container [size="sm"] {
+  font-size: 85%;
+}
+
+mjx-container [size="lg"] {
+  font-size: 120%;
+}
+
+mjx-container [size="Lg"] {
+  font-size: 144%;
+}
+
+mjx-container [size="LG"] {
+  font-size: 173%;
+}
+
+mjx-container [size="hg"] {
+  font-size: 207%;
+}
+
+mjx-container [size="HG"] {
+  font-size: 249%;
+}
+
+mjx-container [width="full"] {
+  width: 100%;
+}
+
+mjx-box {
+  display: inline-block;
+}
+
+mjx-block {
+  display: block;
+}
+
+mjx-itable {
+  display: inline-table;
+}
+
+mjx-row {
+  display: table-row;
+}
+
+mjx-row > * {
+  display: table-cell;
+}
+
+mjx-mtext {
+  display: inline-block;
+}
+
+mjx-mstyle {
+  display: inline-block;
+}
+
+mjx-merror {
+  display: inline-block;
+  color: red;
+  background-color: yellow;
+}
+
+mjx-mphantom {
+  visibility: hidden;
+}
+
+_::-webkit-full-page-media, _:future, :root mjx-container {
+  will-change: opacity;
+}
+
+mjx-assistive-mml {
+  position: absolute !important;
+  top: 0px;
+  left: 0px;
+  clip: rect(1px, 1px, 1px, 1px);
+  padding: 1px 0px 0px 0px !important;
+  border: 0px !important;
+  display: block !important;
+  width: auto !important;
+  overflow: hidden !important;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+mjx-assistive-mml[display="block"] {
+  width: 100% !important;
+}
+
+mjx-c::before {
+  display: block;
+  width: 0;
+}
+
+.MJX-TEX {
+  font-family: MJXZERO, MJXTEX;
+}
+
+.TEX-B {
+  font-family: MJXZERO, MJXTEX-B;
+}
+
+.TEX-I {
+  font-family: MJXZERO, MJXTEX-I;
+}
+
+.TEX-MI {
+  font-family: MJXZERO, MJXTEX-MI;
+}
+
+.TEX-BI {
+  font-family: MJXZERO, MJXTEX-BI;
+}
+
+.TEX-S1 {
+  font-family: MJXZERO, MJXTEX-S1;
+}
+
+.TEX-S2 {
+  font-family: MJXZERO, MJXTEX-S2;
+}
+
+.TEX-S3 {
+  font-family: MJXZERO, MJXTEX-S3;
+}
+
+.TEX-S4 {
+  font-family: MJXZERO, MJXTEX-S4;
+}
+
+.TEX-A {
+  font-family: MJXZERO, MJXTEX-A;
+}
+
+.TEX-C {
+  font-family: MJXZERO, MJXTEX-C;
+}
+
+.TEX-CB {
+  font-family: MJXZERO, MJXTEX-CB;
+}
+
+.TEX-FR {
+  font-family: MJXZERO, MJXTEX-FR;
+}
+
+.TEX-FRB {
+  font-family: MJXZERO, MJXTEX-FRB;
+}
+
+.TEX-SS {
+  font-family: MJXZERO, MJXTEX-SS;
+}
+
+.TEX-SSB {
+  font-family: MJXZERO, MJXTEX-SSB;
+}
+
+.TEX-SSI {
+  font-family: MJXZERO, MJXTEX-SSI;
+}
+
+.TEX-SC {
+  font-family: MJXZERO, MJXTEX-SC;
+}
+
+.TEX-T {
+  font-family: MJXZERO, MJXTEX-T;
+}
+
+.TEX-V {
+  font-family: MJXZERO, MJXTEX-V;
+}
+
+.TEX-VB {
+  font-family: MJXZERO, MJXTEX-VB;
+}
+
+mjx-stretchy-v mjx-c, mjx-stretchy-h mjx-c {
+  font-family: MJXZERO, MJXTEX-S1, MJXTEX-S4, MJXTEX, MJXTEX-A ! important;
+}
+
+@font-face /* 0 */ {
+  font-family: MJXZERO;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Zero.woff") format("woff");
+}
+
+@font-face /* 1 */ {
+  font-family: MJXTEX;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Main-Regular.woff") format("woff");
+}
+
+@font-face /* 2 */ {
+  font-family: MJXTEX-B;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Main-Bold.woff") format("woff");
+}
+
+@font-face /* 3 */ {
+  font-family: MJXTEX-I;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Math-Italic.woff") format("woff");
+}
+
+@font-face /* 4 */ {
+  font-family: MJXTEX-MI;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Main-Italic.woff") format("woff");
+}
+
+@font-face /* 5 */ {
+  font-family: MJXTEX-BI;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Math-BoldItalic.woff") format("woff");
+}
+
+@font-face /* 6 */ {
+  font-family: MJXTEX-S1;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Size1-Regular.woff") format("woff");
+}
+
+@font-face /* 7 */ {
+  font-family: MJXTEX-S2;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Size2-Regular.woff") format("woff");
+}
+
+@font-face /* 8 */ {
+  font-family: MJXTEX-S3;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Size3-Regular.woff") format("woff");
+}
+
+@font-face /* 9 */ {
+  font-family: MJXTEX-S4;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Size4-Regular.woff") format("woff");
+}
+
+@font-face /* 10 */ {
+  font-family: MJXTEX-A;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_AMS-Regular.woff") format("woff");
+}
+
+@font-face /* 11 */ {
+  font-family: MJXTEX-C;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Calligraphic-Regular.woff") format("woff");
+}
+
+@font-face /* 12 */ {
+  font-family: MJXTEX-CB;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Calligraphic-Bold.woff") format("woff");
+}
+
+@font-face /* 13 */ {
+  font-family: MJXTEX-FR;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Fraktur-Regular.woff") format("woff");
+}
+
+@font-face /* 14 */ {
+  font-family: MJXTEX-FRB;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Fraktur-Bold.woff") format("woff");
+}
+
+@font-face /* 15 */ {
+  font-family: MJXTEX-SS;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_SansSerif-Regular.woff") format("woff");
+}
+
+@font-face /* 16 */ {
+  font-family: MJXTEX-SSB;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_SansSerif-Bold.woff") format("woff");
+}
+
+@font-face /* 17 */ {
+  font-family: MJXTEX-SSI;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_SansSerif-Italic.woff") format("woff");
+}
+
+@font-face /* 18 */ {
+  font-family: MJXTEX-SC;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Script-Regular.woff") format("woff");
+}
+
+@font-face /* 19 */ {
+  font-family: MJXTEX-T;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Typewriter-Regular.woff") format("woff");
+}
+
+@font-face /* 20 */ {
+  font-family: MJXTEX-V;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Vector-Regular.woff") format("woff");
+}
+
+@font-face /* 21 */ {
+  font-family: MJXTEX-VB;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Vector-Bold.woff") format("woff");
+}
+</style></head>
+
+<body>
+  <div id="page-header">
+
+  <a class="caption" href="/">Hackage :: [Package]</a>
+
+<ul class="links" id="page-menu">
+
+    <li>
+      <form action="/packages/search" method="get" class="search">
+        <button type="submit">Search&nbsp;</button>
+        <input type="text" name="terms">
+      </form>
+    </li>
+
+    <li><a href="/packages/browse">Browse</a></li>
+
+    <li><a href="/packages/recent">What's new</a></li>
+
+    <li><a href="/upload">Upload</a></li>
+
+    <li><a href="/accounts">User accounts</a></li>
+    
+
+</ul>
+
+</div>
+
+  <div id="content">
+    <h1><a href="//hackage.haskell.org/package/hakyll">hakyll</a>: <small>A static website compiler library</small></h1>
+    <div style="font-size: small">
+      [ <a href="/packages/tag/bsd3">bsd3</a>, <a href="/packages/tag/library">library</a>, <a href="/packages/tag/program">program</a>, <a href="/packages/tag/web">web</a> ]
+      [ <a href="/package/hakyll/tags/edit">Propose Tags </a> ]
+    </div>
+
+    
+
+    <div id="flex-container">
+      <div id="left-pane">
+
+        <div id="description">
+                    <p>Hakyll is a static website compiler library. It provides you with the tools to
+create a simple or advanced static website using a Haskell DSL and formats
+such as markdown or RST. You can find more information, including a tutorial,
+on the website:</p><ul><li><p><a href="http://jaspervdj.be/hakyll">http://jaspervdj.be/hakyll</a></p></li></ul><p>If you seek assistance, there's:</p><ul><li><p>A google group: <a href="http://groups.google.com/group/hakyll">http://groups.google.com/group/hakyll</a></p></li><li><p>An IRC channel, <code>#hakyll</code> on irc.libera.chat (we *do not* have a channel on Freenode anymore)</p></li></ul><p>Additionally, there's the Haddock documentation in the different modules,
+meant as a reference.</p>
+          
+          
+        </div>
+
+        <div id="badges" style="margin-top: 20px;">
+                          <a href="reports/1">
+                <img src="https://img.shields.io/static/v1?label=Build&amp;message=InstallOk&amp;color=success">
+              </a>
+            
+            
+            
+                          <img src="https://img.shields.io/static/v1?label=Documentation&amp;message=Available&amp;color=success">
+            
+        </div>
+
+        <div id="modules">
+          <h2>Modules</h2><p style="font-size: small">[<a href="/package/hakyll-4.15.1.1/docs/doc-index.html">Index</a>] [<a id="quickjump-trigger" href="#">Quick Jump</a>]</p><div id="module-list"><ul class="modules"><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll.html">Hakyll</a></span><ul class="modules"><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Commands.html">Hakyll.Commands</a></span></li><li><i>Core</i><ul class="modules"><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Core-Compiler.html">Hakyll.Core.Compiler</a></span><ul class="modules"><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Core-Compiler-Internal.html">Hakyll.Core.Compiler.Internal</a></span></li></ul></li><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Core-Configuration.html">Hakyll.Core.Configuration</a></span></li><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Core-Dependencies.html">Hakyll.Core.Dependencies</a></span></li><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Core-File.html">Hakyll.Core.File</a></span></li><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Core-Identifier.html">Hakyll.Core.Identifier</a></span><ul class="modules"><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Core-Identifier-Pattern.html">Hakyll.Core.Identifier.Pattern</a></span></li></ul></li><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Core-Item.html">Hakyll.Core.Item</a></span></li><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Core-Logger.html">Hakyll.Core.Logger</a></span></li><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Core-Metadata.html">Hakyll.Core.Metadata</a></span></li><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Core-Provider.html">Hakyll.Core.Provider</a></span><ul class="modules"><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Core-Provider-Metadata.html">Hakyll.Core.Provider.Metadata</a></span></li></ul></li><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Core-Routes.html">Hakyll.Core.Routes</a></span></li><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Core-Rules.html">Hakyll.Core.Rules</a></span><ul class="modules"><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Core-Rules-Internal.html">Hakyll.Core.Rules.Internal</a></span></li></ul></li><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Core-Runtime.html">Hakyll.Core.Runtime</a></span></li><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Core-Store.html">Hakyll.Core.Store</a></span></li><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Core-UnixFilter.html">Hakyll.Core.UnixFilter</a></span></li><li><i>Util</i><ul class="modules"><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Core-Util-File.html">Hakyll.Core.Util.File</a></span></li><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Core-Util-String.html">Hakyll.Core.Util.String</a></span></li></ul></li><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Core-Writable.html">Hakyll.Core.Writable</a></span></li></ul></li><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Main.html">Hakyll.Main</a></span></li><li><i>Web</i><ul class="modules"><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Web-CompressCss.html">Hakyll.Web.CompressCss</a></span></li><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Web-Feed.html">Hakyll.Web.Feed</a></span></li><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Web-Html.html">Hakyll.Web.Html</a></span><ul class="modules"><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Web-Html-RelativizeUrls.html">Hakyll.Web.Html.RelativizeUrls</a></span></li></ul></li><li><i>Meta</i><ul class="modules"><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Web-Meta-JSONLD.html">Hakyll.Web.Meta.JSONLD</a></span></li><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Web-Meta-OpenGraph.html">Hakyll.Web.Meta.OpenGraph</a></span></li><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Web-Meta-TwitterCard.html">Hakyll.Web.Meta.TwitterCard</a></span></li></ul></li><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Web-Paginate.html">Hakyll.Web.Paginate</a></span></li><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Web-Pandoc.html">Hakyll.Web.Pandoc</a></span><ul class="modules"><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Web-Pandoc-Biblio.html">Hakyll.Web.Pandoc.Biblio</a></span></li><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Web-Pandoc-FileType.html">Hakyll.Web.Pandoc.FileType</a></span></li></ul></li><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Web-Redirect.html">Hakyll.Web.Redirect</a></span></li><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Web-Tags.html">Hakyll.Web.Tags</a></span></li><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Web-Template.html">Hakyll.Web.Template</a></span><ul class="modules"><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Web-Template-Context.html">Hakyll.Web.Template.Context</a></span></li><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Web-Template-Internal.html">Hakyll.Web.Template.Internal</a></span><ul class="modules"><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Web-Template-Internal-Element.html">Hakyll.Web.Template.Internal.Element</a></span></li><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Web-Template-Internal-Trim.html">Hakyll.Web.Template.Internal.Trim</a></span></li></ul></li><li><span class="module"><a href="/package/hakyll-4.15.1.1/docs/Hakyll-Web-Template-List.html">Hakyll.Web.Template.List</a></span></li></ul></li></ul></li></ul></li></ul></div>
+        </div>
+
+                <div id="flags">
+          <h2>Flags</h2><h3>Manual Flags</h3><table class="flags-table manual-flags"><thead><tr><th>Name</th><th>Description</th><th>Default</th></tr></thead><tbody><tr><td class="flag-name"><span class="code">buildwebsite</span></td><td class="flag-desc"><p>Build the hakyll website</p></td><td class="flag-disabled">Disabled</td></tr><tr><td class="flag-name"><span class="code">usepandoc</span></td><td class="flag-desc"><p>Include Pandoc support</p></td><td class="flag-enabled">Enabled</td></tr></tbody></table><details><summary>Automatic Flags</summary><table class="flags-table automatic-flags"><thead><tr><th>Name</th><th>Description</th><th>Default</th></tr></thead><tbody><tr><td class="flag-name"><span class="code">previewserver</span></td><td class="flag-desc"><p>Include the preview server</p></td><td class="flag-enabled">Enabled</td></tr><tr><td class="flag-name"><span class="code">watchserver</span></td><td class="flag-desc"><p>Include the watch server</p></td><td class="flag-enabled">Enabled</td></tr><tr><td class="flag-name"><span class="code">checkexternal</span></td><td class="flag-desc"><p>Include external link checking</p></td><td class="flag-enabled">Enabled</td></tr></tbody></table></details><p class="tip"><span>Use </span><span class="code">-f &lt;flag&gt;</span><span> to enable a flag, or </span><span class="code">-f -&lt;flag&gt;</span><span> to disable that flag. </span><a href="https://cabal.readthedocs.io/en/latest/setup-commands.html#controlling-flag-assignments">More info</a></p>
+        </div>
+        
+
+        <div id="downloads">
+          <h2>Downloads</h2><ul><li><a href="/package/hakyll-4.15.1.1/hakyll-4.15.1.1.tar.gz">hakyll-4.15.1.1.tar.gz</a> [<a href="/package/hakyll-4.15.1.1/src/">browse</a>] (Cabal source package)</li><li><a href="/package/hakyll-4.15.1.1/hakyll.cabal">Package description</a> (<a href="/package/hakyll-4.15.1.1/revisions/">revised</a> from the package)</li></ul><p>Note: This package has <a href="/package/hakyll-4.15.1.1/revisions/">metadata revisions</a> in the cabal description newer than included in the tarball. To unpack the package including the revisions, use 'cabal get'.</p>
+        </div>
+
+        <div id="maintainer-corner">
+          <h4>Maintainer's Corner</h4>
+          <p>For <a href="/package/hakyll/maintainers">package maintainers</a> and hackage trustees</p>
+          <ul>
+            <li>
+              <a href="//hackage.haskell.org/package/hakyll/maintain">
+                edit package information
+              </a>
+            </li>
+          </ul>
+          <p>Candidates</p>
+          <ul>
+            <li>
+              No Candidates
+            </li>
+          </ul>
+        </div>
+
+      </div><!-- /left-pane -->
+
+
+      <div id="properties">
+        <table class="properties">
+          <tbody>
+
+            <tr>
+              <th>Versions <span style="font-weight:normal;font-size: small;">[<a href="/package/hakyll.rss">RSS</a>]</span></th>
+              <td><a href="/package/hakyll-0.1">0.1</a>, <a href="/package/hakyll-0.2">0.2</a>, <a href="/package/hakyll-0.3">0.3</a>, <a href="/package/hakyll-0.3.1">0.3.1</a>, <a href="/package/hakyll-0.3.2">0.3.2</a>, <a href="/package/hakyll-0.4">0.4</a>, <a href="/package/hakyll-0.4.1">0.4.1</a>, <a href="/package/hakyll-1.0">1.0</a>, <a href="/package/hakyll-1.0.1">1.0.1</a>, <a href="/package/hakyll-1.1">1.1</a>, <a href="/package/hakyll-1.2">1.2</a>, <a href="/package/hakyll-1.3">1.3</a>, <a href="/package/hakyll-1.4">1.4</a>, <a href="/package/hakyll-2.0">2.0</a>, <a href="/package/hakyll-2.1">2.1</a>, <a href="/package/hakyll-2.1.1">2.1.1</a>, <a href="/package/hakyll-2.2">2.2</a>, <a href="/package/hakyll-2.2.1">2.2.1</a>, <a href="/package/hakyll-2.2.2">2.2.2</a>, <a href="/package/hakyll-2.3">2.3</a>, <a href="/package/hakyll-2.3.1">2.3.1</a>, <a href="/package/hakyll-2.4">2.4</a>, <a href="/package/hakyll-2.4.1">2.4.1</a>, <a href="/package/hakyll-2.4.2">2.4.2</a>, <a href="/package/hakyll-2.4.3">2.4.3</a>, <a href="/package/hakyll-2.4.4">2.4.4</a>, <a href="/package/hakyll-3.0.0.2">3.0.0.2</a>, <a href="/package/hakyll-3.0.0.3">3.0.0.3</a>, <a href="/package/hakyll-3.0.0.4">3.0.0.4</a>, <a href="/package/hakyll-3.0.1.0">3.0.1.0</a>, <a href="/package/hakyll-3.0.1.1">3.0.1.1</a>, <a href="/package/hakyll-3.0.1.2">3.0.1.2</a>, <a href="/package/hakyll-3.0.1.3">3.0.1.3</a>, <a href="/package/hakyll-3.0.1.4">3.0.1.4</a>, <a href="/package/hakyll-3.0.2.0">3.0.2.0</a>, <a href="/package/hakyll-3.0.2.1">3.0.2.1</a>, <a href="/package/hakyll-3.0.2.2">3.0.2.2</a>, <a href="/package/hakyll-3.1.0.0">3.1.0.0</a>, <a href="/package/hakyll-3.1.1.0">3.1.1.0</a>, <a href="/package/hakyll-3.1.1.1">3.1.1.1</a>, <a href="/package/hakyll-3.1.1.2">3.1.1.2</a>, <a href="/package/hakyll-3.1.2.0">3.1.2.0</a>, <a href="/package/hakyll-3.1.2.1">3.1.2.1</a>, <a href="/package/hakyll-3.1.2.2">3.1.2.2</a>, <a href="/package/hakyll-3.1.2.3">3.1.2.3</a>, <a href="/package/hakyll-3.1.2.4">3.1.2.4</a>, <a href="/package/hakyll-3.1.2.5">3.1.2.5</a>, <a href="/package/hakyll-3.1.2.6">3.1.2.6</a>, <a href="/package/hakyll-3.1.2.7">3.1.2.7</a>, <a href="/package/hakyll-3.1.2.8">3.1.2.8</a>, <a href="/package/hakyll-3.2.0.0">3.2.0.0</a>, <a href="/package/hakyll-3.2.0.1">3.2.0.1</a>, <a href="/package/hakyll-3.2.0.2">3.2.0.2</a>, <a href="/package/hakyll-3.2.0.3">3.2.0.3</a>, <a href="/package/hakyll-3.2.0.4">3.2.0.4</a>, <a href="/package/hakyll-3.2.0.5">3.2.0.5</a>, <a href="/package/hakyll-3.2.0.6">3.2.0.6</a>, <a href="/package/hakyll-3.2.0.7">3.2.0.7</a>, <a href="/package/hakyll-3.2.0.8">3.2.0.8</a>, <a href="/package/hakyll-3.2.0.9">3.2.0.9</a>, <a href="/package/hakyll-3.2.0.10">3.2.0.10</a>, <a href="/package/hakyll-3.2.1.0">3.2.1.0</a>, <a href="/package/hakyll-3.2.2.0">3.2.2.0</a>, <a href="/package/hakyll-3.2.3.0">3.2.3.0</a>, <a href="/package/hakyll-3.2.3.1">3.2.3.1</a>, <a href="/package/hakyll-3.2.3.2">3.2.3.2</a>, <a href="/package/hakyll-3.2.4.0">3.2.4.0</a>, <a href="/package/hakyll-3.2.4.1">3.2.4.1</a>, <a href="/package/hakyll-3.2.4.2">3.2.4.2</a>, <a href="/package/hakyll-3.2.5.0">3.2.5.0</a>, <a href="/package/hakyll-3.2.5.1">3.2.5.1</a>, <a href="/package/hakyll-3.2.6.0">3.2.6.0</a>, <a href="/package/hakyll-3.2.6.1">3.2.6.1</a>, <a href="/package/hakyll-3.2.6.2">3.2.6.2</a>, <a href="/package/hakyll-3.2.7.0">3.2.7.0</a>, <a href="/package/hakyll-3.2.7.1">3.2.7.1</a>, <a href="/package/hakyll-3.2.7.2">3.2.7.2</a>, <a href="/package/hakyll-3.2.8.0">3.2.8.0</a>, <a href="/package/hakyll-3.2.8.1">3.2.8.1</a>, <a href="/package/hakyll-3.3.0.0">3.3.0.0</a>, <a href="/package/hakyll-3.3.0.1">3.3.0.1</a>, <a href="/package/hakyll-3.4.0.0">3.4.0.0</a>, <a href="/package/hakyll-3.4.1.0">3.4.1.0</a>, <a href="/package/hakyll-3.4.2.0">3.4.2.0</a>, <a href="/package/hakyll-3.4.2.1">3.4.2.1</a>, <a href="/package/hakyll-3.5.0.0">3.5.0.0</a>, <a href="/package/hakyll-3.5.1.0">3.5.1.0</a>, <a href="/package/hakyll-3.5.2.0">3.5.2.0</a>, <a href="/package/hakyll-3.5.2.1">3.5.2.1</a>, <a href="/package/hakyll-3.5.3.0">3.5.3.0</a>, <a href="/package/hakyll-4.0.0.0">4.0.0.0</a>, <a href="/package/hakyll-4.1.0.0">4.1.0.0</a>, <a href="/package/hakyll-4.1.1.0">4.1.1.0</a>, <a href="/package/hakyll-4.1.2.0">4.1.2.0</a>, <a href="/package/hakyll-4.1.2.1">4.1.2.1</a>, <a href="/package/hakyll-4.1.3.0">4.1.3.0</a>, <a href="/package/hakyll-4.1.4.0">4.1.4.0</a>, <a href="/package/hakyll-4.2.0.0">4.2.0.0</a>, <a href="/package/hakyll-4.2.1.0">4.2.1.0</a>, <a href="/package/hakyll-4.2.1.1">4.2.1.1</a>, <a href="/package/hakyll-4.2.1.2">4.2.1.2</a>, <a href="/package/hakyll-4.2.2.0">4.2.2.0</a>, <a href="/package/hakyll-4.3.0.0">4.3.0.0</a>, <a href="/package/hakyll-4.3.1.0">4.3.1.0</a>, <a href="/package/hakyll-4.3.2.0">4.3.2.0</a>, <a href="/package/hakyll-4.3.3.0">4.3.3.0</a>, <a href="/package/hakyll-4.4.0.0">4.4.0.0</a>, <a href="/package/hakyll-4.4.1.0">4.4.1.0</a>, <a href="/package/hakyll-4.4.1.1">4.4.1.1</a>, <a href="/package/hakyll-4.4.1.2">4.4.1.2</a>, <a href="/package/hakyll-4.4.2.0">4.4.2.0</a>, <a href="/package/hakyll-4.4.3.0">4.4.3.0</a>, <a href="/package/hakyll-4.4.3.1">4.4.3.1</a>, <a href="/package/hakyll-4.4.3.2">4.4.3.2</a>, <a href="/package/hakyll-4.5.0.0">4.5.0.0</a>, <a href="/package/hakyll-4.5.0.1">4.5.0.1</a>, <a href="/package/hakyll-4.5.0.2">4.5.0.2</a>, <a href="/package/hakyll-4.5.1.0">4.5.1.0</a>, <a href="/package/hakyll-4.5.2.0">4.5.2.0</a>, <a href="/package/hakyll-4.5.3.0">4.5.3.0</a>, <a href="/package/hakyll-4.5.4.0">4.5.4.0</a>, <a href="/package/hakyll-4.5.5.0">4.5.5.0</a>, <a href="/package/hakyll-4.5.5.1">4.5.5.1</a>, <a href="/package/hakyll-4.6.0.0">4.6.0.0</a>, <a href="/package/hakyll-4.6.1.0">4.6.1.0</a>, <a href="/package/hakyll-4.6.1.1">4.6.1.1</a>, <a href="/package/hakyll-4.6.2.0">4.6.2.0</a>, <a href="/package/hakyll-4.6.3.0">4.6.3.0</a>, <a href="/package/hakyll-4.6.4.0">4.6.4.0</a>, <a href="/package/hakyll-4.6.5.0">4.6.5.0</a>, <a href="/package/hakyll-4.6.6.0">4.6.6.0</a>, <a href="/package/hakyll-4.6.7.0">4.6.7.0</a>, <a href="/package/hakyll-4.6.7.1">4.6.7.1</a>, <a href="/package/hakyll-4.6.8.0">4.6.8.0</a>, <a href="/package/hakyll-4.6.8.1">4.6.8.1</a>, <a href="/package/hakyll-4.6.9.0">4.6.9.0</a>, <a href="/package/hakyll-4.7.0.0">4.7.0.0</a>, <a href="/package/hakyll-4.7.1.0">4.7.1.0</a>, <a href="/package/hakyll-4.7.2.0">4.7.2.0</a>, <a href="/package/hakyll-4.7.2.1">4.7.2.1</a>, <a href="/package/hakyll-4.7.2.2">4.7.2.2</a>, <a href="/package/hakyll-4.7.2.3">4.7.2.3</a>, <a href="/package/hakyll-4.7.3.0">4.7.3.0</a>, <a href="/package/hakyll-4.7.3.1">4.7.3.1</a>, <a href="/package/hakyll-4.7.4.0">4.7.4.0</a>, <a href="/package/hakyll-4.7.5.0">4.7.5.0</a>, <a href="/package/hakyll-4.7.5.1">4.7.5.1</a>, <a href="/package/hakyll-4.7.5.2">4.7.5.2</a>, <a href="/package/hakyll-4.8.0.0">4.8.0.0</a>, <a href="/package/hakyll-4.8.0.1">4.8.0.1</a>, <a href="/package/hakyll-4.8.1.0">4.8.1.0</a>, <a href="/package/hakyll-4.8.2.0">4.8.2.0</a>, <a href="/package/hakyll-4.8.3.0">4.8.3.0</a>, <a href="/package/hakyll-4.8.3.1">4.8.3.1</a>, <a href="/package/hakyll-4.8.3.2">4.8.3.2</a>, <a href="/package/hakyll-4.9.0.0">4.9.0.0</a>, <a href="/package/hakyll-4.9.1.0">4.9.1.0</a>, <a href="/package/hakyll-4.9.2.0">4.9.2.0</a>, <a href="/package/hakyll-4.9.3.0">4.9.3.0</a>, <a href="/package/hakyll-4.9.4.0">4.9.4.0</a>, <a href="/package/hakyll-4.9.5.0">4.9.5.0</a>, <a href="/package/hakyll-4.9.5.1">4.9.5.1</a>, <a href="/package/hakyll-4.9.6.0">4.9.6.0</a>, <a href="/package/hakyll-4.9.7.0">4.9.7.0</a>, <a href="/package/hakyll-4.9.8.0">4.9.8.0</a>, <a href="/package/hakyll-4.10.0.0">4.10.0.0</a>, <a href="/package/hakyll-4.11.0.0">4.11.0.0</a>, <a href="/package/hakyll-4.12.0.0">4.12.0.0</a>, <a href="/package/hakyll-4.12.0.1">4.12.0.1</a>, <a href="/package/hakyll-4.12.1.0">4.12.1.0</a>, <a href="/package/hakyll-4.12.2.0">4.12.2.0</a>, <a href="/package/hakyll-4.12.3.0">4.12.3.0</a>, <a href="/package/hakyll-4.12.4.0">4.12.4.0</a>, <a href="/package/hakyll-4.12.5.0">4.12.5.0</a>, <a href="/package/hakyll-4.12.5.1">4.12.5.1</a>, <a href="/package/hakyll-4.12.5.2">4.12.5.2</a>, <a href="/package/hakyll-4.13.0.0">4.13.0.0</a>, <a href="/package/hakyll-4.13.0.1">4.13.0.1</a>, <a href="/package/hakyll-4.13.1.0">4.13.1.0</a>, <a href="/package/hakyll-4.13.2.0">4.13.2.0</a>, <a href="/package/hakyll-4.13.3.0">4.13.3.0</a>, <a href="/package/hakyll-4.13.4.0">4.13.4.0</a>, <a href="/package/hakyll-4.13.4.1">4.13.4.1</a>, <a href="/package/hakyll-4.14.0.0">4.14.0.0</a>, <a href="/package/hakyll-4.14.1.0">4.14.1.0</a>, <a href="/package/hakyll-4.15.0.0">4.15.0.0</a>, <a href="/package/hakyll-4.15.0.1">4.15.0.1</a>, <a href="/package/hakyll-4.15.1.0">4.15.1.0</a>, <strong>4.15.1.1</strong></td>
+            </tr>
+
+                        <tr>
+              <th>Change&nbsp;log</th>
+              <td class="word-wrap"><a href="/package/hakyll-4.15.1.1/changelog">CHANGELOG.md</a></td>
+            </tr>
+            
+
+            <tr>
+              <th>Dependencies</th>
+              <td><span style="white-space: nowrap"><a href="/package/aeson">aeson</a> (&gt;=1.0 &amp;&amp; &lt;1.6 || &gt;=2.0 &amp;&amp; &lt;2.1)</span>, <span style="white-space: nowrap"><a href="/package/base">base</a> (&gt;=4.8 &amp;&amp; &lt;5)</span>, <span style="white-space: nowrap"><a href="/package/binary">binary</a> (&gt;=0.5 &amp;&amp; &lt;0.10)</span>, <span style="white-space: nowrap"><a href="/package/blaze-html">blaze-html</a> (&gt;=0.5 &amp;&amp; &lt;0.10)</span>, <span style="white-space: nowrap"><a href="/package/blaze-markup">blaze-markup</a> (&gt;=0.5.1 &amp;&amp; &lt;0.9)</span>, <span style="white-space: nowrap"><a href="/package/bytestring">bytestring</a> (&gt;=0.9 &amp;&amp; &lt;0.12)</span>, <span style="white-space: nowrap"><a href="/package/containers">containers</a> (&gt;=0.3 &amp;&amp; &lt;0.7)</span>, <span style="white-space: nowrap"><a href="/package/data-default">data-default</a> (&gt;=0.4 &amp;&amp; &lt;0.8)</span>, <span style="white-space: nowrap"><a href="/package/deepseq">deepseq</a> (&gt;=1.3 &amp;&amp; &lt;1.5)</span>, <span style="white-space: nowrap"><a href="/package/directory">directory</a> (&gt;=1.2.7.0 &amp;&amp; &lt;1.4)</span>, <span style="white-space: nowrap"><a href="/package/file-embed">file-embed</a> (&gt;=0.0.10.1 &amp;&amp; &lt;0.0.16)</span>, <span style="white-space: nowrap"><a href="/package/filepath">filepath</a> (&gt;=1.0 &amp;&amp; &lt;1.5)</span>, <span style="white-space: nowrap"><a href="/package/fsnotify">fsnotify</a> (&gt;=0.2 &amp;&amp; &lt;0.4)</span>, <span style="white-space: nowrap"><a href="/package/hakyll">hakyll</a></span>, <span style="white-space: nowrap"><a href="/package/hashable">hashable</a> (&gt;=1.0 &amp;&amp; &lt;2)</span>, <span style="white-space: nowrap"><a href="/package/http-conduit">http-conduit</a> (&gt;=2.2 &amp;&amp; &lt;2.4)</span>, <span style="white-space: nowrap"><a href="/package/http-types">http-types</a> (&gt;=0.7 &amp;&amp; &lt;0.13)</span>, <span style="white-space: nowrap"><a href="/package/lifted-async">lifted-async</a> (&gt;=0.10 &amp;&amp; &lt;1)</span>, <span style="white-space: nowrap"><a href="/package/lrucache">lrucache</a> (&gt;=1.1.1 &amp;&amp; &lt;1.3)</span>, <span style="white-space: nowrap"><a href="/package/mtl">mtl</a> (&gt;=1 &amp;&amp; &lt;2.3)</span>, <span style="white-space: nowrap"><a href="/package/network-uri">network-uri</a> (&gt;=2.6 &amp;&amp; &lt;2.7)</span>, <span style="white-space: nowrap"><a href="/package/optparse-applicative">optparse-applicative</a> (&gt;=0.12 &amp;&amp; &lt;0.18)</span>, <span style="white-space: nowrap"><a href="/package/pandoc">pandoc</a> (&gt;=2.11 &amp;&amp; &lt;2.19)</span>, <span style="white-space: nowrap"><a href="/package/parsec">parsec</a> (&gt;=3.0 &amp;&amp; &lt;3.2)</span>, <span style="white-space: nowrap"><a href="/package/process">process</a> (&gt;=1.6 &amp;&amp; &lt;1.7)</span>, <span style="white-space: nowrap"><a href="/package/random">random</a> (&gt;=1.0 &amp;&amp; &lt;1.3)</span>, <span style="white-space: nowrap"><a href="/package/regex-tdfa">regex-tdfa</a> (&gt;=1.1 &amp;&amp; &lt;1.4)</span>, <span style="white-space: nowrap"><a href="/package/resourcet">resourcet</a> (&gt;=1.1 &amp;&amp; &lt;1.3)</span>, <span style="white-space: nowrap"><a href="/package/scientific">scientific</a> (&gt;=0.3.4 &amp;&amp; &lt;0.4)</span>, <span style="white-space: nowrap"><a href="/package/tagsoup">tagsoup</a> (&gt;=0.13.1 &amp;&amp; &lt;0.15)</span>, <span style="white-space: nowrap"><a href="/package/template-haskell">template-haskell</a> (&gt;=2.14 &amp;&amp; &lt;2.19)</span>, <span style="white-space: nowrap"><a href="/package/text">text</a> (&gt;=0.11 &amp;&amp; &lt;1.3 || &gt;=2.0 &amp;&amp; &lt;2.1)</span>, <span style="white-space: nowrap"><a href="/package/time">time</a> (&gt;=1.8 &amp;&amp; &lt;1.12)</span>, <span style="white-space: nowrap"><a href="/package/time-locale-compat">time-locale-compat</a> (&gt;=0.1 &amp;&amp; &lt;0.2)</span>, <span style="white-space: nowrap"><a href="/package/unordered-containers">unordered-containers</a> (&gt;=0.2 &amp;&amp; &lt;0.3)</span>, <span style="white-space: nowrap"><a href="/package/vector">vector</a> (&gt;=0.11 &amp;&amp; &lt;0.13)</span>, <span style="white-space: nowrap"><a href="/package/wai">wai</a> (&gt;=3.2 &amp;&amp; &lt;3.3)</span>, <span style="white-space: nowrap"><a href="/package/wai-app-static">wai-app-static</a> (&gt;=3.1 &amp;&amp; &lt;3.2)</span>, <span style="white-space: nowrap"><a href="/package/warp">warp</a> (&gt;=3.2 &amp;&amp; &lt;3.4)</span>, <span style="white-space: nowrap"><a href="/package/yaml">yaml</a> (&gt;=0.8.11 &amp;&amp; &lt;0.12)</span><span style="font-size: small"> [<a href="/package/hakyll-4.15.1.1/dependencies">details</a>]</span></td>
+            </tr>
+
+            <tr>
+              <th>License</th>
+              <td class="word-wrap"><a href="/package/hakyll-4.15.1.1/src/LICENSE">BSD-3-Clause</a></td>
+            </tr>
+
+            
+
+            <tr>
+              <th>Author</th>
+              <td class="word-wrap">Jasper Van der Jeugt &lt;m@jaspervdj.be&gt;</td>
+            </tr>
+            <tr>
+              <th>Maintainer</th>
+              <td class="word-wrap">Jasper Van der Jeugt &lt;m@jaspervdj.be&gt;</td>
+            </tr>
+
+                        <tr>
+              <th>Revised</th>
+              <td><a href="/package/hakyll-4.15.1.1/revisions/">Revision 4</a> made by <a href="/user/AlexanderBatischev">AlexanderBatischev</a> at <span title="Fri Jun 10 20:32:33 UTC 2022">2022-06-10T20:32:33Z</span></td>
+            </tr>
+            
+
+            <!-- Obsolete/deprecated 'Stability' field hidden
+                 c.f. http://stackoverflow.com/questions/3841218/conventions-for-stability-field-of-cabal-packages
+            <tr>
+              <th>Stability</th>
+              <td>Unknown</td>
+            </tr>
+            -->
+
+                        <tr>
+              <th>Category</th>
+              <td><a href="/packages/#cat:Web">Web</a></td>
+            </tr>
+            
+
+                        <tr>
+              <th>Home page</th>
+              <td class="word-wrap">
+                <a href="http://jaspervdj.be/hakyll">
+                  http://jaspervdj.be/hakyll
+                </a>
+              </td>
+            </tr>
+            
+
+                        <tr>
+              <th>Bug&nbsp;tracker</th>
+              <td class="word-wrap">
+                <a href="http://github.com/jaspervdj/Hakyll/issues">
+                  http://github.com/jaspervdj/Hakyll/issues
+                </a>
+              </td>
+            </tr>
+            
+
+                        <tr>
+              <th>Source&nbsp;repo</th>
+              <td class="word-wrap">head: git clone <a href="git://github.com/jaspervdj/hakyll.git">git://github.com/jaspervdj/hakyll.git</a></td>
+            </tr>
+            
+
+            <tr>
+              <th>Uploaded</th>
+              <td>by <a href="/user/AlexanderBatischev">AlexanderBatischev</a> at <span title="Thu Jan 20 19:23:27 UTC 2022">2022-01-20T19:23:27Z</span></td>
+            </tr>
+
+
+                        <tr>
+              <th>Distributions</th>
+              <td>Arch:<a href="https://www.archlinux.org/packages/community/x86_64/haskell-hakyll">4.15.1.1</a>, Debian:<a href="http://packages.debian.org/source/bullseye/haskell-hakyll">4.13.4.0</a>, Fedora:<a href="https://src.fedoraproject.org/rpms/ghc-hakyll">4.14.0.0</a>, LTSHaskell:<a href="https://www.stackage.org/package/hakyll">4.15.1.1</a>, NixOS:<a href="http://hydra.nixos.org/job/nixpkgs/trunk/haskellPackages.hakyll.x86_64-linux">4.15.1.1</a>, Stackage:<a href="https://www.stackage.org/package/hakyll">4.15.1.1</a></td>
+            </tr>
+            
+
+                        <tr>
+              <th>Executables</th>
+              <td>hakyll-website, hakyll-init</td>
+            </tr>
+            
+
+            <tr>
+              <th>Downloads</th>
+              <td>175623 total (908 in the last 30 days)</td>
+            </tr>
+
+            <tr>
+              <th> Rating</th>
+              <td>2.75 (votes: 10)
+              <span style="font-size: small">[estimated by <a href="https://en.wikipedia.org/wiki/Bayesian_average">Bayesian average</a>]</span></td>
+            </tr>
+
+            <tr>
+              <th>Your&nbsp;Rating</th>
+              <td>
+                <ul class="star-rating">
+                  <li class="star uncool" id="1">λ</li>
+                  <li class="star uncool" id="2">λ</li>
+                  <li class="star uncool" id="3">λ</li>
+                </ul>
+              
+              </td>
+            </tr>
+            <tr>
+              <th>Status</th>
+              <td>Docs available <span style="font-size: small">[<a href="/package/hakyll-4.15.1.1/reports/1">build log</a>]</span><br>Last success reported on 2022-01-20 <span style="font-size: small">[<a href="/package/hakyll-4.15.1.1/reports/">all 1 reports</a>]</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div> <!-- /properties -->
+    </div><!-- /flex-container -->
+
+    
+  </div> <!-- /content -->
+
+  <style>
+  div#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+  }
+
+  div#modal {
+    position: absolute;
+    width: 200px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 14px;
+    padding: 8px;
+  }
+
+  div#modal #content {
+    border-radius: 8px;
+    background: #fff;
+    padding: 20px;
+  }
+
+  div#modal #close {
+    position: absolute;
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAbCAYAAABm409WAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAABCdJREFUeNqcVl1IbFUUnjNzr47enLFkvKUoDNk1S0kxDPHBH4gCTfHJH4jgYgrpg1APmqjQS2gggiLViyBdkEAxjARFSPBBfPCv/LcRS5tSlLzXMcdxZvWt3d6HmTkzXW8LPs45a6/1rbX3XmvvYzL9hxBRC/AjRZcD4BGQE41Di0JciMfnQDF/n5+fm2ZmZkxnZ2e6TWFhoSknJ4T3a03TmkxPE5C/q9JbX1+nmpoaslgsxEPhSE9Pp6GhIbq5uVEuU8DztyLv7e2NShwOzIRcLpdy/S4auQNws0VHR8etiIORmppKh4eHKshXkQLwZtH4+Pgzkyvk5+cHL1dOMLmTNV6vV6xrsFNxcTHV1tZSSkpKiL6srIyam5spLS0tRM97IuWRHsDv97ezZmRkxJDV3t4enZ6e0sDAADkcDqGrqqqizc1NwdLe3m7YeFXCeoBAIPADa8rLyw0BZmdnhfX19TX19fVRY2OjTg4/amhoMPisra2J8YuLizeY3wzDfVY4nU6DcW5uLq2srAiHy8tLQi+I96urK1EM8fHxBp/h4WGV1EMOYOF3VsTExETdPO4JJZx5T08Pmc3miPZc4iwej+dTMweAwxOOZLfbja2uaSabzcaFoOtQKSYkY0pISIhY8jzGgqLx8zMO0xXp8XKEZ1NZWUk7Ozv6smxvb6vsaHBwkJKTkw0+XOossP2AAzx3dHQkeqClpcVgPDY2pm9yW1sblZSU0OLiotD5fD6qqKgIsefu56pj6ezsfJ0DJMzNzX3MCt798ADd3d20sbFBXV1dhOXSj4apqSmanp6mvLy8EPvq6mpBfnJysoLvFBEAyHK73aL26uvrQxx4CYqKigzVkp2dTRkZGSHnFb9vbW2JAPPz84MqwD3glYmJiS954Pj4WDj+n6Oiv7//3w47ONjhEx24zwGsQDrw9tLS0s/qmH7WINwTSpqamrqgywXE0X0XSAYKkpKSPgL572zEGxW+XNHuhNHRUZ28tbX1G+jLgQwuINHJgA14ALyXmJj4GY6H35TD8vKyqB5utri4OEHKs+Py5Y7l7mbBrefDMfI9xj8E3gJeBGLVtRkr1+tN4H3gC1TPT1gyD91CJicnT7Kysr6F3yfAOzJ7Lh6LupMt3HDAC3I/MoFXgZfr6upeKy0tvV9QUHAvMzPzjtVq1fb39/27u7vehYWFx2gq1+rq6hZseWP5+QvwB/AY8GlBl/8dIF4GSQWcEmmAg08SOVO2vQE8AP8FuAE+ml3Ar8CfktzLB7UW9odxV87ELjee1/ElGSBRjvGeXQMXwKkkdMusOeATOe6P9NuiZhIr+8MuiW2yImJkAJ7BpSQ7B/6S73/zsnDmssoi/hdpkkQFskrEyhlqMjvO8ioIPqkPPPXHK2hMkwWgYFbXuCRThIFwYiX/CDAA8quvgv5A6LkAAAAASUVORK5CYII=) 0 0 no-repeat;
+    width: 24px;
+    height: 27px;
+    display: block;
+    text-indent: -9999px;
+    top: -7px;
+    right: -7px;
+  }
+
+  .cool {
+    color: gold;
+    text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
+  }
+
+  .uncool {
+    color: white;
+    text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
+  }
+
+  .star-rating {
+    margin: 0;
+    list-style-type: none;
+    font-size: 150%;
+    color: black;
+  }
+
+  .star-rating li {
+    float: left;
+    margin: 0 1% 0 1%;
+    cursor: pointer;
+  }
+
+  .clear-rating {
+    font-size: small;
+  }
+
+</style>
+
+<script>
+  // Modals
+  var modal = (function() {
+    var
+      method = {},
+      overlay,
+      modal,
+      content,
+      close;
+
+    // Center the modal in the viewport
+    method.center = function() {
+      var top, left;
+
+      top = Math.max($(window).height() - modal.outerHeight(), 0) / 2;
+      left = Math.max($(window).width() - modal.outerWidth(), 0) / 2;
+
+      modal.css({
+        top: top + $(window).scrollTop(),
+        left: left + $(window).scrollLeft()
+      });
+    };
+
+    // Open the modal
+    method.open = function(settings) {
+      content.empty().append(settings.content);
+
+      modal.css({
+        width: settings.width || 'auto',
+        height: settings.height || 'auto'
+      });
+
+      method.center();
+      $(window).bind('resize.modal', method.center);
+      modal.show();
+      overlay.show();
+    };
+
+    // Close the modal
+    method.close = function() {
+      modal.hide();
+      overlay.hide();
+      content.empty();
+      $(window).unbind('resize.modal');
+    };
+
+    // Generate the HTML and add it to the document
+    overlay = $('<div id="overlay"></div>');
+    modal = $('<div id="modal"></div>');
+    content = $('<div id="content"></div>');
+    close = $('<a id="close" href="#">close</a>');
+
+    modal.hide();
+    overlay.hide();
+    modal.append(content, close);
+
+    $(document).ready(function() {
+      $('body').append(overlay, modal);
+    });
+
+    close.click(function(e) {
+      e.preventDefault();
+      method.close();
+    });
+
+    return method;
+  }());
+</script>
+
+<script>
+  // Voting
+  var votesUrl = '/package/hakyll/votes';
+  var star = {
+    "id"       : undefined,
+    "selected" : false
+  };
+  $('.star').mouseenter(function() {
+    if (star.selected === false) {
+      fill_stars(this.id, "in");
+    }
+  });
+  $('.star').mouseleave(function() {
+    if (star.selected === false) {
+      fill_stars(this.id, "out");
+    }
+  });
+  $('.star').click(function() {
+    fill_stars(3, "out");
+    fill_stars(this.id, "in");
+    star.selected = true;
+    star.id = this.id;
+    var formData = {
+      score: this.id
+    }
+    $.post(votesUrl, formData).done(function(data) {
+        if(data != "Package voted for successfully") {
+            modal.open({ content: data});
+	}
+    });
+  });
+  $('.clear-rating').click(function(e) {
+    e.preventDefault()
+    fill_stars(3, "out");
+    star.selected = false;
+    $.ajax({
+      url: votesUrl,
+      type: 'DELETE',
+      success: function(result) {
+        if(result != "Package vote removed successfully") {
+          modal.open({ content: result });
+	}
+      }
+    });
+  });
+  $(function() {
+       var userRating = parseInt($("#userRating").val(),10);
+       if(userRating > 0) {
+         fill_stars(userRating,"in")
+         star.selected = true;
+         star.id       = userRating;
+       }
+  });
+  var fill_stars = function(num, direction) {
+    if (direction === "in")
+      for (i = 0; i <= parseInt(num); i++)
+        $("#" + i).removeClass('uncool').addClass('cool');
+    else
+      for (i = 0; i <= parseInt(num); i++)
+        $("#" + i).removeClass('cool').addClass('uncool');
+  }
+</script>
+  <div style="clear:both"></div>
+  <div id="footer">
+  <p>
+    Produced by <a href="/">hackage</a> and <a href="http://haskell.org/cabal/">Cabal</a> 3.6.3.0.
+  </p>
+</div>
+
+    <script src="/package/hakyll-4.15.1.1/docs/quick-jump.min.js" type="text/javascript"></script>
+  <script type="text/javascript"> quickNav.init("/package/hakyll-4.15.1.1/docs", function(toggle) {var t = document.getElementById('quickjump-trigger');if (t) {t.onclick = function(e) { e.preventDefault(); toggle(); };}}); </script><div id="search" class="hidden"><div id="search-form"><input placeholder="Search in package by name"></div><div id="search-results"><p>You can find any exported type, constructor, class, function or pattern defined in this package by (approximate) name.</p><table class="keyboard-shortcuts"><tr><th>Key</th><th>Shortcut</th></tr><tr><td><span class="key">s</span></td><td>Open this search box</td></tr><tr><td><span class="key">esc</span></td><td>Close this search box</td></tr><tr><td><span class="key">↓</span>,<span class="key">ctrl</span> + <span class="key">j</span></td><td>Move down in search results</td></tr><tr><td><span class="key">↑</span>,<span class="key">ctrl</span> + <span class="key">k</span></td><td>Move up in search results</td></tr><tr><td><span class="key">↵</span></td><td>Go to active search result</td></tr></table></div></div>
+  
+
+  
+
+
+<div id="overlay" style="display: none;"></div><div id="modal" style="display: none;"><div id="content"></div><a id="close" href="#">close</a></div></body></html>

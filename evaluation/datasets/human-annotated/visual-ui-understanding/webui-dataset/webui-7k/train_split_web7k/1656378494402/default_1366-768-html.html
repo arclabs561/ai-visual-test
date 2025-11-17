@@ -1,0 +1,735 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta content="default-src 'self'; script-src 'none'; object-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'" http-equiv="Content-Security-Policy">
+<meta charset="utf-8">
+<meta content="-L_V_27r8NmVJh-1OGyEhGcNVulPnxjfbma6m3SqNME" name="google-site-verification">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<link href="https://yorickpeterse.com/feed.xml" rel="alternate" type="application/atom+xml">
+<link href="https://yorickpeterse.com/articles/not-beating-c-with-96-lines-of-inko/" rel="canonical">
+<meta content="" name="keywords">
+<link href="/favicon.ico" rel="icon" type="image/x-icon">
+<link href="/stylesheets/all-c2224289.css" rel="stylesheet">
+<title>Not beating C with 96 lines of Inko</title>
+
+</head>
+<body>
+<header class="top">
+<nav>
+<ul class="clearfix">
+<li>
+<a href="/">
+Homepage
+</a>
+</li>
+<li>
+<a href="/#header-articles">
+Articles
+</a>
+</li>
+<li>
+<a href="/feed.xml">
+Atom Feed
+</a>
+</li>
+<li>
+<a href="/resume">
+Resume
+</a>
+</li>
+</ul>
+</nav>
+</header>
+
+<div class="row content">
+<section class="article">
+<header>
+<h1>Not beating C with 96 lines of Inko</h1>
+<p class="meta">
+Published on:
+<time datetime="2019-11-22T12:00:00Z">
+November 22, 2019
+</time>
+</p>
+</header>
+<p>The article <a href="https://chrispenner.ca/posts/wc">"Beating C with 80 Lines of
+Haskell"</a> discusses writing a simplified
+version of <code>wc</code> using Haskell, and how it performs compared to the C
+implementation. This resulted in various other people writing the same program
+in different languages, and writing about doing so. At the time of writing,
+there are implementations for:</p>
+
+<ul>
+  <li><a href="http://verisimilitudes.net/2019-11-11">Ada</a></li>
+  <li><a href="https://github.com/expr-fi/fastlwc/">C</a></li>
+  <li><a href="http://verisimilitudes.net/2019-11-12">Common Lisp</a></li>
+  <li><a href="https://ummaycoc.github.io/wc.apl/">Dyalog APL</a></li>
+  <li><a href="https://futhark-lang.org/blog/2019-10-25-beating-c-with-futhark-on-gpu.html">Futhark</a></li>
+  <li><a href="https://ajeetdsouza.github.io/blog/posts/beating-c-with-70-lines-of-go/">Go</a></li>
+  <li><a href="https://chrispenner.ca/posts/wc">Haskell</a></li>
+  <li><a href="https://medium.com/@martinmroz/beating-c-with-120-lines-of-rust-wc-a0db679fe920">Rust</a></li>
+</ul>
+
+<p>Today we will be taking a look at writing a similar program in
+<a href="https://inko-lang.org/">Inko</a>.</p>
+
+<h2 id="header-benchmarking--setup">Benchmarking &amp; setup</h2>
+
+<p>Several articles mentioned above include some benchmarking data, such as how
+long it takes to count the words of a file with a certain size (e.g. 1GB).
+While we will also discuss some benchmarking data, it's important to not focus
+on them too much. Instead, the numbers discussed below should be treated as
+rough estimates at best.</p>
+
+<p>For this article we will be comparing the Inko implementation to GNU <code>wc</code>
+version 8.31, running on a 7th generation Thinkpad X1 Carbon. The CPU is a Intel
+Core i5-8265U. The CPU governor used is the "performance" governor, and the
+clock speed is 3.8 Ghz. The OS is Arch Linux running Linux kernel version
+5.3.11. The storage device is an NVMe SSD.</p>
+
+<h2 id="header-implementation">Implementation</h2>
+
+<p>Like the other implementations, our implementation expects ASCII input. We also
+won't implement any command-line options, or other features of <code>wc</code>. Our input
+set will be <a href="https://github.com/ChrisPenner/wc/blob/master/data/big.txt">this file</a>
+from the Haskell implementation. The file size is 6.2 MB.</p>
+
+<p>For our Inko implementation we will take an approach to counting words similar
+to the Go (and other) implementations: we read our input into a byte array, in
+chunks of 64 KB. When we encounter a whitespace character, we set a flag and
+increment the line count. When we reach a non-whitespace character and the flag
+is set, we increment the word count and unset the flag. We repeat this until we
+have consumed all input bytes.</p>
+
+<h2 id="header-importing-our-dependencies">Importing our dependencies</h2>
+
+<p>Let's start by importing the types and modules we need:</p>
+
+<div class="highlight"><pre class="highlight inko"><code><span class="k">import</span><span class="w"> </span><span class="nn">std</span><span class="p">::</span><span class="nn">byte_array</span><span class="p">::</span><span class="no">ByteArray</span><span class="w">
+</span><span class="k">import</span><span class="w"> </span><span class="nn">std</span><span class="p">::</span>env<span class="w">
+</span><span class="k">import</span><span class="w"> </span><span class="nn">std</span><span class="p">::</span><span class="nn">fs</span><span class="p">::</span>file<span class="w">
+</span><span class="k">import</span><span class="w"> </span><span class="nn">std</span><span class="p">::</span><span class="nn">pair</span><span class="p">::</span><span class="no">Pair</span><span class="w">
+</span><span class="k">import</span><span class="w"> </span><span class="nn">std</span><span class="p">::</span>process<span class="w">
+</span><span class="k">import</span><span class="w"> </span><span class="nn">std</span><span class="p">::</span><span class="nn">stdio</span><span class="p">::</span>stdout<span class="w">
+</span><span class="k">import</span><span class="w"> </span><span class="nn">std</span><span class="p">::</span><span class="nn">string_buffer</span><span class="p">::</span><span class="no">StringBuffer</span><span class="w">
+</span></code></pre></div>
+<p>ByteArray stores a sequence of bytes, as actual bytes and not as (signed)
+integers. This means a ByteArray of 4 bytes needs 1 byte per value, instead of 8
+bytes (when using an integer). This type is not imported by default, so we have
+to explicitly import it.</p>
+
+<p>The module <code>std::fs::file</code> provides file IO types and methods. Inko uses
+different types for files based on the open mode, such as <code>ReadOnlyFile</code> for
+read-only files. We will see this in action later.</p>
+
+<p>Pair is a binary tuple. We will use this so we don't have to define our own
+types for in several places.</p>
+
+<p>Unlike languages such as Ruby, operations using STDERR, STDOUT, and STDIN
+require you to import the appropriate modules; instead of relying on global
+methods or types. The module <code>std::stdio::stdout</code> is used for writing to STDOUT.</p>
+
+<p>Our last import is the importing of the <code>StringBuffer</code> type. Inko does not have
+string interpolation or formatting, so concatenating strings together (without
+producing intermediate strings) requires the use of the <code>StringBuffer</code> type.
+This is a bit clunky, but it's good enough for now.</p>
+
+<h2 id="header-constants">Constants</h2>
+
+<p>Next we will define several constants that we need to access in several methods:</p>
+
+<div class="highlight"><pre class="highlight inko"><code><span class="k">let</span><span class="w"> </span><span class="no">CONCURRENCY</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">8</span><span class="w">
+</span><span class="k">let</span><span class="w"> </span><span class="no">MAIN</span><span class="w"> </span><span class="p">=</span><span class="w"> </span>process<span class="p">.</span><span class="nf">current</span><span class="w">
+</span><span class="k">let</span><span class="w"> </span><span class="no">NEWLINE</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">10</span><span class="w">
+</span><span class="k">let</span><span class="w"> </span><span class="no">SINGLE_SPACE</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">32</span><span class="w">
+</span><span class="k">let</span><span class="w"> </span><span class="no">SPACE_RANGE</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">9</span><span class="p">..</span><span class="nf">13</span><span class="w">
+</span></code></pre></div>
+<p>The <code>CONCURRENCY</code> constant controls the number of processes we will spawn to
+count words. The simplest approach would be to spawn one process for every
+chunk. Since the work is purely CPU bound doing so doesn't improve performance
+if we end up spawning more processes than the number of CPU cores.</p>
+
+<p>The <code>MAIN</code> constant stores an object containing information about the current
+process. All processes we spawn for counting words will send their results to
+this process.</p>
+
+<p>The next three constants define some byte values: byte 10 is the Unix newline
+separator, byte 32 is a single space, and the range <code>9..13</code> covers all ASCII
+whitespace characters (newlines, tabs, etc). In Inko <code>A..B</code> creates an inclusive
+range from A to B.</p>
+
+<h2 id="header-counting-words">Counting words</h2>
+
+<p>It's time to define the methods and types we need to count the words in a
+<code>ByteArray</code>, starting with two methods: <code>space?</code> and <code>worker_loop</code>:</p>
+
+<div class="highlight"><pre class="highlight inko"><code>def<span class="w"> </span>space<span class="p">?(</span><span class="ss">byte</span><span class="p">:</span><span class="w"> </span><span class="no">Integer</span><span class="p">)</span><span class="w"> </span><span class="k">-&gt;</span><span class="w"> </span><span class="no">Boolean</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="no">SPACE_RANGE</span><span class="p">.</span><span class="nf">cover</span><span class="p">?(</span>byte<span class="p">).</span><span class="nf">or</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>byte<span class="w"> </span><span class="nf">==</span><span class="w"> </span><span class="no">SINGLE_SPACE</span><span class="w"> </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span>def<span class="w"> </span>worker_loop<span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="k">let</span><span class="w"> </span>chunk<span class="w"> </span><span class="p">=</span><span class="w"> </span>process<span class="p">.</span><span class="nf">receive</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="no">Chunk</span><span class="w">
+
+  </span><span class="no">MAIN</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span>chunk<span class="p">.</span><span class="nf">count</span><span class="p">)</span><span class="w">
+
+  </span>worker_loop<span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<p>The <code>space?</code> method returns <code>True</code> if the input byte is a whitespace character,
+such as a single space or a newline. Inko has no if/else/or/and statements,
+instead it uses messages, methods, and closures. Instead of writing <code>A || B</code>,
+you would write <code>A.or { B }</code>, where <code>or</code> is a message sent to <code>A</code>. The curly
+braces <code>{ B }</code> denote a closure, which in this case returns whatever <code>B</code> is.</p>
+
+<p>The <code>worker_loop</code> method is a tail-recursive method called by the processes that
+count words. Each loop the process will wait for an incoming message using
+<code>process.receive</code>. Sending messages to processes uses dynamic typing, and Inko
+is pretty strict about dynamic typing. For example, passing a dynamic type
+(<code>Dynamic</code>) as an argument does not work if a non-dynamic type (e.g. <code>Integer</code>)
+is expected. Sending messages to a dynamic type is fine, and will produce a new
+dynamic type. This means we could condense this method to the following:</p>
+
+<div class="highlight"><pre class="highlight inko"><code>def<span class="w"> </span>worker_loop<span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="no">MAIN</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span>process<span class="p">.</span><span class="nf">receive</span><span class="p">.</span><span class="nf">count</span><span class="p">)</span><span class="w">
+
+  </span>worker_loop<span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<p>The reason we don't do this is to make it more clear what input we expect in
+this method, and to prevent us from using the wrong method(s).</p>
+
+<p>Inko supports tail call elimination, so our <code>worker_loop</code> method will not
+overflow the stack. We could also use a closure and send the <code>loop</code> message to
+it:</p>
+
+<div class="highlight"><pre class="highlight inko"><code>def<span class="w"> </span>worker_loop<span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="k">let</span><span class="w"> </span>chunk<span class="w"> </span><span class="p">=</span><span class="w"> </span>process<span class="p">.</span><span class="nf">receive</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="no">Chunk</span><span class="w">
+
+    </span><span class="no">MAIN</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span>chunk<span class="p">.</span><span class="nf">count</span><span class="p">)</span><span class="w">
+  </span><span class="p">}.</span><span class="nf">loop</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<p>This achieves the same results and in fact <code>loop</code> is implemented using tail
+recursion. Since using tail recursion ourselves in this method requires a little
+less code we just use that, instead of using <code>loop</code>.</p>
+
+<p>Now it's time to create an object used for counting words, which we will call
+<code>Chunk</code>. This type will hold some state, such as the bytes to process and the
+number of lines counted so far. We use a dedicated type so it's a bit easier to
+send input to the word counting processes, and so we can use tail recursion when
+iterating over the bytes to process. We define objects using the <code>object</code>
+keyword:</p>
+
+<div class="highlight"><pre class="highlight inko"><code><span class="k">object</span> <span class="nc">Chunk</span><span class="w"> </span><span class="p">{</span><span class="w">
+
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<p>Object attributes need to be defined explicitly when we define the object, so
+let's do that:</p>
+
+<div class="highlight"><pre class="highlight inko"><code><span class="k">object</span> <span class="nc">Chunk</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="vi">@previous_is_space</span><span class="p">:</span><span class="w"> </span><span class="no">Boolean</span><span class="w">
+  </span><span class="vi">@bytes</span><span class="p">:</span><span class="w"> </span><span class="no">ByteArray</span><span class="w">
+  </span><span class="vi">@lines</span><span class="p">:</span><span class="w"> </span><span class="no">Integer</span><span class="w">
+  </span><span class="vi">@words</span><span class="p">:</span><span class="w"> </span><span class="no">Integer</span><span class="w">
+  </span><span class="vi">@index</span><span class="p">:</span><span class="w"> </span><span class="no">Integer</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<p>In Inko we define and refer to attributes using the syntax <code>@NAME</code>. The <code>@</code> is
+part of the name, so it's valid to define both an attribute <code>@foo</code> and a method
+<code>foo</code>. When defining attributes we must also specify the type, such as <code>Integer</code>
+for the attribute <code>@index</code>. The attribute <code>@previous_is_space</code> is used to record
+if a previously processed byte was a whitespace character.</p>
+
+<p>Now we need to define our initialiser method, which is always called <code>init</code>:</p>
+
+<div class="highlight"><pre class="highlight inko"><code>def<span class="w"> </span><span class="nf">init</span><span class="p">(</span><span class="ss">previous_is_space</span><span class="p">:</span><span class="w"> </span><span class="no">Boolean</span><span class="p">,</span><span class="w"> </span><span class="ss">bytes</span><span class="p">:</span><span class="w"> </span><span class="no">ByteArray</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="vi">@previous_is_space</span><span class="w"> </span><span class="p">=</span><span class="w"> </span>previous_is_space<span class="w">
+  </span><span class="vi">@bytes</span><span class="w"> </span><span class="p">=</span><span class="w"> </span>bytes<span class="w">
+  </span><span class="vi">@lines</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span><span class="w">
+  </span><span class="vi">@words</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span><span class="w">
+  </span><span class="vi">@index</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<p>This method just sets the attributes to the right value. If we forget to set an
+attribute in the <code>init</code> method, the compiler will produce an error.</p>
+
+<p>We can now define a method to count words and lines, which we will creatively
+name "count":</p>
+
+<div class="highlight"><pre class="highlight inko"><code>def<span class="w"> </span>count<span class="w"> </span><span class="k">-&gt;</span><span class="w"> </span><span class="no">Pair</span><span class="p">!(</span><span class="no">Integer</span><span class="p">,</span><span class="w"> </span><span class="no">Integer</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="k">let</span><span class="w"> </span>byte<span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="vi">@bytes</span><span class="p">[</span><span class="vi">@index</span><span class="p">]</span><span class="w">
+
+  </span>byte<span class="p">.</span><span class="nf">nil</span><span class="p">?.</span><span class="nf">if_true</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="k">return</span><span class="w"> </span><span class="no">Pair</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="vi">@lines</span><span class="p">,</span><span class="w"> </span><span class="vi">@words</span><span class="p">)</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+
+  </span>space<span class="p">?(</span>byte<span class="p">!).</span><span class="nf">if</span><span class="p">(</span><span class="w">
+    </span><span class="ss">true</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="p">(</span>byte<span class="w"> </span><span class="nf">==</span><span class="w"> </span><span class="no">NEWLINE</span><span class="p">).</span><span class="nf">if_true</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="vi">@lines</span><span class="w"> </span><span class="nf">+=</span><span class="w"> </span><span class="mi">1</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+
+      </span><span class="vi">@previous_is_space</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="no">True</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="ss">false</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="vi">@previous_is_space</span><span class="p">.</span><span class="nf">if_true</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="vi">@words</span><span class="w"> </span><span class="nf">+=</span><span class="w"> </span><span class="mi">1</span><span class="w">
+        </span><span class="vi">@previous_is_space</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="no">False</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">)</span><span class="w">
+
+  </span><span class="vi">@index</span><span class="w"> </span><span class="nf">+=</span><span class="w"> </span><span class="mi">1</span><span class="w">
+
+  </span>count<span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<p>That's quite a lot to take in, so let's break it down. We start by obtaining the
+current byte, and checking if it's <code>Nil</code>. Accessing an out of bounds index in a
+<code>ByteArray</code> is valid, and returns <code>Nil</code>. When this is the case we have consumed
+all input, and we can return the number of lines and words we have counted.
+Instead of creating a custom object to store the lines and words, we use the
+<code>Pair</code> type.</p>
+
+<p>Remember that Inko does not have <code>if</code> statements, and instead uses messages and
+method calls. Here <code>if_true</code> is sent to the result of <code>byte.nil?</code>, and the
+closure passed as its argument will only be run if <code>byte.nil?</code> produced boolean
+true.</p>
+
+<p>Next up we have the code that determines what to do with the current byte:</p>
+
+<div class="highlight"><pre class="highlight inko"><code>space<span class="p">?(</span>byte<span class="p">!).</span><span class="nf">if</span><span class="p">(</span><span class="w">
+  </span><span class="ss">true</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="p">(</span>byte<span class="w"> </span><span class="nf">==</span><span class="w"> </span><span class="no">NEWLINE</span><span class="p">).</span><span class="nf">if_true</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="vi">@lines</span><span class="w"> </span><span class="nf">+=</span><span class="w"> </span><span class="mi">1</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+
+    </span><span class="vi">@previous_is_space</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="no">True</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="ss">false</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="vi">@previous_is_space</span><span class="p">.</span><span class="nf">if_true</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="vi">@words</span><span class="w"> </span><span class="nf">+=</span><span class="w"> </span><span class="mi">1</span><span class="w">
+      </span><span class="vi">@previous_is_space</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="no">False</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span></code></pre></div>
+<p>We use the <code>space?</code> method we defined earlier on, and pass it the current byte.
+We use <code>byte!</code> instead of just <code>byte</code>, as the type of <code>byte</code> is <code>?Integer</code> (an
+Integer or Nil). Since <code>space?</code> expects an <code>Integer</code>, we have to cast our <code>byte</code>
+variable to the right type. Doing this by hand gets tedious, so Inko offers the
+<code>!</code> postfix operator to do just that.</p>
+
+<p>Once we have obtained the result of <code>space?</code>, we send the <code>if</code> message to it and
+pass two arguments: a closure to run when the receiver is true, and a closure
+for when the receiver is false. Here <code>true:</code> and <code>false:</code> are just keyword
+arguments used to clarify the purpose of the closures.</p>
+
+<p>The last two lines are pretty simple: we just increment the byte index by 1,
+then tail recurse back into the <code>count</code> method.</p>
+
+<h2 id="header-scheduling-work">Scheduling work</h2>
+
+<p>Now that we have our methods and types in place, we can start scheduling the
+work. We'll start by opening the file in read-only mode, making sure a file is
+actually provided:</p>
+
+<div class="highlight"><pre class="highlight inko"><code>env<span class="p">.</span><span class="nf">arguments</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nf">nil</span><span class="p">?.</span><span class="nf">if_true</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span>process<span class="p">.</span><span class="nf">panic</span><span class="p">(</span><span class="s1">'You must specify a file to process'</span><span class="p">)</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="k">let</span><span class="w"> </span>path<span class="w"> </span><span class="p">=</span><span class="w"> </span>env<span class="p">.</span><span class="nf">arguments</span><span class="p">[</span><span class="mi">0</span><span class="p">]!</span><span class="w">
+</span><span class="k">let</span><span class="w"> </span>input<span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">try</span><span class="p">!</span><span class="w"> </span>file<span class="p">.</span><span class="nf">read_only</span><span class="p">(</span>path<span class="p">)</span><span class="w">
+</span></code></pre></div>
+<p><code>env.arguments[0]</code> returns the first command-line argument, or <code>Nil</code> if no
+there are no arguments. If this happens, we exit the program with a
+<a href="https://inko-lang.org/manual/getting-started/error-handling/#header-panics">panic</a>.</p>
+
+<p>Our file is opened using <code>file.read_only(path)</code>, which opens the file <code>path</code>
+points to in read-only mode. We use <code>try!</code> to cause a panic if the file could
+not be opened, since there isn't much we can do without being able to open the
+file.</p>
+
+<p>Bored yet? No? Good, we're almost there!</p>
+
+<p>Now it's time to start our worker processes, and to start scheduling work:</p>
+
+<div class="highlight"><pre class="highlight inko"><code><span class="k">let</span><span class="w"> </span>workers<span class="w"> </span><span class="p">=</span><span class="w">
+  </span><span class="no">CONCURRENCY</span><span class="p">.</span><span class="nf">times</span><span class="p">.</span><span class="nf">map</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="p">(</span>_<span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>process<span class="p">.</span><span class="nf">spawn</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>worker_loop<span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}.</span><span class="nf">to_array</span><span class="w">
+
+</span><span class="k">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span>bytes<span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span><span class="w">
+</span><span class="k">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span>words<span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span><span class="w">
+</span><span class="k">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span>lines<span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span><span class="w">
+</span><span class="k">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span>previous_is_space<span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="no">True</span><span class="w">
+</span><span class="k">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span>jobs<span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span><span class="w">
+</span><span class="k">let</span><span class="w"> </span>buffer<span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="no">ByteArray</span><span class="p">.</span><span class="nf">new</span><span class="w">
+</span></code></pre></div>
+<p>The <code>workers</code> assignment is the most interesting. The bit
+<code>CONCURRENCY.times.map</code> creates an iterator that runs 8 times (since we set
+<code>CONCURRENCY</code> to 8), mapping the input value (an integer ranging from 0 to 7) to
+the result of <code>process.spawn</code>. Since we don't care about the input integer, we
+define the argument name as <code>_</code>. We then collect the results into an <code>Array</code>
+using the <code>to_array</code> message. Each spawned process runs the <code>worker_loop</code>
+method, until the program is finished. The other variables are not interesting,
+so let's skip those.</p>
+
+<p>We will divide work across the processes in a round-robin fashion, until we run
+out of bytes to read. Every process is given a chunk of equal size:</p>
+
+<div class="highlight"><pre class="highlight inko"><code><span class="p">{</span><span class="w">
+  </span><span class="k">try</span><span class="p">!</span><span class="w"> </span>input<span class="p">.</span><span class="nf">read_bytes</span><span class="p">(</span><span class="ss">bytes</span><span class="p">:</span><span class="w"> </span>buffer<span class="p">,</span><span class="w"> </span><span class="ss">size</span><span class="p">:</span><span class="w"> </span><span class="no">CHUNK_SIZE</span><span class="p">).</span><span class="nf">positive</span><span class="p">?</span><span class="w">
+</span><span class="p">}.</span><span class="nf">while_true</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span>workers<span class="p">[</span>jobs<span class="w"> </span><span class="err">%</span><span class="w"> </span>workers<span class="p">.</span><span class="nf">length</span><span class="p">]</span><span class="w">
+    </span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="no">Chunk</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="ss">previous_is_space</span><span class="p">:</span><span class="w"> </span>previous_is_space<span class="p">,</span><span class="w"> </span><span class="ss">bytes</span><span class="p">:</span><span class="w"> </span>buffer<span class="p">))</span><span class="w">
+
+  </span>previous_is_space<span class="w"> </span><span class="p">=</span><span class="w"> </span>space<span class="p">?(</span>buffer<span class="p">[</span><span class="mi">-1</span><span class="p">]!)</span><span class="w">
+
+  </span>bytes<span class="w"> </span><span class="nf">+=</span><span class="w"> </span>buffer<span class="p">.</span><span class="nf">length</span><span class="w">
+  </span>jobs<span class="w"> </span><span class="nf">+=</span><span class="w"> </span><span class="mi">1</span><span class="w">
+
+  </span>buffer<span class="p">.</span><span class="nf">clear</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<p>We create a closure that returns the result of
+<code>input.read_bytes(...).positive?</code>, which is a boolean. The result of
+<code>input.read_bytes(...)</code> is an integer signaling the number of bytes read. If the
+operation fails, we panic (by using the <code>try!</code> keyword). The method <code>read_bytes</code>
+reads bytes <em>into</em> a provided <code>ByteArray</code>, instead of returning a <code>ByteArray</code>.</p>
+
+<p><code>while_true</code> is a message sent to this closure, and will run its argument (also
+a closure) as long as the receiver returns boolean true.</p>
+
+<p>Work is balanced across processes by sending the chunks to processes:</p>
+
+<div class="highlight"><pre class="highlight inko"><code>workers<span class="p">[</span>jobs<span class="w"> </span><span class="err">%</span><span class="w"> </span>workers<span class="p">.</span><span class="nf">length</span><span class="p">]</span><span class="w">
+  </span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="no">Chunk</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="ss">previous_is_space</span><span class="p">:</span><span class="w"> </span>previous_is_space<span class="p">,</span><span class="w"> </span><span class="ss">bytes</span><span class="p">:</span><span class="w"> </span>buffer<span class="p">))</span><span class="w">
+</span></code></pre></div>
+<p>The expression <code>jobs % workers.length</code> produces an integer/index between zero
+and the last index in the <code>workers</code> array. Since the <code>workers</code> <code>Array</code> stores
+<code>Process</code> objects, we can just send <code>send</code> to them to have the message (a
+<code>Chunk</code> object in this case) sent to the process.</p>
+
+<p>Since we perform work in parallel, we have to determine if a chunk follows
+whitespace when scheduling them. We do this using <code>previous_is_space =
+space?(buffer[-1]!)</code>. Inko allows you to access negative indexes of <code>Array</code> and
+<code>ByteArray</code> types, which translate to indexes from the end of the list. In other
+words, the index -1 accesses the last element in the list.</p>
+
+<p>After this we just increment the number of bytes read, the number of jobs
+scheduled, and we clear our buffer. We reuse the same <code>ByteArray</code> so we don't
+have to create a new one for every 64 KB of bytes that we read.</p>
+
+<p>Now we can wait for all the results to be sent back from our workers, then
+present them:</p>
+
+<div class="highlight"><pre class="highlight inko"><code><span class="p">{</span><span class="w"> </span>jobs<span class="p">.</span><span class="nf">positive</span><span class="p">?</span><span class="w"> </span><span class="p">}.</span><span class="nf">while_true</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="k">let</span><span class="w"> </span>count<span class="w"> </span><span class="p">=</span><span class="w"> </span>process<span class="p">.</span><span class="nf">receive</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="no">Pair</span><span class="p">!(</span><span class="no">Integer</span><span class="p">,</span><span class="w"> </span><span class="no">Integer</span><span class="p">)</span><span class="w">
+
+  </span>lines<span class="w"> </span><span class="nf">+=</span><span class="w"> </span>count<span class="p">.</span><span class="nf">first</span><span class="w">
+  </span>words<span class="w"> </span><span class="nf">+=</span><span class="w"> </span>count<span class="p">.</span><span class="nf">second</span><span class="w">
+
+  </span>jobs<span class="w"> </span><span class="nf">-=</span><span class="w"> </span><span class="mi">1</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span>stdout<span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="no">StringBuffer</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="w">
+  </span><span class="s1">' '</span><span class="p">,</span><span class="w">
+  </span>lines<span class="p">.</span><span class="nf">to_string</span><span class="p">,</span><span class="w">
+  </span><span class="s1">' '</span><span class="p">,</span><span class="w">
+  </span>words<span class="p">.</span><span class="nf">to_string</span><span class="p">,</span><span class="w">
+  </span><span class="s1">' '</span><span class="p">,</span><span class="w">
+  </span>bytes<span class="p">.</span><span class="nf">to_string</span><span class="p">,</span><span class="w">
+  </span><span class="s1">' '</span><span class="p">,</span><span class="w">
+  </span>path<span class="w">
+</span><span class="p">))</span><span class="w">
+</span></code></pre></div>
+<p>Here we wait for incoming messages, cast them to the right type (a Pair
+of the number of lines and words), then add the results to the total number of
+lines and words. Lastly, we present the results by writing them to STDOUT.</p>
+
+<p>Our final version looks like this:</p>
+
+<div class="highlight"><pre class="highlight inko"><code><span class="k">import</span><span class="w"> </span><span class="nn">std</span><span class="p">::</span><span class="nn">byte_array</span><span class="p">::</span><span class="no">ByteArray</span><span class="w">
+</span><span class="k">import</span><span class="w"> </span><span class="nn">std</span><span class="p">::</span>env<span class="w">
+</span><span class="k">import</span><span class="w"> </span><span class="nn">std</span><span class="p">::</span><span class="nn">fs</span><span class="p">::</span>file<span class="w">
+</span><span class="k">import</span><span class="w"> </span><span class="nn">std</span><span class="p">::</span><span class="nn">pair</span><span class="p">::</span><span class="no">Pair</span><span class="w">
+</span><span class="k">import</span><span class="w"> </span><span class="nn">std</span><span class="p">::</span>process<span class="w">
+</span><span class="k">import</span><span class="w"> </span><span class="nn">std</span><span class="p">::</span><span class="nn">stdio</span><span class="p">::</span>stdout<span class="w">
+</span><span class="k">import</span><span class="w"> </span><span class="nn">std</span><span class="p">::</span><span class="nn">string_buffer</span><span class="p">::</span><span class="no">StringBuffer</span><span class="w">
+
+</span><span class="k">let</span><span class="w"> </span><span class="no">CONCURRENCY</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">8</span><span class="w">
+</span><span class="k">let</span><span class="w"> </span><span class="no">MAIN</span><span class="w"> </span><span class="p">=</span><span class="w"> </span>process<span class="p">.</span><span class="nf">current</span><span class="w">
+</span><span class="k">let</span><span class="w"> </span><span class="no">NEWLINE</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">10</span><span class="w">
+</span><span class="k">let</span><span class="w"> </span><span class="no">SINGLE_SPACE</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">32</span><span class="w">
+</span><span class="k">let</span><span class="w"> </span><span class="no">SPACE_RANGE</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">9</span><span class="p">..</span><span class="nf">13</span><span class="w">
+</span><span class="k">let</span><span class="w"> </span><span class="no">CHUNK_SIZE</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">64</span><span class="w"> </span><span class="nf">*</span><span class="w"> </span><span class="mi">1024</span><span class="w">
+
+</span>def<span class="w"> </span>space<span class="p">?(</span><span class="ss">byte</span><span class="p">:</span><span class="w"> </span><span class="no">Integer</span><span class="p">)</span><span class="w"> </span><span class="k">-&gt;</span><span class="w"> </span><span class="no">Boolean</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="no">SPACE_RANGE</span><span class="p">.</span><span class="nf">cover</span><span class="p">?(</span>byte<span class="p">).</span><span class="nf">or</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>byte<span class="w"> </span><span class="nf">==</span><span class="w"> </span><span class="no">SINGLE_SPACE</span><span class="w"> </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span>def<span class="w"> </span>worker_loop<span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="k">let</span><span class="w"> </span>chunk<span class="w"> </span><span class="p">=</span><span class="w"> </span>process<span class="p">.</span><span class="nf">receive</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="no">Chunk</span><span class="w">
+
+  </span><span class="no">MAIN</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span>chunk<span class="p">.</span><span class="nf">count</span><span class="p">)</span><span class="w">
+
+  </span>worker_loop<span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="k">object</span> <span class="nc">Chunk</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="vi">@previous_is_space</span><span class="p">:</span><span class="w"> </span><span class="no">Boolean</span><span class="w">
+  </span><span class="vi">@bytes</span><span class="p">:</span><span class="w"> </span><span class="no">ByteArray</span><span class="w">
+  </span><span class="vi">@lines</span><span class="p">:</span><span class="w"> </span><span class="no">Integer</span><span class="w">
+  </span><span class="vi">@words</span><span class="p">:</span><span class="w"> </span><span class="no">Integer</span><span class="w">
+  </span><span class="vi">@index</span><span class="p">:</span><span class="w"> </span><span class="no">Integer</span><span class="w">
+
+  </span>def<span class="w"> </span><span class="nf">init</span><span class="p">(</span><span class="ss">previous_is_space</span><span class="p">:</span><span class="w"> </span><span class="no">Boolean</span><span class="p">,</span><span class="w"> </span><span class="ss">bytes</span><span class="p">:</span><span class="w"> </span><span class="no">ByteArray</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="vi">@previous_is_space</span><span class="w"> </span><span class="p">=</span><span class="w"> </span>previous_is_space<span class="w">
+    </span><span class="vi">@bytes</span><span class="w"> </span><span class="p">=</span><span class="w"> </span>bytes<span class="w">
+    </span><span class="vi">@lines</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span><span class="w">
+    </span><span class="vi">@words</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span><span class="w">
+    </span><span class="vi">@index</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+
+  </span>def<span class="w"> </span>count<span class="w"> </span><span class="k">-&gt;</span><span class="w"> </span><span class="no">Pair</span><span class="p">!(</span><span class="no">Integer</span><span class="p">,</span><span class="w"> </span><span class="no">Integer</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="k">let</span><span class="w"> </span>byte<span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="vi">@bytes</span><span class="p">[</span><span class="vi">@index</span><span class="p">]</span><span class="w">
+
+    </span>byte<span class="p">.</span><span class="nf">nil</span><span class="p">?.</span><span class="nf">if_true</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="k">return</span><span class="w"> </span><span class="no">Pair</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="vi">@lines</span><span class="p">,</span><span class="w"> </span><span class="vi">@words</span><span class="p">)</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+
+    </span>space<span class="p">?(</span>byte<span class="p">!).</span><span class="nf">if</span><span class="p">(</span><span class="w">
+      </span><span class="ss">true</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="p">(</span>byte<span class="w"> </span><span class="nf">==</span><span class="w"> </span><span class="no">NEWLINE</span><span class="p">).</span><span class="nf">if_true</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="vi">@lines</span><span class="w"> </span><span class="nf">+=</span><span class="w"> </span><span class="mi">1</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+
+        </span><span class="vi">@previous_is_space</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="no">True</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="ss">false</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="vi">@previous_is_space</span><span class="p">.</span><span class="nf">if_true</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="vi">@words</span><span class="w"> </span><span class="nf">+=</span><span class="w"> </span><span class="mi">1</span><span class="w">
+          </span><span class="vi">@previous_is_space</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="no">False</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">)</span><span class="w">
+
+    </span><span class="vi">@index</span><span class="w"> </span><span class="nf">+=</span><span class="w"> </span><span class="mi">1</span><span class="w">
+
+    </span>count<span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span>env<span class="p">.</span><span class="nf">arguments</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nf">nil</span><span class="p">?.</span><span class="nf">if_true</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span>process<span class="p">.</span><span class="nf">panic</span><span class="p">(</span><span class="s1">'You must specify a file to process'</span><span class="p">)</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="k">let</span><span class="w"> </span>path<span class="w"> </span><span class="p">=</span><span class="w"> </span>env<span class="p">.</span><span class="nf">arguments</span><span class="p">[</span><span class="mi">0</span><span class="p">]!</span><span class="w">
+</span><span class="k">let</span><span class="w"> </span>input<span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">try</span><span class="p">!</span><span class="w"> </span>file<span class="p">.</span><span class="nf">read_only</span><span class="p">(</span>path<span class="p">)</span><span class="w">
+
+</span><span class="k">let</span><span class="w"> </span>workers<span class="w"> </span><span class="p">=</span><span class="w">
+  </span><span class="no">CONCURRENCY</span><span class="p">.</span><span class="nf">times</span><span class="p">.</span><span class="nf">map</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="p">(</span>_<span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>process<span class="p">.</span><span class="nf">spawn</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>worker_loop<span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}.</span><span class="nf">to_array</span><span class="w">
+
+</span><span class="k">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span>bytes<span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span><span class="w">
+</span><span class="k">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span>words<span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span><span class="w">
+</span><span class="k">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span>lines<span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span><span class="w">
+</span><span class="k">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span>previous_is_space<span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="no">True</span><span class="w">
+
+</span><span class="k">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span>jobs<span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span><span class="w">
+</span><span class="k">let</span><span class="w"> </span>buffer<span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="no">ByteArray</span><span class="p">.</span><span class="nf">new</span><span class="w">
+
+</span><span class="p">{</span><span class="w">
+  </span><span class="k">try</span><span class="p">!</span><span class="w"> </span>input<span class="p">.</span><span class="nf">read_bytes</span><span class="p">(</span><span class="ss">bytes</span><span class="p">:</span><span class="w"> </span>buffer<span class="p">,</span><span class="w"> </span><span class="ss">size</span><span class="p">:</span><span class="w"> </span><span class="no">CHUNK_SIZE</span><span class="p">).</span><span class="nf">positive</span><span class="p">?</span><span class="w">
+</span><span class="p">}.</span><span class="nf">while_true</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span>workers<span class="p">[</span>jobs<span class="w"> </span><span class="err">%</span><span class="w"> </span>workers<span class="p">.</span><span class="nf">length</span><span class="p">]</span><span class="w">
+    </span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="no">Chunk</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="ss">previous_is_space</span><span class="p">:</span><span class="w"> </span>previous_is_space<span class="p">,</span><span class="w"> </span><span class="ss">bytes</span><span class="p">:</span><span class="w"> </span>buffer<span class="p">))</span><span class="w">
+
+  </span>previous_is_space<span class="w"> </span><span class="p">=</span><span class="w"> </span>space<span class="p">?(</span>buffer<span class="p">[</span><span class="mi">-1</span><span class="p">]!)</span><span class="w">
+
+  </span>bytes<span class="w"> </span><span class="nf">+=</span><span class="w"> </span>buffer<span class="p">.</span><span class="nf">length</span><span class="w">
+  </span>jobs<span class="w"> </span><span class="nf">+=</span><span class="w"> </span><span class="mi">1</span><span class="w">
+
+  </span>buffer<span class="p">.</span><span class="nf">clear</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="p">{</span><span class="w"> </span>jobs<span class="p">.</span><span class="nf">positive</span><span class="p">?</span><span class="w"> </span><span class="p">}.</span><span class="nf">while_true</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="k">let</span><span class="w"> </span>count<span class="w"> </span><span class="p">=</span><span class="w"> </span>process<span class="p">.</span><span class="nf">receive</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="no">Pair</span><span class="p">!(</span><span class="no">Integer</span><span class="p">,</span><span class="w"> </span><span class="no">Integer</span><span class="p">)</span><span class="w">
+
+  </span>lines<span class="w"> </span><span class="nf">+=</span><span class="w"> </span>count<span class="p">.</span><span class="nf">first</span><span class="w">
+  </span>words<span class="w"> </span><span class="nf">+=</span><span class="w"> </span>count<span class="p">.</span><span class="nf">second</span><span class="w">
+
+  </span>jobs<span class="w"> </span><span class="nf">-=</span><span class="w"> </span><span class="mi">1</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span>stdout<span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="no">StringBuffer</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="w">
+  </span><span class="s1">' '</span><span class="p">,</span><span class="w">
+  </span>lines<span class="p">.</span><span class="nf">to_string</span><span class="p">,</span><span class="w">
+  </span><span class="s1">' '</span><span class="p">,</span><span class="w">
+  </span>words<span class="p">.</span><span class="nf">to_string</span><span class="p">,</span><span class="w">
+  </span><span class="s1">' '</span><span class="p">,</span><span class="w">
+  </span>bytes<span class="p">.</span><span class="nf">to_string</span><span class="p">,</span><span class="w">
+  </span><span class="s1">' '</span><span class="p">,</span><span class="w">
+  </span>path<span class="w">
+</span><span class="p">))</span><span class="w">
+</span></code></pre></div>
+<h2 id="header-performance">Performance</h2>
+
+<p>Let's start by running GNU <code>wc</code> to see how it performs:</p>
+
+<div class="highlight"><pre class="highlight plaintext"><code>$ time -f "%es %MKB" wc big.txt
+ 128457 1095695 6488666 big.txt
+0.03s 2136KB
+</code></pre></div>
+<p>This only took 0.03 seconds (30 milliseconds), and used a peak RSS of 2.08 MB.
+Not bad!</p>
+
+<p>Now let's see how our Inko implementation performs:</p>
+
+<div class="highlight"><pre class="highlight plaintext"><code>$ time -f "%es %MKB" inko wc.inko big.txt
+ 128457 1095695 6488666 big.txt
+8.34s 260272KB
+</code></pre></div>
+<p>Ouch! Our implementation uses a peak RSS of 254 MB, and takes 8.34 seconds to
+count the words and lines. What's going on here? Is our implementation bad, or
+is Inko just slow?</p>
+
+<p>Well, sort of. Our implementation isn't bad at all. Maybe it would be a bit
+nicer if we wouldn't have to use the <code>StringBuffer</code> type, but apart from that
+there is not a lot worth changing. Instead, the problem is Inko. More precisely,
+the complete lack of optimisations applied by Inko's compiler.</p>
+
+<h3 id="header-optimisations-or-lack-thereof">Optimisations, or lack thereof</h3>
+
+<p>When creating a programming language you need a compiler to compile your
+language. The first compiler thus needs to be written in a different language.
+For Inko I opted to use Ruby since it's widely available, and a language I have
+worked with for almost ten years. The goal is to rewrite Inko's compiler in Inko
+itself, something that is actively worked on.</p>
+
+<p>Because we want to replace the Ruby compiler with a compiler written in Inko, we
+spent little time on adding optimisations to the Ruby compiler. In fact, the
+only optimisations it applies are:</p>
+
+<ol>
+  <li>Tail call elimination</li>
+  <li>Replacing keyword arguments passed in-order with positional arguments</li>
+</ol>
+
+<p>Other languages typically perform some form of method inlining, constant
+folding, optimising certain method calls into specialised instructions (e.g.
+translating <code>A + B</code> into something that doesn't require a method call), etc.
+Inko's current compiler does none of that, producing code that does not perform
+as well as it should.</p>
+
+<h3 id="header-closure-allocations">Closure allocations</h3>
+
+<p>This brings us to the main problem of our implementation: closure allocations.
+Specifically, the use of closures instead of statements such as <code>if</code> and
+<code>while</code>. Allocating a closure is not that expensive, but in our implementation
+of <code>wc</code> we are allocating a lot. Our <code>count</code> method alone will create at least
+five closures for every byte. For a 64 KB chunk that results in a total of 327
+680 closures. More allocations also means more garbage collections. While we can
+reuse memory after a collection, collections still take up time.</p>
+
+<p>To combat this we plan to add an optimisation pass to the self-hosting compiler
+that will eliminate closure allocations where possible. For example, cases such
+as <code>if_true</code> and <code>if_false</code> can be optimised to not use closures at all. It's
+hard to say how big the impact of this would be on our <code>wc</code> implementation, but
+I would not be surprised if we can cut the runtime in half; or maybe reduce it
+even more.</p>
+
+<h3 id="header-garbage-collection-performance">Garbage collection performance</h3>
+
+<p>Another problem we are running into is that Inko's garbage collector is spending
+far more time tracing objects than should be necessary. Under normal
+circumstances Inko's garbage collector is able to trace lots of objects in less
+than one millisecond, but for our <code>wc</code> implementation it can take several
+milliseconds to trace 20-30 objects. We can see this by running our <code>wc</code>
+implementation while setting the environment variable <code>INKO_PRINT_GC_TIMINGS</code> to
+<code>true</code> (some output is removed to keep things readable):</p>
+
+<div class="highlight"><pre class="highlight plaintext"><code>$ env INKO_PRINT_GC_TIMINGS=true time -f "%es %MKB" inko wc.inko big.txt
+[0x7fb240004ec0] GC in 2.528122ms, 28 marked, 0 promoted, 0 evacuated
+[0x7fb240004670] GC in 15.437073ms, 28 marked, 0 promoted, 0 evacuated
+[0x7fb240005630] GC in 28.714244ms, 28 marked, 0 promoted, 0 evacuated
+[0x7fb240007440] GC in 30.711002ms, 28 marked, 0 promoted, 0 evacuated
+</code></pre></div>
+<p>This even happens when we limit the number of tracing threads to 1, instead of
+the default of half the number of CPU cores:</p>
+
+<div class="highlight"><pre class="highlight plaintext"><code>$ env INKO_TRACER_THREADS=1 \
+    INKO_PRINT_GC_TIMINGS=true time -f "%es %MKB" inko wc.inko big.txt
+[0x7fdbfc005dd0] GC in 581.006µs, 28 marked, 0 promoted, 0 evacuated
+[0x7fdbfc005630] GC in 2.047803ms, 28 marked, 0 promoted, 0 evacuated
+[0x7fdbfc007bb0] GC in 918.097µs, 28 marked, 0 promoted, 0 evacuated
+[0x7fdbfc004ec0] GC in 1.104836ms, 28 marked, 0 promoted, 0 evacuated
+</code></pre></div>
+<p>The timings may be a bit better, but they are still pretty bad given we end up
+only marking a small number of objects. Take the following program as an
+example:</p>
+
+<div class="highlight"><pre class="highlight inko"><code><span class="k">object</span> <span class="nc">Thing</span><span class="w"> </span><span class="p">{}</span><span class="w">
+
+</span><span class="k">let</span><span class="w"> </span>things<span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">28</span><span class="p">.</span><span class="nf">times</span><span class="p">.</span><span class="nf">map</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="p">(</span>_<span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="no">Thing</span><span class="p">.</span><span class="nf">new</span><span class="w"> </span><span class="p">}.</span><span class="nf">to_array</span><span class="w">
+
+</span><span class="mi">1</span>_000_000<span class="p">.</span><span class="nf">times</span><span class="p">.</span><span class="nf">each</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="p">(</span>integer<span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span>integer<span class="p">.</span><span class="nf">to_float</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<p>Here we create an array containing 28 <code>Thing</code> instances, which we keep around.
+We then create one million float objects, which are heap allocated. If we run
+this with the <code>INKO_PRINT_GC_TIMINGS</code> variable set, the output is as follows:</p>
+
+<div class="highlight"><pre class="highlight plaintext"><code>$ env INKO_PRINT_GC_TIMINGS=true inko foo.inko
+[0x5620ad17df70] GC in 523.047µs, 44 marked, 0 promoted, 0 evacuated
+[0x5620ad17df70] GC in 480.612µs, 46 marked, 0 promoted, 0 evacuated
+[0x5620ad17df70] GC in 493.339µs, 63 marked, 43 promoted, 0 evacuated
+[0x5620ad17df70] GC in 552.766µs, 9 marked, 0 promoted, 0 evacuated
+</code></pre></div>
+<p>These timings are much closer to what one would expect.</p>
+
+<p>It's not quite clear yet what is causing this slowdown. Based on some profiling
+using Valgrind I suspect the
+<a href="https://github.com/crossbeam-rs/crossbeam">crossbeam</a> library (which we use in
+the garbage collector) is to blame, as Valgrind's data suggests most time is
+spent in crossbeam code; even though the code should be fast. The crossbeam
+types we use rely on an epoch based garbage collection mechanism, and per <a href="https://github.com/crossbeam-rs/rfcs/blob/master/text/2017-05-23-epoch-gc.md#oversubscription">this
+crossbeam
+RFC</a>
+it seems this may not work too well when spawning lots of short-lived threads;
+as is done when tracing objects.</p>
+
+<p>A possible solution would be to use a fixed-size thread pool for tracing
+objects, instead of spawning tracing threads on-demand. We do not use this
+approach at the moment because the current approach is easier to implement. An
+approach I have been thinking of is to give each collector thread its own pool
+of tracing threads, spawned when the collector threads first starts up. This
+approach means a tracing pool only ever collects a single process at a time,
+allowing us to pass certain data around once (= when starting the tracing),
+instead of having to pass it around with every new job that is scheduled. This
+is something I will have to take a look at in the coming weeks.</p>
+
+<h2 id="header-wrapping-up">Wrapping up</h2>
+
+<p>We did not manage to beat C with Inko, but that was never the goal of this
+exercise. Instead, I merely wanted to showcase how one would approach the
+problem using Inko, and get more people interested in Inko as a result.</p>
+
+<p>The optimisations discussed will be applied over time, gradually improving
+performance of Inko. One day we will also add a JIT, though I suspect it will
+take several years before we will have a JIT. The potential crossbeam bottleneck
+is also worth investigating.</p>
+
+<p>I doubt a dynamic language such as Inko will be able to beat C, but if we can at
+least beat other dynamic languages (e.g. Ruby) that is good enough.</p>
+
+<p>For more information about Inko, take a look at the <a href="https://inko-lang.org/">Inko
+website</a> or the <a href="https://gitlab.com/inko-lang/inko">Git
+repository</a>. If you would like to sponsor the
+development of Inko with a small monthly contribution, please take a look at the
+<a href="https://inko-lang.org/sponsors/">sponsors page</a> for more information.</p>
+
+</section>
+</div>
+
+
+</body></html>

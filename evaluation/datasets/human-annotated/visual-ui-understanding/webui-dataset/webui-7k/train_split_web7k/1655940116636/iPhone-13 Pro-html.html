@@ -1,0 +1,1324 @@
+<!DOCTYPE html><html lang="en-US"><head>
+	<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="profile" href="https://gmpg.org/xfn/11">
+	<title>Page not found – IndyPlanet</title>
+<meta name="robots" content="max-image-preview:large">
+<link rel="dns-prefetch" href="//s.w.org">
+<link rel="alternate" type="application/rss+xml" title="IndyPlanet » Feed" href="https://www.indyplanet.com/feed">
+<link rel="alternate" type="application/rss+xml" title="IndyPlanet » Comments Feed" href="https://www.indyplanet.com/comments/feed">
+<script type="text/javascript">
+window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/14.0.0\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/14.0.0\/svg\/","svgExt":".svg","source":{"wpemoji":"https:\/\/www.indyplanet.com\/wp-includes\/js\/wp-emoji.js?ver=6.0","twemoji":"https:\/\/www.indyplanet.com\/wp-includes\/js\/twemoji.js?ver=6.0"}};
+/**
+ * @output wp-includes/js/wp-emoji-loader.js
+ */
+
+( function( window, document, settings ) {
+	var src, ready, ii, tests;
+
+	// Create a canvas element for testing native browser support of emoji.
+	var canvas = document.createElement( 'canvas' );
+	var context = canvas.getContext && canvas.getContext( '2d' );
+
+	/**
+	 * Checks if two sets of Emoji characters render the same visually.
+	 *
+	 * @since 4.9.0
+	 *
+	 * @private
+	 *
+	 * @param {number[]} set1 Set of Emoji character codes.
+	 * @param {number[]} set2 Set of Emoji character codes.
+	 *
+	 * @return {boolean} True if the two sets render the same.
+	 */
+	function emojiSetsRenderIdentically( set1, set2 ) {
+		var stringFromCharCode = String.fromCharCode;
+
+		// Cleanup from previous test.
+		context.clearRect( 0, 0, canvas.width, canvas.height );
+		context.fillText( stringFromCharCode.apply( this, set1 ), 0, 0 );
+		var rendered1 = canvas.toDataURL();
+
+		// Cleanup from previous test.
+		context.clearRect( 0, 0, canvas.width, canvas.height );
+		context.fillText( stringFromCharCode.apply( this, set2 ), 0, 0 );
+		var rendered2 = canvas.toDataURL();
+
+		return rendered1 === rendered2;
+	}
+
+	/**
+	 * Detects if the browser supports rendering emoji or flag emoji.
+	 *
+	 * Flag emoji are a single glyph made of two characters, so some browsers
+	 * (notably, Firefox OS X) don't support them.
+	 *
+	 * @since 4.2.0
+	 *
+	 * @private
+	 *
+	 * @param {string} type Whether to test for support of "flag" or "emoji".
+	 *
+	 * @return {boolean} True if the browser can render emoji, false if it cannot.
+	 */
+	function browserSupportsEmoji( type ) {
+		var isIdentical;
+
+		if ( ! context || ! context.fillText ) {
+			return false;
+		}
+
+		/*
+		 * Chrome on OS X added native emoji rendering in M41. Unfortunately,
+		 * it doesn't work when the font is bolder than 500 weight. So, we
+		 * check for bold rendering support to avoid invisible emoji in Chrome.
+		 */
+		context.textBaseline = 'top';
+		context.font = '600 32px Arial';
+
+		switch ( type ) {
+			case 'flag':
+				/*
+				 * Test for Transgender flag compatibility. This flag is shortlisted for the Emoji 13 spec,
+				 * but has landed in Twemoji early, so we can add support for it, too.
+				 *
+				 * To test for support, we try to render it, and compare the rendering to how it would look if
+				 * the browser doesn't render it correctly (white flag emoji + transgender symbol).
+				 */
+				isIdentical = emojiSetsRenderIdentically(
+					[ 0x1F3F3, 0xFE0F, 0x200D, 0x26A7, 0xFE0F ],
+					[ 0x1F3F3, 0xFE0F, 0x200B, 0x26A7, 0xFE0F ]
+				);
+
+				if ( isIdentical ) {
+					return false;
+				}
+
+				/*
+				 * Test for UN flag compatibility. This is the least supported of the letter locale flags,
+				 * so gives us an easy test for full support.
+				 *
+				 * To test for support, we try to render it, and compare the rendering to how it would look if
+				 * the browser doesn't render it correctly ([U] + [N]).
+				 */
+				isIdentical = emojiSetsRenderIdentically(
+					[ 0xD83C, 0xDDFA, 0xD83C, 0xDDF3 ],
+					[ 0xD83C, 0xDDFA, 0x200B, 0xD83C, 0xDDF3 ]
+				);
+
+				if ( isIdentical ) {
+					return false;
+				}
+
+				/*
+				 * Test for English flag compatibility. England is a country in the United Kingdom, it
+				 * does not have a two letter locale code but rather an five letter sub-division code.
+				 *
+				 * To test for support, we try to render it, and compare the rendering to how it would look if
+				 * the browser doesn't render it correctly (black flag emoji + [G] + [B] + [E] + [N] + [G]).
+				 */
+				isIdentical = emojiSetsRenderIdentically(
+					[ 0xD83C, 0xDFF4, 0xDB40, 0xDC67, 0xDB40, 0xDC62, 0xDB40, 0xDC65, 0xDB40, 0xDC6E, 0xDB40, 0xDC67, 0xDB40, 0xDC7F ],
+					[ 0xD83C, 0xDFF4, 0x200B, 0xDB40, 0xDC67, 0x200B, 0xDB40, 0xDC62, 0x200B, 0xDB40, 0xDC65, 0x200B, 0xDB40, 0xDC6E, 0x200B, 0xDB40, 0xDC67, 0x200B, 0xDB40, 0xDC7F ]
+				);
+
+				return ! isIdentical;
+			case 'emoji':
+				/*
+				 * Why can't we be friends? Everyone can now shake hands in emoji, regardless of skin tone!
+				 *
+				 * To test for Emoji 14.0 support, try to render a new emoji: Handshake: Light Skin Tone, Dark Skin Tone.
+				 *
+				 * The Handshake: Light Skin Tone, Dark Skin Tone emoji is a ZWJ sequence combining 🫱 Rightwards Hand,
+				 * 🏻 Light Skin Tone, a Zero Width Joiner, 🫲 Leftwards Hand, and 🏿 Dark Skin Tone.
+				 *
+				 * 0x1FAF1 == Rightwards Hand
+				 * 0x1F3FB == Light Skin Tone
+				 * 0x200D == Zero-Width Joiner (ZWJ) that links the code points for the new emoji or
+				 * 0x200B == Zero-Width Space (ZWS) that is rendered for clients not supporting the new emoji.
+				 * 0x1FAF2 == Leftwards Hand
+				 * 0x1F3FF == Dark Skin Tone.
+				 *
+				 * When updating this test for future Emoji releases, ensure that individual emoji that make up the
+				 * sequence come from older emoji standards.
+				 */
+				isIdentical = emojiSetsRenderIdentically(
+					[0x1FAF1, 0x1F3FB, 0x200D, 0x1FAF2, 0x1F3FF],
+					[0x1FAF1, 0x1F3FB, 0x200B, 0x1FAF2, 0x1F3FF]
+				);
+
+				return ! isIdentical;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Adds a script to the head of the document.
+	 *
+	 * @ignore
+	 *
+	 * @since 4.2.0
+	 *
+	 * @param {Object} src The url where the script is located.
+	 * @return {void}
+	 */
+	function addScript( src ) {
+		var script = document.createElement( 'script' );
+
+		script.src = src;
+		script.defer = script.type = 'text/javascript';
+		document.getElementsByTagName( 'head' )[0].appendChild( script );
+	}
+
+	tests = Array( 'flag', 'emoji' );
+
+	settings.supports = {
+		everything: true,
+		everythingExceptFlag: true
+	};
+
+	/*
+	 * Tests the browser support for flag emojis and other emojis, and adjusts the
+	 * support settings accordingly.
+	 */
+	for( ii = 0; ii < tests.length; ii++ ) {
+		settings.supports[ tests[ ii ] ] = browserSupportsEmoji( tests[ ii ] );
+
+		settings.supports.everything = settings.supports.everything && settings.supports[ tests[ ii ] ];
+
+		if ( 'flag' !== tests[ ii ] ) {
+			settings.supports.everythingExceptFlag = settings.supports.everythingExceptFlag && settings.supports[ tests[ ii ] ];
+		}
+	}
+
+	settings.supports.everythingExceptFlag = settings.supports.everythingExceptFlag && ! settings.supports.flag;
+
+	// Sets DOMReady to false and assigns a ready function to settings.
+	settings.DOMReady = false;
+	settings.readyCallback = function() {
+		settings.DOMReady = true;
+	};
+
+	// When the browser can not render everything we need to load a polyfill.
+	if ( ! settings.supports.everything ) {
+		ready = function() {
+			settings.readyCallback();
+		};
+
+		/*
+		 * Cross-browser version of adding a dom ready event.
+		 */
+		if ( document.addEventListener ) {
+			document.addEventListener( 'DOMContentLoaded', ready, false );
+			window.addEventListener( 'load', ready, false );
+		} else {
+			window.attachEvent( 'onload', ready );
+			document.attachEvent( 'onreadystatechange', function() {
+				if ( 'complete' === document.readyState ) {
+					settings.readyCallback();
+				}
+			} );
+		}
+
+		src = settings.source || {};
+
+		if ( src.concatemoji ) {
+			addScript( src.concatemoji );
+		} else if ( src.wpemoji && src.twemoji ) {
+			addScript( src.twemoji );
+			addScript( src.wpemoji );
+		}
+	}
+
+} )( window, document, window._wpemojiSettings );
+</script><script src="https://www.indyplanet.com/wp-includes/js/twemoji.js?ver=6.0" type="text/javascript" defer=""></script><script src="https://www.indyplanet.com/wp-includes/js/wp-emoji.js?ver=6.0" type="text/javascript" defer=""></script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 0.07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	<link rel="stylesheet" id="wp-block-library-css" href="https://www.indyplanet.com/wp-includes/css/dist/block-library/style.css?ver=6.0" type="text/css" media="all">
+<link rel="stylesheet" id="wc-blocks-vendors-style-css" href="https://www.indyplanet.com/wp-content/plugins/woocommerce/packages/woocommerce-blocks/build/wc-blocks-vendors-style.css?ver=1655860121" type="text/css" media="all">
+<link rel="stylesheet" id="wc-blocks-style-css" href="https://www.indyplanet.com/wp-content/plugins/woocommerce/packages/woocommerce-blocks/build/wc-blocks-style.css?ver=1655860121" type="text/css" media="all">
+<style id="global-styles-inline-css" type="text/css">
+body{--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--duotone--dark-grayscale: url('#wp-duotone-dark-grayscale');--wp--preset--duotone--grayscale: url('#wp-duotone-grayscale');--wp--preset--duotone--purple-yellow: url('#wp-duotone-purple-yellow');--wp--preset--duotone--blue-red: url('#wp-duotone-blue-red');--wp--preset--duotone--midnight: url('#wp-duotone-midnight');--wp--preset--duotone--magenta-yellow: url('#wp-duotone-magenta-yellow');--wp--preset--duotone--purple-green: url('#wp-duotone-purple-green');--wp--preset--duotone--blue-orange: url('#wp-duotone-blue-orange');--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+</style>
+<link rel="stylesheet" id="woocommerce-layout-css" href="https://www.indyplanet.com/wp-content/plugins/woocommerce/assets/css/woocommerce-layout.css?ver=6.6.1" type="text/css" media="all">
+<link rel="stylesheet" id="woocommerce-smallscreen-css" href="https://www.indyplanet.com/wp-content/plugins/woocommerce/assets/css/woocommerce-smallscreen.css?ver=6.6.1" type="text/css" media="only screen and (max-width: 768px)">
+<link rel="stylesheet" id="woocommerce-general-css" href="https://www.indyplanet.com/wp-content/plugins/woocommerce/assets/css/woocommerce.css?ver=6.6.1" type="text/css" media="all">
+<style id="woocommerce-inline-inline-css" type="text/css">
+.woocommerce form .form-row .required { visibility: visible; }
+</style>
+<link rel="stylesheet" id="brands-styles-css" href="https://www.indyplanet.com/wp-content/plugins/woocommerce-brands/assets/css/style.css?ver=1.6.32" type="text/css" media="all">
+<link rel="stylesheet" id="hello-elementor-css" href="https://www.indyplanet.com/wp-content/themes/hello-elementor/style.css?ver=2.4.2" type="text/css" media="all">
+<link rel="stylesheet" id="hello-elementor-theme-style-css" href="https://www.indyplanet.com/wp-content/themes/hello-elementor/theme.css?ver=2.4.2" type="text/css" media="all">
+<link rel="stylesheet" id="elementor-icons-css" href="https://www.indyplanet.com/wp-content/plugins/elementor/assets/lib/eicons/css/elementor-icons.css?ver=5.15.0" type="text/css" media="all">
+<link rel="stylesheet" id="elementor-frontend-css" href="https://www.indyplanet.com/wp-content/plugins/elementor/assets/css/frontend.css?ver=3.6.6" type="text/css" media="all">
+<style id="elementor-frontend-inline-css" type="text/css">
+.elementor-kit-282679{--e-global-color-primary:#FF3300;--e-global-color-secondary:#FF9900;--e-global-color-text:#444444;--e-global-color-accent:#57AACF;--e-global-color-c8bb89c:#BEEBFF;--e-global-typography-primary-font-family:"Ubuntu";--e-global-typography-primary-font-size:16px;--e-global-typography-primary-font-weight:600;--e-global-typography-primary-text-transform:none;--e-global-typography-primary-font-style:normal;--e-global-typography-primary-text-decoration:none;--e-global-typography-secondary-font-family:"Roboto Slab";--e-global-typography-secondary-font-size:16px;--e-global-typography-secondary-font-weight:600;--e-global-typography-text-font-family:"Roboto Slab";--e-global-typography-text-font-size:16px;--e-global-typography-text-font-weight:400;--e-global-typography-accent-font-family:"Ubuntu";--e-global-typography-accent-font-size:20px;--e-global-typography-accent-font-weight:600;color:#444444;font-family:"Roboto Slab", Sans-serif;font-size:16px;font-weight:400;background-color:#FFFFFF;}.elementor-kit-282679 a{color:var( --e-global-color-primary );font-family:"Ubuntu", Sans-serif;font-size:16px;font-weight:600;text-transform:uppercase;font-style:normal;text-decoration:none;}.elementor-kit-282679 a:hover{color:var( --e-global-color-secondary );font-family:"Ubuntu", Sans-serif;font-weight:600;text-transform:uppercase;font-style:normal;text-decoration:none;}.elementor-kit-282679 h1{color:var( --e-global-color-accent );font-family:"Ubuntu", Sans-serif;font-size:36px;font-weight:600;text-transform:none;font-style:normal;text-decoration:none;}.elementor-kit-282679 h2{color:var( --e-global-color-accent );font-family:"Ubuntu", Sans-serif;font-size:28px;font-weight:600;text-transform:none;font-style:normal;text-decoration:none;}.elementor-kit-282679 h3{color:var( --e-global-color-accent );font-family:"Ubuntu", Sans-serif;font-size:24px;font-weight:600;text-transform:none;font-style:normal;text-decoration:none;}.elementor-kit-282679 h4{color:var( --e-global-color-accent );font-family:"Ubuntu Mono", Sans-serif;font-size:20px;font-weight:600;text-transform:none;font-style:normal;text-decoration:none;}.elementor-kit-282679 h5{color:var( --e-global-color-accent );font-family:"Ubuntu Condensed", Sans-serif;font-size:16px;font-weight:600;text-transform:none;font-style:normal;text-decoration:none;}.elementor-kit-282679 h6{color:var( --e-global-color-accent );}.elementor-kit-282679 button,.elementor-kit-282679 input[type="button"],.elementor-kit-282679 input[type="submit"],.elementor-kit-282679 .elementor-button{font-family:"Ubuntu", Sans-serif;font-size:16px;font-weight:bold;text-transform:capitalize;font-style:normal;text-decoration:none;text-shadow:0px 0px 0px rgba(0, 0, 0, 0);color:#FFFFFF;background-color:var( --e-global-color-primary );box-shadow:0px 0px 0px 0px rgba(0, 0, 0, 0);border-radius:0px 0px 0px 0px;padding:0px 0px 0px 0px;}.elementor-kit-282679 button:hover,.elementor-kit-282679 button:focus,.elementor-kit-282679 input[type="button"]:hover,.elementor-kit-282679 input[type="button"]:focus,.elementor-kit-282679 input[type="submit"]:hover,.elementor-kit-282679 input[type="submit"]:focus,.elementor-kit-282679 .elementor-button:hover,.elementor-kit-282679 .elementor-button:focus{color:#FFFFFF;background-color:var( --e-global-color-secondary );box-shadow:0px 0px 0px 0px rgba(0, 0, 0, 0);border-radius:0px 0px 0px 0px;}.elementor-kit-282679 label{color:var( --e-global-color-text );}.elementor-kit-282679 input:not([type="button"]):not([type="submit"]),.elementor-kit-282679 textarea,.elementor-kit-282679 .elementor-field-textual{color:var( --e-global-color-text );background-color:#FFFFFF;box-shadow:0px 0px 0px 0px rgba(0, 0, 0, 0);border-radius:0px 0px 0px 0px;padding:0px 0px 0px 0px;}.elementor-kit-282679 input:focus:not([type="button"]):not([type="submit"]),.elementor-kit-282679 textarea:focus,.elementor-kit-282679 .elementor-field-textual:focus{color:var( --e-global-color-text );background-color:#FFFFFF;}.elementor-section.elementor-section-boxed > .elementor-container{max-width:1140px;}.e-container{--container-max-width:1140px;}.elementor-widget:not(:last-child){margin-bottom:20px;}.elementor-element{--widgets-spacing:20px;}{}h1.entry-title{display:var(--page-title-display);}.elementor-kit-282679 e-page-transition{background-color:#FFBC7D;}.site-header{padding-right:0px;padding-left:0px;}@media(max-width:1024px){.elementor-section.elementor-section-boxed > .elementor-container{max-width:1024px;}.e-container{--container-max-width:1024px;}}@media(max-width:767px){.elementor-section.elementor-section-boxed > .elementor-container{max-width:768px;}.e-container{--container-max-width:768px;}}
+.elementor-283662 .elementor-element.elementor-element-1f62d95c > .elementor-container{max-width:1140px;min-height:60px;}.elementor-283662 .elementor-element.elementor-element-1f62d95c > .elementor-container > .elementor-column > .elementor-widget-wrap{align-content:center;align-items:center;}.elementor-283662 .elementor-element.elementor-element-1f62d95c:not(.elementor-motion-effects-element-type-background), .elementor-283662 .elementor-element.elementor-element-1f62d95c > .elementor-motion-effects-container > .elementor-motion-effects-layer{background-color:#1C1C1C00;}.elementor-283662 .elementor-element.elementor-element-1f62d95c{transition:background 0.3s, border 0.3s, border-radius 0.3s, box-shadow 0.3s;margin-top:10px;margin-bottom:0px;}.elementor-283662 .elementor-element.elementor-element-1f62d95c > .elementor-background-overlay{transition:background 0.3s, border-radius 0.3s, opacity 0.3s;}.elementor-bc-flex-widget .elementor-283662 .elementor-element.elementor-element-32c7e30c.elementor-column .elementor-widget-wrap{align-items:flex-start;}.elementor-283662 .elementor-element.elementor-element-32c7e30c.elementor-column.elementor-element[data-element_type="column"] > .elementor-widget-wrap.elementor-element-populated{align-content:flex-start;align-items:flex-start;}.elementor-283662 .elementor-element.elementor-element-32c7e30c.elementor-column > .elementor-widget-wrap{justify-content:flex-start;}.elementor-283662 .elementor-element.elementor-element-32c7e30c > .elementor-widget-wrap > .elementor-widget:not(.elementor-widget__width-auto):not(.elementor-widget__width-initial):not(:last-child):not(.elementor-absolute){margin-bottom:0px;}.elementor-283662 .elementor-element.elementor-element-32c7e30c > .elementor-element-populated{margin:0px 0px 0px 0px;--e-column-margin-right:0px;--e-column-margin-left:0px;padding:0px 0px 0px 0px;}.elementor-283662 .elementor-element.elementor-element-45925e7f{text-align:left;}.elementor-283662 .elementor-element.elementor-element-45925e7f img{width:468px;max-width:100%;height:90px;}.elementor-283662 .elementor-element.elementor-element-45925e7f > .elementor-widget-container{margin:0px 0px 0px 0px;padding:0px 0px 0px 0px;}.elementor-283662 .elementor-element.elementor-element-4033c688 > .elementor-widget-wrap > .elementor-widget:not(.elementor-widget__width-auto):not(.elementor-widget__width-initial):not(:last-child):not(.elementor-absolute){margin-bottom:4px;}.elementor-283662 .elementor-element.elementor-element-4033c688 > .elementor-element-populated{margin:0px 0px 0px 0px;--e-column-margin-right:0px;--e-column-margin-left:0px;padding:0px 0px 0px 0px;}.elementor-283662 .elementor-element.elementor-element-1ce5316f{text-align:center;}.elementor-283662 .elementor-element.elementor-element-1ce5316f .elementor-heading-title{color:var( --e-global-color-secondary );font-size:22px;}.elementor-283662 .elementor-element.elementor-element-3fda9290{text-align:center;}.elementor-283662 .elementor-element.elementor-element-3fda9290 .elementor-heading-title{color:var( --e-global-color-accent );font-family:"Ubuntu", Sans-serif;}.elementor-283662 .elementor-element.elementor-element-3fda9290 > .elementor-widget-container{margin:0px 0px 0px 0px;padding:0px 0px 0px 0px;}.elementor-283662 .elementor-element.elementor-element-383dbebc{--alignment:center;--grid-side-margin:4px;--grid-column-gap:4px;--grid-row-gap:0px;--grid-bottom-margin:0px;--e-share-buttons-primary-color:#FFFFFF00;--e-share-buttons-secondary-color:var( --e-global-color-primary );}.elementor-283662 .elementor-element.elementor-element-383dbebc .elementor-share-btn{font-size:calc(1px * 10);height:2em;}.elementor-283662 .elementor-element.elementor-element-383dbebc .elementor-share-btn:hover{--e-share-buttons-primary-color:#FF990000;--e-share-buttons-secondary-color:var( --e-global-color-secondary );}.elementor-283662 .elementor-element.elementor-element-383dbebc > .elementor-widget-container{margin:0px 0px 0px 0px;padding:6px 6px 6px 6px;}.elementor-283662 .elementor-element.elementor-element-26d4d6d7 > .elementor-container{max-width:1280px;text-align:center;}.elementor-283662 .elementor-element.elementor-element-26d4d6d7:not(.elementor-motion-effects-element-type-background), .elementor-283662 .elementor-element.elementor-element-26d4d6d7 > .elementor-motion-effects-container > .elementor-motion-effects-layer{background-color:var( --e-global-color-accent );}.elementor-283662 .elementor-element.elementor-element-26d4d6d7{transition:background 0.3s, border 0.3s, border-radius 0.3s, box-shadow 0.3s;margin-top:0px;margin-bottom:0px;padding:0px 0px 0px 0px;}.elementor-283662 .elementor-element.elementor-element-26d4d6d7 > .elementor-background-overlay{transition:background 0.3s, border-radius 0.3s, opacity 0.3s;}.elementor-283662 .elementor-element.elementor-element-26d4d6d7 .elementor-heading-title{color:#57AACF00;}.elementor-bc-flex-widget .elementor-283662 .elementor-element.elementor-element-4cfd623c.elementor-column .elementor-widget-wrap{align-items:center;}.elementor-283662 .elementor-element.elementor-element-4cfd623c.elementor-column.elementor-element[data-element_type="column"] > .elementor-widget-wrap.elementor-element-populated{align-content:center;align-items:center;}.elementor-283662 .elementor-element.elementor-element-4cfd623c.elementor-column > .elementor-widget-wrap{justify-content:flex-start;}.elementor-283662 .elementor-element.elementor-element-4cfd623c > .elementor-element-populated{margin:0px 0px 0px 0px;--e-column-margin-right:0px;--e-column-margin-left:0px;padding:0px 0px 0px 0px;}.elementor-283662 .elementor-element.elementor-element-1c16399 .elementor-menu-toggle{margin-left:auto;border-width:0px;border-radius:0px;}.elementor-283662 .elementor-element.elementor-element-1c16399 .elementor-nav-menu .elementor-item{font-family:"Ubuntu", Sans-serif;font-size:16px;font-weight:600;text-transform:uppercase;font-style:normal;}.elementor-283662 .elementor-element.elementor-element-1c16399 .elementor-nav-menu--main .elementor-item{color:#ffffff;fill:#ffffff;padding-top:10px;padding-bottom:10px;}.elementor-283662 .elementor-element.elementor-element-1c16399 .elementor-nav-menu--main .elementor-item:hover,
+					.elementor-283662 .elementor-element.elementor-element-1c16399 .elementor-nav-menu--main .elementor-item.elementor-item-active,
+					.elementor-283662 .elementor-element.elementor-element-1c16399 .elementor-nav-menu--main .elementor-item.highlighted,
+					.elementor-283662 .elementor-element.elementor-element-1c16399 .elementor-nav-menu--main .elementor-item:focus{color:#fff;}.elementor-283662 .elementor-element.elementor-element-1c16399 .elementor-nav-menu--main:not(.e--pointer-framed) .elementor-item:before,
+					.elementor-283662 .elementor-element.elementor-element-1c16399 .elementor-nav-menu--main:not(.e--pointer-framed) .elementor-item:after{background-color:var( --e-global-color-primary );}.elementor-283662 .elementor-element.elementor-element-1c16399 .e--pointer-framed .elementor-item:before,
+					.elementor-283662 .elementor-element.elementor-element-1c16399 .e--pointer-framed .elementor-item:after{border-color:var( --e-global-color-primary );}.elementor-283662 .elementor-element.elementor-element-1c16399 .elementor-nav-menu--main .elementor-item.elementor-item-active{color:#FFFFFF;}.elementor-283662 .elementor-element.elementor-element-1c16399 .elementor-nav-menu--main:not(.e--pointer-framed) .elementor-item.elementor-item-active:before,
+					.elementor-283662 .elementor-element.elementor-element-1c16399 .elementor-nav-menu--main:not(.e--pointer-framed) .elementor-item.elementor-item-active:after{background-color:var( --e-global-color-secondary );}.elementor-283662 .elementor-element.elementor-element-1c16399 .e--pointer-framed .elementor-item.elementor-item-active:before,
+					.elementor-283662 .elementor-element.elementor-element-1c16399 .e--pointer-framed .elementor-item.elementor-item-active:after{border-color:var( --e-global-color-secondary );}.elementor-283662 .elementor-element.elementor-element-1c16399{--e-nav-menu-horizontal-menu-item-margin:calc( 0px / 2 );--nav-menu-icon-size:30px;width:100%;max-width:100%;align-self:flex-start;}.elementor-283662 .elementor-element.elementor-element-1c16399 .elementor-nav-menu--main:not(.elementor-nav-menu--layout-horizontal) .elementor-nav-menu > li:not(:last-child){margin-bottom:0px;}.elementor-283662 .elementor-element.elementor-element-1c16399 .elementor-nav-menu--dropdown a, .elementor-283662 .elementor-element.elementor-element-1c16399 .elementor-menu-toggle{color:#000000;}.elementor-283662 .elementor-element.elementor-element-1c16399 .elementor-nav-menu--dropdown{background-color:#f2f2f2;}.elementor-283662 .elementor-element.elementor-element-1c16399 .elementor-nav-menu--dropdown a:hover,
+					.elementor-283662 .elementor-element.elementor-element-1c16399 .elementor-nav-menu--dropdown a.elementor-item-active,
+					.elementor-283662 .elementor-element.elementor-element-1c16399 .elementor-nav-menu--dropdown a.highlighted,
+					.elementor-283662 .elementor-element.elementor-element-1c16399 .elementor-menu-toggle:hover{color:#00ce1b;}.elementor-283662 .elementor-element.elementor-element-1c16399 .elementor-nav-menu--dropdown a:hover,
+					.elementor-283662 .elementor-element.elementor-element-1c16399 .elementor-nav-menu--dropdown a.elementor-item-active,
+					.elementor-283662 .elementor-element.elementor-element-1c16399 .elementor-nav-menu--dropdown a.highlighted{background-color:#ededed;}.elementor-283662 .elementor-element.elementor-element-1c16399 .elementor-nav-menu--dropdown .elementor-item, .elementor-283662 .elementor-element.elementor-element-1c16399 .elementor-nav-menu--dropdown  .elementor-sub-item{font-size:15px;}.elementor-283662 .elementor-element.elementor-element-1c16399 div.elementor-menu-toggle{color:#ffffff;}.elementor-283662 .elementor-element.elementor-element-1c16399 div.elementor-menu-toggle svg{fill:#ffffff;}.elementor-283662 .elementor-element.elementor-element-1c16399 div.elementor-menu-toggle:hover{color:#e82a00;}.elementor-283662 .elementor-element.elementor-element-1c16399 div.elementor-menu-toggle:hover svg{fill:#e82a00;}.elementor-283662 .elementor-element.elementor-element-1c16399 > .elementor-widget-container{margin:0px 0px 0px 0px;padding:0px 0px 0px 0px;}.elementor-283662 .elementor-element.elementor-element-3f03f81e > .elementor-widget-wrap > .elementor-widget:not(.elementor-widget__width-auto):not(.elementor-widget__width-initial):not(:last-child):not(.elementor-absolute){margin-bottom:0px;}.elementor-283662 .elementor-element.elementor-element-3f03f81e:not(.elementor-motion-effects-element-type-background) > .elementor-widget-wrap, .elementor-283662 .elementor-element.elementor-element-3f03f81e > .elementor-widget-wrap > .elementor-motion-effects-container > .elementor-motion-effects-layer{background-color:#02010100;}.elementor-283662 .elementor-element.elementor-element-3f03f81e > .elementor-element-populated{transition:background 0.3s, border 0.3s, border-radius 0.3s, box-shadow 0.3s;margin:0px 0px 0px 0px;--e-column-margin-right:0px;--e-column-margin-left:0px;padding:0px 0px 0px 0px;}.elementor-283662 .elementor-element.elementor-element-3f03f81e > .elementor-element-populated > .elementor-background-overlay{transition:background 0.3s, border-radius 0.3s, opacity 0.3s;}.elementor-283662 .elementor-element.elementor-element-488e8a34 .elementor-search-form__container{min-height:30px;box-shadow:0px 0px 0px 0px rgba(0, 0, 0, 0);}.elementor-283662 .elementor-element.elementor-element-488e8a34 .elementor-search-form__submit{min-width:calc( 1 * 30px );--e-search-form-submit-text-color:#FFFFFF;background-color:var( --e-global-color-secondary );--e-search-form-submit-icon-size:16px;}body:not(.rtl) .elementor-283662 .elementor-element.elementor-element-488e8a34 .elementor-search-form__icon{padding-left:calc(30px / 3);}body.rtl .elementor-283662 .elementor-element.elementor-element-488e8a34 .elementor-search-form__icon{padding-right:calc(30px / 3);}.elementor-283662 .elementor-element.elementor-element-488e8a34 .elementor-search-form__input, .elementor-283662 .elementor-element.elementor-element-488e8a34.elementor-search-form--button-type-text .elementor-search-form__submit{padding-left:calc(30px / 3);padding-right:calc(30px / 3);}.elementor-283662 .elementor-element.elementor-element-488e8a34 input[type="search"].elementor-search-form__input{font-family:"Ubuntu", Sans-serif;font-size:12px;font-weight:400;text-transform:capitalize;line-height:0.5em;}.elementor-283662 .elementor-element.elementor-element-488e8a34 .elementor-search-form__input,
+					.elementor-283662 .elementor-element.elementor-element-488e8a34 .elementor-search-form__icon,
+					.elementor-283662 .elementor-element.elementor-element-488e8a34 .elementor-lightbox .dialog-lightbox-close-button,
+					.elementor-283662 .elementor-element.elementor-element-488e8a34 .elementor-lightbox .dialog-lightbox-close-button:hover,
+					.elementor-283662 .elementor-element.elementor-element-488e8a34.elementor-search-form--skin-full_screen input[type="search"].elementor-search-form__input{color:#555555;fill:#555555;}.elementor-283662 .elementor-element.elementor-element-488e8a34:not(.elementor-search-form--skin-full_screen) .elementor-search-form__container{background-color:#FFFFFF;border-color:var( --e-global-color-secondary );border-width:1px 1px 1px 1px;border-radius:6px;}.elementor-283662 .elementor-element.elementor-element-488e8a34.elementor-search-form--skin-full_screen input[type="search"].elementor-search-form__input{background-color:#FFFFFF;border-color:var( --e-global-color-secondary );border-width:1px 1px 1px 1px;border-radius:6px;}.elementor-283662 .elementor-element.elementor-element-488e8a34 > .elementor-widget-container{margin:0px 0px 0px 0px;padding:8px 8px 8px 8px;}.elementor-283662 .elementor-element.elementor-element-71d52608 > .elementor-container > .elementor-column > .elementor-widget-wrap{align-content:flex-start;align-items:flex-start;}.elementor-283662 .elementor-element.elementor-element-71d52608{overflow:hidden;margin-top:0%;margin-bottom:0%;padding:0px 0px 0px 0px;}.elementor-283662 .elementor-element.elementor-element-71d52608 > .elementor-shape-top .elementor-shape-fill{fill:var( --e-global-color-c8bb89c );}.elementor-283662 .elementor-element.elementor-element-71d52608 > .elementor-shape-top svg{width:calc(157% + 1.3px);height:99px;transform:translateX(-50%) rotateY(180deg);}.elementor-283662 .elementor-element.elementor-element-29ae241e.elementor-column > .elementor-widget-wrap{justify-content:center;}.elementor-283662 .elementor-element.elementor-element-29ae241e > .elementor-element-populated{margin:0px 0px 0px 0px;--e-column-margin-right:0px;--e-column-margin-left:0px;padding:0px 0px 0px 0px;}.elementor-283662 .elementor-element.elementor-element-59a2affe{--main-alignment:center;--divider-style:solid;--subtotal-divider-style:solid;--elementor-remove-from-cart-button:none;--remove-from-cart-button:block;--toggle-button-icon-color:var( --e-global-color-primary );--toggle-button-background-color:#FFFFFF;--toggle-button-border-color:var( --e-global-color-primary );--toggle-button-icon-hover-color:#FFFFFF;--toggle-button-hover-background-color:var( --e-global-color-primary );--toggle-button-hover-border-color:var( --e-global-color-primary );--toggle-button-border-width:2px;--toggle-button-border-radius:10px;--toggle-icon-size:24px;--toggle-icon-padding:10px 10px 10px 10px;--cart-border-style:none;--cart-footer-layout:1fr 1fr;--products-max-height-sidecart:calc(100vh - 240px);--products-max-height-minicart:calc(100vh - 385px);z-index:100;}.elementor-283662 .elementor-element.elementor-element-59a2affe .widget_shopping_cart_content{--subtotal-divider-left-width:0;--subtotal-divider-right-width:0;}.elementor-283662 .elementor-element.elementor-element-59a2affe > .elementor-widget-container{margin:0% 0% 0% 90%;padding:0px 0px 0px 0px;}@media(max-width:1024px){.elementor-283662 .elementor-element.elementor-element-1f62d95c > .elementor-container{min-height:120px;}.elementor-283662 .elementor-element.elementor-element-1f62d95c{padding:20px 20px 20px 20px;}.elementor-283662 .elementor-element.elementor-element-4033c688 > .elementor-element-populated{padding:0px 0px 0px 70px;} .elementor-283662 .elementor-element.elementor-element-383dbebc{--grid-side-margin:4px;--grid-column-gap:4px;--grid-row-gap:0px;--grid-bottom-margin:0px;}.elementor-283662 .elementor-element.elementor-element-26d4d6d7{padding:10px 20px 10px 20px;}}@media(max-width:767px){.elementor-283662 .elementor-element.elementor-element-1f62d95c > .elementor-container{min-height:50px;}.elementor-283662 .elementor-element.elementor-element-1f62d95c{padding:15px 20px 15px 20px;}.elementor-283662 .elementor-element.elementor-element-32c7e30c{width:100%;}.elementor-283662 .elementor-element.elementor-element-45925e7f{text-align:center;}.elementor-283662 .elementor-element.elementor-element-45925e7f img{width:468px;}.elementor-283662 .elementor-element.elementor-element-4033c688{width:100%;}.elementor-283662 .elementor-element.elementor-element-4033c688 > .elementor-element-populated{padding:10px 0px 0px 0px;} .elementor-283662 .elementor-element.elementor-element-383dbebc{--grid-side-margin:4px;--grid-column-gap:4px;--grid-row-gap:0px;--grid-bottom-margin:0px;}.elementor-283662 .elementor-element.elementor-element-26d4d6d7{padding:10px 20px 10px 20px;}.elementor-283662 .elementor-element.elementor-element-4cfd623c{width:100%;}}@media(min-width:768px){.elementor-283662 .elementor-element.elementor-element-32c7e30c{width:64.332%;}.elementor-283662 .elementor-element.elementor-element-4033c688{width:35%;}.elementor-283662 .elementor-element.elementor-element-4cfd623c{width:66%;}.elementor-283662 .elementor-element.elementor-element-3f03f81e{width:33.333%;}.elementor-283662 .elementor-element.elementor-element-29ae241e{width:100%;}}@media(max-width:1024px) and (min-width:768px){.elementor-283662 .elementor-element.elementor-element-32c7e30c{width:50%;}.elementor-283662 .elementor-element.elementor-element-4033c688{width:50%;}.elementor-283662 .elementor-element.elementor-element-4cfd623c{width:65%;}.elementor-283662 .elementor-element.elementor-element-3f03f81e{width:25%;}}
+.elementor-282721 .elementor-element.elementor-element-4f830db1:not(.elementor-motion-effects-element-type-background), .elementor-282721 .elementor-element.elementor-element-4f830db1 > .elementor-motion-effects-container > .elementor-motion-effects-layer{background-color:var( --e-global-color-primary );}.elementor-282721 .elementor-element.elementor-element-4f830db1{transition:background 0.3s, border 0.3s, border-radius 0.3s, box-shadow 0.3s;padding:25px 0px 25px 0px;}.elementor-282721 .elementor-element.elementor-element-4f830db1 > .elementor-background-overlay{transition:background 0.3s, border-radius 0.3s, opacity 0.3s;}.elementor-282721 .elementor-element.elementor-element-4f830db1 > .elementor-shape-top .elementor-shape-fill{fill:var( --e-global-color-accent );}.elementor-282721 .elementor-element.elementor-element-4f830db1 > .elementor-shape-top svg{width:calc(100% + 1.3px);height:0px;}.elementor-282721 .elementor-element.elementor-element-76c87972{--grid-template-columns:repeat(0, auto);--icon-size:20px;--grid-column-gap:5px;--grid-row-gap:0px;}.elementor-282721 .elementor-element.elementor-element-76c87972 .elementor-widget-container{text-align:center;}.elementor-282721 .elementor-element.elementor-element-76c87972 .elementor-social-icon{background-color:#FF990000;}.elementor-282721 .elementor-element.elementor-element-76c87972 .elementor-social-icon i{color:#FFFFFF;}.elementor-282721 .elementor-element.elementor-element-76c87972 .elementor-social-icon svg{fill:#FFFFFF;}.elementor-282721 .elementor-element.elementor-element-76c87972 .elementor-social-icon:hover i{color:var( --e-global-color-secondary );}.elementor-282721 .elementor-element.elementor-element-76c87972 .elementor-social-icon:hover svg{fill:var( --e-global-color-secondary );}.elementor-282721 .elementor-element.elementor-element-76c87972 > .elementor-widget-container{margin:0px 0px 0px 0px;padding:0px 0px 0px 0px;background-color:#FF330000;}.elementor-282721 .elementor-element.elementor-element-9b5e704 > .elementor-container{min-height:200px;}.elementor-282721 .elementor-element.elementor-element-9b5e704 > .elementor-container > .elementor-column > .elementor-widget-wrap{align-content:flex-start;align-items:flex-start;}.elementor-282721 .elementor-element.elementor-element-9b5e704:not(.elementor-motion-effects-element-type-background), .elementor-282721 .elementor-element.elementor-element-9b5e704 > .elementor-motion-effects-container > .elementor-motion-effects-layer{background-color:#000000;}.elementor-282721 .elementor-element.elementor-element-9b5e704{transition:background 0.3s, border 0.3s, border-radius 0.3s, box-shadow 0.3s;margin-top:0px;margin-bottom:0px;padding:50px 0px 0px 0px;}.elementor-282721 .elementor-element.elementor-element-9b5e704 > .elementor-background-overlay{transition:background 0.3s, border-radius 0.3s, opacity 0.3s;}.elementor-282721 .elementor-element.elementor-element-9b5e704 > .elementor-shape-top .elementor-shape-fill{fill:var( --e-global-color-accent );}.elementor-282721 .elementor-element.elementor-element-9b5e704 > .elementor-shape-top svg{width:calc(147% + 1.3px);height:28px;transform:translateX(-50%) rotateY(180deg);}.elementor-bc-flex-widget .elementor-282721 .elementor-element.elementor-element-6eccbe99.elementor-column .elementor-widget-wrap{align-items:flex-start;}.elementor-282721 .elementor-element.elementor-element-6eccbe99.elementor-column.elementor-element[data-element_type="column"] > .elementor-widget-wrap.elementor-element-populated{align-content:flex-start;align-items:flex-start;}.elementor-282721 .elementor-element.elementor-element-6eccbe99.elementor-column > .elementor-widget-wrap{justify-content:center;}.elementor-282721 .elementor-element.elementor-element-6eccbe99 > .elementor-widget-wrap > .elementor-widget:not(.elementor-widget__width-auto):not(.elementor-widget__width-initial):not(:last-child):not(.elementor-absolute){margin-bottom:0px;}.elementor-282721 .elementor-element.elementor-element-6eccbe99 > .elementor-element-populated{margin:0px 0px 0px 0px;--e-column-margin-right:0px;--e-column-margin-left:0px;padding:0px 0px 0px 0px;}.elementor-282721 .elementor-element.elementor-element-78206af1{text-align:center;}.elementor-282721 .elementor-element.elementor-element-78206af1 .elementor-heading-title{color:var( --e-global-color-accent );font-size:22px;font-weight:500;}.elementor-282721 .elementor-element.elementor-element-3fa5e137 .elementor-icon-list-items:not(.elementor-inline-items) .elementor-icon-list-item:not(:last-child){padding-bottom:calc(0px/2);}.elementor-282721 .elementor-element.elementor-element-3fa5e137 .elementor-icon-list-items:not(.elementor-inline-items) .elementor-icon-list-item:not(:first-child){margin-top:calc(0px/2);}.elementor-282721 .elementor-element.elementor-element-3fa5e137 .elementor-icon-list-items.elementor-inline-items .elementor-icon-list-item{margin-right:calc(0px/2);margin-left:calc(0px/2);}.elementor-282721 .elementor-element.elementor-element-3fa5e137 .elementor-icon-list-items.elementor-inline-items{margin-right:calc(-0px/2);margin-left:calc(-0px/2);}body.rtl .elementor-282721 .elementor-element.elementor-element-3fa5e137 .elementor-icon-list-items.elementor-inline-items .elementor-icon-list-item:after{left:calc(-0px/2);}body:not(.rtl) .elementor-282721 .elementor-element.elementor-element-3fa5e137 .elementor-icon-list-items.elementor-inline-items .elementor-icon-list-item:after{right:calc(-0px/2);}.elementor-282721 .elementor-element.elementor-element-3fa5e137 .elementor-icon-list-item:not(:last-child):after{content:"";width:20%;border-color:var( --e-global-color-primary );}.elementor-282721 .elementor-element.elementor-element-3fa5e137 .elementor-icon-list-items:not(.elementor-inline-items) .elementor-icon-list-item:not(:last-child):after{border-top-style:dotted;border-top-width:2px;}.elementor-282721 .elementor-element.elementor-element-3fa5e137 .elementor-icon-list-items.elementor-inline-items .elementor-icon-list-item:not(:last-child):after{border-left-style:dotted;}.elementor-282721 .elementor-element.elementor-element-3fa5e137 .elementor-inline-items .elementor-icon-list-item:not(:last-child):after{border-left-width:2px;}.elementor-282721 .elementor-element.elementor-element-3fa5e137{--e-icon-list-icon-size:0px;--e-icon-list-icon-align:left;--e-icon-list-icon-margin:0 calc(var(--e-icon-list-icon-size, 1em) * 0.25) 0 0;}.elementor-282721 .elementor-element.elementor-element-3fa5e137 .elementor-icon-list-text{color:#FFFFFF;padding-left:0px;}.elementor-282721 .elementor-element.elementor-element-3fa5e137 .elementor-icon-list-item:hover .elementor-icon-list-text{color:#FF9900;}.elementor-282721 .elementor-element.elementor-element-3fa5e137 .elementor-icon-list-item > .elementor-icon-list-text, .elementor-282721 .elementor-element.elementor-element-3fa5e137 .elementor-icon-list-item > a{font-family:"Ubuntu", Sans-serif;font-size:16px;font-weight:400;text-transform:capitalize;}.elementor-282721 .elementor-element.elementor-element-a8c4e27 > .elementor-widget-wrap > .elementor-widget:not(.elementor-widget__width-auto):not(.elementor-widget__width-initial):not(:last-child):not(.elementor-absolute){margin-bottom:0px;}.elementor-282721 .elementor-element.elementor-element-449e9e0f{text-align:center;}.elementor-282721 .elementor-element.elementor-element-449e9e0f .elementor-heading-title{color:var( --e-global-color-accent );font-size:22px;font-weight:500;}.elementor-282721 .elementor-element.elementor-element-3fd0ca12 .elementor-icon-list-items:not(.elementor-inline-items) .elementor-icon-list-item:not(:last-child){padding-bottom:calc(0px/2);}.elementor-282721 .elementor-element.elementor-element-3fd0ca12 .elementor-icon-list-items:not(.elementor-inline-items) .elementor-icon-list-item:not(:first-child){margin-top:calc(0px/2);}.elementor-282721 .elementor-element.elementor-element-3fd0ca12 .elementor-icon-list-items.elementor-inline-items .elementor-icon-list-item{margin-right:calc(0px/2);margin-left:calc(0px/2);}.elementor-282721 .elementor-element.elementor-element-3fd0ca12 .elementor-icon-list-items.elementor-inline-items{margin-right:calc(-0px/2);margin-left:calc(-0px/2);}body.rtl .elementor-282721 .elementor-element.elementor-element-3fd0ca12 .elementor-icon-list-items.elementor-inline-items .elementor-icon-list-item:after{left:calc(-0px/2);}body:not(.rtl) .elementor-282721 .elementor-element.elementor-element-3fd0ca12 .elementor-icon-list-items.elementor-inline-items .elementor-icon-list-item:after{right:calc(-0px/2);}.elementor-282721 .elementor-element.elementor-element-3fd0ca12 .elementor-icon-list-item:not(:last-child):after{content:"";width:20%;border-color:var( --e-global-color-primary );}.elementor-282721 .elementor-element.elementor-element-3fd0ca12 .elementor-icon-list-items:not(.elementor-inline-items) .elementor-icon-list-item:not(:last-child):after{border-top-style:dotted;border-top-width:2px;}.elementor-282721 .elementor-element.elementor-element-3fd0ca12 .elementor-icon-list-items.elementor-inline-items .elementor-icon-list-item:not(:last-child):after{border-left-style:dotted;}.elementor-282721 .elementor-element.elementor-element-3fd0ca12 .elementor-inline-items .elementor-icon-list-item:not(:last-child):after{border-left-width:2px;}.elementor-282721 .elementor-element.elementor-element-3fd0ca12{--e-icon-list-icon-size:0px;}.elementor-282721 .elementor-element.elementor-element-3fd0ca12 .elementor-icon-list-text{color:#FFFFFF;padding-left:0px;}.elementor-282721 .elementor-element.elementor-element-3fd0ca12 .elementor-icon-list-item:hover .elementor-icon-list-text{color:var( --e-global-color-secondary );}.elementor-282721 .elementor-element.elementor-element-3fd0ca12 .elementor-icon-list-item > .elementor-icon-list-text, .elementor-282721 .elementor-element.elementor-element-3fd0ca12 .elementor-icon-list-item > a{font-size:16px;font-weight:400;text-transform:capitalize;}.elementor-282721 .elementor-element.elementor-element-3fd0ca12 > .elementor-widget-container{padding:0px 0px 0px 0px;}.elementor-282721 .elementor-element.elementor-element-7cae0f50 > .elementor-widget-wrap > .elementor-widget:not(.elementor-widget__width-auto):not(.elementor-widget__width-initial):not(:last-child):not(.elementor-absolute){margin-bottom:0px;}.elementor-282721 .elementor-element.elementor-element-5931879c{text-align:center;}.elementor-282721 .elementor-element.elementor-element-5931879c .elementor-heading-title{color:var( --e-global-color-accent );font-size:22px;font-weight:500;}.elementor-282721 .elementor-element.elementor-element-5c65acd9 .elementor-icon-list-items:not(.elementor-inline-items) .elementor-icon-list-item:not(:last-child){padding-bottom:calc(0px/2);}.elementor-282721 .elementor-element.elementor-element-5c65acd9 .elementor-icon-list-items:not(.elementor-inline-items) .elementor-icon-list-item:not(:first-child){margin-top:calc(0px/2);}.elementor-282721 .elementor-element.elementor-element-5c65acd9 .elementor-icon-list-items.elementor-inline-items .elementor-icon-list-item{margin-right:calc(0px/2);margin-left:calc(0px/2);}.elementor-282721 .elementor-element.elementor-element-5c65acd9 .elementor-icon-list-items.elementor-inline-items{margin-right:calc(-0px/2);margin-left:calc(-0px/2);}body.rtl .elementor-282721 .elementor-element.elementor-element-5c65acd9 .elementor-icon-list-items.elementor-inline-items .elementor-icon-list-item:after{left:calc(-0px/2);}body:not(.rtl) .elementor-282721 .elementor-element.elementor-element-5c65acd9 .elementor-icon-list-items.elementor-inline-items .elementor-icon-list-item:after{right:calc(-0px/2);}.elementor-282721 .elementor-element.elementor-element-5c65acd9 .elementor-icon-list-item:not(:last-child):after{content:"";width:20%;border-color:var( --e-global-color-primary );}.elementor-282721 .elementor-element.elementor-element-5c65acd9 .elementor-icon-list-items:not(.elementor-inline-items) .elementor-icon-list-item:not(:last-child):after{border-top-style:dotted;border-top-width:2px;}.elementor-282721 .elementor-element.elementor-element-5c65acd9 .elementor-icon-list-items.elementor-inline-items .elementor-icon-list-item:not(:last-child):after{border-left-style:dotted;}.elementor-282721 .elementor-element.elementor-element-5c65acd9 .elementor-inline-items .elementor-icon-list-item:not(:last-child):after{border-left-width:2px;}.elementor-282721 .elementor-element.elementor-element-5c65acd9{--e-icon-list-icon-size:0px;}.elementor-282721 .elementor-element.elementor-element-5c65acd9 .elementor-icon-list-text{color:#FFFFFF;padding-left:0px;}.elementor-282721 .elementor-element.elementor-element-5c65acd9 .elementor-icon-list-item:hover .elementor-icon-list-text{color:var( --e-global-color-secondary );}.elementor-282721 .elementor-element.elementor-element-5c65acd9 .elementor-icon-list-item > .elementor-icon-list-text, .elementor-282721 .elementor-element.elementor-element-5c65acd9 .elementor-icon-list-item > a{font-size:16px;font-weight:400;text-transform:capitalize;}.elementor-282721 .elementor-element.elementor-element-66aee88d > .elementor-widget-wrap > .elementor-widget:not(.elementor-widget__width-auto):not(.elementor-widget__width-initial):not(:last-child):not(.elementor-absolute){margin-bottom:0px;}.elementor-282721 .elementor-element.elementor-element-24b67c4b{text-align:center;}.elementor-282721 .elementor-element.elementor-element-24b67c4b .elementor-heading-title{color:var( --e-global-color-accent );font-size:22px;font-weight:500;}.elementor-282721 .elementor-element.elementor-element-38a025ab .elementor-icon-list-items:not(.elementor-inline-items) .elementor-icon-list-item:not(:last-child){padding-bottom:calc(0px/2);}.elementor-282721 .elementor-element.elementor-element-38a025ab .elementor-icon-list-items:not(.elementor-inline-items) .elementor-icon-list-item:not(:first-child){margin-top:calc(0px/2);}.elementor-282721 .elementor-element.elementor-element-38a025ab .elementor-icon-list-items.elementor-inline-items .elementor-icon-list-item{margin-right:calc(0px/2);margin-left:calc(0px/2);}.elementor-282721 .elementor-element.elementor-element-38a025ab .elementor-icon-list-items.elementor-inline-items{margin-right:calc(-0px/2);margin-left:calc(-0px/2);}body.rtl .elementor-282721 .elementor-element.elementor-element-38a025ab .elementor-icon-list-items.elementor-inline-items .elementor-icon-list-item:after{left:calc(-0px/2);}body:not(.rtl) .elementor-282721 .elementor-element.elementor-element-38a025ab .elementor-icon-list-items.elementor-inline-items .elementor-icon-list-item:after{right:calc(-0px/2);}.elementor-282721 .elementor-element.elementor-element-38a025ab .elementor-icon-list-item:not(:last-child):after{content:"";width:20%;border-color:var( --e-global-color-primary );}.elementor-282721 .elementor-element.elementor-element-38a025ab .elementor-icon-list-items:not(.elementor-inline-items) .elementor-icon-list-item:not(:last-child):after{border-top-style:dotted;border-top-width:2px;}.elementor-282721 .elementor-element.elementor-element-38a025ab .elementor-icon-list-items.elementor-inline-items .elementor-icon-list-item:not(:last-child):after{border-left-style:dotted;}.elementor-282721 .elementor-element.elementor-element-38a025ab .elementor-inline-items .elementor-icon-list-item:not(:last-child):after{border-left-width:2px;}.elementor-282721 .elementor-element.elementor-element-38a025ab{--e-icon-list-icon-size:0px;}.elementor-282721 .elementor-element.elementor-element-38a025ab .elementor-icon-list-text{color:#FFFFFF;padding-left:0px;}.elementor-282721 .elementor-element.elementor-element-38a025ab .elementor-icon-list-item:hover .elementor-icon-list-text{color:var( --e-global-color-secondary );}.elementor-282721 .elementor-element.elementor-element-38a025ab .elementor-icon-list-item > .elementor-icon-list-text, .elementor-282721 .elementor-element.elementor-element-38a025ab .elementor-icon-list-item > a{font-size:16px;font-weight:400;text-transform:capitalize;}.elementor-282721 .elementor-element.elementor-element-b59a351{margin-top:0px;margin-bottom:0px;padding:0px 0px 0px 0px;}.elementor-282721 .elementor-element.elementor-element-49c1bf09:not(.elementor-motion-effects-element-type-background) > .elementor-widget-wrap, .elementor-282721 .elementor-element.elementor-element-49c1bf09 > .elementor-widget-wrap > .elementor-motion-effects-container > .elementor-motion-effects-layer{background-color:#000000;}.elementor-282721 .elementor-element.elementor-element-49c1bf09 > .elementor-element-populated{transition:background 0.3s, border 0.3s, border-radius 0.3s, box-shadow 0.3s;}.elementor-282721 .elementor-element.elementor-element-49c1bf09 > .elementor-element-populated > .elementor-background-overlay{transition:background 0.3s, border-radius 0.3s, opacity 0.3s;}.elementor-282721 .elementor-element.elementor-element-207fe6c img{width:100%;max-width:100%;}.elementor-282721 .elementor-element.elementor-element-207fe6c > .elementor-widget-container{margin:0px 0px 0px 0px;padding:0px 0px 0px 0px;}.elementor-282721 .elementor-element.elementor-element-2bf1542b{text-align:center;color:var( --e-global-color-secondary );font-family:"Roboto", Sans-serif;font-size:12px;font-weight:400;text-decoration:none;}.elementor-282721 .elementor-element.elementor-element-2bf1542b > .elementor-widget-container{padding:0px 50px 50px 50px;}@media(max-width:1024px){.elementor-282721 .elementor-element.elementor-element-4f830db1{padding:25px 20px 25px 20px;}.elementor-282721 .elementor-element.elementor-element-9b5e704{padding:25px 20px 0px 20px;}.elementor-282721 .elementor-element.elementor-element-3fa5e137 .elementor-icon-list-item > .elementor-icon-list-text, .elementor-282721 .elementor-element.elementor-element-3fa5e137 .elementor-icon-list-item > a{font-size:13px;}.elementor-282721 .elementor-element.elementor-element-3fd0ca12 .elementor-icon-list-item > .elementor-icon-list-text, .elementor-282721 .elementor-element.elementor-element-3fd0ca12 .elementor-icon-list-item > a{font-size:13px;}.elementor-282721 .elementor-element.elementor-element-5c65acd9 .elementor-icon-list-item > .elementor-icon-list-text, .elementor-282721 .elementor-element.elementor-element-5c65acd9 .elementor-icon-list-item > a{font-size:13px;}.elementor-282721 .elementor-element.elementor-element-38a025ab .elementor-icon-list-item > .elementor-icon-list-text, .elementor-282721 .elementor-element.elementor-element-38a025ab .elementor-icon-list-item > a{font-size:13px;}}@media(max-width:767px){.elementor-282721 .elementor-element.elementor-element-4f830db1{padding:20px 20px 20px 20px;}.elementor-282721 .elementor-element.elementor-element-9b5e704 > .elementor-shape-top svg{width:calc(201% + 1.3px);height:12px;}.elementor-282721 .elementor-element.elementor-element-9b5e704{padding:25px 25px 0px 25px;}.elementor-282721 .elementor-element.elementor-element-6eccbe99{width:50%;}.elementor-282721 .elementor-element.elementor-element-a8c4e27{width:50%;}.elementor-282721 .elementor-element.elementor-element-7cae0f50{width:50%;}.elementor-282721 .elementor-element.elementor-element-7cae0f50 > .elementor-element-populated{margin:30px 0px 0px 0px;--e-column-margin-right:0px;--e-column-margin-left:0px;}.elementor-282721 .elementor-element.elementor-element-66aee88d{width:50%;}.elementor-282721 .elementor-element.elementor-element-66aee88d > .elementor-element-populated{margin:30px 0px 0px 0px;--e-column-margin-right:0px;--e-column-margin-left:0px;}}@media(min-width:768px){.elementor-282721 .elementor-element.elementor-element-6eccbe99{width:25%;}.elementor-282721 .elementor-element.elementor-element-a8c4e27{width:25%;}}@media(max-width:1024px) and (min-width:768px){.elementor-282721 .elementor-element.elementor-element-6eccbe99{width:25%;}.elementor-282721 .elementor-element.elementor-element-a8c4e27{width:25%;}.elementor-282721 .elementor-element.elementor-element-7cae0f50{width:25%;}.elementor-282721 .elementor-element.elementor-element-66aee88d{width:25%;}}
+</style>
+<link rel="stylesheet" id="elementor-pro-css" href="https://www.indyplanet.com/wp-content/plugins/elementor-pro/assets/css/frontend.css?ver=3.7.2" type="text/css" media="all">
+<link rel="stylesheet" id="hello-elementor-child-style-css" href="https://www.indyplanet.com/wp-content/themes/hello-theme-child-master/style.css?ver=1.0.0" type="text/css" media="all">
+<link rel="stylesheet" id="google-fonts-1-css" href="https://fonts.googleapis.com/css?family=Ubuntu%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CRoboto+Slab%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CUbuntu+Mono%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CUbuntu+Condensed%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CRoboto%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic&amp;display=auto&amp;ver=6.0" type="text/css" media="all">
+<link rel="stylesheet" id="elementor-icons-shared-0-css" href="https://www.indyplanet.com/wp-content/plugins/elementor/assets/lib/font-awesome/css/fontawesome.css?ver=5.15.3" type="text/css" media="all">
+<link rel="stylesheet" id="elementor-icons-fa-solid-css" href="https://www.indyplanet.com/wp-content/plugins/elementor/assets/lib/font-awesome/css/solid.css?ver=5.15.3" type="text/css" media="all">
+<link rel="stylesheet" id="elementor-icons-fa-brands-css" href="https://www.indyplanet.com/wp-content/plugins/elementor/assets/lib/font-awesome/css/brands.css?ver=5.15.3" type="text/css" media="all">
+<script type="text/javascript" src="https://www.indyplanet.com/wp-includes/js/jquery/jquery.js?ver=3.6.0" id="jquery-core-js"></script>
+<script type="text/javascript" src="https://www.indyplanet.com/wp-includes/js/jquery/jquery-migrate.js?ver=3.3.2" id="jquery-migrate-js"></script>
+<link rel="https://api.w.org/" href="https://www.indyplanet.com/wp-json/"><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://www.indyplanet.com/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://www.indyplanet.com/wp-includes/wlwmanifest.xml"> 
+<meta name="generator" content="WordPress 6.0">
+<meta name="generator" content="WooCommerce 6.6.1">
+<style type="text/css">#calc_shipping_state { display: none !important; }.shipping-calculator-form { display: block !important; }a.shipping-calculator-button { pointer-events: none; cursor: default; }</style>	<noscript><style>.woocommerce-product-gallery{ opacity: 1 !important; }</style></noscript>
+			<style type="text/css" id="wp-custom-css">
+			//Hide Price in archived lists
+.elementor-282923 .elementor-element.elementor-global-289229.elementor-wc-products ul.products li.product .price {    display: none !important;}
+
+.woocommerce ul.products li.product .price {    display: none !important;}
+
+//Hide Options Box in archived lists
+.woocommerce ul.products li.product .button { display: none !important;}
+
+/* .woocommerce a.button, .woocommerce button.button, .woocommerce input.button {
+	display: none !important;} */
+
+//Hide Star Rating in archived lists
+.star-rating {display: none !important;}
+
+//Sale Flash Color
+.woocommerce span.onsale { background-color: #ff9900 !important;}
+
+//Store Notice
+.woocommerce-store-notice, p.demo_store {    position: absolute;
+    top: 150px !important;
+      width: 100%;
+    font-size: 1.5em !important;
+    padding: 60px !important;
+    text-align: center;
+	background-color: #ff3300 !important; }
+
+		</style>
+		</head>
+<body class="error404 wp-custom-logo theme-hello-elementor woocommerce-demo-store woocommerce-js elementor-default elementor-kit-282679 e--ua-appleWebkit e--ua-safari e--ua-webkit" data-elementor-device-mode="mobile">
+
+
+	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;">
+		<defs>
+			<filter id="wp-duotone-dark-grayscale">
+				<feColorMatrix color-interpolation-filters="sRGB" type="matrix" values="
+						.299 .587 .114 0 0
+						.299 .587 .114 0 0
+						.299 .587 .114 0 0
+						.299 .587 .114 0 0
+					"></feColorMatrix>
+				<feComponentTransfer color-interpolation-filters="sRGB">
+					<feFuncR type="table" tableValues="0 0.49803921568627"></feFuncR>
+					<feFuncG type="table" tableValues="0 0.49803921568627"></feFuncG>
+					<feFuncB type="table" tableValues="0 0.49803921568627"></feFuncB>
+					<feFuncA type="table" tableValues="1 1"></feFuncA>
+				</feComponentTransfer>
+				<feComposite in2="SourceGraphic" operator="in"></feComposite>
+			</filter>
+		</defs>
+	</svg>
+
+	
+	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;">
+		<defs>
+			<filter id="wp-duotone-grayscale">
+				<feColorMatrix color-interpolation-filters="sRGB" type="matrix" values="
+						.299 .587 .114 0 0
+						.299 .587 .114 0 0
+						.299 .587 .114 0 0
+						.299 .587 .114 0 0
+					"></feColorMatrix>
+				<feComponentTransfer color-interpolation-filters="sRGB">
+					<feFuncR type="table" tableValues="0 1"></feFuncR>
+					<feFuncG type="table" tableValues="0 1"></feFuncG>
+					<feFuncB type="table" tableValues="0 1"></feFuncB>
+					<feFuncA type="table" tableValues="1 1"></feFuncA>
+				</feComponentTransfer>
+				<feComposite in2="SourceGraphic" operator="in"></feComposite>
+			</filter>
+		</defs>
+	</svg>
+
+	
+	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;">
+		<defs>
+			<filter id="wp-duotone-purple-yellow">
+				<feColorMatrix color-interpolation-filters="sRGB" type="matrix" values="
+						.299 .587 .114 0 0
+						.299 .587 .114 0 0
+						.299 .587 .114 0 0
+						.299 .587 .114 0 0
+					"></feColorMatrix>
+				<feComponentTransfer color-interpolation-filters="sRGB">
+					<feFuncR type="table" tableValues="0.54901960784314 0.98823529411765"></feFuncR>
+					<feFuncG type="table" tableValues="0 1"></feFuncG>
+					<feFuncB type="table" tableValues="0.71764705882353 0.25490196078431"></feFuncB>
+					<feFuncA type="table" tableValues="1 1"></feFuncA>
+				</feComponentTransfer>
+				<feComposite in2="SourceGraphic" operator="in"></feComposite>
+			</filter>
+		</defs>
+	</svg>
+
+	
+	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;">
+		<defs>
+			<filter id="wp-duotone-blue-red">
+				<feColorMatrix color-interpolation-filters="sRGB" type="matrix" values="
+						.299 .587 .114 0 0
+						.299 .587 .114 0 0
+						.299 .587 .114 0 0
+						.299 .587 .114 0 0
+					"></feColorMatrix>
+				<feComponentTransfer color-interpolation-filters="sRGB">
+					<feFuncR type="table" tableValues="0 1"></feFuncR>
+					<feFuncG type="table" tableValues="0 0.27843137254902"></feFuncG>
+					<feFuncB type="table" tableValues="0.5921568627451 0.27843137254902"></feFuncB>
+					<feFuncA type="table" tableValues="1 1"></feFuncA>
+				</feComponentTransfer>
+				<feComposite in2="SourceGraphic" operator="in"></feComposite>
+			</filter>
+		</defs>
+	</svg>
+
+	
+	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;">
+		<defs>
+			<filter id="wp-duotone-midnight">
+				<feColorMatrix color-interpolation-filters="sRGB" type="matrix" values="
+						.299 .587 .114 0 0
+						.299 .587 .114 0 0
+						.299 .587 .114 0 0
+						.299 .587 .114 0 0
+					"></feColorMatrix>
+				<feComponentTransfer color-interpolation-filters="sRGB">
+					<feFuncR type="table" tableValues="0 0"></feFuncR>
+					<feFuncG type="table" tableValues="0 0.64705882352941"></feFuncG>
+					<feFuncB type="table" tableValues="0 1"></feFuncB>
+					<feFuncA type="table" tableValues="1 1"></feFuncA>
+				</feComponentTransfer>
+				<feComposite in2="SourceGraphic" operator="in"></feComposite>
+			</filter>
+		</defs>
+	</svg>
+
+	
+	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;">
+		<defs>
+			<filter id="wp-duotone-magenta-yellow">
+				<feColorMatrix color-interpolation-filters="sRGB" type="matrix" values="
+						.299 .587 .114 0 0
+						.299 .587 .114 0 0
+						.299 .587 .114 0 0
+						.299 .587 .114 0 0
+					"></feColorMatrix>
+				<feComponentTransfer color-interpolation-filters="sRGB">
+					<feFuncR type="table" tableValues="0.78039215686275 1"></feFuncR>
+					<feFuncG type="table" tableValues="0 0.94901960784314"></feFuncG>
+					<feFuncB type="table" tableValues="0.35294117647059 0.47058823529412"></feFuncB>
+					<feFuncA type="table" tableValues="1 1"></feFuncA>
+				</feComponentTransfer>
+				<feComposite in2="SourceGraphic" operator="in"></feComposite>
+			</filter>
+		</defs>
+	</svg>
+
+	
+	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;">
+		<defs>
+			<filter id="wp-duotone-purple-green">
+				<feColorMatrix color-interpolation-filters="sRGB" type="matrix" values="
+						.299 .587 .114 0 0
+						.299 .587 .114 0 0
+						.299 .587 .114 0 0
+						.299 .587 .114 0 0
+					"></feColorMatrix>
+				<feComponentTransfer color-interpolation-filters="sRGB">
+					<feFuncR type="table" tableValues="0.65098039215686 0.40392156862745"></feFuncR>
+					<feFuncG type="table" tableValues="0 1"></feFuncG>
+					<feFuncB type="table" tableValues="0.44705882352941 0.4"></feFuncB>
+					<feFuncA type="table" tableValues="1 1"></feFuncA>
+				</feComponentTransfer>
+				<feComposite in2="SourceGraphic" operator="in"></feComposite>
+			</filter>
+		</defs>
+	</svg>
+
+	
+	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;">
+		<defs>
+			<filter id="wp-duotone-blue-orange">
+				<feColorMatrix color-interpolation-filters="sRGB" type="matrix" values="
+						.299 .587 .114 0 0
+						.299 .587 .114 0 0
+						.299 .587 .114 0 0
+						.299 .587 .114 0 0
+					"></feColorMatrix>
+				<feComponentTransfer color-interpolation-filters="sRGB">
+					<feFuncR type="table" tableValues="0.098039215686275 1"></feFuncR>
+					<feFuncG type="table" tableValues="0 0.66274509803922"></feFuncG>
+					<feFuncB type="table" tableValues="0.84705882352941 0.41960784313725"></feFuncB>
+					<feFuncA type="table" tableValues="1 1"></feFuncA>
+				</feComponentTransfer>
+				<feComposite in2="SourceGraphic" operator="in"></feComposite>
+			</filter>
+		</defs>
+	</svg>
+
+			<div data-elementor-type="header" data-elementor-id="283662" class="elementor elementor-283662 elementor-location-header">
+								<header class="elementor-section elementor-top-section elementor-element elementor-element-1f62d95c elementor-section-content-middle elementor-section-height-min-height elementor-section-boxed elementor-section-height-default elementor-section-items-middle" data-id="1f62d95c" data-element_type="section" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+						<div class="elementor-container elementor-column-gap-no">
+					<div class="elementor-column elementor-col-66 elementor-top-column elementor-element elementor-element-32c7e30c" data-id="32c7e30c" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-45925e7f elementor-widget elementor-widget-theme-site-logo elementor-widget-image" data-id="45925e7f" data-element_type="widget" data-widget_type="theme-site-logo.default">
+				<div class="elementor-widget-container">
+																<a href="https://www.indyplanet.com">
+							<img src="https://www.indyplanet.com/wp-content/uploads/elementor/thumbs/2022__IP_star_flare-pj9ejxbqw9zcj6u0mfvh5jazu277l5hw6ol6ze1aq8.png" title="2022__IP_star_flare" alt="2022__IP_star_flare">								</a>
+															</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-top-column elementor-element elementor-element-4033c688" data-id="4033c688" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-1ce5316f elementor-widget elementor-widget-heading" data-id="1ce5316f" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+			<h3 class="elementor-heading-title elementor-size-default">Independent Comics Superstore</h3>		</div>
+				</div>
+				<div class="elementor-element elementor-element-3fda9290 elementor-widget elementor-widget-heading" data-id="3fda9290" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+			<h5 class="elementor-heading-title elementor-size-small">Print-on-Demand | Digital Download</h5>		</div>
+				</div>
+				<div class="elementor-element elementor-element-383dbebc elementor-share-buttons--view-icon elementor-share-buttons--skin-minimal elementor-share-buttons--align-center elementor-share-buttons--color-custom elementor-share-buttons--shape-circle elementor-grid-0 elementor-widget elementor-widget-share-buttons" data-id="383dbebc" data-element_type="widget" data-settings="{&quot;share_url&quot;:{&quot;url&quot;:&quot;https:\/\/indyplanet.com&quot;,&quot;is_external&quot;:&quot;&quot;,&quot;nofollow&quot;:&quot;&quot;,&quot;custom_attributes&quot;:&quot;&quot;}}" data-widget_type="share-buttons.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-grid">
+								<div class="elementor-grid-item">
+						<div class="elementor-share-btn elementor-share-btn_facebook" tabindex="0" aria-label="Share on facebook">
+															<span class="elementor-share-btn__icon">
+								<i class="fab fa-facebook" aria-hidden="true"></i>							</span>
+																				</div>
+					</div>
+									<div class="elementor-grid-item">
+						<div class="elementor-share-btn elementor-share-btn_twitter" tabindex="0" aria-label="Share on twitter">
+															<span class="elementor-share-btn__icon">
+								<i class="fab fa-twitter" aria-hidden="true"></i>							</span>
+																				</div>
+					</div>
+									<div class="elementor-grid-item">
+						<div class="elementor-share-btn elementor-share-btn_pinterest" tabindex="0" aria-label="Share on pinterest">
+															<span class="elementor-share-btn__icon">
+								<i class="fab fa-pinterest" aria-hidden="true"></i>							</span>
+																				</div>
+					</div>
+									<div class="elementor-grid-item">
+						<div class="elementor-share-btn elementor-share-btn_email" tabindex="0" aria-label="Share on email">
+															<span class="elementor-share-btn__icon">
+								<i class="fas fa-envelope" aria-hidden="true"></i>							</span>
+																				</div>
+					</div>
+						</div>
+				</div>
+				</div>
+					</div>
+		</div>
+							</div>
+		</header>
+				<nav class="elementor-section elementor-top-section elementor-element elementor-element-26d4d6d7 elementor-reverse-mobile elementor-section-boxed elementor-section-height-default elementor-section-height-default elementor-sticky" data-id="26d4d6d7" data-element_type="section" data-settings="{&quot;background_background&quot;:&quot;classic&quot;,&quot;sticky&quot;:&quot;top&quot;,&quot;animation&quot;:&quot;none&quot;,&quot;sticky_on&quot;:[&quot;desktop&quot;,&quot;tablet&quot;,&quot;mobile&quot;],&quot;sticky_offset&quot;:0,&quot;sticky_effects_offset&quot;:0}">
+						<div class="elementor-container elementor-column-gap-no">
+					<div class="elementor-column elementor-col-66 elementor-top-column elementor-element elementor-element-4cfd623c" data-id="4cfd623c" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-1c16399 elementor-nav-menu__align-left elementor-nav-menu--dropdown-mobile elementor-nav-menu--stretch elementor-widget__width-inherit elementor-nav-menu__text-align-aside elementor-nav-menu--toggle elementor-nav-menu--burger elementor-widget elementor-widget-nav-menu" data-id="1c16399" data-element_type="widget" data-settings="{&quot;full_width&quot;:&quot;stretch&quot;,&quot;layout&quot;:&quot;horizontal&quot;,&quot;submenu_icon&quot;:{&quot;value&quot;:&quot;<i class=\&quot;fas fa-caret-down\&quot;><\/i>&quot;,&quot;library&quot;:&quot;fa-solid&quot;},&quot;toggle&quot;:&quot;burger&quot;}" data-widget_type="nav-menu.default">
+				<div class="elementor-widget-container">
+						<nav migration_allowed="1" migrated="0" role="navigation" class="elementor-nav-menu--main elementor-nav-menu__container elementor-nav-menu--layout-horizontal e--pointer-background e--animation-shrink">
+				<ul id="menu-1-1c16399" class="elementor-nav-menu" data-smartmenus-id="16559403174414937"><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-282700"><a href="https://www.indyplanet.com/comics-categories" class="elementor-item">Comics Categories</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-282703"><a href="https://www.indyplanet.com/my-account" class="elementor-item">My Account</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-282702"><a href="https://www.indyplanet.com/contact-us" class="elementor-item">Contact Us</a></li>
+</ul>			</nav>
+					<div class="elementor-menu-toggle" role="button" tabindex="0" aria-label="Menu Toggle" aria-expanded="false">
+			<i aria-hidden="true" role="presentation" class="elementor-menu-toggle__icon--open eicon-menu-bar"></i><i aria-hidden="true" role="presentation" class="elementor-menu-toggle__icon--close eicon-close"></i>			<span class="elementor-screen-only">Menu</span>
+		</div>
+			<nav class="elementor-nav-menu--dropdown elementor-nav-menu__container" role="navigation" aria-hidden="true" style="top: 45px; width: 390px; left: -20px;">
+				<ul id="menu-2-1c16399" class="elementor-nav-menu" data-smartmenus-id="16559403174492388"><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-282700"><a href="https://www.indyplanet.com/comics-categories" class="elementor-item" tabindex="-1">Comics Categories</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-282703"><a href="https://www.indyplanet.com/my-account" class="elementor-item" tabindex="-1">My Account</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-282702"><a href="https://www.indyplanet.com/contact-us" class="elementor-item" tabindex="-1">Contact Us</a></li>
+</ul>			</nav>
+				</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-top-column elementor-element elementor-element-3f03f81e" data-id="3f03f81e" data-element_type="column" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-488e8a34 elementor-search-form--skin-classic elementor-search-form--button-type-icon elementor-search-form--icon-search elementor-widget elementor-widget-search-form" data-id="488e8a34" data-element_type="widget" data-settings="{&quot;skin&quot;:&quot;classic&quot;}" data-widget_type="search-form.default">
+				<div class="elementor-widget-container">
+					<form class="elementor-search-form" role="search" action="https://www.indyplanet.com" method="get">
+									<div class="elementor-search-form__container">
+								<input placeholder="search by title, creator, or subject" class="elementor-search-form__input" type="search" name="s" title="Search" value="">
+													<button class="elementor-search-form__submit" type="submit" title="Search" aria-label="Search">
+													<i aria-hidden="true" class="fas fa-search"></i>							<span class="elementor-screen-only">Search</span>
+											</button>
+											</div>
+		</form>
+				</div>
+				</div>
+					</div>
+		</div>
+							</div>
+		</nav>
+				<section class="elementor-section elementor-top-section elementor-element elementor-element-71d52608 elementor-section-full_width elementor-section-content-top elementor-section-stretched elementor-section-height-default elementor-section-height-default" data-id="71d52608" data-element_type="section" data-settings="{&quot;shape_divider_top&quot;:&quot;triangle-asymmetrical&quot;,&quot;stretch_section&quot;:&quot;section-stretched&quot;}" style="width: 390px; left: 0px;">
+					<div class="elementor-shape elementor-shape-top" data-negative="false">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" preserveAspectRatio="none">
+	<path class="elementor-shape-fill" d="M738,99l262-93V0H0v5.6L738,99z"></path>
+</svg>		</div>
+					<div class="elementor-container elementor-column-gap-extended">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-29ae241e" data-id="29ae241e" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-59a2affe toggle-icon--cart-solid elementor-menu-cart--items-indicator-plain elementor-hidden-phone elementor-menu-cart--cart-type-side-cart elementor-menu-cart--show-remove-button-yes elementor-widget elementor-widget-woocommerce-menu-cart" data-id="59a2affe" data-element_type="widget" data-settings="{&quot;cart_type&quot;:&quot;side-cart&quot;,&quot;open_cart&quot;:&quot;click&quot;,&quot;automatically_open_cart&quot;:&quot;no&quot;}" data-widget_type="woocommerce-menu-cart.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-menu-cart__wrapper">
+							<div class="elementor-menu-cart__toggle_wrapper">
+					<div class="elementor-menu-cart__container elementor-lightbox" aria-hidden="true">
+						<div class="elementor-menu-cart__main" aria-hidden="true">
+							<div class="elementor-menu-cart__close-button"></div>
+							<div class="widget_shopping_cart_content">	<div class="woocommerce-mini-cart__empty-message">No products in the cart.</div>
+</div>
+						</div>
+					</div>
+									<div class="elementor-menu-cart__toggle elementor-button-wrapper">
+			<a id="elementor-menu-cart__toggle_button" href="#" class="elementor-menu-cart__toggle_button elementor-button elementor-size-sm" aria-expanded="false">
+				<span class="elementor-button-text"><span class="woocommerce-Price-amount amount"><bdi><span class="woocommerce-Price-currencySymbol">$</span>0.00</bdi></span></span>
+				<span class="elementor-button-icon" data-counter="0">
+					<i class="eicon-cart-solid"></i>					<span class="elementor-screen-only">Cart</span>
+				</span>
+			</a>
+		</div>
+		
+						</div>
+					</div> <!-- close elementor-menu-cart__wrapper -->
+				</div>
+				</div>
+					</div>
+		</div>
+							</div>
+		</section>
+						</div>
+		<main class="site-main" role="main">
+			<header class="page-header">
+			<h1 class="entry-title">The page can’t be found.</h1>
+		</header>
+		<div class="page-content">
+		<p>It looks like nothing was found at this location.</p>
+	</div>
+
+</main>
+		<div data-elementor-type="footer" data-elementor-id="282721" class="elementor elementor-282721 elementor-location-footer">
+								<section class="elementor-section elementor-top-section elementor-element elementor-element-4f830db1 elementor-section-full_width elementor-section-height-default elementor-section-height-default" data-id="4f830db1" data-element_type="section" data-settings="{&quot;background_background&quot;:&quot;classic&quot;,&quot;shape_divider_top&quot;:&quot;triangle-asymmetrical&quot;,&quot;shape_divider_top_negative&quot;:&quot;yes&quot;}">
+					<div class="elementor-shape elementor-shape-top" data-negative="true">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" preserveAspectRatio="none">
+	<path class="elementor-shape-fill" d="M737.9,94.7L0,0v100h1000V0L737.9,94.7z"></path>
+</svg>		</div>
+					<div class="elementor-container elementor-column-gap-no">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-5d14b7a1" data-id="5d14b7a1" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-76c87972 elementor-shape-rounded elementor-grid-0 e-grid-align-center elementor-widget elementor-widget-social-icons" data-id="76c87972" data-element_type="widget" data-widget_type="social-icons.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-social-icons-wrapper elementor-grid">
+							<span class="elementor-grid-item">
+					<a class="elementor-icon elementor-social-icon elementor-social-icon-facebook elementor-repeater-item-532d045" href="https://www.facebook.com/IndyPlanet-275211855913631" target="_blank">
+						<span class="elementor-screen-only">Facebook</span>
+						<i class="fab fa-facebook"></i>					</a>
+				</span>
+							<span class="elementor-grid-item">
+					<a class="elementor-icon elementor-social-icon elementor-social-icon-twitter elementor-repeater-item-b82e2e4" href="https://twitter.com/indyplanet" target="_blank">
+						<span class="elementor-screen-only">Twitter</span>
+						<i class="fab fa-twitter"></i>					</a>
+				</span>
+							<span class="elementor-grid-item">
+					<a class="elementor-icon elementor-social-icon elementor-social-icon-youtube elementor-repeater-item-dd74b06" href="#" target="_blank">
+						<span class="elementor-screen-only">Youtube</span>
+						<i class="fab fa-youtube"></i>					</a>
+				</span>
+							<span class="elementor-grid-item">
+					<a class="elementor-icon elementor-social-icon elementor-social-icon-instagram elementor-repeater-item-fec2faa" href="https://www.instagram.com/indyplanet/" target="_blank">
+						<span class="elementor-screen-only">Instagram</span>
+						<i class="fab fa-instagram"></i>					</a>
+				</span>
+					</div>
+				</div>
+				</div>
+					</div>
+		</div>
+							</div>
+		</section>
+				<section class="elementor-section elementor-inner-section elementor-element elementor-element-9b5e704 elementor-section-content-top elementor-section-full_width elementor-section-height-min-height elementor-section-height-default" data-id="9b5e704" data-element_type="section" data-settings="{&quot;background_background&quot;:&quot;classic&quot;,&quot;shape_divider_top&quot;:&quot;pyramids&quot;,&quot;shape_divider_top_negative&quot;:&quot;yes&quot;}">
+					<div class="elementor-shape elementor-shape-top" data-negative="true">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" preserveAspectRatio="none">
+	<path class="elementor-shape-fill" d="M761.9,40.6L643.1,24L333.9,93.8L0.1,1H0v99h1000V1"></path>
+</svg>		</div>
+					<div class="elementor-container elementor-column-gap-no">
+					<div class="elementor-column elementor-col-25 elementor-inner-column elementor-element elementor-element-6eccbe99" data-id="6eccbe99" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-78206af1 elementor-widget elementor-widget-heading" data-id="78206af1" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+			<h3 class="elementor-heading-title elementor-size-large">Wish Lists</h3>		</div>
+				</div>
+				<div class="elementor-element elementor-element-3fa5e137 elementor-align-center elementor-list-item-link-full_width elementor-widget elementor-widget-icon-list" data-id="3fa5e137" data-element_type="widget" data-widget_type="icon-list.default">
+				<div class="elementor-widget-container">
+					<ul class="elementor-icon-list-items">
+							<li class="elementor-icon-list-item">
+											<a href="https://indyplanet.com/wishlists/create-a-list">
+
+											<span class="elementor-icon-list-text">Create a List</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://indyplanet.com/wishlists/find-a-list">
+
+											<span class="elementor-icon-list-text">FInd a List</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://indyplanet.com/wishlists/manage-list">
+
+											<span class="elementor-icon-list-text">Manage a List</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://indyplanet.com/wishlists/view-a-list">
+
+											<span class="elementor-icon-list-text">View a List</span>
+											</a>
+									</li>
+						</ul>
+				</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-25 elementor-inner-column elementor-element elementor-element-a8c4e27" data-id="a8c4e27" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-449e9e0f elementor-widget elementor-widget-heading" data-id="449e9e0f" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+			<h3 class="elementor-heading-title elementor-size-large">Browse</h3>		</div>
+				</div>
+				<div class="elementor-element elementor-element-3fd0ca12 elementor-align-center elementor-icon-list--layout-traditional elementor-list-item-link-full_width elementor-widget elementor-widget-icon-list" data-id="3fd0ca12" data-element_type="widget" data-widget_type="icon-list.default">
+				<div class="elementor-widget-container">
+					<ul class="elementor-icon-list-items">
+							<li class="elementor-icon-list-item">
+											<a href="https://indyplanet.com/category/free-downloads">
+
+											<span class="elementor-icon-list-text">FREE Comics</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://indyplanet.com/bestsellers">
+
+											<span class="elementor-icon-list-text">Bestsellers</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://indyplanet.com/randomizer">
+
+											<span class="elementor-icon-list-text">Random Comics</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://indyplanet.com/recently-added-comics/">
+
+											<span class="elementor-icon-list-text">Newly Listed</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://indyplanet.com/promotions">
+
+											<span class="elementor-icon-list-text">Promotional</span>
+											</a>
+									</li>
+						</ul>
+				</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-25 elementor-inner-column elementor-element elementor-element-7cae0f50" data-id="7cae0f50" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-5931879c elementor-widget elementor-widget-heading" data-id="5931879c" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+			<h3 class="elementor-heading-title elementor-size-default">Information</h3>		</div>
+				</div>
+				<div class="elementor-element elementor-element-5c65acd9 elementor-align-center elementor-icon-list--layout-traditional elementor-list-item-link-full_width elementor-widget elementor-widget-icon-list" data-id="5c65acd9" data-element_type="widget" data-widget_type="icon-list.default">
+				<div class="elementor-widget-container">
+					<ul class="elementor-icon-list-items">
+							<li class="elementor-icon-list-item">
+											<a href="https://indyplanet.com/buy">
+
+											<span class="elementor-icon-list-text">Buying Here</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://indyplanet.com/sell">
+
+											<span class="elementor-icon-list-text">Sell Your Comics Here</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://indyplanet.com/trouble-with-a-download">
+
+											<span class="elementor-icon-list-text">Trouble With a Download</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://indyplanet.com/what-is-print-on-demand">
+
+											<span class="elementor-icon-list-text">What is Print-on-Demand?</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://indyplanet.com/mailing-list">
+
+											<span class="elementor-icon-list-text">Join Our Mailing List</span>
+											</a>
+									</li>
+						</ul>
+				</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-25 elementor-inner-column elementor-element elementor-element-66aee88d" data-id="66aee88d" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-24b67c4b elementor-widget elementor-widget-heading" data-id="24b67c4b" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+			<h3 class="elementor-heading-title elementor-size-default">Polices</h3>		</div>
+				</div>
+				<div class="elementor-element elementor-element-38a025ab elementor-align-center elementor-icon-list--layout-traditional elementor-list-item-link-full_width elementor-widget elementor-widget-icon-list" data-id="38a025ab" data-element_type="widget" data-widget_type="icon-list.default">
+				<div class="elementor-widget-container">
+					<ul class="elementor-icon-list-items">
+							<li class="elementor-icon-list-item">
+											<a href="https://indyplanet.com/damages-policy">
+
+											<span class="elementor-icon-list-text">Damages</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://indyplanet.com/collectibles-policy">
+
+											<span class="elementor-icon-list-text">Collectibles</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://indyplanet.com/collectibles-policy">
+
+											<span class="elementor-icon-list-text">Privacy</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://indyplanet.com/refund-policy">
+
+											<span class="elementor-icon-list-text">Refunds</span>
+											</a>
+									</li>
+						</ul>
+				</div>
+				</div>
+					</div>
+		</div>
+							</div>
+		</section>
+				<section class="elementor-section elementor-top-section elementor-element elementor-element-b59a351 elementor-section-full_width elementor-section-height-default elementor-section-height-default" data-id="b59a351" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-49c1bf09" data-id="49c1bf09" data-element_type="column" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+			<div class="elementor-widget-wrap elementor-element-populated">
+								<div class="elementor-element elementor-element-207fe6c elementor-widget elementor-widget-image" data-id="207fe6c" data-element_type="widget" data-widget_type="image.default">
+				<div class="elementor-widget-container">
+															<img width="2048" height="293" src="https://www.indyplanet.com/wp-content/uploads/2021/05/IP_hirez_bkg.jpg" class="attachment-full size-full" alt="" loading="lazy">															</div>
+				</div>
+				<div class="elementor-element elementor-element-2bf1542b elementor-widget elementor-widget-text-editor" data-id="2bf1542b" data-element_type="widget" data-widget_type="text-editor.default">
+				<div class="elementor-widget-container">
+							<p>IndyPlanet is a 01 Comics Inc. company. The IndyPlanet logo and mascots are TM and © 01 Comics Inc. All Right reserved. All comics images and graphics are TM and © the respective owners and are used with permission. Printing and Fulfillment by <a href="http://ka-blam.com">Ka-Blam Digital Printing. Ka-Blam.com</a></p>						</div>
+				</div>
+					</div>
+		</div>
+							</div>
+		</section>
+				<section class="elementor-section elementor-top-section elementor-element elementor-element-67f130db elementor-section-full_width elementor-section-height-default elementor-section-height-default" data-id="67f130db" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-no">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-2cc86981" data-id="2cc86981" data-element_type="column">
+			<div class="elementor-widget-wrap">
+									</div>
+		</div>
+							</div>
+		</section>
+						</div>
+		
+<p class="woocommerce-store-notice demo_store" data-notice-id="850809bc85bcdf91b5d8c922eb2a8cea" style="display: block;">IndyPlanet -- like every company that relies on a steady supply of paper-- is feeling the crunch of the worldwide paper shortage. We're continuing to take POD orders, but please be advised that our turnaround times may be much longer than either of us would like.  <a href="#" class="woocommerce-store-notice__dismiss-link">Dismiss</a></p><script>document.addEventListener('DOMContentLoaded', function() {
+	var is_mutation_observer_available = ('undefined' !== typeof MutationObserver);
+
+	WPO_LazyLoad.update();
+
+	if (is_mutation_observer_available) {
+
+		// if MutationObserver available then use it.
+		var observer = new MutationObserver(function (mutations) {
+			mutations.forEach(function (mutation) {
+				WPO_LazyLoad.update(mutation.addedNodes);
+			});
+		});
+
+		var config = {childList: true, subtree: true},
+			target = document.getElementsByTagName('body')[0];
+
+		observer.observe(target, config);
+	} else {
+		// if MutationObserver isn't available then use events.
+		window.addEventListener('load', function() {
+			WPO_LazyLoad.deferred_call('update', WPO_LazyLoad.update);
+		});
+
+		window.addEventListener('scroll', function() {
+			WPO_LazyLoad.deferred_call('update', WPO_LazyLoad.update);
+		});
+
+		window.addEventListener('resize', function() {
+			WPO_LazyLoad.deferred_call('update', WPO_LazyLoad.update);
+		});
+
+		document.getElementsByTagName('body')[0].addEventListener('post-load', function() {
+			WPO_LazyLoad.deferred_call('update', WPO_LazyLoad.update);
+		});
+	}
+});
+
+/**
+ * Some kind of intersection observer for browsers those don't support IntersectionObserver.
+ *
+ * @param {function}  load     callback those called when element is visible on screen.
+ * @param {object}    settings
+ *
+ * @return {{observe: observe, unobserve: unobserve}}
+ */
+var WPO_Intersection_Observer = function(load, settings) {
+	var elements = [];
+
+	settings = settings || {offset: 100};
+
+	/**
+	 *  Add element into observable list.
+	 *
+	 * @param {HTMLElement} element
+	 *
+	 * @return void
+	 */
+	function observe(element) {
+		elements.push(element);
+	}
+
+	/**
+	 * Delete element form observable list.
+	 *
+	 * @param {HTMLElement} element
+	 *
+	 * @return void
+	 */
+	function unobserve(element) {
+		var i;
+		for (i in elements) {
+			if (!elements.hasOwnProperty(i)) continue;
+
+			if (element == elements[i]) {
+				delete elements[i];
+				return;
+			}
+		}
+	}
+
+	/**
+	 * Callback for events handlers. Check observable elements for visibility and call load() function.
+	 *
+	 * @return void
+	 */
+	function check() {
+		var i;
+
+		for (i in elements) {
+			if (!elements.hasOwnProperty(i)) continue;
+
+			if (is_visible(elements[i])) {
+				load(elements[i]);
+				unobserve(elements[i]);
+			}
+		}
+	}
+
+	/**
+	 * Check if element is visible on screen.
+	 *
+	 * @param {HTMLElement} element
+	 *
+	 * @return {boolean}
+	 */
+	function is_visible(element) {
+		var rect = element.getBoundingClientRect(),
+			window_height = window.innerHeight
+				|| document.documentElement.clientHeight
+				|| document.body.clientHeight;
+
+		return (rect.top - settings.offset < window_height) && (rect.bottom + settings.offset > 0);
+	}
+
+	window.addEventListener('load', function() {
+		WPO_LazyLoad.deferred_call('check', check);
+	});
+
+	window.addEventListener('scroll', function() {
+		WPO_LazyLoad.deferred_call('check', check);
+	});
+
+	window.addEventListener('resize', function() {
+		WPO_LazyLoad.deferred_call('check', check);
+	});
+
+	return {
+		observe: observe,
+		unobserve: unobserve
+	}
+};
+
+/**
+ * WP-Optimize lazyload core.
+ */
+var WPO_LazyLoad = function() {
+	var is_intersection_observer_available = ('undefined' !== typeof IntersectionObserver),
+		intersection_observer;
+
+	var settings = {
+		container: window.document,
+		select_class: 'lazyload', 			// used to get elements for lazy loading.
+		observe_class: 'lazyload-observe', 	// added to elements currently observable.
+		loaded_class: 'lazyload-loaded'		// added to loaded elements.
+	};
+
+	if (is_intersection_observer_available) {
+		intersection_observer = new IntersectionObserver(load_elements, {
+			root: null,
+			rootMargin: '0px',
+			threshold: [0.1]
+		});
+	} else {
+		intersection_observer = new WPO_Intersection_Observer(load);
+	}
+
+	/**
+	 * Load lazy load element
+	 *
+	 * @param {HTMLElement} element
+	 *
+	 * @return void
+	 */
+	function load(element) {
+		if (has_class(element, settings.loaded_class)) return;
+		add_class(element, settings.loaded_class);
+
+		intersection_observer.unobserve(element);
+		remove_class(element, settings.observe_class);
+
+		var tag = element.tagName,
+			i;
+
+		if ('picture' == tag.toLowerCase()) {
+			for (i in element.childNodes) {
+				if (!element.childNodes.hasOwnProperty(i)) continue;
+
+				update_lazy_load_attributes(element.childNodes[i]);
+			}
+		} else {
+			update_lazy_load_attributes(element);
+		}
+	}
+
+	/**
+	 * Set attributes for element to show.
+	 *
+	 * @param {HTMLElement} element
+	 *
+	 * @return void
+	 */
+	function update_lazy_load_attributes(element) {
+		// exit if element doesn't support getAttribute, for ex. text.
+		if ('undefined' == typeof element.getAttribute) return;
+
+		var data_src = element.getAttribute('data-src'),
+			data_srcset = element.getAttribute('data-srcset'),
+			data_background  = element.getAttribute('data-background'),
+			data_background_image  = element.getAttribute('data-background-image');
+
+		if (data_src) {
+			element.setAttribute('src', data_src);
+			element.removeAttribute('data-src');
+		}
+
+		if (data_srcset) {
+			element.setAttribute('srcset', data_srcset);
+			element.removeAttribute('data-srcset');
+		}
+
+		if (data_background) {
+			element.style.background = replace_background_url(element.style.background, data_background.split(';'));
+			element.removeAttribute('data-background');
+		}
+
+		if (data_background_image) {
+			element.style.backgroundImage = replace_background_url(element.style.backgroundImage, data_background_image.split(';'));
+			element.removeAttribute('data-background-image');
+		}
+	}
+
+	/**
+	 * Replace callback for background and background-image properties.
+	 *
+	 * @param {string} str
+	 * @param {array} urls
+	 *
+	 * @return {string}
+	 */
+	function replace_background_url(str, urls) {
+		var i = 0;
+		return str.replaceAll(/url\([^\)]*\)/ig, function() {
+			return ['url(\'', urls[i++], '\')'].join('');
+		});
+	}
+
+	/**
+	 * Callback function for intersection observer.
+	 *
+	 * @param {object} elements
+	 *
+	 * @return void
+	 */
+	function load_elements(elements) {
+		var i;
+
+		for (i in elements) {
+			if (!elements.hasOwnProperty(i)) continue;
+
+			if (elements[i].isIntersecting) {
+				load(elements[i].target);
+			}
+		}
+	}
+
+	/**
+	 * Add element to intersection observer.
+	 *
+	 * @param element
+	 *
+	 * @return void
+	 */
+	function handle(element) {
+		remove_class(element, settings.select_class);
+
+		if (!has_class(element, settings.observe_class)) {
+			add_class(element, settings.observe_class);
+			intersection_observer.observe(element);
+		}
+	}
+
+	/**
+	 * Add handlers for new loaded elements.
+	 *
+	 * @param elements
+	 *
+	 * @return void
+	 */
+	function update(elements) {
+
+		var i,
+			elements_list = elements || Array.prototype.slice.call(settings.container.getElementsByClassName(settings.select_class));
+
+		for (i in elements_list) {
+			if (!elements_list.hasOwnProperty(i)) continue;
+
+			if (has_class(elements_list[i], settings.select_class)) {
+				handle(elements_list[i]);
+			} else {
+				if (elements_list[i].childNodes && elements_list[i].childNodes.length) update(elements_list[i].childNodes);
+			}
+		}
+	}
+
+	var deferred_counter = {},
+		deferred_last_call = {};
+
+	/**
+	 * Call function callback() not more often than once in timeout period.
+	 *
+	 * @param {string}   id		  some id for function.
+	 * @param {function} callback
+	 * @param {int}      timeout
+	 *
+	 * @return void
+	 */
+	function deferred_call(id, callback, timeout) {
+		timeout = timeout || 200;
+		// increase counter.
+		deferred_counter[id] = deferred_counter[id] ? deferred_counter[id] + 1 : 1;
+
+		setTimeout(function() {
+			var now = new Date().getTime(),
+				last = deferred_last_call[id] || 0;
+
+			deferred_counter[id]--;
+			if (0 === deferred_counter[id] || last + timeout < now) {
+				deferred_last_call[id] = now;
+				callback();
+			}
+		}, timeout);
+	}
+
+	/**
+	 * Add class to element.
+	 *
+	 * @param element
+	 * @param class_name
+	 *
+	 * @return void
+	 */
+	function add_class(element, class_name) {
+		if (has_class(element, class_name)) return;
+
+		if (element.className) {
+			element.className += ' ' + class_name;
+		} else {
+			element.className = class_name;
+		}
+	}
+
+	/**
+	 * Remove class in element.
+	 *
+	 * @param element
+	 * @param class_name
+	 *
+	 * @return void
+	 */
+	function remove_class(element, class_name) {
+		var regexp = new RegExp(['(^|\\s)', class_name, '(\\s|$)'].join(''));
+
+		element.className = element.className.replace(regexp, ' ');
+	}
+
+	/**
+	 * Check if elementa has class.
+	 *
+	 * @param element
+	 * @param class_name
+	 *
+	 * @return {boolean}
+	 */
+	function has_class(element, class_name) {
+		var regexp = new RegExp(['(^|\\s)', class_name, '(\\s|$)'].join(''));
+		return regexp.test(element.className);
+	}
+
+	return {
+		update: update,
+		deferred_call: deferred_call
+	}
+}();
+</script>	<script type="text/javascript">
+		(function () {
+			var c = document.body.className;
+			c = c.replace(/woocommerce-no-js/, 'woocommerce-js');
+			document.body.className = c;
+		})();
+	</script>
+	<link rel="stylesheet" id="woocommercebulkdiscount-style-css" href="https://www.indyplanet.com/wp-content/plugins/woocommerce-bulk-discount/css/style.css?ver=6.0" type="text/css" media="all">
+<link rel="stylesheet" id="e-animations-css" href="https://www.indyplanet.com/wp-content/plugins/elementor/assets/lib/animations/animations.min.css?ver=3.6.6" type="text/css" media="all">
+<script type="text/javascript" id="image-sizes-js-extra">
+/* <![CDATA[ */
+var IMAGE_SIZES = {"version":"3.5","disables":["medium","medium_large","large","1536x1536","2048x2048","woocommerce_thumbnail","woocommerce_single","woocommerce_gallery_thumbnail","shop_catalog","shop_single","shop_thumbnail"]};
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://www.indyplanet.com/wp-content/plugins/image-sizes/assets/js/front.min.js?ver=3.5" id="image-sizes-js"></script>
+<script type="text/javascript" src="https://www.indyplanet.com/wp-content/plugins/woocommerce/assets/js/jquery-blockui/jquery.blockUI.js?ver=2.7.0-wc.6.6.1" id="jquery-blockui-js"></script>
+<script type="text/javascript" id="wc-add-to-cart-js-extra">
+/* <![CDATA[ */
+var wc_add_to_cart_params = {"ajax_url":"\/wp-admin\/admin-ajax.php","wc_ajax_url":"\/?wc-ajax=%%endpoint%%&elementor_page_id=0","i18n_view_cart":"View cart","cart_url":"https:\/\/www.indyplanet.com\/cart","is_cart":"","cart_redirect_after_add":"yes"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://www.indyplanet.com/wp-content/plugins/woocommerce/assets/js/frontend/add-to-cart.js?ver=6.6.1" id="wc-add-to-cart-js"></script>
+<script type="text/javascript" src="https://www.indyplanet.com/wp-content/plugins/woocommerce/assets/js/js-cookie/js.cookie.js?ver=2.1.4-wc.6.6.1" id="js-cookie-js"></script>
+<script type="text/javascript" id="woocommerce-js-extra">
+/* <![CDATA[ */
+var woocommerce_params = {"ajax_url":"\/wp-admin\/admin-ajax.php","wc_ajax_url":"\/?wc-ajax=%%endpoint%%&elementor_page_id=0"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://www.indyplanet.com/wp-content/plugins/woocommerce/assets/js/frontend/woocommerce.js?ver=6.6.1" id="woocommerce-js"></script>
+<script type="text/javascript" id="wc-cart-fragments-js-extra">
+/* <![CDATA[ */
+var wc_cart_fragments_params = {"ajax_url":"\/wp-admin\/admin-ajax.php","wc_ajax_url":"\/?wc-ajax=%%endpoint%%&elementor_page_id=0","cart_hash_key":"wc_cart_hash_b84c185740cf8de2c6c948bc1d417d28","fragment_name":"wc_fragments_b84c185740cf8de2c6c948bc1d417d28","request_timeout":"5000"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://www.indyplanet.com/wp-content/plugins/woocommerce/assets/js/frontend/cart-fragments.js?ver=6.6.1" id="wc-cart-fragments-js"></script>
+<script type="text/javascript" src="https://www.indyplanet.com/wp-content/themes/hello-elementor/assets/js/hello-frontend.js?ver=1.0.0" id="hello-theme-frontend-js"></script>
+<script type="text/javascript" src="https://www.indyplanet.com/wp-content/plugins/elementor-pro/assets/lib/smartmenus/jquery.smartmenus.js?ver=1.0.1" id="smartmenus-js"></script>
+<script type="text/javascript" src="https://www.indyplanet.com/wp-content/plugins/elementor-pro/assets/js/webpack-pro.runtime.js?ver=3.7.2" id="elementor-pro-webpack-runtime-js"></script>
+<script type="text/javascript" src="https://www.indyplanet.com/wp-content/plugins/elementor/assets/js/webpack.runtime.js?ver=3.6.6" id="elementor-webpack-runtime-js"></script>
+<script type="text/javascript" src="https://www.indyplanet.com/wp-content/plugins/elementor/assets/js/frontend-modules.js?ver=3.6.6" id="elementor-frontend-modules-js"></script>
+<script type="text/javascript" src="https://www.indyplanet.com/wp-includes/js/dist/vendor/regenerator-runtime.js?ver=0.13.9" id="regenerator-runtime-js"></script>
+<script type="text/javascript" src="https://www.indyplanet.com/wp-includes/js/dist/vendor/wp-polyfill.js?ver=3.15.0" id="wp-polyfill-js"></script>
+<script type="text/javascript" src="https://www.indyplanet.com/wp-includes/js/dist/hooks.js?ver=c6d64f2cb8f5c6bb49caca37f8828ce3" id="wp-hooks-js"></script>
+<script type="text/javascript" src="https://www.indyplanet.com/wp-includes/js/dist/i18n.js?ver=ebee46757c6a411e38fd079a7ac71d94" id="wp-i18n-js"></script>
+<script type="text/javascript" id="wp-i18n-js-after">
+wp.i18n.setLocaleData( { 'text direction\u0004ltr': [ 'ltr' ] } );
+</script>
+<script type="text/javascript" id="elementor-pro-frontend-js-before">
+var ElementorProFrontendConfig = {"ajaxurl":"https:\/\/www.indyplanet.com\/wp-admin\/admin-ajax.php","nonce":"5e58f04f74","urls":{"assets":"https:\/\/www.indyplanet.com\/wp-content\/plugins\/elementor-pro\/assets\/","rest":"https:\/\/www.indyplanet.com\/wp-json\/"},"shareButtonsNetworks":{"facebook":{"title":"Facebook","has_counter":true},"twitter":{"title":"Twitter"},"linkedin":{"title":"LinkedIn","has_counter":true},"pinterest":{"title":"Pinterest","has_counter":true},"reddit":{"title":"Reddit","has_counter":true},"vk":{"title":"VK","has_counter":true},"odnoklassniki":{"title":"OK","has_counter":true},"tumblr":{"title":"Tumblr"},"digg":{"title":"Digg"},"skype":{"title":"Skype"},"stumbleupon":{"title":"StumbleUpon","has_counter":true},"mix":{"title":"Mix"},"telegram":{"title":"Telegram"},"pocket":{"title":"Pocket","has_counter":true},"xing":{"title":"XING","has_counter":true},"whatsapp":{"title":"WhatsApp"},"email":{"title":"Email"},"print":{"title":"Print"}},"woocommerce":{"menu_cart":{"cart_page_url":"https:\/\/www.indyplanet.com\/cart","checkout_page_url":"https:\/\/www.indyplanet.com\/checkout","fragments_nonce":"aeec78bb7f"}},"facebook_sdk":{"lang":"en_US","app_id":""},"lottie":{"defaultAnimationUrl":"https:\/\/www.indyplanet.com\/wp-content\/plugins\/elementor-pro\/modules\/lottie\/assets\/animations\/default.json"}};
+</script>
+<script type="text/javascript" src="https://www.indyplanet.com/wp-content/plugins/elementor-pro/assets/js/frontend.js?ver=3.7.2" id="elementor-pro-frontend-js"></script>
+<script type="text/javascript" src="https://www.indyplanet.com/wp-content/plugins/elementor/assets/lib/waypoints/waypoints.js?ver=4.0.2" id="elementor-waypoints-js"></script>
+<script type="text/javascript" src="https://www.indyplanet.com/wp-includes/js/jquery/ui/core.js?ver=1.13.1" id="jquery-ui-core-js"></script>
+<script type="text/javascript" src="https://www.indyplanet.com/wp-content/plugins/elementor/assets/lib/swiper/swiper.js?ver=5.3.6" id="swiper-js"></script>
+<script type="text/javascript" src="https://www.indyplanet.com/wp-content/plugins/elementor/assets/lib/share-link/share-link.js?ver=3.6.6" id="share-link-js"></script>
+<script type="text/javascript" src="https://www.indyplanet.com/wp-content/plugins/elementor/assets/lib/dialog/dialog.js?ver=4.9.0" id="elementor-dialog-js"></script>
+<script type="text/javascript" id="elementor-frontend-js-before">
+var elementorFrontendConfig = {"environmentMode":{"edit":false,"wpPreview":false,"isScriptDebug":true},"i18n":{"shareOnFacebook":"Share on Facebook","shareOnTwitter":"Share on Twitter","pinIt":"Pin it","download":"Download","downloadImage":"Download image","fullscreen":"Fullscreen","zoom":"Zoom","share":"Share","playVideo":"Play Video","previous":"Previous","next":"Next","close":"Close"},"is_rtl":false,"breakpoints":{"xs":0,"sm":480,"md":768,"lg":1025,"xl":1440,"xxl":1600},"responsive":{"breakpoints":{"mobile":{"label":"Mobile","value":767,"default_value":767,"direction":"max","is_enabled":true},"mobile_extra":{"label":"Mobile Extra","value":880,"default_value":880,"direction":"max","is_enabled":false},"tablet":{"label":"Tablet","value":1024,"default_value":1024,"direction":"max","is_enabled":true},"tablet_extra":{"label":"Tablet Extra","value":1200,"default_value":1200,"direction":"max","is_enabled":false},"laptop":{"label":"Laptop","value":1366,"default_value":1366,"direction":"max","is_enabled":false},"widescreen":{"label":"Widescreen","value":2400,"default_value":2400,"direction":"min","is_enabled":false}}},"version":"3.6.6","is_static":false,"experimentalFeatures":{"e_dom_optimization":true,"e_import_export":true,"e_hidden_wordpress_widgets":true,"theme_builder_v2":true,"hello-theme-header-footer":true,"landing-pages":true,"elements-color-picker":true,"favorite-widgets":true,"admin-top-bar":true,"page-transitions":true,"notes":true,"form-submissions":true,"e_scroll_snap":true},"urls":{"assets":"https:\/\/www.indyplanet.com\/wp-content\/plugins\/elementor\/assets\/"},"settings":{"editorPreferences":[]},"kit":{"body_background_background":"classic","active_breakpoints":["viewport_mobile","viewport_tablet"],"global_image_lightbox":"yes","lightbox_enable_fullscreen":"yes","lightbox_enable_share":"yes","lightbox_title_src":"title","woocommerce_notices_elements":[],"hello_header_logo_type":"logo","hello_header_menu_layout":"horizontal","hello_footer_logo_type":"logo"},"post":{"id":0,"title":"Page not found &#8211; IndyPlanet","excerpt":""}};
+</script>
+<script type="text/javascript" src="https://www.indyplanet.com/wp-content/plugins/elementor/assets/js/frontend.js?ver=3.6.6" id="elementor-frontend-js"></script><span id="elementor-device-mode" class="elementor-screen-only"></span>
+<script type="text/javascript" src="https://www.indyplanet.com/wp-content/plugins/elementor-pro/assets/js/preloaded-elements-handlers.js?ver=3.7.2" id="pro-preloaded-elements-handlers-js"></script><svg style="display: none;" class="e-font-icon-svg-symbols"></svg>
+<script type="text/javascript" src="https://www.indyplanet.com/wp-content/plugins/elementor/assets/js/preloaded-modules.js?ver=3.6.6" id="preloaded-modules-js"></script><svg style="display: none;" class="e-font-icon-svg-symbols"></svg>
+<script type="text/javascript" src="https://www.indyplanet.com/wp-content/plugins/elementor-pro/assets/lib/sticky/jquery.sticky.js?ver=3.7.2" id="e-sticky-js"></script>
+
+
+
+
+<!-- WP Optimize page cache - https://getwpo.com - Page not served from cache because: The request extension is not suitable for caching, In the settings, caching is disabled for matches for one of the current request's GET parameters -->
+</body></html>

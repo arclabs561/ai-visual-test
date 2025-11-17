@@ -1,0 +1,281 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ImperialViolet - Apple's SSL/TLS bug</title>
+    <meta name="author" content="Adam Langley">
+
+    <link href="https://twitter.com/agl__" rel="me">
+    <link rel="openid.server" href="https://indieauth.com/openid">
+    <link rel="openid.delegate" href="https://www.imperialviolet.org/">
+    <link rel="alternate" type="application/atom+xml" title="Atom Feed" href="/iv-rss.xml">
+    <link href="https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz:extralight&amp;text=ImperialVioletAdamLangleysWeblog%27" rel="stylesheet" type="text/css">
+
+    <style>
+      @media (prefers-color-scheme: dark) {
+        body {
+          background-color: #333;
+          color: #ccc;
+        }
+        h1 a {
+          color: #eee;
+        }
+        h3 a {
+          color: #ccc;
+        }
+        div.postcontents h3 {
+          color: #bbb;
+        }
+        div.postcontents h3 a {
+          color: #aaa;
+        }
+        div.postcontents h4 {
+          color: #aaa;
+        }
+        div.postcontents h5 {
+          color: #999;
+        }
+        div.postcontents h6 {
+          color: #ccc;
+        }
+        div.postcontents a {
+          color: #ccc;
+        }
+      }
+      @media (prefers-color-scheme: light) {
+        body {
+          background-color: #fbfbfc;
+          color: #000;
+        }
+        h1 a {
+          color: #000;
+        }
+        h3 a {
+          color: #222;
+        }
+        div.postcontents h3 {
+          color: #666;
+        }
+        div.postcontents h3 a {
+          color: #444;
+        }
+        div.postcontents h4 {
+          color: #444;
+        }
+        div.postcontents h5 {
+          color: #555;
+        }
+        div.postcontents h6 {
+          color: #222;
+        }
+        div.postcontents a {
+          color: #222;
+        }
+      }
+
+      body {
+        font-family: serif;
+        text-align: justify;
+        max-width: 45em;
+        line-height: 1.8;
+        margin-left: auto;
+        margin-right: auto;
+        hyphens: auto;
+        -webkit-hyphens: auto;
+        -ms-hyphens: auto;
+      }
+
+      ul {
+        font-size: 14pt;
+      }
+
+      ol {
+        font-size: 14pt;
+      }
+
+      p {
+        font-size: 14pt;
+        line-height: 21pt;
+      }
+
+      h1, h2 {
+        font-family: 'Yanone Kaffeesatz', arial, serif;
+        font-weight: normal;
+      }
+
+      kbd, tt, pre, code {
+        font-size: 12pt;
+        font-family: "Inconsolata", monospace;
+      }
+
+      h1 a {
+        text-decoration: none;
+      }
+
+      h3 a {
+        text-decoration: none;
+      }
+
+      h1 {
+        font-size: 4.5em;
+        margin-bottom: 0;
+        padding-bottom: 0;
+        margin-top: 0;
+        padding-top: 0;
+      }
+
+      h2 {
+        margin-top: 0;
+        padding-top: 0;
+        margin-bottom: 2em;
+      }
+
+      h3 {
+        font-family: sans-serif;
+        font-weight: normal;
+      }
+
+      h4 {
+        font-family: sans-serif;
+      }
+
+      td.topblock {
+        max-width: 25em;
+      }
+
+      td.topblockpadleft {
+        padding-left: 2em;
+      }
+
+      div.postcontents h3 {
+        font-size: 1.3em;
+        font-weight: normal;
+      }
+
+      div.postcontents h3 a {
+        text-decoration: none;
+        font-family: sans-serif;
+      }
+
+      div.postcontents h5 {
+        font-size: 12pt;
+        margin: 0;
+        -webkit-margin-after: 0;
+      }
+
+      /* For the SELinux page */
+
+      div#selinux {
+        max-width: 65em;
+        text-align: justify;
+      }
+      div#selinux .subject {
+        color: red;
+      }
+      div#selinux .action {
+        color: green;
+      }
+      div#selinux .object {
+        color: blue;
+      }
+      div#selinux .class {
+        font-family: monospace;
+        color: brown;
+      }
+      .div#selinux permission {
+        font-family: monospace;
+        color: cadetblue;
+      }
+      div#selinux .type {
+        color: yellowgreen;
+      }
+      div#selinux .fileaction {
+        font-variant: small-caps;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div style="margin-left: 1em; margin-right: 1em;">
+      <div class="topbox">
+    <h1><a href="https://www.imperialviolet.org">ImperialViolet</a></h1>
+  </div>
+
+  <div class="postcontents">
+    <h3><a href="/2014/02/22/applebug.html">Apple's SSL/TLS bug</a> (22 Feb 2014)</h3>
+
+    <div class="post">
+      <p>Yesterday, Apple pushed a rather spooky <a href="http://support.apple.com/kb/HT6147">security update</a> for iOS that suggested that something was horribly wrong with SSL/TLS in iOS but gave no details. Since the answer is <a href="https://news.ycombinator.com/item?id=7281378">at the top</a> of the Hacker News thread, I guess the cat's out of the bag already and we're into the misinformation-quashing stage now.</p>
+
+<p>So here's the Apple bug:</p>
+
+<pre>static OSStatus
+SSLVerifySignedServerKeyExchange(SSLContext *ctx, bool isRsa, SSLBuffer signedParams,
+                                 uint8_t *signature, UInt16 signatureLen)
+{
+	OSStatus        err;
+	<i>...</i>
+
+	if ((err = SSLHashSHA1.update(&amp;hashCtx, &amp;serverRandom)) != 0)
+		goto fail;
+	if ((err = SSLHashSHA1.update(&amp;hashCtx, &amp;signedParams)) != 0)
+		goto fail;
+		goto fail;
+	if ((err = SSLHashSHA1.final(&amp;hashCtx, &amp;hashOut)) != 0)
+		goto fail;
+	<i>...</i>
+
+fail:
+	SSLFreeBuffer(&amp;signedHashes);
+	SSLFreeBuffer(&amp;hashCtx);
+	return err;
+}</pre>
+
+<p>(Quoted from <a href="http://opensource.apple.com/source/Security/Security-55471/libsecurity_ssl/lib/sslKeyExchange.c">Apple's published source code</a>.)</p>
+
+<p>Note the two <tt>goto fail</tt> lines in a row. The first one is correctly bound to the if statement but the second, despite the indentation, isn't conditional at all. The code will always jump to the end from that second goto, <tt>err</tt> will contain a successful value because the SHA1 update operation was successful and so the signature verification will never fail.</p>
+
+<p>This signature verification is checking the signature in a <tt><a href="https://tools.ietf.org/html/rfc5246#section-7.4.3">ServerKeyExchange</a></tt> message. This is used in DHE and ECDHE ciphersuites to communicate the ephemeral key for the connection. The server is saying “here's the ephemeral key and here's a signature, from my certificate, so you know that it's from me”. Now, if the link between the ephemeral key and the certificate chain is broken, then everything falls apart. It's possible to send a correct certificate chain to the client, but sign the handshake with the wrong private key, or not sign it at all! There's no proof that the server possesses the private key matching the public key in its certificate.</p>
+
+<p>Since this is in SecureTransport, it affects iOS from some point prior to 7.0.6 (I confirmed on 7.0.4) and also OS X prior to 10.9.2 (confirmed on 10.9.1). It affects anything that uses SecureTransport, which is most software on those platforms although <i>not</i> Chrome and Firefox, which both use NSS for SSL/TLS. However, that doesn't mean very much if, say, the software update systems on your machine might be using SecureTransport.</p>
+
+<p>I coded up a very quick test site at <a href="https://www.imperialviolet.org:1266"><tt>https://www.imperialviolet.org:1266</tt></a>. Note the port number (which is the CVE number), the normal site is running on port 443 and that <i>is</i> expected to work. On port 1266 the server is sending the same certificates but signing with a completely different key. If you can load an HTTPS site on port 1266 then you have this bug.</p>
+
+<p>Because the certificate chain is correct and it's the link from the handshake to that chain which is broken, I don't believe any sort of certificate pinning would have stopped this. Also, this doesn't only affect sites using DHE or ECDHE ciphersuites - the attacker gets to choose the ciphersuite in this case and will choose the one that works for them.</p>
+
+<p>Also, this doesn't affect TLS 1.2 because there's a different function for verifying the different <tt>ServerKeyExchange</tt> message in TLS 1.2. But, again, the attacker can choose any version that the client will accept. But if the client <i>only</i> enables TLS 1.2 then it appears that would workaround this issue. Likewise, if the client only enabled the plain, RSA ciphersuites then there's no <tt>ServerKeyExchange</tt> and that should also work around this issue. (Of the two, the former workaround is much more preferable.)</p>
+
+<p>Based on my test site, both iOS 7.0.6 and OS X 10.9.2 fix the issue. (<i>Update</i>: it looks like the bug was introduced in 10.9 for OS X but existed in at least some versions of iOS 6. iOS <a href="http://support.apple.com/kb/HT6146">6.1.6</a> was released yesterday to fix it.)</p>
+
+<p>This sort of subtle bug deep in the code is a nightmare. I believe that it's just a mistake and I feel very bad for whoever might have slipped in an editor and created it.</p>
+
+<p>Here's a stripped down that code with the same issue:</p>
+
+<pre>extern int f();
+
+int g() {
+	int ret = 1;
+
+	goto out;
+	ret = f();
+
+out:
+	return ret;
+}</pre>
+
+<p>If I compile with <tt>-Wall</tt> (enable all warnings), neither GCC 4.8.2 or Clang 3.3 from Xcode make a peep about the dead code. That's surprising to me. A better warning could have stopped this but perhaps the false positive rate is too high over real codebases? (Thanks to <a href="https://twitter.com/_peterdn/status/437224206330523648">Peter Nelson</a> for pointing out the Clang does have <tt>-Wunreachable-code</tt> to warn about this, but it's not in <tt>-Wall</tt>.)</p>
+
+<p>Maybe the coding style contributed to this by allowing ifs without braces, but one can have incorrect indentation with braces too, so that doesn't seem terribly convincing to me.</p>
+
+<p>A test case could have caught this, but it's difficult because it's so deep into the handshake. One needs to write a completely separate TLS stack, with lots of options for sending invalid handshakes. In Chromium we have a patched version of <a href="https://github.com/trevp/tlslite">TLSLite</a> to do this sort of thing but I cannot recall that we have a test case for exactly this. (Sounds like I know what my Monday morning involves if not.)</p>
+
+<p>Code review can be effective against these sorts of bug. Not just auditing, but review of each change as it goes in. I've no idea what the code review culture is like at Apple but I strongly believe that my colleagues, Wan-Teh or Ryan Sleevi, would have caught it had I slipped up like this. Although not everyone can be blessed with folks like them.</p>
+
+<p>Lastly, there was a lot of discussion yesterday that Apple missed checking the hostname in the certificate. It's true that <tt>curl</tt> on the OS X command line oddly accepts HTTPS connections to IP addresses when the IP address isn't in the certificate, but I can't find that there's anything more than that and Safari doesn't have that problem.</p>
+
+    </div>
+  </div>
+
+    </div>
+  
+
+</body></html>

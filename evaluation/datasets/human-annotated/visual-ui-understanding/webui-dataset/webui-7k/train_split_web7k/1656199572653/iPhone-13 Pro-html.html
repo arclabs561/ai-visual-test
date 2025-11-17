@@ -1,0 +1,520 @@
+<!DOCTYPE html><html><head>
+    <meta charset="utf-8">
+
+    <!--<meta name="viewport"content="width=320,maximum-scale=1.3,user-scalable=no">-->
+    <!--<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes" />-->
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!--<meta name="viewport" content="width=device-width, initial-scale=1">-->
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="">
+    <meta name="format-detection" content="telephone=no">
+
+    <script language="javascript">
+        /(iPhone|iPad|iPhone OS|Phone|iPod|iOS)/i.test(navigator.userAgent)&&(head=document.getElementsByTagName("head"),viewport=document.createElement("meta"),viewport.name="viewport",viewport.content="target-densitydpi=device-dpi, width=375px, user-scalable=yes",head.length>0&&head[head.length-1].appendChild(viewport));
+    </script><meta name="viewport" content="target-densitydpi=device-dpi, width=375px, user-scalable=yes">
+
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="/static/hui/lib/html5shiv.js"></script>
+    <script type="text/javascript" src="/static/hui/lib/respond.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" type="text/css" href="/static/hui/static/h-ui/css/H-ui.min.css">
+    <!--<link rel="stylesheet" type="text/css" href="/static/css/bootrap.min.css" />-->
+
+    <link rel="stylesheet" type="text/css" href="/static/hui/lib/Hui-iconfont/1.0.8/iconfont.min.css">
+    <!--[if lt IE 9]>
+    <link href="/static/hui/static/h-ui/css/H-ui.ie.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="/static/hui/lib/html5shiv.js"></script>
+    <script type="text/javascript" src="/static/hui/lib/respond.min.js"></script>
+    <script type="text/javascript" src="/static/hui/lib/PIE_IE678.js"></script>
+    <![endif]-->
+    <!--[if IE 6]>
+    <script type="text/javascript" src="/static/hui/lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+    <script>DD_belatedPNG.fix('*');</script>
+    <![endif]-->
+
+
+    <!--demo中间部分引入 上传文件显示文件在这几个文件里-->
+    <script type="text/javascript" src="/static/hui/lib/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/hui/lib/jquery-ui/1.9.1/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/static/hui/static/h-ui/js/H-ui.js"></script>
+    <script type="text/javascript" src="/static/hui/lib/jquery.SuperSlide/2.1.1/jquery.SuperSlide.min.js"></script>
+    <script type="text/javascript" src="/static/hui/lib/jquery.validation/1.14.0/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="/static/hui/lib/jquery.validation/1.14.0/validate-methods.js"></script>
+    <script type="text/javascript" src="/static/hui/lib/jquery.validation/1.14.0/messages_zh.min.js"></script>
+    <!--end-->
+
+
+
+
+    <style type="text/css">
+        .ui-sortable .panel-header{ cursor:move}
+        a:link {
+            color: #000000;
+            text-decoration: none;
+        }
+        a:visited {
+            color: #000000;
+            text-decoration: none;
+        }
+        a:hover {
+            color: #999999;
+            text-decoration: none;
+        }
+        /*.navtop{*/
+            /*text-shadow: 3px 3px 3px #c08e0a;*/
+        /*}*/
+
+        #triangle-topleft {
+            width: 0;
+            height: 0;
+            border-top: 20px solid black;
+            border-left: 20px solid transparent;
+            position: absolute;
+            left:-1%;
+        }
+        #triangle-topright {
+            width: 0;
+            height: 0;
+            border-top: 20px solid black;
+            border-right: 20px solid transparent;
+            position: absolute;
+            right:-1%;
+        }
+        #Hui-nav li>a{
+            color:#FFFFFF;
+            font-size:1.5em;
+            font-weight:600;
+            padding-bottom: 7px;
+        }
+
+        .navbar-nav>ul>li>a {
+            line-height: 49px;
+        }
+
+
+
+        @media (max-width: 767px){
+            .nav{
+                border: none!important;
+                overflow: hidden;
+                height: 10px;
+            }
+
+            .navbar-nav> ul > li {
+                display: block;
+                width: 23%;
+                text-align: center;
+                border: none;
+            }
+
+            #triangle-topright{
+                display: none;
+            }
+            #triangle-topleft{
+                display: none;
+            }
+            #Hui-nav{
+                padding-left: 2%;
+            }
+            .containBox{
+                overflow-x: hidden;
+                overflow-y: auto;
+            }
+
+            .nav #Hui-nav li>a{
+                width:5em;
+            }
+        }
+
+
+    </style>
+    <title>网络涉军违法犯罪和不良信息举报平台</title>
+    <meta name="keywords" content="涉军 举报 涉军违法犯罪与不良信息举报平台">
+    <meta name="description" content="涉军 举报 涉军违法犯罪与不良信息举报平台">
+
+
+<script>
+    $(document).ready(function() {
+    var width=$(window).width();
+    if(width<767){
+        $("#Hui-nav li>span").remove();
+        }
+
+    })
+
+
+</script></head>
+
+
+
+<body ontouchstart="" style="text-align:center;">
+<div class="container" style="width: 1100px;text-align: center;margin: 0 auto;">
+<div class="containBox" style="margin: 0 auto;width:100%;">
+
+    <div style="border-style: solid;border-color: #345400;">
+        <img src="/static/img/banner_top.png" width="100%">
+
+    </div>
+    <!--<div style="text-align:center;background:#345400;">-->
+
+        <!--<img src="/static/img/won.png" class="img-responsive" style="width:10%;height:10%;vertical-align: middle;display: inline-block;margin-top:10px;margin-bottom:10px;margin-left:-20px;margin-right:10px;">-->
+        <!--<span style="display: inline-block;vertical-align: middle;color:#c08e0a;">-->
+        <!--<font style="font-size:40px;font-weight:800;color: white;text-shadow: 1px 1px rgba(197, 223, 248,0.8),2px 2px rgba(197, 223, 248,0.8),3px 3px rgba(197, 223, 248,0.8),4px 4px rgba(197, 223, 248,0.8),5px 5px rgba(197, 223, 248,0.8),6px 6px rgba(197, 223, 248,0.8);">涉军违法犯罪与不良信息举报平台</font>-->
+        <!--</span>-->
+
+    <!--<div class="line mt-10 mb-5" style="border-top: solid 2px #345400;margin-left:10px;margin-right:10px;"></div>-->
+
+    <!--<nav class="nav navbar-nav" role="navigation" style="background-color:#3B6115;width:102%;margin-left: -1%;">-->
+    <div class="nav navbar-nav " style="background-color:#3B6115;width:102%;height:auto;margin-left: -1%;display: block;">
+    <ul id="Hui-nav" class="cl navtop row" style="text-align:center;display:inline-block;margin-bottom: -7px;">
+        <li style="color:#FFFFFF;"><a href="/">&nbsp;&nbsp;首&nbsp;&nbsp;页&nbsp;&nbsp;</a></li>
+        <li style="color:#FFFFFF;"><a href="/reportcategory/categorylist">我要举报</a></li>
+        <li style="color:#FFFFFF;"><a href="/index/reportNotice">举报须知</a></li>
+        <li style="color:#FFFFFF;"><a href="/index/policiesAndRegulations">法律法规</a></li>
+        <li style="color:#FFFFFF;"><a href="index/lawNotice">典型案例</a></li>
+        <li style="color:#FFFFFF;"><a href="/index/safeNotice">安全提示</a></li>
+        <li style="color:#FFFFFF;"><a href="/Query/query">举报查询</a></li>
+        <li style="color:#FFFFFF;"><a href="/index/suggest">意见建议</a></li>
+    </ul>
+
+    </div>
+
+
+    <div id="triangle-topleft"></div>
+    <div id="triangle-topright"></div>
+
+<style>
+	.slider .hd li.active{background-color:#2b542c;}
+</style>
+<script type="text/javascript">
+        window.onload = function(){
+            //屏蔽键盘事件
+            document.onkeydown = function (){
+                var e = window.event || arguments[0];
+                //F12
+                if(e.keyCode == 123){
+                    return false;
+                //Ctrl+Shift+I
+                }else if((e.ctrlKey) && (e.shiftKey) && (e.keyCode == 73)){
+                    return false;
+                //Shift+F10
+                }else if((e.shiftKey) && (e.keyCode == 121)){
+                    return false;
+                //Ctrl+U
+                }else if((e.ctrlKey) && (e.keyCode == 85)){
+                    return false;
+                }
+            };
+            //屏蔽鼠标右键
+            document.oncontextmenu = function (){
+                return false;
+            }
+        }
+
+    </script>
+<div id="slider-3" style="width: 100%;flex: 1 0 auto;">
+<div class="slider">
+	<div class="bd">
+		<div class="tempWrap" style="overflow:hidden; position:relative; width:375px"><ul style="width: 1875px; position: relative; overflow: hidden; padding: 0px; margin: 0px; left: -750px;"><li class="clone" style="float: left; width: 375px;"><img src="/static/img/banner2.jpg" width="100%"></li>
+			<li style="float: left; width: 375px;"><img src="/static/img/banner.jpg" width="100%"></li>
+			<li style="float: left; width: 375px;"><img src="/static/img/banner1.png" width="100%"></li>
+			<li style="float: left; width: 375px;"><img src="/static/img/banner2.jpg" width="100%"></li>
+		<li class="clone" style="float: left; width: 375px;"><img src="/static/img/banner.jpg" width="100%"></li></ul></div>
+	</div>
+	<ol class="hd cl dots">
+		<li class="">1</li>
+		<li class="active">2</li>
+		<li class="">3</li>
+	</ol>
+</div>
+</div>
+<div class="wap-container">
+	<p>&nbsp;</p>
+<div style="height: 150px;padding-left:2%;width:100%;">
+	<ul class="container row" style="text-align:center;width:100%;display: block;margin-left: 0px;">
+		<li class="col-xs-3" style="float:left;display: block;border-left: 2px dotted green;border-right: 2px dotted green;width: 24%;">
+			<a href="/reportcategory/categorylist">
+				<img src="/static/img/ico4.png" width="65%;" class="img-responsive" style="vertical-align: middle;"><span style="display:block;line-height:18px;font-size:18px;font-weight:800;margin-top:10px;">我要举报</span>
+			</a>
+		</li>
+		<li class="col-xs-3" style="float:left;display: block;border-right: 2px dotted green;width:24%;">
+			<a href="/index/reportNotice">
+				<img src="/static/img/ico2.png" width="65%;" class="img-responsive" style="vertical-align: middle;"><span style="display:block;line-height:18px;font-size:18px;font-weight:800;margin-top:10px;">举报须知</span>
+			</a>
+		</li>
+		<li class="col-xs-3" style="float:left;display: block;border-right: 2px dotted green;width:24%;">
+			<a href="/index/policiesAndRegulations">
+				<img src="/static/img/ico1.png" width="65%;" class="img-responsive" style="vertical-align: middle;"><span style="display:block;line-height:18px;font-size:18px;font-weight:800;margin-top:10px;">法律法规</span>
+			</a>
+		</li>
+		<li class="col-xs-3" style="float:left;display: block;border-right: 2px dotted green;width:24%;">
+			<a href="/Query/query">
+				<img src="/static/img/ico3.png" class="img-responsive" style="vertical-align: middle;"><span style="display:block;line-height:18px;font-size:18px;font-weight:800;margin-top:10px;">举报查询</span>
+			</a>
+		</li>
+	</ul>
+</div>
+<div id="index_panel" class=" row" style=" margin-bottom:50%;margin-top: 8%;width: 103%;">
+	<div class="col-md-4 col-sm-4 ">
+		<div class=" panel panel-default">
+			<div class="panel-header">
+				<p class="panel-left">典型案例</p>
+				<a class="panel-right" href="/index/lawNotice" target="_blank" style="color: white;">更多...</a>
+			</div>
+			<div class="panel-body row" style="display:block;">
+				<ul class="panelbody-left ">
+					<li><a href="http://tv.cntv.cn/video/C20778/d86934239fa746628b456a051792557d" target="_blank">重拳出击—打击假军服行动纪实(上)</a></li>
+					<li><a href="http://tv.cntv.cn/video/C20778/b111617db982436c91cd26377eed3222" target="_blank">重拳出击—打击假军服行动纪实(下)</a></li>
+					<li><a href="http://tv.cctv.com/2017/05/24/VIDEfipwa4WFRZYwGaPGlZma170524.shtml" target="_blank">军地联合打击假军人违法犯罪行动①</a></li>
+					<li><a href="http://tv.cctv.com/2017/05/25/VIDEjwtyTgMDMdt3C6pmb3M6170525.shtml" target="_blank">军地联合打击假军人违法犯罪行动②</a></li>
+					<li><a href="http://tv.cctv.com/2017/05/26/VIDE7XHPVvYgwiBMjD85phAf170526.shtml" target="_blank">军地联合打击假军人违法犯罪行动③</a></li>
+					<li><a href="http://tv.cctv.com/2018/02/02/VIDE9VT4Et6hbWRWBgHSEZF4180202.shtml" target="_blank">军地联合打击假军人违法犯罪行动④</a></li>
+					<li><a href="http://tv.cntv.cn/video/C20778/706dbc78aebe4827830a75ce87a02e77" target="_blank">《军事纪实》涉军打假在行动①</a></li>
+				</ul>
+				<ul class="panelbody-right ">
+					<li>[2017-11-30]</li>
+					<li>[2017-11-30]</li>
+					<li>[2017-11-30]</li>
+					<li>[2017-11-30]</li>
+					<li>[2017-11-30]</li>
+					<li>[2018-02-02]</li>
+					<li>[2017-11-30]</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-4 col-sm-4 ">
+		<div class=" panel panel-default ">
+			<div class="panel-header">
+				<p class="panel-left">法律法规</p>
+				<a class="panel-right" href="/index/policiesAndRegulations" target="_blank" style="color: white;">更多...</a>
+			</div>
+			<div class="panel-body row" style="display:block;">
+				<ul class="panelbody-left">
+										<li><a href="/index/policiesAndRegulationsDetail?id=67" target="_blank">
+						中华人民共和国刑法（节录）					</a></li>
+										<li><a href="/index/policiesAndRegulationsDetail?id=66" target="_blank">
+						中华人民共和国国家安全法					</a></li>
+										<li><a href="/index/policiesAndRegulationsDetail?id=65" target="_blank">
+						中华人民共和国反间谍法					</a></li>
+										<li><a href="/index/policiesAndRegulationsDetail?id=64" target="_blank">
+						中华人民共和国反恐怖主义法					</a></li>
+										<li><a href="/index/policiesAndRegulationsDetail?id=63" target="_blank">
+						中华人民共和国网络安全法					</a></li>
+										<li><a href="/index/policiesAndRegulationsDetail?id=62" target="_blank">
+						中华人民共和国保守国家秘密法					</a></li>
+										<li><a href="/index/policiesAndRegulationsDetail?id=61" target="_blank">
+						中华人民共和国治安管理处罚法					</a></li>
+									</ul>
+				<ul class="panelbody-right">
+										<li>
+						[2017-11-30]					</li>
+										<li>
+						[2017-11-30]					</li>
+										<li>
+						[2017-11-30]					</li>
+										<li>
+						[2017-11-30]					</li>
+										<li>
+						[2017-11-30]					</li>
+										<li>
+						[2017-11-30]					</li>
+										<li>
+						[2017-11-30]					</li>
+									</ul>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-4 col-sm-4 ">
+		<div class=" panel panel-default ">
+			<div class="panel-header">
+				<p class="panel-left">安全提示</p>
+				<a class="panel-right" href="/index/safeNotice" target="_blank" style="color: white;">更多...</a>
+			</div>
+			<div class="panel-body row" style="display:block;">
+				<ul class="panelbody-left" style="width: 100%;">
+										<li><a href="/index/safeNoticeDetail?id=27" target="_blank">
+						10招教你识别假军人					</a></li>
+										<li><a href="/index/safeNoticeDetail?id=26" target="_blank">
+						军媒六招帮您辨别真假军人					</a></li>
+										<li><a href="/index/safeNoticeDetail?id=25" target="_blank">
+						涉军谣言严重损害军队形象 惩治处罚法律不能缺位					</a></li>
+										<li><a href="/index/safeNoticeDetail?id=24" target="_blank">
+						当前网上恶意攻击军队的十种方式					</a></li>
+										<li><a href="/index/safeNoticeDetail?id=23" target="_blank">
+						假征兵网现形记					</a></li>
+										<li><a href="/index/safeNoticeDetail?id=22" target="_blank">
+						假军车毁军队形象 如何识别假军车					</a></li>
+										<li><a href="/index/safeNoticeDetail?id=21" target="_blank">
+						有多少违法犯罪借军服“隐身”？					</a></li>
+									</ul>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+<style>
+	.wap-container{
+		overflow: visible;
+	}
+	.wap-container .row .panel-header{
+		color: white;
+		background-color: #355500;
+		height: 25px;
+		line-height: 25px;
+	}
+	.wap-container .row .panel-header>p{
+		margin-bottom: 0px;
+	}
+	.wap-container .row .panel-header .panel-left{
+		font-size:17px;
+		float: left;
+	 }
+	.wap-container .row .panel-header .panel-right{
+		float: right;
+		padding-right: 20px;
+		font-size:16px;
+	}
+	.wap-container .row .panel-body{
+		display: block;
+		overflow: hidden;
+		width:100%;
+		padding-top: 0px;
+		margin: 0px 0px;
+		font-size: 15px;
+		padding-bottom: 0px;
+	}
+	.wap-container .row .panel-body  .panelbody-left{
+		padding-left: 8px;
+		float: left ;
+		margin: 4px 0px;
+		display: block;
+		list-style: disc;
+		width: 60%;
+	}
+	.wap-container .row .panel-body  .panelbody-left li {
+		padding: 5px 0px;
+		text-align: left;
+		height:30px;
+		margin: 10px 0px;
+		color: black;
+	}
+	.wap-container .row .panel-body  .panelbody-right{
+		padding-right: 1%;
+		color:gray;
+		float: right;
+		display: block;
+		width:30%;
+	}
+	.wap-container .row .panel-body  .panelbody-right li {
+		height:30px;
+		padding: 5px 0px;
+		margin: 10px 0px;
+
+	}
+	.wap-container .row .panel-body ul li>a:hover{
+		color:orange;
+	}
+	.panel{
+		border: none;
+	}
+	.panel .panel-header{
+		border:solid 1px #355500;
+	}
+	.panel .panel-body {
+		border:solid 1px #ddd;
+		margin: 0px 0px;
+	}
+	@media (max-width: 767px){
+		.wap-container {
+			margin-left: 2%;
+			height: 1500px;
+			width: 100%;
+			min-width: 320px;
+		}
+		#slider-3{
+			overflow: auto;
+		}
+		#index_panel{
+			padding-top: 0;
+			margin-top: 0px;
+		}
+	}
+</style>
+<!--</div>-->
+
+<footer class=" footer mt-20">
+<!--<footer class=" footer mt-20" style="margin-top:5%;font-family:Microsoft Yahei;">-->
+	<div class="container" style="width: 100%;">
+		<nav> <a href="#" style="font-size: 15px;">网络涉军违法犯罪和不良信息举报平台 版权所有</a>  </nav>
+
+		<!--<nav> <a href="http://www.mod.gov.cn/lib/index.html" >关于我们</a> <span class="pipe">|</span> <a href="http://www.mod.gov.cn/lib/index.html" >联系我们</a> <span class="pipe">|</span> <a href="#" >法律声明</a> </nav>-->
+		<!--<p>Copyright &copy;2017 China. <br>-->
+			<a href="http://www.miitbeian.gov.cn/" target="_blank" rel="nofollow">京ICP备05006316号-3</a><br>
+
+	</div>
+</footer>
+<!--</div>-->
+
+
+<style>
+	.footer {
+		width: 100%;
+		position:absolute;
+		margin-top:5%;
+		font-family:Microsoft Yahei;
+		border-top: 1px solid #e8e8e8;
+		padding: 15px 0;
+		font-size: 12px;
+		color: #999;
+		line-height: 22px;
+		text-align: center;
+		flex:0 0 auto;
+	}
+
+	.mt-20 {
+		margin-top: 20px;
+	}
+
+
+</style>
+
+<script>
+    (function (doc, win) {
+        var docEl = doc.documentElement;
+        resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize';
+        recalc = function () {
+            var clientWidth = docEl.clientWidth;
+            if (!clientWidth) return;
+//            docEl.style.fontSize = 50 * (clientWidth / 375) + 'px';
+        };
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+    }(document,window));
+
+</script>
+	
+<script>
+$(function(){
+	jQuery("#slider-3 .slider").slide({
+		mainCell:".bd ul",
+		titCell:".hd li",
+		trigger:"click",
+		effect:"leftLoop",
+		autoPlay:true,
+		delayTime:300,
+		interTime:5000,
+		pnLoop:false,
+		titOnClassName:"active"
+		})
+	});
+</script>
+</div></div></body></html>

@@ -1,0 +1,765 @@
+<!DOCTYPE html><html lang="en-US"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Hands on Linux sandbox with namespaces and cgroups</title>
+
+<!-- Mobile viewport optimized -->
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<link rel="profile" href="http://gmpg.org/xfn/11">
+<link rel="pingback" href="https://rdo.wpengine.com/xmlrpc.php">
+
+<meta name="robots" content="noindex, nofollow">
+<meta name="generator" content="WordPress 5.9.3">
+<meta name="template" content="Path 0.2.1.2">
+<link rel="dns-prefetch" href="//rdo.wpengine.com">
+<link rel="dns-prefetch" href="//secure.gravatar.com">
+<link rel="dns-prefetch" href="//fonts.googleapis.com">
+<link rel="dns-prefetch" href="//s.w.org">
+<link rel="dns-prefetch" href="//v0.wordpress.com">
+<link rel="dns-prefetch" href="//jetpack.wordpress.com">
+<link rel="dns-prefetch" href="//s0.wp.com">
+<link rel="dns-prefetch" href="//public-api.wordpress.com">
+<link rel="dns-prefetch" href="//0.gravatar.com">
+<link rel="dns-prefetch" href="//1.gravatar.com">
+<link rel="dns-prefetch" href="//2.gravatar.com">
+<link rel="dns-prefetch" href="//i0.wp.com">
+<link href="https://fonts.gstatic.com" crossorigin="" rel="preconnect">
+<link rel="alternate" type="application/rss+xml" title="RDO Community Blogs » Feed" href="https://blogs.rdoproject.org/feed/">
+<link rel="alternate" type="application/rss+xml" title="RDO Community Blogs » Comments Feed" href="https://blogs.rdoproject.org/comments/feed/">
+<link rel="alternate" type="application/rss+xml" title="RDO Community Blogs » Hands on Linux sandbox with namespaces and cgroups Comments Feed" href="https://blogs.rdoproject.org/2015/08/hands-on-linux-sandbox-with-namespaces-and-cgroups/feed/">
+<script type="text/javascript">
+window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/13.1.0\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/13.1.0\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/rdo.wpengine.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=5.9.3"}};
+/*! This file is auto-generated */
+!function(e,a,t){var n,r,o,i=a.createElement("canvas"),p=i.getContext&&i.getContext("2d");function s(e,t){var a=String.fromCharCode;p.clearRect(0,0,i.width,i.height),p.fillText(a.apply(this,e),0,0);e=i.toDataURL();return p.clearRect(0,0,i.width,i.height),p.fillText(a.apply(this,t),0,0),e===i.toDataURL()}function c(e){var t=a.createElement("script");t.src=e,t.defer=t.type="text/javascript",a.getElementsByTagName("head")[0].appendChild(t)}for(o=Array("flag","emoji"),t.supports={everything:!0,everythingExceptFlag:!0},r=0;r<o.length;r++)t.supports[o[r]]=function(e){if(!p||!p.fillText)return!1;switch(p.textBaseline="top",p.font="600 32px Arial",e){case"flag":return s([127987,65039,8205,9895,65039],[127987,65039,8203,9895,65039])?!1:!s([55356,56826,55356,56819],[55356,56826,8203,55356,56819])&&!s([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]);case"emoji":return!s([10084,65039,8205,55357,56613],[10084,65039,8203,55357,56613])}return!1}(o[r]),t.supports.everything=t.supports.everything&&t.supports[o[r]],"flag"!==o[r]&&(t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&t.supports[o[r]]);t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&!t.supports.flag,t.DOMReady=!1,t.readyCallback=function(){t.DOMReady=!0},t.supports.everything||(n=function(){t.readyCallback()},a.addEventListener?(a.addEventListener("DOMContentLoaded",n,!1),e.addEventListener("load",n,!1)):(e.attachEvent("onload",n),a.attachEvent("onreadystatechange",function(){"complete"===a.readyState&&t.readyCallback()})),(n=t.source||{}).concatemoji?c(n.concatemoji):n.wpemoji&&n.twemoji&&(c(n.twemoji),c(n.wpemoji)))}(window,document,window._wpemojiSettings);
+</script><script src="https://rdo.wpengine.com/wp-includes/js/wp-emoji-release.min.js?ver=5.9.3" type="text/javascript" defer=""></script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 0.07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	<link rel="stylesheet" id="style-css" href="https://rdo.wpengine.com/wp-content/themes/path/style.min.css?ver=0.2.1.2" type="text/css" media="all">
+<link rel="stylesheet" id="wp-block-library-css" href="https://rdo.wpengine.com/wp-includes/css/dist/block-library/style.min.css?ver=5.9.3" type="text/css" media="all">
+<style id="wp-block-library-inline-css" type="text/css">
+.has-text-align-justify{text-align:justify;}
+</style>
+<link rel="stylesheet" id="mediaelement-css" href="https://rdo.wpengine.com/wp-includes/js/mediaelement/mediaelementplayer-legacy.min.css?ver=4.2.16" type="text/css" media="all">
+<link rel="stylesheet" id="wp-mediaelement-css" href="https://rdo.wpengine.com/wp-includes/js/mediaelement/wp-mediaelement.min.css?ver=5.9.3" type="text/css" media="all">
+<style id="global-styles-inline-css" type="text/css">
+body{--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--duotone--dark-grayscale: url('#wp-duotone-dark-grayscale');--wp--preset--duotone--grayscale: url('#wp-duotone-grayscale');--wp--preset--duotone--purple-yellow: url('#wp-duotone-purple-yellow');--wp--preset--duotone--blue-red: url('#wp-duotone-blue-red');--wp--preset--duotone--midnight: url('#wp-duotone-midnight');--wp--preset--duotone--magenta-yellow: url('#wp-duotone-magenta-yellow');--wp--preset--duotone--purple-green: url('#wp-duotone-purple-green');--wp--preset--duotone--blue-orange: url('#wp-duotone-blue-orange');--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+</style>
+<link rel="stylesheet" id="font-oswald-css" href="http://fonts.googleapis.com/css?family=Oswald%3A400%2C300%2C700&amp;ver=1" type="text/css" media="screen">
+<link rel="stylesheet" id="olympus-google-fonts-css" href="https://fonts.googleapis.com/css?family=Open+Sans%3A300%2C400%2C500%2C600%2C700%2C800%2C300i%2C400i%2C500i%2C600i%2C700i%2C800i%7CSpinnaker%3A400%2C400i&amp;display=swap&amp;subset=all&amp;ver=3.0.20" type="text/css" media="all">
+<link rel="stylesheet" id="social-logos-css" href="https://rdo.wpengine.com/wp-content/plugins/jetpack/_inc/social-logos/social-logos.min.css?ver=11.0" type="text/css" media="all">
+<link rel="stylesheet" id="jetpack_css-css" href="https://rdo.wpengine.com/wp-content/plugins/jetpack/css/jetpack.css?ver=11.0" type="text/css" media="all">
+<script type="text/javascript" src="https://rdo.wpengine.com/wp-includes/js/jquery/jquery.min.js?ver=3.6.0" id="jquery-core-js"></script>
+<script type="text/javascript" src="https://rdo.wpengine.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.3.2" id="jquery-migrate-js"></script>
+<link rel="https://api.w.org/" href="https://blogs.rdoproject.org/wp-json/"><link rel="alternate" type="application/json" href="https://blogs.rdoproject.org/wp-json/wp/v2/posts/7761"><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://rdo.wpengine.com/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://rdo.wpengine.com/wp-includes/wlwmanifest.xml"> 
+<link rel="canonical" href="https://blogs.rdoproject.org/2015/08/hands-on-linux-sandbox-with-namespaces-and-cgroups/">
+<link rel="shortlink" href="https://wp.me/paBYFv-21b">
+<link rel="alternate" type="application/json+oembed" href="https://blogs.rdoproject.org/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fblogs.rdoproject.org%2F2015%2F08%2Fhands-on-linux-sandbox-with-namespaces-and-cgroups%2F">
+<link rel="alternate" type="text/xml+oembed" href="https://blogs.rdoproject.org/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fblogs.rdoproject.org%2F2015%2F08%2Fhands-on-linux-sandbox-with-namespaces-and-cgroups%2F&amp;format=xml">
+<style>img#wpstats{display:none}</style>
+		
+	<!-- Enables media queries and html5 in some unsupported browsers. -->
+	<!--[if (lt IE 9) & (!IEMobile)]>
+	<script type="text/javascript" src="https://rdo.wpengine.com/wp-content/themes/path/js/respond/respond.min.js"></script>
+	<script type="text/javascript" src="https://rdo.wpengine.com/wp-content/themes/path/js/html5shiv/html5shiv.js"></script>
+	<![endif]-->
+	
+	<style type="text/css" id="custom-background-css">
+body.custom-background { background-image: url("https://rdo.wpengine.com/wp-content/themes/path/images/path_bg.png"); background-position: left top; background-size: auto; background-repeat: repeat; background-attachment: scroll; }
+</style>
+	
+<!-- Jetpack Open Graph Tags -->
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hands on Linux sandbox with namespaces and cgroups">
+<meta property="og:url" content="https://blogs.rdoproject.org/2015/08/hands-on-linux-sandbox-with-namespaces-and-cgroups/">
+<meta property="og:description" content="This article goes through Linux namespaces and cgroups usage to sandbox and isolate processes. For more detailed explanations on these Linux features, see the following articles: namespace, cgroups…">
+<meta property="article:published_time" content="2015-08-13T06:17:27+00:00">
+<meta property="article:modified_time" content="2015-08-13T06:17:27+00:00">
+<meta property="og:site_name" content="RDO Community Blogs">
+<meta property="og:image" content="https://s0.wp.com/i/blank.jpg">
+<meta property="og:image:alt" content="">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:text:title" content="Hands on Linux sandbox with namespaces and cgroups">
+<meta name="twitter:card" content="summary">
+
+<!-- End Jetpack Open Graph Tags -->
+<style type="text/css" id="wp-custom-css">.byline {font-family: "Open Sans", arial, sans-serif}
+
+.category {font-family: "Open Sans", arial, sans-serif;}
+
+.post_tag {font-family: "Open Sans", arial, sans-serif;}</style>	<!-- Fonts Plugin CSS - https://fontsplugin.com/ -->
+	<style>
+		:root {
+--font-base: Open Sans;
+--font-headings: Spinnaker;
+--font-input: Open Sans;
+}
+body, #content, .entry-content, .post-content, .page-content, .post-excerpt, .entry-summary, .entry-excerpt, .widget-area, .widget, .sidebar, #sidebar, footer, .footer, #footer, .site-footer {
+font-family: "Open Sans";
+ }
+#site-title, .site-title, #site-title a, .site-title a, .entry-title, .entry-title a, h1, h2, h3, h4, h5, h6, .widget-title {
+font-family: "Spinnaker";
+ }
+button, .button, input, select, textarea, .wp-block-button, .wp-block-button__link {
+font-family: "Open Sans";
+ }
+.menu, .page_item a, .menu-item a, .wp-block-navigation, .wp-block-navigation-item__content {
+font-family: "Open Sans";
+ }
+.entry-content, .entry-content p, .post-content, .page-content, .post-excerpt, .entry-summary, .entry-excerpt, .excerpt, .excerpt p, .type-post p, .type-page p {
+font-family: "Open Sans";
+ }
+.wp-block-post-title, .wp-block-post-title a, .entry-title, .entry-title a, .post-title, .post-title a, .page-title, .entry-content h1, #content h1, .type-post h1, .type-page h1 {
+font-family: "Spinnaker";
+ }
+	</style>
+	<!-- Fonts Plugin CSS -->
+	
+</head>
+
+<body class="wordpress ltr en_US parent-theme y2022 m06 d27 h08 monday logged-out custom-background custom-header singular singular-post singular-post-7761 post-format-standard layout-default" id="error-page">
+
+	
+	<div id="container">
+
+		
+		
+		<header id="header">
+
+			
+			<div class="wrap">
+
+				<hgroup id="branding">
+				
+											
+						<h1 id="site-title"><a href="https://blogs.rdoproject.org" title="RDO Community Blogs"><img src="https://rdo.wpengine.com/wp-content/uploads/2015/10/cropped-rdo-logo-wp.png" height="65" width="198" alt="RDO Community Blogs"></a></h1>
+					
+										
+					<h2 id="site-description">Articles about OpenStack and related technologies from the RDO community</h2>
+					
+				</hgroup><!-- #branding -->
+
+				
+			</div><!-- .wrap -->
+
+			
+		</header><!-- #header -->
+
+		
+				
+		
+		<div id="main">
+		
+				
+		
+			<div class="wrap">
+
+			
+			
+		<nav class="breadcrumb-trail breadcrumbs" itemprop="breadcrumb">
+			<span class="trail-browse">You are here:</span> <span class="trail-begin"><a href="https://blogs.rdoproject.org" title="RDO Community Blogs">Home</a></span>
+			 <span class="sep">∼</span> <a href="https://blogs.rdoproject.org/2015/" title="2015">2015</a>
+			 <span class="sep">∼</span> <a href="https://blogs.rdoproject.org/2015/08/" title="August 2015">August</a>
+			 <span class="sep">∼</span> <span class="trail-end">Hands on Linux sandbox with namespaces and cgroups</span>
+		</nav>
+	
+	<div id="content">
+
+		
+		<div class="hfeed">
+
+			
+	
+			
+				
+					
+<article id="post-7761" class="hentry post publish post-1 odd author-tristan-cacqueray format-standard category-infrastructures post_tag-cgroups post_tag-linux post_tag-namespaces post_tag-sandbox">
+
+	
+		
+		<header class="entry-header">
+			<h1 class="post-title entry-title"><a href="https://blogs.rdoproject.org/2015/08/hands-on-linux-sandbox-with-namespaces-and-cgroups/">Hands on Linux sandbox with namespaces and cgroups</a></h1>			<div class="byline">Published by <span class="author vcard"><a class="url fn n" rel="author" href="https://blogs.rdoproject.org/author/tristan-cacqueray/" title="Tristan Cacqueray">Tristan Cacqueray</a></span> on <time class="published" datetime="2015-08-13T08:17:27+02:00" title="Thursday, August 13th, 2015, 8:17 am">13/08/2015</time>  | <a class="comments-link" href="https://blogs.rdoproject.org/2015/08/hands-on-linux-sandbox-with-namespaces-and-cgroups/#comments" title="Comment on Hands on Linux sandbox with namespaces and cgroups">3 Responses</a> </div>		</header><!-- .entry-header -->
+		
+		<div class="entry-content">
+			<p>This article goes through Linux namespaces and cgroups usage to sandbox and isolate processes. For more detailed explanations on these Linux features, see the following articles: <a href="http://lwn.net/Articles/531114/">namespace</a>, <a href="https://lwn.net/Articles/604609/">cgroups</a> and <a href="http://www.haifux.org/lectures/299/netLec7.pdf">resources management</a><br>
+Command lines should work on any modern Linux system, and you should try them out while reading to better understand the sandbox process. Most actions require admin privileges and SUDO_USER should be set to your local user.<br>
+&nbsp;</p>
+<h2>Introduction</h2>
+<p>The primary goal of a sandbox is to limit a process. While it’s mostly used to run non-trusted processes, it’s also very useful to isolate different contexts. This is the list of actions a process can do by default:</p>
+<ul>
+<li>A) Uses resources (cpu, memory, …)</li>
+<li>B) Read and write user’s files.</li>
+<li>C) Read and write the memory of other user’s processes.</li>
+<li>D) Read host configuration and access network.</li>
+</ul>
+<p>Using resources limits, cgroup and namespace, this article will demonstrate how to control each of these capabilities for a sandbox.</p>
+<h2>Resource limits</h2>
+<p>Resource limits is an old mechanism used to limit various resources like:</p>
+<ul>
+<li>nofile: maximum number of open files</li>
+<li>nproc: maximum number of processes</li>
+<li>locks: maximum number of files lock</li>
+</ul>
+<p>Resource limits should always be used, new sessions can be started by using prlimit (included in util-linux-2.21):</p>
+<pre>prlimit --nofile=256 --nproc=512 --locks=32 /bin/bash
+  # This prevent fork bomb like
+  :(){ :|: &amp; };:
+</pre>
+<p>Resource limits can also be applied to current session using the ulimit tool:</p>
+<pre>ulimit -n 256 -u 512 -x 32
+# show current limits:
+ulimit -a
+</pre>
+<h2>Cgroup</h2>
+<p>Linux control groups allow fine-grained control over allocating, prioritizing, denying, managing, and monitoring system resources. Without getting too far into the details, one needs to know that cgroups are composed of different subsystems organized hierarchically. The main constraint is that two subsystems grouped together can’t be used independently. Currently, Linux offers more than ten subsystems. This article will only use:</p>
+<ul>
+<li>cpu: control cpu usage</li>
+<li>memory: control memory usage</li>
+<li>blkio: control block device usage</li>
+<li>devices: control device access</li>
+<li>freezer: control process status</li>
+</ul>
+<p>For more details, see this <a href="https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Resource_Management_Guide/index.html">documentation</a>.</p>
+<h3>Basic usage</h3>
+<p>To limit a sandbox, a new hierarchy needs to be created for each subsystem (requires libcgroup-tools):</p>
+<pre># create new cgroups
+cgcreate -g cpu,memory,blkio,devices,freezer:/sandbox
+</pre>
+<p>Cgroup information and configuration can be found in the virtual filesystem cgroup, usualy present in /sys/fs/cgroup:</p>
+<pre># list tasks associated to the sandbox cpu group:
+cat /sys/fs/cgroup/cpu/sandbox/tasks
+# show the cpu share of the sandbox cpu group:
+cat /sys/fs/cgroup/cpu/sandbox/cpu.shares
+# kill all of sandbox's processes
+kill -9 $(cat /sys/fs/cgroup/cpu/sandbox/tasks)
+</pre>
+<h3>Freezer</h3>
+<p>The freezer subsystem suspends or resumes tasks:</p>
+<pre># To freeze a group
+cgset -r freezer.state=FROZEN sandbox
+# To unfreeze a group
+cgset -r freezer.state=THAWED sandbox
+# Get the status
+cgget -r freezer.state sandbox
+</pre>
+<p>This has the effect of completely locking the sandbox and pausing all of the processes.</p>
+<h3>Cpu</h3>
+<p>The cpu subsystem controls compute resource allocation. CFS periods and quotas can effectively control a process’s cpu usage. The quota sets how much cpu time a process can use during each period. Note that this does not take into account the number of cpu cores.<br>
+Using a period of 100ms, here are a few example:</p>
+<pre># Allows only 1ms every 100ms to simulate a slow system
+cgset -r cpu.cfs_period_us=100000 -r cpu.cfs_quota_us=1000 sandbox
+# Limit usage at 10% for a multi core system
+cgset -r cpu.cfs_period_us=100000 \
+     -r cpu.cfs_quota_us=$[ 10000 * $(getconf _NPROCESSORS_ONLN) ] \
+           sandbox
+</pre>
+<p>This is specially useful to prevent a sandbox from hogging all cpu ressources.</p>
+<h3>Memory</h3>
+<p>The memory subsystem controls memory resource allocation:</p>
+<pre># Set a limit of 2Gb
+cgset -r memory.limit_in_bytes=2G sandbox
+# Get memory stats used by the cgroup
+cgget -r memory.stat sandbox
+</pre>
+<p>This prevents the sandbox from reserving all memory.</p>
+<h3>Block I/O</h3>
+<p>The blkio subsystem controls and monitors access to I/O on block devices:</p>
+<pre># Limit to 1MB/s for read and write on common hard drive device
+for dev in 253:0 252:0 252:16 8:0 8:16 1:0; do
+  cgset -r blkio.throttle.read_bps_device="${dev} 1048576" sandbox
+  cgset -r blkio.throttle.write_bps_device="${dev} 1048576" sandbox
+done
+</pre>
+<p>This limit the sandbox bandwith for hard drive read and write operations.</p>
+<h3>Devices</h3>
+<p>The device subsystem allows or denies access to devices:</p>
+<pre># Deny access to devices
+cgset -r devices.deny=a sandbox
+# Allow access to console, null, zero, random, unrandom
+for d in "c 5:1" "c 1:3" "c 1:5" "c 1:8" "c 1:9"; do
+  cgset -r devices.allow="$d rw" sandbox
+done
+</pre>
+<p>This prevents the sandbox from accessing host devices.</p>
+<h3>Sandbox using Linux cgroups</h3>
+<p>All together, the cgroups proposed above limit the following system resources:</p>
+<ul>
+<li>10% of total cpu resources</li>
+<li>2Gb of memory</li>
+<li>1Mb/s of block i/o</li>
+<li>no devices access</li>
+</ul>
+<p>Here is a demo of the sandbox:</p>
+<pre># join the cgroups
+cgexec -g cpu,memory,blkio,devices,freezer:/sandbox \
+  prlimit --nofile=256 --nproc=512 --locks=32 /bin/bash
+# check that sandbox groups are assigned
+cat /proc/self/cgroup
+# On a 4 cores systems, a single thread can't load more than 40%
+python -c "while True: 42*42"
+# Check with top cpu load.
+# block access speeds should be around 1 MB/s
+dd if=zero_file of=/dev/zero iflag=direct bs=4k count=1024
+# direct access to devices are not allowed
+head -c 512 /dev/sda
+</pre>
+<p>From another session, the sandbox can be terminated with:</p>
+<pre># freeze the sandbox
+cgset -r freezer.state=FROZEN sandbox
+kill -9 $(cat /sys/fs/cgroup/cpu/sandbox/tasks)
+# unfreeze
+cgset -r freezer.state=THAWED sandbox
+</pre>
+<p>In brief, Linux cgroups offers good sandbox mechanisms like hardware usage limitation and process controls. It mitigates the capability A) Uses resources (cpu, memory, …) mentioned in the introduction. The next chapter presents how namespaces can be used to further restrict a sandbox.</p>
+<h2>Namespaces</h2>
+<p>Linux namespaces are sets of system resources that can be unique for a process. Currently, Linux implements six namespaces:</p>
+<ul>
+<li>Mounts namespace: filesystem mount points</li>
+<li>PID namespace: process id number</li>
+<li>IPC namespace: inter process communication resources as shown by the “ipcs” command</li>
+<li>UTS namespace: hostname and domain name</li>
+<li>Network namespace: network resources</li>
+<li>User namespace: user and group id numbers</li>
+</ul>
+<p>Linux namespaces can be independently assigned, the “unshare” utility is used to create processes with new namespaces.</p>
+<h3>Filesystem isolation</h3>
+<p>Using the mounts namespace, the host filesystem can be isolated from the sandbox. This example will replace the /home directory by /home/sandbox:</p>
+<pre># Create a new home directory tree
+mkdir -p /home/sandbox/${SUDO_USER}
+chown ${SUDO_USER} /home/sandbox/${SUDO_USER}
+# Make sure / is private
+mount --make-rprivate /
+# Create a new root shell with the mount namespace
+unshare --mount
+  # New mount will be local to this session
+  mount -o bind /home/sandbox /home
+  # Other directories can be replaced e.g., /tmp
+  mount -t tmpfs none /tmp
+  # Drop privilege back to user
+  su -l ${SUDO_USER}
+</pre>
+<p>This sandbox has a dedicated /home and /tmp directory. X11 access is denied because the sandbox does not have access to the ~/.Xauthority file nor the unix socket (/tmp/.X11-unix). This offers a good counter measure against capability B) and can be further extended by replacing more directories before dropping privilege.</p>
+<h3>Process isolation</h3>
+<p>Using the mounts, PID and IPC namespaces, the sandbox can be confined to its own process tree. Process ID namespace (–pid) will make the first process start with the pid 1. In order to hide the host process, a new proc filesystem still needs to be mounted inside the new mounts namespace (–mount-proc=/proc). Finaly, to make this easier, the new process will be forked first (–fork). All put together:</p>
+<pre>unshare --mount --ipc --pid --mount-proc=/proc --fork \
+  su -l ${SUDO_USER}
+</pre>
+<p>This sandbox has a dedicated process tree (/proc) that will deny capability C).</p>
+<h3>Networking isolation</h3>
+<p>Using the network namespace, the sandbox can be isolated from host networks devices, routes and the firewall:</p>
+<pre>unshare --net su -l ${SUDO_USER}
+</pre>
+<p>This sandbox does not have any network connectivity.<br>
+In order to get network access, the namespace needs to be created using the ip utility. Network namespaces are persistent and needs to be destroyed explicitly:</p>
+<pre># create a new namespace
+ip netns add sandbox
+ip netns exec sandbox su -l ${SUDO_USER}
+</pre>
+<p>This basic configuration should enable external network access:</p>
+<pre># configure sandbox loopback
+ip netns exec sandbox ip addr add 127.0.0.1/8 dev lo
+ip netns exec sandbox ip link set lo up
+# create a device pairs
+ip link add sandbox0 type veth peer name sandbox1
+# initiate the host side
+ip link set sandbox0 up
+# initiate the container side
+ip link set sandbox1 netns sandbox up
+# configure network
+ip addr add 192.168.242.1/30 dev sandbox0
+ip netns exec sandbox ip addr add 192.168.242.2/30 dev sandbox1
+ip netns exec sandbox ip route add default via 192.168.242.1 dev sandbox1
+# enable routing
+echo 1 | tee /proc/sys/net/ipv4/ip_forward
+ext_if=$(ip route get 8.8.8.8 | grep 'dev' | awk '{ print $5 }')
+iptables -I POSTROUTING -t nat -s 192.168.242.2/32 -o ${ext_if} -j MASQUERADE
+iptables -I FORWARD -i sandbox0 -o ${ext_if} -j ACCEPT
+iptables -I FORWARD -i ${ext_if} -o sandbox0 -j ACCEPT
+# configure resolv.conf
+mkdir -p /etc/netns/sandbox
+echo nameserver 8.8.8.8 | tee /etc/netns/sandbox/resolv.conf
+</pre>
+<p>Note that dedicated resolv.conf and hosts files can be assigned in /etc/netns.<br>
+Network namespace provides complete network isolation and using virtual networks, the traffic can be further limited to prevent capability D).</p>
+<h3>X11 sandbox</h3>
+<p>Graphical applications need special care to be isolated. A direct access to the X11 server is not recommended since it gives the sandbox access to the keyboard events and the list of running applications. A dedicated X11 instance can be used with Xephyr and mount namespaces:</p>
+<pre># Create new home directory
+mkdir -p /home/sandbox/${SUDO_USER}
+# Create a new cookie
+echo -n | tee /home/sandbox/${SUDO_USER}/.Xauthority
+xauth -f /home/sandbox/${SUDO_USER}/.Xauthority add :4 . $(mcookie)
+chown -R ${SUDO_USER} /home/sandbox/${SUDO_USER}/
+# Create a nest with a window manager on :4
+su ${SUDO_USER} -c "Xephyr -screen 1024x768 -auth /home/sandbox/${SUDO_USER}/.Xauthority :4" &amp;
+unshare --mount /bin/sh -c "
+  # Remount /home
+  mount -o bind /home/sandbox /home
+  # minimal startx
+  export DISPLAY=:4
+  export XAUTHORITY=/home/{SUDO_USER}/.Xauthority
+  su -l ${SUDO_USER} -c 'twm &amp; xclock; firefox'
+"
+</pre>
+<p>This sandbox does not have access to the host session :0 and is confined to a virtual screen.</p>
+<h2>Use cases</h2>
+<h3>All together</h3>
+<p>Example usage of cgroups, namespaces and resource limits:</p>
+<pre># Create cgroups
+cgcreate -g cpu,memory,blkio,devices,freezer:/sandbox
+# Allows only 1ms every 100ms to simulate a slow system
+cgset -r cpu.cfs_period_us=100000 -r cpu.cfs_quota_us=1000 sandbox
+# Set a limit of 2Gb
+cgset -r memory.limit_in_bytes=2G sandbox
+# Limit block I/O to 1MB/s
+for dev in 253:0 252:0 252:16 8:0 8:16 1:0; do
+  cgset -r blkio.throttle.read_bps_device="${dev} 1048576" sandbox
+  cgset -r blkio.throttle.write_bps_device="${dev} 1048576" sandbox
+done
+# Deny access to devices
+cgset -r devices.deny=a sandbox
+# Allow access to console, null, zero, random, unrandom
+for d in "c 5:1" "c 1:3" "c 1:5" "c 1:8" "c 1:9"; do
+  cgset -r devices.allow="$d rw" sandbox
+done
+# Create network namespace
+ip netns add sandbox
+# Join cgroup, netns and activate resources limit
+cgexec -g cpu,memory,blkio,devices,freezer:/sandbox   \
+  prlimit --nofile=256 --nproc=512 --locks=32         \
+    ip netns exec sandbox                             \
+      unshare --mount --uts --ipc --pid --mount-proc=/proc --fork sh -c "
+        mount -t tmpfs none /home
+        mount -t tmpfs none /tmp
+        mount -t tmpfs none /sys
+        mount -t tmpfs none /var/log
+        exec su -l ${SUDO_USER}
+      "
+</pre>
+<p>While this sandbox is very minimal, it shows how to use cgroups, namespaces and resource limits together.</p>
+<h3>Scripted usage</h3>
+<p>To automatically setup sandbox within a script, one should know that:</p>
+<ul>
+<li>Namespaces are represented by file handles. They are created at process creation with special clone(2) flags.</li>
+<li>To join an existing namespace, a process needs to call setns(2) with a valid namespace file handle.</li>
+<li>Namespaces handles can be obtain from /proc//ns/ directory.</li>
+<li>The tool “nsenter” can create a new process using namespaces of other processes.</li>
+<li>Named network namespaces created by the ip utility are kept persistent in /run/netns.</li>
+<li>Once destroyed, a mount namespace will undo all local mounts.</li>
+<li>The root filesystem needs to be mounted as private (mount –make-rprivate /) to prevent remount to propagate to the host.</li>
+<li>A specific cgroup can be joined by writting a process id to a /sys/fs/cgroups tasks file.</li>
+</ul>
+<p>The main difficulty being that new namespaces are created with the clone syscall and to properly setup the environment, more actions are required from within the child process.</p>
+<h3>Developpement sandbox</h3>
+<p>Openstack developpment environment can benefit from sandbox:</p>
+<ul>
+<li>a dedicated home directory allows to securely store commit keys, gitconfig and source codes.</li>
+<li>system and network isolation will prevent unwanted operation on the host like running Horizon on a public interfaces.</li>
+</ul>
+<h3>Web browser sandbox</h3>
+<p>Web browsers can be really messy and to mitigate most common issues, a different sandbox can be used per context. For example, an openstack developer browser can be protected by only allowing access to launchpad.net and openstack.org domain using iptables.</p>
+<h3>Vpn sandbox</h3>
+<p>The openvpn process can be ran in a complete sandbox with a specific network namespace. Network access can be restricted to the Vpn remote endpoint in order to prevent direct Internet access. Then applications can be ran in separate sandboxs but using the same network namespace.</p>
+<h2>Clean-up</h2>
+<p>All resources created by previous examples can be removed with:</p>
+<pre># destroy cgroups
+cgdelete -g cpu,memory,blkio,devices,freezer:/sandbox
+# destroy network namespace
+ip netns delete sandbox
+iptables -D POSTROUTING -t nat -s 192.168.42.2/32 -o ${ext_if} -j MASQUERADE
+iptables -D FORWARD -i sandbox0 -o ${ext_if} -j ACCEPT
+iptables -D FORWARD -i ${ext_if} -o sandbox0 -j ACCEPT
+rm -Rf /etc/netns/sandbox
+</pre>
+<h2>Conclusion</h2>
+<p>This article covered sandbox techniques using Linux. Namespaces in particular enables a process to be run in a unique environment, allowing multiple isolated instances of an application.<br>
+This is only effective for user process, as it does not prevent a privileged process from escaping the sandbox. Better isolation requires dedicated hardware and/or virtualisation.<br>
+Food for thought:</p>
+<ul>
+<li>Uname (kernel name, version and build time) can’t be isolated and requires a fake uname syscall to be preloaded</li>
+<li>Grsecurity can harden /proc and /sys filesystem to deny access to more system information</li>
+<li>Sandbox provides an easy way to audit suspicious activies</li>
+<li>Mandatory access controls can be used to further limit capabilities</li>
+</ul>
+<div class="sharedaddy sd-sharing-enabled"><div class="robots-nocontent sd-block sd-social sd-social-icon sd-sharing"><h3 class="sd-title">Share this:</h3><div class="sd-content"><ul><li class="share-twitter"><a rel="nofollow noopener noreferrer" data-shared="sharing-twitter-7761" class="share-twitter sd-button share-icon no-text" href="https://blogs.rdoproject.org/2015/08/hands-on-linux-sandbox-with-namespaces-and-cgroups/?share=twitter" target="_blank" title="Click to share on Twitter"><span></span><span class="sharing-screen-reader-text">Click to share on Twitter (Opens in new window)</span></a></li><li class="share-linkedin"><a rel="nofollow noopener noreferrer" data-shared="sharing-linkedin-7761" class="share-linkedin sd-button share-icon no-text" href="https://blogs.rdoproject.org/2015/08/hands-on-linux-sandbox-with-namespaces-and-cgroups/?share=linkedin" target="_blank" title="Click to share on LinkedIn"><span></span><span class="sharing-screen-reader-text">Click to share on LinkedIn (Opens in new window)</span></a></li><li class="share-facebook"><a rel="nofollow noopener noreferrer" data-shared="sharing-facebook-7761" class="share-facebook sd-button share-icon no-text" href="https://blogs.rdoproject.org/2015/08/hands-on-linux-sandbox-with-namespaces-and-cgroups/?share=facebook" target="_blank" title="Click to share on Facebook"><span></span><span class="sharing-screen-reader-text">Click to share on Facebook (Opens in new window)</span></a></li><li><a href="#" class="sharing-anchor sd-button share-more"><span>More</span></a></li><li class="share-end"></li></ul><div class="sharing-hidden"><div class="inner" style="display: none;"><ul><li class="share-email"><a rel="nofollow noopener noreferrer" data-shared="" class="share-email sd-button share-icon no-text" href="mailto:?subject=%5BShared%20Post%5D%20Hands%20on%20Linux%20sandbox%20with%20namespaces%20and%20cgroups&amp;body=https%3A%2F%2Fblogs.rdoproject.org%2F2015%2F08%2Fhands-on-linux-sandbox-with-namespaces-and-cgroups%2F&amp;share=email" target="_blank" title="Click to email a link to a friend" data-email-share-error-title="Do you have email set up?" data-email-share-error-text="If you're having problems sharing via email, you might not have email set up for your browser. You may need to create a new email yourself." data-email-share-nonce="ea6a08e8a3" data-email-share-track-url="https://blogs.rdoproject.org/2015/08/hands-on-linux-sandbox-with-namespaces-and-cgroups/?share=email"><span></span><span class="sharing-screen-reader-text">Click to email a link to a friend (Opens in new window)</span></a></li><li class="share-print"><a rel="nofollow noopener noreferrer" data-shared="" class="share-print sd-button share-icon no-text" href="https://blogs.rdoproject.org/2015/08/hands-on-linux-sandbox-with-namespaces-and-cgroups/#print" target="_blank" title="Click to print"><span></span><span class="sharing-screen-reader-text">Click to print (Opens in new window)</span></a></li><li class="share-end"></li><li class="share-reddit"><a rel="nofollow noopener noreferrer" data-shared="" class="share-reddit sd-button share-icon no-text" href="https://blogs.rdoproject.org/2015/08/hands-on-linux-sandbox-with-namespaces-and-cgroups/?share=reddit" target="_blank" title="Click to share on Reddit"><span></span><span class="sharing-screen-reader-text">Click to share on Reddit (Opens in new window)</span></a></li><li class="share-pinterest"><a rel="nofollow noopener noreferrer" data-shared="sharing-pinterest-7761" class="share-pinterest sd-button share-icon no-text" href="https://blogs.rdoproject.org/2015/08/hands-on-linux-sandbox-with-namespaces-and-cgroups/?share=pinterest" target="_blank" title="Click to share on Pinterest"><span></span><span class="sharing-screen-reader-text">Click to share on Pinterest (Opens in new window)</span></a></li><li class="share-end"></li><li class="share-tumblr"><a rel="nofollow noopener noreferrer" data-shared="" class="share-tumblr sd-button share-icon no-text" href="https://blogs.rdoproject.org/2015/08/hands-on-linux-sandbox-with-namespaces-and-cgroups/?share=tumblr" target="_blank" title="Click to share on Tumblr"><span></span><span class="sharing-screen-reader-text">Click to share on Tumblr (Opens in new window)</span></a></li><li class="share-pocket"><a rel="nofollow noopener noreferrer" data-shared="" class="share-pocket sd-button share-icon no-text" href="https://blogs.rdoproject.org/2015/08/hands-on-linux-sandbox-with-namespaces-and-cgroups/?share=pocket" target="_blank" title="Click to share on Pocket"><span></span><span class="sharing-screen-reader-text">Click to share on Pocket (Opens in new window)</span></a></li><li class="share-end"></li><li class="share-end"></li></ul></div></div></div></div></div>					</div><!-- .entry-content -->
+
+		<footer class="entry-footer">
+			<div class="entry-meta"><span class="category"><span class="before">Posted in </span><a href="https://blogs.rdoproject.org/category/infrastructures/" rel="tag">Infrastructures</a></span> <span class="post_tag"><span class="before">Tagged </span><a href="https://blogs.rdoproject.org/tag/cgroups/" rel="tag">cgroups</a>, <a href="https://blogs.rdoproject.org/tag/linux/" rel="tag">linux</a>, <a href="https://blogs.rdoproject.org/tag/namespaces/" rel="tag">namespaces</a>, <a href="https://blogs.rdoproject.org/tag/sandbox/" rel="tag">sandbox</a></span></div>		</footer><!-- .entry-footer -->
+		
+	
+	
+</article><!-- .hentry -->
+
+
+										
+						
+	<div class="author-profile vcard">
+	
+		
+			<h4 class="author-name fn n">Article written by <span class="author vcard"><a class="url fn n" rel="author" href="https://blogs.rdoproject.org/author/tristan-cacqueray/" title="Tristan Cacqueray">Tristan Cacqueray</a></span></h4>
+
+			<img alt="" src="https://secure.gravatar.com/avatar/c299bb4078c3ea1dd7e60d5722c6a42c?s=96&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/c299bb4078c3ea1dd7e60d5722c6a42c?s=192&amp;d=mm&amp;r=g 2x" class="avatar avatar-96 photo" height="96" width="96" loading="lazy">
+			<p class="author-description author-bio">
+							</p>
+
+					
+	</div>
+		
+						
+						
+						
+<div id="comments-template">
+
+	<div class="comments-wrap">
+
+		<div id="comments">
+
+			
+				<h3 id="comments-number" class="comments-header">3 Responses</h3>
+
+				
+				
+				<ol class="comment-list">
+					
+	<li id="comment-188" class="comment even thread-even depth-1 reader has-avatar">
+
+		
+		<div class="comment-wrap">
+
+			
+			<img alt="Phani Kumar Yadavilli" src="https://secure.gravatar.com/avatar/dc3eade1431ee9e3bc76fb0632e3a4f2?s=80&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/dc3eade1431ee9e3bc76fb0632e3a4f2?s=160&amp;d=mm&amp;r=g 2x" class="avatar avatar-80 photo" height="80" width="80" loading="lazy">
+			<div class="comment-meta"><span class="comment-author vcard"><cite class="fn">Phani Kumar Yadavilli</cite></span><!-- .comment-author .vcard --> <span class="published"><time class="comment-date" datetime="2016-10-31T06:03:53+02:00" title="Monday, October 31st, 2016, 6:03 am">31/10/2016</time> at <time class="comment-time" title="Monday, October 31st, 2016, 6:03 am">06:03</time></span> | <a class="permalink" href="https://blogs.rdoproject.org/2015/08/hands-on-linux-sandbox-with-namespaces-and-cgroups/#comment-188" title="Permalink to comment 188">Permalink</a>  </div>
+			<div class="comment-content comment-text">
+				
+				<p>The blog post was very informative and helpful. Could you please let me know where can i download the sandbox.</p>
+			</div><!-- .comment-content .comment-text -->
+
+			
+		</div><!-- .comment-wrap -->
+
+		
+	</li><!-- .comment -->
+	<li id="comment-189" class="comment odd alt thread-odd thread-alt depth-1 reader has-avatar">
+
+		
+		<div class="comment-wrap">
+
+			
+			<img alt="Onur Sehitoglu" src="https://secure.gravatar.com/avatar/4ee335d2ff44ba9c4d9e552dbf15d274?s=80&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/4ee335d2ff44ba9c4d9e552dbf15d274?s=160&amp;d=mm&amp;r=g 2x" class="avatar avatar-80 photo" height="80" width="80" loading="lazy">
+			<div class="comment-meta"><span class="comment-author vcard"><cite class="fn">Onur Sehitoglu</cite></span><!-- .comment-author .vcard --> <span class="published"><time class="comment-date" datetime="2017-12-06T20:49:22+02:00" title="Wednesday, December 6th, 2017, 8:49 pm">06/12/2017</time> at <time class="comment-time" title="Wednesday, December 6th, 2017, 8:49 pm">20:49</time></span> | <a class="permalink" href="https://blogs.rdoproject.org/2015/08/hands-on-linux-sandbox-with-namespaces-and-cgroups/#comment-189" title="Permalink to comment 189">Permalink</a>  </div>
+			<div class="comment-content comment-text">
+				
+				<p>Thank you. This is a really useful and clear tutorial. I had problem in prlimit nproc though. Since I try the sandbox with my desktop user, my current processes already reached the nproc limit so I had difficulties. Than I found a newer (than this article)  controller called pids limitting the number of processes per cgroup. pids.max does the job.<br>
+Thanks again.</p>
+			</div><!-- .comment-content .comment-text -->
+
+			
+		</div><!-- .comment-wrap -->
+
+		
+	</li><!-- .comment -->
+	<li id="comment-190" class="pingback even thread-even depth-1 ping reader has-avatar">
+
+		
+		<div class="comment-wrap">
+
+			
+			<a href="https://ilearnedhowto.wordpress.com/2017/12/13/how-to-run-docker-containers-using-common-linux-tools-without-docker/" rel="external nofollow" title="How to run Docker containers using common Linux tools (without Docker) – I Learned How To…"><img alt="How to run Docker containers using common Linux tools (without Docker) – I Learned How To…" src="https://secure.gravatar.com/avatar/?s=80&amp;d=https%3A%2F%2Frdo.wpengine.com%2Fwp-content%2Fthemes%2Fpath%2Flibrary%2Fimages%2Fping.png&amp;r=g" srcset="https://secure.gravatar.com/avatar/?s=160&amp;d=https%3A%2F%2Frdo.wpengine.com%2Fwp-content%2Fthemes%2Fpath%2Flibrary%2Fimages%2Fping.png&amp;r=g 2x" class="avatar avatar-80 photo avatar-default" height="80" width="80" loading="lazy"></a>
+			<div class="comment-meta"><span class="comment-author vcard"><cite class="fn" title="https://ilearnedhowto.wordpress.com/2017/12/13/how-to-run-docker-containers-using-common-linux-tools-without-docker/"><a href="https://ilearnedhowto.wordpress.com/2017/12/13/how-to-run-docker-containers-using-common-linux-tools-without-docker/" title="How to run Docker containers using common Linux tools (without Docker) – I Learned How To…" class="url" rel="external nofollow">How to run Docker containers using common Linux tools (without Docker) – I Learned How To…</a></cite></span><!-- .comment-author .vcard --> <span class="published"><time class="comment-date" datetime="2017-12-13T17:26:55+02:00" title="Wednesday, December 13th, 2017, 5:26 pm">13/12/2017</time> at <time class="comment-time" title="Wednesday, December 13th, 2017, 5:26 pm">17:26</time></span> | <a class="permalink" href="https://blogs.rdoproject.org/2015/08/hands-on-linux-sandbox-with-namespaces-and-cgroups/#comment-190" title="Permalink to comment 190">Permalink</a>  </div>
+			<div class="comment-content comment-text">
+				
+				<p>[…] Full post at RDO that explains basics of cgroups, unshares, etc. and puts all together. […]</p>
+			</div><!-- .comment-content .comment-text -->
+
+			
+		</div><!-- .comment-wrap -->
+
+		
+	</li><!-- .comment -->				</ol><!-- .comment-list -->
+
+				
+			
+			
+				<p class="comments-closed">
+					Comments are closed.				</p><!-- .comments-closed -->
+
+			
+		</div><!-- #comments -->
+
+		
+	</div><!-- .comments-wrap -->
+
+</div><!-- #comments-template -->
+					
+				
+			
+		</div><!-- .hfeed -->
+
+		
+		
+	
+		<div class="loop-nav">
+			<a href="https://blogs.rdoproject.org/2015/08/flavio-percoco-talks-about-the-zaqar-project/" rel="prev"><span class="previous"><span class="meta-nav">←</span> Previous</span></a>			<a href="https://blogs.rdoproject.org/2015/08/logging-configuration-in-opencontrail/" rel="next"><span class="next">Next <span class="meta-nav">→</span></span></a>		</div><!-- .loop-nav -->
+
+	
+	</div><!-- #content -->
+
+	
+				
+	
+	<div id="sidebar-primary" class="sidebar">
+
+		
+		<section id="twitter_timeline-3" class="widget widget_twitter_timeline widget-widget_twitter_timeline"><h3 class="widget-title">RDO on Twitter</h3><a class="twitter-timeline" data-height="400" data-theme="light" data-border-color="#e8e8e8" data-lang="EN" data-partner="jetpack" data-chrome="noheader nofooter noborders noscrollbar transparent" href="https://twitter.com/rdocommunity">My Tweets</a></section>
+		<section id="recent-posts-3" class="widget widget_recent_entries widget-widget_recent_entries">
+		<h3 class="widget-title">Recent Posts</h3>
+		<ul>
+											<li>
+					<a href="https://blogs.rdoproject.org/2022/04/rdo-yoga-released/">RDO Yoga Released</a>
+									</li>
+											<li>
+					<a href="https://blogs.rdoproject.org/2021/10/rdo-xena-released/">RDO Xena Released</a>
+									</li>
+											<li>
+					<a href="https://blogs.rdoproject.org/2021/05/rdo-wallaby-released/">RDO Wallaby Released</a>
+									</li>
+											<li>
+					<a href="https://blogs.rdoproject.org/2021/01/rdo-plans-to-move-to-centos-stream/">RDO plans to move to CentOS Stream</a>
+									</li>
+											<li>
+					<a href="https://blogs.rdoproject.org/2020/11/rdo-victoria-released/">RDO Victoria Released</a>
+									</li>
+					</ul>
+
+		</section><section id="hybrid-authors-3" class="widget authors widget-authors"><h3 class="widget-title">Authors</h3><ul class="xoxo authors"><li><a href="https://blogs.rdoproject.org/author/amoralej/" title="Posts by amoralej">amoralej</a></li><li><a href="https://blogs.rdoproject.org/author/spotz/" title="Posts by Amy Marrich">Amy Marrich</a></li><li><a href="https://blogs.rdoproject.org/author/apevec/" title="Posts by apevec">apevec</a></li><li><a href="https://blogs.rdoproject.org/author/atc/" title="Posts by atc">atc</a></li><li><a href="https://blogs.rdoproject.org/author/babu/" title="Posts by Babu Shanmugam">Babu Shanmugam</a></li><li><a href="https://blogs.rdoproject.org/author/chandankumar/" title="Posts by chandankumar">chandankumar</a></li><li><a href="https://blogs.rdoproject.org/author/chkumar246/" title="Posts by chkumar246">chkumar246</a></li><li><a href="https://blogs.rdoproject.org/author/chmouel/" title="Posts by Chmouel Boudjnah">Chmouel Boudjnah</a></li><li><a href="https://blogs.rdoproject.org/author/cschwede/" title="Posts by Christian Schwede">Christian Schwede</a></li><li><a href="https://blogs.rdoproject.org/author/cyril-roelandt/" title="Posts by Cyril Roelandt">Cyril Roelandt</a></li><li><a href="https://blogs.rdoproject.org/author/dradezredhat-com/" title="Posts by Dan Radez">Dan Radez</a></li><li><a href="https://blogs.rdoproject.org/author/dneary/" title="Posts by dneary">dneary</a></li><li><a href="https://blogs.rdoproject.org/author/emalikova/" title="Posts by emalikova">emalikova</a></li><li><a href="https://blogs.rdoproject.org/author/emilien/" title="Posts by Emilien Macchi">Emilien Macchi</a></li><li><a href="https://blogs.rdoproject.org/author/erwan/" title="Posts by Erwan Velu">Erwan Velu</a></li><li><a href="https://blogs.rdoproject.org/author/fabien/" title="Posts by Fabien Boucher">Fabien Boucher</a></li><li><a href="https://blogs.rdoproject.org/author/fred/" title="Posts by Frederic Lepied">Frederic Lepied</a></li><li><a href="https://blogs.rdoproject.org/author/goneri/" title="Posts by Gonéri Le Bouder">Gonéri Le Bouder</a></li><li><a href="https://blogs.rdoproject.org/author/ggillies/" title="Posts by Graeme Gillies">Graeme Gillies</a></li><li><a href="https://blogs.rdoproject.org/author/hguemar/" title="Posts by hguemar">Haïkel Guémar</a></li><li><a href="https://blogs.rdoproject.org/author/ignace/" title="Posts by Ignace Mouzannar">Ignace Mouzannar</a></li><li><a href="https://blogs.rdoproject.org/author/imeloferredhat-com/" title="Posts by Iury Gregory Melo Ferreira">Iury Gregory Melo Ferreira</a></li><li><a href="https://blogs.rdoproject.org/author/james-kulina/" title="Posts by James Kulina">James Kulina</a></li><li><a href="https://blogs.rdoproject.org/author/joe/" title="Posts by Joe H. Rahme">Joe H. Rahme</a></li><li><a href="https://blogs.rdoproject.org/author/jpena/" title="Posts by jpena">jpena</a></li><li><a href="https://blogs.rdoproject.org/author/jruzicka/" title="Posts by jruzicka">jruzicka</a></li><li><a href="https://blogs.rdoproject.org/author/jd/" title="Posts by Julien Danjou">Julien Danjou</a></li><li><a href="https://blogs.rdoproject.org/author/laura/" title="Posts by Laura ZANETTI">Laura ZANETTI</a></li><li><a href="https://blogs.rdoproject.org/author/ltoscano/" title="Posts by ltoscano">ltoscano</a></li><li><a href="https://blogs.rdoproject.org/author/mthengvaredhat-com/" title="Posts by Mary Thengvall">Mary Thengvall</a></li><li><a href="https://blogs.rdoproject.org/author/mattdm/" title="Posts by mattdm">mattdm</a></li><li><a href="https://blogs.rdoproject.org/author/matthieu/" title="Posts by Matthieu Huin">Matthieu Huin</a></li><li><a href="https://blogs.rdoproject.org/author/sileht/" title="Posts by Mehdi Abaakouk">Mehdi Abaakouk</a></li><li><a href="https://blogs.rdoproject.org/author/mkopec/" title="Posts by mkopec">mkopec</a></li><li><a href="https://blogs.rdoproject.org/author/nijaba/" title="Posts by Nick Barcet">Nick Barcet</a></li><li><a href="https://blogs.rdoproject.org/author/nicolas-hicher/" title="Posts by Nicolas Hicher">Nicolas Hicher</a></li><li><a href="https://blogs.rdoproject.org/author/nplanel/" title="Posts by Nicolas Planel">Nicolas Planel</a></li><li><a href="https://blogs.rdoproject.org/author/nusiddiq/" title="Posts by Numan Siddique">Numan Siddique</a></li><li><a href="https://blogs.rdoproject.org/author/pkovarredhat-com/" title="Posts by Petr Kovar">Petr Kovar</a></li><li><a href="https://blogs.rdoproject.org/author/pmavro/" title="Posts by Pierre Mavro">Pierre Mavro</a></li><li><a href="https://blogs.rdoproject.org/author/pixelbeat/" title="Posts by pixelbeat">pixelbeat</a></li><li><a href="https://blogs.rdoproject.org/author/pmkovar/" title="Posts by pmkovar">pmkovar</a></li><li><a href="https://blogs.rdoproject.org/author/pmyers/" title="Posts by pmyers">pmyers</a></li><li><a href="https://blogs.rdoproject.org/author/rleander/" title="Posts by Rain Leander">Rain Leander</a></li><li><a href="https://blogs.rdoproject.org/author/rbowen/" title="Posts by Rich Bowen">Rich Bowen</a></li><li><a href="https://blogs.rdoproject.org/author/rkukura/" title="Posts by rkukura">rkukura</a></li><li><a href="https://blogs.rdoproject.org/author/sebastien/" title="Posts by Sebastien Han">Sebastien Han</a></li><li><a href="https://blogs.rdoproject.org/author/software-factory-team/" title="Posts by Software Factory Team">Software Factory Team</a></li><li><a href="https://blogs.rdoproject.org/author/sridhar-gaddam/" title="Posts by Sridhar Gaddam">Sridhar Gaddam</a></li><li><a href="https://blogs.rdoproject.org/author/safchain/" title="Posts by Sylvain Afchain">Sylvain Afchain</a></li><li><a href="https://blogs.rdoproject.org/author/tdecacqu/" title="Posts by tdecacqu">tdecacqu</a></li><li><a href="https://blogs.rdoproject.org/author/therve/" title="Posts by Thomas Herve">Thomas Herve</a></li><li><a href="https://blogs.rdoproject.org/author/tristan-cacqueray/" title="Posts by Tristan Cacqueray">Tristan Cacqueray</a></li><li><a href="https://blogs.rdoproject.org/author/trown/" title="Posts by trown">trown</a></li><li><a href="https://blogs.rdoproject.org/author/haypo/" title="Posts by Victor Stinner">Victor Stinner</a></li><li><a href="https://blogs.rdoproject.org/author/whayutin/" title="Posts by whayutin">whayutin</a></li><li><a href="https://blogs.rdoproject.org/author/yanis-guenane/" title="Posts by Yanis Guenane">Yanis Guenane</a></li><li><a href="https://blogs.rdoproject.org/author/yassine/" title="Posts by Yassine Lamgarchal">Yassine Lamgarchal</a></li></ul><!-- .xoxo .authors --></section><section id="hybrid-categories-3" class="widget categories widget-categories"><h3 class="widget-title">Categories</h3><ul class="xoxo categories"><li class="cat-item cat-item-2"><a href="https://blogs.rdoproject.org/category/ceph-2/">Ceph</a></li><li class="cat-item cat-item-3"><a href="https://blogs.rdoproject.org/category/community-blog-round-up/">Community Blog Round-up</a></li><li class="cat-item cat-item-4"><a href="https://blogs.rdoproject.org/category/conferences/">Conferences</a></li><li class="cat-item cat-item-5"><a href="https://blogs.rdoproject.org/category/deployment/">Deployment</a><ul class="children"><li class="cat-item cat-item-17"><a href="https://blogs.rdoproject.org/category/deployment/ci/">CI</a></li></ul></li><li class="cat-item cat-item-6"><a href="https://blogs.rdoproject.org/category/event-2/">Event</a></li><li class="cat-item cat-item-7"><a href="https://blogs.rdoproject.org/category/infrastructures/">Infrastructures</a><ul class="children"><li class="cat-item cat-item-14"><a href="https://blogs.rdoproject.org/category/infrastructures/agile-infrastructures/">Agile</a></li></ul></li><li class="cat-item cat-item-8"><a href="https://blogs.rdoproject.org/category/openstackdev/">OpenStack</a><ul class="children"><li class="cat-item cat-item-15"><a href="https://blogs.rdoproject.org/category/openstackdev/aodh-openstackdev/">Aodh</a></li><li class="cat-item cat-item-16"><a href="https://blogs.rdoproject.org/category/openstackdev/ceilometer-openstackdev/">Ceilometer</a></li><li class="cat-item cat-item-18"><a href="https://blogs.rdoproject.org/category/openstackdev/gnocchi/">Gnocchi</a></li><li class="cat-item cat-item-19"><a href="https://blogs.rdoproject.org/category/openstackdev/heat-openstackdev/">Heat</a></li><li class="cat-item cat-item-20"><a href="https://blogs.rdoproject.org/category/openstackdev/keystone-2/">Keystone</a></li><li class="cat-item cat-item-21"><a href="https://blogs.rdoproject.org/category/openstackdev/neutron-openstackdev/">Neutron</a></li><li class="cat-item cat-item-22"><a href="https://blogs.rdoproject.org/category/openstackdev/nova-1/">Nova</a></li><li class="cat-item cat-item-11"><a href="https://blogs.rdoproject.org/category/openstackdev/swift-openstackdev/">Swift</a></li><li class="cat-item cat-item-12"><a href="https://blogs.rdoproject.org/category/openstackdev/tempest-openstackdev/">Tempest</a></li><li class="cat-item cat-item-13"><a href="https://blogs.rdoproject.org/category/openstackdev/tripleo/">TripleO</a></li></ul></li><li class="cat-item cat-item-9"><a href="https://blogs.rdoproject.org/category/puppet/">Puppet</a></li><li class="cat-item cat-item-10"><a href="https://blogs.rdoproject.org/category/python/">Python</a></li></ul><!-- .xoxo .categories --></section><section id="hybrid-tags-3" class="widget tags widget-tags"><h3 class="widget-title">Tags</h3>
+
+
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width">
+		<meta name="robots" content="noindex, nofollow">
+	<title>WordPress › Error</title>
+	<style type="text/css">
+		html {
+			background: #f1f1f1;
+		}
+		body {
+			background: #fff;
+			border: 1px solid #ccd0d4;
+			color: #444;
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+			margin: 2em auto;
+			padding: 1em 2em;
+			max-width: 700px;
+			-webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, .04);
+			box-shadow: 0 1px 1px rgba(0, 0, 0, .04);
+		}
+		h1 {
+			border-bottom: 1px solid #dadada;
+			clear: both;
+			color: #666;
+			font-size: 24px;
+			margin: 30px 0 0 0;
+			padding: 0;
+			padding-bottom: 7px;
+		}
+		#error-page {
+			margin-top: 50px;
+		}
+		#error-page p,
+		#error-page .wp-die-message {
+			font-size: 14px;
+			line-height: 1.5;
+			margin: 25px 0 20px;
+		}
+		#error-page code {
+			font-family: Consolas, Monaco, monospace;
+		}
+		ul li {
+			margin-bottom: 10px;
+			font-size: 14px ;
+		}
+		a {
+			color: #0073aa;
+		}
+		a:hover,
+		a:active {
+			color: #006799;
+		}
+		a:focus {
+			color: #124964;
+			-webkit-box-shadow:
+				0 0 0 1px #5b9dd9,
+				0 0 2px 1px rgba(30, 140, 190, 0.8);
+			box-shadow:
+				0 0 0 1px #5b9dd9,
+				0 0 2px 1px rgba(30, 140, 190, 0.8);
+			outline: none;
+		}
+		.button {
+			background: #f3f5f6;
+			border: 1px solid #016087;
+			color: #016087;
+			display: inline-block;
+			text-decoration: none;
+			font-size: 13px;
+			line-height: 2;
+			height: 28px;
+			margin: 0;
+			padding: 0 10px 1px;
+			cursor: pointer;
+			-webkit-border-radius: 3px;
+			-webkit-appearance: none;
+			border-radius: 3px;
+			white-space: nowrap;
+			-webkit-box-sizing: border-box;
+			-moz-box-sizing:    border-box;
+			box-sizing:         border-box;
+
+			vertical-align: top;
+		}
+
+		.button.button-large {
+			line-height: 2.30769231;
+			min-height: 32px;
+			padding: 0 12px;
+		}
+
+		.button:hover,
+		.button:focus {
+			background: #f1f1f1;
+		}
+
+		.button:focus {
+			background: #f3f5f6;
+			border-color: #007cba;
+			-webkit-box-shadow: 0 0 0 1px #007cba;
+			box-shadow: 0 0 0 1px #007cba;
+			color: #016087;
+			outline: 2px solid transparent;
+			outline-offset: 0;
+		}
+
+		.button:active {
+			background: #f3f5f6;
+			border-color: #7e8993;
+			-webkit-box-shadow: none;
+			box-shadow: none;
+		}
+
+			</style>
+
+
+	<div class="wp-die-message"><p>There has been a critical error on this website.</p><p><a href="https://wordpress.org/support/article/faq-troubleshooting/">Learn more about troubleshooting WordPress.</a></p></div>
+
+	</section></div></div></div></div></body></html>

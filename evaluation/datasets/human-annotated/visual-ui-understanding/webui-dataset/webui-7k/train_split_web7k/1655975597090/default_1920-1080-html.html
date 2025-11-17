@@ -1,0 +1,451 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta content="We released user-defined build jobs (``build.jobs`` config key) which will help you with your custom build process!" lang="en" name="description">
+
+  <meta property="og:title" content="Announcing user-defined build jobs">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://blog.readthedocs.com/user-defined-build-jobs.html">
+  <meta property="og:site_name" content="Read the Docs Blog">
+  <meta property="og:description" content="We are happy to announce a new feature to specify user-defined build jobs on Read the Docs. If your project requires custom commands to be run in the middle of the build process, they can now be ex...">
+  <meta property="og:image" content="https://blog.readthedocs.com/_static/logo-opengraph.png">
+  <meta property="og:image:alt" content="Read the Docs Blog">
+  <meta name="twitter:card" content="summary_large_image">
+    <title>Announcing user-defined build jobs — Read the Docs Blog</title>
+    <link rel="stylesheet" href="../_static/main.css" type="text/css">
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css">
+    <link rel="stylesheet" type="text/css" href="/_/static/css/badge_only.css">
+    <script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=UA-17997319-2&amp;l=dataLayer&amp;cx=c"></script><script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script><script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="/_/static/javascript/readthedocs-doc-embed.js"></script>
+    <link rel="canonical" href="https://blog.readthedocs.com/user-defined-build-jobs.html">
+    <link rel="index" title="Index" href="../genindex/">
+    <link rel="search" title="Search" href="../search/">
+  
+  <link href="//fonts.googleapis.com/css?family=Bree+Serif" rel="stylesheet" type="text/css">
+  <link href="//fonts.googleapis.com/css?family=Puritan:400,400italic,700,700italic" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="../_static/local.css" type="text/css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script defer="" data-domain="blog.readthedocs.com" src="https://plausible.io/js/plausible.js"></script>
+
+  
+  <link rel="alternate" type="application/atom+xml" href="../archive/atom.xml" title="Read the Docs Blog">
+  
+  
+  <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+  
+  <style type="text/css">
+    ul.ablog-archive {list-style: none; overflow: auto; margin-left: 0px}
+    ul.ablog-archive li {float: left; margin-right: 5px; font-size: 80%}
+    ul.postlist a {font-style: italic;}
+    ul.postlist-style-disc {list-style-type: disc;}
+    ul.postlist-style-none {list-style-type: none;}
+    ul.postlist-style-circle {list-style-type: circle;}
+  </style>
+
+  
+<!-- RTD Extra Head -->
+
+<link rel="stylesheet" href="/_/static/css/readthedocs-doc-embed.css" type="text/css">
+
+<script type="application/json" id="READTHEDOCS_DATA">{"ad_free": true, "api_host": "https://readthedocs.org", "build_date": "2022-06-09T17:16:47Z", "builder": "sphinx", "canonical_url": null, "commit": "47085809", "docroot": "/", "features": {"docsearch_disabled": false}, "global_analytics_code": "UA-17997319-1", "language": "en", "page": "user-defined-build-jobs", "programming_language": "py", "project": "readthedocs-blog", "proxied_api_host": "/_", "source_suffix": ".rst", "subprojects": {}, "theme": "rtd-blog", "user_analytics_code": "UA-17997319-2", "version": "latest"}</script>
+
+<!--
+Using this variable directly instead of using `JSON.parse` is deprecated.
+The READTHEDOCS_DATA global variable will be removed in the future.
+-->
+<script type="text/javascript">
+READTHEDOCS_DATA = JSON.parse(document.getElementById('READTHEDOCS_DATA').innerHTML);
+</script>
+
+<script type="text/javascript" src="/_/static/javascript/readthedocs-analytics.js" async="async"></script>
+
+<!-- end RTD <extrahead> -->
+<script type="text/javascript" src="https://static.mailerlite.com/js/w/ml_jQuery.inputmask.bundle.min.js?v3.3.1"></script><script src="https://www.googletagmanager.com/gtag/js?id=UA-17997319-1" type="text/javascript" async=""></script></head><body>
+  <!-- BEGIN header -->
+  <div id="header">
+    <div class="row">
+      <div class="logo">
+        <h1><a href="../">
+            <img src="../_static/logo.png" height="48">
+            Read the Docs Blog
+        </a></h1>
+      </div>
+      <div class="nav">
+        <ul>
+          <li><a href="https://readthedocs.com">Back to site</a></li>
+          <li><a href="mailto:hello@readthedocs.com">Contact&nbsp;Us</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <!-- END header -->
+
+  <div id="content">
+    <div class="wrapper">
+
+      <div class="col-major content">
+          
+  <div class="section" id="announcing-user-defined-build-jobs">
+<h1>Announcing user-defined build jobs<a class="headerlink" href="#announcing-user-defined-build-jobs" title="Permalink to this headline">¶</a></h1>
+<p>We are happy to announce a new feature to specify user-defined build jobs on Read the Docs.
+If your project requires custom commands to be run in the middle of the build process,
+they can now be executed with the new config key <code class="docutils literal notranslate"><span class="pre">build.jobs</span></code>.
+This opens up a complete world full of new and exciting possibilities to our users.</p>
+<div class="section" id="background-about-the-build-process">
+<h2>Background about the build process<a class="headerlink" href="#background-about-the-build-process" title="Permalink to this headline">¶</a></h2>
+<p>If your project has ever required a custom command to run during the build process,
+you probably wished you could easily specify this.
+You might have used a hacky solution inside your Sphinx’s <code class="docutils literal notranslate"><span class="pre">conf.py</span></code> file,
+but this was not a great solution to this problem.</p>
+<p>That solution wasn’t supported,
+and it had another important limitation: it only ran the commands <em>from inside</em> Sphinx’s build command.
+It was impossible to run a command after cloning the repository,
+or before starting the Sphinx build process.
+With the addition of the new config key <code class="docutils literal notranslate"><span class="pre">build.jobs</span></code>,
+you can do these things and more!</p>
+</div>
+<div class="section" id="using-build-jobs-in-your-configuration-file">
+<h2>Using <code class="docutils literal notranslate"><span class="pre">build.jobs</span></code> in your configuration file<a class="headerlink" href="#using-build-jobs-in-your-configuration-file" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://docs.readthedocs.io/en/stable/builds.html">Read the Docs’ build process</a> is well-defined and divided into these pre-defined jobs:
+<code class="docutils literal notranslate"><span class="pre">checkout</span></code>, <code class="docutils literal notranslate"><span class="pre">system_dependencies</span></code>, <code class="docutils literal notranslate"><span class="pre">create_environment</span></code>, <code class="docutils literal notranslate"><span class="pre">install</span></code>, <code class="docutils literal notranslate"><span class="pre">build</span></code> and <code class="docutils literal notranslate"><span class="pre">upload</span></code>.
+Now, with the introduction of <code class="docutils literal notranslate"><span class="pre">build.jobs</span></code>, you can hook these with custom commands that run before &amp; after.</p>
+<p>Let’s say your project requires to run a command immediately <em>after</em> clonning the repository in the <code class="docutils literal notranslate"><span class="pre">checkout</span></code> job.
+In that case, you will want to use the <code class="docutils literal notranslate"><span class="pre">build.jobs.post_checkout</span></code> config key:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
+<span class="nt">build</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">os</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-22.04</span><span class="w"></span>
+<span class="w">  </span><span class="nt">tools</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">python</span><span class="p">:</span><span class="w"> </span><span class="s">"3.10"</span><span class="w"></span>
+<span class="w">  </span><span class="nt">jobs</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">post_checkout</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="c1"># Unshallow the git repository to</span><span class="w"></span>
+<span class="w">      </span><span class="c1"># have access to its full history</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">git fetch --unshallow</span><span class="w"></span>
+</pre></div>
+</div>
+<p>In this example, Read the Docs will run <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">...</span></code> as the first command and after that will run <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">fetch</span> <span class="pre">--unshallow</span></code>.
+Then it will continue with the rest of the remaining pre-defined jobs.</p>
+<p>To learn more about this how to use this new feature,
+read the <a class="reference external" href="https://docs.readthedocs.io/en/stable/build-customization.html">build customization</a> documentation page.</p>
+</div>
+<div class="section" id="the-future-of-the-builders">
+<h2>The future of the builders<a class="headerlink" href="#the-future-of-the-builders" title="Permalink to this headline">¶</a></h2>
+<p>We are already discussing how we can expand this feature in the future.
+We’d like to support more complex build processes,
+or even projects that are not using Sphinx or MkDocs.
+That would open the door to a lot new possibilities.
+So, <a class="reference external" href="https://landing.mailerlite.com/webforms/landing/p8b7z2">subscribe to our mailing list</a> and stay tuned!</p>
+</div>
+<div class="section" id="try-it-out-now">
+<h2>Try it out now!<a class="headerlink" href="#try-it-out-now" title="Permalink to this headline">¶</a></h2>
+<p>We encourage you to give it a try now to power up your documentation’s build process.
+As we mentioned, we are designing the future of our builders and we are collecting ideas from our users.
+Your feedback will allow us to ensure our design is flexible and customizable enough,
+and that we’re supporting as many use cases as possible.</p>
+<p>Please, contact us at <a class="reference external" href="mailto:support%40readthedocs.com">support<span>@</span>readthedocs<span>.</span>com</a> to let us know how you are using <code class="docutils literal notranslate"><span class="pre">build.jobs</span></code>!</p>
+</div>
+</div>
+
+  <div class="section">
+  
+    
+  
+  
+  </div>
+
+      </div>
+
+      <div class="col-minor sidebar">
+  
+  
+  <ul class="post-details">
+    <li>
+      
+        <i class="fa-fw fa fa-calendar"></i>
+        09 May 2022
+      
+    </li>
+
+      
+
+  
+  <li id="author"><span><i class="fa-fw fa fa-user"></i></span>
+    
+      
+      <a href="../archive/author/manuel-kaufmann/">Manuel Kaufmann</a>
+      
+    </li>
+  
+
+  
+  <li id="location"><span><i class="fa-fw fa fa-location-arrow"></i></span>
+    
+      
+      <a href="../archive/location/barcelona-spain/">Barcelona, Spain</a>
+      
+    </li>
+  
+
+  
+
+  
+
+  
+  <li id="tags"><span><i class="fa-fw fa fa-tags"></i>
+      </span>
+    
+      
+      <a href="../archive/tag/announcement/">announcement</a>
+      
+    
+      
+      <a href="../archive/tag/feature/">feature</a>
+      
+    
+      
+      <a href="../archive/tag/builds/">builds</a>
+      
+    </li>
+  
+  
+  </ul>
+
+
+
+<!-- Begin MailerLite Signup Form -->
+  <div id="mlb2-4710274" class="ml-form-embedContainer ml-subscribe-form ml-subscribe-form-4710274">
+    <div class="ml-form-align-center">
+      <div class="ml-form-embedWrapper embedForm">
+        <div class="ml-form-embedBody ml-form-embedBodyDefault row-form">
+          <div class="ml-form-embedContent">
+            <h3 style="margin-left: 0">Subscribe to our mailing list</h3>
+            <p>Sign up for our blog and we'll send you news and updates about Sphinx and Read the Docs on a regular basis.</p>
+          </div>
+          <form class="ml-block-form" action="https://static.mailerlite.com/webforms/submit/p8b7z2" data-code="p8b7z2" method="post" target="_blank">
+            <div class="ml-form-formContent">
+              <div class="ml-form-fieldRow ml-last-item">
+                <div class="ml-field-group ml-field-email ml-validate-email ml-validate-required">
+                  <input aria-label="email" aria-required="true" type="email" class="form-control" data-inputmask="" name="fields[email]" placeholder="email address" autocomplete="email" style="width: 90%" aria-invalid="false">
+                </div>
+              </div>
+            </div>
+            <div class="ml-form-embedPermissions">
+              <div class="ml-form-embedPermissionsContent default privacy-policy">
+                <p style="margin-bottom: 0; font-size: 0.8em">You can unsubscribe anytime. For more details, review our <a href="https://docs.readthedocs.io/page/privacy-policy.html" target="_blank">Privacy Policy</a>.</p>
+              </div>
+            </div>
+            <input type="hidden" name="ml-submit" value="1" aria-invalid="false">
+            <div class="ml-form-embedSubmit">
+              <button type="submit" class="primary">Subscribe</button>
+              <button disabled="disabled" style="display:none" type="button" class="loading"> <div class="ml-form-embedSubmitLoad"></div> <span class="sr-only">Loading...</span> </button>
+            </div>
+            <input type="hidden" name="anticsrf" value="true" aria-invalid="false">
+          </form>
+        </div>
+        <div class="ml-form-successBody row-success" style="display:none">
+          <div class="ml-form-successContent">
+            <h4>Thank you!</h4>
+            <p>You have successfully joined our subscriber list.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function ml_webform_success_4710274(){var r=ml_jQuery||jQuery;r(".ml-subscribe-form-4710274 .row-success").show(),r(".ml-subscribe-form-4710274 .row-form").hide()}
+  </script>
+  <img src="https://track.mailerlite.com/webforms/o/4710274/p8b7z2?v1632123501" width="1" height="1" style="max-width:1px;max-height:1px;visibility:hidden;padding:0;margin:0;display:block" alt="." border="0">
+  <script src="https://static.mailerlite.com/js/w/webforms.min.js?v0c75f831c56857441820dcec3163967c" type="text/javascript"></script>
+<!--End mc_embed_signup-->
+
+<h3> Read the Docs is hiring </h3>
+<ul>
+    <li><a href="/job-product-developer/">Product-focused Application Developer</a></li>
+</ul>
+
+<h3> Follow us </h3>
+
+<ul>
+<li>
+<a href="http://blog.readthedocs.com/archive/atom.xml" rel="me">Atom Feed</a>
+</li>
+<li>
+<a href="https://twitter.com/readthedocs" rel="me">Twitter</a>
+</li>
+</ul>
+
+  <h3><a href="../archive/">Recent Posts</a></h3>
+  <ul>
+    
+    
+      <li><a href="../newsletter-june-2022/">08 June - Read the Docs newsletter - June 2022</a></li>
+    
+      <li><a href="../newsletter-may-2022/">05 May - Read the Docs newsletter - May 2022</a></li>
+    
+      <li><a href="../newsletter-april-2022/">07 April - Read the Docs newsletter - April 2022</a></li>
+    
+      <li><a href="../read-the-docs-2021-stats/">21 March - Read the Docs 2021 Stats</a></li>
+    
+      <li><a href="../newsletter-march-2022/">10 March - Read the Docs newsletter - March 2022</a></li>
+    
+  </ul>
+
+  <h3><a href="../archive/archive/">Archives</a></h3>
+  <ul>
+  
+    
+    <li><a href="../archive/2022/">2022 (11)</a></li>
+    
+  
+    
+    <li><a href="../archive/2021/">2021 (24)</a></li>
+    
+  
+    
+    <li><a href="../archive/2020/">2020 (6)</a></li>
+    
+  
+    
+    <li><a href="../archive/2019/">2019 (15)</a></li>
+    
+  
+    
+    <li><a href="../archive/2018/">2018 (13)</a></li>
+    
+  
+    
+    <li><a href="../archive/2017/">2017 (7)</a></li>
+    
+  
+    
+    <li><a href="../archive/2016/">2016 (5)</a></li>
+    
+  
+    
+    <li><a href="../archive/2015/">2015 (9)</a></li>
+    
+  
+    
+    <li><a href="../archive/2014/">2014 (4)</a></li>
+    
+  
+    
+    <li><a href="../archive/2013/">2013 (2)</a></li>
+    
+  
+  </ul>
+
+        
+      </div>
+    </div>
+  </div>
+  <div id="footer">
+    <div class="row">
+      <div class="col fill">
+        <ul>
+            <li>
+                © Copyright 2021, Read the Docs, Inc.
+            </li>
+
+          <li>
+            Powered by <a href="http://ablog.readthedocs.org">ABlog</a>, and <a href="http://readthedocs.org/">Read the Docs</a>.
+          </li>
+            <li>
+              Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+            </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+<!-- Inserted RTD Footer -->
+
+<div class="injected">
+
+  
+  <div class="rst-versions rst-badge" data-toggle="rst-versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book">&nbsp;</span>
+      v: latest
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      
+
+      
+      
+      
+      
+
+      
+      
+      
+
+      
+      <dl>
+        
+        <!-- These are kept as relative links for internal installs that are http -->
+        <dt>On Read the Docs</dt>
+        <dd>
+          <a href="//readthedocs.org/projects/readthedocs-blog/">Project Home</a>
+        </dd>
+        <dd>
+          <a href="//readthedocs.org/projects/readthedocs-blog/builds/">Builds</a>
+        </dd>
+        <dd>
+          <a href="//readthedocs.org/projects/readthedocs-blog/downloads/">Downloads</a>
+        </dd>
+      </dl>
+      
+
+      
+
+      
+      <dl>
+        <dt>On GitHub</dt>
+        <dd>
+          <a href="https://github.com/rtfd/blog/blob/main//user-defined-build-jobs.rst">View</a>
+        </dd>
+        
+        <dd>
+          <a href="https://github.com/rtfd/blog/edit/main//user-defined-build-jobs.rst">Edit</a>
+        </dd>
+        
+      </dl>
+      
+      
+
+      
+      <dl>
+        <dt>Search</dt>
+        <dd>
+          <div style="padding: 6px;">
+            
+            <form id="flyout-search-form" class="wy-form" target="_blank" action="//readthedocs.org/projects/readthedocs-blog/search/" method="get">
+              <input type="text" name="q" aria-label="Search docs" placeholder="Search docs">
+              </form>
+          </div>
+        </dd>
+      </dl>
+      
+
+      <hr>
+
+      
+        <small>
+          <span>Hosted by <a href="https://readthedocs.org">Read the Docs</a></span>
+          <span> · </span>
+          <a href="https://docs.readthedocs.io/page/privacy-policy.html">Privacy Policy</a>
+        </small>
+      
+
+      
+    </div>
+  </div>
+  
+
+</div>
+</body></html>

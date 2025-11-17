@@ -1,0 +1,134 @@
+<!DOCTYPE html><html lang="en"><head>
+        <title>mutt-wizard</title>
+        <meta charset="utf-8">
+	<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%221em%22 font-size=%2280%22>🧙</text></svg>">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="alternate" type="application/rss+xml" title="muttwizard RSS" href="https://github.com/lukesmithxyz/mutt-wizard/commits/master.atom">
+    <style>
+body {
+	color: #ccc ;
+	background: #111 ;
+	max-width: 800px ;
+	margin: auto ;
+}
+a { color: lime ; }
+header {
+	text-align: center ;
+	font-size: xx-large ;
+}
+code { color: lime ;}
+</style></head>
+
+<body>
+    <header><h1>mutt-wizard (mw)</h1>
+    🐶🧙</header>
+    <main>
+	    <hr>
+        <p>
+	Muttwizard is a tool that automatically sets up a <a href="https://neomutt.org/">neomutt</a>-based minimal email system.
+        </p>
+        <h2>Who is mw for?</h2>
+        <ol>
+            <li>Those new to or experimenting with extensible, terminal-based setups.
+            </li>
+            <li>Those already familiar with all that, but don't want to be bothered by manually setting up neomutt and its many peripheral programs.
+        </li></ol>
+        <h2>mw does all this for you.</h2>
+        <p>
+        mw follows the Unix philosophy: it calls on already-existing minimal programs to give you a full email system.
+        Knowledge of <strong>none</strong> of these programs is required by the user to get the system up and working.
+        </p>
+        <ul>
+            <li><a href="https://isync.sourceforge.io/">isync</a> downloads the users mail and stores it offline in an instantly-loading archive which is also easy to backup.</li>
+            <li>Passwords automatically encrypted with <a href="https://www.passwordstore.org/">pass</a> and decrypted when needed for login.</li>
+            <li>Compatible with POP servers as well, and will automatically set up <a href="https://marlam.de/mpop/">mpop</a> in those cases.</li>
+            <li>Mail automatically indexed with <a href="https://notmuchmail.org/">notmuch</a> to enable searching and other things.</li>
+            <li>Works with <a href="https://abook.sourceforge.io/">abook</a> so contact information can easily be stored to be used by neomutt or other programs.</li>
+            <li>mw can also handle multiple accounts and can easily switch between them.</li>
+            <li>mw sets up sensible defaults, including vim bindings and simple color scheming to maximize the usability of neomutt.</li>
+        </ul>
+        <h2>Installation</h2>
+        <pre><code>git clone https://github.com/lukesmithxyz/mutt-wizard
+cd mutt-wizard
+sudo make install</code></pre>
+        <h3>Depenencies</h3>
+        <ul>
+            <li>neomutt – email client. Note that mw uses some features that are not included in oldschool mutt, so neomutt is required.</li>
+            <li>curl – used to test login credentials and get email information. Not required if run with <code>-f</code>.</li>
+            <li>isync – downloads mail. (Not actually required for POP servers though.)</li>
+            <li>msmtp – sends mail.</li>
+            <li>pass – securely stores user passwords encrypted with their GPG key.</li>
+        </ul>
+        <p>
+        Before using mw, be sure you have a GPG key pair (run <code>gpg --full-gen-key</code> if you do not).
+        The email used in the GPG key needn't have anything to do with the email accounts added by mw.
+        It is merely used to store passwords.
+        Once you have a key pair, run <code>pass init your@gpgpemail.com</code>.
+        </p>
+        <h3>Highly recommended</h3>
+        <ul>
+            <li>lynx – format HTML emails in neomutt.</li>
+            <li>notmuch – index all mail making it searchable.</li>
+            <li>abook – address book</li>
+        </ul>
+        <h3>Other programs to consider</h3>
+        <ul>
+            <li>mpop – for those few POP servers still remaining.</li>
+            <li>urlview – allows one to follow urls.</li>
+            <li>a cronjob manager – set mw to download mail at a particular interval.</li>
+        </ul>
+        <h2>Usage</h2>
+        <h3>mw</h3>
+
+<pre style="font-size:small"><code>mw: mutt-wizard, auto-configure email accounts for mutt
+including downloadable mail with `isync`.
+Main actions:
+  -a your@email.com     Add an email address
+  -l                    List email addresses configured
+  -d                    Remove an already added address
+  -D your@email.com     Force remove account without confirmation
+  -y your@email.com     Sync mail for account by name
+  -Y                    Sync mail for all accounts
+  -t number             Toggle automatic mailsync every <number> minutes
+  -T                    Toggle automatic mailsync
+  -r                    Reorder and set new default account
+Options allowed with -a:
+  -u    Account login name if not full address
+  -n    "Real name" to be on the email account
+  -i    IMAP/POP server address
+  -I    IMAP/POP server port
+  -s    SMTP server address
+  -S    SMTP server port
+  -x    Password for account (recommended to be in double quotes)
+  -p    Install for a Protonmail account.
+  -P    Add for a POP server instead of IMAP.
+  -X    Delete an account's local email too when deleting.
+  -o    Configure address, but keep mail online.
+  -f    Assume typical English mailboxes without attempting log-on.
+NOTE: Once at least one account is added, you can run
+`mbsync -a` to begin downloading mail.
+To change an account's password, run `pass edit your@email.com`.</number></code></pre>
+        <h3>neomutt</h3>
+        <p>
+        neomutt configured by mw will have vim-like bindings.
+        <code>o</code> downloads mail.
+        <code>ctrl-f</code> searches mail indexed by notmuch.
+        <code>m</code> to write mail, <code>r</code> to reply to a mail, <code>y</code> to send mail that is written.
+        </p>
+        <p>
+        See <code>man mw</code> for more information.
+        You may also press <code>?</code> when within neomutt to get a full list of key bindings.
+        </p>
+        <h2>Support</h2>
+        <p>
+        mw is a real time saver and opens up a new world of efficient email for people.
+        If you've benefited from mw, please donate Bitcoin or Monero:
+        </p>
+        <ul>
+            <li>BTC: <code style="word-wrap:break-word">bc1qacqfp36ffv9mafechmvk8f6r8qy4tual6rcm9p</code></li>
+            <li>XMR: <code style="word-wrap:break-word">8AzeWXhJvYJ1VeENHcNXCR1dLMgDALreZ1BdooZVjRKndv6myr3t1ue6C4ML2an5fWSpcP1sTDA9nKUMevkukDXG6chRjNv</code></li>
+        </ul>
+    </main>
+
+
+</body></html>

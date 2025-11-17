@@ -1,0 +1,229 @@
+<!DOCTYPE html><html><head>
+    <meta charset="utf-8">
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="google-site-verification" content="4_GsKqpLHd7qdV_WUjPdpO951DueHmRe2AqaQVHu80E">
+    <meta name="description" content="Hanami, formerly known as Lotus, is a Ruby web framework like Ruby on Rails. I'm really fond of it due to it's small footprint and architecture which guides you to well designed applications. Another piece of software I have high opinions of is Sidekiq, a simple and efficient job processing solution for Ruby. Now let me show you how to use them together.">
+
+    <title>Use Sidekiq With Hanami — Neuronen Schmiede</title>
+
+    <link href="/stylesheets/all-81583a9d.css" rel="stylesheet" type="text/css">
+    <script src="/javascripts/all-f2f3d8c9.js" type="text/javascript"></script>
+
+    <link rel="icon" href="/favicon.ico?201505020">
+    <link rel="alternate" type="application/atom+xml" title="Neuronen Schmiede" href="/feed.xml">
+  </head>
+
+  <body>
+    <header class="header">
+      <h1 class="header__introduction-text">
+        The <strong>Neuronen Schmiede</strong> concerns itself with topics related to software development. One focus are robust web applications.
+      </h1>
+
+      <ol class="header__links">
+        <li><a href="/">View all posts</a></li>
+        <li><a href="/feed.xml">RSS Feed</a></li>
+      </ol>
+    </header>
+
+    <main>
+        <article class="article">
+    <header class="article-header">
+      <h1 class="article-header__title article-header__title--without-link">Use Sidekiq With Hanami</h1>
+      <span class="article-header__information">
+        <time datetime="2016-01-20">January 20, 2016</time> — <a href="/blog/2016-use-sidekiq-with-hanami.html">Permalink</a>
+      </span>
+    </header>
+
+    <section class="article__content">
+      <p><a href="http://hanamirb.org/">Hanami</a>, formerly known as Lotus, is a Ruby web framework like Ruby on Rails. I'm really fond of it due to it's small footprint and architecture which guides you to well designed applications. Another piece of software I have high opinions of is <a href="http://sidekiq.org/">Sidekiq</a>, a simple and efficient job processing solution for Ruby. Now let me show you how to use them together.</p>
+
+<h2 id="setting-up-sidekiq-within-hanami">Setting up Sidekiq within Hanami</h2>
+
+<p>The first step is adding Sidekiq to your <code>Gemfile</code> and running <code>bundle install</code>. I also tend to generate binstubs for the gems I need to use outside the application code. To do this for Sidekiq run <code>bundle binstubs sidekiq</code>.</p>
+
+<figure>
+  <figcaption>
+    <p>Gemfile
+</p>
+  </figcaption>
+
+<pre class="highlight ruby"><code><span class="n">gem</span> <span class="s1">'sidekiq'</span><span class="p">,</span> <span class="s1">'~&gt; 4.0.2'</span>
+</code></pre>
+
+</figure>
+
+<p>Once Sidekiq is installed it's time to configure it. Mainly I want to specify which Redis URL it uses. For example when you are running both Production and Staging versions of your application on the same server and both access the same Redis instance you want them to not interfere with each other.</p>
+
+<p>Instead of using the namespace option I will use different Redis databases. (A default Redis instance comes with 16 of these.) The database is specified in the Redis URL which in turn is an environment variable. You can read more about this topic in an <a href="http://www.mikeperham.com/2015/09/24/storing-data-with-redis/">article by Mike Perham, the creator of Sidekiq</a>.</p>
+
+<p>To configure Sidekiq we create <code>config/sidekiq.rb</code> and setup both server and client. In addition we require our newly created file in <code>config/environment.rb</code> so it is actually available within Hanami.</p>
+
+<figure>
+  <figcaption>
+    <p>config/sidekiq.rb
+</p>
+  </figcaption>
+
+<pre class="highlight ruby"><code><span class="no">Sidekiq</span><span class="p">.</span><span class="nf">configure_server</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+  <span class="n">config</span><span class="p">.</span><span class="nf">redis</span> <span class="o">=</span> <span class="p">{</span> <span class="ss">url: </span><span class="no">ENV</span><span class="p">.</span><span class="nf">fetch</span><span class="p">(</span><span class="s2">"REDIS_URL"</span><span class="p">)</span> <span class="p">}</span>
+<span class="k">end</span>
+
+<span class="no">Sidekiq</span><span class="p">.</span><span class="nf">configure_client</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+  <span class="n">config</span><span class="p">.</span><span class="nf">redis</span> <span class="o">=</span> <span class="p">{</span> <span class="ss">url: </span><span class="no">ENV</span><span class="p">.</span><span class="nf">fetch</span><span class="p">(</span><span class="s2">"REDIS_URL"</span><span class="p">)</span> <span class="p">}</span>
+<span class="k">end</span>
+</code></pre>
+
+</figure>
+
+<figure>
+  <figcaption>
+    <p>config/environment.rb
+</p>
+  </figcaption>
+
+<pre class="highlight ruby"><code><span class="c1"># ...</span>
+<span class="nb">require_relative</span> <span class="s1">'../lib/your-application-name'</span>
+<span class="nb">require_relative</span> <span class="s1">'../apps/web/application'</span>
+<span class="nb">require_relative</span> <span class="s1">'./sidekiq'</span>
+<span class="c1"># ...</span>
+</code></pre>
+
+</figure>
+
+<p>Lastly add the <code>REDIS_URL</code> environment variable to your <code>dotenv</code> environment files and you are good to go. Remember to use different Redis databases for your environments. In this example I use the database <code>0</code> as you can see at the end of the URL.</p>
+
+<figure>
+  <figcaption>
+    <p>.env.<environment>
+</environment></p>
+  </figcaption>
+
+<pre class="highlight shell"><code><span class="nv">REDIS_URL</span><span class="o">=</span>redis://localhost:6379/0
+</code></pre>
+
+</figure>
+
+<h2 id="adding-sidekiq-workers-to-a-hanami-application">Adding Sidekiq workers to a Hanami application</h2>
+
+<p>If you are using Hanami you are probably already aware of the two important directories <code>lib/</code> and <code>apps/</code>. The first one houses your application core and the second contains your various delivery mechanisms like your API or web interface. Sidekiq workers are like entities at the core of your application. They are independent of the delivery mechanism and can be used in various places.</p>
+
+<p>Therefore I suggest we store our workers within the <code>lib/&lt;your-application-name/workers</code> directory. Let's add an example worker that does nothing but sleep.</p>
+
+<figure>
+  <figcaption>
+    <p>lib/&lt;your-application-name/workers/sleep_worker.rb
+</p>
+  </figcaption>
+
+<pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">SleepWorker</span>
+  <span class="kp">include</span> <span class="no">Sidekiq</span><span class="o">::</span><span class="no">Worker</span>
+
+  <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="n">workload</span><span class="p">)</span>
+    <span class="nb">sleep</span> <span class="n">workload</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+
+</figure>
+
+<p>Within our application we can now schedule background jobs as shown in the Sidekiq manual. Just call <code>SleepWorker.perform_async(10)</code> and you are done. At this point we are able to schedule jobs, but that's it. Sidekiq stores them happily in Redis but never looks at them again. To change this we have to run Sidekiq along our web server.</p>
+
+<h2 id="running-sidekiq-and-hanami">Running Sidekiq and Hanami</h2>
+
+<p>In development I use <a href="http://ddollar.github.io/foreman/">Foreman</a> to manage all the different pieces of an application. In our case that would be a web server and Sidekiq. The <code>Procfile</code> contains an entry for each piece so everything can be started and stopped with a single command. You can see we are using the <code>-r</code> flag to tell Sidekiq to require our applications Hanami environment file. This makes sure Sidekiq is correctly configured and the application core is loaded.</p>
+
+<p>You can start everything with <code>foreman start</code> and watch how your workers get busy.</p>
+
+<figure>
+  <figcaption>
+    <p>Procfile
+</p>
+  </figcaption>
+
+<pre class="highlight shell"><code>app: bin/hanami server --host 127.0.0.1
+sidekiq: bin/sidekiq -e development -r ./config/environment.rb
+</code></pre>
+
+</figure>
+
+<h2 id="mounting-the-sidekiq-web-dashboard-in-hanami">Mounting the Sidekiq web dashboard in Hanami</h2>
+
+<p>Sidekiq comes with <code>Sidekiq::Web</code> a nice web interface that allows a certain amount of introspection. In order to run it two things are necessary. First add Sinatra to your <code>Gemfile</code> and do not require it, Sidekiq itself will only require the parts it needs.</p>
+
+<figure>
+  <figcaption>
+    <p>Gemfile
+</p>
+  </figcaption>
+
+<pre class="highlight ruby"><code><span class="n">gem</span> <span class="s1">'sinatra'</span><span class="p">,</span> <span class="s1">'~&gt; 1.4.6'</span><span class="p">,</span> <span class="ss">require: </span><span class="kp">false</span>
+</code></pre>
+
+</figure>
+
+<p>In the second step you mount <code>Sidekiq::Web</code> to make it available. At the moment <code>config.ru</code> seems to be the only place where it works<span class="bigfoot-footnote__container"><a class="bigfoot-footnote__button" id="fnref:1" data-footnote-number="1" data-footnote-identifier="1" alt="See Footnote 1" rel="footnote" data-bigfoot-footnote="<p>Using Hanamis <code>mount</code> method results in a mounted Sidekiq web interface where all URL paths miss a critical segment. Which leads to wrong links and missing assets like stylesheets and scripts. This happens because the <code>SCRIPT_NAME</code> environment variable is not set and <code>Sidekiq::Web</code> uses it to construct paths. I'm still investigating the best way to solve this.</p>">1</a></span><sup id="fnref:1" data-footnote-backlink-ref="fnref:1" data-footnote-ref="#fn:1" class="footnote-print-only"><a href="#fn:1" class="footnote">1</a></sup>.</p>
+
+<figure>
+  <figcaption>
+    <p>config.ru
+</p>
+  </figcaption>
+
+<pre class="highlight ruby"><code><span class="nb">require</span> <span class="s1">'./config/environment'</span>
+<span class="nb">require</span> <span class="s1">'sidekiq/web'</span>
+
+<span class="n">map</span> <span class="s1">'/admin/sidekiq'</span> <span class="k">do</span>
+  <span class="n">use</span> <span class="no">Sidekiq</span><span class="o">::</span><span class="no">Web</span>
+<span class="k">end</span>
+
+<span class="n">run</span> <span class="no">Hanami</span><span class="o">::</span><span class="no">Container</span><span class="p">.</span><span class="nf">new</span>
+</code></pre>
+
+</figure>
+
+<p>Once you updated your <code>config.ru</code> you can view the Sidekiq web dashboard at <code>localhost:2300/admin/sidekiq/</code>. Be aware that the Sidekiq web dashboard is not protected with any kind of authentication. Anybody can visit the URL and mess with your jobs!</p>
+
+<p><strong>So please make sure to use somekind of authentication like <code>Rack::Auth::Basic</code> in production.</strong></p>
+
+<div class="footnotes">
+  <ol>
+    <li id="fn:1" class="footnote-processed">
+      <p>Using Hanamis <code>mount</code> method results in a mounted Sidekiq web interface where all URL paths miss a critical segment. Which leads to wrong links and missing assets like stylesheets and scripts. This happens because the <code>SCRIPT_NAME</code> environment variable is not set and <code>Sidekiq::Web</code> uses it to construct paths. I'm still investigating the best way to solve this. <a href="#fnref:1" class="reversefootnote">↩</a></p>
+    </li>
+  </ol>
+</div>
+
+    </section>
+  </article>
+
+    </main>
+
+    <footer class="footer">
+      <div class="footer__about-text">
+        <div class="about-me">
+          <img alt="David Strauß" class="about-me__avatar" src="/images/david-strauss-cbdc087c.jpg">
+
+          <div class="about-me__description">
+
+            <p>
+              I'm <strong>David Strauß</strong> and I have the urge to understand technical topics. My posts are the attempt to counteract the trend of superficiality.
+            </p>
+
+            <p>
+              Photograph by <a href="http://www.gregorsams.at/">Gregor Sams</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <ol class="footer__links">
+        <li><a href="https://twitter.com/stravid">@stravid</a></li>
+        <li><a href="mailto:david@strauss.io">david@strauss.io</a></li>
+        <li><a href="/impressum.html">Impressum</a></li>
+        <li><a href="/datenschutzerklaerung.html">Datenschutzerklärung</a></li>
+      </ol>
+    </footer>
+  
+
+</body></html>

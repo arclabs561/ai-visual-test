@@ -1,0 +1,613 @@
+<!DOCTYPE html><html lang="en" prefix="og: http://ogp.me/ns#"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover">
+
+    <title>Using Laravel Dusk outside of Tests to upload Files • stefanzweifel.io</title>
+
+<meta name="theme-color" content="#FFFFFF">
+<meta name="robots" content="index,follow">
+<meta name="google-site-verification" content="LIcRaaOJ4Pzt395oKRAn1KhZrIJZ11CWzoBEyNoOHS4">
+
+<meta property="og:title" content="Using Laravel Dusk outside of Tests to upload Files">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="stefanzweifel.io">
+<meta property="og:url" content="https://stefanzweifel.io/posts/2021/09/26/using-laravel-dusk-outside-of-tests-to-upload-files">
+<meta property="og:image" content="https://stefanzweifel.io/assets/images/open-graph-image-2020.jpg">
+
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@_stefanzweifel">
+<meta name="twitter:creator" content="@_stefanzweifel">
+<meta name="twitter:title" content="Using Laravel Dusk outside of Tests to upload Files">
+<meta name="twitter:image" content="https://stefanzweifel.io/assets/images/open-graph-image-2020.jpg">
+        <meta property="og:description" content="Laravel Dusk can not just be used to test your application, but also to automate dedious work. This article gives you a quick overview, how we have done this at work.">
+    <meta property="og:article:author" content="https://twitter.com/_stefanzweifel">
+    <meta property="og:article:published_time" content="2021-09-26T13:50:08+00:00">
+
+    <meta name="description" content="Laravel Dusk can not just be used to test your application, but also to automate dedious work. This article gives you a quick overview, how we have done this at work.">
+    <meta name="twitter:description" content="Laravel Dusk can not just be used to test your application, but also to automate dedious work. This article gives you a quick overview, how we have done this at work.">
+
+    <link rel="preconnect" href="//stats.wnx.ch">
+    <link rel="dns-prefetch" href="//stats.wnx.ch">
+
+    <link rel="me" href="https://twitter.com/_stefanzweifel">
+    <link rel="me" href="https://github.com/stefanzweifel">
+
+    <link rel="webmention" href="https://webmention.io/stefanzweifel.io/webmention">
+    <link rel="pingback" href="https://webmention.io/stefanzweifel.io/xmlrpc">
+
+    <link rel="canonical" href="https://stefanzweifel.io/posts/2021/09/26/using-laravel-dusk-outside-of-tests-to-upload-files">
+    <link rel="author" href="https://stefanzweifel.io/humans.txt">
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🐼</text></svg>">
+
+    <link rel="alternate" title="XML Feed" type="application/rss+xml" href="https://stefanzweifel.io/rss.xml">
+
+    <link rel="stylesheet" type="text/css" href="/assets/build/css/main.css?id=6de7196dbfc43e5afe39">
+
+    
+
+    <script async="" src="//stats.wnx.ch/tracker.js" id="fathom-script"></script><script type="application/ld+json">{"@context": "http://schema.org","@type": "CreativeWork","author": "Stefan Zweifel"}</script>
+
+    
+
+            <!-- Fathom - simple website analytics - https://github.com/usefathom/fathom -->
+        <script>
+        (function(f, a, t, h, o, m){
+            a[h]=a[h]||function(){
+                (a[h].q=a[h].q||[]).push(arguments)
+            };
+            o=f.createElement('script'),
+            m=f.getElementsByTagName('script')[0];
+            o.async=1; o.src=t; o.id='fathom-script';
+            m.parentNode.insertBefore(o,m)
+        })(document, window, '//stats.wnx.ch/tracker.js', 'fathom');
+        fathom('set', 'siteId', 'BSSXI');
+        fathom('trackPageview');
+        </script>
+        <!-- / Fathom -->
+    </head>
+<body class="bg-white flex flex-col justify-between font-sans text-gray-900">
+
+    <div class="absolute h-1 w-full top-0">
+        <div class="overflow-hidden bg-blue-100 h-1 grid grid-cols-12">
+            <div class="bg-red-500 h-12 transform rotate-12 -mt-4 -mx-6"></div>
+            <div class="bg-orange-500 h-12 transform rotate-12 -mt-4 -mx-6"></div>
+            <div class="bg-yellow-500 h-12 transform rotate-12 -mt-4 -mx-6"></div>
+            <div class="bg-green-400 h-12 transform rotate-12 -mt-4 -mx-6"></div>
+            <div class="bg-green-500 h-12 transform rotate-12 -mt-4 -mx-6"></div>
+            <div class="bg-lime-500 h-12 transform rotate-12 -mt-4 -mx-6"></div>
+            <div class="bg-blue-400 h-12 transform rotate-12 -mt-4 -mx-6"></div>
+            <div class="bg-blue-500 h-12 transform rotate-12 -mt-4 -mx-6"></div>
+            <div class="bg-blue-600 h-12 transform rotate-12 -mt-4 -mx-6"></div>
+            <div class="bg-indigo-600 h-12 transform rotate-12 -mt-4 -mx-6"></div>
+            <div class="bg-purple-400 h-12 transform rotate-12 -mt-4 -mx-6"></div>
+            <div class="bg-purple-500 h-12 transform rotate-12 -mt-4 -mx-6"></div>
+        </div>
+
+    </div>
+
+
+    <a class="btn--skip-content rounded-br focus:bg-indigo-600 text-white" href="#skip-content-target" aria-hidden="true">
+        Skip to content ↓
+    </a>
+
+    <a href="https://stefanzweifel.io" class="hidden" rel="me">stefanzweifel.io</a>
+
+    <div class="container max-w-2xl mx-auto">
+
+
+        <header>
+
+            <nav class="flex flex-col sm:flex-row justify-between mb-12 sm:mb-8 mt-8 sm:mt-8 px-6 md:px-0" role="navigation">
+
+                
+
+                <div>
+                    <a href="/" class="link-pill text-gray-900 text-lg no-underline font-bold">Stefan Zweifel</a>
+                </div>
+
+                <ul class="flex mt-2 sm:mt-0 space-x-4">
+                    <li>
+                        <a href="/about/" title="Learn more about me." class="py-px px-1 rounded no-underline text-gray-900 bg-transparent hover:bg-gray-300">About</a>
+                    </li>
+                    <li>
+                        <a href="/posts/" title="Essays I've written over the last years." class="py-px px-1 rounded no-underline text-gray-900 bg-transparent hover:bg-gray-300">Articles</a>
+                    </li>
+                    <li>
+                        <a href="/uses/" title="Software and Hardware I use everyday." class="py-px px-1 rounded no-underline text-gray-900 bg-transparent hover:bg-gray-300">Uses</a>
+                    </li>
+                    <li>
+                        <a href="/reading/" title="A list of books I've read over the last years." class="py-px px-1 rounded no-underline text-gray-900 bg-transparent hover:bg-gray-300">Reading</a>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+
+        <div id="skip-content-target" class="hidden" tabindex="-1"></div>
+        <main id="main-content" class="mt-12 md:mt-24 px-6 md:px-0">
+            <div class="">
+                
+    <article class="h-entry">
+         <h1 class="p-name mb-3 text-3xl sm:text-4xl md:text-5xl font-bold leading-none lg:max-w-90">Using Laravel Dusk outside of Tests to upload Files</h1>
+
+        <footer class="text-sm text-gray-700 font-semibold mb-4">
+            <time class="dt-published" title="26.09.2021" datetime="2021-09-26T13:50:08+00:00">
+                September 26, 2021
+            </time>
+
+                            •
+                1 min read
+                    </footer>
+
+        
+        
+        <div class="e-content prose">
+            <p>Recently I asked on Twitter, if anyone had experience with running Laravel Dusk outside of a test environment.
+<a href="https://twitter.com/paulredmond">Paul Redmond</a> linked to <a href="https://laravel-news.com/automatically-making-monthly-payments-with-dusk">the infamous Laravel News article</a>, where <a href="https://twitter.com/jordankdalton">Jordan Dalton</a> automated his monthly payments using Laravel Dusk.</p>
+<p>My public call came from a similar need. At work, we needed to automate a file upload. Not that complicated you might think. But the client uses a proprietary software to handle those files. There are no SFTP credentials or APIs to use.<br>
+Files have to be uploaded by signing in to a website, clicking through a folder hirarchy and then uploading the respective file.</p>
+<p>At first, we did this manually. A few weeks later the cadense increased to daily uploads, and we started to think about automating this step.</p>
+<p>In his response, Paul also shared links to <a href="https://github.com/paulredmond/scraping-with-laravel-dusk">a project</a> he used for a presentation on data scraping. It was exactly what I was looking for.</p>
+<h2>The Laravel Way<a id="content-the-laravel-way" href="#content-the-laravel-way" class="heading-permalink" aria-hidden="true" title="Permalink">#</a></h2>
+<p>Our solution is based on a fresh new Laravel application. We've added a <code>Browser</code>-class similar to the one Paul shared on Twitter.<br>
+A scheduled Artisan command looks for new files to upload, boots the Browser and uploads the files through the web UI.</p>
+<p>Here are both our <code>Browser</code> and Artisan command implementations.</p>
+<pre class="shiki" style="background-color: #212539"><code><span class="line"><span style="color: #BAACFF">&lt;</span><span style="color: #7FDAFF">?</span><span style="color: #FFDF9B">php</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #BAACFF">namespace</span><span style="color: #E4F3FA"> </span><span style="color: #FFDB8E">App</span><span style="color: #7FDAFF">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #BAACFF">use</span><span style="color: #FFDB8E"> Closure</span><span style="color: #7FDAFF">;</span></span>
+<span class="line"><span style="color: #BAACFF">use</span><span style="color: #FFDB8E"> Exception</span><span style="color: #7FDAFF">;</span></span>
+<span class="line"><span style="color: #BAACFF">use</span><span style="color: #FFDB8E"> Facebook</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">WebDriver</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">Chrome</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">ChromeOptions</span><span style="color: #7FDAFF">;</span></span>
+<span class="line"><span style="color: #BAACFF">use</span><span style="color: #FFDB8E"> Facebook</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">WebDriver</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">Remote</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">DesiredCapabilities</span><span style="color: #7FDAFF">;</span></span>
+<span class="line"><span style="color: #BAACFF">use</span><span style="color: #FFDB8E"> Facebook</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">WebDriver</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">Remote</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">RemoteWebDriver</span><span style="color: #7FDAFF">;</span></span>
+<span class="line"><span style="color: #BAACFF">use</span><span style="color: #FFDB8E"> Laravel</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">Dusk</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">Chrome</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">ChromeProcess</span><span style="color: #7FDAFF">;</span></span>
+<span class="line"><span style="color: #BAACFF">use</span><span style="color: #FFDB8E"> Laravel</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">Dusk</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">Chrome</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">SupportsChrome</span><span style="color: #7FDAFF">;</span></span>
+<span class="line"><span style="color: #BAACFF">use</span><span style="color: #FFDB8E"> Symfony</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">Component</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">Process</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">Process</span><span style="color: #7FDAFF">;</span></span>
+<span class="line"><span style="color: #BAACFF">use</span><span style="color: #FFDB8E"> Throwable</span><span style="color: #7FDAFF">;</span></span>
+<span class="line"><span style="color: #BAACFF">use</span><span style="color: #FFDB8E"> Laravel</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">Dusk</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">Browser </span><span style="color: #BAACFF">as</span><span style="color: #FFDB8E"> DuskBrowser</span><span style="color: #7FDAFF">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #BAACFF">class</span><span style="color: #E4F3FA"> </span><span style="color: #FFDB8E">Browser</span></span>
+<span class="line"><span style="color: #7FDAFF">{</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7E8EDA">/**</span></span>
+<span class="line"><span style="color: #7E8EDA">     * </span><span style="color: #BAACFF">@var</span><span style="color: #7E8EDA"> </span><span style="color: #FFDB8E">DuskBrowser</span><span style="color: #7FDAFF">|</span><span style="color: #BAACFF">null</span></span>
+<span class="line"><span style="color: #7E8EDA">     */</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #BAACFF">public</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">$</span><span style="color: #E4F3FA">browser</span><span style="color: #7FDAFF">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7E8EDA">/**</span></span>
+<span class="line"><span style="color: #7E8EDA">     * </span><span style="color: #BAACFF">@var</span><span style="color: #7E8EDA"> </span><span style="color: #FFDB8E">Process</span></span>
+<span class="line"><span style="color: #7E8EDA">     */</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #BAACFF">public</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">$</span><span style="color: #E4F3FA">process</span><span style="color: #7FDAFF">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #BAACFF">public</span><span style="color: #E4F3FA"> </span><span style="color: #BAACFF">function</span><span style="color: #E4F3FA"> </span><span style="color: #70B0FF">startProcess</span><span style="color: #7FDAFF">()</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7FDAFF">{</span></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #7FDAFF">$</span><span style="color: #FF757F">this</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #A7C6E8">process</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">=</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">(</span><span style="color: #BAACFF">new</span><span style="color: #E4F3FA"> </span><span style="color: #FFDB8E">ChromeProcess</span><span style="color: #7FDAFF">)-&gt;</span><span style="color: #70B0FF">toProcess</span><span style="color: #7FDAFF">();</span></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #7FDAFF">$</span><span style="color: #FF757F">this</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #A7C6E8">process</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">start</span><span style="color: #7FDAFF">();</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7FDAFF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #BAACFF">public</span><span style="color: #E4F3FA"> </span><span style="color: #BAACFF">function</span><span style="color: #E4F3FA"> </span><span style="color: #70B0FF">quit</span><span style="color: #7FDAFF">()</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7FDAFF">{</span></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #7FDAFF">$</span><span style="color: #FF757F">this</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #A7C6E8">browser</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">quit</span><span style="color: #7FDAFF">();</span></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #7FDAFF">$</span><span style="color: #FF757F">this</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #A7C6E8">process</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">stop</span><span style="color: #7FDAFF">();</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7FDAFF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7E8EDA">/**</span></span>
+<span class="line"><span style="color: #7E8EDA">     * </span><span style="color: #BAACFF">@param</span><span style="color: #7E8EDA"> </span><span style="color: #FFDB8E">Closure</span><span style="color: #7E8EDA"> $callback</span></span>
+<span class="line"><span style="color: #7E8EDA">     */</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #BAACFF">public</span><span style="color: #E4F3FA"> </span><span style="color: #BAACFF">function</span><span style="color: #E4F3FA"> </span><span style="color: #70B0FF">browse</span><span style="color: #7FDAFF">(</span><span style="color: #FFDB8E">Closure</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">$</span><span style="color: #E4F3FA">callback</span><span style="color: #7FDAFF">)</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7FDAFF">{</span></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #7FDAFF">$</span><span style="color: #FF757F">this</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">startProcess</span><span style="color: #7FDAFF">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #BAACFF">if</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">(</span><span style="color: #BAACFF">!</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">$</span><span style="color: #FF757F">this</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #A7C6E8">browser</span><span style="color: #7FDAFF">)</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">{</span></span>
+<span class="line"><span style="color: #E4F3FA">            </span><span style="color: #7FDAFF">$</span><span style="color: #FF757F">this</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #A7C6E8">browser</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">=</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">$</span><span style="color: #FF757F">this</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">newBrowser</span><span style="color: #7FDAFF">($</span><span style="color: #FF757F">this</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">createWebDriver</span><span style="color: #7FDAFF">());</span></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #7FDAFF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #7FDAFF">$</span><span style="color: #E4F3FA">callback</span><span style="color: #7FDAFF">($</span><span style="color: #FF757F">this</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #A7C6E8">browser</span><span style="color: #7FDAFF">);</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7FDAFF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7E8EDA">/**</span></span>
+<span class="line"><span style="color: #7E8EDA">     * </span><span style="color: #BAACFF">@throws</span><span style="color: #7E8EDA"> </span><span style="color: #FFDB8E">Exception</span></span>
+<span class="line"><span style="color: #7E8EDA">     */</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #BAACFF">function</span><span style="color: #E4F3FA"> </span><span style="color: #34D3FB">__destruct</span><span style="color: #7FDAFF">()</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7FDAFF">{</span></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #BAACFF">if</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">($</span><span style="color: #FF757F">this</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #A7C6E8">browser</span><span style="color: #7FDAFF">)</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">{</span></span>
+<span class="line"><span style="color: #E4F3FA">            </span><span style="color: #7FDAFF">$</span><span style="color: #FF757F">this</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">closeBrowser</span><span style="color: #7FDAFF">();</span></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #7FDAFF">}</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7FDAFF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7E8EDA">/**</span></span>
+<span class="line"><span style="color: #7E8EDA">     * </span><span style="color: #BAACFF">@throws</span><span style="color: #7E8EDA"> </span><span style="color: #FFDB8E">Exception</span></span>
+<span class="line"><span style="color: #7E8EDA">     */</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #BAACFF">protected</span><span style="color: #E4F3FA"> </span><span style="color: #BAACFF">function</span><span style="color: #E4F3FA"> </span><span style="color: #70B0FF">closeBrowser</span><span style="color: #7FDAFF">():</span><span style="color: #E4F3FA"> </span><span style="color: #BAACFF">void</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7FDAFF">{</span></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #BAACFF">if</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">(</span><span style="color: #BAACFF">!</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">$</span><span style="color: #FF757F">this</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #A7C6E8">browser</span><span style="color: #7FDAFF">)</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">{</span></span>
+<span class="line"><span style="color: #E4F3FA">            </span><span style="color: #BAACFF">throw</span><span style="color: #E4F3FA"> </span><span style="color: #BAACFF">new</span><span style="color: #E4F3FA"> </span><span style="color: #FFDB8E">Exception</span><span style="color: #7FDAFF">(</span><span style="color: #7FDAFF">"</span><span style="color: #7AF8CA">The browser hasn't been initialized yet</span><span style="color: #7FDAFF">"</span><span style="color: #7FDAFF">);</span></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #7FDAFF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #7FDAFF">$</span><span style="color: #FF757F">this</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #A7C6E8">browser</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">quit</span><span style="color: #7FDAFF">();</span></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #7FDAFF">$</span><span style="color: #FF757F">this</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #A7C6E8">browser</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">=</span><span style="color: #E4F3FA"> </span><span style="color: #FF8A8A">null</span><span style="color: #7FDAFF">;</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7FDAFF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #BAACFF">protected</span><span style="color: #E4F3FA"> </span><span style="color: #BAACFF">function</span><span style="color: #E4F3FA"> </span><span style="color: #70B0FF">newBrowser</span><span style="color: #7FDAFF">($</span><span style="color: #E4F3FA">driver</span><span style="color: #7FDAFF">):</span><span style="color: #E4F3FA"> </span><span style="color: #FFDB8E">DuskBrowser</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7FDAFF">{</span></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #BAACFF">return</span><span style="color: #E4F3FA"> </span><span style="color: #BAACFF">new</span><span style="color: #E4F3FA"> </span><span style="color: #FFDB8E">DuskBrowser</span><span style="color: #7FDAFF">($</span><span style="color: #E4F3FA">driver</span><span style="color: #7FDAFF">);</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7FDAFF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #BAACFF">protected</span><span style="color: #E4F3FA"> </span><span style="color: #BAACFF">function</span><span style="color: #E4F3FA"> </span><span style="color: #70B0FF">createWebDriver</span><span style="color: #7FDAFF">():</span><span style="color: #E4F3FA"> </span><span style="color: #FFDB8E">RemoteWebDriver</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7FDAFF">{</span></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #BAACFF">return</span><span style="color: #E4F3FA"> </span><span style="color: #70B0FF">retry</span><span style="color: #7FDAFF">(</span><span style="color: #FF9668">5</span><span style="color: #7FDAFF">,</span><span style="color: #70B0FF"> </span><span style="color: #BAACFF">function</span><span style="color: #70B0FF"> </span><span style="color: #7FDAFF">()</span><span style="color: #70B0FF"> </span><span style="color: #7FDAFF">{</span></span>
+<span class="line"><span style="color: #70B0FF">            </span><span style="color: #BAACFF">return</span><span style="color: #70B0FF"> </span><span style="color: #7FDAFF">$</span><span style="color: #FF757F">this</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">driver</span><span style="color: #7FDAFF">();</span></span>
+<span class="line"><span style="color: #70B0FF">        </span><span style="color: #7FDAFF">},</span><span style="color: #70B0FF"> </span><span style="color: #FF9668">50</span><span style="color: #7FDAFF">);</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7FDAFF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #BAACFF">protected</span><span style="color: #E4F3FA"> </span><span style="color: #BAACFF">function</span><span style="color: #E4F3FA"> </span><span style="color: #70B0FF">driver</span><span style="color: #7FDAFF">():</span><span style="color: #E4F3FA"> </span><span style="color: #FFDB8E">RemoteWebDriver</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7FDAFF">{</span></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #7FDAFF">$</span><span style="color: #E4F3FA">options </span><span style="color: #7FDAFF">=</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">(</span><span style="color: #BAACFF">new</span><span style="color: #E4F3FA"> </span><span style="color: #FFDB8E">ChromeOptions</span><span style="color: #7FDAFF">)-&gt;</span><span style="color: #70B0FF">addArguments</span><span style="color: #7FDAFF">(</span><span style="color: #70B0FF">collect</span><span style="color: #7FDAFF">([</span></span>
+<span class="line"><span style="color: #70B0FF">            </span><span style="color: #7FDAFF">'</span><span style="color: #7AF8CA">--window-size=2000,800</span><span style="color: #7FDAFF">'</span><span style="color: #7FDAFF">,</span></span>
+<span class="line"><span style="color: #70B0FF">            </span><span style="color: #7FDAFF">'</span><span style="color: #7AF8CA">--disable-gpu</span><span style="color: #7FDAFF">'</span><span style="color: #7FDAFF">,</span></span>
+<span class="line"><span style="color: #70B0FF">            </span><span style="color: #7FDAFF">'</span><span style="color: #7AF8CA">--headless</span><span style="color: #7FDAFF">'</span><span style="color: #7FDAFF">,</span></span>
+<span class="line"><span style="color: #70B0FF">        </span><span style="color: #7FDAFF">])-&gt;</span><span style="color: #70B0FF">all</span><span style="color: #7FDAFF">());</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #BAACFF">return</span><span style="color: #E4F3FA"> </span><span style="color: #FFDB8E">RemoteWebDriver</span><span style="color: #7FDAFF">::</span><span style="color: #70B0FF">create</span><span style="color: #7FDAFF">(</span></span>
+<span class="line"><span style="color: #E4F3FA">            </span><span style="color: #7FDAFF">'</span><span style="color: #7AF8CA">http://localhost:9515</span><span style="color: #7FDAFF">'</span><span style="color: #7FDAFF">,</span></span>
+<span class="line"><span style="color: #E4F3FA">            </span><span style="color: #FFDB8E">DesiredCapabilities</span><span style="color: #7FDAFF">::</span><span style="color: #70B0FF">chrome</span><span style="color: #7FDAFF">()-&gt;</span><span style="color: #70B0FF">setCapability</span><span style="color: #7FDAFF">(</span></span>
+<span class="line"><span style="color: #E4F3FA">                </span><span style="color: #FFDB8E">ChromeOptions</span><span style="color: #7FDAFF">::</span><span style="color: #E4F3FA">CAPABILITY</span><span style="color: #7FDAFF">,</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">$</span><span style="color: #E4F3FA">options</span></span>
+<span class="line"><span style="color: #E4F3FA">            </span><span style="color: #7FDAFF">)</span></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #7FDAFF">);</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7FDAFF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #7FDAFF">}</span></span>
+<span class="line"></span></code></pre>
+<pre class="shiki" style="background-color: #212539"><code><span class="line"><span style="color: #BAACFF">&lt;</span><span style="color: #7FDAFF">?</span><span style="color: #FFDF9B">php</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #BAACFF">namespace</span><span style="color: #E4F3FA"> </span><span style="color: #FFDB8E">App</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">Console</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">Commands</span><span style="color: #7FDAFF">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #BAACFF">use</span><span style="color: #FFDB8E"> App</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">Browser</span><span style="color: #7FDAFF">;</span></span>
+<span class="line"><span style="color: #BAACFF">use</span><span style="color: #FFDB8E"> App</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">Notifications</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">NoFilesFoundNotification</span><span style="color: #7FDAFF">;</span></span>
+<span class="line"><span style="color: #BAACFF">use</span><span style="color: #FFDB8E"> App</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">Notifications</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">UploadFailedNotification</span><span style="color: #7FDAFF">;</span></span>
+<span class="line"><span style="color: #BAACFF">use</span><span style="color: #FFDB8E"> App</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">Notifications</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">UploadSucceededNotification</span><span style="color: #7FDAFF">;</span></span>
+<span class="line"><span style="color: #BAACFF">use</span><span style="color: #FFDB8E"> Illuminate</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">Console</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">Command</span><span style="color: #7FDAFF">;</span></span>
+<span class="line"><span style="color: #BAACFF">use</span><span style="color: #FFDB8E"> Illuminate</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">Support</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">Collection</span><span style="color: #7FDAFF">;</span></span>
+<span class="line"><span style="color: #BAACFF">use</span><span style="color: #FFDB8E"> Illuminate</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">Support</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">Facades</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">Notification</span><span style="color: #7FDAFF">;</span></span>
+<span class="line"><span style="color: #BAACFF">use</span><span style="color: #FFDB8E"> Illuminate</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">Support</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">Facades</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">Storage</span><span style="color: #7FDAFF">;</span></span>
+<span class="line"><span style="color: #BAACFF">use</span><span style="color: #FFDB8E"> Illuminate</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">Support</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">Str</span><span style="color: #7FDAFF">;</span></span>
+<span class="line"><span style="color: #BAACFF">use</span><span style="color: #FFDB8E"> Throwable</span><span style="color: #7FDAFF">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #BAACFF">class</span><span style="color: #E4F3FA"> </span><span style="color: #FFDB8E">UploadNewFilesCommand</span><span style="color: #E4F3FA"> </span><span style="color: #BAACFF">extends</span><span style="color: #E4F3FA"> </span><span style="color: #7AF8CA">Command</span></span>
+<span class="line"><span style="color: #7FDAFF">{</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #BAACFF">protected</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">$</span><span style="color: #E4F3FA">signature </span><span style="color: #7FDAFF">=</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">'</span><span style="color: #7AF8CA">app:upload-new-files</span><span style="color: #7FDAFF">'</span><span style="color: #7FDAFF">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #BAACFF">protected</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">$</span><span style="color: #E4F3FA">description </span><span style="color: #7FDAFF">=</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">'</span><span style="color: #7AF8CA">Boot a Browser and Upload new Files</span><span style="color: #7FDAFF">'</span><span style="color: #7FDAFF">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #BAACFF">private</span><span style="color: #E4F3FA"> </span><span style="color: #FFDB8E">Browser</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">$</span><span style="color: #E4F3FA">browser</span><span style="color: #7FDAFF">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #BAACFF">public</span><span style="color: #E4F3FA"> </span><span style="color: #BAACFF">function</span><span style="color: #E4F3FA"> </span><span style="color: #34D3FB">__construct</span><span style="color: #7FDAFF">(</span><span style="color: #FFDB8E">Browser</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">$</span><span style="color: #E4F3FA">browser</span><span style="color: #7FDAFF">)</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7FDAFF">{</span></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #BAACFF">parent</span><span style="color: #7FDAFF">::</span><span style="color: #70B0FF">__construct</span><span style="color: #7FDAFF">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #7FDAFF">$</span><span style="color: #FF757F">this</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #A7C6E8">browser</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">=</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">$</span><span style="color: #E4F3FA">browser</span><span style="color: #7FDAFF">;</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7FDAFF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #BAACFF">public</span><span style="color: #E4F3FA"> </span><span style="color: #BAACFF">function</span><span style="color: #E4F3FA"> </span><span style="color: #70B0FF">handle</span><span style="color: #7FDAFF">()</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7FDAFF">{</span></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #7FDAFF">$</span><span style="color: #E4F3FA">files </span><span style="color: #7FDAFF">=</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">$</span><span style="color: #FF757F">this</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">getNewAndNotUploadedFiles</span><span style="color: #7FDAFF">();</span></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #7FDAFF">$</span><span style="color: #FF757F">this</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">info</span><span style="color: #7FDAFF">(</span><span style="color: #7FDAFF">"{$</span><span style="color: #E4F3FA">files</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">count</span><span style="color: #7FDAFF">()}</span><span style="color: #7AF8CA"> Files found to upload</span><span style="color: #7FDAFF">"</span><span style="color: #7FDAFF">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #BAACFF">if</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">($</span><span style="color: #E4F3FA">files</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">count</span><span style="color: #7FDAFF">()</span><span style="color: #E4F3FA"> </span><span style="color: #BAACFF">===</span><span style="color: #E4F3FA"> </span><span style="color: #FF9668">0</span><span style="color: #7FDAFF">)</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">{</span></span>
+<span class="line"><span style="color: #E4F3FA">            </span><span style="color: #7FDAFF">$</span><span style="color: #FF757F">this</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">notifyDevelopersAboutNoFiles</span><span style="color: #7FDAFF">();</span></span>
+<span class="line"><span style="color: #E4F3FA">            </span><span style="color: #BAACFF">return</span><span style="color: #E4F3FA"> </span><span style="color: #FF9668">0</span><span style="color: #7FDAFF">;</span></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #7FDAFF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #7FDAFF">$</span><span style="color: #E4F3FA">files</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">each</span><span style="color: #7FDAFF">(</span><span style="color: #BAACFF">function</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">(</span><span style="color: #BAACFF">string</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">$</span><span style="color: #E4F3FA">file</span><span style="color: #7FDAFF">)</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">{</span></span>
+<span class="line"><span style="color: #E4F3FA">            </span><span style="color: #7FDAFF">$</span><span style="color: #FF757F">this</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">info</span><span style="color: #7FDAFF">(</span><span style="color: #7FDAFF">"</span><span style="color: #7AF8CA">Start uploading </span><span style="color: #7FDAFF">{$</span><span style="color: #E4F3FA">file</span><span style="color: #7FDAFF">}</span><span style="color: #7AF8CA"> …</span><span style="color: #7FDAFF">"</span><span style="color: #7FDAFF">);</span></span>
+<span class="line"><span style="color: #E4F3FA">            </span><span style="color: #7FDAFF">$</span><span style="color: #FF757F">this</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">uploadFile</span><span style="color: #7FDAFF">($</span><span style="color: #E4F3FA">file</span><span style="color: #7FDAFF">);</span></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #7FDAFF">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #7FDAFF">$</span><span style="color: #FF757F">this</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #A7C6E8">browser</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">quit</span><span style="color: #7FDAFF">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #BAACFF">return</span><span style="color: #E4F3FA"> </span><span style="color: #FF9668">0</span><span style="color: #7FDAFF">;</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7FDAFF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #BAACFF">private</span><span style="color: #E4F3FA"> </span><span style="color: #BAACFF">function</span><span style="color: #E4F3FA"> </span><span style="color: #70B0FF">getNewAndNotUploadedFiles</span><span style="color: #7FDAFF">():</span><span style="color: #E4F3FA"> </span><span style="color: #FFDB8E">Collection</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7FDAFF">{</span></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #BAACFF">return</span><span style="color: #E4F3FA"> </span><span style="color: #70B0FF">collect</span><span style="color: #7FDAFF">(</span><span style="color: #FFDB8E">Storage</span><span style="color: #7FDAFF">::</span><span style="color: #70B0FF">disk</span><span style="color: #7FDAFF">(</span><span style="color: #7FDAFF">'</span><span style="color: #7AF8CA">sftp</span><span style="color: #7FDAFF">'</span><span style="color: #7FDAFF">)-&gt;</span><span style="color: #70B0FF">files</span><span style="color: #7FDAFF">())</span></span>
+<span class="line"><span style="color: #E4F3FA">            </span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">reject</span><span style="color: #7FDAFF">(</span><span style="color: #BAACFF">function</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">(</span><span style="color: #BAACFF">string</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">$</span><span style="color: #E4F3FA">file</span><span style="color: #7FDAFF">)</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">{</span></span>
+<span class="line"><span style="color: #E4F3FA">                </span><span style="color: #BAACFF">return</span><span style="color: #E4F3FA"> </span><span style="color: #FFDB8E">Str</span><span style="color: #7FDAFF">::</span><span style="color: #70B0FF">startsWith</span><span style="color: #7FDAFF">($</span><span style="color: #E4F3FA">file</span><span style="color: #7FDAFF">,</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">'</span><span style="color: #7AF8CA">uploaded_</span><span style="color: #7FDAFF">'</span><span style="color: #7FDAFF">);</span></span>
+<span class="line"><span style="color: #E4F3FA">            </span><span style="color: #7FDAFF">});</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7FDAFF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #BAACFF">private</span><span style="color: #E4F3FA"> </span><span style="color: #BAACFF">function</span><span style="color: #E4F3FA"> </span><span style="color: #70B0FF">uploadFile</span><span style="color: #7FDAFF">(</span><span style="color: #BAACFF">string</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">$</span><span style="color: #E4F3FA">file</span><span style="color: #7FDAFF">)</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7FDAFF">{</span></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #BAACFF">try</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">{</span></span>
+<span class="line"><span style="color: #E4F3FA">            </span><span style="color: #7FDAFF">$</span><span style="color: #FF757F">this</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #A7C6E8">browser</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">browse</span><span style="color: #7FDAFF">(</span><span style="color: #BAACFF">function</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">(\</span><span style="color: #FFDB8E">Laravel</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">Dusk</span><span style="color: #7FDAFF">\</span><span style="color: #FFDB8E">Browser</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">$</span><span style="color: #E4F3FA">browser</span><span style="color: #7FDAFF">)</span><span style="color: #E4F3FA"> </span><span style="color: #BAACFF">use</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">($</span><span style="color: #E4F3FA">file</span><span style="color: #7FDAFF">)</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">{</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #7FDAFF">                </span><span style="color: #7E8EDA">// Download file from SFTP to local disk.</span></span>
+<span class="line"><span style="color: #E4F3FA">                </span><span style="color: #7FDAFF">$</span><span style="color: #E4F3FA">contents </span><span style="color: #7FDAFF">=</span><span style="color: #E4F3FA"> </span><span style="color: #FFDB8E">Storage</span><span style="color: #7FDAFF">::</span><span style="color: #70B0FF">disk</span><span style="color: #7FDAFF">(</span><span style="color: #7FDAFF">'</span><span style="color: #7AF8CA">sftp</span><span style="color: #7FDAFF">'</span><span style="color: #7FDAFF">)-&gt;</span><span style="color: #70B0FF">get</span><span style="color: #7FDAFF">($</span><span style="color: #E4F3FA">file</span><span style="color: #7FDAFF">);</span></span>
+<span class="line"><span style="color: #E4F3FA">                </span><span style="color: #FFDB8E">Storage</span><span style="color: #7FDAFF">::</span><span style="color: #70B0FF">put</span><span style="color: #7FDAFF">($</span><span style="color: #E4F3FA">file</span><span style="color: #7FDAFF">,</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">$</span><span style="color: #E4F3FA">contents</span><span style="color: #7FDAFF">);</span></span>
+<span class="line"><span style="color: #E4F3FA">                </span><span style="color: #7FDAFF">$</span><span style="color: #E4F3FA">absolutePath </span><span style="color: #7FDAFF">=</span><span style="color: #E4F3FA"> </span><span style="color: #FFDB8E">Storage</span><span style="color: #7FDAFF">::</span><span style="color: #70B0FF">path</span><span style="color: #7FDAFF">($</span><span style="color: #E4F3FA">file</span><span style="color: #7FDAFF">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E4F3FA">                </span><span style="color: #7FDAFF">$</span><span style="color: #E4F3FA">browser</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">visit</span><span style="color: #7FDAFF">(</span><span style="color: #7FDAFF">'</span><span style="color: #7AF8CA">http://example.com/login</span><span style="color: #7FDAFF">'</span><span style="color: #7FDAFF">)</span></span>
+<span class="line"><span style="color: #E4F3FA">                    </span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">pause</span><span style="color: #7FDAFF">(</span><span style="color: #FF9668">1000</span><span style="color: #7FDAFF">)</span></span>
+<span class="line"><span style="color: #E4F3FA">                    </span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">type</span><span style="color: #7FDAFF">(</span><span style="color: #7FDAFF">'</span><span style="color: #7AF8CA">email</span><span style="color: #7FDAFF">'</span><span style="color: #7FDAFF">,</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">'</span><span style="color: #7AF8CA">example</span><span style="color: #7FDAFF">'</span><span style="color: #7FDAFF">)</span></span>
+<span class="line"><span style="color: #E4F3FA">                    </span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">type</span><span style="color: #7FDAFF">(</span><span style="color: #7FDAFF">'</span><span style="color: #7AF8CA">password</span><span style="color: #7FDAFF">'</span><span style="color: #7FDAFF">,</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">'</span><span style="color: #7AF8CA">secret</span><span style="color: #7FDAFF">'</span><span style="color: #7FDAFF">)</span></span>
+<span class="line"><span style="color: #E4F3FA">                    </span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">pause</span><span style="color: #7FDAFF">(</span><span style="color: #FF9668">1000</span><span style="color: #7FDAFF">)</span></span>
+<span class="line"><span style="color: #E4F3FA">                    </span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">press</span><span style="color: #7FDAFF">(</span><span style="color: #7FDAFF">'</span><span style="color: #7AF8CA">Login</span><span style="color: #7FDAFF">'</span><span style="color: #7FDAFF">)</span></span>
+<span class="line"><span style="color: #E4F3FA">                    </span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">pause</span><span style="color: #7FDAFF">(</span><span style="color: #FF9668">1000</span><span style="color: #7FDAFF">)</span></span>
+<span class="line"><span style="color: #E4F3FA">                    </span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">click</span><span style="color: #7FDAFF">(</span><span style="color: #7FDAFF">'</span><span style="color: #7AF8CA">#upload-btn</span><span style="color: #7FDAFF">'</span><span style="color: #7FDAFF">)</span></span>
+<span class="line"><span style="color: #E4F3FA">                    </span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">pause</span><span style="color: #7FDAFF">(</span><span style="color: #FF9668">1000</span><span style="color: #7FDAFF">);</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E4F3FA">                </span><span style="color: #BAACFF">if</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">(</span><span style="color: #70B0FF">app</span><span style="color: #7FDAFF">()-&gt;</span><span style="color: #70B0FF">environment</span><span style="color: #7FDAFF">(</span><span style="color: #7FDAFF">'</span><span style="color: #7AF8CA">production</span><span style="color: #7FDAFF">'</span><span style="color: #7FDAFF">))</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">{</span></span>
+<span class="line"><span style="color: #E4F3FA">                    </span><span style="color: #7FDAFF">$</span><span style="color: #E4F3FA">browser</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">attach</span><span style="color: #7FDAFF">(</span><span style="color: #7FDAFF">'</span><span style="color: #7AF8CA">#file</span><span style="color: #7FDAFF">'</span><span style="color: #7FDAFF">,</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">$</span><span style="color: #E4F3FA">absolutePath</span><span style="color: #7FDAFF">)</span></span>
+<span class="line"><span style="color: #E4F3FA">                        </span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">pause</span><span style="color: #7FDAFF">(</span><span style="color: #FF9668">10000</span><span style="color: #7FDAFF">)</span></span>
+<span class="line"><span style="color: #E4F3FA">                        </span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">assertSee</span><span style="color: #7FDAFF">($</span><span style="color: #E4F3FA">file</span><span style="color: #7FDAFF">)</span></span>
+<span class="line"><span style="color: #E4F3FA">                        </span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">pause</span><span style="color: #7FDAFF">(</span><span style="color: #FF9668">5000</span><span style="color: #7FDAFF">);</span></span>
+<span class="line"><span style="color: #E4F3FA">                </span><span style="color: #7FDAFF">}</span></span>
+<span class="line"><span style="color: #E4F3FA">            </span><span style="color: #7FDAFF">});</span></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #7FDAFF">}</span><span style="color: #E4F3FA"> </span><span style="color: #BAACFF">catch</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">(</span><span style="color: #FFDB8E">Throwable</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">$</span><span style="color: #E4F3FA">e</span><span style="color: #7FDAFF">)</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">{</span></span>
+<span class="line"><span style="color: #E4F3FA">            </span><span style="color: #7FDAFF">$</span><span style="color: #FF757F">this</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">error</span><span style="color: #7FDAFF">(</span><span style="color: #7FDAFF">"</span><span style="color: #7AF8CA">Upload failed: </span><span style="color: #7FDAFF">{$</span><span style="color: #E4F3FA">e</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">getMessage</span><span style="color: #7FDAFF">()}"</span><span style="color: #7FDAFF">);</span></span>
+<span class="line"><span style="color: #E4F3FA">            </span><span style="color: #7FDAFF">$</span><span style="color: #FF757F">this</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">notifyDevelopersAboutFailure</span><span style="color: #7FDAFF">($</span><span style="color: #E4F3FA">file</span><span style="color: #7FDAFF">);</span></span>
+<span class="line"><span style="color: #E4F3FA">            </span><span style="color: #FFDB8E">Storage</span><span style="color: #7FDAFF">::</span><span style="color: #70B0FF">delete</span><span style="color: #7FDAFF">($</span><span style="color: #E4F3FA">file</span><span style="color: #7FDAFF">);</span></span>
+<span class="line"><span style="color: #E4F3FA">            </span><span style="color: #BAACFF">return</span><span style="color: #7FDAFF">;</span></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #7FDAFF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #7FDAFF">        </span><span style="color: #7E8EDA">// No Exception has been thrown. Consider Upload a Success.</span></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #7FDAFF">$</span><span style="color: #FF757F">this</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">notifyDevelopersAboutSuccess</span><span style="color: #7FDAFF">($</span><span style="color: #E4F3FA">file</span><span style="color: #7FDAFF">);</span></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #7FDAFF">$</span><span style="color: #FF757F">this</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">renameFile</span><span style="color: #7FDAFF">($</span><span style="color: #E4F3FA">file</span><span style="color: #7FDAFF">);</span></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #7FDAFF">$</span><span style="color: #FF757F">this</span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">info</span><span style="color: #7FDAFF">(</span><span style="color: #7FDAFF">"</span><span style="color: #7AF8CA">Uploaded successful. (</span><span style="color: #7FDAFF">{$</span><span style="color: #E4F3FA">file</span><span style="color: #7FDAFF">}</span><span style="color: #7AF8CA">)</span><span style="color: #7FDAFF">"</span><span style="color: #7FDAFF">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #7FDAFF">        </span><span style="color: #7E8EDA">// Delete local copy of file</span></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #FFDB8E">Storage</span><span style="color: #7FDAFF">::</span><span style="color: #70B0FF">delete</span><span style="color: #7FDAFF">($</span><span style="color: #E4F3FA">file</span><span style="color: #7FDAFF">);</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7FDAFF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #BAACFF">private</span><span style="color: #E4F3FA"> </span><span style="color: #BAACFF">function</span><span style="color: #E4F3FA"> </span><span style="color: #70B0FF">notifyDevelopersAboutSuccess</span><span style="color: #7FDAFF">(</span><span style="color: #BAACFF">string</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">$</span><span style="color: #E4F3FA">file</span><span style="color: #7FDAFF">):</span><span style="color: #E4F3FA"> </span><span style="color: #BAACFF">void</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7FDAFF">{</span></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #FFDB8E">Notification</span><span style="color: #7FDAFF">::</span><span style="color: #70B0FF">route</span><span style="color: #7FDAFF">(</span><span style="color: #7FDAFF">'</span><span style="color: #7AF8CA">slack</span><span style="color: #7FDAFF">'</span><span style="color: #7FDAFF">,</span><span style="color: #E4F3FA"> </span><span style="color: #70B0FF">config</span><span style="color: #7FDAFF">(</span><span style="color: #7FDAFF">'</span><span style="color: #7AF8CA">services.slack.webhook_url</span><span style="color: #7FDAFF">'</span><span style="color: #7FDAFF">))</span></span>
+<span class="line"><span style="color: #E4F3FA">            </span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">notify</span><span style="color: #7FDAFF">(</span><span style="color: #BAACFF">new</span><span style="color: #E4F3FA"> </span><span style="color: #FFDB8E">UploadSucceededNotification</span><span style="color: #7FDAFF">($</span><span style="color: #E4F3FA">file</span><span style="color: #7FDAFF">));</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7FDAFF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #BAACFF">private</span><span style="color: #E4F3FA"> </span><span style="color: #BAACFF">function</span><span style="color: #E4F3FA"> </span><span style="color: #70B0FF">notifyDevelopersAboutFailure</span><span style="color: #7FDAFF">(</span><span style="color: #BAACFF">string</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">$</span><span style="color: #E4F3FA">file</span><span style="color: #7FDAFF">):</span><span style="color: #E4F3FA"> </span><span style="color: #BAACFF">void</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7FDAFF">{</span></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #FFDB8E">Notification</span><span style="color: #7FDAFF">::</span><span style="color: #70B0FF">route</span><span style="color: #7FDAFF">(</span><span style="color: #7FDAFF">'</span><span style="color: #7AF8CA">slack</span><span style="color: #7FDAFF">'</span><span style="color: #7FDAFF">,</span><span style="color: #E4F3FA"> </span><span style="color: #70B0FF">config</span><span style="color: #7FDAFF">(</span><span style="color: #7FDAFF">'</span><span style="color: #7AF8CA">services.slack.webhook_url</span><span style="color: #7FDAFF">'</span><span style="color: #7FDAFF">))</span></span>
+<span class="line"><span style="color: #E4F3FA">            </span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">notify</span><span style="color: #7FDAFF">(</span><span style="color: #BAACFF">new</span><span style="color: #E4F3FA"> </span><span style="color: #FFDB8E">UploadFailedNotification</span><span style="color: #7FDAFF">($</span><span style="color: #E4F3FA">file</span><span style="color: #7FDAFF">));</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7FDAFF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #BAACFF">private</span><span style="color: #E4F3FA"> </span><span style="color: #BAACFF">function</span><span style="color: #E4F3FA"> </span><span style="color: #70B0FF">notifyDevelopersAboutNoFiles</span><span style="color: #7FDAFF">():</span><span style="color: #E4F3FA"> </span><span style="color: #BAACFF">void</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7FDAFF">{</span></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #FFDB8E">Notification</span><span style="color: #7FDAFF">::</span><span style="color: #70B0FF">route</span><span style="color: #7FDAFF">(</span><span style="color: #7FDAFF">'</span><span style="color: #7AF8CA">slack</span><span style="color: #7FDAFF">'</span><span style="color: #7FDAFF">,</span><span style="color: #E4F3FA"> </span><span style="color: #70B0FF">config</span><span style="color: #7FDAFF">(</span><span style="color: #7FDAFF">'</span><span style="color: #7AF8CA">services.slack.webhook_url</span><span style="color: #7FDAFF">'</span><span style="color: #7FDAFF">))</span></span>
+<span class="line"><span style="color: #E4F3FA">            </span><span style="color: #7FDAFF">-&gt;</span><span style="color: #70B0FF">notify</span><span style="color: #7FDAFF">(</span><span style="color: #BAACFF">new</span><span style="color: #E4F3FA"> </span><span style="color: #FFDB8E">NoFilesFoundNotification</span><span style="color: #7FDAFF">());</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7FDAFF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #BAACFF">private</span><span style="color: #E4F3FA"> </span><span style="color: #BAACFF">function</span><span style="color: #E4F3FA"> </span><span style="color: #70B0FF">renameFile</span><span style="color: #7FDAFF">(</span><span style="color: #BAACFF">string</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">$</span><span style="color: #E4F3FA">file</span><span style="color: #7FDAFF">):</span><span style="color: #E4F3FA"> </span><span style="color: #BAACFF">void</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7FDAFF">{</span></span>
+<span class="line"><span style="color: #E4F3FA">        </span><span style="color: #FFDB8E">Storage</span><span style="color: #7FDAFF">::</span><span style="color: #70B0FF">disk</span><span style="color: #7FDAFF">(</span><span style="color: #7FDAFF">'</span><span style="color: #7AF8CA">sftp</span><span style="color: #7FDAFF">'</span><span style="color: #7FDAFF">)-&gt;</span><span style="color: #70B0FF">move</span><span style="color: #7FDAFF">($</span><span style="color: #E4F3FA">file</span><span style="color: #7FDAFF">,</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">"</span><span style="color: #7AF8CA">uploaded_</span><span style="color: #7FDAFF">"</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">.</span><span style="color: #E4F3FA"> </span><span style="color: #7FDAFF">$</span><span style="color: #E4F3FA">file</span><span style="color: #7FDAFF">);</span></span>
+<span class="line"><span style="color: #E4F3FA">    </span><span style="color: #7FDAFF">}</span></span>
+<span class="line"><span style="color: #7FDAFF">}</span></span>
+<span class="line"></span></code></pre>
+<p>The file upload has it's quirks though. Our system asserts that the uploaded file name appers in the UI. This doesn't happen all the time for unkown reasons.<br>
+To ensure, that all files are always uploaded, we send Slack notifiations to our team, so that a human can take a look if a file appears to not be uploaded correctly.</p>
+<h2>The Laravel Zero Way<a id="content-the-laravel-zero-way" href="#content-the-laravel-zero-way" class="heading-permalink" aria-hidden="true" title="Permalink">#</a></h2>
+<p>A couple of weeks after I've deployed our solution, I started working on a CLI for a different project. I've used <a href="https://laravel-zero.com/">Laravel Zero</a> for it.</p>
+<p>While reading the docs, I saw that Laravel Zero natively supports controling the Dusk browser. They call it <a href="https://laravel-zero.com/docs/web-browser-automation">"Web Browser Automation"</a>.</p>
+<p>I won't rewrite our solution, as it works great for us. Next time I have to automate a process involving a web browser, I will definitely give Laravel Zero with its Dusk component a try.</p>
+        </div>
+    </article>
+
+    <footer class="mt-12 sm:flex justify-between text-sm">
+
+        <div>
+            <h2 class="text-base mb-4">Continue Reading</h2>
+
+            <ul class="space-y-1">
+                                    <li>
+                        Previous:
+                        <a href="https://stefanzweifel.io/posts/2021/09/13/boring-reading-stack" title="Boring Reading Stack">
+                            Boring Reading Stack
+                        </a>
+                    </li>
+                                                    <li>
+                        Next:
+                        <a href="https://stefanzweifel.io/posts/2021/11/13/introducing-the-changelog-updater-action" title="Introducing the changelog-updater Action">
+                            Introducing the changelog-updater Action
+                        </a>
+                    </li>
+                            </ul>
+        </div>
+
+        <div class="mt-4 sm:mt-0">
+            <h2 class="text-base mb-4">Stay in the Loop</h2>
+            <ul class="space-y-1">
+                <li>
+                    <a href="https://twitter.com/_stefanzweifel" target="_blank" rel="noopener">Follow on Twitter</a>
+                </li>
+                <li>
+                    <a href="mailto:hello@stefanzweifel.io" target="_blank" rel="noopener">Reply via email</a>
+                </li>
+                <li>
+                    <a href="/rss.xml" target="_blank" rel="noopener">Subscribe to RSS Feed</a>
+                </li>
+                <li>
+                    <a href="https://github.com/stefanzweifel/ama/discussions" target="_blank" rel="noopener">
+                        Ask me Anything
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+    </footer>
+
+    <details class="mt-8">
+    <summary class="font-semibold cursor-pointer">
+        Webmentions
+    </summary>
+
+    
+    <ul class="mt-4">
+
+        
+            <h3 class="mb-4 font-bold leading-none">Likes and more</h3>
+
+            <div class="flex overflow-hidden mb-8">
+                                    <a href="https://twitter.com/myroslavco" title="𝗠𝘆𝗿𝗼𝘀𝗹𝗮𝘃 2.5 🇺🇦" target="_blank" rel="noopener" class=" inline-block h-8 w-8 rounded-full text-white shadow-solid">
+                        <img src="https://webmention.io/avatar/pbs.twimg.com/d2d2cb31bc8bdb093e77bc045f9a214fb6a48c0880e16a665b4d734ba552d546.jpg" alt="Photo of 𝗠𝘆𝗿𝗼𝘀𝗹𝗮𝘃 2.5 🇺🇦" loading="lazy" class=" inline-block h-8 w-8 rounded-full text-white shadow-solid">
+                    </a>
+                                    <a href="https://twitter.com/seemly" title="Chris Sparshott" target="_blank" rel="noopener" class=" -ml-2  inline-block h-8 w-8 rounded-full text-white shadow-solid">
+                        <img src="https://webmention.io/avatar/pbs.twimg.com/a1336272dae803124cafcfbbac1277034264c0e132da7a83c7a719d76920b4b7.jpg" alt="Photo of Chris Sparshott" loading="lazy" class=" -ml-2  inline-block h-8 w-8 rounded-full text-white shadow-solid">
+                    </a>
+                                    <a href="https://twitter.com/snellingio" title="Sam Snelling" target="_blank" rel="noopener" class=" -ml-2  inline-block h-8 w-8 rounded-full text-white shadow-solid">
+                        <img src="https://webmention.io/avatar/pbs.twimg.com/11ed75cae32aa1c2d66a74389765f9d0b5c45fd35eed5d038be06ab71105ef2d.jpg" alt="Photo of Sam Snelling" loading="lazy" class=" -ml-2  inline-block h-8 w-8 rounded-full text-white shadow-solid">
+                    </a>
+                                    <a href="https://twitter.com/aarondfrancis" title="Aaron Francis" target="_blank" rel="noopener" class=" -ml-2  inline-block h-8 w-8 rounded-full text-white shadow-solid">
+                        <img src="https://webmention.io/avatar/pbs.twimg.com/cbc49b103e92273bf6c8c73499c7122d967b6cc1eac4e8acb2723764511cc5e2.jpg" alt="Photo of Aaron Francis" loading="lazy" class=" -ml-2  inline-block h-8 w-8 rounded-full text-white shadow-solid">
+                    </a>
+                                    <a href="https://twitter.com/enunomaduro" title="Nuno Maduro" target="_blank" rel="noopener" class=" -ml-2  inline-block h-8 w-8 rounded-full text-white shadow-solid">
+                        <img src="https://webmention.io/avatar/pbs.twimg.com/7e10921465d0212ad7566eaf6ea759e0e70c3115e07c38af0e8c379abb6b9c62.jpg" alt="Photo of Nuno Maduro" loading="lazy" class=" -ml-2  inline-block h-8 w-8 rounded-full text-white shadow-solid">
+                    </a>
+                                    <a href="https://twitter.com/olivM" title="olivM" target="_blank" rel="noopener" class=" -ml-2  inline-block h-8 w-8 rounded-full text-white shadow-solid">
+                        <img src="https://webmention.io/avatar/pbs.twimg.com/f9ed5825464d9ab886fefe5748dba5de743c843ae16d030fb632400d4514623e.png" alt="Photo of olivM" loading="lazy" class=" -ml-2  inline-block h-8 w-8 rounded-full text-white shadow-solid">
+                    </a>
+                                    <a href="https://twitter.com/alfredy_bruno" title="bruno_alfred" target="_blank" rel="noopener" class=" -ml-2  inline-block h-8 w-8 rounded-full text-white shadow-solid">
+                        <img src="https://webmention.io/avatar/pbs.twimg.com/e4a1e3ab186c53d32061a07349d5c9125f9694db3db643430edfb60854690272.jpg" alt="Photo of bruno_alfred" loading="lazy" class=" -ml-2  inline-block h-8 w-8 rounded-full text-white shadow-solid">
+                    </a>
+                                    <a href="https://twitter.com/SNKhan300" title="Sardar Nawab Khan" target="_blank" rel="noopener" class=" -ml-2  inline-block h-8 w-8 rounded-full text-white shadow-solid">
+                        <img src="https://webmention.io/avatar/pbs.twimg.com/1016d16bf4b8f1bac5958d13f443ff10b086f03ca37221a8dec47cd589fe5e8b.jpg" alt="Photo of Sardar Nawab Khan" loading="lazy" class=" -ml-2  inline-block h-8 w-8 rounded-full text-white shadow-solid">
+                    </a>
+                                    <a href="https://twitter.com/jamieyork" title="Jamie York" target="_blank" rel="noopener" class=" -ml-2  inline-block h-8 w-8 rounded-full text-white shadow-solid">
+                        <img src="https://webmention.io/avatar/pbs.twimg.com/e1acfcaea86b4c6c8ab056548ab2cf41df416b48460b7054ce59d2469760885b.jpg" alt="Photo of Jamie York" loading="lazy" class=" -ml-2  inline-block h-8 w-8 rounded-full text-white shadow-solid">
+                    </a>
+                                    <a href="https://twitter.com/sebastiaanluca" title="Sebastiaan Luca 🤖" target="_blank" rel="noopener" class=" -ml-2  inline-block h-8 w-8 rounded-full text-white shadow-solid">
+                        <img src="https://webmention.io/avatar/pbs.twimg.com/f16d4bc904e9b9ea56fbbbae03a72fab6aaefd47bb9fc039498c64c273110990.jpg" alt="Photo of Sebastiaan Luca 🤖" loading="lazy" class=" -ml-2  inline-block h-8 w-8 rounded-full text-white shadow-solid">
+                    </a>
+                                    <a href="https://twitter.com/TheCraigPaul" title="Craig Paul" target="_blank" rel="noopener" class=" -ml-2  inline-block h-8 w-8 rounded-full text-white shadow-solid">
+                        <img src="https://webmention.io/avatar/pbs.twimg.com/7b34dffc93784726af0ab85e96312abb36f8bf57b349fc735a2eb8874ad95a41.jpg" alt="Photo of Craig Paul" loading="lazy" class=" -ml-2  inline-block h-8 w-8 rounded-full text-white shadow-solid">
+                    </a>
+                                    <a href="https://twitter.com/Omar_Andres_Bar" title="Captain Barbosa" target="_blank" rel="noopener" class=" -ml-2  inline-block h-8 w-8 rounded-full text-white shadow-solid">
+                        <img src="https://webmention.io/avatar/pbs.twimg.com/e304a6c21edc4658e7bb0a6aca9a2ae6e3d9af7d8322dfaab7b53a8d8ebc0b47.jpg" alt="Photo of Captain Barbosa" loading="lazy" class=" -ml-2  inline-block h-8 w-8 rounded-full text-white shadow-solid">
+                    </a>
+                                    <a href="https://twitter.com/lukasleitsch" title="Lukas Leitsch" target="_blank" rel="noopener" class=" -ml-2  inline-block h-8 w-8 rounded-full text-white shadow-solid">
+                        <img src="https://webmention.io/avatar/pbs.twimg.com/77b0ac0429a07a4600e5291ec55fc102f8d59196de3cac687755adf296f81ec0.jpg" alt="Photo of Lukas Leitsch" loading="lazy" class=" -ml-2  inline-block h-8 w-8 rounded-full text-white shadow-solid">
+                    </a>
+                                    <a href="https://twitter.com/LaravelZero" title="Laravel Zero" target="_blank" rel="noopener" class=" -ml-2  inline-block h-8 w-8 rounded-full text-white shadow-solid">
+                        <img src="https://webmention.io/avatar/pbs.twimg.com/5e2fe48dbc0f87de01ea046b7f3068c90287319766f16c303f1b0919004bc287.jpg" alt="Photo of Laravel Zero" loading="lazy" class=" -ml-2  inline-block h-8 w-8 rounded-full text-white shadow-solid">
+                    </a>
+                            </div>
+
+        
+
+                    <h3 class="mb-4 font-bold leading-none">Replies</h3>
+
+            
+                <li class="mb-10 last:mb-0">
+                    <p class="flex items-center" style="margin-bottom: .5em !important">
+                        <img src="https://webmention.io/avatar/pbs.twimg.com/68e55e487787324fcac84eff70174c69a480acd873d6585b2f2bdb156036d2b1.jpg" alt="Photo of Len Woodward" loading="lazy" class="rounded-full h-6 w-6 mr-2" width="40">
+
+                        <a href="https://twitter.com/ProjektGopher" class="font-semibold text-black mr-1 no-underline">
+                            Len Woodward
+                        </a>
+
+                        <a href="https://twitter.com/ProjektGopher/status/1442229776303857665" class="">
+                            replied
+                        </a>
+                    </p>
+
+                                            <p style="margin-bottom: .5em !important">
+                                                            Can you touch on why you catch exceptions just to throw them again in Brower-&gt;browse()
+
+I've never seen that, and I'm wondering what problem it solves
+<a class="u-mention" href="https://laravel-zero.com/docs/web-browser-automation"></a>
+<a class="u-mention" href="https://stefanzweifel.io"></a>
+<a class="u-mention" href="https://twitter.com/LaravelZero"></a>
+<a class="u-mention" href="https://twitter.com/_stefanzweifel"></a>
+                                                    </p>
+                    
+                    <p class="text-xs text-gray-500">
+                        September 26th, 2021
+                    </p>
+                </li>
+
+            
+                <li class="mb-10 last:mb-0">
+                    <p class="flex items-center" style="margin-bottom: .5em !important">
+                        <img src="https://webmention.io/avatar/pbs.twimg.com/3b772e9239dfd15ce8527f90edd45d0678849d57b28725cc69f929bb4f11cf06.jpg" alt="Photo of Stefan Zweifel 🌿" loading="lazy" class="rounded-full h-6 w-6 mr-2" width="40">
+
+                        <a href="https://twitter.com/_stefanzweifel" class="font-semibold text-black mr-1 no-underline">
+                            Stefan Zweifel 🌿
+                        </a>
+
+                        <a href="https://twitter.com/_stefanzweifel/status/1442373641807679489" class="">
+                            replied
+                        </a>
+                    </p>
+
+                                            <p style="margin-bottom: .5em !important">
+                                                            I don't know. I have taken this part of the code from <a href="https://twitter.com/paulredmond">@paulredmond</a>'s project: <a href="https://github.com/paulredmond/scraping-with-laravel-dusk/blob/f6d94ce6ed2a31265ba9e52db1c2e07c8ee66aaf/laravel-app/app/Browser.php#L34-L46">github.com/paulredmond/sc…</a>
+
+Probably not needed.
+<a class="u-mention" href="https://laravel-zero.com/docs/web-browser-automation"></a>
+<a class="u-mention" href="https://twitter.com/ProjektGopher"></a>
+                                                    </p>
+                    
+                    <p class="text-xs text-gray-500">
+                        September 27th, 2021
+                    </p>
+                </li>
+
+                        </ul>
+</details>
+
+            </div>
+        </main>
+
+    </div>
+
+    <footer class=" mt-8 p-8">
+
+        
+
+        <div class="container max-w-2xl mx-auto">
+
+            <div class="mb-4">
+                <h2 class="hidden">Footer Navigation</h2>
+
+                <ul class="flex flex-wrap leading-loose text-sm sm:justify-center">
+                    <li class="mr-4">
+                        <a href="https://twitter.com/_stefanzweifel" rel="me" class="underline text-gray-700 hover:no-underline">Twitter</a>
+                    </li>
+                    <li class="mr-4">
+                        <a href="https://github.com/stefanzweifel" rel="me" class="underline text-gray-700 hover:no-underline">GitHub</a>
+                    </li>
+                    <li class="mr-4">
+                        <a href="mailto:hello@stefanzweifel.io" class="underline text-gray-700 hover:no-underline">Email</a>
+                    </li>
+                    <li class="mr-4">
+                        •
+                    </li>
+                    <li class="mr-4">
+                        <a href="/rss.xml" class="underline text-gray-700 hover:no-underline">RSS</a>
+                    </li>
+                    <li class="mr-4">
+                        •
+                    </li>
+                    <li class="mr-4">
+                        <a href="https://buymeacoff.ee/3oQ64YW" target="_blank" rel="noopener" class="underline text-gray-700 hover:no-underline">Buy me a tea</a>
+                    </li>
+                    <li class="mr-4">
+                        <a href="https://github.com/sponsors/stefanzweifel" target="_blank" rel="noopener" class="underline text-gray-700 hover:no-underline">GitHub Sponsors</a>
+                    </li>
+                </ul>
+            </div>
+
+            <p class="leading-snug text-gray-600 text-xs text-center">
+                © 2012 - 2022 All rights reserved.
+            </p>
+
+            
+        </div>
+
+    </footer>
+
+
+
+</body></html>

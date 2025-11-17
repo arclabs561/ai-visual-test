@@ -1,0 +1,150 @@
+<!DOCTYPE html><html lang="en"><head> 
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AcoustID</title> 
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Roboto:300">
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans:400,600">
+  <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  
+  <link rel="stylesheet" type="text/css" href="/static/acoustid.css">
+  <link rel="shortcut icon" href="/static/favicon.ico">
+	<!--<script type="text/javascript"> 
+ 
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-18981078-1']);
+  _gaq.push(['_trackPageview']);
+ 
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+ 
+	</script> -->
+</head> 
+<body>
+
+
+
+
+
+  <nav class="navbar navbar-default navbar-static-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <div class="navbar-brand">
+          <a href="/" title="AcoustID">
+            <img src="/static/acoustid.svg" alt="AcoustID">
+          </a>
+          <small>open source audio identification</small>
+        </div>
+      </div>
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="/applications">Applications</a></li>
+          <li><a href="/stats">Statistics</a></li>
+          <li><a href="/docs">Documentation</a></li>
+          <li><a href="/donate">Donate</a></li>
+          
+          <li><a href="/login">Sign in</a></li>
+          
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+	<div class="container"> 
+
+    <div class="content">
+      
+
+<h2>Sign in</h2> 
+
+
+
+<p>Please sign in with an account from one of these providers:</p>
+
+<form action="/login" method="POST" class="form-inline"> 
+
+<p>
+    <a class="login-block login-musicbrainz" href="#"><span>Log in with MusicBrainz</span></a>
+    <a class="login-block login-google" href="#"><span>Log in with Google</span></a>
+    <a class="login-block login-yahoo" href="#"><span>Log in with Yahoo!</span></a>
+    <a class="login-block login-openid" href="#"><span>Log in with OpenID</span></a>
+</p>
+
+<p class="openid-form" style="display:none">
+    <input name="openid_identifier" type="text" class="openid form-control">
+    <input type="submit" value="Sign in" class="btn btn-default">
+</p>
+
+<input type="hidden" name="return_url" value="https://acoustid.org/api-key"> 
+<input type="hidden" name="login" value="openid"> 
+
+</form> 
+
+
+    </div>
+
+	</div> 
+
+	<div class="footer">
+    <div class="container">
+      <p class="text-muted">Software created by <a href="https://oxygene.sk/">Lukáš Lalinský</a>, hosted by <a href="https://acoustid.biz">AcoustID OÜ</a>, data crowd-sourced by <a href="/stats">thousands of contributors</a>.</p>
+      <p class="text-muted">
+        <a href="/contact">Contact</a> |
+        <a href="https://blog.acoustid.org/">Blog</a> |
+        <a href="https://twitter.com/acoustid">Twitter</a> |
+        <a href="https://www.facebook.com/acoustid">Facebook</a>
+      </p>
+    </div>
+	</div>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+  <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <script async="" src="https://c6.patreon.com/becomePatronButton.bundle.js"></script>
+  
+
+<script type="text/javascript"> 
+$(document).ready(function () {
+    $('.login-musicbrainz').click(function () {
+        var $form = $(this).closest('form');
+        $form.find('input[name=login]').val('musicbrainz');
+        $form.submit();
+        return false;
+    });
+    $('.login-google').click(function () {
+        var $form = $(this).closest('form');
+        $form.find('input[name=login]').val('google');
+        $form.submit();
+        return false;
+    });
+    $('.login-yahoo').click(function () {
+        var $form = $(this).closest('form');
+        $form.find('input[name=login]').val('openid');
+        $form.find('input.openid').val('https://me.yahoo.com');
+        $form.submit();
+        return false;
+    });
+    $('.login-openid').click(function () {
+        var $this = $(this), $form = $this.closest('form');
+        $this.addClass('active');
+        $form.find('input[name=login]').val('openid');
+        $form.find('.openid-form').show();
+        $form.find('.openid-form input.openid').focus();
+        return false;
+    });
+});
+</script> 
+
+
+
+ 
+ 
+ </body></html>

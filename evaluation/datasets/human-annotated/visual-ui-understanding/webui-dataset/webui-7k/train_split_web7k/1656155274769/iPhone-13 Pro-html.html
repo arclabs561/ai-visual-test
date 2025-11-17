@@ -1,0 +1,228 @@
+<!DOCTYPE html><html lang="en" ng-app="myApp" class="ng-scope"><head><style type="text/css">@charset "UTF-8";[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\:form{display:block;}</style>
+  <meta charset="utf-8">
+  <title>Japanisch im Sauseschritt - Vokabeltrainer</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular-route.js"></script>
+		<script src="js/routes.js"></script>
+		<script src="js/controllers.js"></script>
+		<script src="js/band1.js"></script>
+		<!-- jQuery -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+		<!-- Stylesheet -->
+		<link rel="stylesheet" href="css/app.css">
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		<!-- Google Font API -->
+		<link href="http://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">		
+</head>
+<body>
+<div id="container">
+ <div id="content">
+ <!-- ngView:  --><div ng-view="" class="ng-scope"><!-- ngInclude:  --><div ng-include="" src="'cBand.html'" ng-show="view==='cBand'" class="ng-scope"><div class="row text-center ng-scope">
+    <jumbo>Welche Bände sollen abgefragt werden?</jumbo>
+</div>
+<div class="row text-center ng-scope">
+    <div class="btn-group" role="group" aria-label="...">
+        <button type="button" class="btn btn-default btn-lg" data-ng-click="switchBand(0)">Band 1
+            <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band[0]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band[0]"></span></button>
+    </div>
+    <div class="btn-group" role="group" aria-label="...">
+        <button type="button" disabled="" class="btn btn-default btn-lg" data-ng-click="switchBand(1)">Band 2A
+            <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band[1]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band[1]"></span></button>
+        <button type="button" disabled="" class="btn btn-default btn-lg" data-ng-click="switchBand(2)">Band 2B
+            <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band[2]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band[2]"></span></button>
+    </div>
+    <div class="btn-group" role="group" aria-label="...">
+        <button type="button" disabled="" class="btn btn-default btn-lg" data-ng-click="switchBand(3)">Band 3A
+            <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band[3]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band[3]"></span></button>
+        <button type="button" disabled="" class="btn btn-default btn-lg" data-ng-click="switchBand(4)">Band 3B
+            <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band[4]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band[4]"></span></button>
+    </div>
+</div>
+<div class="row ng-scope">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+        <hr>
+        <button type="button" ng-disabled="bandNextDisabled" class="btn btn-default btn-lg pull-right" data-ng-click="toLek()" disabled="disabled">Weiter <span class="glyphicon glyphicon-chevron-right"></span></button>
+    </div>
+    <div class="col-md-3"></div>
+</div></div>
+<!-- ngInclude:  --><div ng-include="" src="'cLektionen.html'" ng-show="view==='cLektionen'" class="ng-scope ng-hide"><div class="row text-center ng-scope">
+    <jumbo>Welche Lektionen sollen abgefragt werden?</jumbo>
+</div>
+<div class="row text-center ng-scope" style="margin-left: 2em;margin-right:2em">
+    <!-- ngRepeat: b in band1Lektionen track by $index --><button type="button" ng-repeat="b in band1Lektionen track by $index" class="btn btn-default btn-lg ng-binding ng-scope" data-ng-click="switchLek($index)">1
+        <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band1Lektionen[$index]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band1Lektionen[$index]"></span></button><!-- end ngRepeat: b in band1Lektionen track by $index --><button type="button" ng-repeat="b in band1Lektionen track by $index" class="btn btn-default btn-lg ng-binding ng-scope" data-ng-click="switchLek($index)">2
+        <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band1Lektionen[$index]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band1Lektionen[$index]"></span></button><!-- end ngRepeat: b in band1Lektionen track by $index --><button type="button" ng-repeat="b in band1Lektionen track by $index" class="btn btn-default btn-lg ng-binding ng-scope" data-ng-click="switchLek($index)">3
+        <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band1Lektionen[$index]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band1Lektionen[$index]"></span></button><!-- end ngRepeat: b in band1Lektionen track by $index --><button type="button" ng-repeat="b in band1Lektionen track by $index" class="btn btn-default btn-lg ng-binding ng-scope" data-ng-click="switchLek($index)">4
+        <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band1Lektionen[$index]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band1Lektionen[$index]"></span></button><!-- end ngRepeat: b in band1Lektionen track by $index --><button type="button" ng-repeat="b in band1Lektionen track by $index" class="btn btn-default btn-lg ng-binding ng-scope" data-ng-click="switchLek($index)">5
+        <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band1Lektionen[$index]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band1Lektionen[$index]"></span></button><!-- end ngRepeat: b in band1Lektionen track by $index --><button type="button" ng-repeat="b in band1Lektionen track by $index" class="btn btn-default btn-lg ng-binding ng-scope" data-ng-click="switchLek($index)">6
+        <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band1Lektionen[$index]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band1Lektionen[$index]"></span></button><!-- end ngRepeat: b in band1Lektionen track by $index --><button type="button" ng-repeat="b in band1Lektionen track by $index" class="btn btn-default btn-lg ng-binding ng-scope" data-ng-click="switchLek($index)">7
+        <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band1Lektionen[$index]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band1Lektionen[$index]"></span></button><!-- end ngRepeat: b in band1Lektionen track by $index --><button type="button" ng-repeat="b in band1Lektionen track by $index" class="btn btn-default btn-lg ng-binding ng-scope" data-ng-click="switchLek($index)">8
+        <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band1Lektionen[$index]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band1Lektionen[$index]"></span></button><!-- end ngRepeat: b in band1Lektionen track by $index --><button type="button" ng-repeat="b in band1Lektionen track by $index" class="btn btn-default btn-lg ng-binding ng-scope" data-ng-click="switchLek($index)">9
+        <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band1Lektionen[$index]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band1Lektionen[$index]"></span></button><!-- end ngRepeat: b in band1Lektionen track by $index --><button type="button" ng-repeat="b in band1Lektionen track by $index" class="btn btn-default btn-lg ng-binding ng-scope" data-ng-click="switchLek($index)">10
+        <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band1Lektionen[$index]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band1Lektionen[$index]"></span></button><!-- end ngRepeat: b in band1Lektionen track by $index --><button type="button" ng-repeat="b in band1Lektionen track by $index" class="btn btn-default btn-lg ng-binding ng-scope" data-ng-click="switchLek($index)">11
+        <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band1Lektionen[$index]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band1Lektionen[$index]"></span></button><!-- end ngRepeat: b in band1Lektionen track by $index --><button type="button" ng-repeat="b in band1Lektionen track by $index" class="btn btn-default btn-lg ng-binding ng-scope" data-ng-click="switchLek($index)">12
+        <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band1Lektionen[$index]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band1Lektionen[$index]"></span></button><!-- end ngRepeat: b in band1Lektionen track by $index --><button type="button" ng-repeat="b in band1Lektionen track by $index" class="btn btn-default btn-lg ng-binding ng-scope" data-ng-click="switchLek($index)">13
+        <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band1Lektionen[$index]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band1Lektionen[$index]"></span></button><!-- end ngRepeat: b in band1Lektionen track by $index --><button type="button" ng-repeat="b in band1Lektionen track by $index" class="btn btn-default btn-lg ng-binding ng-scope" data-ng-click="switchLek($index)">14
+        <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band1Lektionen[$index]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band1Lektionen[$index]"></span></button><!-- end ngRepeat: b in band1Lektionen track by $index --><button type="button" ng-repeat="b in band1Lektionen track by $index" class="btn btn-default btn-lg ng-binding ng-scope" data-ng-click="switchLek($index)">15
+        <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band1Lektionen[$index]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band1Lektionen[$index]"></span></button><!-- end ngRepeat: b in band1Lektionen track by $index --><button type="button" ng-repeat="b in band1Lektionen track by $index" class="btn btn-default btn-lg ng-binding ng-scope" data-ng-click="switchLek($index)">16
+        <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band1Lektionen[$index]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band1Lektionen[$index]"></span></button><!-- end ngRepeat: b in band1Lektionen track by $index --><button type="button" ng-repeat="b in band1Lektionen track by $index" class="btn btn-default btn-lg ng-binding ng-scope" data-ng-click="switchLek($index)">17
+        <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band1Lektionen[$index]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band1Lektionen[$index]"></span></button><!-- end ngRepeat: b in band1Lektionen track by $index --><button type="button" ng-repeat="b in band1Lektionen track by $index" class="btn btn-default btn-lg ng-binding ng-scope" data-ng-click="switchLek($index)">18
+        <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band1Lektionen[$index]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band1Lektionen[$index]"></span></button><!-- end ngRepeat: b in band1Lektionen track by $index --><button type="button" ng-repeat="b in band1Lektionen track by $index" class="btn btn-default btn-lg ng-binding ng-scope" data-ng-click="switchLek($index)">19
+        <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band1Lektionen[$index]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band1Lektionen[$index]"></span></button><!-- end ngRepeat: b in band1Lektionen track by $index --><button type="button" ng-repeat="b in band1Lektionen track by $index" class="btn btn-default btn-lg ng-binding ng-scope" data-ng-click="switchLek($index)">20
+        <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band1Lektionen[$index]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band1Lektionen[$index]"></span></button><!-- end ngRepeat: b in band1Lektionen track by $index --><button type="button" ng-repeat="b in band1Lektionen track by $index" class="btn btn-default btn-lg ng-binding ng-scope" data-ng-click="switchLek($index)">21
+        <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band1Lektionen[$index]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band1Lektionen[$index]"></span></button><!-- end ngRepeat: b in band1Lektionen track by $index --><button type="button" ng-repeat="b in band1Lektionen track by $index" class="btn btn-default btn-lg ng-binding ng-scope" data-ng-click="switchLek($index)">22
+        <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band1Lektionen[$index]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band1Lektionen[$index]"></span></button><!-- end ngRepeat: b in band1Lektionen track by $index --><button type="button" ng-repeat="b in band1Lektionen track by $index" class="btn btn-default btn-lg ng-binding ng-scope" data-ng-click="switchLek($index)">23
+        <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band1Lektionen[$index]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band1Lektionen[$index]"></span></button><!-- end ngRepeat: b in band1Lektionen track by $index --><button type="button" ng-repeat="b in band1Lektionen track by $index" class="btn btn-default btn-lg ng-binding ng-scope" data-ng-click="switchLek($index)">24
+        <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band1Lektionen[$index]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band1Lektionen[$index]"></span></button><!-- end ngRepeat: b in band1Lektionen track by $index --><button type="button" ng-repeat="b in band1Lektionen track by $index" class="btn btn-default btn-lg ng-binding ng-scope" data-ng-click="switchLek($index)">25
+        <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band1Lektionen[$index]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band1Lektionen[$index]"></span></button><!-- end ngRepeat: b in band1Lektionen track by $index --><button type="button" ng-repeat="b in band1Lektionen track by $index" class="btn btn-default btn-lg ng-binding ng-scope" data-ng-click="switchLek($index)">26
+        <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band1Lektionen[$index]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band1Lektionen[$index]"></span></button><!-- end ngRepeat: b in band1Lektionen track by $index --><button type="button" ng-repeat="b in band1Lektionen track by $index" class="btn btn-default btn-lg ng-binding ng-scope" data-ng-click="switchLek($index)">27
+        <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band1Lektionen[$index]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band1Lektionen[$index]"></span></button><!-- end ngRepeat: b in band1Lektionen track by $index --><button type="button" ng-repeat="b in band1Lektionen track by $index" class="btn btn-default btn-lg ng-binding ng-scope" data-ng-click="switchLek($index)">28
+        <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band1Lektionen[$index]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band1Lektionen[$index]"></span></button><!-- end ngRepeat: b in band1Lektionen track by $index --><button type="button" ng-repeat="b in band1Lektionen track by $index" class="btn btn-default btn-lg ng-binding ng-scope" data-ng-click="switchLek($index)">29
+        <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band1Lektionen[$index]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band1Lektionen[$index]"></span></button><!-- end ngRepeat: b in band1Lektionen track by $index --><button type="button" ng-repeat="b in band1Lektionen track by $index" class="btn btn-default btn-lg ng-binding ng-scope" data-ng-click="switchLek($index)">30
+        <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="band1Lektionen[$index]"></span><span class="glyphicon glyphicon-remove" data-ng-show="!band1Lektionen[$index]"></span></button><!-- end ngRepeat: b in band1Lektionen track by $index -->
+    <button type="button" class="btn btn-default btn-lg" data-ng-click="selectAllLek()">Alle
+        <br><span class="glyphicon glyphicon-education"></span></button>
+</div>
+<div class="row ng-scope">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+        <hr>
+        <button type="button" ng-disabled="lekNextDisabled" class="btn btn-default btn-lg pull-right" data-ng-click="toType()" disabled="disabled">Weiter <span class="glyphicon glyphicon-chevron-right"></span></button>
+        <button type="button" class="btn btn-default btn-lg pull-left" data-ng-click="toBand()"><span class="glyphicon glyphicon-chevron-left"></span> Zurück</button>
+    </div>
+    <div class="col-md-3"></div>
+</div>
+<div class="row ng-scope">
+    <div class="text-center">
+        <h1 class="ng-binding">0 Vokabeln</h1></div>
+</div></div>
+<!-- ngInclude:  --><div ng-include="" src="'cSchrift.html'" ng-show="view==='cSchrift'" class="ng-scope ng-hide"><div class="row text-center ng-scope">
+    <jumbo>Gleich geht's los...</jumbo>
+</div>
+<div class="row text-center ng-scope">
+    <div><b>Bitte wählen Sie die Schriftart, in der japanische Wörter angezeigt werden.</b></div>
+    <div style="margin-top:1em">
+        <button type="button" class="btn btn-default btn-lg" data-ng-click="disableKana()">Rōmaji
+            <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="!kanaEnabled"></span><span class="glyphicon glyphicon-remove" data-ng-show="kanaEnabled"></span></button>
+        <button type="button" class="btn btn-default btn-lg" data-ng-click="enableKana()">Kana
+            <br><span class="glyphicon glyphicon-ok" data-ng-show="kanaEnabled"></span><span class="glyphicon glyphicon-remove ng-hide" data-ng-show="!kanaEnabled"></span></button>
+    </div>
+</div>
+<hr class="dropshadow ng-scope">
+<div class="row text-center ng-scope">
+    <div><b>Bitte wählen Sie die Lernrichtung aus.</b></div>
+    <div style="margin-top:1em">
+        <button type="button" class="btn btn-default btn-lg" data-ng-click="setMode(0)">Deutsch → Japanisch
+            <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="mode===0"></span><span class="glyphicon glyphicon-remove" data-ng-show="mode!==0"></span></button>
+        <button type="button" class="btn btn-default btn-lg" data-ng-click="setMode(1)">Japanisch → Deutsch
+            <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="mode===1"></span><span class="glyphicon glyphicon-remove" data-ng-show="mode!==1"></span></button>
+        <button type="button" class="btn btn-default btn-lg" data-ng-click="setMode(2)">Japanisch ↔ Deutsch
+            <br><span class="glyphicon glyphicon-ok" data-ng-show="mode===2"></span><span class="glyphicon glyphicon-remove ng-hide" data-ng-show="mode!==2"></span></button>
+    </div>
+</div>
+<hr class="dropshadow ng-scope">
+<div class="row text-center ng-scope">
+    <div><b>Antworten zunächst verdecken?.</b></div>
+    <div style="margin-top:1em">
+        <button type="button" class="btn btn-default btn-lg" data-ng-click="hideAnswers()">Ja
+            <br><span class="glyphicon glyphicon-ok" data-ng-show="answerHidden"></span><span class="glyphicon glyphicon-remove ng-hide" data-ng-show="!answerHidden"></span></button>
+        <button type="button" class="btn btn-default btn-lg" data-ng-click="showAnswers()">Nein
+            <br><span class="glyphicon glyphicon-ok ng-hide" data-ng-show="!answerHidden"></span><span class="glyphicon glyphicon-remove" data-ng-show="answerHidden"></span></button>
+    </div>
+</div>
+<div class="row ng-scope">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+        <hr>
+        <button type="button" ng-disabled="lekNextDisabled" class="btn btn-default btn-lg pull-right" data-ng-click="start()" disabled="disabled">Start! <span class="glyphicon glyphicon-send"></span></button>
+        <button type="button" class="btn btn-default btn-lg pull-left" data-ng-click="toLek()"><span class="glyphicon glyphicon-chevron-left"></span> Zurück</button>
+    </div>
+    <div class="col-md-3"></div>
+</div></div>
+<!-- ngInclude:  --><div ng-include="" src="'game.html'" ng-show="view==='game'" class="ng-scope ng-hide"><div class="row text-center ng-scope">
+    <jumbo class="ng-binding"></jumbo>
+</div>
+<div class="row text-center ng-scope" ng-show="currentRoundShown">
+    <button type="button" id="b0" class="btn btn-lg ng-binding btn-default" ng-class="{'btn-default':!weiterActive,'btn-danger':weiterActive&amp;&amp;correctButton!==0,'disabled':weiterActive,'btn-success':weiterActive&amp;&amp;correctButton===0}" data-ng-click="click(0)"></button>
+    <button type="button" id="b1" class="btn btn-lg ng-binding btn-default" ng-class="{'btn-default':!weiterActive,'btn-danger':weiterActive&amp;&amp;correctButton!==1,'disabled':weiterActive,'btn-success':weiterActive&amp;&amp;correctButton===1}" data-ng-click="click(1)"></button>
+</div>
+<div class="row text-center ng-scope" ng-show="currentRoundShown">
+    <button type="button" id="b2" class="btn btn-lg ng-binding btn-default" ng-class="{'btn-default':!weiterActive,'btn-danger':weiterActive&amp;&amp;correctButton!==2,'disabled':weiterActive,'btn-success':weiterActive&amp;&amp;correctButton===2}" data-ng-click="click(2)"></button>
+    <button type="button" id="b3" class="btn btn-lg ng-binding btn-default" ng-class="{'btn-default':!weiterActive,'btn-danger':weiterActive&amp;&amp;correctButton!==3,'disabled':weiterActive,'btn-success':weiterActive&amp;&amp;correctButton===3}" data-ng-click="click(3)"></button>
+</div>
+<div class="row text-center ng-scope" ng-show="currentRoundShown">
+    <button type="button" id="b4" class="btn btn-lg ng-binding btn-default" ng-class="{'btn-default':!weiterActive,'btn-danger':weiterActive&amp;&amp;correctButton!==4,'disabled':weiterActive,'btn-success':weiterActive&amp;&amp;correctButton===4}" data-ng-click="click(4)"></button>
+    <button type="button" id="b5" class="btn btn-lg ng-binding btn-default" ng-class="{'btn-default':!weiterActive,'btn-danger':weiterActive&amp;&amp;correctButton!==5,'disabled':weiterActive,'btn-success':weiterActive&amp;&amp;correctButton===5}" data-ng-click="click(5)"></button>
+</div>
+<div class="row text-center ng-scope" style="margin-top: 2em">	
+    <!-- ngIf: weiterActive -->
+</div>
+<div class="row text-center ng-scope ng-hide" data-ng-show="answerHidden&amp;&amp;!currentRoundShown">
+    <button type="button" id="ba" class="btn btn-default btn-lg" data-ng-click="roundShowAnswers()">Antworten zeigen</button>
+</div>
+<div class="row text-center ng-scope" style="margin-top: 1em">	
+    <h3 class="ng-binding">0 Punkte</h3>
+</div>
+<hr class="dropshadow ng-scope">
+<div class="row ng-scope">
+    <div class="col-md-2"></div>
+    <div class="col-md-6">
+        <div class="progress">
+            <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: -Infinity%">
+                <span class="sr-only"></span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2"><b class="ng-binding">Noch 1</b></div>
+    <div class="col-md-2"></div>
+</div>
+<div class="row ng-scope ng-hide" ng-hide="correctWidth===-1">
+    <div class="col-md-2"></div>
+    <div class="col-md-6">
+        <div class="progress">
+            <div class="progress-bar progress-bar-striped active progress-bar-success" style="width: -1%">
+                <span class="sr-only"></span>
+            </div>
+            <div class="progress-bar progress-bar-striped active progress-bar-danger" style="width: 101%">
+                <span class="sr-only"></span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2"><b class="ng-binding">0 korrekt, 0 falsch</b></div>
+    <div class="col-md-2"></div>
+</div></div>
+<!-- ngInclude:  --><div ng-include="" src="'fin.html'" ng-show="view==='fin'" class="ng-scope ng-hide"><div class="row text-center ng-scope">
+    <jumbo class="ng-binding"></jumbo>
+</div>
+<div class="row text-center ng-scope">
+    <h1 class="ng-binding"></h1>
+</div>
+<div class="row text-center ng-scope" style="margin-top: 2em">
+    <h2 class="ng-binding">Sie haben 0 Punkte erreicht!</h2>
+</div>
+<div class="row text-center ng-scope">
+    <h2 class="ng-binding">Insgesamt hatten Sie -1% richtig.</h2>
+</div>
+<div class="row text-center ng-scope">
+    <button type="button" class="btn btn-default btn-lg" data-ng-click="toBand()"><span class="glyphicon glyphicon-book"></span> Band wählen</button>
+    <button type="button" class="btn btn-default btn-lg" data-ng-click="toLek()"><span class="glyphicon glyphicon-duplicate"></span> Lektionen wählen</button>
+    <button type="button" class="btn btn-default btn-lg" data-ng-click="start()"><span class="glyphicon glyphicon-retweet"></span> Neustart</button>
+</div></div></div>    
+ </div>
+</div>
+<div id="footer"><p style="margin-left:1em"><i>von Marco Hoffmann. Probleme, Fragen, Anregungen oder Kritik? Gerne Mail an <script>document.write('<'+'a'+' '+'h'+'r'+'e'+'f'+'='+"'"+'m'+'a'+'&'+'#'+'1'+'0'+'5'+';'+'l'+'t'+'o'+'&'+'#'+'5'+'8'+';'+
+'m'+'&'+'#'+'9'+'7'+';'+'%'+'7'+'2'+'c'+'o'+'h'+'%'+'6'+'F'+'f'+'%'+'6'+'&'+'#'+'5'+'4'+';'+'&'+'#'+
+'3'+'7'+';'+'6'+'D'+'%'+'&'+'#'+'5'+'4'+';'+'&'+'#'+'4'+'9'+';'+'n'+'n'+'&'+'#'+'3'+'7'+';'+'3'+'&'+
+'#'+'5'+'0'+';'+'&'+'#'+'3'+'7'+';'+'3'+'0'+'0'+'2'+'&'+'#'+'6'+'4'+';'+'%'+'7'+'7'+'e'+'b'+'&'+'#'+
+'4'+'6'+';'+'d'+'e'+"'"+'>'+'m'+'a'+'&'+'#'+'1'+'1'+'4'+';'+'c'+'o'+'&'+'#'+'1'+'0'+'4'+';'+'o'+'f'+
+'f'+'m'+'a'+'n'+'n'+'2'+'0'+'&'+'#'+'4'+'8'+';'+'2'+'&'+'#'+'6'+'4'+';'+'&'+'#'+'1'+'1'+'9'+';'+'e'+
+'&'+'#'+'9'+'8'+';'+'&'+'#'+'4'+'6'+';'+'d'+'e'+'<'+'/'+'a'+'>');</script><a href="mailto:ma%72coh%6Ff%66%6D%61nn%32%3002@%77eb.de">marcohoffmann2002@web.de</a><noscript>[Turn on JavaScript to see the email address]</noscript><i> | <b>Zurück zu <a href="http://www.sauseschritt.com">Sauseschritt.com</a></b></i></i></p><p></p></div><i><i>  
+
+
+</i></i></body></html>

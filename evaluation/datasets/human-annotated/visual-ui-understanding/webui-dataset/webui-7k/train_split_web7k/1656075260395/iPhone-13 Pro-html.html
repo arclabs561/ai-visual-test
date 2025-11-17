@@ -1,0 +1,633 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="author" content="">
+<link rel="shortcut icon" href="ico/favicon.ico">
+
+<title>QuickCheck | Continuous Integration</title>
+
+<!-- Bootstrap core CSS -->
+<link href="/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Custom styles for this template -->
+<link href="/css/dashboard.css" rel="stylesheet">
+
+<!-- Our stuff -->
+<link href="/css/eqc_ci.css" rel="stylesheet">
+
+<!-- Just for debugging purposes. Don't actually copy this line! -->
+<!--[if lt IE 9]><script src="/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+<style id="holderjs-style" type="text/css"></style></head>
+
+<body id="body" onload="init()" onresize="resize()" style="">
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+<div class="container-fluid">
+<div class="navbar-header">
+<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+<span class="sr-only">Toggle navigation</span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+</button>
+<a href="http://www.quviq.com" target="_blank">
+<img height="30px" class="navbar-brand" src="/images/quviq-vit.png">
+</a>
+</div>
+<div class="navbar-collapse collapse">
+<ul class="nav navbar-nav navbar-left">
+<li id="page_main_selector" class="active"><a href="#" onclick="select_page('main'); return false;">Home</a></li>
+<li id="page_project_search_selector"><a href="#" onclick="select_page('project_search'); return false;">Find project</a></li>
+<li id="page_project_overview_selector"><a href="#" onclick="select_page('project_overview'); return false;">Project overview</a></li>
+<li id="page_queued_builds_selector"><a href="#" onclick="select_page('queued_builds'); return false;">Queued projects</a></li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+<li id="page_register_project_selector"><a href="#" onclick="select_page('register_project'); return false;">Register project</a></li>
+<li id="page_help_selector"><a href="#" onclick="select_page('help'); return false;">Help</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+<!-- The main modal window used for system messages. -->
+<div id="main_modal" class="modal fade">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h4 class="modal-title"><span class="glyphicon glyphicon-exclamation-sign"></span> System message</h4>
+</div>
+<div id="main_modal_body" class="modal-body">
+</div>
+<div class="modal-footer">
+<button type="button" class="btn btn-primary" onclick="window.location.reload();">Reload page</button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="container-fluid">
+<div class="row">
+<div id="cookieheader" class="alert alert-warning" style="margin: 0px 10px;">
+This site uses cookies to improve the user experience. By continuing to use the site you are agreeing to our use of cookies.
+<br>
+<button type="button" class="btn btn-primary btn-xs" onclick="use_cookies(true);">Accept and close</button>
+<button type="button" class="btn btn-warning btn-xs" onclick="use_cookies(false);">Do not use cookies</button>
+</div>
+
+<!-- The container used for system messages. -->
+<div style="position: fixed; bottom: 0px; left: 0px; width: 100%; text-align: centre;">
+<div id="system_message" style="width: 60%; margin: 0 auto;"></div>
+</div>
+
+
+<!-- ==================================== -->
+<!-- === The main page                === -->
+<!-- ==================================== -->
+<div id="page_main" class="main page active" style="display: block;">
+<div class="jumbotron">
+<h2 class="header">
+Welcome to QuickCheck CI!
+</h2>
+
+<p>QuickCheck CI is a continuous integration server that runs
+QuviQ QuickCheck on a project. QuickCheck is a tool for <i>automatically
+generating test cases</i> from specified properties of the software under
+test.</p>
+
+<p>Open Source Developers can use QuickCheck CI to get free access to
+QuviQ QuickCheck for their quality assurance. There are many open source
+projects created by people that have a commercial copy of QuickCheck; they
+can now easily share their QuickCheck properties.
+
+QuickCheck CI runs the full version of QuickCheck, including the
+connection to C. Thus, even open source projects written in C can be tested
+with QuickCheck CI.</p>
+
+<br>
+<p>
+<button type="button" class="btn btn-primary" onclick="select_page('register_project')"><span class="glyphicon glyphicon-plus"></span> Register your project</button>
+<button type="button" class="btn btn-primary" onclick="select_page('project_search')">Find registered project</button>
+</p>
+</div>
+<br>
+<br>
+<div class="panel panel-info">
+<div class="panel-heading"><b>Most recently built projects</b></div>
+<div class="panel-body" style="background: #f5f5f5">
+<table id="page_main_history_table" class="table table-condensed borderless">
+<thead>
+<tr>
+<th width="20"></th>
+<th>Project</th>
+<th>Status</th>
+<th>Date</th>
+<th>Runtime</th>
+</tr>
+</thead>
+<tbody><tr><td></td><td><a href="javascript:void(0)" onclick="select_project(148, &quot;uwiger/sext&quot;, &quot;https://github.com/uwiger/sext&quot;)"><div>uwiger/sext</div></a></td><td style="color: #007700">Passed</td><td>23 Apr 2022 11:32</td><td>4.83s</td></tr><tr><td></td><td><a href="javascript:void(0)" onclick="select_project(148, &quot;uwiger/sext&quot;, &quot;https://github.com/uwiger/sext&quot;)"><div>uwiger/sext</div></a></td><td style="color: #007700">Passed</td><td>11 Apr 2022 15:53</td><td>4.64s</td></tr><tr><td></td><td><a href="javascript:void(0)" onclick="select_project(148, &quot;uwiger/sext&quot;, &quot;https://github.com/uwiger/sext&quot;)"><div>uwiger/sext</div></a></td><td style="color: #007700">Passed</td><td>6 Mar 2022 15:21</td><td>5.62s</td></tr><tr><td></td><td><a href="javascript:void(0)" onclick="select_project(148, &quot;uwiger/sext&quot;, &quot;https://github.com/uwiger/sext&quot;)"><div>uwiger/sext</div></a></td><td style="color: #007700">Passed</td><td>6 Mar 2022 15:21</td><td>5.50s</td></tr><tr><td></td><td><a href="javascript:void(0)" onclick="select_project(148, &quot;uwiger/sext&quot;, &quot;https://github.com/uwiger/sext&quot;)"><div>uwiger/sext</div></a></td><td style="color: #007700">Passed</td><td>16 Dec 2021 16:12</td><td>5.07s</td></tr><tr><td></td><td><a href="javascript:void(0)" onclick="select_project(141, &quot;assaabloy-ppi/binson-c-light&quot;, &quot;https://github.com/assaabloy-ppi/binson-c-light&quot;)"><div>assaabloy-ppi/binson-c-light</div></a></td><td style="color: #bb0000">Build failed</td><td>29 Jun 2021 07:58</td><td>-</td></tr><tr><td></td><td><a href="javascript:void(0)" onclick="select_project(143, &quot;erlang-ls/erlang_ls&quot;, &quot;https://github.com/erlang-ls/erlang_ls&quot;)"><div>erlang-ls/erlang_ls</div></a></td><td style="color: #bb0000">Build failed</td><td>6 Jun 2021 21:50</td><td>-</td></tr><tr><td></td><td><a href="javascript:void(0)" onclick="select_project(148, &quot;uwiger/sext&quot;, &quot;https://github.com/uwiger/sext&quot;)"><div>uwiger/sext</div></a></td><td style="color: #007700">Passed</td><td>19 Oct 2020 08:18</td><td>6.96s</td></tr><tr><td></td><td><a href="javascript:void(0)" onclick="select_project(19, &quot;hanssv/example_proj&quot;, &quot;https://github.com/hanssv/example_proj&quot;)"><div>hanssv/example_proj</div></a></td><td style="color: #bb0000">Failed</td><td>29 Sep 2020 06:46</td><td>2.71s</td></tr><tr><td></td><td><a href="javascript:void(0)" onclick="select_project(19, &quot;hanssv/example_proj&quot;, &quot;https://github.com/hanssv/example_proj&quot;)"><div>hanssv/example_proj</div></a></td><td style="color: #bb0000">Failed</td><td>29 Sep 2020 06:45</td><td>2.77s</td></tr></tbody>
+</table>
+</div>
+</div>
+</div>
+
+
+<!-- ===================================== -->
+<!-- === The project settings modal    === -->
+<!-- ===================================== -->
+<div id="project_settings_modal" class="modal fade">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h4 class="modal-title"><span class="glyphicon glyphicon-cog"></span> Project settings</h4>
+</div>
+<div class="modal-body">
+If you have a lot of active counterexamples the running time might get very high.
+In this case you can inactivate all counterexamples in bulk.
+<br>
+<br>
+<button type="button" class="btn btn-primary" onclick="change_project_examples_status(current_project, 'inactive'); show_project_settings(false); return false;">Inactivate all counterexamples</button>
+</div>
+<div class="modal-footer">
+<button type="button" class="btn btn-primary" onclick="show_project_settings(false); return false;">Close</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ==================================== -->
+<!-- === The project overview page    === -->
+<!-- ==================================== -->
+<div id="page_project_overview" class="main page" style="display: none;">
+<div id="page_project_overview_info">
+<div class="alert alert-info">
+You have not selected any project to view.
+<br>
+<br>
+<button type="button" class="btn btn-primary" onclick="select_page('project_search')">Find registered project</button>
+</div>
+</div>
+<div id="page_project_overview_main" style="display: none">
+<h2 class="sub-header">
+<button type="button" class="btn btn-primary" onclick="show_project_settings(true);">
+<span class="glyphicon glyphicon-cog" title="Project settings"></span>
+</button>
+<span id="page_project_overview_project_name"></span> <small id="page_project_overview_project_build_id"></small>
+<span style="float: right">
+<small id="page_project_overview_project_status"></small>
+<button type="button" class="btn btn-primary" onclick="queue_build(current_project);">Queue build</button>
+</span>
+</h2>
+
+<div id="page_project_overview_status" style="display: none;"></div>
+
+<!-- Timeline -->
+<div id="page_project_overview_timeline" class="timeline">
+<div class="wrapper">
+<div class="scroll-container"><ul></ul><span class="line"></span></div>
+</div>
+<!--<div class="right"><span class="glyphicon glyphicon-forward"></span></div>-->
+<!--<div class="left"><span class="glyphicon glyphicon-backward"></span></div>-->
+</div>
+
+<!-- Build info -->
+<div id="build_info_table" class="build_info alert">
+<table><tbody><tr><td class="build_info_hdr" id="build_info_hdr">Build info&nbsp;</td>
+<td class="build_info_data output" id="build_info_data"></td></tr></tbody></table>
+</div>
+<!-- Show bread crumbs path
+<ol class="breadcrumb" id="breadcrumbs">
+</ol>
+<p>
+-->
+
+<div id="content-table">
+<!-- Nav tabs -->
+<table id="nav-tabs" class="nav nav-tabs eqc-nav-tabs"><tbody><tr>
+<td class="eqc-tab-group"><table>
+<tbody><tr><td colspan="2" class="tab-group-title">MyProject</td></tr>
+<tr class="eqc-tabs">
+<td class="active">
+<a href="#results" id="result_tab" data-toggle="eqc-tab">Modules</a></td>
+<td><a href="#history" id="history_tab" data-toggle="eqc-tab">History</a></td>
+<td><a href="#coverage" id="coverage_tab" data-toggle="eqc-tab">Coverage</a></td>
+</tr>
+</tbody></table></td>
+</tr></tbody></table>
+
+<!-- Tab panes -->
+<div id="tab-content" class="tab-content" style="height: 824px;">
+
+<!-- Test results table -->
+<div class="tab-pane active table-responsive" id="results">
+<div id="test_results_info" class="output" style="display: none;"></div>
+<table id="test_results" class="table" style="border-collapse:collapse;">
+<thead>
+<tr>
+<th class="project-module-col">Module</th>
+<th class="project-expand-module-col"></th>
+<th class="project-result-col">Result <span class="glyphicon glyphicon-question-sign" title="The number of passed, failed, aborted and not run tests."></span></th>
+<!-- <th>Expected</th> -->
+<!-- <th>Output</th> -->
+<th class="project-runtime-col">Runtime</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+</div>
+
+<!-- Build history table -->
+<div class="tab-pane table-responsive" id="history">
+<table id="build_history" class="table">
+<thead>
+<tr>
+<th width="1px"></th>
+<th>Build</th>
+<th>Result <span class="glyphicon glyphicon-question-sign" title="The number of passed, failed, aborted and not run tests."></span></th>
+<th>Build time</th>
+<th>Runtime</th>
+<th>Coverage</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+</div>
+
+<!-- Build coverage table -->
+<div class="tab-pane table-responsive" id="coverage">
+<div id="build_coverage_info" class="output"></div>
+<table id="build_coverage" class="table">
+<thead>
+<tr>
+<th width="1px"></th>
+<th class="coverage-file-col">File</th>
+<th class="coverage-coverage-col">Coverage</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- ==================================== -->
+<!-- === The build queue page         === -->
+<!-- ==================================== -->
+<div id="page_queued_builds" class="main page" style="display: none;">
+<div class="panel panel-primary">
+<div class="panel-heading"><b>Queued projects</b></div>
+<div class="panel-body" style="background: #d9edf7">
+<table id="queued_builds_table" class="table table-condensed borderless">
+<thead>
+<tr>
+<th width="20"></th>
+<th>Project</th>
+<th>Queued/started</th>
+<th>Status</th>
+<th width="20"></th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+</div>
+<br>
+<br>
+<div class="panel panel-info">
+<div class="panel-heading"><b>Most recently built projects</b></div>
+<div class="panel-body" style="background: #f5f5f5">
+<table id="queued_builds_history_table" class="table table-condensed borderless">
+<thead>
+<tr>
+<th width="20"></th>
+<th>Project</th>
+<th>Status</th>
+<th>Date</th>
+<th>Runtime</th>
+</tr>
+</thead>
+<tbody><tr><td></td><td><a href="javascript:void(0)" onclick="select_project(148, &quot;uwiger/sext&quot;, &quot;https://github.com/uwiger/sext&quot;)"><div>uwiger/sext</div></a></td><td style="color: #007700">Passed</td><td>23 Apr 2022 11:32</td><td>4.83s</td></tr><tr><td></td><td><a href="javascript:void(0)" onclick="select_project(148, &quot;uwiger/sext&quot;, &quot;https://github.com/uwiger/sext&quot;)"><div>uwiger/sext</div></a></td><td style="color: #007700">Passed</td><td>11 Apr 2022 15:53</td><td>4.64s</td></tr><tr><td></td><td><a href="javascript:void(0)" onclick="select_project(148, &quot;uwiger/sext&quot;, &quot;https://github.com/uwiger/sext&quot;)"><div>uwiger/sext</div></a></td><td style="color: #007700">Passed</td><td>6 Mar 2022 15:21</td><td>5.62s</td></tr><tr><td></td><td><a href="javascript:void(0)" onclick="select_project(148, &quot;uwiger/sext&quot;, &quot;https://github.com/uwiger/sext&quot;)"><div>uwiger/sext</div></a></td><td style="color: #007700">Passed</td><td>6 Mar 2022 15:21</td><td>5.50s</td></tr><tr><td></td><td><a href="javascript:void(0)" onclick="select_project(148, &quot;uwiger/sext&quot;, &quot;https://github.com/uwiger/sext&quot;)"><div>uwiger/sext</div></a></td><td style="color: #007700">Passed</td><td>16 Dec 2021 16:12</td><td>5.07s</td></tr><tr><td></td><td><a href="javascript:void(0)" onclick="select_project(141, &quot;assaabloy-ppi/binson-c-light&quot;, &quot;https://github.com/assaabloy-ppi/binson-c-light&quot;)"><div>assaabloy-ppi/binson-c-light</div></a></td><td style="color: #bb0000">Build failed</td><td>29 Jun 2021 07:58</td><td>-</td></tr><tr><td></td><td><a href="javascript:void(0)" onclick="select_project(143, &quot;erlang-ls/erlang_ls&quot;, &quot;https://github.com/erlang-ls/erlang_ls&quot;)"><div>erlang-ls/erlang_ls</div></a></td><td style="color: #bb0000">Build failed</td><td>6 Jun 2021 21:50</td><td>-</td></tr><tr><td></td><td><a href="javascript:void(0)" onclick="select_project(148, &quot;uwiger/sext&quot;, &quot;https://github.com/uwiger/sext&quot;)"><div>uwiger/sext</div></a></td><td style="color: #007700">Passed</td><td>19 Oct 2020 08:18</td><td>6.96s</td></tr><tr><td></td><td><a href="javascript:void(0)" onclick="select_project(19, &quot;hanssv/example_proj&quot;, &quot;https://github.com/hanssv/example_proj&quot;)"><div>hanssv/example_proj</div></a></td><td style="color: #bb0000">Failed</td><td>29 Sep 2020 06:46</td><td>2.71s</td></tr><tr><td></td><td><a href="javascript:void(0)" onclick="select_project(19, &quot;hanssv/example_proj&quot;, &quot;https://github.com/hanssv/example_proj&quot;)"><div>hanssv/example_proj</div></a></td><td style="color: #bb0000">Failed</td><td>29 Sep 2020 06:45</td><td>2.77s</td></tr></tbody>
+</table>
+</div>
+</div>
+</div>
+
+<!-- ===================================== -->
+<!-- === The project registration page === -->
+<!-- ===================================== -->
+<div id="page_register_project" class="main page" style="display: none;">
+<h2>Project instructions</h2>
+<div class="well">
+<h5>Required files</h5>
+Before registering your project you need to add the following two files in the top directory of your repository:
+<table style="margin-left: 20px">
+<tbody><tr>
+<td>⇒ <tt>EQC_CI_LICENCE.txt</tt></td>
+<td style="padding-left: 20px"></td>
+<td>- The QuviQ CI licence file which can be downloaded <a href="EQC_CI_LICENCE.txt">here</a>.</td>
+</tr>
+<tr>
+<td>⇒ <tt>.eqc_ci</tt></td>
+<td></td>
+<td>- A configuration file with the following contents.  </td>
+</tr>
+</tbody></table>
+
+<table style="margin-top: 10px; margin-left: 50px">
+<tbody><tr>
+<td><tt>{build, "CMD"}.</tt></td>
+<td style="padding-left: 20px"></td>
+<td>Where <tt>CMD</tt> is a command that builds your project, for example: <tt>cd ebin; erl -make</tt></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>(<i>Mandatory</i>)</td>
+</tr>
+<tr>
+<td><tt>{test_path, "DIR"}.</tt></td>
+<td></td>
+<td>Where <tt>DIR</tt> is the directory where the compiled <b>beam</b>-files will be found, for example: <tt>ebin</tt></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>(<i>Optional</i> - the option can be repeated if tests reside in multiple directories. <i>Default:</i> <tt>ebin</tt>)</td>
+</tr>
+<tr>
+<td><tt>{deps, "DIR"}.</tt></td>
+<td></td>
+<td>Where <tt>DIR</tt> is the directory containing beam files necessary when running, for example: <tt>deps/folsom/ebin</tt></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>(<i>Optional</i> - the option can be repeated for multiple dependencies. <b>Note:</b> rebar.config is currently not taken into account)</td>
+</tr>
+<tr>
+<td><tt>{test_root, "DIR"}.</tt></td>
+<td></td>
+<td>Where <tt>DIR</tt> is the directory from where the tests should be run, for example: <tt>ebin_test</tt></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>(<i>Optional</i> <b>Note:</b> rebar.config is currently not taken into account)</td>
+</tr>
+</tbody></table>
+
+<h5>Code coverage</h5>
+QuickCheck CI will automatically try to collect coverage information when running tests. In order to succeed the code must be compiled using
+the eqc_cover parse transform. If you are compiling using: <tt>erl -make</tt> this can be achieved with:
+<br>
+<br>
+<tt>erl -noshell -eval "make:all([{parse_transform, eqc_cover}])" -s init stop</tt>
+<br>
+<br>
+Otherwise make sure that you compile with this parse transform and that it is
+applied <i>first</i> (it needs the source code untouched to display it correctly).
+
+<br>
+
+<h5>Example project</h5>
+The following GitHub project is a working example of a QuickCheck enabled repository:
+<br>
+<a href="https://github.com/hanssv/example_proj">https://github.com/hanssv/example_proj</a>
+</div>
+
+<br>
+<br>
+
+<form class="form-horizontal">
+<div class="form-group">
+<label class="control-label col-sm-2" for="register_project_url">Project URL</label>
+<div class="col-sm-8">
+<input id="register_project_url" type="text" placeholder="For example: https://github.com/hanssv/example_proj" class="form-control">
+</div>
+</div>
+<div class="form-group">
+<label class="control-label col-sm-2" for="register_project_type">Repo type</label>
+<div class="col-sm-2">
+<select id="register_project_type" value="" class="form-control"><option value="git">git</option><option value="mercurial">mercurial</option></select>
+</div>
+</div>
+<div class="form-group">
+<label class="control-label col-sm-2" for="register_project_branch">Branch</label>
+<div class="col-sm-2">
+<input id="register_project_branch" type="text" value="" class="form-control">
+</div>
+</div>
+<div class="form-group">
+<div class="col-sm-offset-2 col-sm-8">
+<button type="submit" class="btn btn-primary" onclick="register_project(false); return false;"><span class="glyphicon glyphicon-plus"></span> Register project</button>
+</div>
+</div>
+<div class="form-group" style="margin-top: 50px">
+<div class="col-xs-offset-2 col-xs-9" id="register_project_status"></div>
+</div>
+</form>
+</div>
+
+
+
+<!-- ==================================== -->
+<!-- === The help page                === -->
+<!-- ==================================== -->
+<div id="page_help" class="main page" style="display: none;">
+<h2>Help</h2>
+<div class="well">
+For questions and feedback, please email: <a href="mailto:quickcheck-ci@quviq.com">quickcheck-ci@quviq.com</a>
+
+<h3>GitHub webhook</h3>
+QuickCheck-CI exports a GitHub webhook that can automatically queue a build whenever there is
+a push to a repository. You can install the webhook as follows:
+<ol>
+<li>Open the repository on <a href="http://www.github.com" target="_blank">GitHub</a> while being logged in</li>
+<li>Navigate to the settings page</li>
+<li>Choose the "Webhooks &amp; Services" menu item</li>
+<li>Click the "Add webhook" button</li>
+<li>Fill the "Payload URL" field with the following URL: <div class="webhookurl">http://quickcheck-ci.com/webhook/</div></li>
+<li>Set the "Content type" to <tt>'application/json'</tt></li>
+<li>Since QuickCheck-CI only understands the PUSH event, select 'Just the push event'</li>
+<li>Leave the other settings as , and click the "Add webhook" button</li>
+</ol>
+
+<h3>Installed software</h3>
+<ul>
+<li>QuviQ QuickCheck: <b><span id="eqc_version">1.40.1</span></b>
+</li><li>Erlang: <b><span id="erlang_version">Erlang/OTP 19/8.2</span></b>
+</li><li>Elixir: <b><span id="elixir_version">1.4.1</span></b>
+</li></ul>
+
+<h3>Configuration options</h3>
+<table style="margin-top: 10px; margin-left: 50px">
+<tbody><tr>
+<td><tt>{build, "CMD"}.</tt></td>
+<td style="padding-left: 20px"></td>
+<td>Where <tt>CMD</tt> is a command that builds your project, for example: <tt>cd ebin; erl -make</tt></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td><b>Mandatory</b></td>
+</tr>
+<tr><td>&nbsp;</td></tr>
+<tr>
+<td><tt>{test_path, "DIR"}.</tt></td>
+<td></td>
+<td>Where <tt>DIR</tt> is the directory where the compiled <b>beam</b>-files will be found, for example: <tt>ebin</tt></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td><b>Optional</b> - The option can be repeated if tests reside in multiple directories.</td>
+</tr>
+<tr><td>&nbsp;</td></tr>
+<tr>
+<td><tt>{deps, "DIR"}.</tt></td>
+<td></td>
+<td>Where <tt>DIR</tt> is the directory containing beam files necessary when running, for example: <tt>deps/folsom/ebin</tt></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td><b>Optional</b> - The option can be repeated for multiple dependencies.</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td><b>Note:</b> rebar.config is currently not taken into account.</td>
+</tr>
+<tr><td>&nbsp;</td></tr>
+<tr>
+<td><tt>{test_root, "DIR"}.</tt></td>
+<td></td>
+<td>Where <tt>DIR</tt> is the directory from where the tests should be run, for example: <tt>ebin_test</tt></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td><b>Optional</b></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td><b>Default value</b>: <tt>"ebin"</tt></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td><b>Note:</b> rebar.config is currently not taken into account.</td>
+</tr>
+</tbody></table>
+
+<h3>Code coverage</h3>
+QuickCheck CI will automatically try to collect coverage information when running tests. In order to succeed the code must be compiled using
+the eqc_cover parse transform. If you are compiling using: <tt>erl -make</tt> this can be achieved with:
+<br>
+<br>
+<tt>erl -noshell -eval "make:all([{parse_transform, eqc_cover}])" -s init stop</tt>
+<br>
+<br>
+Otherwise make sure that you compile with this parse transform and that it is
+applied <i>first</i> (it needs the source code untouched to display it correctly).
+
+<br>
+
+<h3>Example project</h3>
+The following GitHub project is a working example of a QuickCheck enabled repository:
+<br>
+<a href="https://github.com/hanssv/example_proj" target="_blank">https://github.com/hanssv/example_proj</a>
+</div>
+</div>
+
+<!-- ==================================== -->
+<!-- === The project search page      === -->
+<!-- ==================================== -->
+<div id="page_project_search" class="main page" style="display: none;">
+<form class="form-horizontal">
+<div class="form-group">
+<label class="control-label col-xs-1" for="project_search_filter">Filter</label>
+<div class="col-xs-10">
+<input id="project_search_filter" type="text" placeholder="Enter part of the project name..." class="form-control">
+</div>
+</div>
+<div class="form-group">
+<div class="col-xs-offset-1 col-xs-10">
+<button type="submit" class="btn btn-primary" onclick="update_project_search_table(); return false;">Search</button>
+</div>
+</div>
+<div class="form-group" style="margin-top: 50px">
+<div class="col-xs-offset-1 col-xs-10" id="project_search_status"></div>
+</div>
+</form>
+
+<br>
+<br>
+
+<table id="project_search_table" class="table table-condensed" style="display: none">
+<thead>
+<tr>
+<th>Project</th>
+<th>Last status</th>
+<th>Last build</th>
+<th width="20">Builds</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+<!-- Not displayed here bur rather programatically elsewhere -->
+<div id="no_coverage_info" class="output" style="display: none;">
+*** No coverage information found ***
+
+QuickCheck CI will automatically try to collect coverage information when running
+tests. In order to succeed the code must be compiled using the eqc_cover parse transform.
+If you are compiling using 'erl -make' this can be achieved with:
+
+erl -eval "make:all([{parse_transform, eqc_cover}])" -s init stop
+
+Otherwise make sure that you compile with this parse transform and that it is applied first
+(it needs the source code untouched to display it correctly)
+</div>
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script async="" src="//www.google-analytics.com/analytics.js"></script><script src="/js/jquery.min.js"></script>
+<script src="/js/jquery.cookie.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/docs.min.js"></script>
+<script src="/js/timeline.js"></script>
+<script src="/js/utils.js"></script>
+<script src="/js/eqc_ci.js"></script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-11643517-2', 'quickcheck-ci.com');
+  ga('require', 'displayfeatures');
+  ga('send', 'pageview');
+</script>
+
+
+</body></html>

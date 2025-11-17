@@ -1,0 +1,835 @@
+<!DOCTYPE html><html lang="nl"><head><meta charset="UTF-8"><script>if(navigator.userAgent.match(/MSIE|Internet Explorer/i)||navigator.userAgent.match(/Trident\/7\..*?rv:11/i)){var href=document.location.href;if(!href.match(/[?&]nowprocket/)){if(href.indexOf("?")==-1){if(href.indexOf("#")==-1){document.location.href=href+"?nowprocket=1"}else{document.location.href=href.replace("#","?nowprocket=1#")}}else{if(href.indexOf("#")==-1){document.location.href=href+"&nowprocket=1"}else{document.location.href=href.replace("#","&nowprocket=1#")}}}}</script><script>class RocketLazyLoadScripts{constructor(){this.triggerEvents=["keydown","mousedown","mousemove","touchmove","touchstart","touchend","wheel"],this.userEventHandler=this._triggerListener.bind(this),this.touchStartHandler=this._onTouchStart.bind(this),this.touchMoveHandler=this._onTouchMove.bind(this),this.touchEndHandler=this._onTouchEnd.bind(this),this.clickHandler=this._onClick.bind(this),this.interceptedClicks=[],window.addEventListener("pageshow",(e=>{this.persisted=e.persisted})),window.addEventListener("DOMContentLoaded",(()=>{this._preconnect3rdParties()})),this.delayedScripts={normal:[],async:[],defer:[]},this.allJQueries=[]}_addUserInteractionListener(e){document.hidden?e._triggerListener():(this.triggerEvents.forEach((t=>window.addEventListener(t,e.userEventHandler,{passive:!0}))),window.addEventListener("touchstart",e.touchStartHandler,{passive:!0}),window.addEventListener("mousedown",e.touchStartHandler),document.addEventListener("visibilitychange",e.userEventHandler))}_removeUserInteractionListener(){this.triggerEvents.forEach((e=>window.removeEventListener(e,this.userEventHandler,{passive:!0}))),document.removeEventListener("visibilitychange",this.userEventHandler)}_onTouchStart(e){"HTML"!==e.target.tagName&&(window.addEventListener("touchend",this.touchEndHandler),window.addEventListener("mouseup",this.touchEndHandler),window.addEventListener("touchmove",this.touchMoveHandler,{passive:!0}),window.addEventListener("mousemove",this.touchMoveHandler),e.target.addEventListener("click",this.clickHandler),this._renameDOMAttribute(e.target,"onclick","rocket-onclick"))}_onTouchMove(e){window.removeEventListener("touchend",this.touchEndHandler),window.removeEventListener("mouseup",this.touchEndHandler),window.removeEventListener("touchmove",this.touchMoveHandler,{passive:!0}),window.removeEventListener("mousemove",this.touchMoveHandler),e.target.removeEventListener("click",this.clickHandler),this._renameDOMAttribute(e.target,"rocket-onclick","onclick")}_onTouchEnd(e){window.removeEventListener("touchend",this.touchEndHandler),window.removeEventListener("mouseup",this.touchEndHandler),window.removeEventListener("touchmove",this.touchMoveHandler,{passive:!0}),window.removeEventListener("mousemove",this.touchMoveHandler)}_onClick(e){e.target.removeEventListener("click",this.clickHandler),this._renameDOMAttribute(e.target,"rocket-onclick","onclick"),this.interceptedClicks.push(e),e.preventDefault(),e.stopPropagation(),e.stopImmediatePropagation()}_replayClicks(){window.removeEventListener("touchstart",this.touchStartHandler,{passive:!0}),window.removeEventListener("mousedown",this.touchStartHandler),this.interceptedClicks.forEach((e=>{e.target.dispatchEvent(new MouseEvent("click",{view:e.view,bubbles:!0,cancelable:!0}))}))}_renameDOMAttribute(e,t,n){e.hasAttribute&&e.hasAttribute(t)&&(event.target.setAttribute(n,event.target.getAttribute(t)),event.target.removeAttribute(t))}_triggerListener(){this._removeUserInteractionListener(this),"loading"===document.readyState?document.addEventListener("DOMContentLoaded",this._loadEverythingNow.bind(this)):this._loadEverythingNow()}_preconnect3rdParties(){let e=[];document.querySelectorAll("script[type=rocketlazyloadscript]").forEach((t=>{if(t.hasAttribute("src")){const n=new URL(t.src).origin;n!==location.origin&&e.push({src:n,crossOrigin:t.crossOrigin||"module"===t.getAttribute("data-rocket-type")})}})),e=[...new Map(e.map((e=>[JSON.stringify(e),e]))).values()],this._batchInjectResourceHints(e,"preconnect")}async _loadEverythingNow(){this.lastBreath=Date.now(),this._delayEventListeners(),this._delayJQueryReady(this),this._handleDocumentWrite(),this._registerAllDelayedScripts(),this._preloadAllScripts(),await this._loadScriptsFromList(this.delayedScripts.normal),await this._loadScriptsFromList(this.delayedScripts.defer),await this._loadScriptsFromList(this.delayedScripts.async);try{await this._triggerDOMContentLoaded(),await this._triggerWindowLoad()}catch(e){}window.dispatchEvent(new Event("rocket-allScriptsLoaded")),this._replayClicks()}_registerAllDelayedScripts(){document.querySelectorAll("script[type=rocketlazyloadscript]").forEach((e=>{e.hasAttribute("src")?e.hasAttribute("async")&&!1!==e.async?this.delayedScripts.async.push(e):e.hasAttribute("defer")&&!1!==e.defer||"module"===e.getAttribute("data-rocket-type")?this.delayedScripts.defer.push(e):this.delayedScripts.normal.push(e):this.delayedScripts.normal.push(e)}))}async _transformScript(e){return await this._littleBreath(),new Promise((t=>{const n=document.createElement("script");[...e.attributes].forEach((e=>{let t=e.nodeName;"type"!==t&&("data-rocket-type"===t&&(t="type"),n.setAttribute(t,e.nodeValue))})),e.hasAttribute("src")?(n.addEventListener("load",t),n.addEventListener("error",t)):(n.text=e.text,t());try{e.parentNode.replaceChild(n,e)}catch(e){t()}}))}async _loadScriptsFromList(e){const t=e.shift();return t?(await this._transformScript(t),this._loadScriptsFromList(e)):Promise.resolve()}_preloadAllScripts(){this._batchInjectResourceHints([...this.delayedScripts.normal,...this.delayedScripts.defer,...this.delayedScripts.async],"preload")}_batchInjectResourceHints(e,t){var n=document.createDocumentFragment();e.forEach((e=>{if(e.src){const i=document.createElement("link");i.href=e.src,i.rel=t,"preconnect"!==t&&(i.as="script"),e.getAttribute&&"module"===e.getAttribute("data-rocket-type")&&(i.crossOrigin=!0),e.crossOrigin&&(i.crossOrigin=e.crossOrigin),n.appendChild(i)}})),document.head.appendChild(n)}_delayEventListeners(){let e={};function t(t,n){!function(t){function n(n){return e[t].eventsToRewrite.indexOf(n)>=0?"rocket-"+n:n}e[t]||(e[t]={originalFunctions:{add:t.addEventListener,remove:t.removeEventListener},eventsToRewrite:[]},t.addEventListener=function(){arguments[0]=n(arguments[0]),e[t].originalFunctions.add.apply(t,arguments)},t.removeEventListener=function(){arguments[0]=n(arguments[0]),e[t].originalFunctions.remove.apply(t,arguments)})}(t),e[t].eventsToRewrite.push(n)}function n(e,t){let n=e[t];Object.defineProperty(e,t,{get:()=>n||function(){},set(i){e["rocket"+t]=n=i}})}t(document,"DOMContentLoaded"),t(window,"DOMContentLoaded"),t(window,"load"),t(window,"pageshow"),t(document,"readystatechange"),n(document,"onreadystatechange"),n(window,"onload"),n(window,"onpageshow")}_delayJQueryReady(e){let t=window.jQuery;Object.defineProperty(window,"jQuery",{get:()=>t,set(n){if(n&&n.fn&&!e.allJQueries.includes(n)){n.fn.ready=n.fn.init.prototype.ready=function(t){e.domReadyFired?t.bind(document)(n):document.addEventListener("rocket-DOMContentLoaded",(()=>t.bind(document)(n)))};const t=n.fn.on;n.fn.on=n.fn.init.prototype.on=function(){if(this[0]===window){function e(e){return e.split(" ").map((e=>"load"===e||0===e.indexOf("load.")?"rocket-jquery-load":e)).join(" ")}"string"==typeof arguments[0]||arguments[0]instanceof String?arguments[0]=e(arguments[0]):"object"==typeof arguments[0]&&Object.keys(arguments[0]).forEach((t=>{delete Object.assign(arguments[0],{[e(t)]:arguments[0][t]})[t]}))}return t.apply(this,arguments),this},e.allJQueries.push(n)}t=n}})}async _triggerDOMContentLoaded(){this.domReadyFired=!0,await this._littleBreath(),document.dispatchEvent(new Event("rocket-DOMContentLoaded")),await this._littleBreath(),window.dispatchEvent(new Event("rocket-DOMContentLoaded")),await this._littleBreath(),document.dispatchEvent(new Event("rocket-readystatechange")),await this._littleBreath(),document.rocketonreadystatechange&&document.rocketonreadystatechange()}async _triggerWindowLoad(){await this._littleBreath(),window.dispatchEvent(new Event("rocket-load")),await this._littleBreath(),window.rocketonload&&window.rocketonload(),await this._littleBreath(),this.allJQueries.forEach((e=>e(window).trigger("rocket-jquery-load"))),await this._littleBreath();const e=new Event("rocket-pageshow");e.persisted=this.persisted,window.dispatchEvent(e),await this._littleBreath(),window.rocketonpageshow&&window.rocketonpageshow({persisted:this.persisted})}_handleDocumentWrite(){const e=new Map;document.write=document.writeln=function(t){const n=document.currentScript,i=document.createRange(),r=n.parentElement;let o=e.get(n);void 0===o&&(o=n.nextSibling,e.set(n,o));const s=document.createDocumentFragment();i.setStart(s,0),s.appendChild(i.createContextualFragment(t)),r.insertBefore(s,o)}}async _littleBreath(){Date.now()-this.lastBreath>45&&(await this._requestAnimFrame(),this.lastBreath=Date.now())}async _requestAnimFrame(){return document.hidden?new Promise((e=>setTimeout(e))):new Promise((e=>requestAnimationFrame(e)))}static run(){const e=new RocketLazyLoadScripts;e._addUserInteractionListener(e)}}RocketLazyLoadScripts.run();</script>
+	
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="profile" href="https://gmpg.org/xfn/11">
+	<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+
+	<!-- This site is optimized with the Yoast SEO plugin v19.1 - https://yoast.com/wordpress/plugins/seo/ -->
+	<title>Homepage - Bokxing IT</title><link rel="preload" as="style" href="https://fonts.googleapis.com/css?family=Open%20Sans%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CRoboto%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CLato%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CMontserrat%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic&amp;display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open%20Sans%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CRoboto%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CLato%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CMontserrat%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic&amp;display=swap" media="all" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open%20Sans%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CRoboto%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CLato%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CMontserrat%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic&#038;display=swap" /></noscript><link rel="stylesheet" href="https://bokxing-it.nl/wp-content/cache/min/1/f553c9e735d8cf3c6db5c6609946ffdd.css" media="all" data-minify="1">
+	<link rel="canonical" href="https://bokxing-it.nl/">
+	<meta property="og:locale" content="nl_NL">
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="Homepage - Bokxing IT">
+	<meta property="og:description" content="Bokxing IT Organisaties ontzorgen door innovatieve en op maat gemaakte IT-oplossingen die meebewegen met steeds veranderende bedrijfsbehoeften. Oplossingen Ga direct naar Cloud oplossingen On-premise oplossingen VoIP oplossingen All in ICT Bokxing biedt digitale werkomgevingen die specifiek voor u op maat gemaakt worden. Door onze jarenlange ervaring kan Bokxing IT de ideale omgeving voor uw bedrijfs-software […]">
+	<meta property="og:url" content="https://bokxing-it.nl/">
+	<meta property="og:site_name" content="Bokxing IT">
+	<meta property="article:modified_time" content="2021-06-17T08:31:54+00:00">
+	<meta property="og:image" content="https://bokxing-it.nl/wp-content/uploads/2020/11/cropped-favicon.png">
+	<meta property="og:image:width" content="512">
+	<meta property="og:image:height" content="512">
+	<meta property="og:image:type" content="image/png">
+	<meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:label1" content="Geschatte leestijd">
+	<meta name="twitter:data1" content="9 minuten">
+	<script type="application/ld+json" class="yoast-schema-graph">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://bokxing-it.nl/#website","url":"https://bokxing-it.nl/","name":"Bokxing IT","description":"Ingenieus en innovatief - ICT totaalleverancier voor het MKB","potentialAction":[{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://bokxing-it.nl/?s={search_term_string}"},"query-input":"required name=search_term_string"}],"inLanguage":"nl"},{"@type":"ImageObject","inLanguage":"nl","@id":"https://bokxing-it.nl/#primaryimage","url":"https://bokxing-it.nl/wp-content/uploads/2020/11/cropped-favicon.png","contentUrl":"https://bokxing-it.nl/wp-content/uploads/2020/11/cropped-favicon.png","width":512,"height":512,"caption":"Bokxing IT favicon"},{"@type":"WebPage","@id":"https://bokxing-it.nl/#webpage","url":"https://bokxing-it.nl/","name":"Homepage - Bokxing IT","isPartOf":{"@id":"https://bokxing-it.nl/#website"},"primaryImageOfPage":{"@id":"https://bokxing-it.nl/#primaryimage"},"datePublished":"2020-11-05T09:58:29+00:00","dateModified":"2021-06-17T08:31:54+00:00","breadcrumb":{"@id":"https://bokxing-it.nl/#breadcrumb"},"inLanguage":"nl","potentialAction":[{"@type":"ReadAction","target":["https://bokxing-it.nl/"]}]},{"@type":"BreadcrumbList","@id":"https://bokxing-it.nl/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home"}]}]}</script>
+	<meta name="google-site-verification" content="a6bOKOJNF5yQslderVYVM2-jN8E67tkH0hepRF79JFw">
+	<!-- / Yoast SEO plugin. -->
+
+
+<link href="https://fonts.gstatic.com" crossorigin="" rel="preconnect">
+<link rel="alternate" type="application/rss+xml" title="Bokxing IT » Feed" href="https://bokxing-it.nl/feed/">
+<link rel="alternate" type="application/rss+xml" title="Bokxing IT » Reactiesfeed" href="https://bokxing-it.nl/comments/feed/">
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 0.07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	
+<style id="global-styles-inline-css" type="text/css">
+body{--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--duotone--dark-grayscale: url('#wp-duotone-dark-grayscale');--wp--preset--duotone--grayscale: url('#wp-duotone-grayscale');--wp--preset--duotone--purple-yellow: url('#wp-duotone-purple-yellow');--wp--preset--duotone--blue-red: url('#wp-duotone-blue-red');--wp--preset--duotone--midnight: url('#wp-duotone-midnight');--wp--preset--duotone--magenta-yellow: url('#wp-duotone-magenta-yellow');--wp--preset--duotone--purple-green: url('#wp-duotone-purple-green');--wp--preset--duotone--blue-orange: url('#wp-duotone-blue-orange');--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+</style>
+
+
+
+
+
+
+
+
+<link rel="stylesheet" id="elementor-post-10-css" href="https://bokxing-it.nl/wp-content/uploads/elementor/css/post-10.css?ver=1653294408" type="text/css" media="all">
+
+<link rel="stylesheet" id="elementor-post-8-css" href="https://bokxing-it.nl/wp-content/uploads/elementor/css/post-8.css?ver=1653294428" type="text/css" media="all">
+<link rel="stylesheet" id="elementor-post-958-css" href="https://bokxing-it.nl/wp-content/uploads/elementor/css/post-958.css?ver=1653294408" type="text/css" media="all">
+<link rel="stylesheet" id="elementor-post-163-css" href="https://bokxing-it.nl/wp-content/uploads/elementor/css/post-163.css?ver=1653294409" type="text/css" media="all">
+
+
+
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://bokxing-it.nl/wp-includes/js/jquery/jquery.min.js?ver=3.6.0" id="jquery-core-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://bokxing-it.nl/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.3.2" id="jquery-migrate-js"></script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://bokxing-it.nl/wp-content/cache/min/1/wp-content/plugins/email-encoder-bundle/core/includes/assets/js/custom.js?ver=1650044007" id="eeb-js-frontend-js"></script>
+<link rel="https://api.w.org/" href="https://bokxing-it.nl/wp-json/"><link rel="alternate" type="application/json" href="https://bokxing-it.nl/wp-json/wp/v2/pages/8"><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://bokxing-it.nl/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://bokxing-it.nl/wp-includes/wlwmanifest.xml"> 
+<meta name="generator" content="WordPress 6.0">
+<link rel="shortlink" href="https://bokxing-it.nl/">
+<link rel="alternate" type="application/json+oembed" href="https://bokxing-it.nl/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fbokxing-it.nl%2F">
+<link rel="alternate" type="text/xml+oembed" href="https://bokxing-it.nl/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fbokxing-it.nl%2F&amp;format=xml">
+<!-- Google Tag Manager -->
+<script type="rocketlazyloadscript">(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-W58LCBQ');</script>
+<!-- End Google Tag Manager --><link rel="icon" href="https://bokxing-it.nl/wp-content/uploads/2020/11/cropped-favicon-32x32.png" sizes="32x32">
+<link rel="icon" href="https://bokxing-it.nl/wp-content/uploads/2020/11/cropped-favicon-192x192.png" sizes="192x192">
+<link rel="apple-touch-icon" href="https://bokxing-it.nl/wp-content/uploads/2020/11/cropped-favicon-180x180.png">
+<meta name="msapplication-TileImage" content="https://bokxing-it.nl/wp-content/uploads/2020/11/cropped-favicon-270x270.png">
+		<style type="text/css" id="wp-custom-css">
+			.elementor-testimonial__cite {
+	margin-top:15px;
+}
+
+.button {
+	background-color: #7AB52D;
+}
+
+.button :hover {
+	background-color:black;
+	color: white!important;
+}
+
+.button :after{
+	display:none!important;
+}		</style>
+		<noscript><style id="rocket-lazyload-nojs-css">.rll-youtube-player, [data-lazy-src]{display:none !important;}</style></noscript></head>
+<body class="home page-template-default page page-id-8 wp-custom-logo elementor-default elementor-kit-10 elementor-page elementor-page-8">
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W58LCBQ"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) --><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-dark-grayscale"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></feColorMatrix><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0 0.49803921568627"></feFuncR><feFuncG type="table" tableValues="0 0.49803921568627"></feFuncG><feFuncB type="table" tableValues="0 0.49803921568627"></feFuncB><feFuncA type="table" tableValues="1 1"></feFuncA></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-grayscale"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></feColorMatrix><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0 1"></feFuncR><feFuncG type="table" tableValues="0 1"></feFuncG><feFuncB type="table" tableValues="0 1"></feFuncB><feFuncA type="table" tableValues="1 1"></feFuncA></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-purple-yellow"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></feColorMatrix><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0.54901960784314 0.98823529411765"></feFuncR><feFuncG type="table" tableValues="0 1"></feFuncG><feFuncB type="table" tableValues="0.71764705882353 0.25490196078431"></feFuncB><feFuncA type="table" tableValues="1 1"></feFuncA></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-blue-red"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></feColorMatrix><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0 1"></feFuncR><feFuncG type="table" tableValues="0 0.27843137254902"></feFuncG><feFuncB type="table" tableValues="0.5921568627451 0.27843137254902"></feFuncB><feFuncA type="table" tableValues="1 1"></feFuncA></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-midnight"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></feColorMatrix><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0 0"></feFuncR><feFuncG type="table" tableValues="0 0.64705882352941"></feFuncG><feFuncB type="table" tableValues="0 1"></feFuncB><feFuncA type="table" tableValues="1 1"></feFuncA></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-magenta-yellow"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></feColorMatrix><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0.78039215686275 1"></feFuncR><feFuncG type="table" tableValues="0 0.94901960784314"></feFuncG><feFuncB type="table" tableValues="0.35294117647059 0.47058823529412"></feFuncB><feFuncA type="table" tableValues="1 1"></feFuncA></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-purple-green"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></feColorMatrix><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0.65098039215686 0.40392156862745"></feFuncR><feFuncG type="table" tableValues="0 1"></feFuncG><feFuncB type="table" tableValues="0.44705882352941 0.4"></feFuncB><feFuncA type="table" tableValues="1 1"></feFuncA></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-blue-orange"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></feColorMatrix><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0.098039215686275 1"></feFuncR><feFuncG type="table" tableValues="0 0.66274509803922"></feFuncG><feFuncB type="table" tableValues="0.84705882352941 0.41960784313725"></feFuncB><feFuncA type="table" tableValues="1 1"></feFuncA></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs></svg>		<div data-elementor-type="header" data-elementor-id="958" class="elementor elementor-958 elementor-location-header">
+					<div class="elementor-section-wrap">
+								<section class="elementor-section elementor-top-section elementor-element elementor-element-2771ed36 elementor-section-content-middle elementor-hidden-tablet elementor-hidden-phone elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="2771ed36" data-element_type="section" data-settings="{&quot;background_background&quot;:&quot;classic&quot;,&quot;sticky&quot;:&quot;top&quot;,&quot;sticky_on&quot;:[&quot;desktop&quot;,&quot;tablet&quot;],&quot;sticky_offset&quot;:0,&quot;sticky_effects_offset&quot;:0}">
+						<div class="elementor-container elementor-column-gap-no">
+							<div class="elementor-row">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-411ef4ba" data-id="411ef4ba" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-95c8399 elementor-widget elementor-widget-theme-site-logo elementor-widget-image" data-id="95c8399" data-element_type="widget" data-widget_type="theme-site-logo.default">
+				<div class="elementor-widget-container">
+								<div class="elementor-image">
+													<a href="https://bokxing-it.nl">
+							<img src="https://bokxing-it.nl/wp-content/uploads/2020/11/bokxing-logo-2020-def-v2.svg" class="attachment-full size-full entered lazyloaded" alt="Bokxing IT logo" data-lazy-src="https://bokxing-it.nl/wp-content/uploads/2020/11/bokxing-logo-2020-def-v2.svg" data-ll-status="loaded"><noscript><img src="https://bokxing-it.nl/wp-content/uploads/2020/11/bokxing-logo-2020-def-v2.svg" class="attachment-full size-full" alt="Bokxing IT logo" /></noscript>								</a>
+														</div>
+						</div>
+				</div>
+				<div class="elementor-element elementor-element-2f1cf444 elementor-nav-menu__align-center elementor-nav-menu--dropdown-mobile elementor-nav-menu__text-align-aside elementor-nav-menu--toggle elementor-nav-menu--burger elementor-widget elementor-widget-nav-menu" data-id="2f1cf444" data-element_type="widget" data-settings="{&quot;layout&quot;:&quot;horizontal&quot;,&quot;submenu_icon&quot;:{&quot;value&quot;:&quot;<i class=\&quot;fas fa-caret-down\&quot;><\/i>&quot;,&quot;library&quot;:&quot;fa-solid&quot;},&quot;toggle&quot;:&quot;burger&quot;}" data-widget_type="nav-menu.default">
+				<div class="elementor-widget-container">
+						<nav migration_allowed="1" migrated="0" role="navigation" class="elementor-nav-menu--main elementor-nav-menu__container elementor-nav-menu--layout-horizontal e--pointer-underline e--animation-fade">
+				<ul id="menu-1-2f1cf444" class="elementor-nav-menu"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-home current-menu-item page_item page-item-8 current_page_item menu-item-69"><a href="https://bokxing-it.nl/" aria-current="page" class="elementor-item elementor-item-active">Home</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-71"><a href="https://bokxing-it.nl/onze-totaaloplossing/" class="elementor-item">Oplossingen</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-70"><a href="https://bokxing-it.nl/nieuws/" class="elementor-item">Nieuws</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-72"><a href="https://bokxing-it.nl/over-ons/" class="elementor-item">Over ons</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-68"><a href="https://bokxing-it.nl/contact/" class="elementor-item">Contact</a></li>
+<li class="button menu-item menu-item-type-post_type menu-item-object-page menu-item-965"><a href="https://bokxing-it.nl/support/" class="elementor-item">Support</a></li>
+</ul>			</nav>
+					<div class="elementor-menu-toggle" role="button" tabindex="0" aria-label="Menu Toggle" aria-expanded="false">
+			<i aria-hidden="true" role="presentation" class="elementor-menu-toggle__icon--open eicon-menu-bar"></i><i aria-hidden="true" role="presentation" class="elementor-menu-toggle__icon--close eicon-close"></i>			<span class="elementor-screen-only">Menu</span>
+		</div>
+			<nav class="elementor-nav-menu--dropdown elementor-nav-menu__container" role="navigation" aria-hidden="true">
+				<ul id="menu-2-2f1cf444" class="elementor-nav-menu"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-home current-menu-item page_item page-item-8 current_page_item menu-item-69"><a href="https://bokxing-it.nl/" aria-current="page" class="elementor-item elementor-item-active" tabindex="-1">Home</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-71"><a href="https://bokxing-it.nl/onze-totaaloplossing/" class="elementor-item" tabindex="-1">Oplossingen</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-70"><a href="https://bokxing-it.nl/nieuws/" class="elementor-item" tabindex="-1">Nieuws</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-72"><a href="https://bokxing-it.nl/over-ons/" class="elementor-item" tabindex="-1">Over ons</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-68"><a href="https://bokxing-it.nl/contact/" class="elementor-item" tabindex="-1">Contact</a></li>
+<li class="button menu-item menu-item-type-post_type menu-item-object-page menu-item-965"><a href="https://bokxing-it.nl/support/" class="elementor-item" tabindex="-1">Support</a></li>
+</ul>			</nav>
+				</div>
+				</div>
+						</div>
+					</div>
+		</div>
+								</div>
+					</div>
+		</section>
+				<section class="elementor-section elementor-top-section elementor-element elementor-element-b99b93b elementor-section-content-middle elementor-hidden-desktop elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="b99b93b" data-element_type="section" data-settings="{&quot;background_background&quot;:&quot;classic&quot;,&quot;sticky&quot;:&quot;top&quot;,&quot;sticky_on&quot;:[&quot;desktop&quot;,&quot;tablet&quot;],&quot;sticky_offset&quot;:0,&quot;sticky_effects_offset&quot;:0}">
+						<div class="elementor-container elementor-column-gap-no">
+							<div class="elementor-row">
+					<div class="elementor-column elementor-col-50 elementor-top-column elementor-element elementor-element-1dbe7de" data-id="1dbe7de" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-a1f8660 elementor-widget elementor-widget-theme-site-logo elementor-widget-image" data-id="a1f8660" data-element_type="widget" data-widget_type="theme-site-logo.default">
+				<div class="elementor-widget-container">
+								<div class="elementor-image">
+													<a href="https://bokxing-it.nl">
+							<img src="https://bokxing-it.nl/wp-content/uploads/2020/11/bokxing-logo-2020-def-v2.svg" class="attachment-full size-full entered lazyloaded" alt="Bokxing IT logo" data-lazy-src="https://bokxing-it.nl/wp-content/uploads/2020/11/bokxing-logo-2020-def-v2.svg" data-ll-status="loaded"><noscript><img src="https://bokxing-it.nl/wp-content/uploads/2020/11/bokxing-logo-2020-def-v2.svg" class="attachment-full size-full" alt="Bokxing IT logo" /></noscript>								</a>
+														</div>
+						</div>
+				</div>
+						</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-50 elementor-top-column elementor-element elementor-element-8830dc2" data-id="8830dc2" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-3c04af0 elementor-nav-menu__align-center elementor-nav-menu--stretch elementor-nav-menu--dropdown-tablet elementor-nav-menu__text-align-aside elementor-nav-menu--toggle elementor-nav-menu--burger elementor-widget elementor-widget-nav-menu" data-id="3c04af0" data-element_type="widget" data-settings="{&quot;full_width&quot;:&quot;stretch&quot;,&quot;layout&quot;:&quot;horizontal&quot;,&quot;submenu_icon&quot;:{&quot;value&quot;:&quot;<i class=\&quot;fas fa-caret-down\&quot;><\/i>&quot;,&quot;library&quot;:&quot;fa-solid&quot;},&quot;toggle&quot;:&quot;burger&quot;}" data-widget_type="nav-menu.default">
+				<div class="elementor-widget-container">
+						<nav migration_allowed="1" migrated="0" role="navigation" class="elementor-nav-menu--main elementor-nav-menu__container elementor-nav-menu--layout-horizontal e--pointer-underline e--animation-fade">
+				<ul id="menu-1-3c04af0" class="elementor-nav-menu"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-home current-menu-item page_item page-item-8 current_page_item menu-item-69"><a href="https://bokxing-it.nl/" aria-current="page" class="elementor-item elementor-item-active">Home</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-71"><a href="https://bokxing-it.nl/onze-totaaloplossing/" class="elementor-item">Oplossingen</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-70"><a href="https://bokxing-it.nl/nieuws/" class="elementor-item">Nieuws</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-72"><a href="https://bokxing-it.nl/over-ons/" class="elementor-item">Over ons</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-68"><a href="https://bokxing-it.nl/contact/" class="elementor-item">Contact</a></li>
+<li class="button menu-item menu-item-type-post_type menu-item-object-page menu-item-965"><a href="https://bokxing-it.nl/support/" class="elementor-item">Support</a></li>
+</ul>			</nav>
+					<div class="elementor-menu-toggle" role="button" tabindex="0" aria-label="Menu Toggle" aria-expanded="false">
+			<i aria-hidden="true" role="presentation" class="elementor-menu-toggle__icon--open eicon-menu-bar"></i><i aria-hidden="true" role="presentation" class="elementor-menu-toggle__icon--close eicon-close"></i>			<span class="elementor-screen-only">Menu</span>
+		</div>
+			<nav class="elementor-nav-menu--dropdown elementor-nav-menu__container" role="navigation" aria-hidden="true">
+				<ul id="menu-2-3c04af0" class="elementor-nav-menu"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-home current-menu-item page_item page-item-8 current_page_item menu-item-69"><a href="https://bokxing-it.nl/" aria-current="page" class="elementor-item elementor-item-active" tabindex="-1">Home</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-71"><a href="https://bokxing-it.nl/onze-totaaloplossing/" class="elementor-item" tabindex="-1">Oplossingen</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-70"><a href="https://bokxing-it.nl/nieuws/" class="elementor-item" tabindex="-1">Nieuws</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-72"><a href="https://bokxing-it.nl/over-ons/" class="elementor-item" tabindex="-1">Over ons</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-68"><a href="https://bokxing-it.nl/contact/" class="elementor-item" tabindex="-1">Contact</a></li>
+<li class="button menu-item menu-item-type-post_type menu-item-object-page menu-item-965"><a href="https://bokxing-it.nl/support/" class="elementor-item" tabindex="-1">Support</a></li>
+</ul>			</nav>
+				</div>
+				</div>
+						</div>
+					</div>
+		</div>
+								</div>
+					</div>
+		</section>
+							</div>
+				</div>
+		
+<main id="content" class="site-main post-8 page type-page status-publish has-post-thumbnail hentry" role="main">
+		<div class="page-content">
+				<div data-elementor-type="wp-page" data-elementor-id="8" class="elementor elementor-8">
+						<div class="elementor-inner">
+				<div class="elementor-section-wrap">
+									<section class="elementor-section elementor-top-section elementor-element elementor-element-ea4865d elementor-section-full_width elementor-section-height-min-height elementor-section-content-middle elementor-reverse-tablet elementor-reverse-mobile elementor-section-height-default elementor-section-items-middle" data-id="ea4865d" data-element_type="section" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+							<div class="elementor-background-overlay"></div>
+							<div class="elementor-container elementor-column-gap-default">
+							<div class="elementor-row">
+					<div class="elementor-column elementor-col-33 elementor-top-column elementor-element elementor-element-2defb7a" data-id="2defb7a" data-element_type="column">
+			<div class="elementor-column-wrap">
+							<div class="elementor-widget-wrap">
+								</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-top-column elementor-element elementor-element-66ddd56" data-id="66ddd56" data-element_type="column" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-529e1969 elementor-widget elementor-widget-text-editor" data-id="529e1969" data-element_type="widget" data-widget_type="text-editor.default">
+				<div class="elementor-widget-container">
+								<div class="elementor-text-editor elementor-clearfix">
+				<h1 style="letter-spacing: 0.6px;">Bokxing IT</h1>					</div>
+						</div>
+				</div>
+				<div class="elementor-element elementor-element-7f99e195 elementor-widget elementor-widget-text-editor" data-id="7f99e195" data-element_type="widget" data-widget_type="text-editor.default">
+				<div class="elementor-widget-container">
+								<div class="elementor-text-editor elementor-clearfix">
+				<p>Organisaties ontzorgen door innovatieve en op maat gemaakte IT-oplossingen die meebewegen met steeds veranderende bedrijfsbehoeften.</p>					</div>
+						</div>
+				</div>
+				<div class="elementor-element elementor-element-ca67583 elementor-widget elementor-widget-button" data-id="ca67583" data-element_type="widget" data-widget_type="button.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-button-wrapper">
+			<a href="/onze-totaaloplossing/" class="elementor-button-link elementor-button elementor-size-sm" role="button">
+						<span class="elementor-button-content-wrapper">
+							<span class="elementor-button-icon elementor-align-icon-right">
+				<i aria-hidden="true" class="fas fa-arrow-right"></i>			</span>
+						<span class="elementor-button-text">Oplossingen</span>
+		</span>
+					</a>
+		</div>
+				</div>
+				</div>
+						</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-top-column elementor-element elementor-element-3091630 elementor-hidden-desktop" data-id="3091630" data-element_type="column" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-background-overlay"></div>
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-44fa5f23 elementor-hidden-desktop elementor-widget elementor-widget-spacer" data-id="44fa5f23" data-element_type="widget" data-widget_type="spacer.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-spacer">
+			<div class="elementor-spacer-inner"></div>
+		</div>
+				</div>
+				</div>
+						</div>
+					</div>
+		</div>
+								</div>
+					</div>
+		</section>
+				<section class="elementor-section elementor-top-section elementor-element elementor-element-473290f elementor-section-height-min-height elementor-reverse-mobile elementor-section-boxed elementor-section-height-default elementor-section-items-middle" data-id="473290f" data-element_type="section" data-settings="{&quot;background_background&quot;:&quot;classic&quot;,&quot;shape_divider_bottom&quot;:&quot;waves&quot;}">
+							<div class="elementor-background-overlay"></div>
+						<div class="elementor-shape elementor-shape-bottom" data-negative="false">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" preserveAspectRatio="none">
+	<path class="elementor-shape-fill" d="M421.9,6.5c22.6-2.5,51.5,0.4,75.5,5.3c23.6,4.9,70.9,23.5,100.5,35.7c75.8,32.2,133.7,44.5,192.6,49.7
+	c23.6,2.1,48.7,3.5,103.4-2.5c54.7-6,106.2-25.6,106.2-25.6V0H0v30.3c0,0,72,32.6,158.4,30.5c39.2-0.7,92.8-6.7,134-22.4
+	c21.2-8.1,52.2-18.2,79.7-24.2C399.3,7.9,411.6,7.5,421.9,6.5z"></path>
+</svg>		</div>
+					<div class="elementor-container elementor-column-gap-wider">
+							<div class="elementor-row">
+					<div class="elementor-column elementor-col-50 elementor-top-column elementor-element elementor-element-f5c2652" data-id="f5c2652" data-element_type="column" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-f1c1b67 elementor-widget elementor-widget-text-editor" data-id="f1c1b67" data-element_type="widget" data-widget_type="text-editor.default">
+				<div class="elementor-widget-container">
+								<div class="elementor-text-editor elementor-clearfix">
+				<p><strong>Ga direct naar</strong></p>					</div>
+						</div>
+				</div>
+				<div class="elementor-element elementor-element-2745e4b elementor-icon-list--layout-traditional elementor-list-item-link-full_width elementor-widget elementor-widget-icon-list" data-id="2745e4b" data-element_type="widget" data-widget_type="icon-list.default">
+				<div class="elementor-widget-container">
+					<ul class="elementor-icon-list-items">
+							<li class="elementor-icon-list-item">
+											<a href="/onze-totaaloplossing/#cloud">
+
+												<span class="elementor-icon-list-icon">
+							<i aria-hidden="true" class="fas fa-arrow-right"></i>						</span>
+										<span class="elementor-icon-list-text">Cloud oplossingen</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="/onze-totaaloplossing/#on-premise">
+
+												<span class="elementor-icon-list-icon">
+							<i aria-hidden="true" class="fas fa-arrow-right"></i>						</span>
+										<span class="elementor-icon-list-text">On-premise oplossingen</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="/onze-totaaloplossing/#voip">
+
+												<span class="elementor-icon-list-icon">
+							<i aria-hidden="true" class="fas fa-arrow-right"></i>						</span>
+										<span class="elementor-icon-list-text">VoIP oplossingen</span>
+											</a>
+									</li>
+						</ul>
+				</div>
+				</div>
+						</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-50 elementor-top-column elementor-element elementor-element-e7190ea" data-id="e7190ea" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-dd41c79 elementor-widget elementor-widget-heading" data-id="dd41c79" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-default">All in ICT</h2>		</div>
+				</div>
+				<div class="elementor-element elementor-element-fea9c33 elementor-widget elementor-widget-text-editor" data-id="fea9c33" data-element_type="widget" data-widget_type="text-editor.default">
+				<div class="elementor-widget-container">
+								<div class="elementor-text-editor elementor-clearfix">
+				<p>Bokxing biedt digitale werkomgevingen die specifiek voor u op maat gemaakt worden. Door onze jarenlange ervaring kan Bokxing IT de ideale omgeving voor uw bedrijfs-software bieden. Dit alles voor een vast bedrag per maand.</p>					</div>
+						</div>
+				</div>
+						</div>
+					</div>
+		</div>
+								</div>
+					</div>
+		</section>
+				<section class="elementor-section elementor-top-section elementor-element elementor-element-c2373c2 elementor-section-content-middle elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="c2373c2" data-element_type="section" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+						<div class="elementor-container elementor-column-gap-wide">
+							<div class="elementor-row">
+					<div class="elementor-column elementor-col-50 elementor-top-column elementor-element elementor-element-10746c5" data-id="10746c5" data-element_type="column" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-97bb1c8 elementor-widget elementor-widget-spacer" data-id="97bb1c8" data-element_type="widget" data-widget_type="spacer.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-spacer">
+			<div class="elementor-spacer-inner"></div>
+		</div>
+				</div>
+				</div>
+						</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-50 elementor-top-column elementor-element elementor-element-4556608" data-id="4556608" data-element_type="column" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-41cbc1b elementor-widget elementor-widget-heading" data-id="41cbc1b" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-default">Altijd en overal veilig kunnen werken voor een vast bedrag per medewerker per maand</h2>		</div>
+				</div>
+				<div class="elementor-element elementor-element-746c334 elementor-widget elementor-widget-text-editor" data-id="746c334" data-element_type="widget" data-widget_type="text-editor.default">
+				<div class="elementor-widget-container">
+								<div class="elementor-text-editor elementor-clearfix">
+				<p>Wilt u overal veilig kunnen werken, én bij al uw bestanden kunnen? Dan is onze cloud werkplek de oplossing voor u! Waar u ook bent, u kunt veilig bij uw bestanden en bedrijfssoftware. Zo kunt u overal eenvoudig en zorgeloos aan het werk. Bokxing IT verzorgt het gehele beheer en support van uw online werkplek op afstand.</p><p>Door onze werkwijze heeft u alle tijd om zich te focussen op uw bedrijfsvoering.</p>					</div>
+						</div>
+				</div>
+				<div class="elementor-element elementor-element-f3d62c5 elementor-icon-list--layout-traditional elementor-list-item-link-full_width elementor-widget elementor-widget-icon-list" data-id="f3d62c5" data-element_type="widget" data-widget_type="icon-list.default">
+				<div class="elementor-widget-container">
+					<ul class="elementor-icon-list-items">
+							<li class="elementor-icon-list-item">
+											<a href="/onze-totaaloplossing/">
+
+												<span class="elementor-icon-list-icon">
+							<i aria-hidden="true" class="fas fa-arrow-right"></i>						</span>
+										<span class="elementor-icon-list-text">Cloud oplossingen</span>
+											</a>
+									</li>
+						</ul>
+				</div>
+				</div>
+						</div>
+					</div>
+		</div>
+								</div>
+					</div>
+		</section>
+				<section class="elementor-section elementor-top-section elementor-element elementor-element-4d329e8 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="4d329e8" data-element_type="section" data-settings="{&quot;background_background&quot;:&quot;classic&quot;,&quot;shape_divider_bottom&quot;:&quot;waves&quot;}">
+					<div class="elementor-shape elementor-shape-bottom" data-negative="false">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" preserveAspectRatio="none">
+	<path class="elementor-shape-fill" d="M421.9,6.5c22.6-2.5,51.5,0.4,75.5,5.3c23.6,4.9,70.9,23.5,100.5,35.7c75.8,32.2,133.7,44.5,192.6,49.7
+	c23.6,2.1,48.7,3.5,103.4-2.5c54.7-6,106.2-25.6,106.2-25.6V0H0v30.3c0,0,72,32.6,158.4,30.5c39.2-0.7,92.8-6.7,134-22.4
+	c21.2-8.1,52.2-18.2,79.7-24.2C399.3,7.9,411.6,7.5,421.9,6.5z"></path>
+</svg>		</div>
+					<div class="elementor-container elementor-column-gap-default">
+							<div class="elementor-row">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-6002201" data-id="6002201" data-element_type="column" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-344c37f elementor-widget elementor-widget-heading" data-id="344c37f" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-default">Klanten aan het woord</h2>		</div>
+				</div>
+				<div class="elementor-element elementor-element-df30a1c elementor-hidden-desktop elementor-pagination-type-bullets elementor-review--has-separator elementor--star-style-star_fontawesome elementor-widget elementor-widget-reviews" data-id="df30a1c" data-element_type="widget" data-settings="{&quot;slides_per_view&quot;:&quot;3&quot;,&quot;slides_to_scroll&quot;:&quot;3&quot;,&quot;space_between&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;size&quot;:30,&quot;sizes&quot;:[]},&quot;slides_per_view_tablet&quot;:&quot;1&quot;,&quot;slides_per_view_mobile&quot;:&quot;1&quot;,&quot;pagination&quot;:&quot;bullets&quot;,&quot;speed&quot;:500,&quot;autoplay&quot;:&quot;yes&quot;,&quot;autoplay_speed&quot;:5000,&quot;loop&quot;:&quot;yes&quot;,&quot;pause_on_hover&quot;:&quot;yes&quot;,&quot;pause_on_interaction&quot;:&quot;yes&quot;,&quot;space_between_tablet&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;size&quot;:10,&quot;sizes&quot;:[]},&quot;space_between_mobile&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;size&quot;:10,&quot;sizes&quot;:[]}}" data-widget_type="reviews.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-swiper">
+			<div class="elementor-main-swiper swiper-container">
+				<div class="swiper-wrapper">
+											<div class="swiper-slide">
+									<div class="elementor-testimonial elementor-repeater-item-e628694">
+							<div class="elementor-testimonial__header">
+											<div class="elementor-testimonial__image">
+							<img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E" alt="Edwin Hokke " data-lazy-src="https://bokxing-it.nl/wp-content/uploads/2021/01/activa-logo-e1611234935555.jpg"><noscript><img src="https://bokxing-it.nl/wp-content/uploads/2021/01/activa-logo-e1611234935555.jpg" alt="Edwin Hokke "></noscript>
+													</div>
+										<cite class="elementor-testimonial__cite"><span class="elementor-testimonial__name">Edwin Hokke </span><span class="elementor-testimonial__title">Activa Administratiekantoor</span></cite>					<div class="elementor-testimonial__icon elementor-icon elementor-icon-"><span class="elementor-screen-only">Lees verder</span></div>				</div>
+										<div class="elementor-testimonial__content">
+					<div class="elementor-testimonial__text">
+						"Wij zijn al jaren tevreden met de service en adviezen van Bokxing IT en recent is onze lokale server oplossing vervangen door de oplossing Werkplekken in de Cloud. Ik moet zeggen dat het boven mijn verwachting vele malen sneller is dan ik had verwacht en we zijn als bedrijf veel flexibeler geworden. Tevens is de overgang vlekkeloos verlopen en loggen we nu op elke willekeurige locaties in en werken we direct in onze eigen vertrouwde omgeving. Super!"					</div>
+				</div>
+					</div>
+								</div>
+											<div class="swiper-slide">
+									<div class="elementor-testimonial elementor-repeater-item-e37001e">
+							<div class="elementor-testimonial__header">
+											<div class="elementor-testimonial__image">
+							<img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E" alt="Marcel Knol " data-lazy-src="https://bokxing-it.nl/wp-content/uploads/2021/01/petplan-logo.jpeg"><noscript><img src="https://bokxing-it.nl/wp-content/uploads/2021/01/petplan-logo.jpeg" alt="Marcel Knol "></noscript>
+													</div>
+										<cite class="elementor-testimonial__cite"><span class="elementor-testimonial__name">Marcel Knol </span><span class="elementor-testimonial__title">Petplan Nederland</span></cite>					<div class="elementor-testimonial__icon elementor-icon elementor-icon-"><span class="elementor-screen-only">Lees verder</span></div>				</div>
+										<div class="elementor-testimonial__content">
+					<div class="elementor-testimonial__text">
+						"In de Cloud werken via Bokxing IT betekent voor ons echt een verademing ten opzichte van het aloude on-premise werken. 24/7 uptime. Servicedesk altijd bereikbaar en het maakt niet uit waar ter wereld we inloggen. Onverhoopt geen internet op de zaak? Gewoon elders inloggen! Thuiswerken vanaf nu geen enkel probleem meer. Altijd beveiligd verbinding met onze servers, eigen bureaublad, mail, documenten en bedrijfsapplicaties. Kortom, voor mij als ICT beheerder aardig wat kopzorgen minder. Bokxing IT is een plezierige, open en no-nonsens businesspartner voor ons."					</div>
+				</div>
+					</div>
+								</div>
+											<div class="swiper-slide">
+									<div class="elementor-testimonial elementor-repeater-item-87ca195">
+							<div class="elementor-testimonial__header">
+											<div class="elementor-testimonial__image">
+							<img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E" alt="Winston van Ee " data-lazy-src="https://bokxing-it.nl/wp-content/uploads/2021/01/apc-holland-768x512-1-e1611236901553.jpg"><noscript><img src="https://bokxing-it.nl/wp-content/uploads/2021/01/apc-holland-768x512-1-e1611236901553.jpg" alt="Winston van Ee "></noscript>
+													</div>
+										<cite class="elementor-testimonial__cite"><span class="elementor-testimonial__name">Winston van Ee </span><span class="elementor-testimonial__title">APC Holland </span></cite>					<div class="elementor-testimonial__icon elementor-icon elementor-icon-"><span class="elementor-screen-only">Lees verder</span></div>				</div>
+										<div class="elementor-testimonial__content">
+					<div class="elementor-testimonial__text">
+						"De Cloud oplossing van Bokxing IT is flexibel en schaalbaar. Nieuwe accounts opzetten wordt snel en gemakkelijk voor ons gedaan. Onze medewerkers kunnen werken waar zij willen, en bij vragen kunnen zij zelf contact op nemen met de Servicedesk die de vraag kunnen beantwoorden. Onze productiviteit is zichtbaar gestegen sinds wij werken in de Cloud!"					</div>
+				</div>
+					</div>
+								</div>
+									</div>
+															<div class="swiper-pagination"></div>
+																	</div>
+		</div>
+				</div>
+				</div>
+				<div class="elementor-element elementor-element-ae880d9 elementor-hidden-tablet elementor-hidden-phone elementor-review--has-separator elementor--star-style-star_fontawesome elementor-widget elementor-widget-reviews" data-id="ae880d9" data-element_type="widget" data-settings="{&quot;slides_per_view&quot;:&quot;3&quot;,&quot;slides_to_scroll&quot;:&quot;3&quot;,&quot;space_between&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;size&quot;:30,&quot;sizes&quot;:[]},&quot;slides_per_view_tablet&quot;:&quot;3&quot;,&quot;slides_per_view_mobile&quot;:&quot;1&quot;,&quot;speed&quot;:500,&quot;space_between_tablet&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;size&quot;:10,&quot;sizes&quot;:[]},&quot;space_between_mobile&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;size&quot;:10,&quot;sizes&quot;:[]}}" data-widget_type="reviews.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-swiper">
+			<div class="elementor-main-swiper swiper-container">
+				<div class="swiper-wrapper">
+											<div class="swiper-slide">
+									<div class="elementor-testimonial elementor-repeater-item-e628694">
+							<div class="elementor-testimonial__header">
+											<div class="elementor-testimonial__image">
+							<img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E" alt="Edwin Hokke " data-lazy-src="https://bokxing-it.nl/wp-content/uploads/2021/01/activa-logo-e1611234935555.jpg"><noscript><img src="https://bokxing-it.nl/wp-content/uploads/2021/01/activa-logo-e1611234935555.jpg" alt="Edwin Hokke "></noscript>
+													</div>
+										<cite class="elementor-testimonial__cite"><span class="elementor-testimonial__name">Edwin Hokke </span><span class="elementor-testimonial__title">Activa Administratiekantoor</span></cite>					<div class="elementor-testimonial__icon elementor-icon elementor-icon-"><span class="elementor-screen-only">Lees verder</span></div>				</div>
+										<div class="elementor-testimonial__content">
+					<div class="elementor-testimonial__text">
+						"Wij zijn al jaren tevreden met de service en adviezen van Bokxing IT en recent is onze lokale server oplossing vervangen door de oplossing Werkplekken in de Cloud. Ik moet zeggen dat het boven mijn verwachting vele malen sneller is dan ik had verwacht en we zijn als bedrijf veel flexibeler geworden. Tevens is de overgang vlekkeloos verlopen en loggen we nu op elke willekeurige locaties in en werken we direct in onze eigen vertrouwde omgeving. Super!"					</div>
+				</div>
+					</div>
+								</div>
+											<div class="swiper-slide">
+									<div class="elementor-testimonial elementor-repeater-item-e37001e">
+							<div class="elementor-testimonial__header">
+											<div class="elementor-testimonial__image">
+							<img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E" alt="Marcel Knol " data-lazy-src="https://bokxing-it.nl/wp-content/uploads/2021/01/petplan-logo.jpeg"><noscript><img src="https://bokxing-it.nl/wp-content/uploads/2021/01/petplan-logo.jpeg" alt="Marcel Knol "></noscript>
+													</div>
+										<cite class="elementor-testimonial__cite"><span class="elementor-testimonial__name">Marcel Knol </span><span class="elementor-testimonial__title">Petplan Nederland</span></cite>					<div class="elementor-testimonial__icon elementor-icon elementor-icon-"><span class="elementor-screen-only">Lees verder</span></div>				</div>
+										<div class="elementor-testimonial__content">
+					<div class="elementor-testimonial__text">
+						"In de Cloud werken via Bokxing IT betekent voor ons echt een verademing ten opzichte van het aloude on-premise werken. 24/7 uptime. Servicedesk altijd bereikbaar en het maakt niet uit waar ter wereld we inloggen. Onverhoopt geen internet op de zaak? Gewoon elders inloggen! Thuiswerken vanaf nu geen enkel probleem meer. Altijd beveiligd verbinding met onze servers, eigen bureaublad, mail, documenten en bedrijfsapplicaties. Kortom, voor mij als ICT beheerder aardig wat kopzorgen minder. Bokxing IT is een plezierige, open en no-nonsens businesspartner voor ons."					</div>
+				</div>
+					</div>
+								</div>
+											<div class="swiper-slide">
+									<div class="elementor-testimonial elementor-repeater-item-87ca195">
+							<div class="elementor-testimonial__header">
+											<div class="elementor-testimonial__image">
+							<img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E" alt="Winston van Ee " data-lazy-src="https://bokxing-it.nl/wp-content/uploads/2021/01/apc-holland-768x512-1-e1611236901553.jpg"><noscript><img src="https://bokxing-it.nl/wp-content/uploads/2021/01/apc-holland-768x512-1-e1611236901553.jpg" alt="Winston van Ee "></noscript>
+													</div>
+										<cite class="elementor-testimonial__cite"><span class="elementor-testimonial__name">Winston van Ee </span><span class="elementor-testimonial__title">APC Holland </span></cite>					<div class="elementor-testimonial__icon elementor-icon elementor-icon-"><span class="elementor-screen-only">Lees verder</span></div>				</div>
+										<div class="elementor-testimonial__content">
+					<div class="elementor-testimonial__text">
+						"De Cloud oplossing van Bokxing IT is flexibel en schaalbaar. Nieuwe accounts opzetten wordt snel en gemakkelijk voor ons gedaan. Onze medewerkers kunnen werken waar zij willen, en bij vragen kunnen zij zelf contact op nemen met de Servicedesk die de vraag kunnen beantwoorden. Onze productiviteit is zichtbaar gestegen sinds wij werken in de Cloud!"					</div>
+				</div>
+					</div>
+								</div>
+									</div>
+																					</div>
+		</div>
+				</div>
+				</div>
+						</div>
+					</div>
+		</div>
+								</div>
+					</div>
+		</section>
+				<section class="elementor-section elementor-top-section elementor-element elementor-element-ad1c3cd elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="ad1c3cd" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+							<div class="elementor-row">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-6561bd1" data-id="6561bd1" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-fc4e1c6 elementor-widget elementor-widget-text-editor" data-id="fc4e1c6" data-element_type="widget" data-widget_type="text-editor.default">
+				<div class="elementor-widget-container">
+								<div class="elementor-text-editor elementor-clearfix">
+				<h2>Laatste nieuws</h2>					</div>
+						</div>
+				</div>
+				<div class="elementor-element elementor-element-b61d77d elementor-grid-3 elementor-grid-tablet-2 elementor-grid-mobile-1 elementor-posts--thumbnail-top elementor-card-shadow-yes elementor-posts__hover-gradient elementor-widget elementor-widget-posts" data-id="b61d77d" data-element_type="widget" data-settings="{&quot;cards_columns&quot;:&quot;3&quot;,&quot;cards_columns_tablet&quot;:&quot;2&quot;,&quot;cards_columns_mobile&quot;:&quot;1&quot;,&quot;cards_row_gap&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;size&quot;:35,&quot;sizes&quot;:[]},&quot;cards_row_gap_tablet&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;size&quot;:&quot;&quot;,&quot;sizes&quot;:[]},&quot;cards_row_gap_mobile&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;size&quot;:&quot;&quot;,&quot;sizes&quot;:[]}}" data-widget_type="posts.cards">
+				<div class="elementor-widget-container">
+					<div class="elementor-posts-container elementor-posts elementor-posts--skin-cards elementor-grid">
+				<article class="elementor-post elementor-grid-item post-1507 post type-post status-publish format-standard has-post-thumbnail hentry category-nieuws">
+			<div class="elementor-post__card">
+				<a class="elementor-post__thumbnail__link" href="https://bokxing-it.nl/nieuws/beveiligmij-partnership/"><div class="elementor-post__thumbnail"><img width="300" height="157" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20157'%3E%3C/svg%3E" class="attachment-medium size-medium" alt="" data-lazy-srcset="https://bokxing-it.nl/wp-content/uploads/2022/03/Promo-webinar-300x157.png 300w, https://bokxing-it.nl/wp-content/uploads/2022/03/Promo-webinar-1024x535.png 1024w, https://bokxing-it.nl/wp-content/uploads/2022/03/Promo-webinar-768x401.png 768w, https://bokxing-it.nl/wp-content/uploads/2022/03/Promo-webinar.png 1200w" data-lazy-sizes="(max-width: 300px) 100vw, 300px" data-lazy-src="https://bokxing-it.nl/wp-content/uploads/2022/03/Promo-webinar-300x157.png"><noscript><img width="300" height="157" src="https://bokxing-it.nl/wp-content/uploads/2022/03/Promo-webinar-300x157.png" class="attachment-medium size-medium" alt="" srcset="https://bokxing-it.nl/wp-content/uploads/2022/03/Promo-webinar-300x157.png 300w, https://bokxing-it.nl/wp-content/uploads/2022/03/Promo-webinar-1024x535.png 1024w, https://bokxing-it.nl/wp-content/uploads/2022/03/Promo-webinar-768x401.png 768w, https://bokxing-it.nl/wp-content/uploads/2022/03/Promo-webinar.png 1200w" sizes="(max-width: 300px) 100vw, 300px" /></noscript></div></a>
+				<div class="elementor-post__badge">Nieuws</div>
+				<div class="elementor-post__text">
+				<h3 class="elementor-post__title">
+			<a href="https://bokxing-it.nl/nieuws/beveiligmij-partnership/">
+				BeveiligMij Partnership  !			</a>
+		</h3>
+				<div class="elementor-post__excerpt">
+			<p>De beste beveiliging kan alleen worden behaald door een combinatie van technische oplossingen, functioneel beheer en gebruik Veiligheid staat al jaar en dag op voorop</p>
+		</div>
+		
+		<a class="elementor-post__read-more" href="https://bokxing-it.nl/nieuws/beveiligmij-partnership/">
+			Lees meer →		</a>
+
+				</div>
+				<div class="elementor-post__meta-data">
+					<span class="elementor-post-date">
+			24 maart 2022		</span>
+				</div>
+					</div>
+		</article>
+				<article class="elementor-post elementor-grid-item post-1487 post type-post status-publish format-standard has-post-thumbnail hentry category-nieuws">
+			<div class="elementor-post__card">
+				<a class="elementor-post__thumbnail__link" href="https://bokxing-it.nl/nieuws/lastpass-partnership/"><div class="elementor-post__thumbnail"><img width="300" height="191" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20191'%3E%3C/svg%3E" class="attachment-medium size-medium" alt="" data-lazy-srcset="https://bokxing-it.nl/wp-content/uploads/2022/03/171883-300x191.jpg 300w, https://bokxing-it.nl/wp-content/uploads/2022/03/171883.jpg 440w" data-lazy-sizes="(max-width: 300px) 100vw, 300px" data-lazy-src="https://bokxing-it.nl/wp-content/uploads/2022/03/171883-300x191.jpg"><noscript><img width="300" height="191" src="https://bokxing-it.nl/wp-content/uploads/2022/03/171883-300x191.jpg" class="attachment-medium size-medium" alt="" srcset="https://bokxing-it.nl/wp-content/uploads/2022/03/171883-300x191.jpg 300w, https://bokxing-it.nl/wp-content/uploads/2022/03/171883.jpg 440w" sizes="(max-width: 300px) 100vw, 300px" /></noscript></div></a>
+				<div class="elementor-post__badge">Nieuws</div>
+				<div class="elementor-post__text">
+				<h3 class="elementor-post__title">
+			<a href="https://bokxing-it.nl/nieuws/lastpass-partnership/">
+				LastPass Partnership  !			</a>
+		</h3>
+				<div class="elementor-post__excerpt">
+			<p>Maak een account aan met één lang, sterk hoofdwachtwoord en LastPass doet de rest. Steeds vaker krijgen wij signalen van onze klanten dat ze een</p>
+		</div>
+		
+		<a class="elementor-post__read-more" href="https://bokxing-it.nl/nieuws/lastpass-partnership/">
+			Lees meer →		</a>
+
+				</div>
+				<div class="elementor-post__meta-data">
+					<span class="elementor-post-date">
+			16 maart 2022		</span>
+				</div>
+					</div>
+		</article>
+				<article class="elementor-post elementor-grid-item post-1473 post type-post status-publish format-standard has-post-thumbnail hentry category-nieuws">
+			<div class="elementor-post__card">
+				<a class="elementor-post__thumbnail__link" href="https://bokxing-it.nl/nieuws/nieuwe-medewerker/"><div class="elementor-post__thumbnail"><img width="300" height="200" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20200'%3E%3C/svg%3E" class="attachment-medium size-medium" alt="" data-lazy-src="https://bokxing-it.nl/wp-content/uploads/2021/09/milad.jpg"><noscript><img width="300" height="200" src="https://bokxing-it.nl/wp-content/uploads/2021/09/milad.jpg" class="attachment-medium size-medium" alt="" /></noscript></div></a>
+				<div class="elementor-post__badge">Nieuws</div>
+				<div class="elementor-post__text">
+				<h3 class="elementor-post__title">
+			<a href="https://bokxing-it.nl/nieuws/nieuwe-medewerker/">
+				Nieuwe medewerker !			</a>
+		</h3>
+				<div class="elementor-post__excerpt">
+			<p>Even Voorstellen: Milad Milad is 23 jaar, woont in Delft en is daarmee de jongste medewerker uit het team. Met zijn affiniteit voor opensource tackelt</p>
+		</div>
+		
+		<a class="elementor-post__read-more" href="https://bokxing-it.nl/nieuws/nieuwe-medewerker/">
+			Lees meer →		</a>
+
+				</div>
+				<div class="elementor-post__meta-data">
+					<span class="elementor-post-date">
+			10 september 2021		</span>
+				</div>
+					</div>
+		</article>
+				</div>
+
+
+		
+				</div>
+				</div>
+						</div>
+					</div>
+		</div>
+								</div>
+					</div>
+		</section>
+				<section class="elementor-section elementor-top-section elementor-element elementor-element-b58cffd elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="b58cffd" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+							<div class="elementor-row">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-621fc65" data-id="621fc65" data-element_type="column" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-1f40f92 elementor-widget elementor-widget-heading" data-id="1f40f92" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-default">Contact</h2>		</div>
+				</div>
+				<div class="elementor-element elementor-element-e5619cf elementor-widget elementor-widget-text-editor" data-id="e5619cf" data-element_type="widget" data-widget_type="text-editor.default">
+				<div class="elementor-widget-container">
+								<div class="elementor-text-editor elementor-clearfix">
+				<p>Hoe kunnen wij u van dienst zijn? Neem direct contact met ons op.</p>					</div>
+						</div>
+				</div>
+				<div class="elementor-element elementor-element-57168f1 elementor-align-center elementor-widget elementor-widget-button" data-id="57168f1" data-element_type="widget" data-widget_type="button.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-button-wrapper">
+			<a href="/contact" class="elementor-button-link elementor-button elementor-size-sm" role="button">
+						<span class="elementor-button-content-wrapper">
+							<span class="elementor-button-icon elementor-align-icon-right">
+				<i aria-hidden="true" class="fas fa-arrow-right"></i>			</span>
+						<span class="elementor-button-text">Contact opnemen</span>
+		</span>
+					</a>
+		</div>
+				</div>
+				</div>
+						</div>
+					</div>
+		</div>
+								</div>
+					</div>
+		</section>
+									</div>
+			</div>
+					</div>
+				<div class="post-tags">
+					</div>
+			</div>
+
+	<section id="comments" class="comments-area">
+
+	
+
+
+</section><!-- .comments-area -->
+</main>
+
+			<div data-elementor-type="footer" data-elementor-id="163" class="elementor elementor-163 elementor-location-footer">
+					<div class="elementor-section-wrap">
+								<section class="elementor-section elementor-top-section elementor-element elementor-element-f59e9ae elementor-section-height-min-height elementor-section-boxed elementor-section-height-default elementor-section-items-middle" data-id="f59e9ae" data-element_type="section" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+							<div class="elementor-background-overlay"></div>
+							<div class="elementor-container elementor-column-gap-default">
+							<div class="elementor-row">
+					<div class="elementor-column elementor-col-33 elementor-top-column elementor-element elementor-element-3abcc36" data-id="3abcc36" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-5938e729 elementor-widget elementor-widget-theme-site-logo elementor-widget-image" data-id="5938e729" data-element_type="widget" data-widget_type="theme-site-logo.default">
+				<div class="elementor-widget-container">
+								<div class="elementor-image">
+													<a href="https://bokxing-it.nl">
+							<img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E" class="attachment-full size-full" alt="Bokxing IT logo" data-lazy-src="https://bokxing-it.nl/wp-content/uploads/2020/11/bokxing-logo-2020-def-v2.svg"><noscript><img src="https://bokxing-it.nl/wp-content/uploads/2020/11/bokxing-logo-2020-def-v2.svg" class="attachment-full size-full" alt="Bokxing IT logo" /></noscript>								</a>
+														</div>
+						</div>
+				</div>
+				<div class="elementor-element elementor-element-3a95e45 elementor-widget elementor-widget-text-editor" data-id="3a95e45" data-element_type="widget" data-widget_type="text-editor.default">
+				<div class="elementor-widget-container">
+								<div class="elementor-text-editor elementor-clearfix">
+				<p>Elektronicaweg 14a<br>2628XG Delft</p>					</div>
+						</div>
+				</div>
+						</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-top-column elementor-element elementor-element-78fa774" data-id="78fa774" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-c850d65 elementor-widget elementor-widget-text-editor" data-id="c850d65" data-element_type="widget" data-widget_type="text-editor.default">
+				<div class="elementor-widget-container">
+								<div class="elementor-text-editor elementor-clearfix">
+				Support					</div>
+						</div>
+				</div>
+				<div class="elementor-element elementor-element-25d04d5b elementor-tablet-align-left elementor-icon-list--layout-traditional elementor-list-item-link-full_width elementor-widget elementor-widget-icon-list" data-id="25d04d5b" data-element_type="widget" data-widget_type="icon-list.default">
+				<div class="elementor-widget-container">
+					<ul class="elementor-icon-list-items">
+							<li class="elementor-icon-list-item">
+											<span class="elementor-icon-list-icon">
+							<i aria-hidden="true" class="fas fa-phone-alt"></i>						</span>
+										<span class="elementor-icon-list-text">088 00 164 00</span>
+									</li>
+						</ul>
+				</div>
+				</div>
+				<div class="elementor-element elementor-element-50c2f41 elementor-widget elementor-widget-text-editor" data-id="50c2f41" data-element_type="widget" data-widget_type="text-editor.default">
+				<div class="elementor-widget-container">
+								<div class="elementor-text-editor elementor-clearfix">
+				<p>verkoop</p>					</div>
+						</div>
+				</div>
+				<div class="elementor-element elementor-element-7a13d09 elementor-tablet-align-left elementor-icon-list--layout-traditional elementor-list-item-link-full_width elementor-widget elementor-widget-icon-list" data-id="7a13d09" data-element_type="widget" data-widget_type="icon-list.default">
+				<div class="elementor-widget-container">
+					<ul class="elementor-icon-list-items">
+							<li class="elementor-icon-list-item">
+											<span class="elementor-icon-list-icon">
+							<i aria-hidden="true" class="fas fa-phone-alt"></i>						</span>
+										<span class="elementor-icon-list-text">088 00 164 04</span>
+									</li>
+						</ul>
+				</div>
+				</div>
+				<div class="elementor-element elementor-element-ba3f3d2 elementor-widget elementor-widget-text-editor" data-id="ba3f3d2" data-element_type="widget" data-widget_type="text-editor.default">
+				<div class="elementor-widget-container">
+								<div class="elementor-text-editor elementor-clearfix">
+				<p>E-mail</p>					</div>
+						</div>
+				</div>
+				<div class="elementor-element elementor-element-8155888 elementor-tablet-align-left elementor-icon-list--layout-traditional elementor-list-item-link-full_width elementor-widget elementor-widget-icon-list" data-id="8155888" data-element_type="widget" data-widget_type="icon-list.default">
+				<div class="elementor-widget-container">
+					<ul class="elementor-icon-list-items">
+							<li class="elementor-icon-list-item">
+											<a href="javascript:;" data-enc-email="%20vasb[at]obxkvat-vg.ay" class="mail-link" data-wpel-link="ignore"><span id="eeb-999956-749498">
+
+												<span class="elementor-icon-list-icon">
+							<i aria-hidden="true" class="fas fa-envelope"></i>						</span>
+										<span class="elementor-icon-list-text">info@bokxing-it.nl</span>
+											</span><script type="text/javascript">(function(){var ml="FmfroncpE%-.i0ah2tkADuxbgdCse3l4v9",mi="9=C9=C9=Q9=Q9=Q9=Q9=Q9=Q9=Q9=Q9=Q9=Q9=Q9=Q9MJK7>59@=6N>KK9MD9@@LNL1L5A43:<645:N<KA:<6459@@9M89=C9=Q9=Q9=Q9=Q9=Q9=Q9=Q9MJ<9@=>3<>:?<IIL59MD9@@A3EL9@@9@=6N>KK9MD9@@2>K9@=2>:L5PLN47L9@@9M89MJ9@0<9M89=Q9=Q9=Q9=Q9=Q9=Q9MJ9@0K7>59M89=C9=Q9=Q9=Q9=Q9=Q9=Q9=Q9=Q9=Q9=Q9MJK7>59@=6N>KK9MD9@@LNL1L5A43:<645:N<KA:ALFA9@@9M8<5249O=G4BF<5H:<A;5N9MJ9@0K7>59M89=C9=Q9=Q9=Q9=Q9=Q9=Q9=Q9=Q9=Q9=Q9=Q",o="";for(var j=0,l=mi.length;j<l;j++){o+=ml.charAt(mi.charCodeAt(j)-48);}document.getElementById("eeb-999956-749498").innerHTML = decodeURIComponent(o);}());</script><noscript>*protected email*</noscript></a>
+									</li>
+						</ul>
+				</div>
+				</div>
+						</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-top-column elementor-element elementor-element-c677290 elementor-hidden-phone" data-id="c677290" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-43ebf09 elementor-widget elementor-widget-heading" data-id="43ebf09" data-element_type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-default">over</h2>		</div>
+				</div>
+				<div class="elementor-element elementor-element-4920a63 elementor-widget elementor-widget-text-editor" data-id="4920a63" data-element_type="widget" data-widget_type="text-editor.default">
+				<div class="elementor-widget-container">
+								<div class="elementor-text-editor elementor-clearfix">
+				<p>Bokxing IT is een IT-bedrijf uit Delft, gespecialiseerd in de installatie en het beheer van servers en netwerken.<br>Wij zijn sinds 2000 actief, derhalve heeft de IT voor ons weinig geheimen meer. Wij zorgen ervoor dat onze opdrachtgevers ongestoord kunnen werken en zich op hun core business kunnen blijven concentreren.</p>					</div>
+						</div>
+				</div>
+						</div>
+					</div>
+		</div>
+								</div>
+					</div>
+		</section>
+				<footer class="elementor-section elementor-top-section elementor-element elementor-element-b47677c elementor-section-height-min-height elementor-section-content-middle elementor-section-boxed elementor-section-height-default elementor-section-items-middle" data-id="b47677c" data-element_type="section" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+						<div class="elementor-container elementor-column-gap-default">
+							<div class="elementor-row">
+					<div class="elementor-column elementor-col-50 elementor-top-column elementor-element elementor-element-2d90fa6e" data-id="2d90fa6e" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-07cc533 elementor-widget elementor-widget-text-editor" data-id="07cc533" data-element_type="widget" data-widget_type="text-editor.default">
+				<div class="elementor-widget-container">
+								<div class="elementor-text-editor elementor-clearfix">
+				<p>© Bokxing IT<br></p>					</div>
+						</div>
+				</div>
+						</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-50 elementor-top-column elementor-element elementor-element-4bd130bf" data-id="4bd130bf" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+							<div class="elementor-widget-wrap">
+						<div class="elementor-element elementor-element-6cf8096 elementor-widget elementor-widget-text-editor" data-id="6cf8096" data-element_type="widget" data-widget_type="text-editor.default">
+				<div class="elementor-widget-container">
+								<div class="elementor-text-editor elementor-clearfix">
+				<p><a href="/algemene-voorwaarden/">Algemene voorwaarden</a> | <a href="/privacybeleid/">Privacyverklaring</a></p>					</div>
+						</div>
+				</div>
+						</div>
+					</div>
+		</div>
+								</div>
+					</div>
+		</footer>
+							</div>
+				</div>
+		
+
+<script type="text/javascript" id="eeb-js-ajax-ef-js-extra">
+/* <![CDATA[ */
+var eeb_ef = {"ajaxurl":"https:\/\/bokxing-it.nl\/wp-admin\/admin-ajax.php","security":"98fbdd8522"};
+/* ]]> */
+</script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://bokxing-it.nl/wp-content/cache/min/1/wp-content/plugins/email-encoder-bundle/core/includes/assets/js/encoder-form.js?ver=1650044007" id="eeb-js-ajax-ef-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://bokxing-it.nl/wp-content/plugins/elementor-pro/assets/lib/smartmenus/jquery.smartmenus.min.js?ver=1.0.1" id="smartmenus-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://bokxing-it.nl/wp-includes/js/imagesloaded.min.js?ver=4.1.4" id="imagesloaded-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://bokxing-it.nl/wp-content/plugins/elementor-pro/assets/js/webpack-pro.runtime.min.js?ver=3.7.1" id="elementor-pro-webpack-runtime-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://bokxing-it.nl/wp-content/plugins/elementor/assets/js/webpack.runtime.min.js?ver=3.6.6" id="elementor-webpack-runtime-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://bokxing-it.nl/wp-content/plugins/elementor/assets/js/frontend-modules.min.js?ver=3.6.6" id="elementor-frontend-modules-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://bokxing-it.nl/wp-includes/js/dist/vendor/regenerator-runtime.min.js?ver=0.13.9" id="regenerator-runtime-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://bokxing-it.nl/wp-includes/js/dist/vendor/wp-polyfill.min.js?ver=3.15.0" id="wp-polyfill-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://bokxing-it.nl/wp-includes/js/dist/hooks.min.js?ver=c6d64f2cb8f5c6bb49caca37f8828ce3" id="wp-hooks-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://bokxing-it.nl/wp-includes/js/dist/i18n.min.js?ver=ebee46757c6a411e38fd079a7ac71d94" id="wp-i18n-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" id="wp-i18n-js-after">
+wp.i18n.setLocaleData( { 'text direction\u0004ltr': [ 'ltr' ] } );
+</script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" id="elementor-pro-frontend-js-before">
+var ElementorProFrontendConfig = {"ajaxurl":"https:\/\/bokxing-it.nl\/wp-admin\/admin-ajax.php","nonce":"e2212355de","urls":{"assets":"https:\/\/bokxing-it.nl\/wp-content\/plugins\/elementor-pro\/assets\/","rest":"https:\/\/bokxing-it.nl\/wp-json\/"},"shareButtonsNetworks":{"facebook":{"title":"Facebook","has_counter":true},"twitter":{"title":"Twitter"},"linkedin":{"title":"LinkedIn","has_counter":true},"pinterest":{"title":"Pinterest","has_counter":true},"reddit":{"title":"Reddit","has_counter":true},"vk":{"title":"VK","has_counter":true},"odnoklassniki":{"title":"OK","has_counter":true},"tumblr":{"title":"Tumblr"},"digg":{"title":"Digg"},"skype":{"title":"Skype"},"stumbleupon":{"title":"StumbleUpon","has_counter":true},"mix":{"title":"Mix"},"telegram":{"title":"Telegram"},"pocket":{"title":"Pocket","has_counter":true},"xing":{"title":"XING","has_counter":true},"whatsapp":{"title":"WhatsApp"},"email":{"title":"Email"},"print":{"title":"Print"}},"facebook_sdk":{"lang":"nl_NL","app_id":""},"lottie":{"defaultAnimationUrl":"https:\/\/bokxing-it.nl\/wp-content\/plugins\/elementor-pro\/modules\/lottie\/assets\/animations\/default.json"}};
+</script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://bokxing-it.nl/wp-content/plugins/elementor-pro/assets/js/frontend.min.js?ver=3.7.1" id="elementor-pro-frontend-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://bokxing-it.nl/wp-content/plugins/elementor/assets/lib/waypoints/waypoints.min.js?ver=4.0.2" id="elementor-waypoints-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://bokxing-it.nl/wp-includes/js/jquery/ui/core.min.js?ver=1.13.1" id="jquery-ui-core-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://bokxing-it.nl/wp-content/plugins/elementor/assets/lib/swiper/swiper.min.js?ver=5.3.6" id="swiper-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://bokxing-it.nl/wp-content/plugins/elementor/assets/lib/share-link/share-link.min.js?ver=3.6.6" id="share-link-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://bokxing-it.nl/wp-content/plugins/elementor/assets/lib/dialog/dialog.min.js?ver=4.9.0" id="elementor-dialog-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" id="elementor-frontend-js-before">
+var elementorFrontendConfig = {"environmentMode":{"edit":false,"wpPreview":false,"isScriptDebug":false},"i18n":{"shareOnFacebook":"Deel via Facebook","shareOnTwitter":"Deel via Twitter","pinIt":"Pin dit","download":"Downloaden","downloadImage":"Download afbeelding","fullscreen":"Volledig scherm","zoom":"Zoom","share":"Delen","playVideo":"Video afspelen","previous":"Vorige","next":"Volgende","close":"Sluiten"},"is_rtl":false,"breakpoints":{"xs":0,"sm":480,"md":768,"lg":1025,"xl":1440,"xxl":1600},"responsive":{"breakpoints":{"mobile":{"label":"Mobiel","value":767,"default_value":767,"direction":"max","is_enabled":true},"mobile_extra":{"label":"Mobiel Extra","value":880,"default_value":880,"direction":"max","is_enabled":false},"tablet":{"label":"Tablet","value":1024,"default_value":1024,"direction":"max","is_enabled":true},"tablet_extra":{"label":"Tablet Extra","value":1200,"default_value":1200,"direction":"max","is_enabled":false},"laptop":{"label":"Laptop","value":1366,"default_value":1366,"direction":"max","is_enabled":false},"widescreen":{"label":"Breedbeeld","value":2400,"default_value":2400,"direction":"min","is_enabled":false}}},"version":"3.6.6","is_static":false,"experimentalFeatures":{"e_import_export":true,"e_hidden_wordpress_widgets":true,"theme_builder_v2":true,"landing-pages":true,"elements-color-picker":true,"favorite-widgets":true,"admin-top-bar":true,"page-transitions":true,"notes":true,"form-submissions":true,"e_scroll_snap":true},"urls":{"assets":"https:\/\/bokxing-it.nl\/wp-content\/plugins\/elementor\/assets\/"},"settings":{"page":[],"editorPreferences":[]},"kit":{"body_background_background":"classic","active_breakpoints":["viewport_mobile","viewport_tablet"],"global_image_lightbox":"yes","lightbox_enable_counter":"yes","lightbox_enable_fullscreen":"yes","lightbox_enable_zoom":"yes","lightbox_enable_share":"yes","lightbox_title_src":"title","lightbox_description_src":"description"},"post":{"id":8,"title":"Homepage%20-%20Bokxing%20IT","excerpt":"","featuredImage":"https:\/\/bokxing-it.nl\/wp-content\/uploads\/2020\/11\/cropped-favicon.png"}};
+</script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://bokxing-it.nl/wp-content/plugins/elementor/assets/js/frontend.min.js?ver=3.6.6" id="elementor-frontend-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://bokxing-it.nl/wp-content/plugins/elementor-pro/assets/js/preloaded-elements-handlers.min.js?ver=3.7.1" id="pro-preloaded-elements-handlers-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://bokxing-it.nl/wp-content/plugins/elementor/assets/js/preloaded-modules.min.js?ver=3.6.6" id="preloaded-modules-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://bokxing-it.nl/wp-content/plugins/elementor-pro/assets/lib/sticky/jquery.sticky.min.js?ver=3.7.1" id="e-sticky-js"></script>
+<script>window.lazyLoadOptions={elements_selector:"img[data-lazy-src],.rocket-lazyload",data_src:"lazy-src",data_srcset:"lazy-srcset",data_sizes:"lazy-sizes",class_loading:"lazyloading",class_loaded:"lazyloaded",threshold:300,callback_loaded:function(element){if(element.tagName==="IFRAME"&&element.dataset.rocketLazyload=="fitvidscompatible"){if(element.classList.contains("lazyloaded")){if(typeof window.jQuery!="undefined"){if(jQuery.fn.fitVids){jQuery(element).parent().fitVids()}}}}}};window.addEventListener('LazyLoad::Initialized',function(e){var lazyLoadInstance=e.detail.instance;if(window.MutationObserver){var observer=new MutationObserver(function(mutations){var image_count=0;var iframe_count=0;var rocketlazy_count=0;mutations.forEach(function(mutation){for(var i=0;i<mutation.addedNodes.length;i++){if(typeof mutation.addedNodes[i].getElementsByTagName!=='function'){continue}
+if(typeof mutation.addedNodes[i].getElementsByClassName!=='function'){continue}
+images=mutation.addedNodes[i].getElementsByTagName('img');is_image=mutation.addedNodes[i].tagName=="IMG";iframes=mutation.addedNodes[i].getElementsByTagName('iframe');is_iframe=mutation.addedNodes[i].tagName=="IFRAME";rocket_lazy=mutation.addedNodes[i].getElementsByClassName('rocket-lazyload');image_count+=images.length;iframe_count+=iframes.length;rocketlazy_count+=rocket_lazy.length;if(is_image){image_count+=1}
+if(is_iframe){iframe_count+=1}}});if(image_count>0||iframe_count>0||rocketlazy_count>0){lazyLoadInstance.update()}});var b=document.getElementsByTagName("body")[0];var config={childList:!0,subtree:!0};observer.observe(b,config)}},!1)</script><script data-no-minify="1" async="" src="https://bokxing-it.nl/wp-content/plugins/wp-rocket/assets/js/lazyload/17.5/lazyload.min.js"></script>
+<script>class RocketElementorAnimation{constructor(){this.deviceMode=document.createElement("span"),this.deviceMode.id="elementor-device-mode",this.deviceMode.setAttribute("class","elementor-screen-only"),document.body.appendChild(this.deviceMode)}_detectAnimations(){let t=getComputedStyle(this.deviceMode,":after").content.replace(/"/g,"");this.animationSettingKeys=this._listAnimationSettingsKeys(t),document.querySelectorAll(".elementor-invisible[data-settings]").forEach(t=>{const e=t.getBoundingClientRect();if(e.bottom>=0&&e.top<=window.innerHeight)try{this._animateElement(t)}catch(t){}})}_animateElement(t){const e=JSON.parse(t.dataset.settings),i=e._animation_delay||e.animation_delay||0,n=e[this.animationSettingKeys.find(t=>e[t])];if("none"===n)return void t.classList.remove("elementor-invisible");t.classList.remove(n),this.currentAnimation&&t.classList.remove(this.currentAnimation),this.currentAnimation=n;let s=setTimeout(()=>{t.classList.remove("elementor-invisible"),t.classList.add("animated",n),this._removeAnimationSettings(t,e)},i);window.addEventListener("rocket-startLoading",function(){clearTimeout(s)})}_listAnimationSettingsKeys(t="mobile"){const e=[""];switch(t){case"mobile":e.unshift("_mobile");case"tablet":e.unshift("_tablet");case"desktop":e.unshift("_desktop")}const i=[];return["animation","_animation"].forEach(t=>{e.forEach(e=>{i.push(t+e)})}),i}_removeAnimationSettings(t,e){this._listAnimationSettingsKeys().forEach(t=>delete e[t]),t.dataset.settings=JSON.stringify(e)}static run(){const t=new RocketElementorAnimation;requestAnimationFrame(t._detectAnimations.bind(t))}}document.addEventListener("DOMContentLoaded",RocketElementorAnimation.run);</script>
+
+
+<!-- This website is like a Rocket, isn't it? Performance optimized by WP Rocket. Learn more: https://wp-rocket.me - Debug: cached@1656306494 --><span id="elementor-device-mode" class="elementor-screen-only"></span></body></html>

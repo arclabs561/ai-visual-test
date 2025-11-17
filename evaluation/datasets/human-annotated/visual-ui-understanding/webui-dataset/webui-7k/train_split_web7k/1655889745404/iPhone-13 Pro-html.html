@@ -1,0 +1,528 @@
+<!DOCTYPE html><html lang="en"><head>
+ <link rel="icon" type="image/vnd.microsoft.icon" href="/static/images/monorail.ico">
+ 
+ <script async="" nonce="" src="https://storage.googleapis.com/chops-feedback/feedback.js"></script><script async="" nonce="" src="//www.google-analytics.com/analytics.js"></script><script type="text/javascript" nonce="">
+ 
+ window.CS_env = {
+ 'absoluteBaseUrl': 'https://bugs.chromium.org',
+ 'app_version': '49712-4c1ceaa.444368075368987207',
+ 'token': 'MGeZ5gg8eRQD_-3cQ6ASuzoxNjU1ODg5ODk3',
+ 'tokenExpiresSec': 1655896797,
+ 'loggedInUserEmail':
+ 
+ null
+ ,
+ 'login_url': 'https://accounts.google.com/AccountChooser?continue\x3dhttps://uc.appengine.google.com/_ah/conflogin%3Fcontinue%3Dhttps%3A%2F%2Fbugs.chromium.org%2Fp%2Fchromium%2Fissues%2Fdetail%3Fid%3D1268157',
+ 'logout_url': 'https://bugs.chromium.org/_ah/logout?continue\x3dhttps://accounts.google.com/Logout%3Fcontinue%3Dhttps://uc.appengine.google.com/_ah/logout%253Fcontinue%253Dhttps://google.com/url%25253Fsa%25253DD%252526q%25253Dhttps://bugs.chromium.org/p/chromium/issues/detail%2525253Fid%2525253D1268157%252526ust%25253D1655976297978173%252526usg%25253DAOvVaw2Zd9eberPWkpVk5a7e1SJ2%26service%3Dah',
+ 'profileUrl':
+ 
+ null
+ ,
+ 'projectName': 'chromium',
+ 'projectIsRestricted': false,
+ 'is_member': '',
+ 'gapi_client_id': '679746765624-tqaakho939p2mc7eb65t4ecrj3gj08rt.apps.googleusercontent.com',
+ };
+ </script>
+ 
+ 
+ <title>1268157 - Windows Rust builds don't yet work - chromium</title>
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+ <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+ <meta name="referrer" content="no-referrer">
+ 
+ <meta name="ROBOTS" content="NOARCHIVE">
+ 
+ <meta name="viewport" content="width=device-width, minimum-scale=1.0">
+ <link type="text/css" rel="stylesheet" href="https://49712-4c1ceaa-dot-monorail-prod.appspot.com/static/css/chopsui-normal.css">
+ 
+ <!-- Lazy load icons. -->
+ <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" media="all" id="icons-stylesheet">
+ <script type="module" async="" defer="" nonce="">
+ document.getElementById('icons-stylesheet').media = 'all';
+ </script>
+ 
+<script type="text/javascript" nonce="">
+ function _go(url, newWindow) {
+ if (newWindow)
+ window.open(url, '_blank');
+ else
+ document.location = url;
+ }
+ function $(id) { return document.getElementById(id); }
+ var loadQueue = [];
+ function runOnLoad(fn) { loadQueue.push(fn); }
+ window.onload = function() {
+ for (var i = 0; i < loadQueue.length; i++)
+ loadQueue[i]();
+ delete loadQueue;
+ };
+</script><script src="/static/dist/mr-app.bde92706c5d331bcd2db.min.js" nonce="" type="module"></script><style>
+    .__crdxFeedbackButton {
+      background-image: url('https://storage.cloud.google.com/chops-feedback/icon.png');
+      background-size: cover;
+      bottom: 32px;
+      height: 32px;
+      opacity: .4;
+      position: fixed;
+      right: 24px;
+      text-decoration: none;
+      transition: opacity .2s;
+      width: 32px;
+      z-index: 8675309; /* Jenny */
+    }
+    .__crdxFeedbackButton:hover,
+    .__crdxFeedbackButton:hover::after {
+      opacity: .75;
+    }
+    .__crdxFeedbackButton::after {
+      color: #707070;
+      content: "Feedback";
+      font-size: 12px;
+      left: 50%;
+      opacity: 0;
+      position: absolute;
+      text-decoration: none;
+      top: 28px;
+      transform: translateX(-50%);
+      transition: opacity .4s;
+      -webkit-transform: translateX(-50%);
+    }
+  </style></head>
+
+
+
+<body><mr-app loginurl="https://accounts.google.com/AccountChooser?continue=https://uc.appengine.google.com/_ah/conflogin%3Fcontinue%3Dhttps%3A%2F%2Fbugs.chromium.org%2Fp%2Fchromium%2Fissues%2Fdetail%3Fid%3D1268157" logouturl="https://bugs.chromium.org/_ah/logout?continue=https://accounts.google.com/Logout%3Fcontinue%3Dhttps://uc.appengine.google.com/_ah/logout%253Fcontinue%253Dhttps://google.com/url%25253Fsa%25253DD%252526q%25253Dhttps://bugs.chromium.org/p/chromium/issues/detail%2525253Fid%2525253D1268157%252526ust%25253D1655976297978173%252526usg%25253DAOvVaw2Zd9eberPWkpVk5a7e1SJ2%26service%3Dah" versionbase="https://49712-4c1ceaa-dot-monorail-prod.appspot.com"><!---->
+      <style>
+        
+  :host {
+    --mr-edit-field-padding: 0.125em 4px;
+    --mr-edit-field-width: 90%;
+    --mr-input-grid-gap: 6px;
+    font-family: var(--chops-font-family);
+    color: var(--chops-primary-font-color);
+    font-size: var(--chops-main-font-size);
+  }
+  /** Converts a <button> to look like an <a> tag. */
+  .linkify {
+    display: inline;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    background: 0;
+    cursor: pointer;
+  }
+  h1, h2, h3, h4 {
+    background: none;
+  }
+  a, chops-button, a.button, .button, .linkify {
+    color: var(--chops-link-color);
+    text-decoration: none;
+    font-weight: var(--chops-link-font-weight);
+    font-family: var(--chops-font-family);
+  }
+  a:hover, .linkify:hover {
+    text-decoration: underline;
+  }
+  a.button, .button {
+    /* Links that look like buttons. */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: filter 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  }
+  a.button:hover, .button:hover {
+    filter: brightness(95%);
+  }
+  chops-button, a.button, .button {
+    box-sizing: border-box;
+    font-size: var(--chops-main-font-size);
+    background: var(--chops-white);
+    border-radius: 6px;
+    --chops-button-padding: 0.25em 8px;
+    margin: 0;
+    margin-left: auto;
+  }
+  a.button, .button {
+    padding: var(--chops-button-padding);
+  }
+  chops-button i.material-icons, a.button i.material-icons, .button i.material-icons {
+    display: block;
+    margin-right: 4px;
+  }
+  chops-button.emphasized, a.button.emphasized, .button.emphasized {
+    background: var(--chops-primary-button-bg);
+    color: var(--chops-primary-button-color);
+    text-shadow: 1px 1px 3px hsla(0, 0%, 0%, 0.25);
+  }
+  textarea, select, input {
+    box-sizing: border-box;
+    font-size: var(--chops-main-font-size);
+  }
+  /* Note: decoupling heading levels from styles is useful for
+  * accessibility because styles will not always line up with semantically
+  * appropriate heading levels.
+  */
+  .medium-heading {
+    font-size: var(--chops-large-font-size);
+    font-weight: normal;
+    line-height: 1;
+    padding: 0.25em 0;
+    color: var(--chops-link-color);
+    margin: 0;
+    margin-top: 0.25em;
+    border-bottom: var(--chops-normal-border);
+  }
+  .medium-heading chops-button {
+    line-height: 1.6;
+  }
+  .input-grid {
+    padding: 0.5em 0;
+    display: grid;
+    max-width: 100%;
+    grid-gap: var(--mr-input-grid-gap);
+    grid-template-columns: minmax(120px, max-content) 1fr;
+    align-items: flex-start;
+  }
+  .input-grid label {
+    font-weight: bold;
+    text-align: right;
+    word-wrap: break-word;
+  }
+  @media (max-width: 600px) {
+    .input-grid label {
+      margin-top: var(--mr-input-grid-gap);
+      text-align: left;
+    }
+    .input-grid {
+      grid-gap: var(--mr-input-grid-gap);
+      grid-template-columns: 100%;
+    }
+  }
+
+        mr-app {
+          display: block;
+          padding-top: var(--monorail-header-height);
+          margin-top: -1px; /* Prevent a double border from showing up. */
+
+          /* From shared-styles.js. */
+          --mr-edit-field-padding: 0.125em 4px;
+          --mr-edit-field-width: 90%;
+          --mr-input-grid-gap: 6px;
+          font-family: var(--chops-font-family);
+          color: var(--chops-primary-font-color);
+          font-size: var(--chops-main-font-size);
+        }
+        main {
+          border-top: var(--chops-normal-border);
+        }
+        .snackbar-container {
+          position: fixed;
+          bottom: 1em;
+          left: 1em;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          z-index: 1000;
+        }
+        /** Unfix <chops-snackbar> to allow stacking. */
+        chops-snackbar {
+          position: static;
+          margin-top: 0.5em;
+        }
+      </style>
+      <mr-header></mr-header>
+      <chops-announcement service="monorail"></chops-announcement>
+      <mr-site-banner hidden=""></mr-site-banner>
+      <mr-cue centered="" nondismissible="" cueprefname="switch_to_parent_account" hidden=""></mr-cue>
+      <mr-cue centered="" cueprefname="search_for_numbers" hidden=""></mr-cue>
+      <main><!---->
+          <mr-issue-page issueclosed=""><!---->
+      <style>
+        mr-issue-page {
+          --mr-issue-page-horizontal-padding: 12px;
+          --mr-toggled-font-family: inherit;
+          --monorail-metadata-toggled-bg: var(--monorail-metadata-open-bg);
+        }
+        mr-issue-page[issueClosed] {
+          --monorail-metadata-toggled-bg: var(--monorail-metadata-closed-bg);
+        }
+        mr-issue-page[codeFont] {
+          --mr-toggled-font-family: Monospace;
+        }
+        .container-issue {
+          width: 100%;
+          flex-direction: column;
+          align-items: stretch;
+          justify-content: flex-start;
+          z-index: 200;
+        }
+        .container-issue-content {
+          padding: 0;
+          flex-grow: 1;
+          display: flex;
+          align-items: stretch;
+          justify-content: space-between;
+          flex-direction: row;
+          flex-wrap: nowrap;
+          box-sizing: border-box;
+          padding-top: 0.5em;
+        }
+        .container-outside {
+          box-sizing: border-box;
+          width: 100%;
+          max-width: 100%;
+          margin: auto;
+          padding: 0;
+          display: flex;
+          align-items: stretch;
+          justify-content: space-between;
+          flex-direction: row;
+          flex-wrap: no-wrap;
+        }
+        .container-no-issue {
+          padding: 0.5em 16px;
+          font-size: var(--chops-large-font-size);
+        }
+        .metadata-container {
+          font-size: var(--chops-main-font-size);
+          background: var(--monorail-metadata-toggled-bg);
+          border-right: var(--chops-normal-border);
+          border-bottom: var(--chops-normal-border);
+          width: 24em;
+          min-width: 256px;
+          flex-grow: 0;
+          flex-shrink: 0;
+          box-sizing: border-box;
+          z-index: 100;
+        }
+        .issue-header-container {
+          z-index: 10;
+          position: sticky;
+          top: var(--monorail-header-height);
+          margin-bottom: 0.25em;
+          width: 100%;
+        }
+        mr-issue-details {
+          min-width: 50%;
+          max-width: 1000px;
+          flex-grow: 1;
+          box-sizing: border-box;
+          min-height: 100%;
+          padding-left: var(--mr-issue-page-horizontal-padding);
+          padding-right: var(--mr-issue-page-horizontal-padding);
+        }
+        mr-issue-metadata {
+          position: sticky;
+          overflow-y: auto;
+          top: var(--monorail-header-height);
+          height: calc(100vh - var(--monorail-header-height));
+        }
+        mr-launch-overview {
+          border-left: var(--chops-normal-border);
+          padding-left: var(--mr-issue-page-horizontal-padding);
+          padding-right: var(--mr-issue-page-horizontal-padding);
+          flex-grow: 0;
+          flex-shrink: 0;
+          width: 50%;
+          box-sizing: border-box;
+          min-height: 100%;
+        }
+        @media (max-width: 1126px) {
+          .container-issue-content {
+            flex-direction: column;
+            padding: 0 var(--mr-issue-page-horizontal-padding);
+          }
+          mr-issue-details, mr-launch-overview {
+            width: 100%;
+            padding: 0;
+            border: 0;
+          }
+        }
+        @media (max-width: 840px) {
+          .container-outside {
+            flex-direction: column;
+          }
+          .metadata-container {
+            width: 100%;
+            height: auto;
+            border: 0;
+            border-bottom: var(--chops-normal-border);
+          }
+          mr-issue-metadata {
+            min-width: auto;
+            max-width: auto;
+            width: 100%;
+            padding: 0;
+            min-height: 0;
+            border: 0;
+          }
+          mr-issue-metadata, .issue-header-container {
+            position: static;
+          }
+        }
+      </style>
+      <mr-click-throughs></mr-click-throughs>
+      
+        <div class="container-outside" id="issue">
+          <aside class="metadata-container">
+            <mr-issue-metadata></mr-issue-metadata>
+          </aside>
+          <div class="container-issue">
+            <div class="issue-header-container">
+              <mr-issue-header></mr-issue-header>
+              <mr-restriction-indicator hidden=""></mr-restriction-indicator>
+            </div>
+            <div class="container-issue-content">
+              <mr-issue-details class="main-item"><!---->
+      <style>
+        mr-issue-details {
+          font-size: var(--chops-main-font-size);
+          background-color: var(--chops-white);
+          padding-bottom: 1em;
+          display: flex;
+          align-items: stretch;
+          justify-content: flex-start;
+          flex-direction: column;
+          margin: 0;
+          box-sizing: border-box;
+        }
+        h3 {
+          margin-top: 1em;
+        }
+        mr-description {
+          margin-bottom: 1em;
+        }
+        mr-edit-issue {
+          margin-top: 40px;
+        }
+      </style>
+      <mr-description></mr-description>
+      <mr-comment-list headinglevel="2"></mr-comment-list>
+      
+    <!----></mr-issue-details>
+              <mr-launch-overview class="main-item" hidden=""><!---->
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      <style>
+        mr-launch-overview {
+          max-width: 100%;
+          display: flex;
+          flex-flow: column;
+          justify-content: flex-start;
+          align-items: stretch;
+        }
+        mr-launch-overview[hidden] {
+          display: none;
+        }
+        mr-phase {
+          margin-bottom: 0.75em;
+        }
+      </style>
+      
+      
+    <!----></mr-launch-overview>
+            </div>
+          </div>
+        </div>
+        <mr-edit-description id="edit-description"></mr-edit-description>
+        <mr-move-copy-issue id="move-copy-issue"></mr-move-copy-issue>
+        <mr-convert-issue id="convert-issue"></mr-convert-issue>
+        <mr-related-issues id="reorder-related-issues"></mr-related-issues>
+        <mr-update-issue-hotlists-dialog id="update-issue-hotlists"></mr-update-issue-hotlists-dialog>
+      
+    <!----></mr-issue-page>
+        <!----></main>
+      <div class="snackbar-container" aria-live="polite">
+        
+      </div>
+    <!----></mr-app>
+
+<div id="footer">
+ 
+ 
+ <a href="https://bugs.chromium.org/p/monorail/adminIntro" title="Monorail 49712-4c1ceaa.444368075368987207">About Monorail</a>
+ <a href="https://chromium.googlesource.com/infra/infra/+/main/appengine/monorail/doc/userguide/README.md">User Guide</a>
+ <a href="https://chromium.googlesource.com/infra/infra/+/main/appengine/monorail/doc/release-notes.md">Release Notes</a>
+ <a href="https://bugs.chromium.org/p/monorail/issues/entry?template=Online%20Feedback" target="_blank">Feedback on Monorail</a>
+ <a href="https://chromium.googlesource.com/infra/infra/+/main/appengine/monorail/doc/terms.md">Terms</a>
+ <a href="https://www.google.com/policies/privacy/">Privacy</a>
+</div>
+
+ 
+
+
+<script src="/static/dist/ezt-footer-scripts-package.d0ef803a82ef42c4fa9f.min.js" nonce="" type="module"></script>
+<script type="module" nonce="">
+// Load and instantiate pRPC client before any other script.
+window.prpcClient = new AutoRefreshPrpcClient(
+ CS_env.token, CS_env.tokenExpiresSec);
+</script>
+
+
+<script type="text/javascript" defer="" src="https://49712-4c1ceaa-dot-monorail-prod.appspot.com/static/js/graveyard/common.js" nonce=""></script>
+<script type="text/javascript" defer="" src="https://49712-4c1ceaa-dot-monorail-prod.appspot.com/static/js/graveyard/listen.js" nonce=""></script>
+<script type="text/javascript" defer="" src="https://49712-4c1ceaa-dot-monorail-prod.appspot.com/static/js/graveyard/xmlhttp.js" nonce=""></script>
+<script type="text/javascript" defer="" src="https://49712-4c1ceaa-dot-monorail-prod.appspot.com/static/js/graveyard/shapes.js" nonce=""></script>
+<script type="text/javascript" defer="" src="https://49712-4c1ceaa-dot-monorail-prod.appspot.com/static/js/graveyard/geom.js" nonce=""></script>
+<script type="text/javascript" defer="" src="https://49712-4c1ceaa-dot-monorail-prod.appspot.com/static/js/graveyard/popup_controller.js" nonce=""></script>
+
+<script type="text/javascript" defer="" src="https://49712-4c1ceaa-dot-monorail-prod.appspot.com/static/js/tracker/ac.js" nonce=""></script>
+<script type="text/javascript" defer="" src="https://49712-4c1ceaa-dot-monorail-prod.appspot.com/static/js/tracker/tracker-ac.js" nonce=""></script>
+<script type="text/javascript" defer="" src="https://49712-4c1ceaa-dot-monorail-prod.appspot.com/static/js/tracker/tracker-install-ac.js" nonce=""></script>
+
+<script type="text/javascript" defer="" src="https://49712-4c1ceaa-dot-monorail-prod.appspot.com/static/js/tracker/tracker-editing.js" nonce=""></script>
+
+
+
+ <script type="text/javascript" nonce="">
+ runOnLoad(function() {
+ TKR_install_ac();
+ });
+ </script>
+
+<script type="text/javascript" nonce="">
+runOnLoad(function() {
+ // CrDX Feedback Button
+ (function(i,s,o,g,r,a,m){i['CrDXObject']=r;i[r]=i[r]||function(){
+ (i[r].q=i[r].q||[]).push(arguments)},a=s.createElement(o),
+ m=s.getElementsByTagName(o)[0];a.async=1;a.setAttribute('nonce','LuXrkAv9xsBu6VJNCkb9hzX07uXSETKX');
+ a.src=g;m.parentNode.insertBefore(a,m)
+ })(window,document,'script','https://storage.googleapis.com/chops-feedback/feedback.js','crdx');
+ crdx('setFeedbackButtonLink', 'https://bugs.chromium.org/p/monorail/issues/entry?template=Online%20Feedback');
+});
+</script>
+
+<script type="text/javascript" nonce="">
+// Google Analytics
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.setAttribute('nonce','LuXrkAv9xsBu6VJNCkb9hzX07uXSETKX');
+a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+(function setupGoogleAnalytics() {
+ ga('create', 'UA-55762617-14', {'siteSpeedSampleRate': 100});
+})();
+</script>
+
+
+ <script type="text/javascript" nonce="">
+ window.addEventListener('load', () => {
+ window.getTSMonClient().recordIssueDetailSpaTiming();
+ });
+ </script>
+
+<script type="text/javascript" nonce="">
+ runOnLoad(function() {
+ if (typeof(ClientLogger) === "function") {
+ let cl = new ClientLogger("issues");
+ if (cl.started("new-issue")) {
+ cl.logEnd("new-issue", null, 120 * 1000);
+ }
+ if (cl.started("issue-search")) {
+ cl.logEnd("issue-search");
+ }
+ }
+ });
+</script>
+<a class="__crdxFeedbackButton" target="_blank" href="https://bugs.chromium.org/p/monorail/issues/entry?template=Online%20Feedback"></a></body></html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="An open-source monitoring system with a dimensional data model, flexible query language, efficient time series database and modern alerting approach.">
+    <meta name="keywords" content="prometheus, monitoring, monitoring system, time series, time series database, alerting, metrics, telemetry">
+    <meta name="author" content="Prometheus">
+    <meta name="twitter:card" content="summary">
+    <meta property="og:description" content="An open-source monitoring system with a dimensional data model, flexible query language, efficient time series database and modern alerting approach.">
+    <meta property="og:image" content="https://prometheus.io/assets/favicons/android-chrome-192x192.png">
+
+    <link rel="alternate" type="application/atom+xml" title="Prometheus Blog » Feed" href="/blog/feed.xml">
+
+    <link rel="shortcut icon" href="/assets/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/favicons/apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/favicons/apple-touch-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/favicons/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/favicons/apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/favicons/apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/favicons/apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/favicons/apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/favicons/apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon-180x180.png">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/assets/favicons/android-chrome-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="/assets/favicons/android-chrome-manifest.json">
+    
+    <!-- Meta tag for indexing that enables faceted search in Algolia,
+      see https://docsearch.algolia.com/docs/required-configuration/#introduce-global-information-as-meta-tags -->
+    <meta name="docsearch:prometheus-version" content="none">
+    <meta name="docsearch:include" content="true">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    
+    <meta property="og:title" content="TLS encryption | Prometheus">
+    <title>TLS encryption | Prometheus</title>
+    
+
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/bootstrap-3.4.1/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Algolia site search, see https://www.algolia.com/solutions/site-search/ -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/docs.css" rel="stylesheet">
+    <link href="/css/routing-tree-editor.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/assets/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400" rel="stylesheet" type="text/css">
+  <style type="text/css">   .side-nav ul, .side-nav div { display: none; }   .side-nav ul.active, .side-nav div.active { display: block; } </style></head>
+
+  <body>
+
+  <div class="">
+    <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><img src="/assets/prometheus_logo_grey.svg" alt="Prometheus logo"> Prometheus</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+          <ul class="nav navbar-nav navbar-right main-nav">
+            <li><a href="/docs/introduction/overview/">Docs</a></li>
+            <li><a href="/download/">Download</a></li>
+            <li><a href="/community/">Community</a></li>
+            <li><a href="/support-training/">Support &amp; Training</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><span class="algolia-autocomplete" style="position: relative; display: inline-block; direction: ltr;"><input class="searchbox form-control ds-input" type="search" placeholder="Search" aria-label="Search" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-owns="algolia-autocomplete-listbox-0" dir="auto" style="position: relative; vertical-align: top;"><pre aria-hidden="true" style="position: absolute; visibility: hidden; white-space: pre; font-family: Lato, sans-serif; font-size: 14px; font-style: normal; font-variant: normal; font-weight: 400; word-spacing: 0px; letter-spacing: normal; text-indent: 0px; text-rendering: auto; text-transform: none;"></pre><span class="ds-dropdown-menu" role="listbox" id="algolia-autocomplete-listbox-0" style="position: absolute; top: 100%; z-index: 100; display: none; left: 0px; right: auto;"><div class="ds-dataset-1"></div></span></span></li>
+            <li><a href="https://github.com/prometheus"><i class="fa fa-github"></i></a></li>
+            <li><a href="https://twitter.com/PrometheusIO"><i class="fa fa-twitter"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-3 side-nav-col">
+      <ul class="nav navbar-nav side-nav">
+        
+          <li><span class="nav-header"><i class="fa fa-hand-o-right"></i> <a href="#">Introduction</a></span><ul class="nav "><li><a href="/docs/introduction/overview/">Overview</a></li><li><a href="/docs/introduction/first_steps/">First steps</a></li><li><a href="/docs/introduction/comparison/">Comparison to alternatives</a></li><li><a href="/docs/introduction/faq/">FAQ</a></li><li><a href="/docs/introduction/roadmap/">Roadmap</a></li><li><a href="/docs/introduction/design-doc/">Design Documents</a></li><li><a href="/docs/introduction/media/">Media</a></li><li><a href="/docs/introduction/glossary/">Glossary</a></li><li><a href="/docs/introduction/release-cycle/">Long-Term Support</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-flask"></i> <a href="#">Concepts</a></span><ul class="nav "><li><a href="/docs/concepts/data_model/">Data model</a></li><li><a href="/docs/concepts/metric_types/">Metric types</a></li><li><a href="/docs/concepts/jobs_instances/">Jobs and instances</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-server"></i> <a href="#">Prometheus</a></span><div class="">Version: <select><option value="/docs/prometheus/latest/getting_started/" selected="selected">latest (2.36)</option><option value="/docs/prometheus/2.36/getting_started/">2.36</option><option value="/docs/prometheus/2.35/getting_started/">2.35</option><option value="/docs/prometheus/2.34/getting_started/">2.34</option><option value="/docs/prometheus/2.33/getting_started/">2.33</option><option value="/docs/prometheus/2.32/getting_started/">2.32</option><option value="/docs/prometheus/2.31/getting_started/">2.31</option><option value="/docs/prometheus/2.30/getting_started/">2.30</option><option value="/docs/prometheus/2.29/getting_started/">2.29</option><option value="/docs/prometheus/2.28/getting_started/">2.28</option><option value="/docs/prometheus/2.27/getting_started/">2.27</option><option value="/docs/prometheus/1.8/getting_started/">1.8</option></select></div><ul class="nav "><li><a href="/docs/prometheus/latest/getting_started/">Getting started</a></li><li><a href="/docs/prometheus/latest/installation/">Installation</a></li><li><a href="#">Configuration</a><ul class="nav "><li><a href="/docs/prometheus/latest/configuration/configuration/">Configuration</a></li><li><a href="/docs/prometheus/latest/configuration/recording_rules/">Recording rules</a></li><li><a href="/docs/prometheus/latest/configuration/alerting_rules/">Alerting rules</a></li><li><a href="/docs/prometheus/latest/configuration/template_examples/">Template examples</a></li><li><a href="/docs/prometheus/latest/configuration/template_reference/">Template reference</a></li><li><a href="/docs/prometheus/latest/configuration/unit_testing_rules/">Unit Testing for Rules</a></li><li><a href="/docs/prometheus/latest/configuration/https/">HTTPS and authentication</a></li></ul></li><li><a href="#">Querying</a><ul class="nav "><li><a href="/docs/prometheus/latest/querying/basics/">Basics</a></li><li><a href="/docs/prometheus/latest/querying/operators/">Operators</a></li><li><a href="/docs/prometheus/latest/querying/functions/">Functions</a></li><li><a href="/docs/prometheus/latest/querying/examples/">Examples</a></li><li><a href="/docs/prometheus/latest/querying/api/">HTTP API</a></li></ul></li><li><a href="/docs/prometheus/latest/storage/">Storage</a></li><li><a href="/docs/prometheus/latest/federation/">Federation</a></li><li><a href="/docs/prometheus/latest/http_sd/">HTTP SD</a></li><li><a href="/docs/prometheus/latest/management_api/">Management API</a></li><li><a href="/docs/prometheus/latest/migration/">Migration</a></li><li><a href="/docs/prometheus/latest/stability/">API Stability</a></li><li><a href="/docs/prometheus/latest/feature_flags/">Feature flags</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-line-chart"></i> <a href="#">Visualization</a></span><ul class="nav "><li><a href="/docs/visualization/browser/">Expression browser</a></li><li><a href="/docs/visualization/grafana/">Grafana</a></li><li><a href="/docs/visualization/consoles/">Console templates</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-code"></i> <a href="#">Instrumenting</a></span><ul class="nav "><li><a href="/docs/instrumenting/clientlibs/">Client libraries</a></li><li><a href="/docs/instrumenting/writing_clientlibs/">Writing client libraries</a></li><li><a href="/docs/instrumenting/pushing/">Pushing metrics</a></li><li><a href="/docs/instrumenting/exporters/">Exporters and integrations</a></li><li><a href="/docs/instrumenting/writing_exporters/">Writing exporters</a></li><li><a href="/docs/instrumenting/exposition_formats/">Exposition formats</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-cog"></i> <a href="#">Operating</a></span><ul class="nav "><li><a href="/docs/operating/security/">Security</a></li><li><a href="/docs/operating/integrations/">Integrations</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-bell-o"></i> <a href="#">Alerting</a></span><div class="">Version: <select><option value="/docs/alerting/latest/overview/" selected="selected">latest (0.24)</option><option value="/docs/alerting/0.24/overview/">0.24</option><option value="/docs/alerting/0.23/overview/">0.23</option><option value="/docs/alerting/0.22/overview/">0.22</option><option value="/docs/alerting/0.21/overview/">0.21</option><option value="/docs/alerting/0.20/overview/">0.20</option></select></div><ul class="nav "><li><a href="/docs/alerting/latest/overview/">Alerting overview</a></li><li><a href="/docs/alerting/latest/alertmanager/">Alertmanager</a></li><li><a href="/docs/alerting/latest/configuration/">Configuration</a></li><li><a href="/docs/alerting/latest/clients/">Clients</a></li><li><a href="/docs/alerting/latest/notifications/">Notification template reference</a></li><li><a href="/docs/alerting/latest/notification_examples/">Notification template examples</a></li><li><a href="/docs/alerting/latest/management_api/">Management API</a></li><li><a href="/docs/alerting/latest/https/">HTTPS and authentication</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-thumbs-o-up"></i> <a href="#">Best practices</a></span><ul class="nav "><li><a href="/docs/practices/naming/">Metric and label naming</a></li><li><a href="/docs/practices/consoles/">Consoles and dashboards</a></li><li><a href="/docs/practices/instrumentation/">Instrumentation</a></li><li><a href="/docs/practices/histograms/">Histograms and summaries</a></li><li><a href="/docs/practices/alerting/">Alerting</a></li><li><a href="/docs/practices/rules/">Recording rules</a></li><li><a href="/docs/practices/pushing/">When to use the Pushgateway</a></li><li><a href="/docs/practices/remote_write/">Remote write tuning</a></li></ul></li>
+        
+          <li class="active"><span class="nav-header"><i class="fa fa-map-o"></i> <a href="#">Guides</a></span><ul class="nav active"><li><a href="/docs/guides/basic-auth/">Basic auth</a></li><li><a href="/docs/guides/cadvisor/">Monitoring Docker container metrics using cAdvisor</a></li><li><a href="/docs/guides/file-sd/">Use file-based service discovery to discover scrape targets</a></li><li><a href="/docs/guides/go-application/">Instrumenting a Go application</a></li><li><a href="/docs/guides/multi-target-exporter/">Understanding and using the multi-target exporter pattern</a></li><li><a href="/docs/guides/node-exporter/">Monitoring Linux host metrics with the Node Exporter</a></li><li><a href="/docs/guides/dockerswarm/">Docker Swarm</a></li><li><a href="/docs/guides/query-log/">Query Log</a></li><li class="active current"><a href="/docs/guides/tls-encryption/">TLS encryption</a></li></ul></li>
+        
+          <li><span class="nav-header"><i class="fa fa-book"></i> <a href="#">Tutorials</a></span><ul class="nav "><li><a href="/docs/tutorials/getting_started/">Getting Started with Prometheus</a></li><li><a href="/docs/tutorials/understanding_metric_types/">Understanding metric types</a></li><li><a href="/docs/tutorials/instrumenting_http_server_in_go/">Instrumenting HTTP server written in Go</a></li><li><a href="/docs/tutorials/visualizing_metrics_using_grafana/">Visualizing metrics using Grafana</a></li></ul></li>
+        
+      </ul>
+    </div>
+
+    <div class="col-md-9 doc-content">
+      
+
+<h1 id="securing-prometheus-api-and-ui-endpoints-using-tls-encryption" class="page-header">Securing Prometheus API and UI endpoints using TLS encryption<a class="header-anchor" href="#securing-prometheus-api-and-ui-endpoints-using-tls-encryption" name="securing-prometheus-api-and-ui-endpoints-using-tls-encryption"></a>
+</h1>
+<div class="toc toc-right"><ul>
+<li><a href="#pre-requisites">Pre-requisites
+</a></li>
+<li><a href="#prometheus-configuration">Prometheus configuration
+</a></li>
+<li><a href="#testing">Testing
+</a></li>
+</ul></div>
+
+<p>Prometheus supports <a href="https://en.wikipedia.org/wiki/Transport_Layer_Security">Transport Layer Security</a> (TLS) encryption for connections to Prometheus instances (i.e. to the expression browser or <a href="../../prometheus/latest/querying/api">HTTP API</a>). If you would like to enforce TLS for those connections, you would need to create a specific web configuration file.</p>
+
+<div class="admonition-wrapper note"><div class="admonition alert alert-info">
+<strong>NOTE:</strong> This guide is about TLS connections <em>to</em> Prometheus instances. TLS is also supported for connections <em>from</em> Prometheus instances to <a href="../../prometheus/latest/configuration/configuration/#tls_config">scrape targets</a>.</div></div>
+
+<h2 id="pre-requisites">Pre-requisites<a class="header-anchor" href="#pre-requisites" name="pre-requisites"></a>
+</h2>
+
+<p>Let's say that you already have a Prometheus instance up and running, and you
+want to adapt it. We will not cover the initial Prometheus setup in this guide.</p>
+
+<p>Let's say that you want to run a Prometheus instance served with TLS, available at the <code>example.com</code> domain (which you own).</p>
+
+<p>Let's also say that you've generated the following using <a href="https://www.digitalocean.com/community/tutorials/openssl-essentials-working-with-ssl-certificates-private-keys-and-csrs">OpenSSL</a> or an analogous tool:</p>
+
+<ul>
+<li>an SSL certificate at <code>/home/prometheus/certs/example.com/example.com.crt</code>
+</li>
+<li>an SSL key at <code>/home/prometheus/certs/example.com/example.com.key</code>
+</li>
+</ul>
+
+<p>You can generate a self-signed certificate and private key using this command:</p>
+
+<pre><code class="bash">mkdir -p /home/prometheus/certs/example.com &amp;&amp; cd /home/prometheus/certs/certs/example.com
+openssl req \
+  -x509 \
+  -newkey rsa:4096 \
+  -nodes \
+  -keyout example.com.key \
+  -out example.com.crt
+</code></pre>
+
+<p>Fill out the appropriate information at the prompts, and make sure to enter <code>example.com</code> at the <code>Common Name</code> prompt.</p>
+
+<h2 id="prometheus-configuration">Prometheus configuration<a class="header-anchor" href="#prometheus-configuration" name="prometheus-configuration"></a>
+</h2>
+
+<p>Below is an example <a href="https://prometheus.io/docs/prometheus/latest/configuration/https/"><code>web-config.yml</code></a> configuration file. With this configuration, Prometheus will serve all its endpoints behind TLS.</p>
+
+<pre><code class="yaml">tls_server_config:
+  cert_file: /home/prometheus/certs/example.com/example.com.crt
+  key_file: /home/prometheus/certs/example.com/example.com.key
+</code></pre>
+
+<p>To make Prometheus use this config, you will need to call it with the flag
+<code>--web.config.file</code>.</p>
+
+<pre><code class="bash">prometheus \
+  --config.file=/path/to/prometheus.yml \
+  --web.config.file=/path/to/web-config.yml \
+  --web.external-url=https://example.com/
+</code></pre>
+
+<p>The <code>--web.external-url=</code> flag is optional here.</p>
+
+<h2 id="testing">Testing<a class="header-anchor" href="#testing" name="testing"></a>
+</h2>
+
+<p>If you'd like to test out TLS locally using the <code>example.com</code> domain, you can add an entry to your <code>/etc/hosts</code> file that re-routes <code>example.com</code> to <code>localhost</code>:</p>
+
+<pre><code>127.0.0.1     example.com
+</code></pre>
+
+<p>You can then use cURL to interact with your local Prometheus setup:</p>
+
+<pre><code class="bash">curl --cacert /home/prometheus/certs/example.com/example.com.crt \
+  https://example.com/api/v1/label/job/values
+</code></pre>
+
+<p>You can connect to the Prometheus server without specifying certs using the <code>--insecure</code> or <code>-k</code> flag:</p>
+
+<pre><code class="bash">curl -k https://example.com/api/v1/label/job/values
+</code></pre>
+
+
+      <p class="open-source-notice">
+          <i class="fa fa-file"></i> This documentation is <a href="https://github.com/prometheus/docs#contributing-changes">open-source</a>. Please help improve it by filing issues or pull requests.
+      </p>
+    </div>
+
+  </div>
+  <hr>
+
+<footer>
+  <p class="pull-left">
+    © Prometheus Authors 2014-2022 | Documentation Distributed under CC-BY-4.0
+  </p>
+  <p class="pull-left">
+     © 2022 The Linux Foundation. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our <a href="https://www.linuxfoundation.org/trademark-usage">Trademark Usage</a> page.
+  </p>
+</footer>
+
+</div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script async="" src="//www.google-analytics.com/analytics.js"></script><script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="/assets/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+    <script src="/assets/docs.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/assets/ie10-viewport-bug-workaround.js"></script>
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-58468480-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+
+    <!-- Algolia Docsearch -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script>
+    <script type="text/javascript">
+      docsearch({
+        apiKey: '48ac0b7924908a1fd40b1cb18b402ba1',
+        indexName: 'prometheus',
+        inputSelector: '.searchbox',
+        // Search all pages that either are the latest or are not part of the versioned Prometheus docs subtrees.
+        algoliaOptions: { 'filters': 'include:true' },
+        debug: false // Set debug to true if you want to inspect the dropdown
+      });
+    </script>
+  
+
+
+</body></html>

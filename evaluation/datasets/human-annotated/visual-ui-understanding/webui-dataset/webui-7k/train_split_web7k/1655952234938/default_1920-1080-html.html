@@ -1,0 +1,1371 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Basic Types | S2Geometry</title>
+<meta name="generator" content="Jekyll v3.9.0">
+<meta property="og:title" content="Basic Types">
+<meta property="og:locale" content="en_US">
+<meta name="description" content="The s2geometry.io website">
+<meta property="og:description" content="The s2geometry.io website">
+<link rel="canonical" href="https://s2geometry.io/devguide/basic_types.html">
+<meta property="og:url" content="http://s2geometry.io/devguide/basic_types.html">
+<meta property="og:site_name" content="S2Geometry">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta property="twitter:title" content="Basic Types">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"The s2geometry.io website","headline":"Basic Types","url":"http://s2geometry.io/devguide/basic_types.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://s2geometry.io/feed.xml" title="S2Geometry"></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper">
+    
+    <a class="site-title" href="/">S2Geometry</a>
+    <br>
+    <nav class="site-nav">
+      <div class="trigger">
+        
+          
+          
+          <a class="page-link" href="/getS2.html">Get S2</a>
+          
+        
+          
+          
+          <a class="page-link" href="/about/">About S2</a>
+          
+        
+          
+          
+          <a class="page-link" href="/devguide/">Developer Guide</a>
+          
+        
+          
+          
+          <a class="page-link" href="/community/">Community</a>
+          
+        
+          
+          
+          <a class="page-link" href="/resources/">Resources</a>
+          
+        
+      </div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Basic Types</h1>
+  </header>
+
+  <div class="post-content">
+    <h2 id="s1angle">S1Angle</h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">S1Angle</code> class represents a one-dimensional angle (as opposed to a 2D solid
+angle). It has methods for converting angles to or from radians, degrees, and
+the E5/E6/E7 representations (i.e. degrees multiplied by 1e5/1e6/1e7 and rounded
+to the nearest integer).</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">S1Angle</span> <span class="p">{</span>
+ <span class="nl">public:</span>
+  <span class="c1">// These methods construct S1Angle objects from their measure in radians</span>
+  <span class="c1">// or degrees.</span>
+  <span class="k">static</span> <span class="k">constexpr</span> <span class="n">S1Angle</span> <span class="n">Radians</span><span class="p">(</span><span class="kt">double</span> <span class="n">radians</span><span class="p">);</span>
+  <span class="k">static</span> <span class="k">constexpr</span> <span class="n">S1Angle</span> <span class="n">Degrees</span><span class="p">(</span><span class="kt">double</span> <span class="n">degrees</span><span class="p">);</span>
+  <span class="k">static</span> <span class="k">constexpr</span> <span class="n">S1Angle</span> <span class="n">E5</span><span class="p">(</span><span class="n">int32</span> <span class="n">e5</span><span class="p">);</span>
+  <span class="k">static</span> <span class="k">constexpr</span> <span class="n">S1Angle</span> <span class="n">E6</span><span class="p">(</span><span class="n">int32</span> <span class="n">e6</span><span class="p">);</span>
+  <span class="k">static</span> <span class="k">constexpr</span> <span class="n">S1Angle</span> <span class="n">E7</span><span class="p">(</span><span class="n">int32</span> <span class="n">e7</span><span class="p">);</span>
+
+  <span class="c1">// The default constructor yields a zero angle.  This is useful for STL</span>
+  <span class="c1">// containers and class methods with output arguments.</span>
+  <span class="k">constexpr</span> <span class="n">S1Angle</span><span class="p">();</span>
+
+  <span class="c1">// Return an angle larger than any finite angle.</span>
+  <span class="k">static</span> <span class="k">constexpr</span> <span class="n">S1Angle</span> <span class="n">Infinity</span><span class="p">();</span>
+
+  <span class="c1">// A explicit shorthand for the default constructor.</span>
+  <span class="k">static</span> <span class="k">constexpr</span> <span class="n">S1Angle</span> <span class="n">Zero</span><span class="p">();</span>
+
+  <span class="c1">// Return the angle between two points, which is also equal to the distance</span>
+  <span class="c1">// between these points on the unit sphere.  The points do not need to be</span>
+  <span class="c1">// normalized.</span>
+  <span class="n">S1Angle</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">x</span><span class="p">,</span> <span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">y</span><span class="p">);</span>
+
+  <span class="c1">// Like the constructor above, but return the angle (i.e., distance)</span>
+  <span class="c1">// between two S2LatLng points.</span>
+  <span class="n">S1Angle</span><span class="p">(</span><span class="k">const</span> <span class="n">S2LatLng</span><span class="o">&amp;</span> <span class="n">x</span><span class="p">,</span> <span class="k">const</span> <span class="n">S2LatLng</span><span class="o">&amp;</span> <span class="n">y</span><span class="p">);</span>
+
+  <span class="k">constexpr</span> <span class="kt">double</span> <span class="n">radians</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="k">constexpr</span> <span class="kt">double</span> <span class="n">degrees</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="n">int32</span> <span class="n">e5</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="n">int32</span> <span class="n">e6</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="n">int32</span> <span class="n">e7</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return the absolute value of an angle.</span>
+  <span class="n">S1Angle</span> <span class="n">abs</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return the angle normalized to the range (-180, 180] degrees.</span>
+  <span class="n">S1Angle</span> <span class="n">Normalized</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Normalize this angle to the range (-180, 180] degrees.</span>
+  <span class="kt">void</span> <span class="n">Normalize</span><span class="p">();</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>See <code class="language-plaintext highlighter-rouge">s1angle.h</code> for additional methods, including comparison and arithmetic
+operators. For example, if <code class="language-plaintext highlighter-rouge">x</code> and <code class="language-plaintext highlighter-rouge">y</code> are angles, then you can write</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if (sin(0.5 * x) &gt; (x + y) / (x - y)) { ... }
+</code></pre></div></div>
+
+<h2 id="s2point">S2Point</h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">S2Point</code> class represents a point on the unit sphere as a 3D vector.
+Usually points are normalized to be unit length, but some methods do not require
+this. The <code class="language-plaintext highlighter-rouge">S2Point</code> class is simply a synonym for the <code class="language-plaintext highlighter-rouge">Vector_3d</code> class from
+<code class="language-plaintext highlighter-rouge">util/math/vector.h</code>, which defines overloaded operators that make it convenient
+to write arithmetic expressions (e.g. <code class="language-plaintext highlighter-rouge">x*p1 + (1-x)*p2</code>).</p>
+
+<p>Some of its more useful methods include:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">S2Point</span> <span class="cm">/* Vector3_d */</span> <span class="p">{</span>
+ <span class="nl">public:</span>
+  <span class="n">S2Point</span><span class="p">(</span><span class="kt">double</span> <span class="n">x</span><span class="p">,</span> <span class="kt">double</span> <span class="n">y</span><span class="p">,</span> <span class="kt">double</span> <span class="n">z</span><span class="p">);</span>
+  <span class="kt">double</span> <span class="n">x</span><span class="p">(),</span> <span class="n">y</span><span class="p">(),</span> <span class="n">z</span><span class="p">();</span>                 <span class="c1">// Named component accessors</span>
+  <span class="kt">double</span><span class="o">&amp;</span> <span class="k">operator</span><span class="p">[](</span><span class="kt">int</span> <span class="n">i</span><span class="p">);</span>            <span class="c1">// Return component i (0, 1, 2)</span>
+  <span class="kt">bool</span> <span class="k">operator</span><span class="o">==</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">v</span><span class="p">);</span>    <span class="c1">// Equality testing</span>
+  <span class="kt">bool</span> <span class="k">operator</span><span class="o">!=</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">v</span><span class="p">);</span>    <span class="c1">// Inequality testing</span>
+  <span class="n">S2Point</span> <span class="k">operator</span><span class="o">+=</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">v</span><span class="p">);</span> <span class="c1">// Add another vector</span>
+  <span class="n">S2Point</span> <span class="k">operator</span><span class="o">-=</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">v</span><span class="p">);</span> <span class="c1">// Subtract another vector</span>
+  <span class="n">S2Point</span> <span class="k">operator</span><span class="o">*=</span><span class="p">(</span><span class="kt">double</span> <span class="n">k</span><span class="p">);</span>         <span class="c1">// Multiply by a scalar</span>
+  <span class="n">S2Point</span> <span class="k">operator</span><span class="o">/=</span><span class="p">(</span><span class="kt">double</span> <span class="n">k</span><span class="p">);</span>         <span class="c1">// Divide by a scalar</span>
+  <span class="n">S2Point</span> <span class="k">operator</span><span class="o">+</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">v</span><span class="p">);</span>  <span class="c1">// Add two vectors</span>
+  <span class="n">S2Point</span> <span class="k">operator</span><span class="o">-</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">v</span><span class="p">);</span>  <span class="c1">// Subtract two vectors</span>
+  <span class="n">S2Point</span> <span class="k">operator</span><span class="o">*</span><span class="p">(</span><span class="kt">double</span> <span class="n">k</span><span class="p">);</span>          <span class="c1">// Multiply by a scalar</span>
+  <span class="n">S2Point</span> <span class="k">operator</span><span class="o">/</span><span class="p">(</span><span class="kt">double</span> <span class="n">k</span><span class="p">);</span>          <span class="c1">// Divide by a scalar</span>
+  <span class="kt">double</span> <span class="n">DotProd</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">v</span><span class="p">);</span>     <span class="c1">// Dot product</span>
+  <span class="n">S2Point</span> <span class="n">CrossProd</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">v</span><span class="p">);</span>  <span class="c1">// Cross product</span>
+  <span class="kt">double</span> <span class="n">Norm2</span><span class="p">();</span>                       <span class="c1">// Squared L2 norm</span>
+  <span class="kt">double</span> <span class="n">Norm</span><span class="p">();</span>                        <span class="c1">// L2 norm</span>
+  <span class="n">S2Point</span> <span class="n">Normalize</span><span class="p">();</span>                  <span class="c1">// Return a normalized **copy**</span>
+  <span class="kt">double</span> <span class="n">Angle</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span><span class="n">v</span><span class="p">);</span>        <span class="c1">// Angle between two vectors (radians)</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>Note that the <code class="language-plaintext highlighter-rouge">S2Point</code> type is technically defined as follows:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>typedef Vector3&lt;double&gt; Vector3_d;
+typedef Vector3_d S2Point;
+</code></pre></div></div>
+
+<p>See <code class="language-plaintext highlighter-rouge">util/math/vector.h</code> for details and additional methods.</p>
+
+<h2 id="s2latlng">S2LatLng</h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">S2LatLng</code> class represents a point on the unit sphere as a pair of
+latitude-longitude coordinates.</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">S2LatLng</span> <span class="p">{</span>
+ <span class="nl">public:</span>
+  <span class="c1">// Constructor.  The latitude and longitude are allowed to be outside</span>
+  <span class="c1">// the is_valid() range.  However, note that most methods that accept</span>
+  <span class="c1">// S2LatLngs expect them to be normalized (see Normalized() below).</span>
+  <span class="n">S2LatLng</span><span class="p">(</span><span class="n">S1Angle</span> <span class="n">lat</span><span class="p">,</span> <span class="n">S1Angle</span> <span class="n">lng</span><span class="p">);</span>
+
+  <span class="c1">// The default constructor sets the latitude and longitude to zero.  This is</span>
+  <span class="c1">// mainly useful when declaring arrays, STL containers, etc.</span>
+  <span class="n">S2LatLng</span><span class="p">();</span>
+
+  <span class="c1">// Convert a direction vector (not necessarily unit length) to an S2LatLng.</span>
+  <span class="k">explicit</span> <span class="n">S2LatLng</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">p</span><span class="p">);</span>
+
+  <span class="c1">// Returns an S2LatLng for which is_valid() will return false.</span>
+  <span class="k">static</span> <span class="n">S2LatLng</span> <span class="n">Invalid</span><span class="p">();</span>
+
+  <span class="c1">// Convenience functions -- shorter than calling S1Angle::Radians(), etc.</span>
+  <span class="k">static</span> <span class="n">S2LatLng</span> <span class="n">FromRadians</span><span class="p">(</span><span class="kt">double</span> <span class="n">lat_radians</span><span class="p">,</span> <span class="kt">double</span> <span class="n">lng_radians</span><span class="p">);</span>
+  <span class="k">static</span> <span class="n">S2LatLng</span> <span class="n">FromDegrees</span><span class="p">(</span><span class="kt">double</span> <span class="n">lat_degrees</span><span class="p">,</span> <span class="kt">double</span> <span class="n">lng_degrees</span><span class="p">);</span>
+  <span class="k">static</span> <span class="n">S2LatLng</span> <span class="n">FromE5</span><span class="p">(</span><span class="n">int32</span> <span class="n">lat_e5</span><span class="p">,</span> <span class="n">int32</span> <span class="n">lng_e5</span><span class="p">);</span>
+  <span class="k">static</span> <span class="n">S2LatLng</span> <span class="n">FromE6</span><span class="p">(</span><span class="n">int32</span> <span class="n">lat_e6</span><span class="p">,</span> <span class="n">int32</span> <span class="n">lng_e6</span><span class="p">);</span>
+  <span class="k">static</span> <span class="n">S2LatLng</span> <span class="n">FromE7</span><span class="p">(</span><span class="n">int32</span> <span class="n">lat_e7</span><span class="p">,</span> <span class="n">int32</span> <span class="n">lng_e7</span><span class="p">);</span>
+
+  <span class="c1">// Accessor methods.</span>
+  <span class="n">S1Angle</span> <span class="n">lat</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="n">S1Angle</span> <span class="n">lng</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="k">const</span> <span class="n">R2Point</span><span class="o">&amp;</span> <span class="n">coords</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if the latitude is between -90 and 90 degrees inclusive</span>
+  <span class="c1">// and the longitude is between -180 and 180 degrees inclusive.</span>
+  <span class="kt">bool</span> <span class="n">is_valid</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Clamps the latitude to the range [-90, 90] degrees, and adds or subtracts</span>
+  <span class="c1">// a multiple of 360 degrees to the longitude if necessary to reduce it to</span>
+  <span class="c1">// the range [-180, 180].</span>
+  <span class="n">S2LatLng</span> <span class="n">Normalized</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Convert a normalized S2LatLng to the equivalent unit-length vector.</span>
+  <span class="n">S2Point</span> <span class="n">ToPoint</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return the distance (measured along the surface of the sphere) to the</span>
+  <span class="c1">// given S2LatLng.  This is mathematically equivalent to:</span>
+  <span class="c1">//</span>
+  <span class="c1">//   S1Angle(ToPoint(), o.ToPoint())</span>
+  <span class="c1">//</span>
+  <span class="c1">// but this implementation is slightly more efficient.  Both S2LatLngs</span>
+  <span class="c1">// must be normalized.</span>
+  <span class="n">S1Angle</span> <span class="n">GetDistance</span><span class="p">(</span><span class="k">const</span> <span class="n">S2LatLng</span><span class="o">&amp;</span> <span class="n">o</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>See <code class="language-plaintext highlighter-rouge">s2latlng.h</code> for additional methods, including comparison and arithmetic
+operators.</p>
+
+<h2 id="s2region">S2Region</h2>
+
+<p>An <code class="language-plaintext highlighter-rouge">S2Region</code> represents a two-dimensional region over the unit sphere. It is an
+abstract interface with various concrete subtypes, such as discs, rectangles,
+polylines, polygons, geometry collections, buffered shapes, etc.</p>
+
+<p>The main purpose of this interface is to allow complex regions to be
+approximated as simpler regions. So rather than having a wide variety of virtual
+methods that are implemented by all subtypes, the interface is restricted to
+methods that are useful for computing approximations. Here they are:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">S2Region</span> <span class="p">{</span>
+ <span class="nl">public:</span>
+  <span class="k">virtual</span> <span class="o">~</span><span class="n">S2Region</span><span class="p">();</span>
+
+  <span class="c1">// Return a deep copy of this region.  If you want to narrow the result to a</span>
+  <span class="c1">// specific known region type, use down_cast&lt;T*&gt; from casts.h.</span>
+  <span class="c1">// Subtypes return pointers to that subtype from their Clone() methods.</span>
+  <span class="k">virtual</span> <span class="n">S2Region</span><span class="o">*</span> <span class="n">Clone</span><span class="p">()</span> <span class="k">const</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+  <span class="c1">// Return a bounding spherical cap. This is not guaranteed to be exact.</span>
+  <span class="k">virtual</span> <span class="n">S2Cap</span> <span class="n">GetCapBound</span><span class="p">()</span> <span class="k">const</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+  <span class="c1">// Return a bounding latitude-longitude rectangle that contains the region.</span>
+  <span class="c1">// The bounds are not guaranteed to be tight.</span>
+  <span class="k">virtual</span> <span class="n">S2LatLngRect</span> <span class="n">GetRectBound</span><span class="p">()</span> <span class="k">const</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+  <span class="c1">// If this method returns true, the region completely contains the given</span>
+  <span class="c1">// cell.  Otherwise, either the region does not contain the cell or the</span>
+  <span class="c1">// containment relationship could not be determined.</span>
+  <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">Contains</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Cell</span><span class="o">&amp;</span> <span class="n">cell</span><span class="p">)</span> <span class="k">const</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+  <span class="c1">// If this method returns false, the region does not intersect the given</span>
+  <span class="c1">// cell.  Otherwise, either region intersects the cell, or the intersection</span>
+  <span class="c1">// relationship could not be determined.</span>
+  <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">MayIntersect</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Cell</span><span class="o">&amp;</span> <span class="n">cell</span><span class="p">)</span> <span class="k">const</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+  <span class="c1">// Return true if and only if the given point is contained by the region.</span>
+  <span class="c1">// The point 'p' is generally required to be unit length, although some</span>
+  <span class="c1">// subtypes may relax this restriction.</span>
+  <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">Contains</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">p</span><span class="p">)</span> <span class="k">const</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+  <span class="c1">//////////////////////////////////////////////////////////////////////////</span>
+  <span class="c1">// Many S2Region subtypes also define the following non-virtual methods.</span>
+
+  <span class="c1">// Appends a serialized representation of the region to "encoder".</span>
+  <span class="kt">void</span> <span class="n">Encode</span><span class="p">(</span><span class="n">Encoder</span><span class="o">*</span> <span class="k">const</span> <span class="n">encoder</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Decodes an S2Region encoded with Encode().  Note that this method</span>
+  <span class="c1">// requires that an S2Region object of the appropriate concrete type has</span>
+  <span class="c1">// already been constructed.  It is not possible to decode regions of</span>
+  <span class="c1">// unknown type.</span>
+  <span class="kt">bool</span> <span class="n">Decode</span><span class="p">(</span><span class="n">Decoder</span><span class="o">*</span> <span class="k">const</span> <span class="n">decoder</span><span class="p">);</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>See <code class="language-plaintext highlighter-rouge">s2region.h</code> for the full interface.</p>
+
+<h2 id="s2latlngrect">S2LatLngRect</h2>
+
+<p>An <code class="language-plaintext highlighter-rouge">S2LatLngRect</code> is a type of <code class="language-plaintext highlighter-rouge">S2Region</code> that represents a rectangle in
+latitude-longitude space. It is capable of representing the empty and full
+rectangles as well as single points. It has an <code class="language-plaintext highlighter-rouge">AddPoint</code> method that makes it
+easy to construct a bounding rectangle for a set of points, including point sets
+that span the 180 degree meridian. Here are its methods:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">S2LatLngRect</span> <span class="k">final</span> <span class="o">:</span> <span class="k">public</span> <span class="n">S2Region</span> <span class="p">{</span>
+ <span class="nl">public:</span>
+  <span class="c1">// Construct a rectangle from minimum and maximum latitudes and longitudes.</span>
+  <span class="c1">// If lo.lng() &gt; hi.lng(), the rectangle spans the 180 degree longitude</span>
+  <span class="c1">// line. Both points must be normalized, with lo.lat() &lt;= hi.lat().</span>
+  <span class="c1">// The rectangle contains all the points p such that 'lo' &lt;= p &lt;= 'hi',</span>
+  <span class="c1">// where '&lt;=' is defined in the obvious way.</span>
+  <span class="n">S2LatLngRect</span><span class="p">(</span><span class="k">const</span> <span class="n">S2LatLng</span><span class="o">&amp;</span> <span class="n">lo</span><span class="p">,</span> <span class="k">const</span> <span class="n">S2LatLng</span><span class="o">&amp;</span> <span class="n">hi</span><span class="p">);</span>
+
+  <span class="c1">// Construct a rectangle from latitude and longitude intervals.  The two</span>
+  <span class="c1">// intervals must either be both empty or both non-empty, and the latitude</span>
+  <span class="c1">// interval must not extend outside [-90, +90] degrees.</span>
+  <span class="n">S2LatLngRect</span><span class="p">(</span><span class="k">const</span> <span class="n">R1Interval</span><span class="o">&amp;</span> <span class="n">lat</span><span class="p">,</span> <span class="k">const</span> <span class="n">S1Interval</span><span class="o">&amp;</span> <span class="n">lng</span><span class="p">);</span>
+
+  <span class="c1">// The default constructor creates an empty S2LatLngRect.</span>
+  <span class="n">S2LatLngRect</span><span class="p">();</span>
+
+  <span class="c1">// Construct a rectangle of the given size centered around the given point.</span>
+  <span class="k">static</span> <span class="n">S2LatLngRect</span> <span class="n">FromCenterSize</span><span class="p">(</span><span class="k">const</span> <span class="n">S2LatLng</span><span class="o">&amp;</span> <span class="n">center</span><span class="p">,</span>
+                                     <span class="k">const</span> <span class="n">S2LatLng</span><span class="o">&amp;</span> <span class="n">size</span><span class="p">);</span>
+
+  <span class="c1">// Construct a rectangle containing a single (normalized) point.</span>
+  <span class="k">static</span> <span class="n">S2LatLngRect</span> <span class="n">FromPoint</span><span class="p">(</span><span class="k">const</span> <span class="n">S2LatLng</span><span class="o">&amp;</span> <span class="n">p</span><span class="p">);</span>
+
+  <span class="c1">// Construct the minimal bounding rectangle containing the two given</span>
+  <span class="c1">// normalized points.  The points do not need to be ordered.</span>
+  <span class="k">static</span> <span class="n">S2LatLngRect</span> <span class="n">FromPointPair</span><span class="p">(</span><span class="k">const</span> <span class="n">S2LatLng</span><span class="o">&amp;</span> <span class="n">p1</span><span class="p">,</span> <span class="k">const</span> <span class="n">S2LatLng</span><span class="o">&amp;</span> <span class="n">p2</span><span class="p">);</span>
+
+  <span class="c1">// Accessor methods.</span>
+  <span class="n">S1Angle</span> <span class="n">lat_lo</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="n">S1Angle</span> <span class="n">lat_hi</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="n">S1Angle</span> <span class="n">lng_lo</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="n">S1Angle</span> <span class="n">lng_hi</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="k">const</span> <span class="n">R1Interval</span><span class="o">&amp;</span> <span class="n">lat</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="k">const</span> <span class="n">S1Interval</span><span class="o">&amp;</span> <span class="n">lng</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="n">R1Interval</span> <span class="o">*</span><span class="n">mutable_lat</span><span class="p">();</span>
+  <span class="n">S1Interval</span> <span class="o">*</span><span class="n">mutable_lng</span><span class="p">();</span>
+  <span class="n">S2LatLng</span> <span class="n">lo</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="n">S2LatLng</span> <span class="n">hi</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// The canonical empty and full rectangles.</span>
+  <span class="k">static</span> <span class="n">S2LatLngRect</span> <span class="n">Empty</span><span class="p">();</span>
+  <span class="k">static</span> <span class="n">S2LatLngRect</span> <span class="n">Full</span><span class="p">();</span>
+
+  <span class="c1">// Return true if the rectangle is valid, which essentially just means</span>
+  <span class="c1">// that the latitude bounds do not exceed Pi/2 in absolute value and</span>
+  <span class="c1">// the longitude bounds do not exceed Pi in absolute value.  Also, if</span>
+  <span class="c1">// either the latitude or longitude bound is empty then both must be.</span>
+  <span class="kt">bool</span> <span class="n">is_valid</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if the rectangle is empty, i.e. it contains no points at all.</span>
+  <span class="kt">bool</span> <span class="n">is_empty</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if the rectangle is full, i.e. it contains all points.</span>
+  <span class="kt">bool</span> <span class="n">is_full</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if the rectangle is a point, i.e. lo() == hi()</span>
+  <span class="kt">bool</span> <span class="n">is_point</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if the rectangle crosses the 180 degree longitude line.</span>
+  <span class="kt">bool</span> <span class="n">is_inverted</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return the k-th vertex of the rectangle (k = 0,1,2,3) in CCW order (lower</span>
+  <span class="c1">// left, lower right, upper right, upper left).</span>
+  <span class="n">S2LatLng</span> <span class="n">GetVertex</span><span class="p">(</span><span class="kt">int</span> <span class="n">k</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return the center of the rectangle in latitude-longitude space</span>
+  <span class="c1">// (in general this is not the center of the region on the sphere).</span>
+  <span class="n">S2LatLng</span> <span class="n">GetCenter</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return the width and height of this rectangle in latitude-longitude</span>
+  <span class="c1">// space.  Empty rectangles have a negative width and height.</span>
+  <span class="n">S2LatLng</span> <span class="n">GetSize</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Returns the surface area of this rectangle on the unit sphere.</span>
+  <span class="kt">double</span> <span class="n">Area</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return the true centroid of the rectangle multiplied by its surface area.</span>
+  <span class="c1">// The true centroid is the "center of mass" of the rectangle viewed as</span>
+  <span class="c1">// subset of the unit sphere, i.e. it is the point in space about which this</span>
+  <span class="c1">// curved shape would rotate.)</span>
+  <span class="c1">//</span>
+  <span class="c1">// The reason for multiplying the result by the rectangle area is to make it</span>
+  <span class="c1">// easier to compute the centroid of more complicated shapes.</span>
+  <span class="n">S2Point</span> <span class="n">GetCentroid</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// More efficient version of Contains() that accepts a S2LatLng rather than</span>
+  <span class="c1">// an S2Point.</span>
+  <span class="kt">bool</span> <span class="n">Contains</span><span class="p">(</span><span class="k">const</span> <span class="n">S2LatLng</span><span class="o">&amp;</span> <span class="n">ll</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if and only if the given point is contained in the interior</span>
+  <span class="c1">// of the region (i.e. the region excluding its boundary).</span>
+  <span class="kt">bool</span> <span class="n">InteriorContains</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">p</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// More efficient version of InteriorContains() that accepts a S2LatLng</span>
+  <span class="c1">// rather than an S2Point.</span>
+  <span class="kt">bool</span> <span class="n">InteriorContains</span><span class="p">(</span><span class="k">const</span> <span class="n">S2LatLng</span><span class="o">&amp;</span> <span class="n">ll</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if and only if the rectangle contains the given other</span>
+  <span class="c1">// rectangle.</span>
+  <span class="kt">bool</span> <span class="n">Contains</span><span class="p">(</span><span class="k">const</span> <span class="n">S2LatLngRect</span><span class="o">&amp;</span> <span class="n">other</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if and only if the interior of this rectangle contains all</span>
+  <span class="c1">// points of the given other rectangle (including its boundary).</span>
+  <span class="kt">bool</span> <span class="n">InteriorContains</span><span class="p">(</span><span class="k">const</span> <span class="n">S2LatLngRect</span><span class="o">&amp;</span> <span class="n">other</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if this rectangle and the given other rectangle have any</span>
+  <span class="c1">// points in common.</span>
+  <span class="kt">bool</span> <span class="n">Intersects</span><span class="p">(</span><span class="k">const</span> <span class="n">S2LatLngRect</span><span class="o">&amp;</span> <span class="n">other</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Returns true if this rectangle intersects the given cell.  (This is an</span>
+  <span class="c1">// exact test and may be fairly expensive, see also MayIntersect below.)</span>
+  <span class="kt">bool</span> <span class="n">Intersects</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Cell</span><span class="o">&amp;</span> <span class="n">cell</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if and only if the interior of this rectangle intersects</span>
+  <span class="c1">// any point (including the boundary) of the given other rectangle.</span>
+  <span class="kt">bool</span> <span class="n">InteriorIntersects</span><span class="p">(</span><span class="k">const</span> <span class="n">S2LatLngRect</span><span class="o">&amp;</span> <span class="n">other</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Increase the size of the bounding rectangle to include the given point.</span>
+  <span class="c1">// The rectangle is expanded by the minimum amount possible.</span>
+  <span class="kt">void</span> <span class="n">AddPoint</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">p</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="n">AddPoint</span><span class="p">(</span><span class="k">const</span> <span class="n">S2LatLng</span><span class="o">&amp;</span> <span class="n">ll</span><span class="p">);</span>
+
+  <span class="c1">// Return a rectangle that has been expanded by margin.lat() on each side in</span>
+  <span class="c1">// the latitude direction, and by margin.lng() on each side in the longitude</span>
+  <span class="c1">// direction.  If either margin is negative, then shrink the rectangle on</span>
+  <span class="c1">// the corresponding sides instead.  The resulting rectangle may be empty.</span>
+  <span class="c1">//</span>
+  <span class="c1">// If you are trying to grow a rectangle by a certain *distance* on the</span>
+  <span class="c1">// sphere (e.g. 5km), use the ExpandedByDistance() method instead.</span>
+  <span class="n">S2LatLngRect</span> <span class="n">Expanded</span><span class="p">(</span><span class="k">const</span> <span class="n">S2LatLng</span><span class="o">&amp;</span> <span class="n">margin</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// If the rectangle does not include either pole, return it unmodified.</span>
+  <span class="c1">// Otherwise expand the longitude range to Full() so that the rectangle</span>
+  <span class="c1">// contains all possible representations of the contained pole(s).</span>
+  <span class="n">S2LatLngRect</span> <span class="n">PolarClosure</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return the smallest rectangle containing the union of this rectangle and</span>
+  <span class="c1">// the given rectangle.</span>
+  <span class="n">S2LatLngRect</span> <span class="n">Union</span><span class="p">(</span><span class="k">const</span> <span class="n">S2LatLngRect</span><span class="o">&amp;</span> <span class="n">other</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return the smallest rectangle containing the intersection of this</span>
+  <span class="c1">// rectangle and the given rectangle.  Note that the region of intersection</span>
+  <span class="c1">// may consist of two disjoint rectangles, in which case a single rectangle</span>
+  <span class="c1">// spanning both of them is returned.</span>
+  <span class="n">S2LatLngRect</span> <span class="n">Intersection</span><span class="p">(</span><span class="k">const</span> <span class="n">S2LatLngRect</span><span class="o">&amp;</span> <span class="n">other</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Expand this rectangle so that it contains all points within the given</span>
+  <span class="c1">// distance of the boundary, and return the smallest such rectangle.  If the</span>
+  <span class="c1">// distance is negative, then instead shrink this rectangle so that it</span>
+  <span class="c1">// excludes all points within the given absolute distance of the boundary,</span>
+  <span class="c1">// and return the largest such rectangle.</span>
+  <span class="c1">//</span>
+  <span class="c1">// Unlike Expanded(), this method treats the rectangle as a set of points on</span>
+  <span class="c1">// the sphere, and measures distances on the sphere.  For example, you can</span>
+  <span class="c1">// use this method to find a rectangle that contains all points within 5km</span>
+  <span class="c1">// of a given rectangle.</span>
+  <span class="n">S2LatLngRect</span> <span class="n">ExpandedByDistance</span><span class="p">(</span><span class="n">S1Angle</span> <span class="n">distance</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Returns the minimum distance (measured along the surface of the sphere) to</span>
+  <span class="c1">// the given S2LatLngRect. Both S2LatLngRects must be non-empty.</span>
+  <span class="n">S1Angle</span> <span class="n">GetDistance</span><span class="p">(</span><span class="k">const</span> <span class="n">S2LatLngRect</span><span class="o">&amp;</span> <span class="n">other</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Returns the minimum distance (measured along the surface of the sphere)</span>
+  <span class="c1">// from a given point to the rectangle (both its boundary and its interior).</span>
+  <span class="n">S1Angle</span> <span class="n">GetDistance</span><span class="p">(</span><span class="k">const</span> <span class="n">S2LatLng</span><span class="o">&amp;</span> <span class="n">p</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">////////////////////////////////////////////////////////////////////////</span>
+  <span class="c1">// S2Region interface (see s2region.h for details):</span>
+
+  <span class="n">S2LatLngRect</span><span class="o">*</span> <span class="n">Clone</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+  <span class="n">S2Cap</span> <span class="n">GetCapBound</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+  <span class="n">S2LatLngRect</span> <span class="n">GetRectBound</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+  <span class="c1">// The point 'p' does not need to be normalized.</span>
+  <span class="kt">bool</span> <span class="n">Contains</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Cell</span><span class="o">&amp;</span> <span class="n">cell</span><span class="p">)</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+
+  <span class="c1">// This test is cheap but is NOT exact.  Use Intersects() if you want a more</span>
+  <span class="c1">// accurate and more expensive test.</span>
+  <span class="kt">bool</span> <span class="n">MayIntersect</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Cell</span><span class="o">&amp;</span> <span class="n">cell</span><span class="p">)</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>See <code class="language-plaintext highlighter-rouge">s2latlngrect.h</code> for additional methods.</p>
+
+<h2 id="s1chordangle">S1ChordAngle</h2>
+
+<p>The S2 library actually defines two angle representations, <code class="language-plaintext highlighter-rouge">S1Angle</code> and
+<code class="language-plaintext highlighter-rouge">S1ChordAngle</code>.</p>
+
+<p><code class="language-plaintext highlighter-rouge">S1ChordAngle</code> is a specialized angle type that represents the distance
+between two points on the sphere.  (Note that the distance between two
+points can be expressed as the angle between those points measured from the
+sphere’s center.)  Its representation makes it very efficient for computing
+and comparing distances, but unlike <code class="language-plaintext highlighter-rouge">S1Angle</code> it is only capable of
+representing angles between 0 and 180 degrees.  (Internally, <code class="language-plaintext highlighter-rouge">S1ChordAngle</code>
+computes the squared distance between two points through the interior of
+the sphere, i.e. the squared length of the chord between those points).</p>
+
+<p><code class="language-plaintext highlighter-rouge">S1ChordAngle</code> is the preferred representation for distances internally,
+because it is much faster to compute than <code class="language-plaintext highlighter-rouge">S1Angle</code> and also supports the
+exact predicates needed for robust geometric algorithms.  <code class="language-plaintext highlighter-rouge">S1ChordAngle</code>
+supports many of the same methods as <code class="language-plaintext highlighter-rouge">S1Angle</code>, and it is also easy to
+convert back and forth as required.</p>
+
+<h2 id="s2cap">S2Cap</h2>
+
+<p>An <code class="language-plaintext highlighter-rouge">S2Cap</code> represents a spherical cap, i.e. a portion of a sphere cut off by a
+plane. This is the equivalent of a <em>closed disc</em> in planar geometry (i.e., a
+circle together with its interior), so if you are looking for a way to represent
+a circle or disc then you are probably looking for an <code class="language-plaintext highlighter-rouge">S2Cap</code>.</p>
+
+<p>Here are the methods available:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">S2Cap</span> <span class="k">final</span> <span class="o">:</span> <span class="k">public</span> <span class="n">S2Region</span> <span class="p">{</span>
+ <span class="nl">public:</span>
+  <span class="c1">// The default constructor returns an empty S2Cap.</span>
+  <span class="n">S2Cap</span><span class="p">();</span>
+
+  <span class="c1">// Construct a cap with the given center and radius.  A negative radius</span>
+  <span class="c1">// yields an empty cap; a radius of 180 degrees or more yields a full cap</span>
+  <span class="c1">// (containing the entire sphere).</span>
+  <span class="n">S2Cap</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">center</span><span class="p">,</span> <span class="n">S1Angle</span> <span class="n">radius</span><span class="p">);</span>
+
+  <span class="c1">// Convenience function that creates a cap containing a single point.  This</span>
+  <span class="c1">// method is more efficient that the S2Cap(center, radius) constructor.</span>
+  <span class="k">static</span> <span class="n">S2Cap</span> <span class="n">FromPoint</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">center</span><span class="p">);</span>
+
+  <span class="c1">// Return a cap with the given center and height.  (The height of a cap is</span>
+  <span class="c1">// the distance from the cap center to the cutoff plane; see comments</span>
+  <span class="c1">// above.)  A negative height yields an empty cap; a height of 2 or more</span>
+  <span class="c1">// yields a full cap.</span>
+  <span class="k">static</span> <span class="n">S2Cap</span> <span class="n">FromCenterHeight</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">center</span><span class="p">,</span> <span class="kt">double</span> <span class="n">height</span><span class="p">);</span>
+
+  <span class="c1">// Return a cap with the given center and surface area.  Note that the area</span>
+  <span class="c1">// can also be interpreted as the solid angle subtended by the cap (because</span>
+  <span class="c1">// the sphere has unit radius).  A negative area yields an empty cap; an</span>
+  <span class="c1">// area of 4*Pi or more yields a full cap.</span>
+  <span class="k">static</span> <span class="n">S2Cap</span> <span class="n">FromCenterArea</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">center</span><span class="p">,</span> <span class="kt">double</span> <span class="n">area</span><span class="p">);</span>
+
+  <span class="c1">// Return an empty cap, i.e. a cap that contains no points.</span>
+  <span class="k">static</span> <span class="n">S2Cap</span> <span class="n">Empty</span><span class="p">();</span>
+
+  <span class="c1">// Return a full cap, i.e. a cap that contains all points.</span>
+  <span class="k">static</span> <span class="n">S2Cap</span> <span class="n">Full</span><span class="p">();</span>
+
+  <span class="c1">// Accessor methods.</span>
+  <span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">center</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="n">S1ChordAngle</span> <span class="n">radius</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">height</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return the cap radius.  (This method is relatively expensive since only</span>
+  <span class="c1">// the cap height is stored internally, and may yield a slightly different</span>
+  <span class="c1">// result than the value passed to the (center, radius) constructor.)</span>
+  <span class="n">S1Angle</span> <span class="n">GetRadius</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return the area of the cap.</span>
+  <span class="kt">double</span> <span class="n">GetArea</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return the true centroid of the cap multiplied by its surface area.  Note</span>
+  <span class="c1">// that if you just want the "surface centroid", i.e. the normalized result,</span>
+  <span class="c1">// then it is much simpler just to call center().</span>
+  <span class="c1">//</span>
+  <span class="c1">// The reason for multiplying the result by the cap area is to make it</span>
+  <span class="c1">// easier to compute the centroid of more complicated shapes.</span>
+  <span class="n">S2Point</span> <span class="n">GetCentroid</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// We allow negative heights (to represent empty caps) but heights are</span>
+  <span class="c1">// normalized so that they do not exceed 2.</span>
+  <span class="kt">bool</span> <span class="n">is_valid</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if the cap is empty, i.e. it contains no points.</span>
+  <span class="kt">bool</span> <span class="n">is_empty</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if the cap is full, i.e. it contains all points.</span>
+  <span class="kt">bool</span> <span class="n">is_full</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return the complement of the interior of the cap.  A cap and its</span>
+  <span class="c1">// complement have the same boundary but do not share any interior points.</span>
+  <span class="n">S2Cap</span> <span class="n">Complement</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if and only if this cap contains the given other cap</span>
+  <span class="c1">// (in a set containment sense, e.g. every cap contains the empty cap).</span>
+  <span class="kt">bool</span> <span class="n">Contains</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Cap</span><span class="o">&amp;</span> <span class="n">other</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if and only if this cap intersects the given other cap,</span>
+  <span class="c1">// i.e. whether they have any points in common.</span>
+  <span class="kt">bool</span> <span class="n">Intersects</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Cap</span><span class="o">&amp;</span> <span class="n">other</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if and only if the interior of this cap intersects the</span>
+  <span class="c1">// given other cap.  (This relationship is not symmetric, since only</span>
+  <span class="c1">// the interior of this cap is used.)</span>
+  <span class="kt">bool</span> <span class="n">InteriorIntersects</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Cap</span><span class="o">&amp;</span> <span class="n">other</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if and only if the given point is contained in the interior</span>
+  <span class="c1">// of the cap (i.e. the cap excluding its boundary).</span>
+  <span class="kt">bool</span> <span class="n">InteriorContains</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">p</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Increase the cap height if necessary to include the given point.  If the</span>
+  <span class="c1">// cap is empty then the center is set to the given point, but otherwise the</span>
+  <span class="c1">// center is not changed.</span>
+  <span class="kt">void</span> <span class="n">AddPoint</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">p</span><span class="p">);</span>
+
+  <span class="c1">// Increase the cap height if necessary to include "other".  If the current</span>
+  <span class="c1">// cap is empty it is set to the given other cap.</span>
+  <span class="kt">void</span> <span class="n">AddCap</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Cap</span><span class="o">&amp;</span> <span class="n">other</span><span class="p">);</span>
+
+  <span class="c1">// Return a cap that contains all points within a given distance of this</span>
+  <span class="c1">// cap.  Note that any expansion of the empty cap is still empty.</span>
+  <span class="n">S2Cap</span> <span class="n">Expanded</span><span class="p">(</span><span class="n">S1Angle</span> <span class="n">distance</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return the smallest cap which encloses this cap and "other".</span>
+  <span class="n">S2Cap</span> <span class="n">Union</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Cap</span><span class="o">&amp;</span> <span class="n">other</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">////////////////////////////////////////////////////////////////////////</span>
+  <span class="c1">// S2Region interface (see s2region.h for details):</span>
+
+  <span class="n">S2Cap</span><span class="o">*</span> <span class="n">Clone</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+  <span class="n">S2Cap</span> <span class="n">GetCapBound</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+  <span class="n">S2LatLngRect</span> <span class="n">GetRectBound</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+  <span class="c1">// The point "p" should be a unit-length vector.</span>
+  <span class="kt">bool</span> <span class="n">Contains</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Cell</span><span class="o">&amp;</span> <span class="n">cell</span><span class="p">)</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+  <span class="kt">bool</span> <span class="n">MayIntersect</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Cell</span><span class="o">&amp;</span> <span class="n">cell</span><span class="p">)</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>See <code class="language-plaintext highlighter-rouge">s2cap.h</code> for additional methods.</p>
+
+<h2 id="s2polyline">S2Polyline</h2>
+
+<p>An <code class="language-plaintext highlighter-rouge">S2Polyline</code> represents a sequence of zero or more vertices connected by
+straight edges (geodesics). Edges of length 0 and 180 degrees are not allowed,
+i.e. adjacent vertices should not be identical or antipodal.</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">S2Polyline</span> <span class="k">final</span> <span class="o">:</span> <span class="k">public</span> <span class="n">S2Region</span> <span class="p">{</span>
+ <span class="nl">public:</span>
+  <span class="c1">// Creates an empty S2Polyline that should be initialized by calling Init()</span>
+  <span class="c1">// or Decode().</span>
+  <span class="n">S2Polyline</span><span class="p">();</span>
+
+  <span class="c1">// Convenience constructors that call Init() with the given vertices.</span>
+  <span class="k">explicit</span> <span class="n">S2Polyline</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">S2Point</span><span class="o">&gt;&amp;</span> <span class="n">vertices</span><span class="p">);</span>
+  <span class="k">explicit</span> <span class="n">S2Polyline</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">S2LatLng</span><span class="o">&gt;&amp;</span> <span class="n">vertices</span><span class="p">);</span>
+
+  <span class="o">~</span><span class="n">S2Polyline</span><span class="p">();</span>
+
+  <span class="c1">// Initialize a polyline that connects the given vertices. Empty polylines are</span>
+  <span class="c1">// allowed.  Adjacent vertices should not be identical or antipodal.  All</span>
+  <span class="c1">// vertices should be unit length.</span>
+  <span class="kt">void</span> <span class="n">Init</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">S2Point</span><span class="o">&gt;&amp;</span> <span class="n">vertices</span><span class="p">);</span>
+
+  <span class="c1">// Convenience initialization function that accepts latitude-longitude</span>
+  <span class="c1">// coordinates rather than S2Points.</span>
+  <span class="kt">void</span> <span class="n">Init</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">S2LatLng</span><span class="o">&gt;&amp;</span> <span class="n">vertices</span><span class="p">);</span>
+
+  <span class="c1">// Return true if the given vertices form a valid polyline.</span>
+  <span class="kt">bool</span> <span class="n">IsValid</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Returns true if this is *not* a valid polyline and sets "error"</span>
+  <span class="c1">// appropriately.  Otherwise returns false and leaves "error" unchanged.</span>
+  <span class="kt">bool</span> <span class="n">FindValidationError</span><span class="p">(</span><span class="n">S2Error</span><span class="o">*</span> <span class="n">error</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Accessor methods.</span>
+  <span class="kt">int</span> <span class="n">num_vertices</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">vertex</span><span class="p">(</span><span class="kt">int</span> <span class="n">k</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return the length of the polyline.</span>
+  <span class="n">S1Angle</span> <span class="n">GetLength</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return the true centroid of the polyline multiplied by the length of the</span>
+  <span class="c1">// polyline.  Prescaling by the polyline length makes it easy to compute the</span>
+  <span class="c1">// centroid of several polylines (by simply adding up their centroids).</span>
+  <span class="n">S2Point</span> <span class="n">GetCentroid</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return the point whose distance from vertex 0 along the polyline is the</span>
+  <span class="c1">// given fraction of the polyline's total length.  Fractions less than zero</span>
+  <span class="c1">// or greater than one are clamped.  The return value is unit length.</span>
+  <span class="n">S2Point</span> <span class="n">Interpolate</span><span class="p">(</span><span class="kt">double</span> <span class="n">fraction</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Like Interpolate(), but also return the index of the next polyline</span>
+  <span class="c1">// vertex after the interpolated point P.  This allows the caller to easily</span>
+  <span class="c1">// construct a given suffix of the polyline by concatenating P with the</span>
+  <span class="c1">// polyline vertices starting at "next_vertex".</span>
+  <span class="n">S2Point</span> <span class="n">GetSuffix</span><span class="p">(</span><span class="kt">double</span> <span class="n">fraction</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">next_vertex</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// The inverse operation of GetSuffix/Interpolate.  Given a point on the</span>
+  <span class="c1">// polyline, returns the ratio of the distance to the point from the</span>
+  <span class="c1">// beginning of the polyline over the length of the polyline.  The return</span>
+  <span class="c1">// value is always betwen 0 and 1 inclusive.  See GetSuffix() for the</span>
+  <span class="c1">// meaning of "next_vertex".</span>
+  <span class="kt">double</span> <span class="n">UnInterpolate</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">point</span><span class="p">,</span> <span class="kt">int</span> <span class="n">next_vertex</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Given a point, returns a point on the polyline that is closest to the given</span>
+  <span class="c1">// point.  See GetSuffix() for the meaning of "next_vertex".</span>
+  <span class="n">S2Point</span> <span class="n">Project</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">point</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">next_vertex</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Returns true if the point given is on the right hand side of the polyline,</span>
+  <span class="c1">// using a naive definition of "right-hand-sideness" where the point is on</span>
+  <span class="c1">// the RHS of the polyline iff the point is on the RHS of the line segment in</span>
+  <span class="c1">// the polyline which it is closest to.</span>
+  <span class="kt">bool</span> <span class="n">IsOnRight</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">point</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if this polyline intersects the given polyline. If the</span>
+  <span class="c1">// polylines share a vertex they are considered to be intersecting.</span>
+  <span class="kt">bool</span> <span class="n">Intersects</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Polyline</span><span class="o">*</span> <span class="n">line</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Reverse the order of the polyline vertices.</span>
+  <span class="kt">void</span> <span class="n">Reverse</span><span class="p">();</span>
+
+  <span class="c1">// Return a subsequence of vertex indices such that the polyline connecting</span>
+  <span class="c1">// these vertices is never further than "tolerance" from the original</span>
+  <span class="c1">// polyline.</span>
+  <span class="kt">void</span> <span class="n">SubsampleVertices</span><span class="p">(</span><span class="n">S1Angle</span> <span class="n">tolerance</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;*</span> <span class="n">indices</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if "covered" is within "max_error" of a contiguous subpath of</span>
+  <span class="c1">// this polyline over its entire length.  Specifically, this method returns</span>
+  <span class="c1">// true if this polyline has parameterization a:[0,1] -&gt; S^2, "covered" has</span>
+  <span class="c1">// parameterization b:[0,1] -&gt; S^2, and there is a non-decreasing function</span>
+  <span class="c1">// f:[0,1] -&gt; [0,1] such that distance(a(f(t)), b(t)) &lt;= max_error for all t.</span>
+  <span class="c1">//</span>
+  <span class="c1">// You can think of this as testing whether it is possible to drive a car</span>
+  <span class="c1">// along "covered" and a car along some subpath of this polyline such that no</span>
+  <span class="c1">// car ever goes backward, and the cars are always within "max_error" of each</span>
+  <span class="c1">// other.</span>
+  <span class="kt">bool</span> <span class="n">NearlyCoversPolyline</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Polyline</span><span class="o">&amp;</span> <span class="n">covered</span><span class="p">,</span>
+                            <span class="n">S1Angle</span> <span class="n">max_error</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">////////////////////////////////////////////////////////////////////////</span>
+  <span class="c1">// S2Region interface (see s2region.h for details):</span>
+
+  <span class="n">S2Polyline</span><span class="o">*</span> <span class="n">Clone</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+  <span class="n">S2Cap</span> <span class="n">GetCapBound</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+  <span class="n">S2LatLngRect</span> <span class="n">GetRectBound</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+  <span class="kt">bool</span> <span class="n">Contains</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Cell</span><span class="o">&amp;</span> <span class="n">cell</span><span class="p">)</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+  <span class="kt">bool</span> <span class="n">MayIntersect</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Cell</span><span class="o">&amp;</span> <span class="n">cell</span><span class="p">)</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<h2 id="s2loop">S2Loop</h2>
+
+<p>An <code class="language-plaintext highlighter-rouge">S2Loop</code> represents a simple spherical polygon. It consists of a single chain
+of vertices where the first vertex is implicitly connected to the last. All
+loops are defined to have a CCW orientation, i.e. the interior of the loop is on
+the left side of the edges. This implies that a clockwise loop enclosing a small
+area is interpreted to be a CCW loop enclosing a very large area.</p>
+
+<p>Loops are not allowed to have any duplicate vertices (whether adjacent or not),
+and non-adjacent edges are not allowed to intersect. Loops must have at least 3
+vertices (except for the “empty” and “full” loops discussed below). These
+restrictions make it possible to implement exact polygon-polygon containment and
+intersection tests very efficiently. See <code class="language-plaintext highlighter-rouge">S2Builder</code> if your data does not meet
+these requirements.</p>
+
+<p>There are two special loops: the “empty” loop contains no points, while the
+“full” loop contains all points. These loops do not have any edges, but to
+preserve the invariant that every loop can be represented as a vertex chain,
+they are defined as having exactly one vertex each (see kEmpty and kFull).</p>
+
+<p>Point containment of loops is defined such that if the sphere is subdivided into
+faces (loops), every point is contained by exactly one face. This implies that
+loops do not necessarily contain their vertices.</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">S2Loop</span> <span class="k">final</span> <span class="o">:</span> <span class="k">public</span> <span class="n">S2Region</span> <span class="p">{</span>
+ <span class="nl">public:</span>
+  <span class="c1">// Default constructor.  The loop must be initialized by calling Init() or</span>
+  <span class="c1">// Decode() before it is used.</span>
+  <span class="n">S2Loop</span><span class="p">();</span>
+
+  <span class="c1">// Convenience constructor that calls Init() with the given vertices.</span>
+  <span class="k">explicit</span> <span class="n">S2Loop</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">S2Point</span><span class="o">&gt;&amp;</span> <span class="n">vertices</span><span class="p">);</span>
+
+  <span class="c1">// Construct a loop corresponding to the given cell.</span>
+  <span class="c1">//</span>
+  <span class="c1">// Note that the loop and cell *do not* contain exactly the same set of</span>
+  <span class="c1">// points, because S2Loop and S2Cell have slightly different definitions of</span>
+  <span class="c1">// point containment.  For example, an S2Cell vertex is contained by all</span>
+  <span class="c1">// four neighboring S2Cells, but it is contained by exactly one of four</span>
+  <span class="c1">// S2Loops constructed from those cells.</span>
+  <span class="k">explicit</span> <span class="n">S2Loop</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Cell</span><span class="o">&amp;</span> <span class="n">cell</span><span class="p">);</span>
+
+  <span class="o">~</span><span class="n">S2Loop</span><span class="p">();</span>
+
+  <span class="c1">// Initialize a loop with given vertices.  The last vertex is implicitly</span>
+  <span class="c1">// connected to the first.  All points should be unit length.  Loops must</span>
+  <span class="c1">// have at least 3 vertices (except for the "empty" and "full" loops, see</span>
+  <span class="c1">// kEmpty and kFull).  This method may be called multiple times.</span>
+  <span class="kt">void</span> <span class="n">Init</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">S2Point</span><span class="o">&gt;&amp;</span> <span class="n">vertices</span><span class="p">);</span>
+
+  <span class="c1">// A special vertex chain of length 1 that creates an empty loop (i.e., a</span>
+  <span class="c1">// loop with no edges that contains no points).  Example usage:</span>
+  <span class="c1">//    S2Loop empty(S2Loop::kEmpty());</span>
+  <span class="k">static</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">S2Point</span><span class="o">&gt;</span> <span class="n">kEmpty</span><span class="p">();</span>
+
+  <span class="c1">// A special vertex chain of length 1 that creates a full loop (i.e., a loop</span>
+  <span class="c1">// with no edges that contains all points).  See kEmpty() for details.</span>
+  <span class="k">static</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">S2Point</span><span class="o">&gt;</span> <span class="n">kFull</span><span class="p">();</span>
+
+  <span class="c1">// Returns true if this is a valid loop.</span>
+  <span class="kt">bool</span> <span class="n">IsValid</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Returns true if this is *not* a valid loop and sets "error"</span>
+  <span class="c1">// appropriately.  Otherwise returns false and leaves "error" unchanged.</span>
+  <span class="kt">bool</span> <span class="n">FindValidationError</span><span class="p">(</span><span class="n">S2Error</span><span class="o">*</span> <span class="n">error</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="kt">int</span> <span class="n">num_vertices</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// For convenience, we make two entire copies of the vertex list available:</span>
+  <span class="c1">// vertex(n..2*n-1) is mapped to vertex(0..n-1), where n == num_vertices().</span>
+  <span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">vertex</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Like vertex(), but this method returns vertices in reverse order if the</span>
+  <span class="c1">// loop represents a polygon hole. This ensures that the interior of the</span>
+  <span class="c1">// polygon is always to the left of the vertex chain.</span>
+  <span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">oriented_vertex</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if this is the special "empty" loop that contains no points.</span>
+  <span class="kt">bool</span> <span class="n">is_empty</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if this is the special "full" loop that contains all points.</span>
+  <span class="kt">bool</span> <span class="n">is_full</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if this loop is either "empty" or "full".</span>
+  <span class="kt">bool</span> <span class="n">is_empty_or_full</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// The depth of a loop is defined as its nesting level within its containing</span>
+  <span class="c1">// polygon.  "Outer shell" loops have depth 0, holes within those loops have</span>
+  <span class="c1">// depth 1, shells within those holes have depth 2, etc.  This field is only</span>
+  <span class="c1">// used by the S2Polygon implementation.</span>
+  <span class="kt">int</span> <span class="n">depth</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="kt">void</span> <span class="n">set_depth</span><span class="p">(</span><span class="kt">int</span> <span class="n">depth</span><span class="p">);</span>
+
+  <span class="c1">// Return true if this loop represents a hole in its containing polygon.</span>
+  <span class="kt">bool</span> <span class="n">is_hole</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// The sign of a loop is -1 if the loop represents a hole in its containing</span>
+  <span class="c1">// polygon, and +1 otherwise.</span>
+  <span class="kt">int</span> <span class="n">sign</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if the loop area is at most 2*Pi.</span>
+  <span class="kt">bool</span> <span class="n">IsNormalized</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Invert the loop if necessary so that the area enclosed by the loop is at</span>
+  <span class="c1">// most 2*Pi.</span>
+  <span class="kt">void</span> <span class="n">Normalize</span><span class="p">();</span>
+
+  <span class="c1">// Reverse the order of the loop vertices, effectively complementing</span>
+  <span class="c1">// the region represented by the loop.</span>
+  <span class="kt">void</span> <span class="n">Invert</span><span class="p">();</span>
+
+  <span class="c1">// Return the area of the loop interior, i.e. the region on the left side of</span>
+  <span class="c1">// the loop.  The return value is between 0 and 4*Pi.</span>
+  <span class="kt">double</span> <span class="n">GetArea</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return the true centroid of the loop multiplied by the area of the loop.</span>
+  <span class="c1">// We prescale by the loop area for two reasons: (1) it is cheaper to</span>
+  <span class="c1">// compute this way, and (2) it makes it easier to compute the centroid of</span>
+  <span class="c1">// more complicated shapes (by splitting them into disjoint regions and</span>
+  <span class="c1">// adding their centroids).</span>
+  <span class="n">S2Point</span> <span class="n">GetCentroid</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return the sum of the turning angles at each vertex.  The return value is</span>
+  <span class="c1">// positive if the loop is counter-clockwise, negative if the loop is</span>
+  <span class="c1">// clockwise, and zero if the loop is a great circle.</span>
+  <span class="c1">//</span>
+  <span class="c1">// This quantity is also called the "geodesic curvature" of the loop.</span>
+  <span class="kt">double</span> <span class="n">GetCurvature</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return the maximum error in GetCurvature().  The return value is not</span>
+  <span class="c1">// constant; it depends on the loop.</span>
+  <span class="kt">double</span> <span class="n">GetCurvatureMaxError</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return the distance from the given point to the loop interior.  If the</span>
+  <span class="c1">// loop is empty, return S1Angle::Infinity().</span>
+  <span class="n">S1Angle</span> <span class="n">GetDistance</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">x</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return the distance from the given point to the loop boundary.  If the</span>
+  <span class="c1">// loop is empty or full, return S1Angle::Infinity() (since the loop has no</span>
+  <span class="c1">// boundary).</span>
+  <span class="n">S1Angle</span> <span class="n">GetDistanceToBoundary</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">x</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// If the given point is contained by the loop, return it.  Otherwise return</span>
+  <span class="c1">// the closest point on the loop boundary.  If the loop is empty, return the</span>
+  <span class="c1">// input argument.</span>
+  <span class="n">S2Point</span> <span class="n">Project</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">x</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return the closest point on the loop boundary to the given point.  If the</span>
+  <span class="c1">// loop is empty or full, return the input argument (since the loop has no</span>
+  <span class="c1">// boundary).</span>
+  <span class="n">S2Point</span> <span class="n">ProjectToBoundary</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">x</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if the region contained by this loop is a superset of the</span>
+  <span class="c1">// region contained by the given other loop.</span>
+  <span class="kt">bool</span> <span class="n">Contains</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Loop</span><span class="o">*</span> <span class="n">b</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if the region contained by this loop intersects the region</span>
+  <span class="c1">// contained by the given other loop.</span>
+  <span class="kt">bool</span> <span class="n">Intersects</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Loop</span><span class="o">*</span> <span class="n">b</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if two loops have the same vertices in the same linear order</span>
+  <span class="c1">// (i.e., cyclic rotations are not allowed).</span>
+  <span class="kt">bool</span> <span class="n">Equals</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Loop</span><span class="o">*</span> <span class="n">b</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if two loops have the same boundary.  This is true if and</span>
+  <span class="c1">// only if the loops have the same vertices in the same cyclic order (i.e.,</span>
+  <span class="c1">// the vertices may be cyclically rotated).  The empty and full loops are</span>
+  <span class="c1">// considered to have different boundaries.</span>
+  <span class="kt">bool</span> <span class="n">BoundaryEquals</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Loop</span><span class="o">*</span> <span class="n">b</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if two loops have the same boundary except for vertex</span>
+  <span class="c1">// perturbations.  More precisely, the vertices in the two loops must be in</span>
+  <span class="c1">// the same cyclic order, and corresponding vertex pairs must be separated</span>
+  <span class="c1">// by no more than "max_error".</span>
+  <span class="kt">bool</span> <span class="n">BoundaryApproxEquals</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Loop</span><span class="o">&amp;</span> <span class="n">b</span><span class="p">,</span>
+                            <span class="n">S1Angle</span> <span class="n">max_error</span> <span class="o">=</span> <span class="n">S1Angle</span><span class="o">::</span><span class="n">Radians</span><span class="p">(</span><span class="mf">1e-15</span><span class="p">))</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if the two loop boundaries are within "max_error" of each</span>
+  <span class="c1">// other along their entire lengths.  The two loops may have different</span>
+  <span class="c1">// numbers of vertices.  More precisely, this method returns true if the two</span>
+  <span class="c1">// loops have parameterizations a:[0,1] -&gt; S^2, b:[0,1] -&gt; S^2 such that</span>
+  <span class="c1">// distance(a(t), b(t)) &lt;= max_error for all t.  You can think of this as</span>
+  <span class="c1">// testing whether it is possible to drive two cars all the way around the</span>
+  <span class="c1">// two loops such that no car ever goes backward and the cars are always</span>
+  <span class="c1">// within "max_error" of each other.</span>
+  <span class="kt">bool</span> <span class="n">BoundaryNear</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Loop</span><span class="o">&amp;</span> <span class="n">b</span><span class="p">,</span>
+                    <span class="n">S1Angle</span> <span class="n">max_error</span> <span class="o">=</span> <span class="n">S1Angle</span><span class="o">::</span><span class="n">Radians</span><span class="p">(</span><span class="mf">1e-15</span><span class="p">))</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// This method computes the oriented surface integral of some quantity f(x)</span>
+  <span class="c1">// over the loop interior, given a function f_tri(A,B,C) that returns the</span>
+  <span class="c1">// corresponding integral over the spherical triangle ABC.</span>
+  <span class="k">template</span> <span class="o">&lt;</span><span class="k">class</span> <span class="nc">T</span><span class="p">&gt;</span>
+  <span class="n">T</span> <span class="n">GetSurfaceIntegral</span><span class="p">(</span><span class="n">T</span> <span class="n">f_tri</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span><span class="p">,</span> <span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span><span class="p">,</span> <span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span><span class="p">))</span>
+      <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">////////////////////////////////////////////////////////////////////////</span>
+  <span class="c1">// S2Region interface (see s2region.h for details):</span>
+
+  <span class="n">S2Loop</span><span class="o">*</span> <span class="n">Clone</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+
+  <span class="c1">// GetRectBound() returns essentially tight results, while GetCapBound()</span>
+  <span class="c1">// might have a lot of extra padding.  Both bounds are conservative in that</span>
+  <span class="c1">// if the loop contains a point P, then the bound contains P also.</span>
+  <span class="n">S2Cap</span> <span class="n">GetCapBound</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+  <span class="n">S2LatLngRect</span> <span class="n">GetRectBound</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+  <span class="kt">bool</span> <span class="n">Contains</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Cell</span><span class="o">&amp;</span> <span class="n">cell</span><span class="p">)</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+  <span class="kt">bool</span> <span class="n">MayIntersect</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Cell</span><span class="o">&amp;</span> <span class="n">cell</span><span class="p">)</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+  <span class="c1">// Return true if the loop contains the given point.  Point containment is</span>
+  <span class="c1">// defined such that if the sphere is subdivided into faces (loops), every</span>
+  <span class="c1">// point is contained by exactly one face.  This implies that loops do not</span>
+  <span class="c1">// necessarily contain their vertices.</span>
+  <span class="kt">bool</span> <span class="n">Contains</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">p</span><span class="p">)</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+
+  <span class="c1">// Generally clients should not use S2Loop::Encode().  Instead they should</span>
+  <span class="c1">// encode an S2Polygon, which unlike this method supports (lossless)</span>
+  <span class="c1">// compression.</span>
+  <span class="kt">void</span> <span class="n">Encode</span><span class="p">(</span><span class="n">Encoder</span><span class="o">*</span> <span class="k">const</span> <span class="n">encoder</span><span class="p">)</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+
+  <span class="c1">// Decode a loop encoded with Encode() or EncodeCompressed().  These methods</span>
+  <span class="c1">// may be called with loops that have already been initialized.</span>
+  <span class="kt">bool</span> <span class="n">Decode</span><span class="p">(</span><span class="n">Decoder</span><span class="o">*</span> <span class="k">const</span> <span class="n">decoder</span><span class="p">)</span> <span class="k">override</span><span class="p">;</span>
+  <span class="kt">bool</span> <span class="n">DecodeWithinScope</span><span class="p">(</span><span class="n">Decoder</span><span class="o">*</span> <span class="k">const</span> <span class="n">decoder</span><span class="p">)</span> <span class="k">override</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<h2 id="s2polygon">S2Polygon</h2>
+
+<p>An <code class="language-plaintext highlighter-rouge">S2Polygon</code> is an <code class="language-plaintext highlighter-rouge">S2Region</code> object that represents a polygon. A polygon is
+defined by zero or more loops; recall that the interior of a loop is defined to
+be its left-hand side (see <code class="language-plaintext highlighter-rouge">S2Loop</code>). There are two different conventions for
+creating an <code class="language-plaintext highlighter-rouge">S2Polygon</code>:</p>
+
+<ul>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">InitNested()</code> expects the input loops to be nested hierarchically. The
+polygon interior then consists of the set of points contained by an odd
+number of loops. So for example, a circular region with a hole in it would
+be defined as two CCW loops, with one loop containing the other. The loops
+can be provided in any order.</p>
+
+    <p>When the orientation of the input loops is unknown, the nesting requirement
+is typically met by calling <code class="language-plaintext highlighter-rouge">S2Loop::Normalize()</code> on each loop (which
+inverts the loop if necessary so that it encloses at most half the sphere).
+But in fact any set of loops can be used as long as (1) there is no pair of
+loops that cross, and (2) there is no pair of loops whose union is the
+entire sphere.</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">InitOriented()</code> expects the input loops to be oriented such that the
+polygon interior is on the left-hand side of every loop. So for example, a
+circular region with a hole in it would be defined using a CCW outer loop
+and a CW inner loop. The loop orientations must all be consistent; for
+example, it is not valid to have one CCW loop nested inside another CCW
+loop, because the region between the two loops is on the left-hand side of
+one loop and the right-hand side of the other.</p>
+  </li>
+</ul>
+
+<p>Most clients will not call these methods directly; instead they should use
+<code class="language-plaintext highlighter-rouge">S2Builder</code>, which has better support for dealing with imperfect data.</p>
+
+<p>When the polygon is initialized, the given loops are automatically converted
+into a canonical form consisting of “shells” and “holes”. Shells and holes are
+both oriented CCW, and are nested hierarchically. The loops are reordered to
+correspond to a preorder traversal of the nesting hierarchy; <code class="language-plaintext highlighter-rouge">InitOriented()</code>
+may also invert some loops.</p>
+
+<p>Polygons may represent any region of the sphere with a polygonal boundary,
+including the entire sphere (known as the “full” polygon). The full polygon
+consists of a single full loop (see <code class="language-plaintext highlighter-rouge">S2Loop</code>), whereas the empty polygon has no
+loops at all.</p>
+
+<p>Polygons have the following restrictions:</p>
+
+<ul>
+  <li>
+    <p>Loops may not cross, i.e. the boundary of a loop may not intersect both the
+interior and exterior of any other loop.</p>
+  </li>
+  <li>
+    <p>Loops may not share edges, i.e. if a loop contains an edge AB, then no other
+loop may contain AB or BA.</p>
+  </li>
+  <li>
+    <p>Loops may share vertices, however no vertex may appear twice in a single
+loop (see <code class="language-plaintext highlighter-rouge">S2Loop</code>).</p>
+  </li>
+  <li>
+    <p>No loop may be empty. The full loop may appear only in the full polygon.</p>
+  </li>
+</ul>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">S2Polygon</span> <span class="k">final</span> <span class="o">:</span> <span class="k">public</span> <span class="n">S2Region</span> <span class="p">{</span>
+ <span class="nl">public:</span>
+  <span class="c1">// The default constructor creates an empty polygon.  It can be made</span>
+  <span class="c1">// non-empty by calling Init(), Decode(), etc.</span>
+  <span class="n">S2Polygon</span><span class="p">();</span>
+
+  <span class="c1">// Convenience constructor that calls InitNested() with the given loops.</span>
+  <span class="c1">// Takes ownership of the loops and clears the vector.</span>
+  <span class="k">explicit</span> <span class="n">S2Polygon</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">S2Loop</span><span class="o">&gt;&gt;</span> <span class="n">loops</span><span class="p">);</span>
+
+  <span class="c1">// Convenience constructor that creates a polygon with a single loop</span>
+  <span class="c1">// corresponding to the given cell.</span>
+  <span class="k">explicit</span> <span class="n">S2Polygon</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Cell</span><span class="o">&amp;</span> <span class="n">cell</span><span class="p">);</span>
+
+  <span class="c1">// Convenience constructor that calls Init(unique_ptr&lt;S2Loop&gt;).</span>
+  <span class="k">explicit</span> <span class="n">S2Polygon</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">S2Loop</span><span class="o">&gt;</span> <span class="n">loop</span><span class="p">);</span>
+
+  <span class="c1">// Destroys the polygon and frees its loops.</span>
+  <span class="o">~</span><span class="n">S2Polygon</span><span class="p">();</span>
+
+  <span class="c1">// Create a polygon from a set of hierarchically nested loops.  The polygon</span>
+  <span class="c1">// interior consists of the points contained by an odd number of loops.</span>
+  <span class="c1">// (Recall that a loop contains the set of points on its left-hand side.)</span>
+  <span class="c1">//</span>
+  <span class="c1">// This method takes ownership of the given loops and clears the given</span>
+  <span class="c1">// vector.  It then figures out the loop nesting hierarchy and assigns every</span>
+  <span class="c1">// loop a depth.  Shells have even depths, and holes have odd depths.  Note</span>
+  <span class="c1">// that the loops are reordered so the hierarchy can be traversed more</span>
+  <span class="c1">// easily (see GetParent(), GetLastDescendant(), and S2Loop::depth()).</span>
+  <span class="c1">//</span>
+  <span class="c1">// This method may be called more than once, in which case any existing</span>
+  <span class="c1">// loops are deleted before being replaced by the input loops.</span>
+  <span class="kt">void</span> <span class="n">InitNested</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">S2Loop</span><span class="o">&gt;&gt;</span> <span class="n">loops</span><span class="p">);</span>
+
+  <span class="c1">// Like InitNested(), but expects loops to be oriented such that the polygon</span>
+  <span class="c1">// interior is on the left-hand side of all loops.  This implies that shells</span>
+  <span class="c1">// and holes should have opposite orientations in the input to this method.</span>
+  <span class="kt">void</span> <span class="n">InitOriented</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">S2Loop</span><span class="o">&gt;&gt;</span> <span class="n">loops</span><span class="p">);</span>
+
+  <span class="c1">// Initialize a polygon from a single loop.  Takes ownership of the loop.</span>
+  <span class="kt">void</span> <span class="n">Init</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">S2Loop</span><span class="o">&gt;</span> <span class="n">loop</span><span class="p">);</span>
+
+  <span class="c1">// Releases ownership of and returns the loops of this polygon, and resets</span>
+  <span class="c1">// the polygon to be empty.</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">S2Loop</span><span class="o">&gt;&gt;</span> <span class="n">Release</span><span class="p">();</span>
+
+  <span class="c1">// Makes a deep copy of the given source polygon.  The destination polygon</span>
+  <span class="c1">// will be cleared if necessary.</span>
+  <span class="kt">void</span> <span class="n">Copy</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Polygon</span><span class="o">*</span> <span class="n">src</span><span class="p">);</span>
+
+  <span class="c1">// Returns true if this is a valid polygon (including checking whether all</span>
+  <span class="c1">// the loops are themselves valid).</span>
+  <span class="kt">bool</span> <span class="n">IsValid</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Returns true if this is *not* a valid polygon and sets "error"</span>
+  <span class="c1">// appropriately.  Otherwise returns false and leaves "error" unchanged.</span>
+  <span class="kt">bool</span> <span class="n">FindValidationError</span><span class="p">(</span><span class="n">S2Error</span><span class="o">*</span> <span class="n">error</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if this is the empty polygon (consisting of no loops).</span>
+  <span class="kt">bool</span> <span class="n">is_empty</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if this is the full polygon (consisting of a single loop that</span>
+  <span class="c1">// encompasses the entire sphere).</span>
+  <span class="kt">bool</span> <span class="n">is_full</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return the number of loops in this polygon.</span>
+  <span class="kt">int</span> <span class="n">num_loops</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Total number of vertices in all loops.</span>
+  <span class="kt">int</span> <span class="n">num_vertices</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return the loop at the given index.  Note that during initialization, the</span>
+  <span class="c1">// given loops are reordered according to a preorder traversal of the loop</span>
+  <span class="c1">// nesting hierarchy.  This implies that every loop is immediately followed</span>
+  <span class="c1">// by its descendants.  This hierarchy can be traversed using the methods</span>
+  <span class="c1">// GetParent(), GetLastDescendant(), and S2Loop::depth().</span>
+  <span class="k">const</span> <span class="n">S2Loop</span><span class="o">*</span> <span class="n">loop</span><span class="p">(</span><span class="kt">int</span> <span class="n">k</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+  <span class="n">S2Loop</span><span class="o">*</span> <span class="n">loop</span><span class="p">(</span><span class="kt">int</span> <span class="n">k</span><span class="p">);</span>
+
+  <span class="c1">// Return the index of the parent of loop k, or -1 if it has no parent.</span>
+  <span class="kt">int</span> <span class="n">GetParent</span><span class="p">(</span><span class="kt">int</span> <span class="n">k</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return the index of the last loop that is contained within loop k.</span>
+  <span class="kt">int</span> <span class="n">GetLastDescendant</span><span class="p">(</span><span class="kt">int</span> <span class="n">k</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return the area of the polygon interior, i.e. the region on the left side</span>
+  <span class="c1">// of an odd number of loops.  The return value is between 0 and 4*Pi.</span>
+  <span class="kt">double</span> <span class="n">GetArea</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return the true centroid of the polygon multiplied by the area of the</span>
+  <span class="c1">// polygon.  We prescale by the polygon area for two reasons: (1) it is</span>
+  <span class="c1">// cheaper to compute this way, and (2) it makes it easier to compute the</span>
+  <span class="c1">// centroid of more complicated shapes (by splitting them into disjoint</span>
+  <span class="c1">// regions and adding their centroids).</span>
+  <span class="n">S2Point</span> <span class="n">GetCentroid</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// If all of the polygon's vertices happen to be the centers of S2Cells at</span>
+  <span class="c1">// some level, then return that level, otherwise return -1.</span>
+  <span class="kt">int</span> <span class="n">GetSnapLevel</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return the distance from the given point to the polygon interior.  If the</span>
+  <span class="c1">// polygon is empty, return S1Angle::Infinity().</span>
+  <span class="n">S1Angle</span> <span class="n">GetDistance</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">x</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return the distance from the given point to the polygon boundary.  If the</span>
+  <span class="c1">// polygon is empty or full, return S1Angle::Infinity() (since the polygon</span>
+  <span class="c1">// has no boundary).</span>
+  <span class="n">S1Angle</span> <span class="n">GetDistanceToBoundary</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">x</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return the overlap fractions between two polygons, i.e. the ratios of the</span>
+  <span class="c1">// area of intersection to the area of each polygon.</span>
+  <span class="k">static</span> <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="kt">double</span><span class="o">&gt;</span> <span class="n">GetOverlapFractions</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Polygon</span><span class="o">*</span> <span class="n">a</span><span class="p">,</span>
+                                                       <span class="k">const</span> <span class="n">S2Polygon</span><span class="o">*</span> <span class="n">b</span><span class="p">);</span>
+
+  <span class="c1">// If the given point is contained by the polygon, return it.  Otherwise</span>
+  <span class="c1">// return the closest point on the polygon boundary.  If the polygon is</span>
+  <span class="c1">// empty, return the input argument.</span>
+  <span class="n">S2Point</span> <span class="n">Project</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">x</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return the closest point on the polygon boundary to the given point.  If</span>
+  <span class="c1">// the polygon is empty or full, return the input argument (since the</span>
+  <span class="c1">// polygon has no boundary).</span>
+  <span class="n">S2Point</span> <span class="n">ProjectToBoundary</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">x</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if this polygon contains the given other polygon, i.e.</span>
+  <span class="c1">// if polygon A contains all points contained by polygon B.</span>
+  <span class="kt">bool</span> <span class="n">Contains</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Polygon</span><span class="o">*</span> <span class="n">b</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Returns true if this polgyon (A) approximately contains the given other</span>
+  <span class="c1">// polygon (B). This is true if it is possible to move the vertices of B</span>
+  <span class="c1">// no further than "tolerance" such that A contains the modified B.</span>
+  <span class="c1">//</span>
+  <span class="c1">// For example, the empty polygon will contain any polygon whose maximum</span>
+  <span class="c1">// width is no more than "tolerance".</span>
+  <span class="kt">bool</span> <span class="n">ApproxContains</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Polygon</span><span class="o">*</span> <span class="n">b</span><span class="p">,</span> <span class="n">S1Angle</span> <span class="n">tolerance</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if this polygon intersects the given other polygon, i.e.</span>
+  <span class="c1">// if there is a point that is contained by both polygons.</span>
+  <span class="kt">bool</span> <span class="n">Intersects</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Polygon</span><span class="o">*</span> <span class="n">b</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Returns true if this polgyon (A) and the given polygon (B) are</span>
+  <span class="c1">// approximately disjoint.  This is true if it is possible to ensure that A</span>
+  <span class="c1">// and B do not intersect by moving their vertices no further than</span>
+  <span class="c1">// "tolerance".</span>
+  <span class="c1">//</span>
+  <span class="c1">// For example, any polygon is approximately disjoint from a polygon whose</span>
+  <span class="c1">// maximum width is no more than "tolerance".</span>
+  <span class="kt">bool</span> <span class="n">ApproxDisjoint</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Polygon</span><span class="o">&amp;</span> <span class="n">b</span><span class="p">,</span> <span class="n">S1Angle</span> <span class="n">tolerance</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Initialize this polygon to the intersection, union, difference (A - B),</span>
+  <span class="c1">// or symmetric difference (XOR) of the given two polygons.</span>
+  <span class="c1">//</span>
+  <span class="c1">// "snap_function" allows you to specify a minimum spacing between output</span>
+  <span class="c1">// vertices, and/or that the vertices should be snapped to a discrete set of</span>
+  <span class="c1">// points (e.g. S2CellId centers or E7 lat/lng coordinates).  Any snap</span>
+  <span class="c1">// function can be used, including the IdentitySnapFunction with a</span>
+  <span class="c1">// snap_radius of zero (which preserves the input vertices exactly).</span>
+  <span class="kt">void</span> <span class="n">InitToIntersection</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Polygon</span><span class="o">*</span> <span class="n">a</span><span class="p">,</span> <span class="k">const</span> <span class="n">S2Polygon</span><span class="o">*</span> <span class="n">b</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="n">InitToIntersection</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Polygon</span><span class="o">&amp;</span> <span class="n">a</span><span class="p">,</span> <span class="k">const</span> <span class="n">S2Polygon</span><span class="o">&amp;</span> <span class="n">b</span><span class="p">,</span>
+                          <span class="k">const</span> <span class="n">S2Builder</span><span class="o">::</span><span class="n">SnapFunction</span><span class="o">&amp;</span> <span class="n">snap_function</span><span class="p">);</span>
+
+  <span class="kt">void</span> <span class="n">InitToUnion</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Polygon</span><span class="o">*</span> <span class="n">a</span><span class="p">,</span> <span class="k">const</span> <span class="n">S2Polygon</span><span class="o">*</span> <span class="n">b</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="n">InitToUnion</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Polygon</span><span class="o">&amp;</span> <span class="n">a</span><span class="p">,</span> <span class="k">const</span> <span class="n">S2Polygon</span><span class="o">&amp;</span> <span class="n">b</span><span class="p">,</span>
+                   <span class="k">const</span> <span class="n">S2Builder</span><span class="o">::</span><span class="n">SnapFunction</span><span class="o">&amp;</span> <span class="n">snap_function</span><span class="p">);</span>
+
+  <span class="kt">void</span> <span class="n">InitToDifference</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Polygon</span><span class="o">*</span> <span class="n">a</span><span class="p">,</span> <span class="k">const</span> <span class="n">S2Polygon</span><span class="o">*</span> <span class="n">b</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="n">InitToDifference</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Polygon</span><span class="o">&amp;</span> <span class="n">a</span><span class="p">,</span> <span class="k">const</span> <span class="n">S2Polygon</span><span class="o">&amp;</span> <span class="n">b</span><span class="p">,</span>
+                        <span class="k">const</span> <span class="n">S2Builder</span><span class="o">::</span><span class="n">SnapFunction</span><span class="o">&amp;</span> <span class="n">snap_function</span><span class="p">);</span>
+
+  <span class="kt">void</span> <span class="n">InitToSymmetricDifference</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Polygon</span><span class="o">*</span> <span class="n">a</span><span class="p">,</span> <span class="k">const</span> <span class="n">S2Polygon</span><span class="o">*</span> <span class="n">b</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="n">InitToSymmetricDifference</span><span class="p">(</span>
+      <span class="k">const</span> <span class="n">S2Polygon</span><span class="o">&amp;</span> <span class="n">a</span><span class="p">,</span> <span class="k">const</span> <span class="n">S2Polygon</span><span class="o">&amp;</span> <span class="n">b</span><span class="p">,</span>
+      <span class="k">const</span> <span class="n">S2Builder</span><span class="o">::</span><span class="n">SnapFunction</span><span class="o">&amp;</span> <span class="n">snap_function</span><span class="p">);</span>
+
+  <span class="c1">// Convenience functions that use the IdentitySnapFunction with the given</span>
+  <span class="c1">// snap radius.</span>
+  <span class="kt">void</span> <span class="n">InitToApproxIntersection</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Polygon</span><span class="o">*</span> <span class="n">a</span><span class="p">,</span> <span class="k">const</span> <span class="n">S2Polygon</span><span class="o">*</span> <span class="n">b</span><span class="p">,</span>
+                                <span class="n">S1Angle</span> <span class="n">vertex_merge_radius</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="n">InitToApproxUnion</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Polygon</span><span class="o">*</span> <span class="n">a</span><span class="p">,</span> <span class="k">const</span> <span class="n">S2Polygon</span><span class="o">*</span> <span class="n">b</span><span class="p">,</span>
+                         <span class="n">S1Angle</span> <span class="n">vertex_merge_radius</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="n">InitToApproxDifference</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Polygon</span><span class="o">*</span> <span class="n">a</span><span class="p">,</span> <span class="k">const</span> <span class="n">S2Polygon</span><span class="o">*</span> <span class="n">b</span><span class="p">,</span>
+                              <span class="n">S1Angle</span> <span class="n">vertex_merge_radius</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="n">InitToApproxSymmetricDifference</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Polygon</span><span class="o">*</span> <span class="n">a</span><span class="p">,</span> <span class="k">const</span> <span class="n">S2Polygon</span><span class="o">*</span> <span class="n">b</span><span class="p">,</span>
+                                       <span class="n">S1Angle</span> <span class="n">vertex_merge_radius</span><span class="p">);</span>
+
+  <span class="c1">// Initializes this polygon according to the given "snap_function" and</span>
+  <span class="c1">// reduces the number of vertices if possible, while ensuring that no vertex</span>
+  <span class="c1">// moves further than snap_function.snap_radius().</span>
+  <span class="c1">//</span>
+  <span class="c1">// Simplification works by replacing nearly straight chains of short edges</span>
+  <span class="c1">// with longer edges, in a way that preserves the topology of the input</span>
+  <span class="c1">// polygon up to the creation of degeneracies.  This means that loops or</span>
+  <span class="c1">// portions of loops may become degenerate, in which case they are removed.</span>
+  <span class="kt">void</span> <span class="n">InitToSimplified</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Polygon</span><span class="o">&amp;</span> <span class="n">a</span><span class="p">,</span>
+                        <span class="k">const</span> <span class="n">S2Builder</span><span class="o">::</span><span class="n">SnapFunction</span><span class="o">&amp;</span> <span class="n">snap_function</span><span class="p">);</span>
+
+  <span class="c1">// Use S2Builder to build this polygon by assembling the edges of a</span>
+  <span class="c1">// given polygon after snapping its vertices to the center of leaf cells at</span>
+  <span class="c1">// the given "snap_level".  The default snap level corresponds to a</span>
+  <span class="c1">// tolerance of approximately 1.5cm on the surface of the Earth.</span>
+  <span class="c1">// Such a polygon can be efficiently compressed when serialized.</span>
+  <span class="kt">void</span> <span class="n">InitToSnapped</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Polygon</span><span class="o">*</span> <span class="n">polygon</span><span class="p">,</span>
+                     <span class="kt">int</span> <span class="n">snap_level</span> <span class="o">=</span> <span class="n">S2CellId</span><span class="o">::</span><span class="n">kMaxLevel</span><span class="p">);</span>
+
+  <span class="c1">// Initialize this polygon to the complement of the given polygon.</span>
+  <span class="kt">void</span> <span class="n">InitToComplement</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Polygon</span><span class="o">*</span> <span class="n">a</span><span class="p">);</span>
+
+  <span class="c1">// Invert the polygon (replace it by its complement).</span>
+  <span class="kt">void</span> <span class="n">Invert</span><span class="p">();</span>
+
+  <span class="c1">// Intersect this polygon with the polyline "in" and append the resulting</span>
+  <span class="c1">// zero or more polylines to "out" (which must be empty).  The polylines</span>
+  <span class="c1">// are appended in the order they would be encountered by traversing "in"</span>
+  <span class="c1">// from beginning to end.  Note that the output may include polylines with</span>
+  <span class="c1">// only one vertex, but there will not be any zero-vertex polylines.</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">S2Polyline</span><span class="o">&gt;&gt;</span>
+  <span class="n">IntersectWithPolyline</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Polyline</span><span class="o">&amp;</span> <span class="n">in</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Similar to IntersectWithPolyline(), except that vertices will be</span>
+  <span class="c1">// dropped as necessary to ensure that all adjacent vertices in the</span>
+  <span class="c1">// sequence obtained by concatenating the output polylines will be</span>
+  <span class="c1">// farther than "vertex_merge_radius" apart.</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">S2Polyline</span><span class="o">&gt;&gt;</span>
+  <span class="n">ApproxIntersectWithPolyline</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Polyline</span><span class="o">&amp;</span> <span class="n">in</span><span class="p">,</span>
+                              <span class="n">S1Angle</span> <span class="n">vertex_merge_radius</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Like IntersectWithPolyline, but subtracts this polygon from</span>
+  <span class="c1">// the given polyline.</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">S2Polyline</span><span class="o">&gt;&gt;</span>
+  <span class="n">SubtractFromPolyline</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Polyline</span><span class="o">&amp;</span> <span class="n">in</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Like ApproxIntersectWithPolyline, but subtracts this polygon</span>
+  <span class="c1">// from the given polyline.</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">S2Polyline</span><span class="o">&gt;&gt;</span>
+  <span class="n">ApproxSubtractFromPolyline</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Polyline</span><span class="o">&amp;</span> <span class="n">in</span><span class="p">,</span>
+                             <span class="n">S1Angle</span> <span class="n">vertex_merge_radius</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return a polygon which is the union of the given polygons.</span>
+  <span class="c1">// Clears the vector and deletes the polygons.</span>
+  <span class="k">static</span> <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">S2Polygon</span><span class="o">&gt;</span>
+  <span class="n">DestructiveUnion</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">S2Polygon</span><span class="o">&gt;&gt;</span> <span class="n">polygons</span><span class="p">);</span>
+  <span class="k">static</span> <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">S2Polygon</span><span class="o">&gt;</span>
+  <span class="n">DestructiveApproxUnion</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">S2Polygon</span><span class="o">&gt;&gt;</span> <span class="n">polygons</span><span class="p">,</span>
+                         <span class="n">S1Angle</span> <span class="n">vertex_merge_radius</span><span class="p">);</span>
+
+  <span class="c1">// Initialize this polygon to the outline of the given cell union.</span>
+  <span class="c1">// In principle this polygon should exactly contain the cell union and</span>
+  <span class="c1">// this polygon's inverse should not intersect the cell union, but rounding</span>
+  <span class="c1">// issues may cause this not to be the case.</span>
+  <span class="kt">void</span> <span class="n">InitToCellUnionBorder</span><span class="p">(</span><span class="k">const</span> <span class="n">S2CellUnion</span><span class="o">&amp;</span> <span class="n">cells</span><span class="p">);</span>
+
+  <span class="c1">// Return true if every loop of this polygon shares at most one vertex with</span>
+  <span class="c1">// its parent loop.  Every polygon has a unique normalized form.  Normalized</span>
+  <span class="c1">// polygons are useful for testing since it is easy to compare whether two</span>
+  <span class="c1">// polygons represent the same region.</span>
+  <span class="kt">bool</span> <span class="n">IsNormalized</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if two polygons have exactly the same loops.  The loops must</span>
+  <span class="c1">// appear in the same order, and corresponding loops must have the same</span>
+  <span class="c1">// linear vertex ordering (i.e., cyclic rotations are not allowed).</span>
+  <span class="kt">bool</span> <span class="n">Equals</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Polygon</span><span class="o">*</span> <span class="n">b</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if two polygons have the same boundary.  More precisely, this</span>
+  <span class="c1">// method requires that both polygons have loops with the same cyclic vertex</span>
+  <span class="c1">// order and the same nesting hierarchy.  (This implies that vertices may be</span>
+  <span class="c1">// cyclically rotated between corresponding loops, and the loop ordering may</span>
+  <span class="c1">// be different between the two polygons as long as the nesting hierarchy is</span>
+  <span class="c1">// the same.)</span>
+  <span class="kt">bool</span> <span class="n">BoundaryEquals</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Polygon</span><span class="o">*</span> <span class="n">b</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if two polygons have the same boundary except for vertex</span>
+  <span class="c1">// perturbations.  Both polygons must have loops with the same cyclic vertex</span>
+  <span class="c1">// order and the same nesting hierarchy, but the vertex locations are</span>
+  <span class="c1">// allowed to differ by up to "max_error".</span>
+  <span class="kt">bool</span> <span class="n">BoundaryApproxEquals</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Polygon</span><span class="o">&amp;</span> <span class="n">b</span><span class="p">,</span>
+                            <span class="n">S1Angle</span> <span class="n">max_error</span> <span class="o">=</span> <span class="n">S1Angle</span><span class="o">::</span><span class="n">Radians</span><span class="p">(</span><span class="mf">1e-15</span><span class="p">))</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Return true if two polygons have boundaries that are within "max_error"</span>
+  <span class="c1">// of each other along their entire lengths.  More precisely, there must be</span>
+  <span class="c1">// a bijection between the two sets of loops such that for each pair of</span>
+  <span class="c1">// loops, "a_loop-&gt;BoundaryNear(b_loop)" is true.</span>
+  <span class="kt">bool</span> <span class="n">BoundaryNear</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Polygon</span><span class="o">&amp;</span> <span class="n">b</span><span class="p">,</span>
+                    <span class="n">S1Angle</span> <span class="n">max_error</span> <span class="o">=</span> <span class="n">S1Angle</span><span class="o">::</span><span class="n">Radians</span><span class="p">(</span><span class="mf">1e-15</span><span class="p">))</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">////////////////////////////////////////////////////////////////////////</span>
+  <span class="c1">// S2Region interface (see s2region.h for details):</span>
+
+  <span class="c1">// GetRectBound() returns essentially tight results, while GetCapBound()</span>
+  <span class="c1">// might have a lot of extra padding.  Both bounds are conservative in that</span>
+  <span class="c1">// if the loop contains a point P, then the bound contains P also.</span>
+  <span class="n">S2Polygon</span><span class="o">*</span> <span class="n">Clone</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+  <span class="n">S2Cap</span> <span class="n">GetCapBound</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+  <span class="n">S2LatLngRect</span> <span class="n">GetRectBound</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+
+  <span class="kt">bool</span> <span class="n">Contains</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Cell</span><span class="o">&amp;</span> <span class="n">cell</span><span class="p">)</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+  <span class="kt">bool</span> <span class="n">MayIntersect</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Cell</span><span class="o">&amp;</span> <span class="n">cell</span><span class="p">)</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+  <span class="c1">// Return true if the polygon contains the given point.  Point containment</span>
+  <span class="c1">// is defined such that if the sphere is subdivided into polygons, every</span>
+  <span class="c1">// point is contained by exactly one polygons.  This implies that polygons</span>
+  <span class="c1">// do not necessarily contain their vertices.</span>
+  <span class="kt">bool</span> <span class="n">Contains</span><span class="p">(</span><span class="k">const</span> <span class="n">S2Point</span><span class="o">&amp;</span> <span class="n">p</span><span class="p">)</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+
+  <span class="c1">// Encode the polygon with about 4 bytes per vertex, assuming the vertices</span>
+  <span class="c1">// have all been snapped to the centers of S2Cells at a given level</span>
+  <span class="c1">// (typically with InitToSnapped).  The other vertices are stored using 24</span>
+  <span class="c1">// bytes.  Decoding a polygon encoded this way always returns the original</span>
+  <span class="c1">// polygon, without any loss of precision.</span>
+  <span class="kt">void</span> <span class="n">Encode</span><span class="p">(</span><span class="n">Encoder</span><span class="o">*</span> <span class="k">const</span> <span class="n">encoder</span><span class="p">)</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+
+  <span class="c1">// Decode a polygon encoded with Encode().</span>
+  <span class="kt">bool</span> <span class="n">Decode</span><span class="p">(</span><span class="n">Decoder</span><span class="o">*</span> <span class="k">const</span> <span class="n">decoder</span><span class="p">)</span> <span class="k">override</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+  </div>
+
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">S2Geometry</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">S2Geometry</li><li><a class="u-email" href="mailto:s2geometry-io@googlegroups.com">s2geometry-io@googlegroups.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>The s2geometry.io website</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+
+</body></html>

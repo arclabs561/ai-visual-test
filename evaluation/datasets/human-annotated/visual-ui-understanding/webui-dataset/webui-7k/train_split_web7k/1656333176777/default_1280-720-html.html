@@ -1,0 +1,231 @@
+<html><head><script language="JavaScript">
+//purpose:		function trim trims left and right spaces in a string
+//parameters:	string str
+//returns:		trimmed string
+function trim(str)
+{
+	var str_beg=0;
+	var str_end=str.length-1;
+	while (str.charAt(str_beg)==" " && (str_beg != str_end))	{
+		str_beg++;
+	}
+	while (str.charAt(str_end)==" " && (str_beg != str_end))	{
+		str_end--;
+	}
+	if (str_beg == str_end && str.charAt(str_beg)==" ") {
+	   return ""
+   }
+   else {
+	   return str.substring(str_beg, str_end+1);
+	}
+} 
+</script>
+
+
+<script type="text/javascript">
+    function Verify_Submit() {
+
+        var f = document.retrievepw;
+
+        if ((f.answer.value == "")) {
+            alert("Please provide an answer to your Security question #1.");
+            return false;
+        }
+        if ((f.answer2.value == "")) {
+            alert("Please provide an answer to your Security question #2.");
+            return false;
+        }
+
+        return true;
+    }
+    function loadCap() {
+        if (1 == 1) {
+            document.getElementById("imagecheck").value = "";
+            if (!document.all) {
+                document.getElementById("cap_iframe").src = "_captcha.asp";
+            } else {
+                document.cap_iframe.location.href = "_captcha.asp";
+            }
+        }
+    }
+</script>
+<link rel="stylesheet" type="text/css" href="/gui/css/appgui.css">
+<link rel="stylesheet" type="text/css" href="/gds/Skin..1.css">
+<style type="text/css">
+
+FORM LABEL { font-weight:bold; margin-bottom:4px;}
+FORM INPUT, FORM SELECT {  background-color:#FFE; width:230px;}
+INPUT.shortxt { width:170px; }
+INPUT.radiobtn { background-color:#FFF; width:20px; }
+FORM BUTTON { margin-top: 20px; margin-right: 10px;}
+FORM BUTTON SPAN { padding-right:10px; padding-left:10px;}
+#error P { color:#D00; }
+
+body {
+	font-size:1em;
+	font-family:arial;
+	color:#000;
+}
+
+h1 {
+	font-size:1.5em;
+}
+
+td {
+	padding:1em.5em;
+}
+
+input {
+    display: inline-block;
+    padding: 0.5em 0.1em;
+	border:1px solid #ccc;
+	margin:0.5em 0;
+}
+.error {
+	background-color: #F0CDD3;
+    border: 0.2em solid #F0CDD3;
+    border-radius: 0.2em;
+    margin: 0.5em 0.05em;
+    padding: 0.5em;
+	color: #C3374D;
+}
+
+.error input {
+	color: #C3374D;
+    border-color: #C3374D;
+}
+
+#new_pwd_wrapper {
+	display:inline-block;
+	min-width:20em;
+	padding:0.5em;
+	text-align:right;
+	background-color:#e8e8e8;
+	border-radius:0.25em;
+	border:1px solid #ccc;
+	margin:0.5em 0;
+}
+
+#new_pwd {
+	text-align:center;
+	font-weight:600;
+}
+
+#new_pwd_wrapper button {
+	color:#369;
+	font-size:0.8em;
+	margin:0;
+	padding:0;
+	background-image:none;
+	background-color:#e8e8e8;
+	border:0;
+}
+
+#new_pwd_wrapper button:hover {
+	cursor:pointer;
+}
+
+</style>
+<title>Forgot Your Password?</title>
+</head>
+<body>
+<!--INSERT HEADER-->
+<div class="NavigationBarBackground" style="width:99%;padding:5px; margin-bottom:20px;">
+<a href="http://"><img src="/gui/default/img/btlogo.gif" alt="Visit our website" border="0"></a>
+</div>
+<!--INSERT HEADER-->
+<div class="content" style="position:relative;z-index:1000;">
+<h2 class="txtheadline">Forgot Your Password?</h2>
+<form name="retrievepw" method="post" action="/Secured/forgotpw_p.asp?action=account"><input type="hidden" name="enm" value=""><input type="hidden" name="sprname" value="easystreet"><h1>Step 1: Account Login</h1><p>To retrieve your password, please enter your login information:</p><p><label>Username or Email Address:</label><br><input type="text" size="64" maxlength="64" name="unm" class="shortxt" onkeyup="this.value=this.value.toLowerCase();"></p><iframe name="cap_iframe" id="cap_iframe" width="300" height="90" scrolling="NO" frameborder="0" hspace="2" vspace="2" src="_captcha.asp"></iframe><br><br><b>Enter text above: </b><input name="imagecheck" id="imagecheck" type="text" style="width: 196"><br><br><input name="regen_cap" type="button" onclick="loadCap();" class="btnnormal" value="Regenerate Image" style="width: 170"><br><br><p><button type="submit" class="btnnormal"><span>Next</span></button>&nbsp;<button type="button" class="btnnormal" onclick="window.location.href='';return true;"><span>Cancel</span></button></p></form>
+</div>
+
+
+<!-- BT-1849: add some checking on fields for this task - see above comments -->
+<script>
+
+/**
+* Checks that the format of the date field is in YYYY/MM/DD
+* as well as replacing the common "-" with "/" as the seperator
+*/
+function handleDateField(date_field) {
+	var errors = document.getElementById("date_error");
+	var current_value = date_field.value;
+	var field_wrapper = document.getElementById(date_field.getAttribute('data-question'));
+
+	//replace any "-" characters with "/" since we need it in that format
+	current_value = current_value.replace(/(-)/gm, "/");
+	date_field.value = current_value;
+
+	//get a clean version of the current value for checking
+	var char_check = /[^0-9\/]/gm;
+	var clean_value = current_value.replace(char_check, "");
+
+	//reset the error element
+	errors.innerHTML = "";
+	field_wrapper.className = "";
+
+	//let's check for anything that indicates this format is incorrect:
+	//	if the length of the entire string is more than 10
+	//	if on exploding on "/" there are not 3 parts (YYYY/MM/DD)
+	//	if the length of the first part is less than 4 characters (YYYY)
+	//	if the second element exceeds 12 (MM)
+	//	if the last element is more than 31 (DD)
+	// does not check any strings less than 10, since it assumes the user is still typing
+
+	if (current_value.length >= 10) {
+		if (current_value !== clean_value || current_value.length > 10) {
+			errors.innerHTML = "Please check that the date entered is in the format YYYY/MM/DD.";
+			field_wrapper.className = "error";
+		} else {
+			var explode_value = current_value.split("/");
+			if (explode_value.length < 3 || explode_value[0].length !== 4
+				|| Number(explode_value[1]) > 12 || Number(explode_value[2]) > 31) {
+
+				errors.innerHTML = "Please check that the date entered is in the format YYYY/MM/DD.";
+				field_wrapper.className = "error";
+			}
+		}
+	}
+} //end function: handleDateField
+
+
+/**
+* Takes the value of the email field and populates the unm field
+* for excite users to be their email address.
+*/
+function handleExciteEmail(email_field) {
+	var unm_field = document.getElementById("unm");
+	var current_email = email_field.value;
+	var email_explode = current_email.split("@"); //incase they entered entire email
+	var email_username = email_explode[0] || current_email || "";
+	unm_field.value = email_username + "@excite.com";
+} //end function: handleExciteEmail
+
+/**
+* https://stackoverflow.com/questions/36639681/how-to-copy-text-from-a-div-to-clipboard
+*/
+function CopyToClipboard(containerid) {
+	var new_pwd = document.getElementById(containerid);
+	if (document.selection) {
+		var range = document.body.createTextRange();
+		range.moveToElementText(new_pwd);
+		range.select().createTextRange();
+		document.execCommand("copy");
+	} else if (window.getSelection) {
+		var range = document.createRange();
+		range.selectNode(new_pwd);
+		window.getSelection().addRange(range);
+		document.execCommand("copy");
+	}
+}
+
+
+
+</script>
+
+
+
+
+
+
+</body></html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html><html lang="en"><head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Updating IHaskell to a Newer GHC - Vaibhav Sagar</title>
+        <link href="data:," rel="icon">
+        <link rel="stylesheet" type="text/css" href="../../../../../css/default.css">
+        <link rel="stylesheet" type="text/css" href="../../../../../css/syntax.css">
+    </head>
+    <body>
+        <div id="header">
+            <div id="logo">
+                <a href="../../../../../">Vaibhav Sagar</a>
+            </div>
+            <div id="navigation">
+                <a href="../../../../../about/">About</a>
+                <a href="../../../../../talks/">Talks</a>
+                <a href="../../../../../archive/">Archive</a>
+            </div>
+        </div>
+
+        <div id="content">
+            <h1>Updating IHaskell to a Newer GHC</h1>
+
+            <div class="info">
+    Posted on  2 May 2021
+    
+</div>
+<div class="info">
+    
+        Tags: <a title="All pages tagged 'haskell'." href="../../../../../blog/tags/haskell/">haskell</a>, <a title="All pages tagged 'programming'." href="../../../../../blog/tags/programming/">programming</a>, <a title="All pages tagged 'nix'." href="../../../../../blog/tags/nix/">nix</a>
+    
+</div>
+
+<p>As the current maintainer of IHaskell, I see myself as having one primary
+responsibility: keeping it up-to-date with newer GHC releases. The chain of
+events that led to me becoming a maintainer started with the then-latest
+version of IHaskell not having support for GHC 8.0, and I still remember how
+frustrated I felt when dealing with this limitation.</p>
+<p>Since then I’ve had the opportunity to add GHC 8.2, 8.4, 8.6, 8.8, 8.10, and
+now 9.0 support, but because I only have to do this every 6 months or so (at
+the earliest) I promptly forget the details of this work afterwards and have to
+spelunk through old, often heavily amended, commits to rediscover what
+past me (who is notoriously bad at documentation) did.</p>
+<p>At the time of writing, GHC 9.2 is expected to be released soon and I don’t
+want to forget everything I’ve just (re)learned when that happens.
+Additionally, it is conceivable that at some point someone other than me would
+like to take a crack at updating IHaskell to the newest version of GHC. This
+blog post details the steps I took to make these tasks easier in the future.</p>
+<h2 id="building-ihaskells-dependencies">Building IHaskell’s dependencies</h2>
+<p>I should start by saying that my current approach relies heavily on Nix and the
+infrastructure available in <a href="https://github.com/NixOS/nixpkgs"><code>nixpkgs</code></a>. If
+you don’t want to use Nix for whatever reason the general ideas might still
+translate to whatever method you use instead but the details will almost
+certainly vary widely.</p>
+<p>The objective of this first step is to get us to the point where all of
+IHaskell’s dependencies are building, so that we can then focus on
+<code>ghc-parser</code>, <code>ipython-kernel</code>, and <code>ihaskell</code> exclusively.</p>
+<p>I start with a version of Nixpkgs that has the necessary GHC version and
+package overrides to minimise work. As of this writing, the Nixpkgs maintainers
+base the Haskell package set they use on <a href="https://www.stackage.org/">Stackage</a>
+Nightlies with overrides added from
+<a href="https://gitlab.haskell.org/ghc/head.hackage"><code>head.hackage</code></a>. Updates seem to
+go into the
+<a href="https://github.com/NixOS/nixpkgs/tree/haskell-updates"><code>haskell-updates</code></a>
+branch first and are then periodically merged into <code>master</code>. I started with
+<a href="https://github.com/NixOS/nixpkgs/commit/64c6086db4a6c19bb9960baf165c867c1774ab3d">this
+commit</a>
+but it had issues with building <code>alex</code> that I sent pull requests for <a href="https://github.com/NixOS/nixpkgs/pull/120535">to
+Nixpkgs</a> and <a href="https://github.com/simonmar/alex/pull/185">to the
+project</a>. In the meantime it’s very
+easy to make any required changes to a fork or a local copy of Nixpkgs. I start
+by copying <code>release.nix</code> from the IHaskell project root and changing the
+reference to Nixpkgs:</p>
+<details>
+<summary style="cursor: pointer">
+Changing Nixpkgs
+</summary>
+<pre class="nix"><code>let
+  nixpkgs-src = builtins.fetchTarball {
+    url = "https://github.com/NixOS/nixpkgs/tarball/8795d39ce70f04e3fd609422d522e5b2594f3a70";
+    sha256 = "01w7q0nqydippj0ygbg77byb770snhc5rnqzc6isws58642l8z4s";
+  };
+in
+{ compiler ? "ghc901"
+, jupyterlabAppDir ? null
+, nixpkgs ? import nixpkgs-src {}
+, packages ? (_: [])
+, pythonPackages ? (_: [])
+, rtsopts ? "-M3g -N2"
+, systemPackages ? (_: [])
+}:</code></pre>
+</details>
+<p>Then it’s possible to build this and see how many packages need changes:</p>
+<pre class="shell"><code>$ nix-build release-9.0.nix --keep-going 2&gt;&amp;1 | wc -l</code></pre>
+<p>Fixing the affected packages might involve patching, jailbreaking it so that
+its dependency bounds are relaxed, using a newer version that is not included
+in the package set by default, or any number of other changes. Here’s what I ended up with this time:</p>
+<details>
+<summary style="cursor: pointer">
+Package set overrides
+</summary>
+<pre class="nix"><code>      cryptohash-md5    = nixpkgs.haskell.lib.doJailbreak super.cryptohash-md5;
+      cryptohash-sha1   = nixpkgs.haskell.lib.doJailbreak super.cryptohash-sha1;
+      basement          = super.basement_0_0_12;
+      foundation        = super.foundation_0_0_26_1;
+      memory            = nixpkgs.haskell.lib.appendPatch super.memory (nixpkgs.fetchpatch {
+        url = "https://gitlab.haskell.org/ghc/head.hackage/-/raw/c89c1e27af8f180b3be476e102147557f922b224/patches/memory-0.15.0.patch";
+        sha256 = "0mkjbrzi05h1xds8rf5wfky176hrl03q0d7ipklp9x4ls3yyqj5x";
+      });
+      cryptonite        = nixpkgs.haskell.lib.appendPatch super.cryptonite (nixpkgs.fetchpatch {
+        url = "https://gitlab.haskell.org/ghc/head.hackage/-/raw/6a65307bbdc73c5eb4165a67ee97c7b9faa818e1/patches/cryptonite-0.28.patch";
+        sha256 = "1wq9hw16qj2yqy7lyqbi7106lhk199hvnkj5xr7h0ip854gjsr5j";
+      });
+      profunctors       = self.callCabal2nix "profunctors" profunctors-src {}; # `profunctors-src` is defined above
+      mono-traversable  = nixpkgs.haskell.lib.dontCheck super.mono-traversable;</code></pre>
+</details>
+<p>After every few changes, I like to rerun <code>nix-build</code> and watch the number go
+down. It’s also possible to build an individual package, e.g.&nbsp;to build
+<code>foundation</code> (and any dependencies) one would run</p>
+<pre class="shell"><code>$ nix-build release-9.0.nix -A passthru.haskellPackages.foundation</code></pre>
+<p><a href="https://github.com/gibiansky/IHaskell/pull/1215/commits/12f50f34d9cf6dceb3ca5adc9fa450cee6e7dcee">This is what the final <code>release-9.0.nix</code> looked
+like</a>.</p>
+<p>Eventually only <code>ghc-parser</code>, maybe <code>ipython-kernel</code>, and <code>ihaskell</code> should fail to
+build.</p>
+<h2 id="updating-ghc-parser">Updating <code>ghc-parser</code></h2>
+<p><code>ghc-parser</code> has the fewest dependencies of the three packages we are changing
+so it makes sense to start there. I’m relatively low-tech as far as development
+workflow goes and I prefer <code>ghcid</code> and a text editor, mostly because I haven’t
+yet figured out how to get anything more advanced to work. To get <code>ghcid</code>
+running, assuming you have it installed globally like I do, you relax the
+version bounds in <code>ghc-parser.cabal</code> and run</p>
+<pre class="shell"><code>$ nix-shell release-9.0.nix -A passthru.haskellPackages.ghc-parser.env
+$ cd ghc-parser
+$ runhaskell Setup.hs configure
+$ ghcid -c runhaskell Setup.hs repl lib:ghc-parser</code></pre>
+<p>Most of the compilation errors are related to <a href="https://gitlab.haskell.org/ghc/ghc/-/issues/13009">this GHC module
+restructuring</a> that started
+in GHC 8.10 and continued in GHC 9.0. If I had kept better notes from last time
+I would have looked at
+<a href="https://github.com/hsyl20/ghc-api-compat/"><code>ghc-api-compat</code></a> which offers
+a compatibility shim and whose
+<a href="https://github.com/hsyl20/ghc-api-compat/blob/master/ghc-api-compat.cabal"><code>.cabal</code></a>
+file makes translating between old and new module names very easy. Instead
+I ended up looking at the <a href="https://downloads.haskell.org/ghc/9.0.1/docs/html/libraries/ghc-9.0.1/">GHC 9.0 API
+Haddocks</a>
+and the <a href="https://hackage.haskell.org/package/ghc-8.10.2">GHC 8.10 API
+Haddocks</a>. As an aside, I am
+irritated that the most recently released GHC API documentation isn’t available
+on Hackage. I also like to have a local checkout of the GHC source so that
+I can look at the code across different commits if required.</p>
+<p><a href="https://github.com/gibiansky/IHaskell/pull/1215/commits/063e6bb0459b7ff8d9a2e92090332bf7a1e92a63">These are the changes I needed to make to
+<code>ghc-parser</code></a>.</p>
+<h2 id="updating-ipython-kernel">Updating <code>ipython-kernel</code></h2>
+<p><code>ipython-kernel</code> doesn’t depend on the GHC API directly, so changes to it are
+usually related to breaking API changes in other dependencies. In this case, no
+changes were required!</p>
+<h2 id="updating-ihaskell">Updating <code>ihaskell</code></h2>
+<p>This is usually the most involved package to update, as its operation is
+intimately tied with the details of the GHC API. Most of the changes required
+were for three reasons:</p>
+<ol type="1">
+<li><p>The aforementioned module hierarchy change</p></li>
+<li><p>Changing the terminology from
+“packages” to “units” as described in <a href="https://gitlab.haskell.org/ghc/ghc/-/commit/10a2ba90aa6a788677104cc43318c66f46e2e2b0">this
+commit</a></p></li>
+<li><p>Removing specialised <code>gcatch</code>, <code>gtry</code>, etc. functions in favour of the more
+general versions in <code>exceptions</code>, as detailed in <a href="https://downloads.haskell.org/ghc/9.0.1/docs/html/users_guide/9.0.1-notes.html#ghc-library">this section of the release
+notes</a></p></li>
+</ol>
+<p>As before, it’s possible to get <code>ghcid</code> running with</p>
+<pre class="shell"><code>$ nix-shell release-9.0.nix -A passthru.haskellPackages.ghc-parser.env
+$ runhaskell Setup.hs configure --enable-tests
+$ ghcid -c runhaskell Setup.hs repl lib:ihaskell</code></pre>
+<p>After getting everything compiling, I like to build the <code>ihaskell</code> package by
+running</p>
+<pre class="shell"><code>$ nix-build release-9.0.nix -A passthru.haskellPackages.ihaskell</code></pre>
+<p>because this sets up the test environment correctly (i.e.&nbsp;putting the built
+<code>ihaskell</code> executable in the <code>$PATH</code>) before running tests, although course you
+could do this manually. This usually catches any issues that have slipped
+through and <a href="https://github.com/gibiansky/IHaskell/pull/1215/commits/1796c35119ced7a564e75fe07067797fb182149d#diff-409dc396158ef9f7f39928cb144c6c3037072f0d9932499d2213862e0f5fbae6">small formatting changes in GHC output across
+versions</a>.</p>
+<p><a href="https://github.com/gibiansky/IHaskell/pull/1215/commits/1796c35119ced7a564e75fe07067797fb182149d">Here are the changes I made to
+<code>ihaskell</code></a>.</p>
+<h2 id="acceptance-testing">Acceptance testing</h2>
+<p>Since IHaskell bridges the Jupyter and GHC ecosystems, we have an acceptance
+test that essentially runs an IHaskell notebook through
+<a href="https://nbconvert.readthedocs.io/en/latest/"><code>nbconvert</code></a> and ensures that the
+output is identical to the input. Because GHC output (amongst other things)
+differs across GHC versions, this acceptance test was frequently broken and/or
+a bad indicator of whether any changes were correct. Recently <a href="https://github.com/jamesdbrock">James
+Brock</a> simplified and greatly improved the
+acceptance test to be more reliable. Unfortunately the latest releases of
+Jupyter now include additional metadata with each response including the time
+of reply, which cannot be expected to be the same across runs. In the past it’s
+been possible to filter the offending fields out using <code>grep -e</code> but a more
+sophisticated approach was required this time so I took the opportunity to
+learn a little more about <a href="https://stedolan.github.io/jq/"><code>jq</code></a> and used that
+instead. This new approach should also be more flexible and better at
+accommodating future output changes.</p>
+<p><a href="https://github.com/gibiansky/IHaskell/pull/1215/commits/4b62c964fb8937353d39a8798dc13d06260c9257">Here are the changes I made to the acceptance
+tests</a>.</p>
+<h2 id="using-the-updated-ihaskell">Using the updated IHaskell</h2>
+<p>We’re done! I like to quickly try out a new notebook, as a quick test that
+everything works as expected (and also for the novelty of being the first
+person to try IHaskell on the newest GHC). To do this, I run</p>
+<pre class="shell"><code>$ nix-build release-9.0.nix
+$ result/bin/jupyter-notebook</code></pre>
+
+        </div>
+        <div id="footer">
+            <div class="rc-webring">
+                <a href="https://webring.recurse.com"><img src="https://webring.recurse.com/icon.svg"> RC Webring</a>
+            </div>
+            <div class="rc-scout" data-scout-rendered="true"><p class="rc-scout__text"><i class="rc-scout__logo"></i> Want to become a better programmer? <a class="rc-scout__link" href="https://www.recurse.com/scout/click?t=5ac465e5d3396a7e491e42afac4c5c90">Join the Recurse Center!</a></p></div>
+        </div>
+        <script data-goatcounter="https://vaibhavsagar.goatcounter.com/count" async="" src="//gc.zgo.at/count.js"></script>
+    
+
+<script async="" src="https://d29xw0ra2h4o4u.cloudfront.net/assets/scout-04d1192b3bd68a46f8b2a700df35bef61f420d16ee286601d29c1b059052e8f1.js"></script><style class="rc-scout__style" type="text/css">.rc-scout {
+  display: block;
+  padding: 0;
+  border: 0;
+  margin: 0;
+}
+.rc-scout__text {
+  display: block;
+  padding: 0;
+  border: 0;
+  margin: 0;
+  height: 100%;
+  font-size: 100%;
+}
+.rc-scout__logo {
+  display: inline-block;
+  padding: 0;
+  border: 0;
+  margin: 0;
+  width: 0.85em;
+  height: 0.85em;
+  background: no-repeat center url('data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2012%2015%22%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%2212%22%20height%3D%2210%22%20fill%3D%22%23000%22%3E%3C%2Frect%3E%3Crect%20x%3D%221%22%20y%3D%221%22%20width%3D%2210%22%20height%3D%228%22%20fill%3D%22%23fff%22%3E%3C%2Frect%3E%3Crect%20x%3D%222%22%20y%3D%222%22%20width%3D%228%22%20height%3D%226%22%20fill%3D%22%23000%22%3E%3C%2Frect%3E%3Crect%20x%3D%222%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%233dc06c%22%3E%3C%2Frect%3E%3Crect%20x%3D%224%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%233dc06c%22%3E%3C%2Frect%3E%3Crect%20x%3D%226%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%233dc06c%22%3E%3C%2Frect%3E%3Crect%20x%3D%223%22%20y%3D%225%22%20width%3D%222%22%20height%3D%221%22%20fill%3D%22%233dc06c%22%3E%3C%2Frect%3E%3Crect%20x%3D%226%22%20y%3D%225%22%20width%3D%222%22%20height%3D%221%22%20fill%3D%22%233dc06c%22%3E%3C%2Frect%3E%3Crect%20x%3D%224%22%20y%3D%229%22%20width%3D%224%22%20height%3D%223%22%20fill%3D%22%23000%22%3E%3C%2Frect%3E%3Crect%20x%3D%221%22%20y%3D%2211%22%20width%3D%2210%22%20height%3D%224%22%20fill%3D%22%23000%22%3E%3C%2Frect%3E%3Crect%20x%3D%220%22%20y%3D%2212%22%20width%3D%2212%22%20height%3D%223%22%20fill%3D%22%23000%22%3E%3C%2Frect%3E%3Crect%20x%3D%222%22%20y%3D%2213%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23fff%22%3E%3C%2Frect%3E%3Crect%20x%3D%223%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23fff%22%3E%3C%2Frect%3E%3Crect%20x%3D%224%22%20y%3D%2213%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23fff%22%3E%3C%2Frect%3E%3Crect%20x%3D%225%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23fff%22%3E%3C%2Frect%3E%3Crect%20x%3D%226%22%20y%3D%2213%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23fff%22%3E%3C%2Frect%3E%3Crect%20x%3D%227%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23fff%22%3E%3C%2Frect%3E%3Crect%20x%3D%228%22%20y%3D%2213%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23fff%22%3E%3C%2Frect%3E%3Crect%20x%3D%229%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23fff%22%3E%3C%2Frect%3E%3C%2Fsvg%3E');
+}
+.rc-scout__link:link, .rc-scout__link:visited {
+  color: #3dc06c;
+  text-decoration: underline;
+}
+.rc-scout__link:hover, .rc-scout__link:active {
+  color: #4e8b1d;
+}
+</style></body></html>

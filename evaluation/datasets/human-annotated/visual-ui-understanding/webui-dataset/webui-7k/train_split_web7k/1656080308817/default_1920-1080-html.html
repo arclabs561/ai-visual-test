@@ -1,0 +1,493 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" data-svelte="svelte-1v73xa2">
+    <meta name="description" content="primo is an all-in-one, open-source tool for developing and managing static sites" data-svelte="svelte-1v73xa2">
+    <link rel="shortcut icon" type="image/png" href="https://res.cloudinary.com/primoaf/image/upload/v1634841930/primofavicon_kxmemr.png" data-svelte="svelte-1v73xa2">
+    <script src="https://cdn.usefathom.com/script.js" data-site="XWXZCGUM" defer="" async="" data-svelte="svelte-1v73xa2"></script>
+    <style data-svelte="svelte-1v73xa2">
+        @import url("https://unpkg.com/tailwindcss@2.2.15/dist/base.css");
+        @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css");
+
+        .primo-page {
+            --color-primored: #f84449;
+            --color-gray: #262626;
+            --color-black: #121212;
+            --color-white: #e6e6e6;
+            --color-accent: var(--color-primored);
+
+            --padding-left: 2rem;
+            --padding-right: 2rem;
+
+            --color: #eee;
+            --background: var(--color-black);
+            --max-width: 1200px;
+            --border-color: var(--color-gray);
+            --border: 2px solid var(--border-color);
+            --border-radius: 5px;
+
+            --heading-font-size: 2.25rem;
+            --heading-color: white;
+            --heading-font-weight: 700;
+            --subheading-color: #e5e5e5;
+            --body-color: #cccccc;
+
+            --transition-time: 0.1s;
+            --transition: var(--transition-time) color,
+                var(--transition-time) background-color, var(--transition-time) background,
+                var(--transition-time) border-color,
+                var(--transition-time) text-decoration-color,
+                var(--transition-time) box-shadow, var(--transition-time) transform;
+
+            --button-color: var(--color-white);
+            --button-background: var(--color-accent);
+            --button-border: 2px solid var(--color-primored);
+            --button-hover-background: var(--color-primored);
+            --button-padding: 8px 20px;
+            --button-border-radius: 5px;
+
+            --padding: 2rem;
+
+            color: var(--body-color);
+            background: var(--background);
+            font-family: "Satoshi", system-ui, sans-serif;
+            transition: var(--transition);
+        }
+
+        .primo-page[lang="ar"] {
+            direction: rtl;
+        }
+
+        .primo-page.light {
+            --color: #222;
+
+            --background: #eee;
+            --heading-color: #111;
+            --subheading-color: #222;
+            --border-color: #ddd;
+            --body-color: #222;
+        }
+
+        .primo-page.light .button:hover {}
+
+        .primo-page.light .button.secondary {
+            border: 2px solid var(--color-accent);
+            background: var(--color-background);
+            color: var(--color);
+        }
+
+        .primo-content {
+            max-width: calc(var(--max-width) * 0.55);
+            margin: 0 auto;
+            padding: 4rem var(--padding);
+        }
+
+        .primo-content blockquote {
+            padding: 2rem;
+            border-left: 5px solid var(--border-color);
+            margin: 2rem 0;
+            font-size: 1.5rem;
+        }
+
+        .primo-content h1 {
+            color: var(--color);
+            font-size: var(--heading-font-size);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .primo-content h2 {
+            color: var(--color);
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .primo-content h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            padding-bottom: 1rem;
+            margin-top: 2rem;
+        }
+
+        .primo-content h4 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            line-height: 1;
+            margin-bottom: 1rem;
+        }
+
+        .primo-content img {
+            width: 100%;
+            margin: 2rem 0;
+            box-shadow: var(--box-shadow);
+        }
+
+        .primo-content p {
+            line-height: 1.6;
+        }
+
+        .primo-content p:not(:last-child) {
+            margin-bottom: 1rem;
+        }
+
+        .primo-content ol {
+            list-style: decimal;
+            padding-left: 1.25rem;
+        }
+
+        .primo-content ul {
+            list-style: disc;
+            padding-left: 1.25rem;
+        }
+
+        .page-container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding-left: var(--padding);
+            padding-right: var(--padding);
+            padding-top: 5rem;
+            padding-bottom: 5rem;
+        }
+
+        .button {
+            color: var(--button-color);
+            background: var(--button-background);
+            border: var(--button-border);
+            border-radius: var(--button-border-radius);
+            padding: var(--button-padding);
+            transition: var(--transition);
+            transform: translateY(0);
+        }
+
+        .button.secondary {
+            border: 0;
+            color: var(--color-white);
+            background: var(--color-gray);
+        }
+
+        .button.small {
+            color: var(--color);
+            padding: 0.25rem 0.75rem 0.25rem 0.25rem;
+            font-size: 0.75rem;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            display: flex;
+            margin-bottom: 1rem;
+        }
+
+        .button.small svg {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        .button:hover {
+            border-color: transparent;
+            background: var(--color-background);
+            color: white;
+            box-shadow: 0 0 0 2px var(--color-accent);
+        }
+
+        .button.disabled {
+            cursor: disabled;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .heading {
+            font-size: var(--heading-font-size, 49px);
+            line-height: var(--heading-line-height, 1.15);
+            font-weight: var(--heading-font-weight, 700);
+            color: var(--heading-color, #252428);
+            text-align: center;
+        }
+
+        h2.heading {
+            line-height: 1.15;
+        }
+
+        .subheading {
+            font-size: 1.125rem;
+            text-align: center;
+        }
+
+        .link {
+            border-bottom: 2px solid var(--color-accent, #154bf4);
+            transition: border-color 0.1s;
+        }
+
+        .link:hover {
+            border-color: transparent;
+        }
+
+        .link.underlined {
+            border-bottom: 2px solid var(--color-accent, #154bf4);
+        }
+
+        .link.underlined:hover {
+            border-color: transparent;
+        }
+
+        .link.arrow {
+            display: inline-flex;
+            align-items: center;
+            color: var(--color-accent);
+            font-weight: 500;
+        }
+
+        .link.arrow svg {
+            transition: 0.1s transform;
+            transform: translateX(0);
+            position: relative;
+            top: 2px;
+        }
+
+        .link.arrow span {
+            margin-right: 0.5rem;
+        }
+
+        .link.arrow:hover svg {
+            transform: translateX(4px);
+        }
+    </style>
+    <script async="">
+        let data = {}
+        fetch('/en.json').then(res => res.json()).then(res => {
+            data = res
+        })
+    </script>
+</head>
+
+<body class="primo-page">
+
+    <style>
+        header.svelte-p1nfd9.svelte-p1nfd9 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            padding-bottom: 1rem
+        }
+
+        .link.svelte-p1nfd9.svelte-p1nfd9 {
+            border-color: transparent
+        }
+
+        .link.svelte-p1nfd9.svelte-p1nfd9:hover {
+            border-color: var(--color-accent)
+        }
+
+        .logo.svelte-p1nfd9 svg {
+            color: var(--color-white);
+            width: 160px
+        }
+
+        .logo.light.svelte-p1nfd9 svg {
+            color: var(--color-white)
+        }
+
+        .logo.svelte-p1nfd9 span.svelte-p1nfd9 {
+            border: 0 !important;
+            clip: rect(1px, 1px, 1px, 1px) !important;
+            -webkit-clip-path: inset(50%) !important;
+            clip-path: inset(50%) !important;
+            height: 1px !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            padding: 0 !important;
+            position: absolute !important;
+            width: 1px !important;
+            white-space: nowrap !important
+        }
+
+        button#theme.svelte-p1nfd9 svg.svelte-p1nfd9 {
+            width: 1.25rem;
+            height: 1.25rem
+        }
+
+        nav.svelte-p1nfd9.svelte-p1nfd9 {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem
+        }
+
+        nav.svelte-p1nfd9 select {
+            background: transparent
+        }
+
+        nav.svelte-p1nfd9 a.link.svelte-p1nfd9 {
+            display: none
+        }
+
+        nav.svelte-p1nfd9 button#close.svelte-p1nfd9 {
+            display: none
+        }
+
+        nav.svelte-p1nfd9 .nav-item.svelte-p1nfd9 {
+            position: relative
+        }
+
+        nav.svelte-p1nfd9 .nav-item .top-link.svelte-p1nfd9 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem
+        }
+
+        nav.svelte-p1nfd9 .nav-item .dropdown.svelte-p1nfd9 {
+            top: 100%;
+            position: absolute;
+            display: none;
+            width: auto;
+            white-space: nowrap;
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            background: var(--background);
+            box-shadow: var(--box-shadow)
+        }
+
+        nav.svelte-p1nfd9 .nav-item:hover .dropdown.svelte-p1nfd9 {
+            display: grid;
+            place-items: flex-start;
+            gap: 0.25rem
+        }
+
+        nav#mobile-nav.svelte-p1nfd9.svelte-p1nfd9 {
+            position: absolute;
+            flex-direction: column;
+            text-align: center;
+            background: var(--background);
+            border: var(--border);
+            box-shadow: var(--box-shadow);
+            border-radius: var(--border-radius);
+            left: 0.5rem;
+            top: 0.5rem;
+            right: 0.5rem;
+            padding: 2rem
+        }
+
+        nav#mobile-nav.svelte-p1nfd9 a.link.svelte-p1nfd9 {
+            display: block
+        }
+
+        nav#mobile-nav.svelte-p1nfd9 a.svelte-p1nfd9:last-of-type {
+            color: var(--button-color);
+            background: var(--button-background, #154bf4);
+            border: var(--button-border);
+            border-radius: var(--button-border-radius, 5px);
+            padding: var(--button-padding, 8px 20px);
+            width: 100%;
+            justify-content: center
+        }
+
+        nav#mobile-nav.svelte-p1nfd9 button#close.svelte-p1nfd9 {
+            display: block;
+            position: absolute;
+            right: 1rem;
+            top: 1rem
+        }
+
+        nav#mobile-nav.svelte-p1nfd9 button#close svg.svelte-p1nfd9 {
+            color: var(--color-accent, #154bf4);
+            width: 1.5rem;
+            height: 1.5rem
+        }
+
+        @media(min-width: 700px) {
+
+            #open.svelte-p1nfd9.svelte-p1nfd9,
+            #mobile-nav.svelte-p1nfd9.svelte-p1nfd9 {
+                display: none
+            }
+
+            nav.svelte-p1nfd9 a.link.svelte-p1nfd9 {
+                display: inline-block
+            }
+        }
+    </style>
+    <div class="primo-section has-component" id="dgocd"><header class="page-container svelte-p1nfd9"><a href="/" class="logo svelte-p1nfd9"><span class="svelte-p1nfd9">primo</span> <svg viewBox="0 0 161 46" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M10.359 17.19C11.4517 16.0972 13.2234 16.0972 14.3161 17.19C15.3757 18.2496 15.4078 19.9476 14.4124 21.0459L14.3161 21.147L7.2606 28.2016L20.3499 41.2176C21.4124 42.2742 21.4494 43.9721 20.4571 45.0732L20.361 45.1747C19.3044 46.2373 17.6065 46.2742 16.5054 45.2819L16.404 45.1859L1.32514 30.1921C0.260419 29.1334 0.225793 27.4313 1.22302 26.3308L1.31954 26.2294L10.359 17.19Z" fill="url(#paint0_linear_62_1449)"></path> <path d="M28.4998 15.586C35.471 15.586 41.1219 21.2371 41.1219 28.2081C41.1219 35.1791 35.471 40.8303 28.4998 40.8303C26.9545 40.8303 25.7017 39.5775 25.7017 38.0322C25.7017 36.4868 26.9545 35.2341 28.4998 35.2341C32.3803 35.2341 35.5258 32.0885 35.5258 28.2081C35.5258 24.3278 32.3803 21.1822 28.4998 21.1822C24.6769 21.1822 21.5671 24.236 21.4759 28.0909L21.4738 28.264L21.1744 43.2578C21.1436 44.8028 19.8661 46.0303 18.3211 45.9994C16.8167 45.9694 15.6134 44.7574 15.5794 43.2674V43.146L15.8782 28.2081C15.8782 21.2373 21.529 15.586 28.4998 15.586Z" fill="#EE4645"></path> <path d="M42.684 17.1897C43.7436 16.1301 45.4416 16.0981 46.5399 17.0935L46.6411 17.1898L55.6805 26.2299C56.7401 27.2895 56.7721 28.9875 55.7767 30.0858L55.6804 30.1869L46.6409 39.2259C45.5482 40.3185 43.7765 40.3185 42.6838 39.2257C41.6243 38.1661 41.5922 36.4681 42.5876 35.3698L42.684 35.2687L49.7449 28.2077L42.6838 21.1468C41.6243 20.0872 41.5922 18.3891 42.5876 17.2909L42.684 17.1897Z" fill="#EE4645"></path> <path d="M66.948 44.884H70.332V34.12C71.484 36.28 73.824 37.468 76.632 37.468C81.852 37.468 84.804 33.436 84.804 28.072C84.804 22.672 81.672 18.892 76.632 18.892C73.824 18.892 71.448 20.152 70.26 22.564L70.008 19.396H66.948V44.884ZM70.368 28.216C70.368 24.544 72.456 21.988 75.912 21.988C79.368 21.988 81.42 24.58 81.42 28.216C81.42 31.816 79.368 34.408 75.912 34.408C72.456 34.408 70.368 31.816 70.368 28.216ZM98.6139 19.252C97.9299 19.108 97.4259 19.036 96.8139 19.036C94.4019 19.036 92.6379 20.26 91.9179 22.096L91.7019 19.432H88.5339V37H91.9179V27.676C91.9179 24.292 93.8979 22.348 97.1019 22.348H98.6139V19.252ZM103.444 15.22C104.668 15.22 105.676 14.212 105.676 12.988C105.676 11.728 104.668 10.756 103.444 10.756C102.22 10.756 101.212 11.728 101.212 12.988C101.212 14.212 102.22 15.22 103.444 15.22ZM101.788 37H105.172V19.396H101.788V37ZM113.469 37V26.56C113.469 23.752 115.161 21.988 117.717 21.988C120.093 21.988 121.605 23.5 121.605 26.272V37H124.953V26.56C124.953 23.752 126.645 21.952 129.201 21.952C131.577 21.952 133.125 23.536 133.125 26.308V37H136.437V25.48C136.437 21.412 133.989 18.892 129.957 18.892C127.221 18.892 125.097 20.26 124.269 22.456C123.369 20.26 121.425 18.892 118.689 18.892C116.205 18.892 114.333 20.044 113.433 21.7L113.109 19.396H110.085V37H113.469ZM139.976 28.18C139.976 33.616 143.864 37.432 149.156 37.432C154.412 37.432 158.3 33.616 158.3 28.18C158.3 22.744 154.412 18.928 149.156 18.928C143.864 18.928 139.976 22.744 139.976 28.18ZM143.396 28.18C143.396 24.508 145.736 21.952 149.156 21.952C152.54 21.952 154.916 24.508 154.916 28.18C154.916 31.852 152.54 34.408 149.156 34.408C145.736 34.408 143.396 31.852 143.396 28.18Z" fill="currentColor"></path> <path d="M66.948 44.884H66.448V45.384H66.948V44.884ZM70.332 44.884V45.384H70.832V44.884H70.332ZM70.332 34.12L70.7732 33.8847L69.832 34.12H70.332ZM70.26 22.564L69.7616 22.6036L69.9057 24.415L70.7085 22.7849L70.26 22.564ZM70.008 19.396L70.5064 19.3564L70.4698 18.896H70.008V19.396ZM66.948 19.396V18.896H66.448V19.396H66.948ZM66.948 45.384H70.332V44.384H66.948V45.384ZM70.832 44.884V34.12H69.832V44.884H70.832ZM69.8908 34.3553C71.1496 36.7154 73.6857 37.968 76.632 37.968V36.968C73.9623 36.968 71.8184 35.8446 70.7732 33.8847L69.8908 34.3553ZM76.632 37.968C79.3828 37.968 81.57 36.8998 83.0605 35.1005C84.5422 33.3119 85.304 30.841 85.304 28.072H84.304C84.304 30.667 83.5898 32.8941 82.2905 34.4625C81 36.0202 79.1012 36.968 76.632 36.968V37.968ZM85.304 28.072C85.304 25.278 84.4933 22.8578 82.9848 21.1283C81.4701 19.3918 79.2859 18.392 76.632 18.392V19.392C79.0181 19.392 80.9199 20.2822 82.2312 21.7857C83.5487 23.2962 84.304 25.466 84.304 28.072H85.304ZM76.632 18.392C73.6686 18.392 71.0981 19.7308 69.8115 22.3431L70.7085 22.7849C71.7979 20.5732 73.9794 19.392 76.632 19.392V18.392ZM70.7584 22.5244L70.5064 19.3564L69.5096 19.4356L69.7616 22.6036L70.7584 22.5244ZM70.008 18.896H66.948V19.896H70.008V18.896ZM66.448 19.396V44.884H67.448V19.396H66.448ZM70.868 28.216C70.868 26.4716 71.3636 25.0403 72.2214 24.0529C73.0725 23.0734 74.3162 22.488 75.912 22.488V21.488C74.0518 21.488 72.5235 22.1806 71.4666 23.3971C70.4164 24.6057 69.868 26.2884 69.868 28.216H70.868ZM75.912 22.488C77.5052 22.488 78.7394 23.0804 79.5824 24.0639C80.4328 25.056 80.92 26.4885 80.92 28.216H81.92C81.92 26.3075 81.3812 24.626 80.3416 23.4131C79.2946 22.1916 77.7748 21.488 75.912 21.488V22.488ZM80.92 28.216C80.92 29.9244 80.4334 31.3478 79.583 32.3358C78.7399 33.3155 77.5053 33.908 75.912 33.908V34.908C77.7747 34.908 79.2941 34.2045 80.341 32.9882C81.3806 31.7802 81.92 30.1076 81.92 28.216H80.92ZM75.912 33.908C74.3183 33.908 73.0738 33.3151 72.2214 32.3341C71.3624 31.3454 70.868 29.9223 70.868 28.216H69.868C69.868 30.1097 70.4176 31.7826 71.4666 32.9899C72.5222 34.2049 74.0497 34.908 75.912 34.908V33.908ZM98.6139 19.252H99.1139V18.8463L98.7169 18.7627L98.6139 19.252ZM91.9179 22.096L91.4196 22.1364L92.3834 22.2785L91.9179 22.096ZM91.7019 19.432L92.2003 19.3916L92.163 18.932H91.7019V19.432ZM88.5339 19.432V18.932H88.0339V19.432H88.5339ZM88.5339 37H88.0339V37.5H88.5339V37ZM91.9179 37V37.5H92.4179V37H91.9179ZM98.6139 22.348V22.848H99.1139V22.348H98.6139ZM98.7169 18.7627C98.0139 18.6147 97.473 18.536 96.8139 18.536V19.536C97.3789 19.536 97.846 19.6013 98.5109 19.7413L98.7169 18.7627ZM96.8139 18.536C94.2184 18.536 92.2553 19.8661 91.4525 21.9135L92.3834 22.2785C93.0206 20.6539 94.5855 19.536 96.8139 19.536V18.536ZM92.4163 22.0556L92.2003 19.3916L91.2036 19.4724L91.4196 22.1364L92.4163 22.0556ZM91.7019 18.932H88.5339V19.932H91.7019V18.932ZM88.0339 19.432V37H89.0339V19.432H88.0339ZM88.5339 37.5H91.9179V36.5H88.5339V37.5ZM92.4179 37V27.676H91.4179V37H92.4179ZM92.4179 27.676C92.4179 26.0811 92.8828 24.8875 93.6646 24.0939C94.4457 23.301 95.6016 22.848 97.1019 22.848V21.848C95.3982 21.848 93.9621 22.367 92.9522 23.3921C91.9431 24.4165 91.4179 25.8869 91.4179 27.676H92.4179ZM97.1019 22.848H98.6139V21.848H97.1019V22.848ZM99.1139 22.348V19.252H98.1139V22.348H99.1139ZM101.788 37H101.288V37.5H101.788V37ZM105.172 37V37.5H105.672V37H105.172ZM105.172 19.396H105.672V18.896H105.172V19.396ZM101.788 19.396V18.896H101.288V19.396H101.788ZM103.444 15.72C104.944 15.72 106.176 14.4881 106.176 12.988H105.176C105.176 13.9359 104.392 14.72 103.444 14.72V15.72ZM106.176 12.988C106.176 11.4466 104.939 10.256 103.444 10.256V11.256C104.397 11.256 105.176 12.0094 105.176 12.988H106.176ZM103.444 10.256C101.949 10.256 100.712 11.4466 100.712 12.988H101.712C101.712 12.0094 102.491 11.256 103.444 11.256V10.256ZM100.712 12.988C100.712 14.4881 101.944 15.72 103.444 15.72V14.72C102.496 14.72 101.712 13.9359 101.712 12.988H100.712ZM101.788 37.5H105.172V36.5H101.788V37.5ZM105.672 37V19.396H104.672V37H105.672ZM105.172 18.896H101.788V19.896H105.172V18.896ZM101.288 19.396V37H102.288V19.396H101.288ZM113.469 37V37.5H113.969V37H113.469ZM121.605 37H121.105V37.5H121.605V37ZM124.953 37V37.5H125.453V37H124.953ZM133.125 37H132.625V37.5H133.125V37ZM136.437 37V37.5H136.937V37H136.437ZM124.269 22.456L123.806 22.6456L124.288 23.8218L124.737 22.6324L124.269 22.456ZM113.433 21.7L112.938 21.7696L113.149 23.2699L113.872 21.9388L113.433 21.7ZM113.109 19.396L113.604 19.3264L113.543 18.896H113.109V19.396ZM110.085 19.396V18.896H109.585V19.396H110.085ZM110.085 37H109.585V37.5H110.085V37ZM113.969 37V26.56H112.969V37H113.969ZM113.969 26.56C113.969 25.2561 114.36 24.2443 114.999 23.563C115.635 22.8846 116.558 22.488 117.717 22.488V21.488C116.319 21.488 115.119 21.9734 114.269 22.879C113.423 23.7817 112.969 25.0559 112.969 26.56H113.969ZM117.717 22.488C118.796 22.488 119.624 22.8284 120.186 23.4313C120.752 24.0386 121.105 24.9741 121.105 26.272H122.105C122.105 24.7979 121.702 23.5914 120.918 22.7497C120.129 21.9036 119.013 21.488 117.717 21.488V22.488ZM121.105 26.272V37H122.105V26.272H121.105ZM121.605 37.5H124.953V36.5H121.605V37.5ZM125.453 37V26.56H124.453V37H125.453ZM125.453 26.56C125.453 25.2558 125.844 24.2339 126.485 23.5429C127.122 22.8555 128.045 22.452 129.201 22.452V21.452C127.8 21.452 126.599 21.9485 125.752 22.8631C124.907 23.7741 124.453 25.0561 124.453 26.56H125.453ZM129.201 22.452C130.274 22.452 131.112 22.8063 131.686 23.4293C132.264 24.0568 132.625 25.0129 132.625 26.308H133.625C133.625 24.8311 133.211 23.6092 132.421 22.7517C131.627 21.8897 130.504 21.452 129.201 21.452V22.452ZM132.625 26.308V37H133.625V26.308H132.625ZM133.125 37.5H136.437V36.5H133.125V37.5ZM136.937 37V25.48H135.937V37H136.937ZM136.937 25.48C136.937 23.3457 136.293 21.5622 135.066 20.3105C133.838 19.0575 132.079 18.392 129.957 18.392V19.392C131.867 19.392 133.348 19.9865 134.352 21.0105C135.357 22.0358 135.937 23.5463 135.937 25.48H136.937ZM129.957 18.392C127.048 18.392 124.714 19.858 123.801 22.2796L124.737 22.6324C125.48 20.662 127.394 19.392 129.957 19.392V18.392ZM124.731 22.2664C123.751 19.8748 121.619 18.392 118.689 18.392V19.392C121.23 19.392 122.986 20.6452 123.806 22.6456L124.731 22.2664ZM118.689 18.392C116.045 18.392 113.992 19.6247 112.993 21.4612L113.872 21.9388C114.674 20.4633 116.365 19.392 118.689 19.392V18.392ZM113.928 21.6304L113.604 19.3264L112.614 19.4656L112.938 21.7696L113.928 21.6304ZM113.109 18.896H110.085V19.896H113.109V18.896ZM109.585 19.396V37H110.585V19.396H109.585ZM110.085 37.5H113.469V36.5H110.085V37.5ZM139.476 28.18C139.476 33.8921 143.588 37.932 149.156 37.932V36.932C144.14 36.932 140.476 33.3399 140.476 28.18H139.476ZM149.156 37.932C154.689 37.932 158.8 33.8908 158.8 28.18H157.8C157.8 33.3412 154.134 36.932 149.156 36.932V37.932ZM158.8 28.18C158.8 22.4692 154.689 18.428 149.156 18.428V19.428C154.134 19.428 157.8 23.0188 157.8 28.18H158.8ZM149.156 18.428C143.588 18.428 139.476 22.4679 139.476 28.18H140.476C140.476 23.0201 144.14 19.428 149.156 19.428V18.428ZM143.896 28.18C143.896 26.4503 144.446 25.0203 145.361 24.028C146.273 23.0389 147.577 22.452 149.156 22.452V21.452C147.315 21.452 145.739 22.1431 144.626 23.35C143.516 24.5537 142.896 26.2377 142.896 28.18H143.896ZM149.156 22.452C150.716 22.452 152.02 23.0381 152.938 24.0288C153.858 25.0221 154.416 26.4523 154.416 28.18H155.416C155.416 26.2357 154.785 24.5519 153.672 23.3492C152.555 22.1439 150.98 21.452 149.156 21.452V22.452ZM154.416 28.18C154.416 29.9077 153.858 31.3379 152.938 32.3312C152.02 33.3219 150.716 33.908 149.156 33.908V34.908C150.98 34.908 152.555 34.2161 153.672 33.0108C154.785 31.8081 155.416 30.1243 155.416 28.18H154.416ZM149.156 33.908C147.577 33.908 146.273 33.3211 145.361 32.332C144.446 31.3397 143.896 29.9097 143.896 28.18H142.896C142.896 30.1223 143.516 31.8063 144.626 33.01C145.739 34.2169 147.315 34.908 149.156 34.908V33.908Z" fill="currentColor"></path> <defs> <linearGradient id="paint0_linear_62_1449" x1="8.66462" y1="32.4724" x2="19.3273" y2="42.2182" gradientUnits="userSpaceOnUse"> <stop stop-color="#EE4645"></stop> <stop offset="1" stop-color="#810707"></stop> </linearGradient> </defs> </svg></a> <nav class="svelte-p1nfd9"><button aria-label="Toggle dark mode" id="theme" class="svelte-p1nfd9"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="svelte-p1nfd9"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path></svg></button> <div class="nav-item svelte-p1nfd9"><div class="top-link svelte-p1nfd9"><a href="/why-primo" class="link svelte-p1nfd9">Why Primo</a> </div> </div><div class="nav-item svelte-p1nfd9"><div class="top-link svelte-p1nfd9"><a href="/features" class="link svelte-p1nfd9">Features</a> </div> </div><div class="nav-item svelte-p1nfd9"><div class="top-link svelte-p1nfd9"><a href="/themes" class="link svelte-p1nfd9">Themes</a> </div> </div><div class="nav-item svelte-p1nfd9"><div class="top-link svelte-p1nfd9"><a href="https://docs.primo.af" class="link svelte-p1nfd9">Docs</a> </div> </div> <button id="open" class="svelte-p1nfd9"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.4643 17.0213H0.535714C0.239866 17.0213 0 17.3071 0 17.6596V19.3617C0 19.7142 0.239866 20 0.535714 20H19.4643C19.7601 20 20 19.7142 20 19.3617V17.6596C20 17.3071 19.7601 17.0213 19.4643 17.0213ZM19.4643 8.51064H0.535714C0.239866 8.51064 0 8.79644 0 9.14894V10.8511C0 11.2036 0.239866 11.4894 0.535714 11.4894H19.4643C19.7601 11.4894 20 11.2036 20 10.8511V9.14894C20 8.79644 19.7601 8.51064 19.4643 8.51064ZM19.4643 0H0.535714C0.239866 0 0 0.285797 0 0.638296V2.34042C0 2.69292 0.239866 2.97872 0.535714 2.97872H19.4643C19.7601 2.97872 20 2.69292 20 2.34042V0.638296C20 0.285797 19.7601 0 19.4643 0Z" fill="currentColor"></path></svg></button></nav> </header> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/brands.min.css" integrity="sha512-lCU0XyQA8yobR7ychVxEOU5rcxs0+aYh/9gNDLaybsgW9hdrtqczjfKVNIS5doY0Y5627/+3UVuoGv7p8QsUFw==" crossorigin="anonymous" referrerpolicy="no-referrer"></div>
+
+
+    <div class="primo-section has-content" id="wbzbx">
+        <div class="primo-content">
+            <h1>why you'd want to try primo</h1>
+            <h2>monolithic CMSs make development harder</h2>
+            <p>Popular monolithic CMSs like WordPress, Drupal, and Joomla can be complicated to set up for each site, complex to run, and need to be managed and regularly updated to continue serving the site. And while they allow nontechnical content editors to edit site content and build new pages, they do so at the expense of making custom development significantly more complicated.</p>
+            <h2>headless CMSs take longer to set up</h2>
+            <p>Headless CMSs may be more suited to custom development since they're designed to work with a Static Site Generator (e.g. Hugo) or meta-framework (e.g. NextJS), but typically at the expense of ease of content editing (since the system is decoupled from the rendering layer).</p>
+            <p>Headless CMSs need to be set up to work with a framework or SSG, meaning there's a lot more work involved to hook it up and integrate components, as well as setting up the other parts of the website (component library, prebuilt components, connecting to a web host or Github).</p>
+            <p>Using a framework also forces developers to do a lot of up front work to connect the disparate tools that help build websites, including a component library, prebuilt components, connecting to a web host or Github. All of these concerns cause a huge learning curve and up front work when setting up new websites.</p>
+            <h2>primo simplifies managing, developing, <em>and</em> publishing websites.</h2>
+            <p>With Primo you can create a new site with a click and easily manage tens or hundreds of websites from the same place without having to worry about maintenance or security, and update your site content with ease, whether you're technical or not. There's a growing library of professional components that can be used on any of your sites &amp; adapt to its theme (using CSS variables). Custom development becomes 10 times easier because you can do it right from primo's component-driven development environment. Primo sites are built with <a target="_blank" rel="noopener noreferrer nofollow" class="link link link" href="https://svelte.dev">Svelte</a>, so components have rich interactivity with the simplest and most approachable code possible.</p>
+        </div>
+    </div>
+
+    <style>
+        footer.svelte-1tyeklx.svelte-1tyeklx {
+            border-top: 1px solid var(--border-color, #E5E5E7)
+        }
+
+        .page-container.svelte-1tyeklx.svelte-1tyeklx {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 1rem;
+            padding-bottom: 1rem
+        }
+
+        nav.svelte-1tyeklx.svelte-1tyeklx {
+            display: flex;
+            gap: 1rem
+        }
+
+        nav.svelte-1tyeklx a.svelte-1tyeklx {
+            border-bottom: 2px solid transparent;
+            transition: 0.1s border-color
+        }
+
+        nav.svelte-1tyeklx a.svelte-1tyeklx:hover {
+            border-color: var(--color-accent)
+        }
+
+        ul.svelte-1tyeklx.svelte-1tyeklx {
+            display: flex;
+            gap: 1rem
+        }
+
+        ul.svelte-1tyeklx a.svelte-1tyeklx {
+            transition: var(--transition)
+        }
+
+        ul.svelte-1tyeklx a.svelte-1tyeklx:hover {
+            color: var(--color-accent)
+        }
+    </style>
+    <div class="primo-section has-component" id="gltyq"><footer class="svelte-1tyeklx"><div class="page-container svelte-1tyeklx"><nav class="svelte-1tyeklx"><a href="/privacy-policy" class="svelte-1tyeklx">Privacy Policy</a></nav> <ul class="svelte-1tyeklx"><li><a href="https://twitter.com/primo_af" aria-label="Twitter" class="svelte-1tyeklx"><span class="fab fa-fab fa-twitter svelte-1tyeklx"></span></a> </li><li><a href="https://discord.com/invite/UeNeTk6cF3" aria-label="Discord" class="svelte-1tyeklx"><span class="fab fa-fab fa-discord svelte-1tyeklx"></span></a> </li><li><a href="https://github.com/primo-af/primo" aria-label="Github" class="svelte-1tyeklx"><span class="fab fa-fab fa-github svelte-1tyeklx"></span></a> </li></ul></div></footer> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/brands.min.css" integrity="sha512-lCU0XyQA8yobR7ychVxEOU5rcxs0+aYh/9gNDLaybsgW9hdrtqczjfKVNIS5doY0Y5627/+3UVuoGv7p8QsUFw==" crossorigin="anonymous" referrerpolicy="no-referrer"></div>
+
+    <link href="https://api.fontshare.com/css?f[]=satoshi@300,400,401,500,700,900&amp;display=swap" rel="stylesheet">
+
+    <script type="module">
+        import App from '/_modules/eygra.js';
+        new App({
+            target: document.querySelector('#dgocd'),
+            hydrate: true,
+            props: {
+                ...data,
+                ...data['why-primo'],
+                ...data['why-primo']['dgocd']
+            }
+        });
+    </script>
+    <script type="module">
+        import App from '/_modules/omkik.js';
+        new App({
+            target: document.querySelector('#gltyq'),
+            hydrate: true,
+            props: {
+                ...data,
+                ...data['why-primo'],
+                ...data['why-primo']['gltyq']
+            }
+        });
+    </script>
+
+
+</body></html>

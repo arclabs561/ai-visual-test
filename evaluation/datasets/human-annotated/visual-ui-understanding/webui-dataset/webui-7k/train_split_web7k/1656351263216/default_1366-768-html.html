@@ -1,0 +1,268 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <title>日历化版本 / Calendar Versioning — CalVer</title>
+  <meta name="author" content="Mahmoud Hashemi">
+  <meta name="description" content="Timely Project Versioning">
+  <link href="/atom.xml" title="CalVer Feed" type="application/atom+xml" rel="alternate">
+
+  <!-- Mobile Specific Meta -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+
+  <!-- Font
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css"> -->
+
+  <!-- CSS -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:400|Merriweather:400,400i&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/github.css">
+  <link rel="stylesheet" href="/css/floc.css">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+
+  <!-- Analytics -->
+  
+  <script type="text/javascript" async="" src="https://ssl.google-analytics.com/ga.js"></script><script type="text/javascript">
+      var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-63522904-1']);
+        _gaq.push(['_trackPageview']);
+        
+        _gaq.push(['user._setAccount', 'UA-63522904-3']);
+        _gaq.push(['user._trackPageview']);
+        
+        (function() {
+          var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+          ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+  </script>
+  
+</head>
+<body>
+  <header id="header">
+    <h1><a href="/">CalVer</a></h1>
+    <p id="tagline-p">Timely Project Versioning</p>
+    <p id="pri-links-p">
+      
+      <a title="" href="/about.html">About</a>
+      
+      <a title="" href="/users.html">Users</a>
+      
+      <a title="" href="/overview_zhcn.html">中文</a>
+      
+      <a target="_blank" title="CalVer site source" href="https://github.com/mahmoud/calver">GitHub</a>
+      
+    </p>
+    
+    <hr>
+  </header>
+  <main id="page-content">
+  
+
+
+<header id="entry-header">
+  <h1 id="entry-h1"><a href="/overview_zhcn.html">日历化版本 / Calendar Versioning</a></h1>
+  <p id="entry-tagline"></p>
+</header>
+<p></p><p><em>CalVer 不是基于任意数字，而是基于项目发布日期
+的版本控制约定</em></p>
+<p><strong>版本随着时间的推移会变得更好。</strong></p>
+<p>对于维护者，版本使我们在不断扩大的生态系统中
+可以指定精确的依赖关系。对于卖家和推广者来说，
+项目的版本是一个品牌的活力部分。对我们所有人来说，
+版本使我们在升级到将来时可以参考过去。</p>
+<p>不同的项目使用不同的系统命名版本，但是常见的
+实践已经浮现出来。例如，以点分隔的数字（例如，
+<em>3.1.4</em>）就是全部。另一种常见的版本模式
+包含一个基于时间的元素，通常是发布日期的一部分。</p>
+<p>这种基于日期的方法被称为 “日历化版本”（Calendar Versioning），
+或者简称 <strong>CalVer</strong>。</p>
+<div class="toc"><span class="toctitle">Contents</span><ul><li><a href="#方案">方案</a></li><li><a href="#样例学习">样例学习</a><ul><li><a href="#ubuntu">Ubuntu</a></li><li><a href="#twisted">Twisted</a></li><li><a href="#youtube-dl">youtube_dl</a></li><li><a href="#pytz">pytz</a></li><li><a href="#teradata">Teradata</a></li><li><a href="#其他值得注意的项目">其他值得注意的项目</a></li></ul></li><li><a href="#何时使用-calver">何时使用 CalVer</a></li></ul></div><h2 id="方案"><a href="#方案" class="toclink">方案</a></h2>
+<p>有多种日历化版本方案，长期被各种大小项目
+使用。与其宣布某个方案为 CalVer，更重要的是
+要认识到每个方案的可行性并
+<a href="http://sedimental.org/designing_a_version.html" target="_blank" rel="noopener">设计一个适合项目的方案</a>。首先，
+版本的各部分：</p>
+<ul>
+<li><strong>主要</strong> - 版本中的第一个数字。2 和 3 是 Python 的著名
+&nbsp;&nbsp;主要版本。主要部分是基于日历的最常见组件。</li>
+<li><strong>次要</strong> - 版本中的第二个数字。7 是 Python 的最受欢迎的
+&nbsp;&nbsp;次要版本。</li>
+<li><strong>微小</strong> - 版本中的第三个且通常是最终数字。有时
+&nbsp;&nbsp;称为 “补丁” 部分。</li>
+<li><strong>修饰符</strong> - 可选的文本标记，例如 “dev”、“alpha”、“beta”、
+&nbsp;&nbsp;“rc1”，依此类推。</li>
+</ul>
+<p>绝大多数现代版本标识符是由两个或
+三个数字段组成，以及可选的修饰符。通常
+建议不要使用四个数字段的版本。</p>
+<p>如下面的 <a href="#样例学习">样例学习</a> 所示，项目
+发现了不止一种有用的方法在版本中使用
+日期。 作为对比，CalVer 并未像 “语义化版本” 那样选择单一方案，
+而是引入了开发人员的
+标准术语：</p>
+<ul>
+<li><strong><code>YYYY</code></strong> - 年份全称 - 2006、2016、2106</li>
+<li><strong><code>YY</code></strong> - 年份缩写 - 6、16、106</li>
+<li><strong><code>0Y</code></strong> - 以零填充的年份 - 06、16、106</li>
+<li><strong><code>MM</code></strong> - 月份缩写 - 1、2 ... 11、12</li>
+<li><strong><code>0M</code></strong> - 以零填充的月份 - 01、02 ... 11、12</li>
+<li><strong><code>WW</code></strong> - 星期（自年初开始）- 1、2、33、52</li>
+<li><strong><code>0W</code></strong> - 以零填充的星期 - 01、02、33、52</li>
+<li><strong><code>DD</code></strong> - 日 - 1、2 ... 30、31</li>
+<li><strong><code>0D</code></strong> - 以零填充的日 - 01、02 ... 30、31</li>
+</ul>
+<p>请注意，传统的递增版本号是从 0 开始，
+而日期段是从 1 开始的，且年份缩写和以零填充的年份
+是相对于 2000 年。还请注意，星期的使用
+通常与月/日互斥。</p>
+<p>假定采用 <a href="https://zh.wikipedia.org/wiki/%E6%A0%BC%E9%87%8C%E6%9B%86" target="_blank" rel="noopener">格里高利历</a>，
+<a href="https://zh.wikipedia.org/wiki/%E5%8D%8F%E8%B0%83%E4%B8%96%E7%95%8C%E6%97%B6" target="_blank" rel="noopener">UTC</a> 的惯例也是如此。从技术上讲可以使用任何日历，
+只要提供的项目声明使用哪一个。</p>
+<h2 id="样例学习"><a href="#样例学习" class="toclink">样例学习</a></h2>
+<p>CalVer 有很多用户。考虑到知名度和使用案例的多样性
+选择以下项目。</p>
+<h3 id="ubuntu"><a href="#ubuntu" class="toclink">Ubuntu</a></h3>
+<p><img src="https://img.shields.io/badge/calver-YY.0M.MICRO-22bfda.svg"></p>
+<p><strong><a href="http://www.ubuntu.com/" target="_blank" rel="noopener">Ubuntu</a></strong>，最杰出的基于 Linux 可用的
+操作系统之一，使用三段式 CalVer 方案，包含
+年份和以零填充的月份。它
+<a href="https://zh.wikipedia.org/wiki/Ubuntu%E5%8F%91%E8%A1%8C%E7%89%88%E5%88%97%E8%A1%A8" target="_blank" rel="noopener">从一开始</a> 就这样做了，在 2004 年 10 月，将 4.10
+作为 Ubuntu 第一个普通版本。</p>
+<p>即使是一个简单的操作系统，也会涉及到很多很多部分，使它
+很难用一个任意数字传达太多含义。通过
+约定项目发布日期，基于日历的版本要比
+一个任意数字更好，基于简单的事实可以
+传达有用的信息。</p>
+<p>通过 CalVer 方案与 Ubuntu 的支持周期结合，
+Ubuntu 从中获取了额外的好处。Ubuntu 目前为
+长期支持（LTS）版本提供五年支持，
+为非 LTS 版本只提供 9 个月支持。感谢 CalVer 和
+基本算术，任何用户都可以轻松确定他们使用的版本是否
+仍受支持。在写下这段文字时当前的 LTS 版本
+是 16.04，将会支持到 2021 年 4 月。</p>
+<h3 id="twisted"><a href="#twisted" class="toclink">Twisted</a></h3>
+<p><img src="https://img.shields.io/badge/calver-YY.MM.MICRO-22bfda.svg"></p>
+<p><strong><a href="https://twistedmatrix.com" target="_blank" rel="noopener">Twisted</a></strong>，受人尊敬的 Python 网络和
+异步执行框架，使用三段式 CalVer 方案，
+在主要版本部分使用年份缩写，在次要版本部分使用
+该年份的发行序号，而微小版本部分为错误修正版本号。</p>
+<p>2002 年首次发布，至今仍在积极开发中，Twisted 是
+一个已经成长为大范围的 <a href="https://en.wikipedia.org/wiki/Twisted_%28software%29" target="_blank" rel="noopener">成熟的</a> 库。
+它具有从 IRC 客户端到 HTTP 服务器到
+用于并发编程的一系列实用工具的所有功能。就像一个
+操作系统，Twisted 有很多部分组成，而 SemVer 支持
+个别的部分单独废弃与打破兼容性，因而并不适合。</p>
+<p>在每一个连续的版本之间 Twisted 的非废弃部分都是
+向后兼容的，并且要求打破兼容性修改按照基于时间的计划：
+必须经过一年的时间并且在标记废弃功能与删除功能之间
+要间隔两个发布版本。</p>
+<p>Twisted 的版本方案已扩展到相关项目，包括：
+<a href="https://github.com/twisted/klein" target="_blank" rel="noopener">Klein</a>、<a href="https://github.com/twisted/treq" target="_blank" rel="noopener">Treq</a>，甚至是 Twisted 的一个依赖库，
+<a href="https://github.com/pyca/pyopenssl" target="_blank" rel="noopener">PyOpenSSL</a>。</p>
+<h3 id="youtube-dl"><a href="#youtube-dl" class="toclink">youtube_dl</a></h3>
+<p><img src="https://img.shields.io/badge/calver-YYYY.0M.0D-22bfda.svg"></p>
+<p><strong><a href="https://youtube-dl.org/" target="_blank" rel="noopener">youtube_dl</a></strong>，是各地的互联网媒体档案员的盟友，
+使用三段式的 CalVer 方案，
+包括年份全称、以零填充的月、以零填充的日。
+除了由于某些技术背景下添加的一个微小版本部分，
+这个版本几乎完全由日历驱动。</p>
+<p>尽管有这个名字，但 youtube_dl 的使用范围很广。它支持
+从很多网站中提取音频和视频，并且这一长串网站列表
+还在不断扩大。考虑到支持服务的
+快速发布周期，它清楚地说明了
+为什么该项目如此深度的使用 CalVer。</p>
+<h3 id="pytz"><a href="#pytz" class="toclink">pytz</a></h3>
+<p><img src="https://img.shields.io/badge/calver-YYYY.MINOR-22bfda.svg"></p>
+<p><strong><a href="https://pypi.python.org/pypi/pytz" target="_blank" rel="noopener">pytz</a></strong> 是 <a href="https://www.iana.org/time-zones" target="_blank" rel="noopener">IANA/Olson timezone database</a>
+ 的 Python 实现，是所有计算机精确时间背后的数据库。
+pytz 使用两段式 CalVer 方案，
+包括年份全称和次要版本。</p>
+<p>虽然 Python 有 “内置电池” 架构的历史（指包含大量有用的依赖库），
+日期时间模块经常会提到时区，Python 核心
+运行时并不包括时区信息。这是因为
+时区更新没有固定的时间表，并受制于
+政治和立法上的奇思妙想。日历版本为这个用其他方法会混乱的系统
+提供了日期标记的快照。</p>
+<h3 id="teradata"><a href="#teradata" class="toclink">Teradata</a></h3>
+<p><img src="https://img.shields.io/badge/calver-YY.MM.MINOR.MICRO-22bfda.svg"></p>
+<p><strong><a href="https://pypi.python.org/pypi/teradata" target="_blank" rel="noopener">Teradata UDA client</a></strong> 提供了<a href="https://developer.teradata.com/tools/reference/teradata-python-module" target="_blank" rel="noopener">下一代
+访问</a> <a href="http://www.teradata.com/" target="_blank" rel="noopener">Teradata</a> 的数据仓库技术。</p>
+<p>Teradata 的使用并非以技术或公司的突出而著称，
+而是由于在 2016 年发布了多个版本号为 <code>15.10</code>
+ 的版本。这可能在最初看来似乎是破坏性的，但是
+意义和作用是显而易见的。</p>
+<p>库的维护者们精心打造了一个资源丰富的混合型的
+<a href="https://semver.org/lang/zh-CN/" target="_blank" rel="noopener">语义化版本</a> 和日历化版本。<strong>YY.MM</strong>
+版本部分被用作组合的 SemVer 主要版本。这
+意味着新版本库的 API 仍然与 2015 年 10 月的
+相同。此后编写的依赖代码是可以
+安全升级的。我们会在下一次破坏性的 API 变化时看到
+年份与月份部分的更新。</p>
+<h3 id="其他值得注意的项目"><a href="#其他值得注意的项目" class="toclink">其他值得注意的项目</a></h3>
+<ul>
+<li><a href="https://unity3d.com/unity/whats-new/" target="_blank" rel="noopener">Unity</a> - <strong><code>YYYY.MINOR.MICRO</code></strong> - 跨平台的游戏引擎。</li>
+<li><a href="https://pip.pypa.io/en/stable/news/" target="_blank" rel="noopener">pip</a> - <strong><code>YY.MINOR.MICRO</code></strong> - Python 官方软件包管理器。</li>
+<li><a href="https://www.jetbrains.com/pycharm/download/" target="_blank" rel="noopener">PyCharm</a> - <strong><code>YYYY.MINOR.MICRO</code></strong> - 一个领先的 Python IDE。</li>
+<li><a href="http://www.openscad.org/" target="_blank" rel="noopener">OpenSCAD</a> - <strong><code>YYYY.0M</code></strong> - 提供实体三维 CAD 建模的
+  领先开源软件。</li>
+<li><a href="http://www.freshports.org/sysutils/fusefs-ntfs" target="_blank" rel="noopener">fusefs-ntfs</a> - <strong><code>YYYY.MM.DD_MICRO</code></strong> - 为 Unix
+  提供最早且最兼容的 NTFS 访问层
+  之一。</li>
+<li><a href="https://pypi.python.org/pypi/certifi" target="_blank" rel="noopener">certifi</a> - <strong><code>YYYY.MM.DD</code></strong> - certifi 是一个
+  Mozilla 证书授权包的封装，用于保护互联网
+  通信。与 <a href="#pytz">pytz</a> 类似，证书更新没有
+  固定的时间表，但及时的、有日期的更新对于安全是
+  至关重要的。</li>
+<li><a href="http://boltons.readthedocs.io/en/latest/" target="_blank" rel="noopener">boltons</a> - <strong><code>YY.MINOR.MICRO</code></strong> - 一个含有许多实用程序的库，
+  是对 Python 标准库的补充。</li>
+</ul>
+<p>参见 <a href="/users.html">用户页面</a> (<a href="/users_zhcn.html">中文</a>) 以获取越来越多的 CalVer 用户列表。</p>
+<h2 id="何时使用-calver"><a href="#何时使用-calver" class="toclink">何时使用 CalVer</a></h2>
+<p>如果你和你不认识的人都严肃地使用你的项目，那么
+使用一个严肃的版本。幸运的是，为那个版本决定是否使用 CalVer
+比以往任何时候都要容易。</p>
+<ul>
+<li>你的项目是否具有较大或不断变化的范围？<ul>
+<li>大型系统和框架，如 <a href="#ubuntu">Ubuntu</a> 和 <a href="#twisted">Twisted</a>。</li>
+<li>无定形的实用程序集，比如 <a href="#其他值得注意的项目">Boltons</a>。</li>
+</ul>
+</li>
+<li>你的项目是否对时间敏感？是否有其他的外部变化
+  驱动项目新版本的发布？<ul>
+<li>业务需求，例如 <a href="#ubuntu">Ubuntu</a> 对支持计划的支持。</li>
+<li>安全更新，例如 <a href="#其他值得注意的项目">certifi</a> 对证书更新的需求。</li>
+<li>政治变化，例如 <a href="#pytz">pytz</a> 对时区变化的处理。</li>
+</ul>
+</li>
+</ul>
+<p>如果你对这些问题中的任何一个回答是肯定的，CalVer 的语义就会使
+它成为你项目的有力选择。</p><p></p>
+
+
+
+<hr>
+
+
+
+<div class="entry-metadata">
+  <a href="/overview_zhcn.html" title="2020-05-30T00:00:00-0700" class="post-timestamp">May 30, 2020</a>
+  
+</div>
+
+
+
+
+  </main>
+  <footer id="footer">
+    © 2020 <a href="https://creativecommons.org/licenses/by-sa/4.0/"><img height="14" src="/img/by-sa.png"></a> <a href="/atom.xml"><img height="14" src="/img/feed.png"></a>
+  </footer>
+  <!-- Last generated: 2020-12-22T06:56:56Z -->
+
+
+
+
+
+
+
+</body></html>

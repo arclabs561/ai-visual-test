@@ -1,0 +1,177 @@
+<!DOCTYPE html><html lang="en-US"><head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>sled | sled-rs.github.io</title>
+<meta name="generator" content="Jekyll v3.9.2">
+<meta property="og:title" content="sled">
+<meta property="og:locale" content="en_US">
+<link rel="canonical" href="http://sled.rs/introduction.html">
+<meta property="og:url" content="http://sled.rs/introduction.html">
+<meta property="og:site_name" content="sled-rs.github.io">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta property="twitter:title" content="sled">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","headline":"sled","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://sled.rs/art/tree_face.png"}},"url":"http://sled.rs/introduction.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/assets/css/style.css?v=4b6e80ed2a056c4ac639ef780237eb877e6562ff">
+    <!--[if lt IE 9]>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        
+          <a href="https://sled.rs">
+            <img src="/art/tree_face.png" alt="SMILING TREE LOGO" width="40%" height="auto">
+          </a>
+        
+
+        <p></p>
+
+        <br>
+        <b>sled</b>
+        <br>
+        <a href="https://github.com/spacejam/sled">github repo</a>
+        <br>
+        <a href="https://sled.rs/introduction.html">introduction</a>
+        <br>
+        <a href="https://docs.rs/sled">documentation</a>
+        <br>
+        <a href="https://sled.rs/motivating_experiences.html">motivating experiences</a>
+        <br>
+        <a href="https://sled.rs/books.html">book shop</a>
+        <br>
+        <a href="https://github.com/sponsors/spacejam">support sled</a>
+        <br>
+        <br>
+        <b>blog</b>
+        <br>
+        <a href="https://sled.rs/apis.html">API considerations</a>
+        <br>
+        <a href="https://sled.rs/errors.html">error handling in Rust</a>
+        <br>
+        <a href="https://sled.rs/simulation.html">jepsen-proof engineering</a>
+        <br>
+        <a href="https://sled.rs/perf.html">theoretical performance guide</a>
+        <br>
+
+        
+      </header>
+      <section>
+
+      <h1 id="sled">sled</h1>
+
+<p><a href="https://docs.rs/sled"><img src="https://docs.rs/sled/badge.svg" alt="documentation"></a>
+<a href="https://discord.gg/Z6VsXds"><img src="https://img.shields.io/discord/509773073294295082.svg?logo=discord" alt="chat"></a>
+<a href="https://github.com/sponsors/spacejam"><img src="https://img.shields.io/opencollective/backers/sled" alt="sponsors"></a></p>
+
+<p>Welcome to the introduction for the sled embedded database! We’ll keep this short and sweet.</p>
+
+<p>Sled can be thought of as a <code class="language-plaintext highlighter-rouge">BTreeMap&lt;[u8], [u8]&gt;</code> that stores its data on disk.</p>
+
+<p><a href="https://en.wikipedia.org/wiki/Embedded_database">Embedded databases</a> are useful in several cases:</p>
+
+<ul>
+  <li>you want to store data on disk, without facing <a href="https://danluu.com/file-consistency/">the complexity of files</a></li>
+  <li>you want to be simple, without operating an external database</li>
+  <li>you want to be fast, without paying network costs</li>
+  <li>using disk storage as a building block in your system</li>
+</ul>
+
+<h1 id="lets-get-going">Let’s get going!</h1>
+
+<p>Open your rust project, or create one with <code class="language-plaintext highlighter-rouge">cargo new sled-intro</code>.</p>
+
+<p>In <code class="language-plaintext highlighter-rouge">Cargo.toml</code>, add sled to the dependencies section:</p>
+
+<div class="language-toml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nn">[dependencies]</span>
+<span class="py">sled</span> <span class="p">=</span> <span class="s">"0.34"</span>
+</code></pre></div></div>
+
+<p>Now, in your Rust code:</p>
+
+<div class="language-rust highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">fn</span> <span class="nf">main</span><span class="p">()</span> <span class="k">-&gt;</span> <span class="nn">sled</span><span class="p">::</span><span class="n">Result</span><span class="o">&lt;</span><span class="p">()</span><span class="o">&gt;</span> <span class="p">{</span>
+    <span class="c">// this directory will be created if it does not exist</span>
+    <span class="k">let</span> <span class="n">path</span> <span class="o">=</span> <span class="s">"my_storage_directory"</span><span class="p">;</span>
+
+    <span class="c">// works like std::fs::open</span>
+    <span class="k">let</span> <span class="n">db</span> <span class="o">=</span> <span class="nn">sled</span><span class="p">::</span><span class="nf">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+
+    <span class="c">// key and value types can be `Vec&lt;u8&gt;`, `[u8]`, or `str`.</span>
+    <span class="k">let</span> <span class="n">key</span> <span class="o">=</span> <span class="s">"my key"</span><span class="p">;</span>
+
+    <span class="c">// `generate_id`</span>
+    <span class="k">let</span> <span class="n">value</span> <span class="o">=</span> <span class="n">db</span><span class="nf">.generate_id</span><span class="p">()</span><span class="o">?</span><span class="nf">.to_be_bytes</span><span class="p">();</span>
+
+    <span class="nd">dbg!</span><span class="p">(</span>
+        <span class="n">db</span><span class="nf">.insert</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">value</span><span class="p">)</span><span class="o">?</span><span class="p">,</span> <span class="c">// as in BTreeMap::insert</span>
+        <span class="n">db</span><span class="nf">.get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">?</span><span class="p">,</span>            <span class="c">// as in BTreeMap::get</span>
+        <span class="n">db</span><span class="nf">.remove</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">?</span><span class="p">,</span>         <span class="c">// as in BTreeMap::remove</span>
+    <span class="p">);</span>
+
+    <span class="nf">Ok</span><span class="p">(())</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This will create a new directory, <code class="language-plaintext highlighter-rouge">my_storage_directory</code>, write
+a new item into the database inside, retrieve the item, and then remove it.
+If <code class="language-plaintext highlighter-rouge">remove</code> were not used, the data would be stored safely
+on disk for future access.</p>
+
+<h2 id="key-and-value-types">Key and Value Types</h2>
+
+<p>The key and value types can be a <code class="language-plaintext highlighter-rouge">Vec&lt;u8&gt;</code>, a <code class="language-plaintext highlighter-rouge">[u8]</code>, or a <code class="language-plaintext highlighter-rouge">str</code>.
+These will be converted to the sled <code class="language-plaintext highlighter-rouge">IVec</code> type automatically.
+<code class="language-plaintext highlighter-rouge">IVec</code> is an <code class="language-plaintext highlighter-rouge">Arc&lt;[u8]&gt;</code> that will not allocate if the value is small.
+It has implemented the <code class="language-plaintext highlighter-rouge">Deref&lt;Target=[u8]&gt;</code> trait, which means it
+may use all of the <code class="language-plaintext highlighter-rouge">&amp;[u8]</code> slice methods.</p>
+
+<h2 id="error-handling">Error Handling</h2>
+
+<p>All sled operations return a <code class="language-plaintext highlighter-rouge">sled::Result</code> that should never be ignored. If
+this is an <code class="language-plaintext highlighter-rouge">Err</code>, it means a serious unexpected issue has happened. Operations
+that may fail in expected ways, like <code class="language-plaintext highlighter-rouge">compare_and_swap</code>, have a nested return
+type of <code class="language-plaintext highlighter-rouge">sled::Result&lt;CompareAndSwapResult&gt;</code> where the expected failure is
+nested inside the unexpected failure. This allows users to use the try
+operator on every sled operation, and locally reason about errors that are
+likely to be encountered. This allows your local error handling logic to take full
+advantage of Rust’s exhaustive pattern matching. I’ve written more extensively
+about this in <a href="http://sled.rs/errors">a post on error handling</a>.</p>
+
+<h2 id="thread-safety">Thread Safety</h2>
+
+<p>All operations in sled are thread-safe. The <code class="language-plaintext highlighter-rouge">Db</code> may be cloned and shared across threads
+without needing to use <code class="language-plaintext highlighter-rouge">Arc</code> or <code class="language-plaintext highlighter-rouge">Mutex</code> etc… Internally, sled relies on
+atomic operations to guarantee correctness when being used by multiple threads.
+Sled has been designed from the beginning to perform well with highly concurrent
+workloads.</p>
+
+<h1 id="advanced-features">Advanced Features</h1>
+
+<p>Many more advanced features are supported, which might be useful for creators of higher performance stateful systems.</p>
+
+<ul>
+  <li>fully serializable multi-key and multi-Tree <a href="https://docs.rs/sled/latest/sled/struct.Tree.html#method.transaction">transactions</a> involving up to 69 separate Trees!</li>
+  <li>fully atomic single-key operations, supports <a href="https://docs.rs/sled/latest/sled/struct.Tree.html#method.compare_and_swap">compare and swap</a></li>
+  <li><a href="https://docs.rs/sled/latest/sled/struct.Tree.html#method.apply_batch">write batch support</a></li>
+  <li><a href="https://github.com/spacejam/sled/wiki/reactive-semantics">subscription/watch semantics on key prefixes</a></li>
+  <li><a href="https://docs.rs/sled/latest/sled/struct.Db.html#method.open_tree">multiple keyspace/Tree support</a></li>
+  <li><a href="https://github.com/spacejam/sled/wiki/merge-operators">merge operators</a></li>
+  <li>a crash-safe monotonic <a href="https://docs.rs/sled/latest/sled/struct.Db.html#method.generate_id">ID generator</a> capable of generating 75-125 million unique ID’s per second</li>
+  <li><a href="https://github.com/facebook/zstd">zstd</a> compression (use the <code class="language-plaintext highlighter-rouge">compression</code> build feature)</li>
+</ul>
+
+
+      </section>
+    </div>
+    <script src="/assets/js/scale.fix.js"></script>
+    
+  
+
+</body></html>

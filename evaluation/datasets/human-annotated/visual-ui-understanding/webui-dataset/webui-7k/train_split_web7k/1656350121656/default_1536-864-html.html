@@ -1,0 +1,595 @@
+<!DOCTYPE html><html lang="en" class="notranslate" translate="no"><head>
+    <meta charset="utf-8">
+    <title>FediDB - Developer Tools for ActivityPub</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Developer Tools for ActivityPub">
+    <meta name="google" content="notranslate">
+    
+    <style type="text/css">@keyframes  hideLoader{0%{width:100%;height:100%}100%{width:0;height:0}}body>div.loader{position:fixed;background:#fff;width:100%;height:100%;z-index:1071;opacity:0;transition:opacity .5s ease;overflow:hidden;pointer-events:none;display:flex;align-items:center;justify-content:center}body:not(.loaded)>div.loader{opacity:1}body:not(.loaded){overflow:hidden}body.loaded>div.loader{animation:hideLoader .5s linear .5s forwards}.loading-animation{width:6px;height:6px;border-radius:50%;animation:typing 1s linear infinite alternate;position:relative;left:-12px}@keyframes  typing{0%{background-color:#646464;box-shadow:12px 0 0 0 rgba(100,100,100,.2),24px 0 0 0 rgba(100,100,100,.2)}25%{background-color:rgba(100,100,100,.4);box-shadow:12px 0 0 0 #646464,24px 0 0 0 rgba(100,100,100,.2)}75%{background-color:rgba(100,100,100,.4);box-shadow:12px 0 0 0 rgba(100,100,100,.2),24px 0 0 0 #646464}}</style>
+    <link href="/css/custom.css?id=f7828ae1791a6984e714" rel="stylesheet" type="text/css" media="all">
+    
+  </head>
+
+  <body data-aos-easing="ease" data-aos-duration="400" data-aos-delay="0" class="loaded">
+    <div class="loader">
+        <div class="loading-animation"></div>
+        <noscript>
+            <style type="text/css">.loading-animation { display:none; }</style>
+            Please enable javascript to view this page.
+        </noscript>
+    </div>
+
+    
+
+    
+<div class="navbar-container " style="min-height: 69px; margin-bottom: -69px;">
+      <nav class="navbar navbar-expand-lg navbar-dark" data-overlay="" data-sticky="top" style="max-width: 1536px; top: 0px;">
+        <div class="container">
+          <a class="navbar-brand fade-page font-weight-bolder" href="/">
+            <i class="fal fa-database mr-2"></i> FediDB
+          </a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="injected-svg icon navbar-toggler-open" data-src="/landing/img/menu.svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<path d="M3 17C3 17.5523 3.44772 18 4 18H20C20.5523 18 21 17.5523 21 17V17C21 16.4477 20.5523 16 20 16H4C3.44772 16 3 16.4477 3 17V17ZM3 12C3 12.5523 3.44772 13 4 13H20C20.5523 13 21 12.5523 21 12V12C21 11.4477 20.5523 11 20 11H4C3.44772 11 3 11.4477 3 12V12ZM4 6C3.44772 6 3 6.44772 3 7V7C3 7.55228 3.44772 8 4 8H20C20.5523 8 21 7.55228 21 7V7C21 6.44772 20.5523 6 20 6H4Z" fill="#212529"></path>
+</svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="injected-svg icon navbar-toggler-close" data-src="/landing/img/cross.svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<path d="M16.2426 6.34311L6.34309 16.2426C5.95257 16.6331 5.95257 17.2663 6.34309 17.6568C6.73362 18.0473 7.36678 18.0473 7.75731 17.6568L17.6568 7.75732C18.0473 7.36679 18.0473 6.73363 17.6568 6.34311C17.2663 5.95258 16.6331 5.95258 16.2426 6.34311Z" fill="#212529"></path>
+<path d="M17.6568 16.2426L7.75734 6.34309C7.36681 5.95257 6.73365 5.95257 6.34313 6.34309C5.9526 6.73362 5.9526 7.36678 6.34313 7.75731L16.2426 17.6568C16.6331 18.0473 17.2663 18.0473 17.6568 17.6568C18.0474 17.2663 18.0474 16.6331 17.6568 16.2426Z" fill="#212529"></path>
+</svg>
+          </button>
+          <div class="collapse navbar-collapse justify-content-end">
+            <div class="py-2 py-lg-0">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a href="https://fedidb.org/about" class="nav-link ">About</a>
+                </li>
+                
+                
+                
+                
+                <li class="nav-item">
+                  <a href="https://fedidb.org/network" class="nav-link active">Network</a>
+                </li>
+                
+                
+                <li class="nav-item">
+                  <a href="https://fedidb.org/software" class="nav-link ">Software</a>
+                </li>
+                
+              </ul>
+            </div>
+            
+          </div>
+        </div>
+      </nav>
+    </div>
+
+  <section class="has-divider text-light jarallax bg-dark" data-jarallax="" data-speed="0.5" data-overlay="" style="padding-top: 69px !important;">
+      <img src="/landing/img/header-2.jpg" alt="" class="jarallax-img opacity-50">
+      <div class="container">
+
+        <div class="row my-3">
+  <div class="col">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a href="/">Home</a>
+        </li>
+                <li class="breadcrumb-item">
+          <span>Network</span>
+        </li>
+              </ol>
+    </nav>
+  </div>
+</div>
+        <div class="row">
+          <div class="col-xl-5 col-lg-6 col-md-8">
+            <h1 class="display-4">Network</h1>
+            <p class="lead mb-0">An overview of the fediverse.</p>
+          </div>
+        </div>
+      </div>
+      <div class="divider">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="96px" viewBox="0 0 100 100" version="1.1" preserveAspectRatio="none" class="injected-svg" data-src="/landing/img/separator.svg">
+    <path d="M0,0 C16.6666667,66 33.3333333,99 50,99 C66.6666667,99 83.3333333,66 100,0 L100,100 L0,100 L0,0 Z"></path>
+</svg>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="row">
+          <div class="col-12 col-md-3">
+            <form method="get">
+                <div class="form-group">
+                    <label class="small font-weight-bold mb-0">Search</label>
+                    <input class="form-control mb-2 shadow" name="q" placeholder="Search by domain..." value="">
+                </div>
+            </form>
+            <div class="card shadow">
+                <div class="card-body p-2">
+                    <form class="mb-3" method="get">
+                        <label class="small font-weight-bold mb-0">Software</label>
+                        <select class="form-control" name="s" style="min-width: 200px;" onchange="this.form.submit()">
+                          <option disabled="">Select Software</option>
+                          <option>All</option>
+                          
+                                                    <option value="mastodon">Mastodon</option>
+                                                    <option value="peertube">Peertube</option>
+                                                    <option value="pleroma">Pleroma</option>
+                                                    <option value="pixelfed">Pixelfed</option>
+                                                    <option value="birdsitelive">Birdsitelive</option>
+                                                    <option value="writefreely">Writefreely</option>
+                                                    <option value="lemmy">Lemmy</option>
+                                                    <option value="misskey">Misskey</option>
+                                                    <option value="plume">Plume</option>
+                                                    <option value="juick">Juick</option>
+                                                    <option value="friendica">Friendica</option>
+                                                    <option value="mobilizon">Mobilizon</option>
+                                                    <option value="wordpress">Wordpress</option>
+                                                    <option value="funkwhale">Funkwhale</option>
+                                                    <option value="gnusocial">Gnusocial</option>
+                                                    <option value="hometown">Hometown</option>
+                                                    <option value="hubzilla">Hubzilla</option>
+                                                    <option value="bookwyrm">Bookwyrm</option>
+                                                    <option value="socialhome">Socialhome</option>
+                                                    <option value="corgidon">Corgidon</option>
+                                                    <option value="notestock">Notestock</option>
+                                                    <option value="brutalinks">Brutalinks</option>
+                                                    <option value="lotide">Lotide</option>
+                                                    <option value="ecko">Ecko</option>
+                                                    <option value="activity-relay">Activity-relay</option>
+                                                    <option value="zap">Zap</option>
+                                                    <option value="gancio">Gancio</option>
+                                                    <option value="activityrelay">Activityrelay</option>
+                                                    <option value="reel2bits">Reel2bits</option>
+                                                    <option value="smithereen">Smithereen</option>
+                                                    <option value="moodlenet">Moodlenet</option>
+                                                    <option value="fedimoe">Fedimoe</option>
+                                                    <option value="gitea">Gitea</option>
+                                                    <option value="owncast">Owncast</option>
+                                                    <option value="sequel">Sequel</option>
+                                                    <option value="red">Red</option>
+                                                    <option value="turkum">Turkum</option>
+                                                    <option value="anfora">Anfora</option>
+                                                    <option value="contentnation">Contentnation</option>
+                                                    <option value="pubgate">Pubgate</option>
+                                                    <option value="mistpark">Mistpark</option>
+                                                    <option value="roadhouse">Roadhouse</option>
+                                                    <option value="epicyon">Epicyon</option>
+                                                    <option value="gotosocial">Gotosocial</option>
+                                                    <option value="microblogpub">Microblogpub</option>
+                                                    <option value="ktistec">Ktistec</option>
+                                                    <option value="drupal">Drupal</option>
+                                                    <option value="pherephone">Pherephone</option>
+                                                    <option value="bonfire">Bonfire</option>
+                                                    <option value="goblog">Goblog</option>
+                                                    <option value="pub-relay">Pub-relay</option>
+                                                    <option value="kibou">Kibou</option>
+                                                    <option value="imaginarium">Imaginarium</option>
+                                                    <option value="selective-relay">Selective-relay</option>
+                                                    <option value="shadowfacts_blog">Shadowfacts_blog</option>
+                                                    <option value="p3k">P3k</option>
+                                                    <option value="unciarelay">Unciarelay</option>
+                                                    <option value="aoderelay">Aoderelay</option>
+                                                    <option value="wxwclub">Wxwclub</option>
+                                                    <option value="kurofu">Kurofu</option>
+                                                    <option value="unfediverse">Unfediverse</option>
+                                                    <option value="iplaza">Iplaza</option>
+                                                    <option value="mitra">Mitra</option>
+                                                    <option value="ostatus">Ostatus</option>
+                                                    <option value="koyuspace">Koyuspace</option>
+                                                    <option value="starship">Starship</option>
+                                                    <option value="martenblog">Martenblog</option>
+                                                    <option value="bacn">Bacn</option>
+                                                    <option value="castling.club">Castling.club</option>
+                                                    <option value="dolphin">Dolphin</option>
+                                                    <option value="circle">Circle</option>
+                                                    <option value="gorfspace">Gorfspace</option>
+                                                    <option value="becomochi">Becomochi</option>
+                                                    <option value="go-littr">Go-littr</option>
+                                                    <option value="acropolis">Acropolis</option>
+                                                    <option value="pagure">Pagure</option>
+                                                    <option value="olki">Olki</option>
+                                                    <option value="diaspora">Diaspora</option>
+                                                    <option value="kroeg">Kroeg</option>
+                                                    <option value="koype">Koype</option>
+                                                    <option value="solopor">Solopor</option>
+                                                    <option value="tsundere">Tsundere</option>
+                                                    <option value="socialtap">Socialtap</option>
+                                                  </select>
+
+                        <div class="custom-control custom-checkbox my-3">
+                            <input type="checkbox" class="custom-control-input" name="or" id="filter-openreg" onchange="this.form.submit()">
+                            <label class="custom-control-label font-weight-bold" for="filter-openreg">Open Registration</label>
+                        </div>
+
+
+                        
+                        
+                      
+                    </form>
+                </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-9">
+           
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th scope="col">domain</th>
+                                    <th scope="col">software</th>
+                                    <th scope="col">version</th>
+                  <th scope="col">users</th>
+                  <th scope="col">statuses</th>
+                                    <th scope="col">last crawled</th>
+                                  </tr>
+              </thead>
+              <tbody>
+                                <tr>
+                  <th scope="row">
+                    <div class="media">
+                                                <img src="https://fedidb.pixelcdn.net/software/icons/_icon-mastodon.png?v=1" class="rounded mr-2" width="40" height="40">
+                                                <div class="media-body">
+                          <p class="mb-0">
+                            <a href="/network/instance?domain=pawoo.net">
+                                pawoo.net
+                            </a>
+                          </p>
+                          <p class="mb-0 small">
+                              
+                          </p>
+                        </div>
+                    </div>
+                  </th>
+                                    <td>
+                                        <a href="/network?s=mastodon">mastodon</a>
+                                      </td>
+                                    <td>
+                    3.2.2
+                  </td>
+                  <td>734K</td>
+                  <td>67.1M</td>
+                                    <td>15m ago</td>
+                                  </tr>
+                                <tr>
+                  <th scope="row">
+                    <div class="media">
+                                                <img src="https://fedidb.pixelcdn.net/software/icons/_icon-mastodon.png?v=1" class="rounded mr-2" width="40" height="40">
+                                                <div class="media-body">
+                          <p class="mb-0">
+                            <a href="/network/instance?domain=mastodon.social">
+                                mastodon.social
+                            </a>
+                          </p>
+                          <p class="mb-0 small">
+                              The original server operated by the Mastodon gGmbH non-profit
+                          </p>
+                        </div>
+                    </div>
+                  </th>
+                                    <td>
+                                        <a href="/network?s=mastodon">mastodon</a>
+                                      </td>
+                                    <td>
+                    3.5.3
+                  </td>
+                  <td>724K</td>
+                  <td>36.9M</td>
+                                    <td>1h ago</td>
+                                  </tr>
+                                <tr>
+                  <th scope="row">
+                    <div class="media">
+                                                <img src="https://fedidb.pixelcdn.net/software/icons/_icon-mastodon.png?v=1" class="rounded mr-2" width="40" height="40">
+                                                <div class="media-body">
+                          <p class="mb-0">
+                            <a href="/network/instance?domain=baraag.net">
+                                baraag.net
+                            </a>
+                          </p>
+                          <p class="mb-0 small">
+                              By clicking past warnings of any sensitive content, you affirm to be 18 years of age or older, and agree to the Terms of Service.
+
+
+🎨 Freely...
+                          </p>
+                        </div>
+                    </div>
+                  </th>
+                                    <td>
+                                        <a href="/network?s=mastodon">mastodon</a>
+                                      </td>
+                                    <td>
+                    3.5.3
+                  </td>
+                  <td>236K</td>
+                  <td>5.8M</td>
+                                    <td>1h ago</td>
+                                  </tr>
+                                <tr>
+                  <th scope="row">
+                    <div class="media">
+                                                <img src="https://fedidb.pixelcdn.net/software/icons/_icon-mastodon.png?v=1" class="rounded mr-2" width="40" height="40">
+                                                <div class="media-body">
+                          <p class="mb-0">
+                            <a href="/network/instance?domain=mstdn.jp">
+                                mstdn.jp
+                            </a>
+                          </p>
+                          <p class="mb-0 small">
+                              Mastodon日本鯖です．
+よろしくお願いいたします。
+
+(Maintained by Sujitech, LLC)
+                          </p>
+                        </div>
+                    </div>
+                  </th>
+                                    <td>
+                                        <a href="/network?s=mastodon">mastodon</a>
+                                      </td>
+                                    <td>
+                    3.4.6
+                  </td>
+                  <td>212K</td>
+                  <td>61.2M</td>
+                                    <td>1h ago</td>
+                                  </tr>
+                                <tr>
+                  <th scope="row">
+                    <div class="media">
+                                                <img src="https://fedidb.pixelcdn.net/software/icons/_icon-mastodon.png?v=1" class="rounded mr-2" width="40" height="40">
+                                                <div class="media-body">
+                          <p class="mb-0">
+                            <a href="/network/instance?domain=mastodon.online">
+                                mastodon.online
+                            </a>
+                          </p>
+                          <p class="mb-0 small">
+                              A newer server operated by the Mastodon gGmbH non-profit
+                          </p>
+                        </div>
+                    </div>
+                  </th>
+                                    <td>
+                                        <a href="/network?s=mastodon">mastodon</a>
+                                      </td>
+                                    <td>
+                    3.5.3
+                  </td>
+                  <td>101K</td>
+                  <td>1.6M</td>
+                                    <td>2h ago</td>
+                                  </tr>
+                                <tr>
+                  <th scope="row">
+                    <div class="media">
+                                                <img src="https://fedidb.pixelcdn.net/software/icons/_icon-mastodon.png?v=1" class="rounded mr-2" width="40" height="40">
+                                                <div class="media-body">
+                          <p class="mb-0">
+                            <a href="/network/instance?domain=mastodon.cloud">
+                                mastodon.cloud
+                            </a>
+                          </p>
+                          <p class="mb-0 small">
+                              Everyone is welcome as long as you follow our code of conduct! Thank you.
+
+Mastodon.cloud is maintained by Sujitech, LLC.
+
+                          </p>
+                        </div>
+                    </div>
+                  </th>
+                                    <td>
+                                        <a href="/network?s=mastodon">mastodon</a>
+                                      </td>
+                                    <td>
+                    3.4.6
+                  </td>
+                  <td>78.8K</td>
+                  <td>4.2M</td>
+                                    <td>1h ago</td>
+                                  </tr>
+                                <tr>
+                  <th scope="row">
+                    <div class="media">
+                                                <img src="https://fedidb.pixelcdn.net/software/icons/_icon-mastodon.png?v=1" class="rounded mr-2" width="40" height="40">
+                                                <div class="media-body">
+                          <p class="mb-0">
+                            <a href="/network/instance?domain=mstdn.social">
+                                mstdn.social
+                            </a>
+                          </p>
+                          <p class="mb-0 small">
+                              A general-purpose Mastodon server with a 1000 character limit.
+
+ 
+ 
+
+                          </p>
+                        </div>
+                    </div>
+                  </th>
+                                    <td>
+                                        <a href="/network?s=mastodon">mastodon</a>
+                                      </td>
+                                    <td>
+                    3.5.3+glit...
+                  </td>
+                  <td>66.6K</td>
+                  <td>5.0M</td>
+                                    <td>15m ago</td>
+                                  </tr>
+                                <tr>
+                  <th scope="row">
+                    <div class="media">
+                                                <img src="https://fedidb.pixelcdn.net/software/icons/_icon-pixelfed.png?v=1" class="rounded mr-2" width="40" height="40">
+                                                <div class="media-body">
+                          <p class="mb-0">
+                            <a href="/network/instance?domain=pixelfed.social">
+                                pixelfed.social
+                            </a>
+                          </p>
+                          <p class="mb-0 small">
+                              The original Pixelfed instance, operated by the main developer @dansup
+                          </p>
+                        </div>
+                    </div>
+                  </th>
+                                    <td>
+                                        <a href="/network?s=pixelfed">pixelfed</a>
+                                      </td>
+                                    <td>
+                    0.11.3
+                  </td>
+                  <td>51.9K</td>
+                  <td>352K</td>
+                                    <td>1h ago</td>
+                                  </tr>
+                                <tr>
+                  <th scope="row">
+                    <div class="media">
+                                                <img src="https://fedidb.pixelcdn.net/software/icons/_icon-mastodon.png?v=1" class="rounded mr-2" width="40" height="40">
+                                                <div class="media-body">
+                          <p class="mb-0">
+                            <a href="/network/instance?domain=brighteon.social">
+                                brighteon.social
+                            </a>
+                          </p>
+                          <p class="mb-0 small">
+                              The Pro-liberty Social Network
+                          </p>
+                        </div>
+                    </div>
+                  </th>
+                                    <td>
+                                        <a href="/network?s=mastodon">mastodon</a>
+                                      </td>
+                                    <td>
+                    3.4.6
+                  </td>
+                  <td>46.4K</td>
+                  <td>1.8M</td>
+                                    <td>4h ago</td>
+                                  </tr>
+                                <tr>
+                  <th scope="row">
+                    <div class="media">
+                                                <img src="https://fedidb.pixelcdn.net/software/icons/_icon-mastodon.png?v=1" class="rounded mr-2" width="40" height="40">
+                                                <div class="media-body">
+                          <p class="mb-0">
+                            <a href="/network/instance?domain=staging.brighteon.social">
+                                staging.brighteon.social
+                            </a>
+                          </p>
+                          <p class="mb-0 small">
+                              The Pro-liberty Social Network
+                          </p>
+                        </div>
+                    </div>
+                  </th>
+                                    <td>
+                                        <a href="/network?s=mastodon">mastodon</a>
+                                      </td>
+                                    <td>
+                    3.4.6
+                  </td>
+                  <td>46.4K</td>
+                  <td>1.8M</td>
+                                    <td>3h ago</td>
+                                  </tr>
+                              </tbody>
+            </table>
+            
+            <nav>
+        <ul class="pagination">
+            
+                            <li class="page-item disabled" aria-disabled="true">
+                    <span class="page-link">« Previous</span>
+                </li>
+            
+            
+                            <li class="page-item">
+                    <a class="page-link" href="https://fedidb.org/network?page=2" rel="next">Next »</a>
+                </li>
+                    </ul>
+    </nav>
+
+
+            <div class="mt-6 card card-body border-0 o-hidden mb-0 bg-primary text-light">
+              <div class="position-relative d-flex flex-column flex-md-row justify-content-between align-items-center">
+                <div class="h3 text-center mb-md-0">
+                    <p class="font-weight-bolder mb-0">Looking for more network data?</p>
+                    <p class="h5 font-weight-light mb-0 text-left">Check out our free and easy to use APIs</p>
+                    
+                </div>
+                <a href="https://fedidb.org/api" class="btn btn-lg btn-white font-weight-lighter">
+                  Browse APIs
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="bg-primary-3 text-light" id="footer">
+    <div class="container">
+        
+        <div class="row justify-content-end">
+            <div class="col col-md-auto text-right">
+
+                <p class="mb-0">
+                    <small class="text-muted">
+                        <a href="https://fedidb.org/about">About</a>
+                        <span class="px-1"></span>
+                        <a href="https://fedidb.org/api">API</a>
+                        <span class="px-1"></span>
+                         <a href="https://fedidb.org/contact">Contact</a>
+                        <span class="px-1"></span>
+                        
+                        
+                        
+                         <a href="https://fedidb.org/community-resources">Resources</a>
+                        <span class="px-1"></span>
+                        <a href="https://fedidb.org/privacy">Privacy</a>
+                        <span class="px-1"></span>
+                        <a href="https://fedidb.org/terms">Terms</a>
+                    </small>
+                </p>
+                <p class="mb-0">
+                    <small class="text-muted">
+                        Created by <a href="https://pixelfed.org">Pixelfed</a> with ❤️ and funded by <a href="https://www.ngi.eu/ngi-projects/ngi-zero/">NGI Zero</a>
+                    </small>
+                </p>
+                
+            </div>
+        </div>
+    </div>
+</footer>
+
+    <a href="#" class="btn back-to-top btn-primary btn-round aos-init" data-smooth-scroll="" data-aos="fade-up" data-aos-offset="2000" data-aos-mirror="true" data-aos-once="false">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="injected-svg icon" data-src="/landing/img/arrow-up.svg">
+    <title>Icon For Arrow-up</title>
+    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <polygon points="0 0 24 0 24 24 0 24" opacity="0"></polygon>
+        <rect fill="#000000" x="11" y="5" width="2" height="14" rx="1"></rect>
+        <path d="M6.70710678,12.7071068 C6.31658249,13.0976311 5.68341751,13.0976311 5.29289322,12.7071068 C4.90236893,12.3165825 4.90236893,11.6834175 5.29289322,11.2928932 L11.2928932,5.29289322 C11.6714722,4.91431428 12.2810586,4.90106866 12.6757246,5.26284586 L18.6757246,10.7628459 C19.0828436,11.1360383 19.1103465,11.7686056 18.7371541,12.1757246 C18.3639617,12.5828436 17.7313944,12.6103465 17.3242754,12.2371541 L12.0300757,7.38413782 L6.70710678,12.7071068 Z" fill="#000000" fill-rule="nonzero"></path>
+    </g>
+</svg>
+    </a>
+
+    <script type="text/javascript" src="/js/manifest.js?id=7db827d654313dce4250"></script>
+    <script type="text/javascript" src="/js/vendor.js?id=07d35712843b9f92bef3"></script>
+    <script type="text/javascript" src="/js/app.js?id=dad797965270fdb8d5c0"></script>
+    <script type="text/javascript" src="/js/custom.js?id=0a7f40a9277e3f5ef5ea"></script>
+
+    
+
+    
+
+  
+
+
+</body></html>

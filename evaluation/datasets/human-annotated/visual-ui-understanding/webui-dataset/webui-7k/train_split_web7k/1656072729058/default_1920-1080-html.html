@@ -1,0 +1,541 @@
+<html><head>
+				<title>Terms of Use - Telnet Communications</title>
+        		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<link rel="stylesheet" href="/css/normalize.css">
+		<link rel="stylesheet" href="/css/bootstrap.css">
+		<link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/css/jquery.jdMenu.css" type="text/css">
+
+		<script type="text/javascript" async="" src="https://ssl.google-analytics.com/ga.js"></script><script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+		<script type="text/javascript">
+			$(function () {
+				$('.bubbleInfo').each(function () {
+					// options
+					var distance = 10;
+					var time = 250;
+					var hideDelay = 250;
+					
+					var hideDelayTimer = null;
+					
+					// tracker
+					var beingShown = false;
+					var shown = false;
+					
+					var trigger = $('.trigger', this);
+					var popup = $('.popup', this).css('opacity', 0);
+					
+					$('.trigger').click(function(){return false});
+					
+					// set the mouseover and mouseout on both element
+					$([trigger.get(0), popup.get(0)]).bind('mouseenter',function () {
+						// stops the hide event if we move from the trigger to the popup element
+						if (hideDelayTimer) clearTimeout(hideDelayTimer);
+						
+						// don't trigger the animation again if we're being shown, or already visible
+						if (beingShown || shown) {
+							return;
+						} else {
+							beingShown = true;
+							
+							// reset position of popup box
+							popup.css({
+								bottom: '20px',
+								left: -33,
+								display: 'block' // brings the popup back in to view
+							})
+							
+							// (we're using chaining on the popup) now animate it's opacity and position
+							.animate({
+								bottom: '20px',
+								opacity: 1
+							}, time, 'swing', function() {
+								// once the animation is complete, set the tracker variables
+								beingShown = false;
+								shown = true;
+							});
+						}
+					}).bind('mouseleave',function () {
+						// reset the timer if we get fired again - avoids double animations
+						if (hideDelayTimer) clearTimeout(hideDelayTimer);
+						
+						// store the timer so that it can be cleared in the mouseover if required
+						hideDelayTimer = setTimeout(function () {
+							hideDelayTimer = null;
+							popup.animate({
+							bottom: '20px',
+							opacity: 0
+						}, time, 'swing', function () {
+							// once the animate is complete, set the tracker variables
+							shown = false;
+							// hide the popup entirely after the effect (opacity alone doesn't do the job)
+							popup.css('display', 'none');
+						});
+						}, hideDelay);
+					});
+				});
+				var ua = navigator.userAgent,
+			    event = (ua.match(/iPad/i)) ? "touchstart" : "click";
+				if (typeof popup != 'undefined') {
+					$("body").bind('click', function(e){
+						popup.css('display', 'none');
+					});
+					
+					$(".container").bind('click', function(e){
+						popup.css('display', 'none');
+					});
+				}
+				
+			});
+		</script>
+		<script src="/js/bootstrap.js"></script>
+        <script type="text/javascript" src="/js/navigation.js"></script>
+				<script type="text/javascript" src="/js/jquery.positionBy.js"></script>
+		<script type="text/javascript" src="/js/jquery.bgiframe.js"></script>
+		<script type="text/javascript" src="/js/jquery.jdMenu.js"></script>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<script type="text/javascript">
+		
+		  var _gaq = _gaq || [];
+		  _gaq.push(['_setAccount', 'UA-40947301-1']);
+		  _gaq.push(['_trackPageview']);
+		
+		  (function() {
+		    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		  })();
+		
+		</script>
+	</head>
+	<body style="">
+
+		<header id="header">
+			<div class="container">
+				<a href="/" id="logo" title="Telnet Communications"><img src="/img/logo.jpg" alt="Telnet Communications"></a>
+				<div id="right-links">
+										<a href="https://webmail.look.ca/" title="Webmail Login">Email Login</a>
+														</div>
+				<nav id="main" class="hidden-phone">
+					<ul class="jd_menu">
+						<li class="residential">
+							<a href="/residential" title="Residential Phone &amp; Internet">Residential</a>									                </li>
+						<li class="business">
+							<a href="/business" title="Business Phone &amp; Internet">Business</a>									                </li>
+						<li class="about-telnet">
+							<a href="/about-telnet" class="active" title="About Telnet Communications">About Telnet</a>									                </li>
+						<li class="support">
+							<a href="/support" title="Telnet Support">Support</a>									                </li>
+						<li class="contact">
+							<a href="/contact" title="Contact Telnet">Contact</a>						</li>		
+					</ul>
+				</nav>
+
+				<nav id="phone" class="visible-phone">
+					<select id="phone-navigation">
+						<option value="">Navigate to page ...</option>
+						<option value="/">Homepage</option>
+						<option value="/residential">Residential</option>
+						<option value="/business">Business</option>
+						<option value="/about-telnet">About Telnet</option>
+						<option value="/support">Support</option>
+						<option value="/contact">Contact</option>
+					</select>
+				</nav>
+			</div>
+		</header>
+
+        <div id="sub-nav" class="hidden-phone">
+        		</div>
+		<div class="container" id="wrapper"><article id="residential">
+	<h2 id="about-telnet">Terms of Use</h2>
+<p>		      The following terms and  conditions of service (the “Terms”) govern your use of the Services. Any  current Telnet Communications (“Telnet”) document describing the plans,  features, services or products you have selected and any other document  incorporated by reference (collectively, the “Materials”) together with these  Terms constitute our agreement with you (the “Service Agreement”). If there is  any inconsistency between the Materials and these Terms, these Terms will  prevail. No sales representative, dealer, agent, officer or employee of Telnet  Communications has the authority to change or modify these Terms, except  pursuant to an official revised version of these Terms, and you may not rely on  any such change or modification. These Terms cannot be changed by you. <br>
+            <strong>THIS  IS A LEGALLY BINDING AGREEMENT BETWEEN YOU AND TELNET COMMUNICATIONS AND  CONTAINS IMPORTANT TERMS, CONDITIONS AND LIMITATIONS RELATING TO MATTERS SUCH  AS 9-1-1 SERVICE, LIABILITY, WARRANTY AND CUSTOMER OBLIGATIONS. BY ACTIVATING  OR USING THE SERVICES, YOU ACKNOWLEDGE THAT YOU HAVE READ, UNDERSTOOD AND AGREE  TO ALL OF THE TERMS, CONDITIONS AND LIMITATIONS SET FORTH IN THIS AGREEMENT.</strong><br>
+            Throughout this document:<br>
+			</p><ul>			<li><strong>us, we, our, Telnet and  Telnet Communications </strong>means the Telnet Communications entity named in the  Service Agreement; </li>
+			<li><strong>Service or Services </strong>means  any or all of the wireless services, Internet access services, phone services,  or other services that you subscribe to under the Service Agreement or receive  from or through Telnet Communications;</li>
+            <li><strong>Equipment </strong>means any  device, equipment or hardware used to access the Services or used in  conjunction with the Services.</li>
+            Unless otherwise specified  in the Service Agreement, we may change, at any time, any charges, features,  content or any other aspects of the Services, as well as any term or provision  of the Service Agreement, without notice to you. If you do not accept a change  to the Services, your sole remedy is to terminate the Service Agreement and the  Services provided under the Service Agreement.<br>		</ul>			
+            <strong>By entering into the Service Agreement, you: </strong><br>
+            <ul>			<li>authorize Telnet  Communications to obtain information about your credit history and agree that  Telnet Communications may provide information to others about your credit  experience with Telnet Communications; </li>
+            <li>accept all provisions of  the Service Agreement, including those set forth in the Materials and these  Terms; </li>
+            <li>agree to cause all persons  who use Services under your account or with your authorization to comply with  the Service Agreement; </li>
+            <li>acknowledge that the acts  or omissions of all persons who use Services under your account or with your  authorization will be treated for all purposes as your acts or omissions; </li>
+            <li>acknowledge that you have  received and had the opportunity to review a copy of the Service Agreement,  including the Materials and these Terms; </li>
+            <li>confirm that the  information you have provided to us is up-to-date and accurate; and </li>
+            <li>agree to notify us of any  change in your information. </li>			
+		</ul>
+            These  Terms of Service constitute the agreement between you (“you” or “Customer“) and  Telnet Communications Corporation (“us” or “Telnet“) that sets out the terms  and conditions that apply to your use of all or any of the services  (collectively, the “Services“), including high speed Internet access (“High  Speed Services“), Voice over Internet Protocol services (“VoIP Services“) and  dial-up Internet access (“Dial-Up Services“) and related software, equipment  and components provided by Telnet to you (collectively, the Equipment).
+            <ol>
+              <li><strong>Service Agreement</strong>. &nbsp;By activating or using any Service, Equipment  or user account with Telnet with respect to the Services (your “Account“), you  agree to be legally bound by and abide by the terms of this Agreement. If you  do not wish to be bound by this Agreement or any modifications which may be  made by Telnet from time to time (as described in Section 1), you may not  activate or use any Service or Equipment and you must contact Telnet immediately to terminate your Account, if you have one, and this Agreement.</li>
+              <li> <strong>Amendments to this Agreement</strong>. Telnet reserves the right to amend this Agreement at any time. Telnet will use reasonable efforts to publish each amendment before such amendment becomes effective, but at all times ensure that the latest, fully amended version of this Agreement is published, on its website at www.telnetcommunications.com, or such address as may be updated from time to time (the “Telnet Web Site“). Telnet may, but is not required to, advise you of such amendments by (a) sending you an electronic mail at the electronic mail address registered on your Account, or (b) or mailing notification by Canada Post to the address shown on your Account. You are responsible for regularly reviewing the Telnet Web Site to obtain timely notice of such amendments. If any amendment is unacceptable, you may terminate your Account and this Agreement.  If you do not terminate this Agreement before the effective date of the amendment, you will be conclusively deemed to have accepted the amendment.</li>
+              <li><strong>Legal Capacity</strong>. You  represent and warrant that you have reached the age of majority (at least 18 or 19 years of age) in the jurisdiction in which you reside and that you possess  the legal right, capacity and ability to enter into this Agreement and use the  Services in accordance with this Agreement. </li>
+              <li><strong>Services</strong>. The  details of the various Services, including other products and services offered  by Telnet can be found on the Telnet Web Site. Telnet may, from time to time at its sole discretion and without notice or liability, create, amend, change, or  delete any Service, including changing pricing for any Services, introducing  new Services, substituting old Services for new Services, changing any Service  features and deleting any Services. If you do not agree with such changes, you  may (as your sole remedy) terminate your Account as outlined in this document.  The various Services offered by Telnet include a variety of access speeds and  features, such as varying tiers of Dial-Up Services, VoIP Services and High  Speed Services.</li>
+              <li><strong>Term  of Agreement. </strong>Service is offered and paid for, and the term  of this Agreement shall be, on a prescribed recurring basis (usually monthly,  though certain Services are offered on different recurring periods) for a term  that begins on the date that your Account is activated (your “Billing Date“)  and ends on the day before the same date in the following period (the “Recurring  Period“). The Services, and this Agreement, will automatically renew for the  same Recurring Period, at Telnet’s then-current rates and terms, without  further action by either party unless this Agreement and the Account is  terminated by the customer. You acknowledge and agree that the Service is  provided for the full Recurring Period, meaning that if you attempt to cancel  the Services or terminate this Agreement prior to the end of the applicable  Recurring Period, you will be responsible for all charges relating to the  then-current Recurring Period, including unbilled charges, plus a disconnection  fee (if applicable), an early cancellation fee for term-based Service contracts  (if applicable), and a fee for any unreturned Equipment that is the property of  Telnet (if applicable), all of which will become immediately due and payable.</li>
+              <li><strong>Content  Warning. </strong>You acknowledge that the Services provide access to  content, information and materials that are uncensored. Telnet makes no  representation, express or implied, about such content, information or  material. You acknowledge that some of the content, information and material  that is available through the Services and the Internet may be inaccurate,  offensive, harmful or in violation of applicable laws. You further acknowledge  and agree that you and all those who use your Account or the Services are  exclusively responsible for determining the accuracy, suitability, harmfulness  or legality of any content, information or material received, transmitted or  sent using the Services. Without limiting the foregoing, Telnet recommends the  following for parents or guardians of minors who may be using the Services: (a)  advise each minor to never divulge personal information such as his or her  name, phone number or address over the Internet or the Services, and to never  organize meetings with other users of the Internet or the Services without your  strict supervision and parental approval; and (b) supervise the use of the  Services by minors and require that they inform you as to the materials and  information that they access. We have the right, but not the obligation, to  monitor or investigate any content that is transmitted using the services  (other than voice services) or the equipment. We may also access or preserve  content or information to comply with legal process in Canada or foreign  jurisdictions, operate the services, ensure compliance with the service  agreement or any policies, or protect ourselves, our customers or the public.<strong></strong></li>
+              <li><strong>Your  Account and Account Use. </strong>The use of any Service requires a valid  Account. Regardless of whether you are the Account-holder, your use of any  Service shall at all times be governed by this Agreement; however, if you are  not the Account-holder, you are only permitted to use the Services with the permission  of the Account-holder. </li>
+              <li><strong>Account  Holder.</strong> If you are the Account-holder, you are responsible for  your Account and the maintenance, confidentiality and security of your Account  and all passwords related to your Account. You are solely responsible and  liable for any and all activities that occur under your Account, including all  activities of any sub-Account holders and persons who gain access to your  Account, whether with or without your permission. You agree to immediately  notify Telnet of (a) any unauthorized use of your Account, any Service provided  through your Account or any password related to your Account, or (b) any other  breach of security with respect to your Account or any Service provided through  it, and you further agree to provide assistance to Telnet, as requested, to  stop or remedy any breach of security related to your Account. </li>
+              <li><strong>Customer  Information and Privacy. &nbsp;</strong>You  acknowledge that you have read the Telnet Privacy Commitment found online at <a href="http://telnetcommunications.com/about-telnet/privacy-policy">http://www.telnetcommunications.com/en/privacy.php</a>, as  it may be updated from time to time (the “Telnet Privacy Commitment“), and  hereby consent to the collection, use and disclosure by Telnet and its agents  of your personal information (whether previously collected or to be collected)  for the purposes identified in the Telnet Privacy Commitment. You also consent  to Telnet's use of such personal information in accordance with applicable  terms and conditions contained in this Agreement.</li>
+              <li><strong>Account Information Accuracy.</strong> You agree  to provide true, current, accurate and complete customer information as  prompted by Telnet registration or Account-creation process or as otherwise  requested by Telnet or its agents from time to time and you agree to promptly  notify Telnet of any changes to this information as required to keep such  information held by Telnet current, complete and accurate. For greater  continuity of Service, you must update your Account information at least 7 days  prior to any change as this may affect emergency calls for VoIP Service as well  as other services. Your customer information and other details about your  Account and the Services are available online at Telnet’s My Account <a href="https://portal.telnetcommunications.com/billing/customers/login/?return=%2F">https://portal.telnetcommunications.com/billing/customers/login/?return=%2F</a></li>
+              <li><strong>Billing and Payment</strong>.&nbsp; It is the responsibility of the customer to  read and understand the following billing policies (the “Billing Policies“). Telnet  reserves the right to change the Billing Policies at our discretion and without  notice. The Billing Policies are set out as follows:<br>
+              
+			  <ol type="a">
+				
+				<li><strong> Fees</strong>. As an Account-holder, you hereby  agree to pay such fees, including all applicable taxes, incurred by the use of  any Service in arrears upon demand by Telnet, all of which shall be charged to  you in accordance with the rates and conditions established by Telnet for the  Service and as such rates and conditions may be amended by Telnet from time to  time in accordance with this Agreement. Such rates and fees will be posted on  the Telnet Web Site or otherwise made available to you by Telnet. Typically, an  account will incur two types of fees:</li>
+              
+				<ol type="i">
+					<li>Service-Based Fees – recurring, periodic Service fees based on the Services you have selected (please refer to your invoices, Dashboard, and the Telnet Web Site for specific characteristics of your Services); and</li>
+					<li>Usage-Based  Fees and other Fees – depending on the Services to which you subscribe, fees  based on usage (such as the number of hours or minutes used, the amount of data  sent or received, or the destination or location of data transmitted and  received) or other fees described in this Agreement (such as late fees or  suspension fees on delinquent accounts).<br>
+                You  remain responsible for all unauthorized use of your Account until you notify Telnet  in accordance with this Agreement.</li>
+				
+				</ol>
+                <li><strong>Billing and  Invoices</strong>. Accounts are invoiced on your Billing Date, In order to keep our costs to an absolute minimum and stay environmentally friendly, invoices will be sent electronically through Telnet’s automated email billing system to the email address provided at the time of signup. <br>Your Service fees will be invoiced and billed in advance and must be paid in advance of each Recurring Period. Your usage-based fees for previous Recurring Period’s Services will appear on your invoice as a separate line item and will be billed in arrears.</li>
+                <li><strong>Payments and Payment Methods</strong>. All  amounts invoiced are due and payable upon receipt of said invoice. The  following pre-authorized or automatic payment options are available to you: <br>
+				
+				<ol type="i">
+				
+				<li><strong>Pre-Authorized Payment</strong>. To  sign up for Pre-Authorized Payment, and you must either complete the “Pre Authorized  Payment” form with full signature by the Account holder (contact Telnet  customer support to obtain a copy) or complete the Pre-Authorized Payment  process available online through the Telnet Customer Dashboard if your Account  has already been activated. It is your responsibility to notify Telnet promptly  of any changes to your bank payment information. Accounts will not be backdated  nor will payments or fees be refunded or reversed for non-usage or to avoid  additional usage-based fees or service fees. &nbsp;Automatic payments are processed on the  Billing Date. Account adjustments must be made a minimum of 5 days prior to the  assigned auto-debit processing date. Telnet Communications reserves the right to cancel a  Pre-Authorized Payment Plan with written notice to you. If two payments in the  same calendar year fail to be honored, the company may cancel enrolment in the  Plan.</li>
+                <li><strong> Credit Card</strong>. Automatic monthly  payments may be made using a major credit card: Visa, MasterCard or American  Express. It is your responsibility to notify Telnet promptly of any changes to  your credit card payment information prior to your next Billing Date. To sign  up for automatic monthly credit card payments, you may complete the Credit Card  payment process available online through Telnet Customer Dashboard if your  Account has already been activated.</li>
+                <li><strong>Bank.</strong> You may make your payment at a  bank service counter or bank machine. Your printed invoices will contain a stub  that can be separated from the rest of the invoice; the bank will require this  stub in order to process the payment. Accounts will not be back dated nor will  payments or fees be refunded or reversed for non-usage or to avoid additional  usage based fees or service fees. Bank Payments are processed on the billing  date. Account adjustments must be made a minimum of 5 days prior to the  assigned processing date.</li>
+                <li><strong>By Cheque</strong>. You may mail a cheque  payable to Telnet Communications along with your invoice stub, to:<br>
+				Telnet<br>
+				50  Richmond Street East, Suite 105 <br>
+				Oshawa ON L1G 7C7</li>
+                </ol>
+				
+				Contact  our billing department for more information or to sign up for or withdraw from  any particular method of payment. Available billing and payment options may  vary depending on your location, the Services you receive or your plan, and Telnet  reserves the right to modify the types of payment it will accept, at any time,  in its sole discretion.</li>
+                <li><strong>New Accounts</strong>. All Account invoices are  payable immediately upon issuance, whether delivered via e-mail or postage  mail. If you are set up for credit or Pre-Authorized Payments, these amounts  will be automatically taken care of by your credit card company or banking  institution. If these payments are declined, you will be notified by our  collections department. Your Service may be suspended at Telnet’s sole  discretion until such time as Telnet receives full payment.</li>
+                <li><strong>Prepayment and Promotional Rates</strong>.&nbsp; If you elect to prepay your account for a  duration agreed upon by Telnet, you may be qualified for a prepayment discount.  If the account is not paid in advance by the next billing date, your prepayment  discount will be removed.&nbsp; Telnet does  not combine prepayment discounts with any other specials or promotions. &nbsp;Telnet allows one special discount or  promotion per account at any given time. Telnet reserves the right to  discontinue prepayment discounts and other promotional specials following any  billing date. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </li>
+                <li><strong>Late, Rejected and Unpaid Amounts</strong>.  Rejected Payments. If any payment you make is rejected or returned for any  reason, Telnet will charge a $25 ($10 for pre-authorized payment) processing  fee to your Account, and your Account may be subject to suspension at Telnet’s  sole discretion (A) for cheque payment methods, if not fully paid within 7 business  days of Telnet’s notice to you of such a rejection, and (B) for pre-authorized  debit, within 7 business days of Telnet’s notice to you of such a rejection  and, (C) for other payment methods, immediately.</li>
+                <li><strong>Unpaid Accounts, Late Fees, and Delinquency  Fee</strong>. Any outstanding balance on your Account (including accumulated late  fees) unpaid for 30 days after the invoice date will accrue late fees  (commencing on the invoice date) at a rate of 2% per month, (26.82% per annum  compounded) on the total amount overdue. You agree that we can charge any  unpaid or outstanding amount, including any late payment charges, on your  account to your credit card, bank account or any other payment method pre  authorized by you for payment of our charges.</li>
+
+					<ol type="i">
+						<li><strong>Suspension of Unpaid Accounts</strong>. If there  is an unpaid balance on your Account over 28 days in arrears, Telnet reserves  the right to suspend your Services and/or Account or your access thereto until  you make such arrangements to pay the balance owing in full, without affecting  your obligation to pay all amounts outstanding. To reactivate a suspended  Account, a $25 reactivation fee will be charged to your account and the full  outstanding balance must be paid in full. Furthermore, Telnet may require a  particular payment method be used for all future payments. Any Accounts  outstanding for more than 90 days will be sent to collections and will be  subject to other collection charges.</li>
+						<li><strong>Collection.</strong> You agree to pay all costs  incurred by Telnet in the collection of any delinquent charges due under this  Agreement or in the enforcement of this Agreement, including lawyers’ fees. As  outlined in the Telnet Privacy Commitment, Telnet may release customer  information to a collection agency for collection purposes only, as Telnet does  not sell personal information.</li>
+					</ol>
+					
+				<li><strong>Service Plan or Payment Plan Changes</strong>.  If you upgrade your Services, your Recurring Period will be pro-rated and the  new Services will take effect immediately. Any adjustments made to your Account  or the Services you receive can only be made by the authorized Account holder  or other authorized person listed on your Account. At the time you sign up for  a different method of payment, changes in your method of payment will go into  effect immediately.</li>
+                <li><strong>Username Change/E-mail Address Change</strong>.  Your Account will have one or more usernames or e-mail addresses associated  with it (each a “Username”). You can change your Username at any time. A $10  fee will apply to all User Name changes. A password must be provided with the  new Username being activated. The user passwords associated with your Username  may be changed at any time free of charge. You must back up any data associated  with your Account, such as web-hosted materials, before changing any Username.</li>
+                <li><strong> Cancellations</strong>. To cancel an Account or any Service, the authoritative Account holder must contact Telnet Communications, via telephone to cancel Service. The account holder shall not consider their service terminated until they receive a valid cancellation number. Cancellations shall not be honored by electronic mail, fax or postal mail. Customers are given a prorated refund based on the number of unused service days remaining. Activation fees, installation fees, or any other one-time fees are non-refundable. Refund cheques will be issued within 60 days.</li>
+                <li><p><strong> Refunds and Credits on an Account</strong>. Telnet Communications, reserves the right to cancel Service for any reason without prior notice. Telnet Communications, reserves the right to close accounts for whatever reason. User may discontinue their Telnet Service at any time for any reason with proper notice as defined below:</p><p>User must contact Telnet, via telephone to cancel Service. USER SHALL NOT CONSIDER THEIR SERVICE TERMINATED UNTIL THEY RECEIVE A VALID CANCELLATION NUMBER. Cancellations shall not be honored by electronic mail, fax or postal mail. Customers are given a prorated refund based on the number of unused service days remaining. Activation fees, installation fees, or any other one-time fees are non-refundable. Refund cheques will be issued within 60 days.</p></li>
+                <li><strong>Services Used.</strong> You, the  Account-holder, shall be responsible for all usage charges on your Account,  whether incurred by you or other users. It is your and not Telnet’s  responsibility to track the use of your Account, including tracking any  measurable units or charges that may be used in relation to your Account.</li>
+                <li><strong> Limitation Period for Billing Disputes</strong>.  Unless you notify Telnet of any errors, discrepancies or irregularities in any  billing within 30 days after they first appear on your bill or invoice, such  bill or invoice will be deemed accepted by you for all purposes and you agree  to release Telnet from any and all liability and claims of loss resulting from  such errors, discrepancies or irregularities.</li>
+				<li><strong>Administration  Charges </strong>may be levied for administration or account processing activities  in connection with your account, including and not limited to the following:<br>
+					<ul>
+						<li>Collection efforts due to non-payment or  having a balance over your credit limit </li>
+						<li>Court costs in the event the matter requires  legal dispute resolution</li>
+						<li>Returned or rejected payments</li>
+						<li>Change of any identifier (e.g. phone number)</li>
+						<li>The restoration of service</li>
+					</ul>
+                </li><li><strong>Early Cancellation Fees</strong>. If you subscribed  to a term, specific time commitment or a “committed period”, you may be subject  to an early cancelation fee (“ECF”) for each service. Any decrease in your  committed period may be subject to a fee. If your service is terminated prior  to the end of the committed period, you will be required to pay Telnet the full  balance of the unused portion of your commitment period plus taxes.</li>
+                <li><strong>Security Deposits and mandatory prepayments</strong>.  Telnet may require or impose a security deposit or mandatory prepayment of  service at any time and on such terms as determined by us at our sole  discretion. Upon notice to you we may assign, change or remove credit limits on  your account.  </li>
+              
+			  </ol>
+			   
+			  </li><li><strong>Service  Limitation by your Financial Institution. </strong>Your right to use the  Services is subject to any limits established by your credit card issuer or  financial institution, if applicable. By using a credit card, pre-authorized  payment, bank account withdrawal, Bank Account Debit, or other payment method  you expressly authorize Telnet or its agents to charge all fees and charges  incurred by you under this Agreement to such payment method and such  authorization will survive termination of this Agreement until there are no  charges owing by you under this Agreement. </li>
+              <li><strong>Service  Limitations. </strong>The following provisions apply with respect  to all Services:</li>
+            
+					<ol type="a">
+			
+						<li><strong> General Practices and Limits</strong>. You  acknowledge that Telnet may establish general practices and limits concerning  the use of the Services, including: the maximum size of any e-mail message or  other data that may be sent from or received by an Account; the maximum disk  space that will be allotted on Telnet’s servers on your behalf; the maximum  amount of data, speed of data or type of data that may be sent from or received  using the Services or Account; and the maximum number of days that e-mail  messages, voice messages or other data will be stored on Telnet’s servers. &nbsp;You agree to comply with all such general  practices and limits, regardless of when or how such limits are conveyed to  you. You acknowledge that such general practices and limits may differ for  different portions of the Services and may be set at different levels for  different users based upon factors that may be determined in Telnet’s sole  discretion. Telnet reserves the right to change these general practices and  limits at any time, in its sole discretion, with or without notice. You further  agree that violating such practices or exceeding such limits may result in  suspension, restriction or termination of your Account or the imposition of  additional charges.<br>
+						</li><li><strong>Availability</strong>. All Services are subject  to the availability of suitable equipment, facilities and infrastructure and  consequently all Services are not available at all locations.<br>
+						</li><li><strong>Virus, Spam and Spyware Protection</strong>. For  any Services for that any of virus protection, spam control, or spyware  protection are offered, you acknowledge and agree that these features are  network-level services that attempt to filter such content before reaching your  equipment; however, such features will not protect your equipment from any  malicious, surreptitious or disabling code, virus, Trojan horse, spyware or  spam that are able to circumvent such filters. As a customer, you are  ultimately responsible for protecting your account and equipment from Viruses,  Spam and Spyware and Telnet will not be held liable.<br>
+						</li><li><strong>Internet-based Services</strong>. The Services  depend on the Internet, including networks, cabling, facilities and equipment that is not in the control of Telnet; accordingly<br> 
+						
+							<ol type="i">
+						
+								<li>any representation made  by Telnet regarding access performance, speeds, reliability, availability, use  or consistency of the Services are on a “commercial best efforts” basis, 
+								</li><li> Telnet  cannot guarantee any minimum level regarding such performance, speed, reliability, availability, use or consistency, and 
+								</li><li>data, messages,  information or materials sent over the Internet (such as calls made using VoIP  Services, or e-mail messages sent or received) may not be completely private,  and your anonymity is not guaranteed.<br>
+						
+							</li></ol>
+						
+						</li><li><strong>Interoperability</strong>. Telnet does not  guarantee or make any representation or warranty that any Service will operate  with any particular equipment or software, including all Internet applications  and appliances. It is your responsibility to ensure that your equipment and  software meet the current minimum requirements specified from time to time by Telnet  as being necessary for access to any Service (however, compliance with such  minimum requirements does not imply compatibility with the Services). From time  to time, the equipment or software required to access the Services may change.  Accordingly, your equipment or software may cease to be adequate to access the  Services. In such circumstances, you may choose to upgrade your equipment or  software, the cost of which will be borne by you, or you may choose to  terminate your Account.<br>
+						</li><li><strong>Compatibility.</strong> The Services or any  Equipment used to access the Services may interrupt the functioning of some  home or business security systems or other devices that use the same phone  line(s), communications hardware or protocols. You agree that Telnet is not  responsible for any such problems or interruptions. You are responsible for  ensuring that your premises are appropriately wired to ensure proper  functioning of any such security systems or other devices prior to installation  of the Services.
+              
+					</li></ol>
+			  
+			  <li><strong>Dial-Up  Service-Specific Provisions. </strong>You acknowledge that it is  possible that the access numbers used by your modem to connect to the Dial-Up  Services may result in additional or long distance charges being billed to you.  You are solely responsible for determining whether the access numbers you are  using are subject to any additional or long distance charges and you agree to  pay all such charges, including those that may be billed to you by a third  party. Telnet will not reimburse you for any charges incurred by you as a  result of selecting access numbers that are subject to additional or long  distance charges. Information concerning additional and long distance charges is  available on Telnet’s web site.</li>
+              <li><strong>Inactivity. </strong>Notwithstanding  any provision to the contrary, Telnet may temporarily disconnect your access to  the Service for “inactivity”. “Inactivity” is defined as logging into the  Dial-Up Services for an extended period without any network activity. You may  not use any software or any other device for the purpose of simulating network  activity (such as “keep alive” software) to avoid inactivity disconnection.</li>
+              <li><strong>High  Speed Service-Specific Provisions. </strong>High Speed Services have  transfer rate limits as described in your Account plan. If your transfer rate  exceeds these limits, extra fees may be charged per gigabyte or TELNET may, at  its sole discretion, terminate or suspend your Service or Account.</li>
+              <li><strong>VoIP  Service-Specific Provisions</strong>. <strong>THIS  SECTION CONTAINS IMPORTANT PROVISIONS, INCLUDING THOSE REGARDING 911 ACCESS.  PLEASE READ CAREFULLY.</strong>
+            <ul>
+              <li>You  acknowledge and understand that the service or access to the service, including  911 or special needs services may not function correctly, or at all, in the  event of the following circumstances:
+              </li>
+              <li>If your equipment fails, is not configured  correctly or does not meet the Telnet Communications requirements as outlined  in this and other documents</li>
+              <li>In the event of a network outage or extended  power failure</li>
+              <li>If you tamper with or in some cases, move the  equipment, or</li>
+              <li>Following the suspension or termination of  your services or account.</li>
+            </ul>
+
+				<ol type="a">
+					<li><strong> Description</strong>. VoIP Services allow you  to make or receive telephone calls over the Internet to or from the public  switched telephone network (“VoIP Calls“). The nature of VoIP Calls, while  appearing similar to traditional telephone calling services, create unique  limitations and circumstances, and you acknowledge and agree that differences  exist between traditional telephone service and the VoIP Services, including  the lack of traditional 911 services and privacy.<br>
+					</li><li><strong>911 Service</strong>. Because of the unique  nature of VoIP Calls, emergency calls to 911 through the VoIP Service (each a  “911 Call“) will be handled differently than traditional phone service. The  following provisions describe the differences and limitations of 911 Calls, and  you hereby acknowledge and understand the differences between traditional 911  service and VoIP Calls to 911 as described below: <br>
+						<ol type="i">
+							<li><strong> Placing 911 Calls</strong>. When you make a 911  Call, the VoIP Service will attempt to automatically route your 911 Call  through a third party service provider to the Public Safety Answering Point  (“PSAP“) corresponding to the address on record with your Account. However, due  to the limitations of the VoIP System, your 911 Call may be routed to a  different location than that which would be used for traditional 911 dialling.  For example, your call may be forwarded to a third-party, specialized call  centre that handles emergency calls. This call centre is different from the  PSAP that would answer a traditional 911 Call, and you may be required to  provide your name, address, and telephone number to the call centre.<br>
+							</li><li><strong>How Your Information is Provided.</strong> The  VoIP Service will attempt to automatically provide the PSAP dispatcher or  emergency service operator (each a “Dispatcher“) with the name, address and  telephone number associated with your Account. However, for technical reasons,  the Dispatcher may not be able to capture or retain your name, phone number or  physical location. Therefore, when making a 911 Call, you must immediately  inform the Dispatcher of your location (or the location of the emergency, if  different). If you are unable to speak, the Dispatcher may not be able to  locate you.<br>
+							</li><li><strong>Correctness of Information</strong>. You are  responsible for providing, maintaining and updating correct contact information  (including name, residential address and telephone number) with your Account.  If you do not correctly identify the actual location where your Service Access  Device is located, or if your Account information has recently changed, 911 Calls  may be misdirected to an incorrect Dispatcher.<br>
+							</li><li><strong>Disconnections</strong>. You must not disconnect  the 911 Call until told to do so by the dispatcher, as the dispatcher may not  have your number or contact information. If you are inadvertently disconnected,  you must call back immediately.<br>
+							</li><li><strong>Connection Time</strong>. For technical reasons,  including network congestion, it is possible that a 911 Call will produce a  busy signal or will take longer to connect when compared with traditional  calls.<br>
+							</li><li><strong>911 Calls May Not Function</strong>. For  technical reasons, the functionality of 911 Calls may cease or be curtailed in  various circumstances, including: <br>
+								<ol type="A">
+									<li>Failure  of Service or Service Access Device – if your Service Access Device fails or is  not configured correctly or if your VoIP Service is not functioning for any  reason, including in the event of power outage, VoIP Service outage, suspension  or disconnection of your Service due to billing issues, network or Internet  congestion, or network or Internet outage, in the event of a power, network or  Internet outage, you may need to reset or reconfigure the Service Access Device  before being able to use the VoIP Service, including for 911 Calls;<br>
+									</li><li>Changing  Location of Service Access Device – if you move your Service Access Device to a  location other than that described in your Account information or otherwise on  record with Telnet; and<br>
+									</li><li>Use  outside of Canada or the United States – if you move your System Access Device  to a location other than the United States or Canada, excluding Alaska, Hawaii,  the Northwest Territories, Yukon and Nunavut.<br>
+								</li></ol>
+							</li><li><strong>Alternate Services</strong>. If you are not  comfortable with the limitations of 911 Calls, Telnet recommends that you  terminate the services or consider an alternate means for accessing traditional  911 services.<br>
+							</li><li><strong>Inform Other Users</strong>. You are  responsible for notifying, and you agree to notify, any user of your VoIP  Services of the nature and limitations of 911 Calls on the VoIP Services as  described herein.<br>
+							</li><li><strong>No Liability and Indemnity</strong>. You acknowledge  and agree that Telnet will not be liable for any service outage or inability to  place 911 calls using your VoIP Service or to access emergency service  personnel due to the limitations of 911 service described herein. You further  acknowledge and agree that the indemnity provision set out in this document applies  to 911 Calls.<br>
+						</li></ol>
+					</li><li><strong>Privacy</strong>. You acknowledge that VoIP  Calls and VoIP Services utilize, in whole or in part, the public Internet and  third party networks to transmit voice and other communications, which  transmissions may be intercepted by other parties.<br>
+					</li><li><strong>411 Service</strong>. 411 “information” service  is available at Telnet’s current rates as set from time to time in Telnet’s  sole discretion and without notice and available at the Telnet Web Site.<br>
+					</li><li><strong>900 and 976 Numbers</strong>. VoIP Calls to  certain special service phone numbers, including 900- and 976- numbers, may be  limited and Telnet reserves the right to limit your ability to call any such  number at its discretion.<br>
+					</li><li><strong>Long Distance Services</strong>. Long Distance  service, are applicable to VoIP Services.<br>
+					</li><li><strong>Telephone Number Portability</strong>. You may  be able to transfer an existing telephone number to your VoIP Service or your  VoIP Service telephone number to another service provider, provided that your  Account is in good standing. However, Telnet will not be responsible for any  termination fees imposed by any other service provider as a result of you  transferring or instructing Telnet to transfer your existing number to the  Services. Telnet cannot guarantee or warrant the timeliness or date of any  transfer, nor can it guarantee that you will be able to transfer your number.<br>
+					</li><li><strong>Directory Services</strong>. Telnet will make  your name, address and telephone numbers available to publishers of paper and  electronic telephone directories and to providers of operator services, in  accordance with legal, contractual or regulatory requirements.<br>
+					</li><li><strong>Limit on Usage Patterns</strong>. Even for  unlimited calling plans, Telnet, in its sole discretion, reserves the right to  terminate, curtail or suspend your VoIP Services if your calling patterns  materially exceed Telnet’s average customer calling patterns under similar  plans or if you breach any part of this Agreement.<br>
+					</li><li><strong>Bandwidth Usage</strong>. VoIP calls require  high-speed Internet bandwidth, which may affect throughput over any High Speed  Services and will count towards your bandwidth usage for all High Speed  Services.<br>
+					</li><li><strong>Specific Prohibitions</strong>. You are  prohibited from using any VoIP Services for: 
+						<ol type="i">	
+							(i) automatic-dialling announcing  devices and unsolicited voice and facsimile calls made for the purpose of  solicitation; 
+							(ii) non-residential use or operating a business, including  home-based businesses and call centres; 
+							(iii) long-distance calls made using  call forwarding and three-way calling features; 
+							(iv) multi-party conference or  party lines; or 
+							(iv) any application with continuous or excessive calling  patterns, including debit card processing, for auto-dialling, remote call  forwarding, telemarketing (including charitable and political solicitation and  polling), fax broadcasting or fax blasting.
+						</ol>
+				</li></ol>
+			</li><li><strong>Long-Distance Call-Specific Provisions. </strong>Rates  and Fees. Some of the Services include the ability for you to place  long-distance telephone calls. By dialling or placing a long-distance telephone  call, you agree to pay Telnet’s then-current rates and fees for such calls. Telnet  will make its rates and fees for long-distance telephone calls available on its  website at http://www.telnetcommunications.com. Telnet may, in its sole  discretion, change such rates and fees upon at least 30 days prior notice  posted at such website. 
+            You  are solely responsible for the use of the Telnet Services by you and other users, including for all calls originating from your telephone(s), as well as  for all charged calls accepted at your telephone(s), regardless of who made or accepted them.&nbsp; You shall: 
+				<ol type="a">
+					<li>take all necessary measures to ensure that  the Telnet Services are used in accordance with this Agreement; and 
+					</li><li>be  liable for all consequences resulting from any breach of this Agreement.</li>
+				</ol>
+			  
+			</li><li><strong>Unlimited  Long-Distance Plan Limitations and Prohibitions. </strong>&nbsp;Even for unlimited long-distance plans, Telnet, in its sole discretion, reserves the right to terminate, curtail or suspend your long-distance telephone Services if your calling patterns materially exceed Telnet’s average customer calling patterns under similar plans or if you  breach any part of this Agreement. Furthermore, you are prohibited from using  unlimited long-distance Services or plans for: 
+				<ol type="a">
+					<li>automatic-dialling  announcing devices and unsolicited voice and facsimile calls made for the  purpose of solicitation; 
+					</li><li>non-residential use or operating a business,  including home-based businesses and call centres; 
+					</li><li>long-distance calls made  using call forwarding and three-way calling features; 
+					</li><li>multi-party  conference or party lines; or (e) any application with continuous or excessive  calling patterns, including debit card processing, for auto-dialling, remote  call forwarding, telemarketing (including charitable and political solicitation  and polling), fax broadcasting or fax blasting.</li>
+				</ol>
+			</li><li><strong>Telephone  Listings and Directories.</strong> We will make your name, address and  telephone numbers available to the publishers of paper and electronic telephone  directories and to providers of operator services in accordance with legal and  regulatory requirements. However subject to the 911 service provider exception  described herein, you may opt to have your name, address and telephone number  listing and information omitted from these directories or services by  requesting, and paying for, an unlisted phone number. These directories or  services, however, may receive or obtain telephone numbers and address from a  source other than Telnet. Furthermore, your name, address and telephone number  will be accessible by 911 service providers, even if you requested and paid for  an unlisted phone number. We will not be liable to you or to a third party for  any error, inclusion or omission with respect to any telephone listings or  directories.</li>
+            <li><strong>Support. </strong>The  Telnet Customer Support Team will provide telephone assistance on a reasonable  efforts basis, via the telephone number and during the hours specified on the Telnet  Web Site. Assistance is limited to your issues using the Services or your  Account and may exclude problems related to certain equipment and software, as  specified by Telnet, in its discretion. Telnet cannot guarantee the resolution  of any particular problem or Services interruption, and your sole remedy in the  event of your dissatisfaction or Telnet’s failure to resolve any particular  problem is to terminate the Agreement in accordance herewith.</li>
+            <li><strong>Service  Installation, Maintenance and Removals.&nbsp; </strong>The  following provisions apply to all installations, maintenance, inspections,  repairs or removals of any Service or Equipment, whether by you or by or on  behalf of Telnet Communications:</li>
+				<ol type="a">
+					<li>Installation  Services. The standard installation configuration for self-installation or Telnet  installation only includes the installation of the Service access device, such  as a high speed modem for High Speed Services or a combination modem/ATA for  VoIP Services (the “Service Access Device“), and related components to one  stand-alone computer or non-networked server. If you wish to connect additional  computers to the Internet or to your home network, you are responsible for  installing and maintaining the necessary systems and their configurations. You  are required to show that your equipment is functioning properly prior to Telnet  doing any work on your equipment (where applicable).<br>
+					</li><li>Hardware/Software  Requirements. Many Services require you to have suitable hardware (such as a  network interface card) or software (such as an operating system) installed in  your computer before accessing the Services is possible, and Telnet will not  install, remove from or rearrange any such software or hardware unless  expressly provided for hereunder or at Telnet’s sole discretion. You acknowledge  and agree that Telnet is not responsible for the installation, operation,  maintenance or support of any equipment or software owned or used by you,  including any equipment or software used in connection with the Services.<br>
+					</li><li>Access.  By electing for any installation services provided by or on behalf of Telnet,  you authorize Telnet, its employees, agents, contractors and representatives,  to enter your premises and access your equipment and software for the purpose  of installing, maintaining, inspecting, repairing or removing any equipment or  software as reasonably required for the provision of the Services.<br>
+					</li><li>Time  of Access. Telnet will exert commercially reasonable efforts to arrange for  access to your premises at a time that is mutually convenient for you and Telnet.<br>
+					</li><li>Availability.  You acknowledge and agree that final confirmation of Service availability  cannot occur until the necessary equipment is installed at your premises and  tested in such environment. Installation options available for certain  Services, including High Speed Services and VoIP Services will depend upon your  location. Not all installation options or Services are available at all  locations.<br>
+					</li><li>Standards.  At all times, you must provide: (i) an adequate, standard household power outlet  within 1.8 metres of the location that the Service Access Device is to be  installed; (ii) a suitable location for the installation of the Service Access  Device and associated components within 1.8 metres of the computer to be used  for access to the Services and that provides reasonable ventilation and  protection from damage to, or theft or loss of, the Service Access Device and  associated components.<br>
+					</li><li>Additional  Charges. Additional charges shall apply when it is necessary for Telnet to  install special equipment or software or to incur an unusual expense to  establish or install the Services. All site visits for moves, changes,  rearrangements or re-installations of a Service will involve a minimum charge,  unless otherwise specified by Telnet Communications.<br>
+					</li><li>No  Liability. In accordance with Telnet’s exclusion of liability clause included  in this document, Telnet recommends that you back-up all existing computer  files by copying them to a different storage device prior to the installation  or maintenance of any Services, software, Service Access Devices or related  components.<br>
+					</li><li>Connections.  You must supply all the facilities and equipment, including all wiring inside  your premises, and all telephone terminal equipment necessary to connect your  facilities and the equipment up to the point where the local telephone companies’  facilities end and your facilities begin. It is your responsibility to  reconnect your facilities and equipment as necessary after termination of the  Telnet services.
+				</li></ol>
+			  <li><strong>Telnet Equipment. </strong>You  agree to return any Telnet Equipment to Telnet within 30 days of termination  (whether by cancellation, deactivation due to non-payment or any other reason)  of your Account or those Services to which Telnet Equipment relates, unless  otherwise directed by Telnet. If you do not return such Telnet Equipment in  accordance with the foregoing, if such Telnet Equipment is returned damaged, or  if you have assigned, encumbered, sold, transferred or leased such Telnet  Equipment, you agree to pay a replacement charge, plus applicable taxes,  without limiting or affecting any right available to Telnet in at law or in  equity.</li>
+            If Telnet  provides you with any Equipment, including Service Access Devices or related  components, as part of the Services (collectively, “Telnet Equipment“), you  acknowledge and agree that such Telnet Equipment is at all times owned by Telnet  and that nothing in this Agreement grants you any right, title or interest in  or to such Telnet Equipment except as expressly set out herein. You hereby  agree not to sell, transfer, lease, assign any interest in, or encumber all or  any part of such Telnet Equipment.<br>
+              Except  for equipment that you have fully paid for, all equipment installed or provided  by Telnet remains our property and your agree that:
+            <ul>
+              <li>You will take reasonable care with such  equipment</li>
+              <li>You may not sell, lease, mortgage, transfer,  assign, loan or encumber such equipment</li>
+              <li>You may not relocate such equipment without  our written knowledge and permission and </li>
+              <li>You will return such equipment to us at your  own expense upon termination of the service to which the equipment was related. </li>
+            </ul>
+            If  such equipment is lost, stolen, damaged, sold, leased, mortgaged, transferred,  assigned, loaned, encumbered or not returned within 30 days of termination of  such service, you agree to pay Telnet the undisclosed retail value of such  equipment, together with any costs incurred by us in seeking possession of such  equipment and/or its replacement.
+              <li><strong>Equipment  Exclusivity. </strong>You agree that all Telnet Equipment is  exclusively for use in connection with the Service. You agree not to tamper or  modify the device in any manner including changing the electronic serial number  or other identification code of such Telnet Equipment, altering the firmware of  such Telnet Equipment or performing factory resets. You agree to use all TELNET  Equipment in the manner and for the purpose for which it was intended and  solely as expressly permitted under this Agreement.</li>
+              <li><strong>Access  to Equipment. </strong>You authorize us or our representatives to  enter or have access to your premises as necessary at mutually agreed upon  times to install, maintain, inspect, repair or remove the equipment or to  maintain, investigate, protect, modify, or improve the operation of our  services or our facilities.</li>
+              <li><strong>Returning  Equipment</strong>. Telnet Equipment that has been rented must be returned  upon termination, cancellation or deactivation of your Account or Services for  any reason.</li>
+            You must notify us immediately if your  equipment is lost, stolen, damaged or destroyed. 
+              <li><strong>Equipment Requirements. </strong>You  agree not to access the Service with any Equipment or device that has been  modified, tampered, or altered to (a) change the electronic serial number or  identification code, or (b) circumvent any access controls, limitations or  security mechanisms in connection with the Service.</li>
+               Equipment  and related software may be required to meet certain minimum requirements and  be maintained in a certain way and in certain locations in order to access the  services or for the proper operation of the services (e.g. 911 services). Such  requirement maybe changed from time to time at our sole discretion. Unless  otherwise specified by us, you are solely responsible for updating or  maintaining your equipment and software as necessary to meet such requirements  and you may not be entitled to customer support from us if you fail to do so.
+              <li><strong>Software Supplied by Telnet. </strong>You  agree that any and all software and documentation that forms part of the  Services or that is supplied by Telnet, its agents or representatives for use  in connection with the Services (the “Software”) is protected by applicable  intellectual property laws, remains the sole property of Telnet or its  suppliers and is supplied subject to the terms of this Agreement, including the  Disclaimers and Limitations of Liability herein, and the terms of any  applicable software license made available to you by Telnet. Unless otherwise  expressly authorized by Telnet or in the applicable Software license, you agree  not to:</li>
+            
+				<ol type="a">
+					<li>copy,  modify, rent, lease, loan, sell, assign, sublicense, grant a security interest  in or otherwise transfer any right or interest in the Software;<br>
+					</li><li>distribute,  create a derivative work of, reverse engineer, reverse assemble or otherwise  attempt to discover the source code, of the Software;<br>
+					</li><li>remove  any proprietary notices or labels on or in the Software; or<br>
+					</li><li>allow  any other person or entity to engage in any of the foregoing activities.
+				</li></ol>
+			  
+			  <li><strong>Acceptable Use and Prohibitions. </strong>You  agree to fully abide by each of the following terms and conditions regarding  the acceptable and prohibited use of the Services:</li>
+            
+				<ol type="a">
+					<li>Background.  Telnet Communication is committed to being the best possible network citizen.  To assist us in protecting the usefulness and enjoyment of the Internet and the  Services for our members and for other users, we require full compliance with  these acceptable use provisions.<br>
+					</li><li>Lawful  Use. The Services may be used only for lawful purposes.<br>
+					</li><li>Prohibited  Conduct. Without limiting the generality of the foregoing, you further agree  that you will not: <br>
+              
+						<ol type="i">
+							<li>post,  upload, reproduce, distribute or otherwise transmit (A) unauthorized or  unsolicited commercial e-mail, junk or bulk e-mail, chain letters or other  “spam” (whether or not using e-mail services, such as Instant Messaging spam)  or any other duplicative or unsolicited messages, surveys, contests or pyramid  schemes, (B) any information, material or software that contains a virus,  cancelbot, Trojan horse, worm or other harmful, disruptive or surreptitious  component, (C) inappropriate, profane, defamatory, infringing, obscene,  indecent or unlawful material or information, (D) information or materials where  such activity gives rise to civil liability, or otherwise violates the rights  or assists others to violate the rights of Telnet or any third party; such  violations include engaging in copyright infringement, invasion of privacy,  trademark infringement and defamation, or (E) information or materials where  such activity constitutes a criminal offence, or otherwise engage in or assist  others to engage in any criminal offence; such offences include communicating  hatred, pyramid selling, unauthorized use of a computer, mischief in relation  to data, fraud, obscenity and child pornography;<br>
+							</li><li>engage  in threats, harassment, intimidation, stalking or abuse or any conduct that  violates the legal rights of others, including the rights of minors and rights  relating to privacy and publicity;<br>
+							</li><li>scan  or probe another computer system, obstruct or bypass computer identification  procedures or engage in unauthorized computer or network trespass;<br>
+							</li><li>forge  headers or otherwise manipulate any protocols or identifiers used in any system  or protocol in such a manner to disguise the origin of any data transmitted  using the Services;<br>
+							</li><li>impersonate  or falsely represent your association with any person, including a Telnet Communications  representative;<br>
+							</li><li>export  equipment (including the Telnet Equipment, any Service Access Device and  related components), software or data outside of Canada or the United States in  contravention of applicable export control legislation;<br>
+							</li><li>violate  established or accepted network etiquette, applicable charters, FAQs, policies,  rules or guidelines of Telnet or other parties;<br>
+							</li><li>disrupt or threaten the integrity, operation or security of any Service, any  computer or any Internet system;<br>
+							</li><li>engage  in conduct that elicits or is likely to elicit complaints from other Internet  users, restricts or inhibits any other person from enjoying the Service or the  Internet, or, in the sole judgment of Telnet, is otherwise objectionable;<br>
+							</li><li>violate  this Agreement as it may be updated from time to time;<br>
+							</li><li>use  or register Telnet Communication trade-marks, trade names or logos, including  any such trade-marks, logos or service marks displayed on any web site(s)  operated by Telnet, without Telnet’s express prior written permission;<br>
+							</li><li>share,  resell, reproduce, copy, distribute, redistribute, or exploit for any  commercial purposes, any portion of, use of or access to, any Service, except  where expressly authorized by Telnet;<br>
+							</li><li>extract, gather, collect, or store personal information about others without  their express consent; or<br>
+							</li><li>allow  any other person or entity to engage in any of the foregoing activities while  using your Account.<br>
+							</li><li>you may not share or transfer your service without our express consent<br>
+						</li></ol>
+			  From time  to time we may establish policies, rules and limits (together, the “Policies”)  concerning use of services, equipment and any products, content, applications  or services used in conjunction with the services or equipment. Your use of the  service is subject to these policies.&nbsp; We  reserve the right to restrict, change, suspend or terminate your service by any  means if your access, use or connection to the service, equipment or our  facilities is impairing or adversely affecting our operation or the use of our services  or facilities by others.<br>
+					</li><li>No  Servers. You are not permitted to operate an e-mail, web, news or other similar  server for any purpose through any Service, except as may be specified by Telnet  from time to time in its sole discretion.<br>
+					</li><li>Notification  regarding Prohibited Use. If at any time you become aware of any violation, by  any person or entity, of the acceptable use rules set out above, which involves  your Account, you agree to immediately notify Telnet and provide Telnet with  assistance, as requested, to stop or remedy such violation.<br>
+					</li><li>Telnet’s  Remedies. Without limiting any of Telnet’s rights to suspend, restrict or  terminate your Services or Account as described elsewhere in this Agreement, Telnet  may suspend, restrict or terminate your Services or Account without notice if,  in Telnet’s sole and absolute discretion, Telnet determines or believes that  you have violated any of the acceptable use rules set out above.
+              
+				</li></ol>
+			<li><strong>Proprietary Rights. </strong>You  acknowledge and agree that:</li>
+			
+				<ol type="a">
+					<li>Third-Party Content – content, including text, software, music, sound,  photographs, video, graphics or other material accessed or available through  the Services or the Internet may be owned by parties other than you (including Telnet  and third parties) and may be protected by applicable copyrights, trade-marks,  patents, trade secrets or other proprietary rights and laws;<br>
+					</li><li>Telnet  Content – except where expressly stated otherwise, all programs, Services,  processes, designs, technologies, materials and all other things comprising the  Services are owned by Telnet, its licensors or its suppliers and are protected  by applicable copyrights, trade-marks, patents, trade secrets or other  proprietary rights and laws;<br>
+					</li><li>Your  Content – Telnet &nbsp;does not claim  ownership of information, materials, software or other content (collectively,  the “Customer Content”) that you post, upload, input, provide, submit or  otherwise transmit to Telnet, or any third party using the Services; however,  you agree that by posting, uploading, inputting, providing, submitting or  otherwise transmitting the Customer Content to Telnet or any third party using  the Services, you have thereby granted Telnet a royalty-free, non-exclusive  license to use, copy, distribute, transmit, display, edit, delete, publish and  translate such Customer Content to the extent reasonably required by Telnet to  provide the Services to its customers or to ensure adherence to or enforce the  terms of this Agreement;<br>
+					</li><li>IP  Addresses; E-Mail Addresses; Telephone Numbers, etc. – except where otherwise  specified by Telnet, telephone numbers for VoIP Services and numbers and  addresses for other Services (such as both static and dynamic IP addresses and  e-mail addresses) assigned to you by Telnet during the term of this Agreement  remain the property of Telnet at all times and Telnet reserves the right to  change such telephone numbers, numbers and addresses assigned to you at any  time;<br>
+					</li><li>Advertising  – Telnet shall have the right, without notice, to insert advertising data into  the Internet browser used by a Telnet customer, and transferred to a Telnet  customer over Telnet’s network, so long as this does not involve Telnet  transmitting any personal information of the customer to whom such data is sent  in contravention of the Telnet Privacy Commitment;<br>
+					</li><li>Public  Transmission – the technical processing and transmission of the Services,  including the Customer Content and other content, materials or other information,  may involve transmissions over various networks and changes to conform and  adapt to technical requirements of connecting networks or devices; and<br>
+					</li><li>Caching  – You further acknowledge that any Customer Content, materials or information  that you may access through the Services may be subject to “caching” or other  policies and procedures at intermediate locations on the Internet.
+				</li></ol>
+			  
+			  <li><strong>Compliance Measures and Complaints. </strong>You  acknowledge and agree that Telnet has no obligation to censor or monitor use of  the Services by you, any customer or any third party, including any obligation  to censor or monitor any Customer Content, material or other information sent,  received or accessible by you through the Services or the Internet. However,  you agree that Telnet has the right to, without notice, monitor use of the  Services and monitor, review and retain such Customer Content, material or  information if Telnet reasonably believes that such activity is reasonably  necessary to provide the Services to customers, ensure adherence to or enforce  the terms of this Agreement, comply with any laws or regulations, respond to  any allegation of illegal conduct or claimed violation of third party rights,  or protect you, itself or others. If Telnet receives a complaint relating to  use of the Services by you or through your Account, you acknowledge and agree  that Telnet may, in its sole and absolute discretion and without notice or  liability: investigate the complaint; restrict, suspend or terminate any  Accounts or Services involved; or remove any Customer Content, information or  materials from its servers.</li>
+              <li><strong>Disclaimers and Limits of Liability. </strong>Customer  acknowledgement-you acknowledge and agree that: 
+			  
+				<ol type="a">
+					<li>all use of the Services is  at your own risk; 
+					</li><li>the Telnet web site(s) which you may visit while using  the Services may contain links to other web sites. these links are provided  solely as a convenience to you and the inclusion of any such link does not  imply endorsement, investigation or verification by Telnet of such web sites or  the information contained therein; and 
+					</li><li>the services are provided on an “as  is” and “as available” basis. </li>
+				</ol>
+			  
+			  </li><li><strong>Disclaimer of Warranties. </strong>Telnet  Communications makes no conditions, warranties or representations about the  suitability, reliability, usability, security, quality, capacity, performance,  availability, timeliness or accuracy of the services, any other products or  services supplied under this agreement, the networks of third parties or any  content sent or received using or through the services. Telnet expressly  disclaims all conditions, warranties and representations, express, implied or  statutory, including implied conditions or warranties of merchantability,  fitness for a particular purpose, durability, title and non-infringement,  whether arising by usage of trade, course of dealing, course of performance or  otherwise.&nbsp; </li>
+              <li><strong>No Liability. </strong>Notwithstanding  any other provision of this agreement, in no event shall Telnet Communications,  its parents, subsidiaries, affiliates and their respective officers, directors,  agents, employees, suppliers, resellers and distributors (collectively, the “Telnet  entities“) be liable for any direct, indirect, special, incidental,  consequential or punitive damages, or any other damages or losses whatsoever,  including damages for loss of profits, goodwill, opportunity, earnings, use or  data, arising directly or indirectly from or related to this agreement or the  use, non-use, or installation of the Services or any software or service access  device or related components, regardless of the cause of action and even if one  or more of the Telnet entities have been advised of the possibility of such  damages or losses, including damages or losses arising from or in any way  related to the following:</li>
+            
+				<ol type="a">
+					<li>911  service outage, delays, errors or omissions or your inability to (i) place 911 Calls  using your services or (ii) access emergency service personnel;<br>
+					</li><li>sending,  receiving, not sending, not receiving, loss, deletion or alteration of any  transmissions or data, including any 911 calls, e-mail messages or telephone or  VoIP transmissions, or for any transactions entered into through or using the Services,  including domain name registrations, renewals and transfers;<br>
+					</li><li>any  suspension, curtailment, restriction, termination or other limitation placed on  your services or your account;<br>
+					</li><li>any  act or omission of you or any third party, including any threatening,  defamatory, obscene, offensive or illegal conduct or any infringement of  another’s rights, including intellectual property rights;<br>
+					</li><li>any  loss or damage to your equipment, software or data arising directly or  indirectly out of use or non-use of the Services or any service access device  or related component;<br>
+					</li><li>the  performance of the Internet or the Services;<br>
+					</li><li>the  content or accuracy of any material, information or data (including any  software) related to this agreement or viewed, downloaded, accessed or  transmitted using, over or through the Internet or the Services, including  material which infringes the rights of others or otherwise violates laws or  regulations;<br>
+					</li><li>the  viewing, downloading, transmitting, accessing, purchasing or by any other means  acquiring any information, material, product or service accessible through the  internet or the services;<br>
+					</li><li>delays,  errors, interruptions, mistakes, omissions, non-delivery, incorrect delivery,  viruses, Trojan horses, spyware, spam or defects in the transmission of any  information, material or data over or through Telnet’s systems or networks or  the systems or networks of third parties; and<br>
+					</li><li>Installation or maintenance of the Services, whether by you, Telnet or third  parties, including if an installation appointment for the Services is missed,  either by Telnet or by any third party installer.
+				</li></ol>
+
+
+			  <li><strong>Limitation  of Liability. </strong>Without restricting the foregoing,  circumstances may arise in which you or another party is entitled to recover  damages from one or more of the Telnet entities. In such instance, the  aggregate liability of the Telnet entities for damages is limited to $100.00. </li>
+              <li><strong>Applicability. </strong>Some  jurisdictions prohibit the disclaimer of certain warranties or conditions or  the limitation of certain types of liability. In such circumstances, to the  extent that such prohibitions prohibit any exclusions and limitations in this  agreement, such exclusions and limitations will not apply to you strictly to  the extent necessary to make this agreement consistent with such prohibitions.</li>
+              <li><strong>Service Level. </strong>Telnet  Communications does not guarantee or warrant the performance, availability,  coverage, uninterrupted use, security, pricing, or operation of the services,  the equipment or any of the products, content, applications, services,  facilities, connections or networks used or provided by us or third parties  (collectively, the “offering”) .</li>
+              <li><strong>Use. </strong>You bear the risk as  to the use, availability, reliability, timeliness, quality, security and  performance of the offering connection and or network.</li>
+              <li><strong>Limitation  of Liability. </strong>Telnet’s liability, if any arising out of or in any  way related to the performance of its services shall be limited to general  monetary damages prorated to the length of time which it takes Telnet to remedy  the failure, after Telnet receives notice of the failure, and in any event not  to exceed the total amount paid by the customer for Telnet’s services in the  month immediately preceding the occurrence of the event giving rise to such  liability. Telnet shall not be liable under any circumstances for damages in  respect of any direct, indirect, special, exemplary, punitive or consequential  damages, including, without being limited to the following, property damages,  lost profits, loss of business opportunities, that result in any way from the  use of Telnet Services, or any part thereof, by the installation of its  Services and/or equipment by Telnet, its agents and/or suppliers, by the  customer or any other person through their account, or any claim or demand  against Telnet by any other party. Although changes in phone numbers and  service arrangements are not anticipated, Telnet cannot warrant against them.</li>
+              <li><strong>Indemnity. </strong>You  agree to indemnify and hold harmless each of the telnet entities from all  demands, claims, awards, actions, proceedings, damages, losses, costs, charges  and expenses, including legal fees, incurred by or made against any of the  telnet entities, which result from or relate to:<strong></strong></li>
+
+				<ol type="a">
+					<li>any failure or outage of the Service, including those related to 911 calls;<br>
+					</li><li>access  to or use, by you or any third party, of the Services, any service access  device or related components, or your account; or<br>
+					</li><li>any of your acts or omissions, including breach or non-performance of this  agreement and any violation of third party rights.
+				</li></ol>
+			  
+			<li><strong>Indemnification. </strong>Indemnification  and hold harmless Telnet Communications and its affiliated companies from and  against any claims, losses, damages, costs and expenses (including, without  limitation, reasonable legal fees and other litigation expenses) incurred by  Telnet relating to your violation, alleged violation or misappropriation of any  intellectual property, industrial contractual, privacy or other rights of a  third party or any alleged libel or slander by a third party against you.</li>
+            <li><strong>Termination. </strong>
+				Termination by You. You may stop using the Services at any time, but Telnet will continue to bill you until you terminate your Account or the Services in accordance with this provision. You may cancel your Account or any Services by cancelling direct with a Telnet customer service agent by telephone and specifying the following: 
+				<ol type="i">
+					<li>your request for Account or Service  termination; 
+					</li><li>your name and contact telephone number; 
+					</li><li>your Username  and password; 
+					</li><li>if a pre-authorized or automatic payment plan is used for  your Account, the last 4 digits and expiry date of your credit card or the last  4 digits of your financial institution Account number and the name of the financial  institution used for billing; and 
+					</li><li>your reason for terminating your Account. <br>
+				</li></ol>
+
+				Please be advised that only the Account holder may terminate the account. Terminations shall not be honored by electronic mail, fax or postal mail. Customers are given a prorated refund based on the number of unused service days remaining. Activation fees, installation fees, or any other one-time fees are non-refundable. Refund cheques will be issued within 60 days.
+			</li> 
+        <li><strong>Termination by Telnet. </strong>Telnet  may, in its sole discretion, suspend, restrict or terminate your Services or  your Account, effective at any time, without notice to you, for any reason,  including 911 services because:<strong></strong></li>
+
+			<ol type="a">
+			<li>The operation or efficiency of the Services or Telnet’s or any third party’s  equipment or network is impaired by the use of the Services from your Account;<br>
+              </li><li>any  amount is past due from you to Telnet;<br>
+              </li><li>Telnet  has received a third party complaint which relates to the use or misuse of the  Services from your Account;<br>
+              </li><li>you  have been or are in breach of any term or condition of this Agreement; or<br>
+              </li><li>the  Account contains invalid contact information. 
+              </li></ol>
+
+			  <li><strong>Effect of Termination. </strong>Termination  of your Account by you or Telnet automatically terminates this Agreement, but  shall not relieve you from any amounts owing or other liability accruing under  this Agreement prior to the time that such termination becomes effective. If  your Account or any Service is suspended, restricted or terminated, Telnet  shall have no obligation to forward any unread or unsent messages to you or any  third party or to maintain any messages, information or other Customer Content  related to your Account and you acknowledge that all such messages, information  and Customer Content may be immediately deleted. Without limiting the  generality of the foregoing, you acknowledge that upon suspension, restriction  or termination of your Account, all e-mail addresses related to your Account  may be immediately deleted or reassigned to other customers. </li>
+              <li><strong>No Notice of Termination</strong>. Telnet  shall have no responsibility to notify any third party, including any third  party providers of services, merchandise or information, of any suspension,  restriction or termination of your Account or any of your Services.</li>
+              <li><strong>General. </strong>Interpretation.  In this Agreement, any word is deemed to include the masculine, feminine,  neuter, singular or plural form thereof as the context so required. The  captions and headings used in this Agreement are for convenience only and do  not constitute substantive matter and are not to be construed as interpreting  the Customer Contents of this Agreement. The word “including“, the word  “includes” and the phrase “such as“, when following a general statement or term  (whether or not non-limiting language such as “without limitation” or “but not  limited to” or other words of similar import are used with reference thereto),  is not to be construed as limiting the general statement or term to any  specific item or matter set forth or to similar items or matters, but rather as  permitting the general statement or term to refer also to all other items or  matters that could reasonably fall within its broadest possible scope, and the  word “or” between two or more listed matters does not imply an exclusive  relationship between the matters being connected.&nbsp; </li>
+              <li><strong>Waiver of Rights. </strong>The  failure of Telnet to insist upon or enforce strict performance of any provision  of this Agreement shall not be construed as a waiver of any provision or right.  Neither the course of conduct between you and Telnet nor trade practice shall  act to modify any provision of this Agreement.&nbsp; </li>
+              <li><strong>Severability. </strong>&nbsp;If any of the provisions of this Agreement or  any part thereof shall be or held to be invalid or unenforceable, such  invalidity or unenforceability shall not invalidate or render unenforceable the  entire Agreement but rather the entire Agreement shall be construed as if not  containing the particular invalid or unenforceable provisions or parts thereof,  and the rights and obligations of the parties shall be construed and enforced accordingly,  with the invalid or unenforceable provisions or parts modified so as to be  limited and enforced to the fullest extent possible.&nbsp; </li>
+              <li><strong>Governing Law and Jurisdiction. </strong>This  Agreement shall be governed by and construed in accordance with the laws of the  Province of Ontario, Canada. You hereby irrevocably consent to the exclusive  jurisdiction of the courts of the Province of Ontario and the federal courts of  Canada in connection with any matter arising under this Agreement. </li>
+              <li><strong>Limitation Period. </strong>Any  cause of action you may have with respect to this Agreement or the Services  must be commenced within one year after the claim or cause of action arose, or  it shall be barred.<strong></strong></li>
+              <li><strong>Internet References. &nbsp;</strong>All references to Telnet Web  Site addresses in this Agreement shall also include any successor or  replacement web sites containing substantially similar information as the  referenced web site(s).</li>
+              <li><strong>Assignability. </strong>Telnet  may at any time assign its rights and obligations under this Agreement, in  whole or in part, without notice to you. You may not assign this Agreement. </li>
+              <li><strong>Inurement. </strong>This  Agreement will inure to the benefit of and bind you and Telnet and our  respective personal and legal representatives, successors and permitted  assigns.&nbsp; </li>
+              <li><strong>Currency. </strong>&nbsp;All monetary amounts expressed in this  Agreement are in Canadian dollars, unless otherwise expressly stated. <strong>&nbsp;</strong></li>
+              <li><strong>Remedies</strong>. The  rights, powers and remedies of Telnet in this Agreement, including without  limitation the right to suspend, restrict or terminate any Service or Account, are  cumulative and in addition to and not in substitution for any right, power or  remedy that may be available to Telnet at law or in equity. </li>
+              <li><strong>Survival. </strong>All  provisions shall survive termination of this Agreement.</li>
+              <li><strong>Relationship. </strong>You  agree that no joint venture, partnership, employment or agency relationship  exists between Telnet and you as a result of this Agreement or use of your  Account or any Services.&nbsp; <strong></strong></li>
+              <li><strong>Force Majeure. </strong>&nbsp;Neither party shall be responsible for a  failure to fulfil its obligations under this Agreement or for delay in doing so  if such failure or delay is due to circumstances beyond its reasonable control,  such as acts of God, acts of government, war, riots, strikes and accidents in  transportation (collectively, “Force Majeure”).&nbsp; </li>
+              <li><strong>Entire Agreement.</strong> This  Agreement, as amended from time to time, including any and all documents, web  sites, rules, terms and policies referenced herein, constitutes the entire  agreement between Telnet and you with respect to the matters referred to in  this Agreement and supersedes all prior and contemporaneous agreements and  understandings, whether electronic, oral or written, between Telnet and you  with respect to such matters.&nbsp; </li>
+              <li><strong>English Language. </strong>The  parties have requested and agree that this Agreement and all documents relating  thereto be drawn up in English. Les parties ont demandé que cette convention  ainsi que tous les documents qui s’y rattachent soient rédigés en anglais.</li>
+              <li><strong>Contact Us. </strong>How  to contact us. Telnet Communications can be reached at 1.855.835.6381 or go  online to <a href="http://telnetcommunications.com">telnetcommunications.com</a> or  write to: <br>
+			  Telnet Communications at <br>
+			  105-50 Richmond Street East, <br>
+			  Oshawa, ON L1G  7C7</li>
+            
+</ol></article>
+			<footer id="footer">
+			    
+				<img src="/img/footer-divider.jpg">
+				<p style="text-align:center;">Telnet Communications is a division of Fibernetics Corp.</p>
+				<nav>
+					<div class="row-fluid">
+						<div class="span2">
+							<h3><a href="/residential" title="Residential Internet &amp; Phone">Residential</a></h3>
+							<ul>
+								<li><a href="/" class="active" title="High Speed Internet">Internet</a></li>
+								<li><a href="/" class="active" title="Digital Home Phone">Phone</a></li>
+								<li><a href="/" class="active" title="Long Distance Plans">Long Distance Plans</a></li>
+                                <li><a href="/" class="active" title="Long Distance Rates">Long Distance Rates</a></li>
+                                <li><a href="/" class="active" title="Internet &amp; Phone Bundles">Bundles</a></li>
+							</ul>
+						</div>
+
+						<div class="span2">
+							<h3><a href="/business" title="Business Internet &amp; Phone">Business</a></h3>
+							<ul>
+								<li><a href="/" class="active" title="Business Phone">Voice</a></li>
+								<li><a href="/" class="active" title="Business Internet">Data</a></li>
+								<li><a href="/" class="active" title="Trunking &amp; SIP Trunking">Trunking &amp; SIP Trunking</a></li>
+                                <li><a href="/" class="active" title="Web Hosting &amp; Design">Web Hosting &amp; Design</a></li>
+                                <li><a href="/" class="active" title="Business Phone &amp; Internet Bundles">Bundles</a></li>
+							</ul>
+						</div>
+
+						<div class="span2">
+							<h3><a href="/about-telnet" class="active" title="About Telnet">About Telnet</a></h3>
+							<ul>
+								<li><a href="/about-telnet/terms-of-use" class="active" title="Terms of Use">Terms of Use</a></li>
+								<li><a href="/about-telnet/privacy-policy" title="Privacy Policy">Privacy Policy</a></li>
+                                <li><a href="/about-telnet/ccts-complaints" title="Complaints">Complaints</a></li>                                
+								<li><a href="/about-telnet/fair-share-policy" title="Fair Share Policy">Fair Share Policy</a></li>
+							</ul>
+						</div>
+
+						<div class="span2">
+							<h3><a href="/support" title="Support">Support</a></h3>
+							<ul>
+                                <li><a href="/contact" title="Contact Us">Contacting Support</a></li>
+							</ul>
+						</div>
+
+											</div>
+				</nav>
+			
+				
+				<p id="copyright">© 2022 Telnet Communications Ltd. All rights reserved.</p>
+
+			</footer>
+		</div>
+	
+</body></html>

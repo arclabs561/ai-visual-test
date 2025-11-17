@@ -1,0 +1,122 @@
+<!DOCTYPE html><html><head>
+<meta charset="UTF-8">
+<meta name="keywords" content="OMG, laser guns, pew, pew pew, OMG laser guns, OMG Laser Pew Pew, Squirrel Pew Pew, Pew Pew Pew Pew, Omglaserpewpewpew, Pew Pew Pew, Pew Pew Lasers, Squirrel with Laser, laser gun, pewpew, pewpewpew, lazer gun, pew pew gun, lasergun, steampunk, goggles, wow, world of warcraft, guild, oh my god, squirrels, hamman, josh hamman, squirrel, way of the squirrel, blue mini cooper, cooper s, games, animals">
+<title>OMG LASER GUNS PEW PEW PEW</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="author" content="hamman.org - Josh Hamman">
+<meta property="og:title" content="OMG Laser guns! Pew! Pew! Pew!">
+<meta property="og:description" content="A squirrel with a pew pew laser in space.">
+<meta property="og:image" content="http://omglasergunspewpewpew.com/HTML/images/asteroid1.png">
+<link href="http://fonts.googleapis.com/css?family=VT323" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="css/OMGstyle.css">
+<style>
+  #canvas, #_preload_div_ {
+	position:absolute;
+	margin:auto;
+	left:0;right:0;
+	top:0;bottom:0;
+  }
+</style>
+
+</head>
+<body onload="init();" style="margin:0px;">
+	
+	<div class="ad-unit"><script type="text/javascript"><!--
+document.write('<s'+'cript type="text/javascript" src="https://adbuff.com/amp/show.php?z=29&pl=23559&j=1&code='+new Date().getTime()+'"></s'+'cript>'); 
+// --></script><script type="text/javascript" src="https://adbuff.com/amp/show.php?z=29&amp;pl=23559&amp;j=1&amp;code=1655948919184"></script>
+<noscript>
+<iframe src="https://adbuff.com/amp/show.php?z=29&pl=23559" width="728" height="90" marginwidth="0" marginheight="0" hspace="0" vspace="0" frameborder="0" scrolling="no"></iframe>
+</noscript></div>
+
+	<div id="omgTitle" class="omgTitle">OMG LASER GUNS PEW PEW PEW</div>
+	<div id="og" class="og"><a href="../og/">Original Version?</a></div>
+	<div id="animation_container" width:1200px;="" height:800px"="" style="width: 1296px; height: 864px;">
+		<canvas id="canvas" width="1296" height="864" style="position: absolute; display: block; width: 1296px; height: 864px;"></canvas>
+		<div id="thisIsSpace"></div>
+		<div id="dom_overlay_container" style="pointer-events: none; overflow: hidden; width: 1296px; height: 864px; position: absolute; left: 0px; top: 0px; display: none;">
+		</div>
+	</div>
+    <div id="_preload_div_" style="position: absolute; top: 0px; left: 0px; display: none; height: 864px; width: 1296px; text-align: center;">	<span style="display: inline-block; height: 100%; vertical-align: middle;"></span>	<img src="images/acorn1.png?1529685979204" style="vertical-align: middle; max-height: 100%"></div>
+
+<script src="https://code.createjs.com/createjs-2015.11.26.min.js"></script>
+<script src="OMGLaserGunsPewPewPew.js?1493044353310"></script>
+<script>
+var canvas, stage, exportRoot, anim_container, dom_overlay_container, fnStartAnimation;
+function init() {
+	canvas = document.getElementById("canvas");
+	anim_container = document.getElementById("animation_container");
+	dom_overlay_container = document.getElementById("dom_overlay_container");
+	var comp=AdobeAn.getComposition("73B3F66F28B64C76934ACA5ADECC2292");
+	var lib=comp.getLibrary();
+	var loader = new createjs.LoadQueue(false);
+	loader.addEventListener("fileload", function(evt){handleFileLoad(evt,comp)});
+	loader.addEventListener("complete", function(evt){handleComplete(evt,comp)});
+	var lib=comp.getLibrary();
+	loader.loadManifest(lib.properties.manifest);
+}
+function handleFileLoad(evt, comp) {
+	var images=comp.getImages();	
+	if (evt && (evt.item.type == "image")) { images[evt.item.id] = evt.result; }	
+}
+function handleComplete(evt,comp) {
+	//This function is always called, irrespective of the content. You can use the variable "stage" after it is created in token create_stage.
+	var lib=comp.getLibrary();
+	var ss=comp.getSpriteSheet();
+	var queue = evt.target;
+	var ssMetadata = lib.ssMetadata;
+	for(i=0; i<ssMetadata.length; i++) {
+		ss[ssMetadata[i].name] = new createjs.SpriteSheet( {"images": [queue.getResult(ssMetadata[i].name)], "frames": ssMetadata[i].frames} )
+	}
+	var preloaderDiv = document.getElementById("_preload_div_");
+	preloaderDiv.style.display = 'none';
+	canvas.style.display = 'block';
+	exportRoot = new lib.OMGLaserGunsPewPewPew();
+	stage = new lib.Stage(canvas);	
+	//Registers the "tick" event listener.
+	fnStartAnimation = function() {
+		stage.addChild(exportRoot);
+		createjs.Ticker.setFPS(lib.properties.fps);
+		createjs.Ticker.addEventListener("tick", stage);
+	}	    
+	//Code to support hidpi screens and responsive scaling.
+	function makeResponsive(isResp, respDim, isScale, scaleType) {		
+		var lastW, lastH, lastS=1;		
+		window.addEventListener('resize', resizeCanvas);		
+		resizeCanvas();		
+		function resizeCanvas() {			
+			var w = lib.properties.width, h = lib.properties.height;			
+			var iw = window.innerWidth, ih=window.innerHeight;			
+			var pRatio = window.devicePixelRatio || 1, xRatio=iw/w, yRatio=ih/h, sRatio=1;			
+			if(isResp) {                
+				if((respDim=='width'&&lastW==iw) || (respDim=='height'&&lastH==ih)) {                    
+					sRatio = lastS;                
+				}				
+				else if(!isScale) {					
+					if(iw<w || ih<h)						
+						sRatio = Math.min(xRatio, yRatio);				
+				}				
+				else if(scaleType==1) {					
+					sRatio = Math.min(xRatio, yRatio);				
+				}				
+				else if(scaleType==2) {					
+					sRatio = Math.max(xRatio, yRatio);				
+				}			
+			}			
+			canvas.width = w*pRatio*sRatio;			
+			canvas.height = h*pRatio*sRatio;
+			canvas.style.width = anim_container.style.width = dom_overlay_container.style.width = preloaderDiv.style.width = w*sRatio+'px';				
+			canvas.style.height = anim_container.style.height = dom_overlay_container.style.height = preloaderDiv.style.height = h*sRatio+'px';
+			stage.scaleX = pRatio*sRatio;			
+			stage.scaleY = pRatio*sRatio;			
+			lastW = iw; lastH = ih; lastS = sRatio;            
+			stage.tickOnUpdate = false;            
+			stage.update();            
+			stage.tickOnUpdate = true;		
+		}
+	}
+	makeResponsive(true,'both',true,1);	
+	AdobeAn.compositionLoaded(lib.properties.id);
+	fnStartAnimation();
+}
+</script>
+</body></html>

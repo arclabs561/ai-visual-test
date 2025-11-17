@@ -1,0 +1,5093 @@
+<!DOCTYPE html><html><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="user-scalable=no,width=device-width,initial-scale=1,maximum-scale=1">
+	<title>Kiwi IRC - The web IRC client</title>
+	<style>/* target specific styles */
+	body {
+		/* disable the 'pull down to refresh' on mobiles */
+		overflow: hidden;
+	}
+	</style>
+	<style class="embedly-css">
+		.card .hdr {
+			display:none;
+		}
+	</style>
+	<link href="/nextclient/static/css/app.0117211b.css" rel="stylesheet">
+	<!--<link href="/nextclient/static/themes/default/?cb=20theme.css" rel=stylesheet>-->
+<style type="text/css">.fa-border {
+  padding: 0.2em 0.25em 0.15em;
+  border: solid 0.08em #eee;
+  border-radius: 0.1em;
+}
+.fa-pull-left {
+  float: left;
+}
+.fa-pull-right {
+  float: right;
+}
+.fa.fa-pull-left {
+  margin-right: 0.3em;
+}
+.fa.fa-pull-right {
+  margin-left: 0.3em;
+}
+/* Deprecated as of 4.4.0 */
+.pull-right {
+  float: right;
+}
+.pull-left {
+  float: left;
+}
+.fa.pull-left {
+  margin-right: 0.3em;
+}
+.fa.pull-right {
+  margin-left: 0.3em;
+}
+.fa {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.fa-fw {
+  width: 1.28571429em;
+  text-align: center;
+}
+/* Font Awesome uses the Unicode Private Use Area (PUA) to ensure screen
+   readers do not read off random characters that represent icons */
+.fa-glass:before {
+  content: "\F000";
+}
+.fa-music:before {
+  content: "\F001";
+}
+.fa-search:before {
+  content: "\F002";
+}
+.fa-envelope-o:before {
+  content: "\F003";
+}
+.fa-heart:before {
+  content: "\F004";
+}
+.fa-star:before {
+  content: "\F005";
+}
+.fa-star-o:before {
+  content: "\F006";
+}
+.fa-user:before {
+  content: "\F007";
+}
+.fa-film:before {
+  content: "\F008";
+}
+.fa-th-large:before {
+  content: "\F009";
+}
+.fa-th:before {
+  content: "\F00A";
+}
+.fa-th-list:before {
+  content: "\F00B";
+}
+.fa-check:before {
+  content: "\F00C";
+}
+.fa-remove:before,
+.fa-close:before,
+.fa-times:before {
+  content: "\F00D";
+}
+.fa-search-plus:before {
+  content: "\F00E";
+}
+.fa-search-minus:before {
+  content: "\F010";
+}
+.fa-power-off:before {
+  content: "\F011";
+}
+.fa-signal:before {
+  content: "\F012";
+}
+.fa-gear:before,
+.fa-cog:before {
+  content: "\F013";
+}
+.fa-trash-o:before {
+  content: "\F014";
+}
+.fa-home:before {
+  content: "\F015";
+}
+.fa-file-o:before {
+  content: "\F016";
+}
+.fa-clock-o:before {
+  content: "\F017";
+}
+.fa-road:before {
+  content: "\F018";
+}
+.fa-download:before {
+  content: "\F019";
+}
+.fa-arrow-circle-o-down:before {
+  content: "\F01A";
+}
+.fa-arrow-circle-o-up:before {
+  content: "\F01B";
+}
+.fa-inbox:before {
+  content: "\F01C";
+}
+.fa-play-circle-o:before {
+  content: "\F01D";
+}
+.fa-rotate-right:before,
+.fa-repeat:before {
+  content: "\F01E";
+}
+.fa-refresh:before {
+  content: "\F021";
+}
+.fa-list-alt:before {
+  content: "\F022";
+}
+.fa-lock:before {
+  content: "\F023";
+}
+.fa-flag:before {
+  content: "\F024";
+}
+.fa-headphones:before {
+  content: "\F025";
+}
+.fa-volume-off:before {
+  content: "\F026";
+}
+.fa-volume-down:before {
+  content: "\F027";
+}
+.fa-volume-up:before {
+  content: "\F028";
+}
+.fa-qrcode:before {
+  content: "\F029";
+}
+.fa-barcode:before {
+  content: "\F02A";
+}
+.fa-tag:before {
+  content: "\F02B";
+}
+.fa-tags:before {
+  content: "\F02C";
+}
+.fa-book:before {
+  content: "\F02D";
+}
+.fa-bookmark:before {
+  content: "\F02E";
+}
+.fa-print:before {
+  content: "\F02F";
+}
+.fa-camera:before {
+  content: "\F030";
+}
+.fa-font:before {
+  content: "\F031";
+}
+.fa-bold:before {
+  content: "\F032";
+}
+.fa-italic:before {
+  content: "\F033";
+}
+.fa-text-height:before {
+  content: "\F034";
+}
+.fa-text-width:before {
+  content: "\F035";
+}
+.fa-align-left:before {
+  content: "\F036";
+}
+.fa-align-center:before {
+  content: "\F037";
+}
+.fa-align-right:before {
+  content: "\F038";
+}
+.fa-align-justify:before {
+  content: "\F039";
+}
+.fa-list:before {
+  content: "\F03A";
+}
+.fa-dedent:before,
+.fa-outdent:before {
+  content: "\F03B";
+}
+.fa-indent:before {
+  content: "\F03C";
+}
+.fa-video-camera:before {
+  content: "\F03D";
+}
+.fa-photo:before,
+.fa-image:before,
+.fa-picture-o:before {
+  content: "\F03E";
+}
+.fa-pencil:before {
+  content: "\F040";
+}
+.fa-map-marker:before {
+  content: "\F041";
+}
+.fa-adjust:before {
+  content: "\F042";
+}
+.fa-tint:before {
+  content: "\F043";
+}
+.fa-edit:before,
+.fa-pencil-square-o:before {
+  content: "\F044";
+}
+.fa-share-square-o:before {
+  content: "\F045";
+}
+.fa-check-square-o:before {
+  content: "\F046";
+}
+.fa-arrows:before {
+  content: "\F047";
+}
+.fa-step-backward:before {
+  content: "\F048";
+}
+.fa-fast-backward:before {
+  content: "\F049";
+}
+.fa-backward:before {
+  content: "\F04A";
+}
+.fa-play:before {
+  content: "\F04B";
+}
+.fa-pause:before {
+  content: "\F04C";
+}
+.fa-stop:before {
+  content: "\F04D";
+}
+.fa-forward:before {
+  content: "\F04E";
+}
+.fa-fast-forward:before {
+  content: "\F050";
+}
+.fa-step-forward:before {
+  content: "\F051";
+}
+.fa-eject:before {
+  content: "\F052";
+}
+.fa-chevron-left:before {
+  content: "\F053";
+}
+.fa-chevron-right:before {
+  content: "\F054";
+}
+.fa-plus-circle:before {
+  content: "\F055";
+}
+.fa-minus-circle:before {
+  content: "\F056";
+}
+.fa-times-circle:before {
+  content: "\F057";
+}
+.fa-check-circle:before {
+  content: "\F058";
+}
+.fa-question-circle:before {
+  content: "\F059";
+}
+.fa-info-circle:before {
+  content: "\F05A";
+}
+.fa-crosshairs:before {
+  content: "\F05B";
+}
+.fa-times-circle-o:before {
+  content: "\F05C";
+}
+.fa-check-circle-o:before {
+  content: "\F05D";
+}
+.fa-ban:before {
+  content: "\F05E";
+}
+.fa-arrow-left:before {
+  content: "\F060";
+}
+.fa-arrow-right:before {
+  content: "\F061";
+}
+.fa-arrow-up:before {
+  content: "\F062";
+}
+.fa-arrow-down:before {
+  content: "\F063";
+}
+.fa-mail-forward:before,
+.fa-share:before {
+  content: "\F064";
+}
+.fa-expand:before {
+  content: "\F065";
+}
+.fa-compress:before {
+  content: "\F066";
+}
+.fa-plus:before {
+  content: "\F067";
+}
+.fa-minus:before {
+  content: "\F068";
+}
+.fa-asterisk:before {
+  content: "\F069";
+}
+.fa-exclamation-circle:before {
+  content: "\F06A";
+}
+.fa-gift:before {
+  content: "\F06B";
+}
+.fa-leaf:before {
+  content: "\F06C";
+}
+.fa-fire:before {
+  content: "\F06D";
+}
+.fa-eye:before {
+  content: "\F06E";
+}
+.fa-eye-slash:before {
+  content: "\F070";
+}
+.fa-warning:before,
+.fa-exclamation-triangle:before {
+  content: "\F071";
+}
+.fa-plane:before {
+  content: "\F072";
+}
+.fa-calendar:before {
+  content: "\F073";
+}
+.fa-random:before {
+  content: "\F074";
+}
+.fa-comment:before {
+  content: "\F075";
+}
+.fa-magnet:before {
+  content: "\F076";
+}
+.fa-chevron-up:before {
+  content: "\F077";
+}
+.fa-chevron-down:before {
+  content: "\F078";
+}
+.fa-retweet:before {
+  content: "\F079";
+}
+.fa-shopping-cart:before {
+  content: "\F07A";
+}
+.fa-folder:before {
+  content: "\F07B";
+}
+.fa-folder-open:before {
+  content: "\F07C";
+}
+.fa-arrows-v:before {
+  content: "\F07D";
+}
+.fa-arrows-h:before {
+  content: "\F07E";
+}
+.fa-bar-chart-o:before,
+.fa-bar-chart:before {
+  content: "\F080";
+}
+.fa-twitter-square:before {
+  content: "\F081";
+}
+.fa-facebook-square:before {
+  content: "\F082";
+}
+.fa-camera-retro:before {
+  content: "\F083";
+}
+.fa-key:before {
+  content: "\F084";
+}
+.fa-gears:before,
+.fa-cogs:before {
+  content: "\F085";
+}
+.fa-comments:before {
+  content: "\F086";
+}
+.fa-thumbs-o-up:before {
+  content: "\F087";
+}
+.fa-thumbs-o-down:before {
+  content: "\F088";
+}
+.fa-star-half:before {
+  content: "\F089";
+}
+.fa-heart-o:before {
+  content: "\F08A";
+}
+.fa-sign-out:before {
+  content: "\F08B";
+}
+.fa-linkedin-square:before {
+  content: "\F08C";
+}
+.fa-thumb-tack:before {
+  content: "\F08D";
+}
+.fa-external-link:before {
+  content: "\F08E";
+}
+.fa-sign-in:before {
+  content: "\F090";
+}
+.fa-trophy:before {
+  content: "\F091";
+}
+.fa-github-square:before {
+  content: "\F092";
+}
+.fa-upload:before {
+  content: "\F093";
+}
+.fa-lemon-o:before {
+  content: "\F094";
+}
+.fa-phone:before {
+  content: "\F095";
+}
+.fa-square-o:before {
+  content: "\F096";
+}
+.fa-bookmark-o:before {
+  content: "\F097";
+}
+.fa-phone-square:before {
+  content: "\F098";
+}
+.fa-twitter:before {
+  content: "\F099";
+}
+.fa-facebook-f:before,
+.fa-facebook:before {
+  content: "\F09A";
+}
+.fa-github:before {
+  content: "\F09B";
+}
+.fa-unlock:before {
+  content: "\F09C";
+}
+.fa-credit-card:before {
+  content: "\F09D";
+}
+.fa-feed:before,
+.fa-rss:before {
+  content: "\F09E";
+}
+.fa-hdd-o:before {
+  content: "\F0A0";
+}
+.fa-bullhorn:before {
+  content: "\F0A1";
+}
+.fa-bell:before {
+  content: "\F0F3";
+}
+.fa-certificate:before {
+  content: "\F0A3";
+}
+.fa-hand-o-right:before {
+  content: "\F0A4";
+}
+.fa-hand-o-left:before {
+  content: "\F0A5";
+}
+.fa-hand-o-up:before {
+  content: "\F0A6";
+}
+.fa-hand-o-down:before {
+  content: "\F0A7";
+}
+.fa-arrow-circle-left:before {
+  content: "\F0A8";
+}
+.fa-arrow-circle-right:before {
+  content: "\F0A9";
+}
+.fa-arrow-circle-up:before {
+  content: "\F0AA";
+}
+.fa-arrow-circle-down:before {
+  content: "\F0AB";
+}
+.fa-globe:before {
+  content: "\F0AC";
+}
+.fa-wrench:before {
+  content: "\F0AD";
+}
+.fa-tasks:before {
+  content: "\F0AE";
+}
+.fa-filter:before {
+  content: "\F0B0";
+}
+.fa-briefcase:before {
+  content: "\F0B1";
+}
+.fa-arrows-alt:before {
+  content: "\F0B2";
+}
+.fa-group:before,
+.fa-users:before {
+  content: "\F0C0";
+}
+.fa-chain:before,
+.fa-link:before {
+  content: "\F0C1";
+}
+.fa-cloud:before {
+  content: "\F0C2";
+}
+.fa-flask:before {
+  content: "\F0C3";
+}
+.fa-cut:before,
+.fa-scissors:before {
+  content: "\F0C4";
+}
+.fa-copy:before,
+.fa-files-o:before {
+  content: "\F0C5";
+}
+.fa-paperclip:before {
+  content: "\F0C6";
+}
+.fa-save:before,
+.fa-floppy-o:before {
+  content: "\F0C7";
+}
+.fa-square:before {
+  content: "\F0C8";
+}
+.fa-navicon:before,
+.fa-reorder:before,
+.fa-bars:before {
+  content: "\F0C9";
+}
+.fa-list-ul:before {
+  content: "\F0CA";
+}
+.fa-list-ol:before {
+  content: "\F0CB";
+}
+.fa-strikethrough:before {
+  content: "\F0CC";
+}
+.fa-underline:before {
+  content: "\F0CD";
+}
+.fa-table:before {
+  content: "\F0CE";
+}
+.fa-magic:before {
+  content: "\F0D0";
+}
+.fa-truck:before {
+  content: "\F0D1";
+}
+.fa-pinterest:before {
+  content: "\F0D2";
+}
+.fa-pinterest-square:before {
+  content: "\F0D3";
+}
+.fa-google-plus-square:before {
+  content: "\F0D4";
+}
+.fa-google-plus:before {
+  content: "\F0D5";
+}
+.fa-money:before {
+  content: "\F0D6";
+}
+.fa-caret-down:before {
+  content: "\F0D7";
+}
+.fa-caret-up:before {
+  content: "\F0D8";
+}
+.fa-caret-left:before {
+  content: "\F0D9";
+}
+.fa-caret-right:before {
+  content: "\F0DA";
+}
+.fa-columns:before {
+  content: "\F0DB";
+}
+.fa-unsorted:before,
+.fa-sort:before {
+  content: "\F0DC";
+}
+.fa-sort-down:before,
+.fa-sort-desc:before {
+  content: "\F0DD";
+}
+.fa-sort-up:before,
+.fa-sort-asc:before {
+  content: "\F0DE";
+}
+.fa-envelope:before {
+  content: "\F0E0";
+}
+.fa-linkedin:before {
+  content: "\F0E1";
+}
+.fa-rotate-left:before,
+.fa-undo:before {
+  content: "\F0E2";
+}
+.fa-legal:before,
+.fa-gavel:before {
+  content: "\F0E3";
+}
+.fa-dashboard:before,
+.fa-tachometer:before {
+  content: "\F0E4";
+}
+.fa-comment-o:before {
+  content: "\F0E5";
+}
+.fa-comments-o:before {
+  content: "\F0E6";
+}
+.fa-flash:before,
+.fa-bolt:before {
+  content: "\F0E7";
+}
+.fa-sitemap:before {
+  content: "\F0E8";
+}
+.fa-umbrella:before {
+  content: "\F0E9";
+}
+.fa-paste:before,
+.fa-clipboard:before {
+  content: "\F0EA";
+}
+.fa-lightbulb-o:before {
+  content: "\F0EB";
+}
+.fa-exchange:before {
+  content: "\F0EC";
+}
+.fa-cloud-download:before {
+  content: "\F0ED";
+}
+.fa-cloud-upload:before {
+  content: "\F0EE";
+}
+.fa-user-md:before {
+  content: "\F0F0";
+}
+.fa-stethoscope:before {
+  content: "\F0F1";
+}
+.fa-suitcase:before {
+  content: "\F0F2";
+}
+.fa-bell-o:before {
+  content: "\F0A2";
+}
+.fa-coffee:before {
+  content: "\F0F4";
+}
+.fa-cutlery:before {
+  content: "\F0F5";
+}
+.fa-file-text-o:before {
+  content: "\F0F6";
+}
+.fa-building-o:before {
+  content: "\F0F7";
+}
+.fa-hospital-o:before {
+  content: "\F0F8";
+}
+.fa-ambulance:before {
+  content: "\F0F9";
+}
+.fa-medkit:before {
+  content: "\F0FA";
+}
+.fa-fighter-jet:before {
+  content: "\F0FB";
+}
+.fa-beer:before {
+  content: "\F0FC";
+}
+.fa-h-square:before {
+  content: "\F0FD";
+}
+.fa-plus-square:before {
+  content: "\F0FE";
+}
+.fa-angle-double-left:before {
+  content: "\F100";
+}
+.fa-angle-double-right:before {
+  content: "\F101";
+}
+.fa-angle-double-up:before {
+  content: "\F102";
+}
+.fa-angle-double-down:before {
+  content: "\F103";
+}
+.fa-angle-left:before {
+  content: "\F104";
+}
+.fa-angle-right:before {
+  content: "\F105";
+}
+.fa-angle-up:before {
+  content: "\F106";
+}
+.fa-angle-down:before {
+  content: "\F107";
+}
+.fa-desktop:before {
+  content: "\F108";
+}
+.fa-laptop:before {
+  content: "\F109";
+}
+.fa-tablet:before {
+  content: "\F10A";
+}
+.fa-mobile-phone:before,
+.fa-mobile:before {
+  content: "\F10B";
+}
+.fa-circle-o:before {
+  content: "\F10C";
+}
+.fa-quote-left:before {
+  content: "\F10D";
+}
+.fa-quote-right:before {
+  content: "\F10E";
+}
+.fa-spinner:before {
+  content: "\F110";
+}
+.fa-circle:before {
+  content: "\F111";
+}
+.fa-mail-reply:before,
+.fa-reply:before {
+  content: "\F112";
+}
+.fa-github-alt:before {
+  content: "\F113";
+}
+.fa-folder-o:before {
+  content: "\F114";
+}
+.fa-folder-open-o:before {
+  content: "\F115";
+}
+.fa-smile-o:before {
+  content: "\F118";
+}
+.fa-frown-o:before {
+  content: "\F119";
+}
+.fa-meh-o:before {
+  content: "\F11A";
+}
+.fa-gamepad:before {
+  content: "\F11B";
+}
+.fa-keyboard-o:before {
+  content: "\F11C";
+}
+.fa-flag-o:before {
+  content: "\F11D";
+}
+.fa-flag-checkered:before {
+  content: "\F11E";
+}
+.fa-terminal:before {
+  content: "\F120";
+}
+.fa-code:before {
+  content: "\F121";
+}
+.fa-mail-reply-all:before,
+.fa-reply-all:before {
+  content: "\F122";
+}
+.fa-star-half-empty:before,
+.fa-star-half-full:before,
+.fa-star-half-o:before {
+  content: "\F123";
+}
+.fa-location-arrow:before {
+  content: "\F124";
+}
+.fa-crop:before {
+  content: "\F125";
+}
+.fa-code-fork:before {
+  content: "\F126";
+}
+.fa-unlink:before,
+.fa-chain-broken:before {
+  content: "\F127";
+}
+.fa-question:before {
+  content: "\F128";
+}
+.fa-info:before {
+  content: "\F129";
+}
+.fa-exclamation:before {
+  content: "\F12A";
+}
+.fa-superscript:before {
+  content: "\F12B";
+}
+.fa-subscript:before {
+  content: "\F12C";
+}
+.fa-eraser:before {
+  content: "\F12D";
+}
+.fa-puzzle-piece:before {
+  content: "\F12E";
+}
+.fa-microphone:before {
+  content: "\F130";
+}
+.fa-microphone-slash:before {
+  content: "\F131";
+}
+.fa-shield:before {
+  content: "\F132";
+}
+.fa-calendar-o:before {
+  content: "\F133";
+}
+.fa-fire-extinguisher:before {
+  content: "\F134";
+}
+.fa-rocket:before {
+  content: "\F135";
+}
+.fa-maxcdn:before {
+  content: "\F136";
+}
+.fa-chevron-circle-left:before {
+  content: "\F137";
+}
+.fa-chevron-circle-right:before {
+  content: "\F138";
+}
+.fa-chevron-circle-up:before {
+  content: "\F139";
+}
+.fa-chevron-circle-down:before {
+  content: "\F13A";
+}
+.fa-html5:before {
+  content: "\F13B";
+}
+.fa-css3:before {
+  content: "\F13C";
+}
+.fa-anchor:before {
+  content: "\F13D";
+}
+.fa-unlock-alt:before {
+  content: "\F13E";
+}
+.fa-bullseye:before {
+  content: "\F140";
+}
+.fa-ellipsis-h:before {
+  content: "\F141";
+}
+.fa-ellipsis-v:before {
+  content: "\F142";
+}
+.fa-rss-square:before {
+  content: "\F143";
+}
+.fa-play-circle:before {
+  content: "\F144";
+}
+.fa-ticket:before {
+  content: "\F145";
+}
+.fa-minus-square:before {
+  content: "\F146";
+}
+.fa-minus-square-o:before {
+  content: "\F147";
+}
+.fa-level-up:before {
+  content: "\F148";
+}
+.fa-level-down:before {
+  content: "\F149";
+}
+.fa-check-square:before {
+  content: "\F14A";
+}
+.fa-pencil-square:before {
+  content: "\F14B";
+}
+.fa-external-link-square:before {
+  content: "\F14C";
+}
+.fa-share-square:before {
+  content: "\F14D";
+}
+.fa-compass:before {
+  content: "\F14E";
+}
+.fa-toggle-down:before,
+.fa-caret-square-o-down:before {
+  content: "\F150";
+}
+.fa-toggle-up:before,
+.fa-caret-square-o-up:before {
+  content: "\F151";
+}
+.fa-toggle-right:before,
+.fa-caret-square-o-right:before {
+  content: "\F152";
+}
+.fa-euro:before,
+.fa-eur:before {
+  content: "\F153";
+}
+.fa-gbp:before {
+  content: "\F154";
+}
+.fa-dollar:before,
+.fa-usd:before {
+  content: "\F155";
+}
+.fa-rupee:before,
+.fa-inr:before {
+  content: "\F156";
+}
+.fa-cny:before,
+.fa-rmb:before,
+.fa-yen:before,
+.fa-jpy:before {
+  content: "\F157";
+}
+.fa-ruble:before,
+.fa-rouble:before,
+.fa-rub:before {
+  content: "\F158";
+}
+.fa-won:before,
+.fa-krw:before {
+  content: "\F159";
+}
+.fa-bitcoin:before,
+.fa-btc:before {
+  content: "\F15A";
+}
+.fa-file:before {
+  content: "\F15B";
+}
+.fa-file-text:before {
+  content: "\F15C";
+}
+.fa-sort-alpha-asc:before {
+  content: "\F15D";
+}
+.fa-sort-alpha-desc:before {
+  content: "\F15E";
+}
+.fa-sort-amount-asc:before {
+  content: "\F160";
+}
+.fa-sort-amount-desc:before {
+  content: "\F161";
+}
+.fa-sort-numeric-asc:before {
+  content: "\F162";
+}
+.fa-sort-numeric-desc:before {
+  content: "\F163";
+}
+.fa-thumbs-up:before {
+  content: "\F164";
+}
+.fa-thumbs-down:before {
+  content: "\F165";
+}
+.fa-youtube-square:before {
+  content: "\F166";
+}
+.fa-youtube:before {
+  content: "\F167";
+}
+.fa-xing:before {
+  content: "\F168";
+}
+.fa-xing-square:before {
+  content: "\F169";
+}
+.fa-youtube-play:before {
+  content: "\F16A";
+}
+.fa-dropbox:before {
+  content: "\F16B";
+}
+.fa-stack-overflow:before {
+  content: "\F16C";
+}
+.fa-instagram:before {
+  content: "\F16D";
+}
+.fa-flickr:before {
+  content: "\F16E";
+}
+.fa-adn:before {
+  content: "\F170";
+}
+.fa-bitbucket:before {
+  content: "\F171";
+}
+.fa-bitbucket-square:before {
+  content: "\F172";
+}
+.fa-tumblr:before {
+  content: "\F173";
+}
+.fa-tumblr-square:before {
+  content: "\F174";
+}
+.fa-long-arrow-down:before {
+  content: "\F175";
+}
+.fa-long-arrow-up:before {
+  content: "\F176";
+}
+.fa-long-arrow-left:before {
+  content: "\F177";
+}
+.fa-long-arrow-right:before {
+  content: "\F178";
+}
+.fa-apple:before {
+  content: "\F179";
+}
+.fa-windows:before {
+  content: "\F17A";
+}
+.fa-android:before {
+  content: "\F17B";
+}
+.fa-linux:before {
+  content: "\F17C";
+}
+.fa-dribbble:before {
+  content: "\F17D";
+}
+.fa-skype:before {
+  content: "\F17E";
+}
+.fa-foursquare:before {
+  content: "\F180";
+}
+.fa-trello:before {
+  content: "\F181";
+}
+.fa-female:before {
+  content: "\F182";
+}
+.fa-male:before {
+  content: "\F183";
+}
+.fa-gittip:before,
+.fa-gratipay:before {
+  content: "\F184";
+}
+.fa-sun-o:before {
+  content: "\F185";
+}
+.fa-moon-o:before {
+  content: "\F186";
+}
+.fa-archive:before {
+  content: "\F187";
+}
+.fa-bug:before {
+  content: "\F188";
+}
+.fa-vk:before {
+  content: "\F189";
+}
+.fa-weibo:before {
+  content: "\F18A";
+}
+.fa-renren:before {
+  content: "\F18B";
+}
+.fa-pagelines:before {
+  content: "\F18C";
+}
+.fa-stack-exchange:before {
+  content: "\F18D";
+}
+.fa-arrow-circle-o-right:before {
+  content: "\F18E";
+}
+.fa-arrow-circle-o-left:before {
+  content: "\F190";
+}
+.fa-toggle-left:before,
+.fa-caret-square-o-left:before {
+  content: "\F191";
+}
+.fa-dot-circle-o:before {
+  content: "\F192";
+}
+.fa-wheelchair:before {
+  content: "\F193";
+}
+.fa-vimeo-square:before {
+  content: "\F194";
+}
+.fa-turkish-lira:before,
+.fa-try:before {
+  content: "\F195";
+}
+.fa-plus-square-o:before {
+  content: "\F196";
+}
+.fa-space-shuttle:before {
+  content: "\F197";
+}
+.fa-slack:before {
+  content: "\F198";
+}
+.fa-envelope-square:before {
+  content: "\F199";
+}
+.fa-wordpress:before {
+  content: "\F19A";
+}
+.fa-openid:before {
+  content: "\F19B";
+}
+.fa-institution:before,
+.fa-bank:before,
+.fa-university:before {
+  content: "\F19C";
+}
+.fa-mortar-board:before,
+.fa-graduation-cap:before {
+  content: "\F19D";
+}
+.fa-yahoo:before {
+  content: "\F19E";
+}
+.fa-google:before {
+  content: "\F1A0";
+}
+.fa-reddit:before {
+  content: "\F1A1";
+}
+.fa-reddit-square:before {
+  content: "\F1A2";
+}
+.fa-stumbleupon-circle:before {
+  content: "\F1A3";
+}
+.fa-stumbleupon:before {
+  content: "\F1A4";
+}
+.fa-delicious:before {
+  content: "\F1A5";
+}
+.fa-digg:before {
+  content: "\F1A6";
+}
+.fa-pied-piper-pp:before {
+  content: "\F1A7";
+}
+.fa-pied-piper-alt:before {
+  content: "\F1A8";
+}
+.fa-drupal:before {
+  content: "\F1A9";
+}
+.fa-joomla:before {
+  content: "\F1AA";
+}
+.fa-language:before {
+  content: "\F1AB";
+}
+.fa-fax:before {
+  content: "\F1AC";
+}
+.fa-building:before {
+  content: "\F1AD";
+}
+.fa-child:before {
+  content: "\F1AE";
+}
+.fa-paw:before {
+  content: "\F1B0";
+}
+.fa-spoon:before {
+  content: "\F1B1";
+}
+.fa-cube:before {
+  content: "\F1B2";
+}
+.fa-cubes:before {
+  content: "\F1B3";
+}
+.fa-behance:before {
+  content: "\F1B4";
+}
+.fa-behance-square:before {
+  content: "\F1B5";
+}
+.fa-steam:before {
+  content: "\F1B6";
+}
+.fa-steam-square:before {
+  content: "\F1B7";
+}
+.fa-recycle:before {
+  content: "\F1B8";
+}
+.fa-automobile:before,
+.fa-car:before {
+  content: "\F1B9";
+}
+.fa-cab:before,
+.fa-taxi:before {
+  content: "\F1BA";
+}
+.fa-tree:before {
+  content: "\F1BB";
+}
+.fa-spotify:before {
+  content: "\F1BC";
+}
+.fa-deviantart:before {
+  content: "\F1BD";
+}
+.fa-soundcloud:before {
+  content: "\F1BE";
+}
+.fa-database:before {
+  content: "\F1C0";
+}
+.fa-file-pdf-o:before {
+  content: "\F1C1";
+}
+.fa-file-word-o:before {
+  content: "\F1C2";
+}
+.fa-file-excel-o:before {
+  content: "\F1C3";
+}
+.fa-file-powerpoint-o:before {
+  content: "\F1C4";
+}
+.fa-file-photo-o:before,
+.fa-file-picture-o:before,
+.fa-file-image-o:before {
+  content: "\F1C5";
+}
+.fa-file-zip-o:before,
+.fa-file-archive-o:before {
+  content: "\F1C6";
+}
+.fa-file-sound-o:before,
+.fa-file-audio-o:before {
+  content: "\F1C7";
+}
+.fa-file-movie-o:before,
+.fa-file-video-o:before {
+  content: "\F1C8";
+}
+.fa-file-code-o:before {
+  content: "\F1C9";
+}
+.fa-vine:before {
+  content: "\F1CA";
+}
+.fa-codepen:before {
+  content: "\F1CB";
+}
+.fa-jsfiddle:before {
+  content: "\F1CC";
+}
+.fa-life-bouy:before,
+.fa-life-buoy:before,
+.fa-life-saver:before,
+.fa-support:before,
+.fa-life-ring:before {
+  content: "\F1CD";
+}
+.fa-circle-o-notch:before {
+  content: "\F1CE";
+}
+.fa-ra:before,
+.fa-resistance:before,
+.fa-rebel:before {
+  content: "\F1D0";
+}
+.fa-ge:before,
+.fa-empire:before {
+  content: "\F1D1";
+}
+.fa-git-square:before {
+  content: "\F1D2";
+}
+.fa-git:before {
+  content: "\F1D3";
+}
+.fa-y-combinator-square:before,
+.fa-yc-square:before,
+.fa-hacker-news:before {
+  content: "\F1D4";
+}
+.fa-tencent-weibo:before {
+  content: "\F1D5";
+}
+.fa-qq:before {
+  content: "\F1D6";
+}
+.fa-wechat:before,
+.fa-weixin:before {
+  content: "\F1D7";
+}
+.fa-send:before,
+.fa-paper-plane:before {
+  content: "\F1D8";
+}
+.fa-send-o:before,
+.fa-paper-plane-o:before {
+  content: "\F1D9";
+}
+.fa-history:before {
+  content: "\F1DA";
+}
+.fa-circle-thin:before {
+  content: "\F1DB";
+}
+.fa-header:before {
+  content: "\F1DC";
+}
+.fa-paragraph:before {
+  content: "\F1DD";
+}
+.fa-sliders:before {
+  content: "\F1DE";
+}
+.fa-share-alt:before {
+  content: "\F1E0";
+}
+.fa-share-alt-square:before {
+  content: "\F1E1";
+}
+.fa-bomb:before {
+  content: "\F1E2";
+}
+.fa-soccer-ball-o:before,
+.fa-futbol-o:before {
+  content: "\F1E3";
+}
+.fa-tty:before {
+  content: "\F1E4";
+}
+.fa-binoculars:before {
+  content: "\F1E5";
+}
+.fa-plug:before {
+  content: "\F1E6";
+}
+.fa-slideshare:before {
+  content: "\F1E7";
+}
+.fa-twitch:before {
+  content: "\F1E8";
+}
+.fa-yelp:before {
+  content: "\F1E9";
+}
+.fa-newspaper-o:before {
+  content: "\F1EA";
+}
+.fa-wifi:before {
+  content: "\F1EB";
+}
+.fa-calculator:before {
+  content: "\F1EC";
+}
+.fa-paypal:before {
+  content: "\F1ED";
+}
+.fa-google-wallet:before {
+  content: "\F1EE";
+}
+.fa-cc-visa:before {
+  content: "\F1F0";
+}
+.fa-cc-mastercard:before {
+  content: "\F1F1";
+}
+.fa-cc-discover:before {
+  content: "\F1F2";
+}
+.fa-cc-amex:before {
+  content: "\F1F3";
+}
+.fa-cc-paypal:before {
+  content: "\F1F4";
+}
+.fa-cc-stripe:before {
+  content: "\F1F5";
+}
+.fa-bell-slash:before {
+  content: "\F1F6";
+}
+.fa-bell-slash-o:before {
+  content: "\F1F7";
+}
+.fa-trash:before {
+  content: "\F1F8";
+}
+.fa-copyright:before {
+  content: "\F1F9";
+}
+.fa-at:before {
+  content: "\F1FA";
+}
+.fa-eyedropper:before {
+  content: "\F1FB";
+}
+.fa-paint-brush:before {
+  content: "\F1FC";
+}
+.fa-birthday-cake:before {
+  content: "\F1FD";
+}
+.fa-area-chart:before {
+  content: "\F1FE";
+}
+.fa-pie-chart:before {
+  content: "\F200";
+}
+.fa-line-chart:before {
+  content: "\F201";
+}
+.fa-lastfm:before {
+  content: "\F202";
+}
+.fa-lastfm-square:before {
+  content: "\F203";
+}
+.fa-toggle-off:before {
+  content: "\F204";
+}
+.fa-toggle-on:before {
+  content: "\F205";
+}
+.fa-bicycle:before {
+  content: "\F206";
+}
+.fa-bus:before {
+  content: "\F207";
+}
+.fa-ioxhost:before {
+  content: "\F208";
+}
+.fa-angellist:before {
+  content: "\F209";
+}
+.fa-cc:before {
+  content: "\F20A";
+}
+.fa-shekel:before,
+.fa-sheqel:before,
+.fa-ils:before {
+  content: "\F20B";
+}
+.fa-meanpath:before {
+  content: "\F20C";
+}
+.fa-buysellads:before {
+  content: "\F20D";
+}
+.fa-connectdevelop:before {
+  content: "\F20E";
+}
+.fa-dashcube:before {
+  content: "\F210";
+}
+.fa-forumbee:before {
+  content: "\F211";
+}
+.fa-leanpub:before {
+  content: "\F212";
+}
+.fa-sellsy:before {
+  content: "\F213";
+}
+.fa-shirtsinbulk:before {
+  content: "\F214";
+}
+.fa-simplybuilt:before {
+  content: "\F215";
+}
+.fa-skyatlas:before {
+  content: "\F216";
+}
+.fa-cart-plus:before {
+  content: "\F217";
+}
+.fa-cart-arrow-down:before {
+  content: "\F218";
+}
+.fa-diamond:before {
+  content: "\F219";
+}
+.fa-ship:before {
+  content: "\F21A";
+}
+.fa-user-secret:before {
+  content: "\F21B";
+}
+.fa-motorcycle:before {
+  content: "\F21C";
+}
+.fa-street-view:before {
+  content: "\F21D";
+}
+.fa-heartbeat:before {
+  content: "\F21E";
+}
+.fa-venus:before {
+  content: "\F221";
+}
+.fa-mars:before {
+  content: "\F222";
+}
+.fa-mercury:before {
+  content: "\F223";
+}
+.fa-intersex:before,
+.fa-transgender:before {
+  content: "\F224";
+}
+.fa-transgender-alt:before {
+  content: "\F225";
+}
+.fa-venus-double:before {
+  content: "\F226";
+}
+.fa-mars-double:before {
+  content: "\F227";
+}
+.fa-venus-mars:before {
+  content: "\F228";
+}
+.fa-mars-stroke:before {
+  content: "\F229";
+}
+.fa-mars-stroke-v:before {
+  content: "\F22A";
+}
+.fa-mars-stroke-h:before {
+  content: "\F22B";
+}
+.fa-neuter:before {
+  content: "\F22C";
+}
+.fa-genderless:before {
+  content: "\F22D";
+}
+.fa-facebook-official:before {
+  content: "\F230";
+}
+.fa-pinterest-p:before {
+  content: "\F231";
+}
+.fa-whatsapp:before {
+  content: "\F232";
+}
+.fa-server:before {
+  content: "\F233";
+}
+.fa-user-plus:before {
+  content: "\F234";
+}
+.fa-user-times:before {
+  content: "\F235";
+}
+.fa-hotel:before,
+.fa-bed:before {
+  content: "\F236";
+}
+.fa-viacoin:before {
+  content: "\F237";
+}
+.fa-train:before {
+  content: "\F238";
+}
+.fa-subway:before {
+  content: "\F239";
+}
+.fa-medium:before {
+  content: "\F23A";
+}
+.fa-yc:before,
+.fa-y-combinator:before {
+  content: "\F23B";
+}
+.fa-optin-monster:before {
+  content: "\F23C";
+}
+.fa-opencart:before {
+  content: "\F23D";
+}
+.fa-expeditedssl:before {
+  content: "\F23E";
+}
+.fa-battery-4:before,
+.fa-battery:before,
+.fa-battery-full:before {
+  content: "\F240";
+}
+.fa-battery-3:before,
+.fa-battery-three-quarters:before {
+  content: "\F241";
+}
+.fa-battery-2:before,
+.fa-battery-half:before {
+  content: "\F242";
+}
+.fa-battery-1:before,
+.fa-battery-quarter:before {
+  content: "\F243";
+}
+.fa-battery-0:before,
+.fa-battery-empty:before {
+  content: "\F244";
+}
+.fa-mouse-pointer:before {
+  content: "\F245";
+}
+.fa-i-cursor:before {
+  content: "\F246";
+}
+.fa-object-group:before {
+  content: "\F247";
+}
+.fa-object-ungroup:before {
+  content: "\F248";
+}
+.fa-sticky-note:before {
+  content: "\F249";
+}
+.fa-sticky-note-o:before {
+  content: "\F24A";
+}
+.fa-cc-jcb:before {
+  content: "\F24B";
+}
+.fa-cc-diners-club:before {
+  content: "\F24C";
+}
+.fa-clone:before {
+  content: "\F24D";
+}
+.fa-balance-scale:before {
+  content: "\F24E";
+}
+.fa-hourglass-o:before {
+  content: "\F250";
+}
+.fa-hourglass-1:before,
+.fa-hourglass-start:before {
+  content: "\F251";
+}
+.fa-hourglass-2:before,
+.fa-hourglass-half:before {
+  content: "\F252";
+}
+.fa-hourglass-3:before,
+.fa-hourglass-end:before {
+  content: "\F253";
+}
+.fa-hourglass:before {
+  content: "\F254";
+}
+.fa-hand-grab-o:before,
+.fa-hand-rock-o:before {
+  content: "\F255";
+}
+.fa-hand-stop-o:before,
+.fa-hand-paper-o:before {
+  content: "\F256";
+}
+.fa-hand-scissors-o:before {
+  content: "\F257";
+}
+.fa-hand-lizard-o:before {
+  content: "\F258";
+}
+.fa-hand-spock-o:before {
+  content: "\F259";
+}
+.fa-hand-pointer-o:before {
+  content: "\F25A";
+}
+.fa-hand-peace-o:before {
+  content: "\F25B";
+}
+.fa-trademark:before {
+  content: "\F25C";
+}
+.fa-registered:before {
+  content: "\F25D";
+}
+.fa-creative-commons:before {
+  content: "\F25E";
+}
+.fa-gg:before {
+  content: "\F260";
+}
+.fa-gg-circle:before {
+  content: "\F261";
+}
+.fa-tripadvisor:before {
+  content: "\F262";
+}
+.fa-odnoklassniki:before {
+  content: "\F263";
+}
+.fa-odnoklassniki-square:before {
+  content: "\F264";
+}
+.fa-get-pocket:before {
+  content: "\F265";
+}
+.fa-wikipedia-w:before {
+  content: "\F266";
+}
+.fa-safari:before {
+  content: "\F267";
+}
+.fa-chrome:before {
+  content: "\F268";
+}
+.fa-firefox:before {
+  content: "\F269";
+}
+.fa-opera:before {
+  content: "\F26A";
+}
+.fa-internet-explorer:before {
+  content: "\F26B";
+}
+.fa-tv:before,
+.fa-television:before {
+  content: "\F26C";
+}
+.fa-contao:before {
+  content: "\F26D";
+}
+.fa-500px:before {
+  content: "\F26E";
+}
+.fa-amazon:before {
+  content: "\F270";
+}
+.fa-calendar-plus-o:before {
+  content: "\F271";
+}
+.fa-calendar-minus-o:before {
+  content: "\F272";
+}
+.fa-calendar-times-o:before {
+  content: "\F273";
+}
+.fa-calendar-check-o:before {
+  content: "\F274";
+}
+.fa-industry:before {
+  content: "\F275";
+}
+.fa-map-pin:before {
+  content: "\F276";
+}
+.fa-map-signs:before {
+  content: "\F277";
+}
+.fa-map-o:before {
+  content: "\F278";
+}
+.fa-map:before {
+  content: "\F279";
+}
+.fa-commenting:before {
+  content: "\F27A";
+}
+.fa-commenting-o:before {
+  content: "\F27B";
+}
+.fa-houzz:before {
+  content: "\F27C";
+}
+.fa-vimeo:before {
+  content: "\F27D";
+}
+.fa-black-tie:before {
+  content: "\F27E";
+}
+.fa-fonticons:before {
+  content: "\F280";
+}
+.fa-reddit-alien:before {
+  content: "\F281";
+}
+.fa-edge:before {
+  content: "\F282";
+}
+.fa-credit-card-alt:before {
+  content: "\F283";
+}
+.fa-codiepie:before {
+  content: "\F284";
+}
+.fa-modx:before {
+  content: "\F285";
+}
+.fa-fort-awesome:before {
+  content: "\F286";
+}
+.fa-usb:before {
+  content: "\F287";
+}
+.fa-product-hunt:before {
+  content: "\F288";
+}
+.fa-mixcloud:before {
+  content: "\F289";
+}
+.fa-scribd:before {
+  content: "\F28A";
+}
+.fa-pause-circle:before {
+  content: "\F28B";
+}
+.fa-pause-circle-o:before {
+  content: "\F28C";
+}
+.fa-stop-circle:before {
+  content: "\F28D";
+}
+.fa-stop-circle-o:before {
+  content: "\F28E";
+}
+.fa-shopping-bag:before {
+  content: "\F290";
+}
+.fa-shopping-basket:before {
+  content: "\F291";
+}
+.fa-hashtag:before {
+  content: "\F292";
+}
+.fa-bluetooth:before {
+  content: "\F293";
+}
+.fa-bluetooth-b:before {
+  content: "\F294";
+}
+.fa-percent:before {
+  content: "\F295";
+}
+.fa-gitlab:before {
+  content: "\F296";
+}
+.fa-wpbeginner:before {
+  content: "\F297";
+}
+.fa-wpforms:before {
+  content: "\F298";
+}
+.fa-envira:before {
+  content: "\F299";
+}
+.fa-universal-access:before {
+  content: "\F29A";
+}
+.fa-wheelchair-alt:before {
+  content: "\F29B";
+}
+.fa-question-circle-o:before {
+  content: "\F29C";
+}
+.fa-blind:before {
+  content: "\F29D";
+}
+.fa-audio-description:before {
+  content: "\F29E";
+}
+.fa-volume-control-phone:before {
+  content: "\F2A0";
+}
+.fa-braille:before {
+  content: "\F2A1";
+}
+.fa-assistive-listening-systems:before {
+  content: "\F2A2";
+}
+.fa-asl-interpreting:before,
+.fa-american-sign-language-interpreting:before {
+  content: "\F2A3";
+}
+.fa-deafness:before,
+.fa-hard-of-hearing:before,
+.fa-deaf:before {
+  content: "\F2A4";
+}
+.fa-glide:before {
+  content: "\F2A5";
+}
+.fa-glide-g:before {
+  content: "\F2A6";
+}
+.fa-signing:before,
+.fa-sign-language:before {
+  content: "\F2A7";
+}
+.fa-low-vision:before {
+  content: "\F2A8";
+}
+.fa-viadeo:before {
+  content: "\F2A9";
+}
+.fa-viadeo-square:before {
+  content: "\F2AA";
+}
+.fa-snapchat:before {
+  content: "\F2AB";
+}
+.fa-snapchat-ghost:before {
+  content: "\F2AC";
+}
+.fa-snapchat-square:before {
+  content: "\F2AD";
+}
+.fa-pied-piper:before {
+  content: "\F2AE";
+}
+.fa-first-order:before {
+  content: "\F2B0";
+}
+.fa-yoast:before {
+  content: "\F2B1";
+}
+.fa-themeisle:before {
+  content: "\F2B2";
+}
+.fa-google-plus-circle:before,
+.fa-google-plus-official:before {
+  content: "\F2B3";
+}
+.fa-fa:before,
+.fa-font-awesome:before {
+  content: "\F2B4";
+}
+.fa-handshake-o:before {
+  content: "\F2B5";
+}
+.fa-envelope-open:before {
+  content: "\F2B6";
+}
+.fa-envelope-open-o:before {
+  content: "\F2B7";
+}
+.fa-linode:before {
+  content: "\F2B8";
+}
+.fa-address-book:before {
+  content: "\F2B9";
+}
+.fa-address-book-o:before {
+  content: "\F2BA";
+}
+.fa-vcard:before,
+.fa-address-card:before {
+  content: "\F2BB";
+}
+.fa-vcard-o:before,
+.fa-address-card-o:before {
+  content: "\F2BC";
+}
+.fa-user-circle:before {
+  content: "\F2BD";
+}
+.fa-user-circle-o:before {
+  content: "\F2BE";
+}
+.fa-user-o:before {
+  content: "\F2C0";
+}
+.fa-id-badge:before {
+  content: "\F2C1";
+}
+.fa-drivers-license:before,
+.fa-id-card:before {
+  content: "\F2C2";
+}
+.fa-drivers-license-o:before,
+.fa-id-card-o:before {
+  content: "\F2C3";
+}
+.fa-quora:before {
+  content: "\F2C4";
+}
+.fa-free-code-camp:before {
+  content: "\F2C5";
+}
+.fa-telegram:before {
+  content: "\F2C6";
+}
+.fa-thermometer-4:before,
+.fa-thermometer:before,
+.fa-thermometer-full:before {
+  content: "\F2C7";
+}
+.fa-thermometer-3:before,
+.fa-thermometer-three-quarters:before {
+  content: "\F2C8";
+}
+.fa-thermometer-2:before,
+.fa-thermometer-half:before {
+  content: "\F2C9";
+}
+.fa-thermometer-1:before,
+.fa-thermometer-quarter:before {
+  content: "\F2CA";
+}
+.fa-thermometer-0:before,
+.fa-thermometer-empty:before {
+  content: "\F2CB";
+}
+.fa-shower:before {
+  content: "\F2CC";
+}
+.fa-bathtub:before,
+.fa-s15:before,
+.fa-bath:before {
+  content: "\F2CD";
+}
+.fa-podcast:before {
+  content: "\F2CE";
+}
+.fa-window-maximize:before {
+  content: "\F2D0";
+}
+.fa-window-minimize:before {
+  content: "\F2D1";
+}
+.fa-window-restore:before {
+  content: "\F2D2";
+}
+.fa-times-rectangle:before,
+.fa-window-close:before {
+  content: "\F2D3";
+}
+.fa-times-rectangle-o:before,
+.fa-window-close-o:before {
+  content: "\F2D4";
+}
+.fa-bandcamp:before {
+  content: "\F2D5";
+}
+.fa-grav:before {
+  content: "\F2D6";
+}
+.fa-etsy:before {
+  content: "\F2D7";
+}
+.fa-imdb:before {
+  content: "\F2D8";
+}
+.fa-ravelry:before {
+  content: "\F2D9";
+}
+.fa-eercast:before {
+  content: "\F2DA";
+}
+.fa-microchip:before {
+  content: "\F2DB";
+}
+.fa-snowflake-o:before {
+  content: "\F2DC";
+}
+.fa-superpowers:before {
+  content: "\F2DD";
+}
+.fa-wpexplorer:before {
+  content: "\F2DE";
+}
+.fa-meetup:before {
+  content: "\F2E0";
+}
+/* makes the font 33% larger relative to the icon container */
+.fa-lg {
+  font-size: 1.33333333em;
+  line-height: 0.75em;
+  vertical-align: -15%;
+}
+.fa-2x {
+  font-size: 2em;
+}
+.fa-3x {
+  font-size: 3em;
+}
+.fa-4x {
+  font-size: 4em;
+}
+.fa-5x {
+  font-size: 5em;
+}
+.fa-ul {
+  padding-left: 0;
+  margin-left: 2.14285714em;
+  list-style-type: none;
+}
+.fa-ul > li {
+  position: relative;
+}
+.fa-li {
+  position: absolute;
+  left: -2.14285714em;
+  width: 2.14285714em;
+  top: 0.14285714em;
+  text-align: center;
+}
+.fa-li.fa-lg {
+  left: -1.85714286em;
+}
+/* FONT PATH
+ * -------------------------- */
+@font-face {
+  font-family: 'FontAwesome';
+  src: url(static/fonts/fontawesome-webfont.674f50d2.eot);
+  src: url(static/fonts/fontawesome-webfont.674f50d2.eot?#iefix&v=4.7.0) format('embedded-opentype'), url(static/fonts/fontawesome-webfont.af7ae505.woff2) format('woff2'), url(static/fonts/fontawesome-webfont.fee66e71.woff) format('woff'), url(static/fonts/fontawesome-webfont.b06871f2.ttf) format('truetype'), url(static/img/fontawesome-webfont.912ec66d.svg#fontawesomeregular) format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+.fa-rotate-90 {
+  -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=1)";
+  -webkit-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  transform: rotate(90deg);
+}
+.fa-rotate-180 {
+  -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=2)";
+  -webkit-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+.fa-rotate-270 {
+  -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=3)";
+  -webkit-transform: rotate(270deg);
+  -ms-transform: rotate(270deg);
+  transform: rotate(270deg);
+}
+.fa-flip-horizontal {
+  -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=0, mirror=1)";
+  -webkit-transform: scale(-1, 1);
+  -ms-transform: scale(-1, 1);
+  transform: scale(-1, 1);
+}
+.fa-flip-vertical {
+  -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1)";
+  -webkit-transform: scale(1, -1);
+  -ms-transform: scale(1, -1);
+  transform: scale(1, -1);
+}
+:root .fa-rotate-90,
+:root .fa-rotate-180,
+:root .fa-rotate-270,
+:root .fa-flip-horizontal,
+:root .fa-flip-vertical {
+  filter: none;
+}
+.fa-spin {
+  -webkit-animation: fa-spin 2s infinite linear;
+  animation: fa-spin 2s infinite linear;
+}
+.fa-pulse {
+  -webkit-animation: fa-spin 1s infinite steps(8);
+  animation: fa-spin 1s infinite steps(8);
+}
+@-webkit-keyframes fa-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
+@keyframes fa-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
+.fa-stack {
+  position: relative;
+  display: inline-block;
+  width: 2em;
+  height: 2em;
+  line-height: 2em;
+  vertical-align: middle;
+}
+.fa-stack-1x,
+.fa-stack-2x {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  text-align: center;
+}
+.fa-stack-1x {
+  line-height: inherit;
+}
+.fa-stack-2x {
+  font-size: 2em;
+}
+.fa-inverse {
+  color: #fff;
+}
+</style><style type="text/css">/**
+* General Uppy styles that apply to everything inside the .Uppy container
+*/
+.uppy-Root {
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: left;
+  position: relative;
+  color: #333; }
+
+.uppy-Root *, .uppy-Root *:before, .uppy-Root *:after {
+  box-sizing: inherit; }
+
+.uppy-Root [hidden] {
+  display: none; }
+
+.UppyIcon {
+  max-width: 100%;
+  max-height: 100%;
+  fill: currentColor;
+  /* no !important */
+  display: inline-block;
+  overflow: hidden; }
+
+.UppyIcon--svg-baseline {
+  bottom: -0.125em;
+  position: relative; }
+
+.uppy-u-reset {
+  -webkit-appearance: none;
+  line-height: 1;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  color: inherit;
+  -webkit-backface-visibility: visible;
+          backface-visibility: visible;
+  background: none;
+  border: medium none currentColor;
+  border-collapse: separate;
+  border-image: none;
+  border-radius: 0;
+  border-spacing: 0;
+  box-shadow: none;
+  clear: none;
+  cursor: auto;
+  display: inline;
+  empty-cells: show;
+  float: none;
+  font-family: inherit;
+  font-size: inherit;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: normal;
+  font-stretch: normal;
+  -webkit-hyphens: none;
+      -ms-hyphens: none;
+          hyphens: none;
+  left: auto;
+  letter-spacing: normal;
+  list-style: none;
+  margin: 0;
+  max-height: none;
+  max-width: none;
+  min-height: 0;
+  min-width: 0;
+  opacity: 1;
+  outline: medium none invert;
+  overflow: visible;
+  overflow-x: visible;
+  overflow-y: visible;
+  text-align: left;
+  text-decoration: none;
+  text-indent: 0;
+  text-shadow: none;
+  text-transform: none;
+  top: auto;
+  transform: none;
+  transform-origin: 50% 50% 0;
+  transform-style: flat;
+  transition: none 0s ease 0s;
+  unicode-bidi: normal;
+  vertical-align: baseline;
+  visibility: visible;
+  white-space: normal;
+  z-index: auto; }
+
+.uppy-c-textInput {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 6px 8px;
+  background-color: #fff; }
+
+.uppy-size--md .uppy-c-textInput {
+  padding: 8px 10px; }
+
+.uppy-c-textInput:focus {
+  border-color: rgba(34, 117, 215, 0.6);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(34, 117, 215, 0.15); }
+
+.uppy-c-btn {
+  display: inline-block;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1;
+  font-weight: 500;
+  transition: background-color 0.3s;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none; }
+
+.uppy-c-btn:not(:disabled):not(.disabled) {
+  cursor: pointer; }
+
+.uppy-c-btn::-moz-focus-inner {
+  border: 0; }
+
+.uppy-c-btn-primary {
+  font-size: 14px;
+  padding: 10px 18px;
+  border-radius: 4px;
+  background-color: #2275d7;
+  color: #fff; }
+
+.uppy-size--md .uppy-c-btn-primary {
+  padding: 13px 22px; }
+
+.uppy-c-btn-primary:hover {
+  background-color: #1b5dab; }
+
+.uppy-c-btn-primary:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(34, 117, 215, 0.4); }
+
+.uppy-c-btn-link {
+  font-size: 14px;
+  line-height: 1;
+  padding: 10px 15px;
+  border-radius: 4px;
+  background-color: transparent;
+  color: #525252; }
+
+.uppy-size--md .uppy-c-btn-link {
+  padding: 13px 18px; }
+
+.uppy-c-btn-link:hover {
+  color: #333; }
+
+.uppy-c-btn-link:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(34, 117, 215, 0.25); }
+
+.uppy-c-btn--small {
+  font-size: 0.9em;
+  padding: 7px 16px;
+  border-radius: 2px; }
+
+.uppy-size--md .uppy-c-btn--small {
+  padding: 8px 10px;
+  border-radius: 2px; }
+</style><style type="text/css">.uppy-Informer {
+  position: absolute;
+  bottom: 60px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  opacity: 1;
+  transform: none;
+  transition: all 250ms ease-in;
+  z-index: 1005; }
+
+.uppy-Informer[aria-hidden=true] {
+  opacity: 0;
+  transform: translateY(350%);
+  transition: all 300ms ease-in;
+  z-index: -1000; }
+
+.uppy-Informer p {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: 400;
+  padding: 6px 15px;
+  background-color: #757575;
+  /* no !important */
+  color: #fff;
+  border-radius: 18px;
+  max-width: 90%; }
+  .uppy-size--md .uppy-Informer p {
+    font-size: 14px;
+    line-height: 1.3;
+    max-width: 500px;
+    padding: 10px 20px; }
+
+.uppy-Informer span {
+  line-height: 12px;
+  width: 13px;
+  height: 13px;
+  display: inline-block;
+  vertical-align: middle;
+  color: #525252;
+  background-color: #fff;
+  border-radius: 50%;
+  position: relative;
+  top: -1px;
+  left: 3px;
+  font-size: 10px;
+  margin-left: -1px; }
+
+.uppy-Informer span:hover {
+  cursor: help; }
+
+.uppy-Informer span:after {
+  line-height: 1.3;
+  word-wrap: break-word; }
+
+/* -------------------------------------------------------------------
+  Microtip
+
+  Modern, lightweight css-only tooltips
+  Just 1kb minified and gzipped
+
+  @author Ghosh
+  @package Microtip
+
+----------------------------------------------------------------------
+  1. Base Styles
+  2. Direction Modifiers
+  3. Position Modifiers
+--------------------------------------------------------------------*/
+/* ------------------------------------------------
+  [1] Base Styles
+-------------------------------------------------*/
+.uppy-Root [aria-label][role~="tooltip"] {
+  /* no important */
+  position: relative; }
+
+.uppy-Root [aria-label][role~="tooltip"]::before,
+.uppy-Root [aria-label][role~="tooltip"]::after {
+  /* no important */
+  transform: translate3d(0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  will-change: transform;
+  opacity: 0;
+  pointer-events: none;
+  transition: all var(--microtip-transition-duration, 0.18s) var(--microtip-transition-easing, ease-in-out) var(--microtip-transition-delay, 0s);
+  position: absolute;
+  box-sizing: border-box;
+  z-index: 10;
+  transform-origin: top; }
+
+.uppy-Root [aria-label][role~="tooltip"]::before {
+  /* no important */
+  background-size: 100% auto !important;
+  content: ""; }
+
+.uppy-Root [aria-label][role~="tooltip"]::after {
+  /* no important */
+  background: rgba(17, 17, 17, 0.9);
+  border-radius: 4px;
+  color: #ffffff;
+  content: attr(aria-label);
+  font-size: var(--microtip-font-size, 13px);
+  font-weight: var(--microtip-font-weight, normal);
+  text-transform: var(--microtip-text-transform, none);
+  padding: .5em 1em;
+  white-space: nowrap;
+  box-sizing: content-box; }
+
+.uppy-Root [aria-label][role~="tooltip"]:hover::before,
+.uppy-Root [aria-label][role~="tooltip"]:hover::after,
+.uppy-Root [aria-label][role~="tooltip"]:focus::before,
+.uppy-Root [aria-label][role~="tooltip"]:focus::after {
+  /* no important */
+  opacity: 1;
+  pointer-events: auto; }
+
+/* ------------------------------------------------
+  [2] Position Modifiers
+-------------------------------------------------*/
+.uppy-Root [role~="tooltip"][data-microtip-position|="top"]::before {
+  /* no important */
+  background: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2236px%22%20height%3D%2212px%22%3E%3Cpath%20fill%3D%22rgba%2817,%2017,%2017,%200.9%29%22%20transform%3D%22rotate%280%29%22%20d%3D%22M2.658,0.000%20C-13.615,0.000%2050.938,0.000%2034.662,0.000%20C28.662,0.000%2023.035,12.002%2018.660,12.002%20C14.285,12.002%208.594,0.000%202.658,0.000%20Z%22/%3E%3C/svg%3E") no-repeat;
+  height: 6px;
+  width: 18px;
+  margin-bottom: 5px; }
+
+.uppy-Root [role~="tooltip"][data-microtip-position|="top"]::after {
+  /* no important */
+  margin-bottom: 11px; }
+
+.uppy-Root [role~="tooltip"][data-microtip-position|="top"]::before {
+  /* no important */
+  transform: translate3d(-50%, 0, 0);
+  bottom: 100%;
+  left: 50%; }
+
+.uppy-Root [role~="tooltip"][data-microtip-position|="top"]:hover::before {
+  /* no important */
+  transform: translate3d(-50%, -5px, 0); }
+
+.uppy-Root [role~="tooltip"][data-microtip-position|="top"]::after {
+  /* no important */
+  transform: translate3d(-50%, 0, 0);
+  bottom: 100%;
+  left: 50%; }
+
+.uppy-Root [role~="tooltip"][data-microtip-position="top"]:hover::after {
+  /* no important */
+  transform: translate3d(-50%, -5px, 0); }
+
+/* ------------------------------------------------
+  [2.1] Top Left
+-------------------------------------------------*/
+.uppy-Root [role~="tooltip"][data-microtip-position="top-left"]::after {
+  /* no important */
+  transform: translate3d(calc(-100% + 16px), 0, 0);
+  bottom: 100%; }
+
+.uppy-Root [role~="tooltip"][data-microtip-position="top-left"]:hover::after {
+  /* no important */
+  transform: translate3d(calc(-100% + 16px), -5px, 0); }
+
+/* ------------------------------------------------
+  [2.2] Top Right
+-------------------------------------------------*/
+.uppy-Root [role~="tooltip"][data-microtip-position="top-right"]::after {
+  /* no important */
+  transform: translate3d(calc(0% + -16px), 0, 0);
+  bottom: 100%; }
+
+.uppy-Root [role~="tooltip"][data-microtip-position="top-right"]:hover::after {
+  /* no important */
+  transform: translate3d(calc(0% + -16px), -5px, 0); }
+
+/* ------------------------------------------------
+  [2.3] Bottom
+-------------------------------------------------*/
+.uppy-Root [role~="tooltip"][data-microtip-position|="bottom"]::before {
+  /* no important */
+  background: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2236px%22%20height%3D%2212px%22%3E%3Cpath%20fill%3D%22rgba%2817,%2017,%2017,%200.9%29%22%20transform%3D%22rotate%28180%2018%206%29%22%20d%3D%22M2.658,0.000%20C-13.615,0.000%2050.938,0.000%2034.662,0.000%20C28.662,0.000%2023.035,12.002%2018.660,12.002%20C14.285,12.002%208.594,0.000%202.658,0.000%20Z%22/%3E%3C/svg%3E") no-repeat;
+  height: 6px;
+  width: 18px;
+  margin-top: 5px;
+  margin-bottom: 0; }
+
+.uppy-Root [role~="tooltip"][data-microtip-position|="bottom"]::after {
+  /* no important */
+  margin-top: 11px; }
+
+.uppy-Root [role~="tooltip"][data-microtip-position|="bottom"]::before {
+  /* no important */
+  transform: translate3d(-50%, -10px, 0);
+  bottom: auto;
+  left: 50%;
+  top: 100%; }
+
+.uppy-Root [role~="tooltip"][data-microtip-position|="bottom"]:hover::before {
+  /* no important */
+  transform: translate3d(-50%, 0, 0); }
+
+.uppy-Root [role~="tooltip"][data-microtip-position|="bottom"]::after {
+  /* no important */
+  transform: translate3d(-50%, -10px, 0);
+  top: 100%;
+  left: 50%; }
+
+.uppy-Root [role~="tooltip"][data-microtip-position="bottom"]:hover::after {
+  /* no important */
+  transform: translate3d(-50%, 0, 0); }
+
+/* ------------------------------------------------
+  [2.4] Bottom Left
+-------------------------------------------------*/
+.uppy-Root [role~="tooltip"][data-microtip-position="bottom-left"]::after {
+  /* no important */
+  transform: translate3d(calc(-100% + 16px), -10px, 0);
+  top: 100%; }
+
+.uppy-Root [role~="tooltip"][data-microtip-position="bottom-left"]:hover::after {
+  /* no important */
+  transform: translate3d(calc(-100% + 16px), 0, 0); }
+
+/* ------------------------------------------------
+  [2.5] Bottom Right
+-------------------------------------------------*/
+.uppy-Root [role~="tooltip"][data-microtip-position="bottom-right"]::after {
+  /* no important */
+  transform: translate3d(calc(0% + -16px), -10px, 0);
+  top: 100%; }
+
+.uppy-Root [role~="tooltip"][data-microtip-position="bottom-right"]:hover::after {
+  /* no important */
+  transform: translate3d(calc(0% + -16px), 0, 0); }
+
+/* ------------------------------------------------
+  [2.6] Left
+-------------------------------------------------*/
+.uppy-Root [role~="tooltip"][data-microtip-position="left"]::before,
+.uppy-Root [role~="tooltip"][data-microtip-position="left"]::after {
+  /* no important */
+  bottom: auto;
+  left: auto;
+  right: 100%;
+  top: 50%;
+  transform: translate3d(10px, -50%, 0); }
+
+.uppy-Root [role~="tooltip"][data-microtip-position="left"]::before {
+  /* no important */
+  background: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212px%22%20height%3D%2236px%22%3E%3Cpath%20fill%3D%22rgba%2817,%2017,%2017,%200.9%29%22%20transform%3D%22rotate%28-90%2018%2018%29%22%20d%3D%22M2.658,0.000%20C-13.615,0.000%2050.938,0.000%2034.662,0.000%20C28.662,0.000%2023.035,12.002%2018.660,12.002%20C14.285,12.002%208.594,0.000%202.658,0.000%20Z%22/%3E%3C/svg%3E") no-repeat;
+  height: 18px;
+  width: 6px;
+  margin-right: 5px;
+  margin-bottom: 0; }
+
+.uppy-Root [role~="tooltip"][data-microtip-position="left"]::after {
+  /* no important */
+  margin-right: 11px; }
+
+.uppy-Root [role~="tooltip"][data-microtip-position="left"]:hover::before,
+.uppy-Root [role~="tooltip"][data-microtip-position="left"]:hover::after {
+  /* no important */
+  transform: translate3d(0, -50%, 0); }
+
+/* ------------------------------------------------
+  [2.7] Right
+-------------------------------------------------*/
+.uppy-Root [role~="tooltip"][data-microtip-position="right"]::before,
+.uppy-Root [role~="tooltip"][data-microtip-position="right"]::after {
+  /* no important */
+  bottom: auto;
+  left: 100%;
+  top: 50%;
+  transform: translate3d(-10px, -50%, 0); }
+
+.uppy-Root [role~="tooltip"][data-microtip-position="right"]::before {
+  /* no important */
+  background: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212px%22%20height%3D%2236px%22%3E%3Cpath%20fill%3D%22rgba%2817,%2017,%2017,%200.9%29%22%20transform%3D%22rotate%2890%206%206%29%22%20d%3D%22M2.658,0.000%20C-13.615,0.000%2050.938,0.000%2034.662,0.000%20C28.662,0.000%2023.035,12.002%2018.660,12.002%20C14.285,12.002%208.594,0.000%202.658,0.000%20Z%22/%3E%3C/svg%3E") no-repeat;
+  height: 18px;
+  width: 6px;
+  margin-bottom: 0;
+  margin-left: 5px; }
+
+.uppy-Root [role~="tooltip"][data-microtip-position="right"]::after {
+  /* no important */
+  margin-left: 11px; }
+
+.uppy-Root [role~="tooltip"][data-microtip-position="right"]:hover::before,
+.uppy-Root [role~="tooltip"][data-microtip-position="right"]:hover::after {
+  /* no important */
+  transform: translate3d(0, -50%, 0); }
+
+/* ------------------------------------------------
+  [3] Size
+-------------------------------------------------*/
+.uppy-Root [role~="tooltip"][data-microtip-size="small"]::after {
+  /* no important */
+  white-space: initial;
+  width: 80px; }
+
+.uppy-Root [role~="tooltip"][data-microtip-size="medium"]::after {
+  /* no important */
+  white-space: initial;
+  width: 150px; }
+
+.uppy-Root [role~="tooltip"][data-microtip-size="large"]::after {
+  /* no important */
+  white-space: initial;
+  width: 260px; }
+
+.uppy-StatusBar {
+  display: -ms-flexbox;
+  display: flex;
+  position: relative;
+  height: 40px;
+  line-height: 40px;
+  font-size: 12px;
+  font-weight: 400;
+  color: #fff;
+  background-color: #fff;
+  z-index: 1001;
+  transition: height .2s; }
+
+.uppy-size--md .uppy-StatusBar {
+  height: 46px; }
+
+.uppy-StatusBar:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #eaeaea; }
+
+.uppy-StatusBar[aria-hidden=true] {
+  overflow-y: hidden;
+  height: 0; }
+
+.uppy-StatusBar.is-complete .uppy-StatusBar-progress {
+  background-color: #1bb240; }
+
+.uppy-StatusBar.is-error .uppy-StatusBar-progress {
+  background-color: #e32437; }
+
+.uppy-StatusBar.is-complete .uppy-StatusBar-statusIndicator {
+  color: #1bb240; }
+
+.uppy-StatusBar.is-error .uppy-StatusBar-statusIndicator {
+  color: #e32437; }
+
+.uppy-StatusBar:not([aria-hidden=true]).is-waiting {
+  background-color: #fff;
+  height: 65px;
+  border-top: 1px solid #eaeaea; }
+
+.uppy-StatusBar-progress {
+  background-color: #2275d7;
+  height: 2px;
+  position: absolute;
+  z-index: 1001;
+  transition: background-color, width .3s ease-out; }
+  .uppy-StatusBar-progress.is-indeterminate {
+    background-size: 64px 64px;
+    background-image: linear-gradient(45deg, rgba(0, 0, 0, 0.3) 25%, transparent 25%, transparent 50%, rgba(0, 0, 0, 0.3) 50%, rgba(0, 0, 0, 0.3) 75%, transparent 75%, transparent);
+    animation: uppy-StatusBar-ProgressStripes 1s linear infinite; }
+
+@keyframes uppy-StatusBar-ProgressStripes {
+  from {
+    background-position: 0 0; }
+  to {
+    background-position: 64px 0; } }
+
+.uppy-StatusBar.is-preprocessing .uppy-StatusBar-progress,
+.uppy-StatusBar.is-postprocessing .uppy-StatusBar-progress {
+  background-color: #f6a623; }
+
+.uppy-StatusBar.is-waiting .uppy-StatusBar-progress {
+  display: none; }
+
+.uppy-StatusBar-content {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  position: relative;
+  z-index: 1002;
+  padding-left: 10px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: #333;
+  height: 100%; }
+  .uppy-size--md .uppy-StatusBar-content {
+    padding-left: 15px; }
+
+.uppy-StatusBar-status {
+  line-height: 1.4;
+  font-weight: normal;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+      flex-direction: column;
+  -ms-flex-pack: center;
+      justify-content: center;
+  padding-right: 0.3em; }
+
+.uppy-Root:not(.uppy-size--md) .uppy-StatusBar-additionalInfo {
+  display: none; }
+
+.uppy-StatusBar-statusPrimary {
+  font-weight: 500; }
+
+.uppy-StatusBar-statusSecondary {
+  margin-top: 1px;
+  font-size: 11px;
+  line-height: 1.2;
+  display: inline-block;
+  color: #757575;
+  white-space: nowrap; }
+
+.uppy-StatusBar-statusSecondaryHint {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 5px;
+  line-height: 1; }
+  .uppy-size--md .uppy-StatusBar-statusSecondaryHint {
+    margin-right: 8px; }
+
+.uppy-StatusBar-statusIndicator {
+  position: relative;
+  top: 1px;
+  color: #525252;
+  margin-right: 7px; }
+  .uppy-StatusBar-statusIndicator svg {
+    vertical-align: text-bottom; }
+
+.uppy-StatusBar-actions {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 10px;
+  z-index: 1004; }
+
+.uppy-StatusBar.is-waiting .uppy-StatusBar-actions {
+  width: 100%;
+  position: static;
+  padding: 0 15px;
+  background-color: #fafafa; }
+
+.uppy-StatusBar-actionCircleBtn {
+  line-height: 1;
+  cursor: pointer;
+  margin: 3px;
+  opacity: 0.9; }
+  .uppy-StatusBar-actionCircleBtn:focus {
+    outline: none; }
+  .uppy-StatusBar-actionCircleBtn::-moz-focus-inner {
+    border: 0; }
+  .uppy-StatusBar-actionCircleBtn:focus {
+    box-shadow: 0 0 0 3px rgba(34, 117, 215, 0.5); }
+  .uppy-StatusBar-actionCircleBtn:hover {
+    opacity: 1; }
+  .uppy-StatusBar-actionCircleBtn:focus {
+    border-radius: 50%; }
+
+.uppy-StatusBar-actionCircleBtn svg {
+  vertical-align: bottom; }
+
+.uppy-StatusBar-actionBtn {
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 10px;
+  line-height: inherit;
+  color: #2275d7; }
+  .uppy-size--md .uppy-StatusBar-actionBtn {
+    font-size: 11px; }
+
+.uppy-StatusBar-actionBtn--retry {
+  height: 16px;
+  border-radius: 8px;
+  margin-right: 6px;
+  background-color: #ff4b23;
+  line-height: 1;
+  color: #fff;
+  padding: 1px 6px 3px 18px;
+  position: relative; }
+  .uppy-StatusBar-actionBtn--retry:focus {
+    outline: none; }
+  .uppy-StatusBar-actionBtn--retry::-moz-focus-inner {
+    border: 0; }
+  .uppy-StatusBar-actionBtn--retry:focus {
+    box-shadow: 0 0 0 3px rgba(34, 117, 215, 0.5); }
+  .uppy-StatusBar-actionBtn--retry:hover {
+    background-color: #f92d00; }
+  .uppy-StatusBar-actionBtn--retry svg {
+    position: absolute;
+    top: 3px;
+    left: 6px; }
+
+.uppy-StatusBar.is-waiting .uppy-StatusBar-actionBtn--upload {
+  font-size: 14px;
+  width: 100%;
+  padding: 15px 10px;
+  color: #fff;
+  background-color: #1bb240;
+  line-height: 1; }
+
+.uppy-StatusBar.is-waiting .uppy-StatusBar-actionBtn--upload:hover {
+  background-color: #148630; }
+
+.uppy-size--md .uppy-StatusBar.is-waiting .uppy-StatusBar-actionBtn--upload {
+  padding: 13px 22px;
+  width: auto; }
+
+.uppy-StatusBar:not(.is-waiting) .uppy-StatusBar-actionBtn--upload {
+  background-color: transparent;
+  color: #2275d7; }
+
+.uppy-StatusBar-actionBtn--uploadNewlyAdded {
+  padding-right: 3px;
+  padding-left: 3px;
+  padding-bottom: 1px;
+  border-radius: 3px; }
+  .uppy-StatusBar-actionBtn--uploadNewlyAdded:focus {
+    outline: none; }
+  .uppy-StatusBar-actionBtn--uploadNewlyAdded::-moz-focus-inner {
+    border: 0; }
+  .uppy-StatusBar-actionBtn--uploadNewlyAdded:focus {
+    box-shadow: 0 0 0 3px rgba(34, 117, 215, 0.5); }
+
+.uppy-StatusBar-details {
+  line-height: 12px;
+  width: 13px;
+  height: 13px;
+  display: inline-block;
+  vertical-align: middle;
+  color: #fff;
+  background-color: #939393;
+  border-radius: 50%;
+  position: relative;
+  top: 0;
+  left: 2px;
+  font-size: 10px;
+  font-weight: 600;
+  text-align: center;
+  cursor: help; }
+
+.uppy-StatusBar-details:after {
+  line-height: 1.3;
+  word-wrap: break-word; }
+
+.uppy-StatusBar-spinner {
+  animation-name: uppy-StatusBar-spinnerAnimation;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  margin-right: 10px;
+  fill: #2275d7; }
+
+.uppy-StatusBar.is-preprocessing .uppy-StatusBar-spinner,
+.uppy-StatusBar.is-postprocessing .uppy-StatusBar-spinner {
+  fill: #f6a623; }
+
+@keyframes uppy-StatusBar-spinnerAnimation {
+  0% {
+    transform: rotate(0deg); }
+  100% {
+    transform: rotate(360deg); } }
+
+.uppy-ProviderBrowser-viewType--grid ul.uppy-ProviderBrowser-list {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: row;
+      flex-direction: row;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -ms-flex-pack: justify;
+      justify-content: space-between;
+  -ms-flex-align: start;
+      align-items: flex-start;
+  padding: 6px; }
+  .uppy-ProviderBrowser-viewType--grid ul.uppy-ProviderBrowser-list::after {
+    content: '';
+    -ms-flex: auto;
+        flex: auto; }
+
+.uppy-ProviderBrowser-viewType--grid li.uppy-ProviderBrowserItem {
+  width: 50%;
+  position: relative;
+  margin: 0; }
+  .uppy-size--md .uppy-ProviderBrowser-viewType--grid li.uppy-ProviderBrowserItem {
+    width: 33.3333%; }
+  .uppy-size--lg .uppy-ProviderBrowser-viewType--grid li.uppy-ProviderBrowserItem {
+    width: 25%; }
+  .uppy-ProviderBrowser-viewType--grid li.uppy-ProviderBrowserItem::before {
+    content: '';
+    padding-top: 100%;
+    display: block; }
+
+.uppy-ProviderBrowser-viewType--grid li.uppy-ProviderBrowserItem--selected img, .uppy-ProviderBrowser-viewType--grid li.uppy-ProviderBrowserItem--selected svg {
+  opacity: 0.85; }
+
+.uppy-ProviderBrowser-viewType--grid li.uppy-ProviderBrowserItem--noPreview .uppy-ProviderBrowserItem-inner {
+  background-color: rgba(147, 147, 147, 0.3); }
+
+.uppy-ProviderBrowser-viewType--grid li.uppy-ProviderBrowserItem--noPreview svg {
+  fill: rgba(0, 0, 0, 0.7);
+  width: 30%;
+  height: 30%; }
+
+.uppy-ProviderBrowser-viewType--grid button.uppy-ProviderBrowserItem-inner {
+  border-radius: 4px;
+  overflow: hidden;
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  right: 7px;
+  bottom: 7px;
+  text-align: center; }
+  .uppy-ProviderBrowser-viewType--grid button.uppy-ProviderBrowserItem-inner:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(34, 117, 215, 0.9); }
+  .uppy-ProviderBrowser-viewType--grid button.uppy-ProviderBrowserItem-inner img, .uppy-ProviderBrowser-viewType--grid button.uppy-ProviderBrowserItem-inner svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px; }
+
+.uppy-ProviderBrowser-viewType--grid .uppy-ProviderBrowserItem-fakeCheckbox {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 26px;
+  height: 26px;
+  background-color: #2275d7;
+  border-radius: 50%;
+  z-index: 1002;
+  opacity: 0; }
+  .uppy-ProviderBrowser-viewType--grid .uppy-ProviderBrowserItem-fakeCheckbox:after {
+    width: 12px;
+    height: 7px;
+    left: 7px;
+    top: 8px; }
+
+.uppy-ProviderBrowser-viewType--grid .uppy-ProviderBrowserItem-fakeCheckbox--is-checked {
+  opacity: 1; }
+
+.uppy-ProviderBrowser-viewType--list {
+  background-color: #fff; }
+  .uppy-ProviderBrowser-viewType--list li.uppy-ProviderBrowserItem {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+        align-items: center;
+    padding: 7px 15px;
+    margin: 0; }
+  .uppy-ProviderBrowser-viewType--list .uppy-ProviderBrowserItem-fakeCheckbox {
+    margin-right: 15px;
+    height: 17px;
+    width: 17px;
+    border-radius: 3px;
+    background-color: #fff;
+    border: 1px solid #cfcfcf; }
+    .uppy-ProviderBrowser-viewType--list .uppy-ProviderBrowserItem-fakeCheckbox:focus {
+      border: 1px solid #2275d7;
+      box-shadow: 0 0 0 3px rgba(34, 117, 215, 0.25);
+      outline: none; }
+    .uppy-ProviderBrowser-viewType--list .uppy-ProviderBrowserItem-fakeCheckbox::after {
+      opacity: 0;
+      height: 5px;
+      width: 9px;
+      left: 3px;
+      top: 4px; }
+  .uppy-ProviderBrowser-viewType--list .uppy-ProviderBrowserItem-fakeCheckbox--is-checked {
+    background-color: #2275d7;
+    border-color: #2275d7; }
+    .uppy-ProviderBrowser-viewType--list .uppy-ProviderBrowserItem-fakeCheckbox--is-checked::after {
+      opacity: 1; }
+  .uppy-ProviderBrowser-viewType--list .uppy-ProviderBrowserItem-inner {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+        align-items: center;
+    padding: 2px; }
+    .uppy-ProviderBrowser-viewType--list .uppy-ProviderBrowserItem-inner:focus {
+      outline: none;
+      text-decoration: underline; }
+    .uppy-ProviderBrowser-viewType--list .uppy-ProviderBrowserItem-inner img, .uppy-ProviderBrowser-viewType--list .uppy-ProviderBrowserItem-inner svg {
+      margin-right: 8px;
+      max-width: 20px;
+      max-height: 20px; }
+
+.uppy-ProviderBrowserItem-fakeCheckbox {
+  position: relative;
+  cursor: pointer; }
+  .uppy-ProviderBrowserItem-fakeCheckbox::after {
+    content: '';
+    position: absolute;
+    cursor: pointer;
+    border-left: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    transform: rotate(-45deg); }
+
+.uppy-DashboardContent-panelBody {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: center;
+      justify-content: center;
+  -ms-flex: 1;
+      flex: 1; }
+
+.uppy-Provider-auth,
+.uppy-Provider-error,
+.uppy-Provider-loading,
+.uppy-Provider-empty {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: center;
+      justify-content: center;
+  -ms-flex-flow: column wrap;
+      flex-flow: column wrap;
+  -ms-flex: 1;
+      flex: 1;
+  color: #939393; }
+
+.uppy-Provider-empty {
+  color: #939393; }
+
+.uppy-Provider-authIcon svg {
+  width: 100px;
+  height: 75px;
+  margin-bottom: 15px; }
+
+.uppy-Provider-authTitle {
+  font-size: 17px;
+  line-height: 1.4;
+  font-weight: 400;
+  margin-bottom: 30px;
+  padding: 0 15px;
+  max-width: 500px;
+  text-align: center;
+  color: #757575; }
+  .uppy-size--md .uppy-Provider-authTitle {
+    font-size: 20px; }
+
+.uppy-Provider-breadcrumbs {
+  -ms-flex: 1;
+      flex: 1;
+  color: #525252;
+  font-size: 12px;
+  margin-bottom: 10px;
+  text-align: left; }
+  .uppy-size--md .uppy-Provider-breadcrumbs {
+    margin-bottom: 0; }
+
+.uppy-Provider-breadcrumbsIcon {
+  display: inline-block;
+  color: #525252;
+  vertical-align: middle;
+  margin-right: 4px;
+  line-height: 1; }
+
+.uppy-Provider-breadcrumbsIcon svg {
+  width: 13px;
+  height: 13px;
+  fill: #525252; }
+
+.uppy-Provider-breadcrumbs button {
+  display: inline-block;
+  line-height: inherit;
+  padding: 4px;
+  border-radius: 3px; }
+  .uppy-Provider-breadcrumbs button:focus {
+    outline: none; }
+  .uppy-Provider-breadcrumbs button::-moz-focus-inner {
+    border: 0; }
+  .uppy-Provider-breadcrumbs button:hover {
+    color: #1b5dab; }
+  .uppy-Provider-breadcrumbs button:focus {
+    background-color: #eceef2; }
+  .uppy-Provider-breadcrumbs button:hover {
+    text-decoration: underline;
+    cursor: pointer; }
+
+.uppy-ProviderBrowser {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+      flex-direction: column;
+  -ms-flex: 1;
+      flex: 1;
+  font-size: 14px;
+  font-weight: 400;
+  height: 100%; }
+
+.uppy-ProviderBrowser-user {
+  margin: 0 8px 0 0;
+  font-weight: 500;
+  color: #333; }
+
+.uppy-ProviderBrowser-user:after {
+  content: '\00B7';
+  position: relative;
+  left: 4px;
+  color: #939393;
+  font-weight: normal; }
+
+.uppy-ProviderBrowser-header {
+  z-index: 1001;
+  border-bottom: 1px solid #eaeaea;
+  position: relative; }
+
+.uppy-ProviderBrowser-headerBar {
+  padding: 7px 15px;
+  background-color: #fafafa;
+  z-index: 1001;
+  color: #757575;
+  line-height: 1.4;
+  font-size: 12px; }
+  .uppy-size--md .uppy-ProviderBrowser-headerBar {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+        align-items: center; }
+
+.uppy-ProviderBrowser-headerBar--simple {
+  text-align: center;
+  display: block;
+  -ms-flex-pack: center;
+      justify-content: center; }
+
+.uppy-ProviderBrowser-headerBar--simple .uppy-Provider-breadcrumbsWrap {
+  -ms-flex: none;
+      flex: none;
+  display: inline-block;
+  vertical-align: middle; }
+
+.uppy-ProviderBrowser-search {
+  width: 100%;
+  background-color: #fff;
+  position: relative;
+  height: 30px;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center; }
+
+.uppy-ProviderBrowser-searchIcon {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  left: 16px;
+  z-index: 1002;
+  color: #bbb; }
+
+.uppy-ProviderBrowser-searchInput {
+  width: 100%;
+  height: 30px;
+  background-color: transparent;
+  outline: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-size: 12px;
+  line-height: 1.4;
+  border: 0;
+  margin: 0 8px;
+  padding-left: 27px;
+  z-index: 1001;
+  border-radius: 4px; }
+
+.uppy-ProviderBrowser-searchInput:focus {
+  outline: 0;
+  background-color: #f4f4f4; }
+
+.uppy-ProviderBrowser-searchClose {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  padding: 6px;
+  right: 12px;
+  top: 4px;
+  z-index: 1002;
+  color: #939393;
+  cursor: pointer; }
+  .uppy-ProviderBrowser-searchClose:hover {
+    color: #757575; }
+
+.uppy-ProviderBrowser-searchClose svg {
+  vertical-align: text-top; }
+
+.uppy-ProviderBrowser-searchInput:-ms-input-placeholder {
+  color: #939393;
+  opacity: 1; }
+
+.uppy-ProviderBrowser-searchInput::-ms-input-placeholder {
+  color: #939393;
+  opacity: 1; }
+
+.uppy-ProviderBrowser-searchInput::placeholder {
+  color: #939393;
+  opacity: 1; }
+
+.uppy-ProviderBrowser-userLogout {
+  cursor: pointer;
+  line-height: inherit;
+  color: #2275d7;
+  padding: 4px;
+  border-radius: 3px; }
+  .uppy-ProviderBrowser-userLogout:focus {
+    outline: none; }
+  .uppy-ProviderBrowser-userLogout::-moz-focus-inner {
+    border: 0; }
+  .uppy-ProviderBrowser-userLogout:hover {
+    color: #1b5dab; }
+  .uppy-ProviderBrowser-userLogout:focus {
+    background-color: #eceef2; }
+  .uppy-ProviderBrowser-userLogout:hover {
+    text-decoration: underline; }
+
+.uppy-ProviderBrowser-body {
+  -ms-flex: 1;
+      flex: 1;
+  position: relative; }
+
+.uppy-ProviderBrowser-list {
+  -ms-flex: 1;
+      flex: 1;
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  border-spacing: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0; }
+
+.uppy-ProviderBrowserItem-inner {
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 13px; }
+
+.uppy-ProviderBrowser-footer {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  background: #fff;
+  height: 65px;
+  border-top: 1px solid #eaeaea;
+  padding: 0 15px; }
+  .uppy-ProviderBrowser-footer button {
+    margin-right: 8px; }
+
+.uppy-DashboardItem-previewInnerWrap {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: center;
+      justify-content: center;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-direction: column;
+      flex-direction: column;
+  box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.4);
+  border-radius: 3px; }
+  .uppy-size--md .uppy-DashboardItem-previewInnerWrap {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15); }
+
+.uppy-DashboardItem-previewInnerWrap:after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.65);
+  display: none;
+  z-index: 1001; }
+
+.uppy-DashboardItem-previewLink {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 1002; }
+  .uppy-DashboardItem-previewLink:focus {
+    box-shadow: inset 0 0 0 3px #76abe9; }
+
+.uppy-DashboardItem-preview img.uppy-DashboardItem-previewImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: translateZ(0);
+  border-radius: 3px; }
+
+.uppy-DashboardItem-progress {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1002;
+  color: #fff;
+  text-align: center;
+  width: 120px;
+  transition: all .35 ease; }
+
+.uppy-DashboardItem-progressIndicator {
+  display: inline-block;
+  width: 38px;
+  height: 38px;
+  opacity: 0.9;
+  cursor: pointer; }
+  .uppy-DashboardItem-progressIndicator:focus {
+    outline: none; }
+  .uppy-DashboardItem-progressIndicator::-moz-focus-inner {
+    border: 0; }
+  .uppy-DashboardItem-progressIndicator:focus svg.UppyIcon-progressCircle .bg,
+  .uppy-DashboardItem-progressIndicator:focus svg.retry {
+    fill: #76abe9; }
+
+svg.UppyIcon-progressCircle {
+  width: 100%;
+  height: 100%; }
+  svg.UppyIcon-progressCircle .bg {
+    stroke: rgba(255, 255, 255, 0.4);
+    opacity: 0; }
+  svg.UppyIcon-progressCircle .progress {
+    stroke: #fff;
+    transition: stroke-dashoffset .5s ease-out;
+    opacity: 0; }
+  svg.UppyIcon-progressCircle .play {
+    stroke: #fff;
+    fill: #fff;
+    opacity: 0;
+    transition: all 0.2s;
+    display: none; }
+  svg.UppyIcon-progressCircle .cancel {
+    fill: #fff;
+    opacity: 0;
+    transition: all 0.2s; }
+  svg.UppyIcon-progressCircle .pause {
+    stroke: #fff;
+    fill: #fff;
+    opacity: 0;
+    transition: all 0.2s;
+    display: none; }
+  svg.UppyIcon-progressCircle .check {
+    opacity: 0;
+    fill: #fff;
+    transition: all 0.2s; }
+
+svg.UppyIcon.retry {
+  fill: #fff; }
+
+.uppy-DashboardItem.is-complete .uppy-DashboardItem-progress {
+  transform: initial;
+  top: -9px;
+  right: -8px;
+  left: initial;
+  width: auto; }
+
+.uppy-DashboardItem.is-inprogress .uppy-DashboardItem-progress,
+.uppy-DashboardItem.is-complete .uppy-DashboardItem-progress,
+.uppy-DashboardItem.is-error .uppy-DashboardItem-progress {
+  display: block; }
+
+.uppy-DashboardItem.is-error .uppy-DashboardItem-progressIndicator {
+  width: 18px;
+  height: 18px; }
+  .uppy-size--md .uppy-DashboardItem.is-error .uppy-DashboardItem-progressIndicator {
+    width: 28px;
+    height: 28px; }
+
+.uppy-DashboardItem.is-complete .uppy-DashboardItem-progressIndicator {
+  width: 18px;
+  height: 18px;
+  opacity: 1; }
+  .uppy-size--md .uppy-DashboardItem.is-complete .uppy-DashboardItem-progressIndicator {
+    width: 22px;
+    height: 22px; }
+
+.uppy-DashboardItem.is-paused svg.UppyIcon-progressCircle .pause {
+  opacity: 0; }
+
+.uppy-DashboardItem.is-paused svg.UppyIcon-progressCircle .play {
+  opacity: 1; }
+
+.uppy-DashboardItem.is-noIndividualCancellation .uppy-DashboardItem-progressIndicator {
+  cursor: default; }
+
+.uppy-DashboardItem.is-noIndividualCancellation .cancel {
+  display: none; }
+
+.uppy-DashboardItem.is-processing .uppy-DashboardItem-progress {
+  opacity: 0; }
+
+.uppy-DashboardItem.is-complete .uppy-DashboardItem-progressIndicator {
+  cursor: default; }
+
+.uppy-DashboardItem.is-complete .progress {
+  stroke: #1bb240;
+  fill: #1bb240;
+  opacity: 1; }
+
+.uppy-DashboardItem.is-complete .check {
+  opacity: 1; }
+
+.uppy-size--md .uppy-DashboardItem-progressIndicator {
+  width: 55px;
+  height: 55px; }
+
+.uppy-DashboardItem.is-resumable .pause, .uppy-DashboardItem.is-resumable .play {
+  display: block; }
+
+.uppy-DashboardItem.is-resumable .cancel {
+  display: none; }
+
+.uppy-DashboardItem.is-inprogress .bg, .uppy-DashboardItem.is-inprogress .progress, .uppy-DashboardItem.is-inprogress .pause, .uppy-DashboardItem.is-inprogress .cancel {
+  opacity: 1; }
+
+.uppy-DashboardItem-fileInfo {
+  padding-right: 5px; }
+
+.uppy-DashboardItem-name {
+  font-size: 12px;
+  line-height: 1.3;
+  font-weight: 500;
+  margin-bottom: 4px;
+  word-break: break-all;
+  word-wrap: anywhere; }
+
+.uppy-DashboardItem-status {
+  font-size: 11px;
+  line-height: 1.3;
+  font-weight: normal;
+  color: #757575; }
+
+.uppy-DashboardItem-statusSize {
+  display: inline-block;
+  vertical-align: bottom;
+  text-transform: uppercase; }
+
+.uppy-DashboardItem-sourceIcon {
+  display: inline-block;
+  vertical-align: bottom;
+  color: #bbb; }
+  .uppy-DashboardItem-sourceIcon:not(:first-child) {
+    position: relative;
+    margin-left: 14px; }
+  .uppy-DashboardItem-sourceIcon svg,
+  .uppy-DashboardItem-sourceIcon svg * {
+    max-width: 100%;
+    max-height: 100%;
+    display: inline-block;
+    vertical-align: text-bottom;
+    overflow: hidden;
+    fill: currentColor;
+    width: 11px;
+    height: 12px; }
+
+.uppy-DashboardItem-action {
+  cursor: pointer;
+  color: #939393; }
+  .uppy-DashboardItem-action:focus {
+    outline: none; }
+  .uppy-DashboardItem-action::-moz-focus-inner {
+    border: 0; }
+  .uppy-DashboardItem-action:focus {
+    box-shadow: 0 0 0 3px rgba(34, 117, 215, 0.5); }
+  .uppy-DashboardItem-action:hover {
+    opacity: 1;
+    color: #1f1f1f; }
+
+.uppy-DashboardItem-action--remove {
+  color: #1f1f1f;
+  opacity: 0.95; }
+
+.uppy-Dashboard:not(.uppy-size--md) .uppy-DashboardItem-actionWrapper {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center; }
+
+.uppy-Dashboard:not(.uppy-size--md) .uppy-DashboardItem-action {
+  width: 22px;
+  height: 22px;
+  padding: 3px;
+  margin-left: 3px; }
+  .uppy-Dashboard:not(.uppy-size--md) .uppy-DashboardItem-action:focus {
+    border-radius: 3px; }
+
+.uppy-size--md .uppy-DashboardItem-action--copyLink,
+.uppy-size--md .uppy-DashboardItem-action--edit {
+  width: 16px;
+  height: 16px;
+  padding: 0; }
+  .uppy-size--md .uppy-DashboardItem-action--copyLink:focus,
+  .uppy-size--md .uppy-DashboardItem-action--edit:focus {
+    border-radius: 3px; }
+
+.uppy-size--md .uppy-DashboardItem-action--remove {
+  z-index: 1002;
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 18px;
+  height: 18px;
+  padding: 0; }
+  .uppy-size--md .uppy-DashboardItem-action--remove:focus {
+    border-radius: 50%; }
+
+.uppy-Dashboard:not(.uppy-size--md) .uppy-DashboardItem {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  border-bottom: 1px solid #eaeaea;
+  padding: 10px;
+  padding-right: 0; }
+
+.uppy-size--md .uppy-DashboardItem {
+  position: relative;
+  display: block;
+  float: left;
+  margin: 5px 15px;
+  width: calc(33.333% - 15px - 15px);
+  height: 215px; }
+
+.uppy-size--lg .uppy-DashboardItem {
+  margin: 5px 15px;
+  width: calc(25% - 15px - 15px);
+  height: 190px; }
+
+.uppy-size--xl .uppy-DashboardItem {
+  width: calc(20% - 15px - 15px);
+  height: 210px; }
+
+.uppy-DashboardItem-preview {
+  position: relative; }
+  .uppy-Dashboard:not(.uppy-size--md) .uppy-DashboardItem-preview {
+    -ms-flex-negative: 0;
+        flex-shrink: 0;
+    -ms-flex-positive: 0;
+        flex-grow: 0;
+    width: 50px;
+    height: 50px; }
+  .uppy-size--md .uppy-DashboardItem-preview {
+    width: 100%;
+    height: 140px; }
+  .uppy-size--lg .uppy-DashboardItem-preview {
+    height: 120px; }
+  .uppy-size--xl .uppy-DashboardItem-preview {
+    height: 140px; }
+
+.uppy-DashboardItem-fileInfoAndButtons {
+  -ms-flex-positive: 1;
+      flex-grow: 1;
+  padding-right: 8px;
+  padding-left: 12px;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: justify;
+      justify-content: space-between; }
+  .uppy-size--md .uppy-DashboardItem-fileInfoAndButtons {
+    -ms-flex-align: start;
+        align-items: flex-start;
+    width: 100%;
+    padding: 0;
+    padding-top: 9px; }
+
+.uppy-DashboardItem-fileInfo {
+  -ms-flex-positive: 1;
+      flex-grow: 1;
+  -ms-flex-negative: 1;
+      flex-shrink: 1; }
+
+.uppy-DashboardItem-actionWrapper {
+  -ms-flex-positive: 0;
+      flex-grow: 0;
+  -ms-flex-negative: 0;
+      flex-shrink: 0; }
+
+.uppy-DashboardItem.is-inprogress .uppy-DashboardItem-previewInnerWrap:after {
+  display: block; }
+
+.uppy-DashboardItem.is-error .uppy-DashboardItem-previewInnerWrap:after {
+  display: block; }
+
+.uppy-DashboardItem.is-inprogress:not(.is-resumable) .uppy-DashboardItem-action--remove {
+  display: none; }
+
+.uppy-Dashboard-FileCard {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1005;
+  box-shadow: 0px 0px 10px 4px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  border-radius: 5px;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+      flex-direction: column; }
+  .uppy-Dashboard-FileCard .uppy-DashboardContent-bar {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px; }
+  .uppy-Dashboard-FileCard .uppy-Dashboard-FileCard-actions {
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px; }
+
+.uppy-Dashboard-FileCard-inner {
+  height: 100%;
+  -ms-flex-positive: 1;
+      flex-grow: 1;
+  -ms-flex-negative: 1;
+      flex-shrink: 1;
+  min-height: 0;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+      flex-direction: column; }
+
+.uppy-Dashboard-FileCard-preview {
+  height: 60%;
+  -ms-flex-positive: 0;
+      flex-grow: 0;
+  -ms-flex-negative: 1;
+      flex-shrink: 1;
+  min-height: 0;
+  border-bottom: 1px solid #eaeaea;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: center;
+      justify-content: center; }
+
+.uppy-Dashboard-FileCard-preview img.uppy-DashboardItem-previewImg {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: cover;
+  -ms-flex: 0 0 auto;
+      flex: 0 0 auto;
+  border-radius: 3px;
+  box-shadow: 0px 3px 20px rgba(0, 0, 0, 0.15); }
+
+.uppy-Dashboard-FileCard-info {
+  height: 40%;
+  -ms-flex-positive: 0;
+      flex-grow: 0;
+  -ms-flex-negative: 0;
+      flex-shrink: 0;
+  padding: 30px 20px 20px 20px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; }
+
+.uppy-Dashboard-FileCard-fieldset {
+  font-size: 0;
+  border: 0;
+  padding: 0;
+  max-width: 640px;
+  margin: auto;
+  margin-bottom: 12px; }
+
+.uppy-Dashboard-FileCard-label {
+  display: inline-block;
+  vertical-align: middle;
+  width: 22%;
+  font-size: 12px;
+  color: #525252; }
+  .uppy-size--md .uppy-Dashboard-FileCard-label {
+    font-size: 14px; }
+
+.uppy-Dashboard-FileCard-input {
+  display: inline-block;
+  vertical-align: middle;
+  width: 78%; }
+
+.uppy-Dashboard-FileCard-actions {
+  height: 55px;
+  -ms-flex-negative: 0;
+      flex-shrink: 0;
+  -ms-flex-positive: 0;
+      flex-grow: 0;
+  border-top: 1px solid #eaeaea;
+  padding: 0 15px;
+  background-color: #fafafa;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center; }
+  .uppy-size--md .uppy-Dashboard-FileCard-actions {
+    height: 65px; }
+
+.uppy-Dashboard-FileCard-actionsBtn {
+  margin-right: 10px; }
+
+.uppy-transition-slideDownUp-enter {
+  opacity: 0.01;
+  transform: translate3d(0, -105%, 0);
+  transition: transform 0.25s ease-in-out, opacity 0.25s ease-in-out; }
+
+.uppy-transition-slideDownUp-enter.uppy-transition-slideDownUp-enter-active {
+  opacity: 1;
+  transform: translate3d(0, 0, 0); }
+
+.uppy-transition-slideDownUp-leave {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition: transform 0.25s ease-in-out, opacity 0.25s ease-in-out; }
+
+.uppy-transition-slideDownUp-leave.uppy-transition-slideDownUp-leave-active {
+  opacity: 0.01;
+  transform: translate3d(0, -105%, 0); }
+
+.uppy-Dashboard--modal {
+  z-index: 1001; }
+
+.uppy-Dashboard--modal[aria-hidden=true] {
+  display: none; }
+
+@keyframes uppy-Dashboard-fadeIn {
+  from {
+    opacity: 0; }
+  to {
+    opacity: 1; } }
+
+@keyframes uppy-Dashboard-fadeOut {
+  from {
+    opacity: 1; }
+  to {
+    opacity: 0; } }
+
+@keyframes uppy-Dashboard-slideDownAndFadeIn {
+  from {
+    transform: translate3d(-50%, -70%, 0);
+    opacity: 0; }
+  to {
+    transform: translate3d(-50%, -50%, 0);
+    opacity: 1; } }
+
+@keyframes uppy-Dashboard-slideDownAndFadeIn--small {
+  from {
+    transform: translate3d(0, -20%, 0);
+    opacity: 0; }
+  to {
+    transform: translate3d(0, 0, 0);
+    opacity: 1; } }
+
+@keyframes uppy-Dashboard-slideUpFadeOut {
+  from {
+    transform: translate3d(-50%, -50%, 0);
+    opacity: 1; }
+  to {
+    transform: translate3d(-50%, -70%, 0);
+    opacity: 0; } }
+
+@keyframes uppy-Dashboard-slideUpFadeOut--small {
+  from {
+    transform: translate3d(0, 0, 0);
+    opacity: 1; }
+  to {
+    transform: translate3d(0, -20%, 0);
+    opacity: 0; } }
+
+.uppy-Dashboard--modal.uppy-Dashboard--animateOpenClose > .uppy-Dashboard-inner {
+  animation: uppy-Dashboard-slideDownAndFadeIn--small 0.3s cubic-bezier(0, 0, 0.2, 1); }
+  @media only screen and (min-width: 820px) {
+    .uppy-Dashboard--modal.uppy-Dashboard--animateOpenClose > .uppy-Dashboard-inner {
+      animation: uppy-Dashboard-slideDownAndFadeIn 0.3s cubic-bezier(0, 0, 0.2, 1); } }
+
+.uppy-Dashboard--modal.uppy-Dashboard--animateOpenClose > .uppy-Dashboard-overlay {
+  animation: uppy-Dashboard-fadeIn 0.3s cubic-bezier(0, 0, 0.2, 1); }
+
+.uppy-Dashboard--modal.uppy-Dashboard--animateOpenClose.uppy-Dashboard--isClosing > .uppy-Dashboard-inner {
+  animation: uppy-Dashboard-slideUpFadeOut--small 0.3s cubic-bezier(0, 0, 0.2, 1); }
+  @media only screen and (min-width: 820px) {
+    .uppy-Dashboard--modal.uppy-Dashboard--animateOpenClose.uppy-Dashboard--isClosing > .uppy-Dashboard-inner {
+      animation: uppy-Dashboard-slideUpFadeOut 0.3s cubic-bezier(0, 0, 0.2, 1); } }
+
+.uppy-Dashboard--modal.uppy-Dashboard--animateOpenClose.uppy-Dashboard--isClosing > .uppy-Dashboard-overlay {
+  animation: uppy-Dashboard-fadeOut 0.3s cubic-bezier(0, 0, 0.2, 1); }
+
+.uppy-Dashboard-isFixed {
+  overflow: hidden;
+  height: 100vh; }
+
+.uppy-Dashboard--modal .uppy-Dashboard-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1001; }
+
+.uppy-Dashboard-inner {
+  position: relative;
+  background-color: #fafafa;
+  max-width: 100%;
+  /* no !important */
+  max-height: 100%;
+  /* no !important */
+  min-height: 450px;
+  outline: none;
+  border: 1px solid #eaeaea;
+  border-radius: 5px; }
+  .uppy-size--md .uppy-Dashboard-inner {
+    min-height: auto; }
+  @media only screen and (min-width: 820px) {
+    .uppy-Dashboard-inner {
+      width: 750px;
+      /* no !important */
+      height: 550px;
+      /* no !important */ } }
+  .uppy-Dashboard--modal .uppy-Dashboard-inner {
+    z-index: 1002; }
+
+.uppy-Dashboard-innerWrap {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+      flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  border-radius: 5px;
+  opacity: 0; }
+
+.uppy-Dashboard--isInnerWrapVisible .uppy-Dashboard-innerWrap {
+  opacity: 1; }
+
+.uppy-Dashboard--modal .uppy-Dashboard-inner {
+  position: fixed;
+  top: 35px;
+  left: 15px;
+  right: 15px;
+  bottom: 15px;
+  border: none; }
+  @media only screen and (min-width: 820px) {
+    .uppy-Dashboard--modal .uppy-Dashboard-inner {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 5px 15px 4px rgba(0, 0, 0, 0.15); } }
+
+.uppy-Dashboard-close {
+  display: block;
+  position: absolute;
+  top: -33px;
+  right: -2px;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 27px;
+  z-index: 1005; }
+  .uppy-Dashboard-close:focus {
+    outline: none; }
+  .uppy-Dashboard-close::-moz-focus-inner {
+    border: 0; }
+  .uppy-Dashboard-close:focus {
+    color: #8cb8ed; }
+  @media only screen and (min-width: 820px) {
+    .uppy-Dashboard-close {
+      font-size: 35px;
+      top: -10px;
+      right: -35px; } }
+
+.uppy-DashboardAddFiles {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: center;
+      justify-content: center;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-direction: column;
+      flex-direction: column;
+  height: 100%;
+  position: relative;
+  text-align: center;
+  -ms-flex: 1;
+      flex: 1; }
+  .uppy-size--md .uppy-DashboardAddFiles {
+    margin: 7px;
+    border-radius: 3px;
+    border: 1px dashed #dfdfdf; }
+  .uppy-Dashboard-AddFilesPanel .uppy-DashboardAddFiles {
+    border: none; }
+  .uppy-Dashboard--modal .uppy-DashboardAddFiles {
+    border-color: #cfcfcf; }
+
+.uppy-DashboardTabs {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+      flex-direction: column;
+  -ms-flex-pack: center;
+      justify-content: center;
+  width: 100%; }
+  .uppy-size--md .uppy-DashboardTabs {
+    -ms-flex-align: center;
+        align-items: center; }
+
+.uppy-DashboardTabs-title {
+  font-size: 14px;
+  line-height: 30px;
+  font-weight: 400;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  color: #525252; }
+  .uppy-size--md .uppy-DashboardTabs-title {
+    font-size: 16px;
+    line-height: 40px; }
+
+.uppy-DashboardAddFiles-info {
+  padding-top: 15px;
+  padding-bottom: 15px; }
+  .uppy-size--md .uppy-DashboardAddFiles-info {
+    position: absolute;
+    bottom: 30px;
+    left: 0;
+    right: 0;
+    padding-top: 30px;
+    padding-bottom: 0; }
+
+.uppy-Dashboard-browse {
+  cursor: pointer;
+  color: rgba(34, 117, 215, 0.9); }
+  .uppy-Dashboard-browse:focus {
+    outline: none; }
+  .uppy-Dashboard-browse::-moz-focus-inner {
+    border: 0; }
+  .uppy-Dashboard-browse:hover, .uppy-Dashboard-browse:focus {
+    border-bottom: 2px solid #2275d7; }
+
+.uppy-DashboardTabs-list {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+      flex-direction: column;
+  max-height: 300px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-top: 10px;
+  padding: 2px 0; }
+  .uppy-size--md .uppy-DashboardTabs-list {
+    -ms-flex-direction: row;
+        flex-direction: row;
+    -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+    -ms-flex-pack: center;
+        justify-content: center;
+    max-width: 600px;
+    overflow-x: initial;
+    margin-top: 15px;
+    padding-top: 0; }
+
+.uppy-DashboardTab {
+  width: 100%;
+  display: inline-block;
+  text-align: center;
+  border-bottom: 1px solid #eaeaea;
+  padding: 0px 2px; }
+  .uppy-size--md .uppy-DashboardTab {
+    width: initial;
+    margin-bottom: 20px;
+    border-bottom: none;
+    padding: 0; }
+
+.uppy-DashboardTab-btn {
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  border: 0;
+  background-color: transparent;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+       appearance: none;
+  color: #525252;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: row;
+      flex-direction: row;
+  -ms-flex-align: center;
+      align-items: center;
+  padding: 12px 15px;
+  line-height: 1;
+  text-align: center; }
+  .uppy-size--md .uppy-DashboardTab-btn {
+    width: 86px;
+    margin-right: 1px;
+    -ms-flex-direction: column;
+        flex-direction: column;
+    padding: 10px 3px;
+    border-radius: 5px; }
+
+.uppy-DashboardTab-btn::-moz-focus-inner {
+  border: 0; }
+
+.uppy-DashboardTab-btn:hover {
+  background-color: #f1f3f6; }
+
+.uppy-DashboardTab-btn:active,
+.uppy-DashboardTab-btn:focus {
+  background-color: #eceef2;
+  outline: none; }
+
+.uppy-DashboardTab-btn svg {
+  margin-right: 10px; }
+  .uppy-size--md .uppy-DashboardTab-btn svg {
+    margin-right: 0; }
+
+.uppy-DashboardTab-btn svg {
+  max-width: 100%;
+  max-height: 100%;
+  display: inline-block;
+  vertical-align: text-top;
+  overflow: hidden;
+  transition: transform ease-in-out .15s; }
+
+.uppy-DashboardTab-name {
+  font-size: 14px;
+  font-weight: 500; }
+  .uppy-size--md .uppy-DashboardTab-name {
+    font-size: 11px;
+    line-height: 14px;
+    margin-top: 8px;
+    margin-bottom: 0; }
+
+.uppy-DashboardTab svg {
+  width: 18px;
+  height: 18px;
+  vertical-align: middle; }
+  .uppy-size--md .uppy-DashboardTab svg {
+    width: 27px;
+    height: 27px; }
+
+.uppy-Dashboard-input {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1; }
+
+.uppy-DashboardContent-bar {
+  -ms-flex-negative: 0;
+      flex-shrink: 0;
+  height: 40px;
+  width: 100%;
+  padding: 0 10px;
+  z-index: 1004;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: justify;
+      justify-content: space-between;
+  position: relative;
+  border-bottom: 1px solid #eaeaea;
+  background-color: #fafafa; }
+  .uppy-size--md .uppy-DashboardContent-bar {
+    height: 50px;
+    padding: 0 15px; }
+
+.uppy-DashboardContent-title {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 12px;
+  line-height: 40px;
+  font-weight: 500;
+  width: 100%;
+  max-width: 170px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow-x: hidden;
+  margin: auto; }
+  .uppy-size--md .uppy-DashboardContent-title {
+    font-size: 14px;
+    line-height: 50px;
+    max-width: 300px; }
+
+.uppy-DashboardContent-back {
+  background: none;
+  -webkit-appearance: none;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: 1;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  color: inherit;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 400;
+  cursor: pointer;
+  color: #2275d7;
+  padding: 7px 6px;
+  margin-left: -6px; }
+  .uppy-DashboardContent-back:focus {
+    outline: none; }
+  .uppy-DashboardContent-back::-moz-focus-inner {
+    border: 0; }
+  .uppy-DashboardContent-back:hover {
+    color: #1b5dab; }
+  .uppy-DashboardContent-back:focus {
+    background-color: #eceef2; }
+  .uppy-size--md .uppy-DashboardContent-back {
+    font-size: 14px; }
+
+.uppy-DashboardContent-addMore {
+  background: none;
+  -webkit-appearance: none;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: 1;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  color: inherit;
+  border-radius: 3px;
+  font-weight: 500;
+  cursor: pointer;
+  color: #2275d7;
+  width: 29px;
+  height: 29px;
+  padding: 7px 8px;
+  margin-right: -5px; }
+  .uppy-DashboardContent-addMore:focus {
+    outline: none; }
+  .uppy-DashboardContent-addMore::-moz-focus-inner {
+    border: 0; }
+  .uppy-DashboardContent-addMore:hover {
+    color: #1b5dab; }
+  .uppy-DashboardContent-addMore:focus {
+    background-color: #eceef2; }
+  .uppy-size--md .uppy-DashboardContent-addMore {
+    font-size: 14px;
+    width: auto;
+    height: auto;
+    margin-right: -8px; }
+
+.uppy-DashboardContent-addMore svg {
+  vertical-align: baseline;
+  margin-right: 4px; }
+  .uppy-size--md .uppy-DashboardContent-addMore svg {
+    width: 11px;
+    height: 11px; }
+
+.uppy-DashboardContent-addMoreCaption {
+  display: none; }
+  .uppy-size--md .uppy-DashboardContent-addMoreCaption {
+    display: inline; }
+
+.uppy-DashboardContent-panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: whitesmoke;
+  overflow: hidden;
+  z-index: 1005;
+  border-radius: 5px;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+      flex-direction: column;
+  -ms-flex: 1;
+      flex: 1; }
+
+.uppy-Dashboard-AddFilesPanel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fafafa;
+  background: linear-gradient(0deg, #fafafa 35%, rgba(250, 250, 250, 0.85) 100%);
+  box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  z-index: 1005;
+  border-radius: 5px;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+      flex-direction: column; }
+
+.uppy-Dashboard--isAddFilesPanelVisible .uppy-Dashboard-files {
+  filter: blur(2px); }
+
+.uppy-Dashboard-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 12%; }
+
+.uppy-Dashboard-progressBarContainer.is-active {
+  z-index: 1004;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; }
+
+.uppy-Dashboard-filesContainer {
+  position: relative;
+  overflow-y: hidden;
+  margin: 0;
+  -ms-flex: 1;
+      flex: 1; }
+  .uppy-Dashboard-filesContainer:after {
+    content: '';
+    display: table;
+    clear: both; }
+
+.uppy-Dashboard-files {
+  margin: 0;
+  padding: 0 0 10px 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  -ms-flex: 1;
+      flex: 1; }
+
+.uppy-size--md .uppy-Dashboard-files {
+  padding-top: 10px; }
+
+.uppy-Dashboard-dropFilesHereHint {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: center;
+      justify-content: center;
+  visibility: hidden;
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  bottom: 7px;
+  left: 7px;
+  padding-top: 90px;
+  border: 1px dashed #2275d7;
+  border-radius: 3px;
+  z-index: 2000;
+  text-align: center;
+  background-image: url("data:image/svg+xml,%3Csvg width='48' height='48' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M24 1v1C11.85 2 2 11.85 2 24s9.85 22 22 22 22-9.85 22-22S36.15 2 24 2V1zm0 0V0c13.254 0 24 10.746 24 24S37.254 48 24 48 0 37.254 0 24 10.746 0 24 0v1zm7.707 19.293a.999.999 0 1 1-1.414 1.414L25 16.414V34a1 1 0 1 1-2 0V16.414l-5.293 5.293a.999.999 0 1 1-1.414-1.414l7-7a.999.999 0 0 1 1.414 0l7 7z' fill='%232275D7' fill-rule='nonzero'/%3E%3C/svg%3E");
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  color: #707070;
+  font-size: 16px; }
+
+.uppy-Dashboard.uppy-Dashboard--isDraggingOver .uppy-Dashboard-dropFilesHereHint {
+  visibility: visible; }
+
+.uppy-Dashboard.uppy-Dashboard--isDraggingOver .uppy-DashboardContent-bar,
+.uppy-Dashboard.uppy-Dashboard--isDraggingOver .uppy-Dashboard-files,
+.uppy-Dashboard.uppy-Dashboard--isDraggingOver .uppy-Dashboard-progressindicators {
+  opacity: 0.15; }
+
+.uppy-Dashboard.uppy-Dashboard--isDraggingOver .uppy-DashboardAddFiles {
+  opacity: 0.03; }
+
+.uppy-Dashboard-dropFilesTitle {
+  max-width: 300px;
+  text-align: center;
+  font-size: 16px;
+  line-height: 1.35;
+  font-weight: 400;
+  color: #525252;
+  margin: auto;
+  padding: 0 15px; }
+  .uppy-size--md .uppy-Dashboard-dropFilesTitle {
+    max-width: 470px;
+    font-size: 27px; }
+
+.uppy-Dashboard-note {
+  font-size: 14px;
+  line-height: 1.25;
+  text-align: center;
+  color: #757575;
+  max-width: 350px;
+  margin: auto;
+  padding: 0 15px; }
+  .uppy-size--md .uppy-Dashboard-note {
+    font-size: 16px;
+    line-height: 1.35;
+    max-width: 600px; }
+
+a.uppy-Dashboard-poweredBy {
+  display: inline-block;
+  text-align: center;
+  font-size: 11px;
+  color: #939393;
+  text-decoration: none;
+  margin-top: 8px; }
+
+.uppy-Dashboard-poweredByIcon {
+  stroke: #939393;
+  fill: none;
+  margin-left: 1px;
+  margin-right: 1px;
+  position: relative;
+  top: 1px;
+  opacity: 0.9;
+  vertical-align: text-top; }
+
+.uppy-DashboardItem-previewIcon {
+  width: 25px;
+  height: 25px;
+  z-index: 100;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); }
+  .uppy-size--md .uppy-DashboardItem-previewIcon {
+    width: 38px;
+    height: 38px; }
+  .uppy-DashboardItem-previewIcon svg {
+    width: 100%;
+    height: 100%; }
+
+.uppy-DashboardItem-previewIconWrap {
+  height: 76px;
+  max-height: 75%;
+  position: relative; }
+
+.uppy-DashboardItem-previewIconBg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(rgba(0, 0, 0, 0.1) 0px 1px 1px); }
+
+.uppy-Dashboard-upload {
+  position: relative;
+  width: 50px;
+  height: 50px; }
+  .uppy-size--md .uppy-Dashboard-upload {
+    width: 60px;
+    height: 60px; }
+
+.uppy-Dashboard-upload .UppyIcon {
+  position: relative;
+  top: 1px;
+  width: 50%; }
+
+.uppy-Dashboard-uploadCount {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  background-color: #1bb240;
+  color: #fff;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+  font-size: 8px; }
+  .uppy-size--md .uppy-Dashboard-uploadCount {
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    font-size: 9px; }
+</style><style type="text/css">.uppy-Webcam-container {
+  width: 100%;
+  height: 100%;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: center;
+      justify-content: center;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-direction: column;
+      flex-direction: column; }
+
+.uppy-Webcam-videoContainer {
+  width: 100%;
+  -ms-flex: 1;
+      flex: 1;
+  -ms-flex-positive: 1;
+      flex-grow: 1;
+  overflow: hidden;
+  background-color: #333;
+  text-align: center;
+  position: relative; }
+
+.uppy-Webcam-video {
+  max-width: 100%;
+  max-height: 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto; }
+
+.uppy-Webcam-video--mirrored {
+  transform: scaleX(-1); }
+
+.uppy-Webcam-buttonContainer {
+  width: 100%;
+  height: 75px;
+  border-top: 1px solid #eaeaea;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: center;
+      justify-content: center;
+  padding: 0 20px; }
+
+.uppy-Webcam-button {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background-color: #e32437;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s; }
+
+.uppy-Webcam-button svg {
+  width: 30px;
+  height: 30px;
+  max-width: 100%;
+  max-height: 100%;
+  display: inline-block;
+  vertical-align: text-top;
+  overflow: hidden;
+  fill: currentColor; }
+
+.uppy-size--md .uppy-Webcam-button {
+  width: 60px;
+  height: 60px; }
+
+.uppy-Webcam-button:hover {
+  background-color: #d31b2d; }
+
+.uppy-Webcam-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(34, 117, 215, 0.5); }
+
+.uppy-Webcam-button--picture {
+  margin-right: 12px; }
+
+.uppy-Webcam-permissons {
+  padding: 15px;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: center;
+      justify-content: center;
+  -ms-flex-flow: column wrap;
+      flex-flow: column wrap;
+  height: 100%;
+  -ms-flex: 1;
+      flex: 1; }
+
+.uppy-Webcam-permissons p {
+  max-width: 450px;
+  line-height: 1.3; }
+
+.uppy-Webcam-title {
+  font-size: 22px;
+  line-height: 1.35;
+  font-weight: 400;
+  margin: 0;
+  margin-bottom: 5px;
+  padding: 0 15px;
+  max-width: 500px;
+  text-align: center;
+  color: #333; }
+
+.uppy-Webcam-permissons p {
+  text-align: center;
+  line-height: 1.45;
+  color: #939393;
+  margin: 0; }
+
+.uppy-Webcam-permissonsIcon svg {
+  width: 100px;
+  height: 75px;
+  color: #bbb;
+  margin-bottom: 30px; }
+</style><style type="text/css">
+.kiwi-filebuffer-outer-container[data-v-8a626294] {
+    height: 100%;
+    width: 100%;
+    margin-top: 5px;
+}
+.kiwi-filebuffer-inner-container[data-v-8a626294] {
+    font-family: arial, tahoma;
+    width: 100%;
+}
+.kiwi-filebuffer-download-container[data-v-8a626294] {
+    margin: 0 0 5px 0;
+    padding: 10px 10px;
+    background: #666;
+    color: #eee;
+}
+.kiwi-filebuffer-downloadicon[data-v-8a626294] {
+    float: right;
+    margin-top: 3px;
+    margin-right: 3px;
+    border: 1px solid #fff;
+    border-radius: 50%;
+    padding: 7px;
+    font-size: 16px;
+}
+.kiwi-filebuffer-filetitle[data-v-8a626294] {
+    font-weight: bold;
+    line-height: normal;
+    margin-bottom: 5px;
+}
+.kiwi-filebuffer-fileinfo[data-v-8a626294] {
+    float: left;
+    font-size: 11px;
+    width: 90px;
+    opacity: 0.8;
+    line-height: normal;
+}
+.kiwi-filebuffer-anchor[data-v-8a626294] {
+    border: none;
+    color: #eee;
+    cursor: pointer;
+    text-decoration: none;
+}
+</style></head>
+<body>
+	<script>
+		function extractServerFromUrl() {
+			var url = window.location.pathname.match(/\/nextclient\/(.*)/);
+			if (!url || !url[1]) {
+				return;
+			}
+
+			url = url[1];
+			var urlParts = url.split('/');
+			var server = urlParts[0];
+			var channel = window.location.hash.replace('#', '') || urlParts[1] || '';
+
+			// If the channel does not start with # or &, preppend the #
+			if (channel && (channel[0] !== '#' && channel[0] !== '&')) {
+				channel = '#' + channel;
+			}
+
+			var serverParts = server.split(':');
+			var host = serverParts[0] || '';
+			var tls = false;
+			var port = 6667;
+			if (serverParts.length > 1) {
+				if (serverParts[1][0] === '+') {
+					tls = true;
+					port = serverParts[1].substr(1);
+				} else {
+					tls = false;
+					port = serverParts[1];
+				}
+			}
+
+			return {
+				server: host,
+				port: port,
+				tls: tls,
+				channel: channel,
+			};
+		}
+
+		function getParameterByName(name, url) {
+			if (!url) url = window.location.href;
+			name = name.replace(/[\[\]]/g, "\\$&");
+			var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+				results = regex.exec(url);
+			if (!results) return null;
+			if (!results[2]) return '';
+			return decodeURIComponent(results[2].replace(/\+/g, " "));
+		}
+
+		(function() {
+			// Add the gateway session to the window object so that plugins can make use of it
+			window.k_sid = 'i88wfxyelm4t';
+			// URLs with a hash starting with #irc: should stay as they are. They will use the
+			// customServer welcome screen
+			if ((window.location.hash || '').indexOf('#irc:') === 0) {
+				return;
+			}
+
+			// Don't redirect if using the root path
+			var url = window.location.pathname.match(/\/nextclient\/(.*)/);
+			if (!url || !url[1]) {
+				return;
+			}
+
+			// Don't redirect if using /nextclient/server.irc/channel format
+			var conInfo = extractServerFromUrl();
+			if (conInfo) {
+				return;
+			}
+
+			url = url[1];
+			var server = url.split('/')[0];
+			var channel = window.location.hash.replace('#', '');
+			var nick = getParameterByName('nick');
+			var theme = getParameterByName('theme');
+			var new_url = '/nextclient/';
+
+			if (theme) {
+				new_url += '?theme=' + theme;
+			}
+
+			new_url += '#irc://' + server + '/' + channel;
+
+			if (nick) {
+				new_url += '?nick=' + nick;
+			}
+
+			window.location = new_url;
+		})()
+	</script>
+	<div data-activebuffer="" class="kiwi-wrap kiwi-theme-bg"><link href="/nextclient/static/themes/default/theme.css?cb=20" rel="stylesheet" type="text/css"><div class="kiwi-startup-common kiwi-welcome-simple" style="background-image: url(&quot;https://kiwiirc.com/img/clientbg.jpg&quot;);"><div class="kiwi-startup-common-section kiwi-startup-common-section-connection"><form class="u-form u-form--big kiwi-welcome-simple-form"><h2>Hello!</h2><!----><div class="u-input-text kiwi-welcome-invalid-nick" data-focus="true"><label for="inp_6z8mp5x1bns">Nick</label><div class="u-input-text-inputs" style="display: flex;"><input id="inp_6z8mp5x1bns" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="u-input"><!----></div></div><div class="kiwi-welcome-simple-input-container"><label class="kiwi-welcome-simple-have-password"><input type="checkbox"><span> I have a password </span></label></div><!----><div class="kiwi-welcome-simple-input-container"><div class="u-input-text"><label for="inp_72y1nvvogzg">Channel</label><div class="u-input-text-inputs" style="display: flex;"><input id="inp_72y1nvvogzg" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="u-input"><!----></div></div></div><div><!----></div><button disabled="disabled" type="submit" class="u-button u-button-primary u-submit kiwi-welcome-simple-start">Start</button><div></div></form></div><div class="kiwi-startup-common-section kiwi-startup-common-section-info" style="background-image: url(&quot;https://kiwiirc.com/img/clientbg.jpg&quot;);"><!----></div></div></div>
+	<script>
+	function kiwiConfig() {
+		var readFromUrl = false;
+		var config = {"windowTitle":"Kiwi IRC - The web IRC client","startupScreen":"kiwiirccom","kiwiServer":"https:\/\/do-e.clients.kiwiirc.com\/webirc\/kiwiirc\/?sid=i88wfxyelm4t&p=1","restricted":false,"language":"","theme":"Default","themes":[{"name":"Default","url":"\/nextclient\/static\/themes\/default\/?cb=20"},{"name":"Dark","url":"\/nextclient\/static\/themes\/dark\/?cb=20"},{"name":"Nightswatch","url":"\/nextclient\/static\/themes\/nightswatch\/?cb=20"},{"name":"Radioactive","url":"\/nextclient\/static\/themes\/radioactive\/?cb=20"},{"name":"Osprey","url":"\/nextclient\/static\/themes\/osprey\/?cb=20"},{"name":"Sky","url":"\/nextclient\/static\/themes\/sky\/?cb=20"},{"name":"Coffee","url":"\/nextclient\/static\/themes\/coffee\/?cb=20"},{"name":"custom","url":"\/nextclient\/static\/themes\/default\/?cb=20"}],"startupOptions":{"server":"irc.freenode.net","port":6697,"tls":true,"direct":false,"channel":"#kiwiirc","nick":"","state_key":"kiwi-state","infoContent":"","infoBackground":"https:\/\/kiwiirc.com\/img\/clientbg.jpg","greetingText":"Hello!","remember_buffers":true,"encoding":"utf8","recaptchaSiteId":"6LcnPO8UAAAAAFCqvrPYvACJ1VV4FrnTMYgDlvoz"},"sidebarDefault":"nicklist","teamHighlights":true,"buffers":{"messageLayout":"modern","show_joinparts":true,"show_realnames":true,"inline_link_auto_preview_whitelist":"(uploads.kiwiirc.com.+\\.(png|jpg|jpeg|gif)$)|(https?:\/\/(www\\.)?youtube\\.com)"},"embedly":{"key":"4637407a1c13426a9f51f1cf8ca0320c"},"plugins":[{"name":"fileuploader","url":"https:\/\/kiwiirc.com\/nextplugins\/fileuploader.js?cb=20"},{"name":"location","url":"https:\/\/kiwiirc.com\/nextplugins\/location.js?cb=17"},{"name":"gatewayupdate","url":"https:\/\/kiwiirc.com\/nextplugins\/gatewayupdate.js?cb=1"}],"presetNetworks":["Chathispano|irc.chathispano.com:6667","Chatzone|chatzone.ga:6667","DALnet|irc.dal.net:+6697","EfNet|irc.efnet.org:+6697","EsperNet|irc.esper.net:+6697","EuropNet|irc.europnet.org:+6660","freenode|irc.freenode.net:+6697","GameSurge|irc.gamesurge.net:6667","GeekShed|geekshed.net:+6697","IRCnet|open.ircnet.net:6667","Libera.Chat|irc.libera.chat:+6697","Mozilla|irc.mozilla.org:+6697","Oftc|irc.oftc.net:6667","Rizon|irc.rizon.net:+6697","Snoonet|irc.snoonet.org:+6697","SwiftIRC|irc.swiftirc.net:+5004","-----|-----","Undernet|irc.undernet.org:6667","0v1|irc.0v1.org:+6697","0x1|irc.0x1.gr:+6697","101000101000|irc.101000101000.org.uk:+6697","1chan|irc.1chan.us:+6697","420-HIGHTIMES|irc.420-hightimes.com:+7000","42Net|irc.42net.org:+6697","5222t irc|irc1.5222t.com:6667","6IRC|irc.6irc.net:+6697","8pallo|irc.8pallo.fi:+6697","A Computer Guru|chat.acomputer.guru:+6697","ABV|irc.abvnet.org:+6697","AIDS-net|aids.olemattomuus.fi:+7000","AQStream|irc.aqstream.com:+9443","ARG-IRC|irc.arg-irc.net:+6697","ARGentinaChat|irc.argentinachat.com.ar:6667","ASoTnet|irc.aseriesoftubez.com:+6697","AUXnet|irc.auxnet.org:+6697","Abjects|irc.abjects.net:+9999","Absoluty-IRC.org|irc.absoluty-irc.org:6667","AbvChat|irc.abvchat.ml:6667","Abyssnet|irc.abyssnet.net:+6697","Ac3Hacks|irc.ac3.uk:+6697","AccessIRC|irc.accessirc.net:+6697","AceIRC|irc.aceirc.org:+6697","Adelais|irc.adelais.net:6667","Adiga IRC Network|irc.adiga.com:6667","Aeronet Network|irc.aeronet-network.com:+6697","AfraidIRC|irc.afraidirc.net:+6697","Air Raid Sirens|irc.airraidsirens.com:+6697","AirFrance|62.210.236.193:+6697","AkGhost|akghost.hamshack.info:6667","AlbaChat AL|irc.albachat.al:+6646","AlbaChat Phone|phone.albachat.com:+6641","AlbaChat Web|web.albachat.com:+6646","AlbaChat|31.220.29.246:+6645","Albnetwork.net|albnetwork.net:7000","Albnetwork|irc.albnetwork.net:+6697","Albos|irc.albos.org:7000","AllNetworks|irc.allnetworks.de:+6670","Allnetwork|irc.allnetwork.org:6667","AlloChat|irc.allochat.eu:+6697","AlphaChat|irc.alphachat.net:+6697","AltCoinWeb|irc.altcoinweb.com:+6697","AlternaMedia Inc. IRC Service|irc.alternamedia.org:6667","AmbreenGames|irc.ambreengames.net:+6697","AmicaChat|irc.amicachat.net:6667","AndIRC|irc.andirc.net:+6697","Animebytes|irc.animebytes.tv:+6697","Aniterasu|irc.aniterasu.com:+6601","AnonNet|irc.anonnet.org:+6697","AnonSleepover|anonsleepover.users.the-irc.com:+6697","AnthroChat|lion.anthrochat.net:+6697","AppliedIRC|irc.appliedirc.com:+6697","ApropoChat|irc.chatapropo.eu:6667","ApropoNET|irc.aproponet.ro:+6697","Aqua Chat|irc.aqua-chat.fr:+6669","ArcaneVisions|irc.arcanevisions.net:6667","ArconaiTv|irc.arconaitv.net:6667","AreaChat|irc.areachat.org:6667","ArgentinaIRC|irc.argentinaIRC.net:6667","Arinity|irc.arinity.org:+6697","Aspros Tigris IRC|irc.asprostigris.ns01.biz:+6697","AstraIRC|irc.astrairc.com:+6697","AtbrWork|irc.atbr.work:6668","AtomicEdge|irc.atomicedge.org:+6697","Atrum|irc.atrum.org:+6697","Aurel-Tchat Network|irc.aurel-tchat.fr:+6669","Aurora-IRC|irc.aurora-irc.net:+6697","AustNet IRC Network|irc.austnet.org:+6697","AutIRC|irc.autirc.com:+6697","Awesome-HD|irc.awesome-hd.net:+6697","Axon|irc.axon.pw:+6697","Azarath|irc.azarath.net:+6697","AzelNet|pallida.tamalin.org:+3397","BBSN IRC Network|irc.bbsn.ca:6667","BE-Chat|be-chat.be:6667","BOL-Chat|irc.bol-chat.de:6667","BTN|irc.broadcasthe.net:+6697","BaLtaZaR|Script.Tchat-Delire.fr:6690","Backup Spaghetti|irc.spaghetti.rocks:+6697","Badnik|irc.badnik.zone:+6697","BaesIRC|irc.baseirc.ga:+6697","BakaShiMoe|irc.bakashimoe.me:+9999","Balkanirc|irc.balkanirc.us.to:6667","BaphoNet|irc.orderofthetilde.net:+6697","BaphoNet|irc.veuwer.com:+6697","Beat Place Fm|149.56.15.38:6667","BellyBuilders|irc.bellybuilders.com:6667","BeyondHD|irc.beyond-hd.me:+6697","BeyondIRC|irc.beyondirc.net:+7443","Biscanka|irc.biscanka.org:6667","BitcoinIRC|bitcoinirc.net:+6697","BlackSails|192.82.252.240:6667","Blackout|hell.frostyfolks.me:6667","BlackzNet|151.80.74.155:6000","Bladerock|irc.bladerock.net:+6697","Blockah|irc.blockah.com:+6697","Bluechat IRC Network|irc.bluechat.it:+9999","BokaIRC|irc.bokairc.com:+6697","Bondage International|irc.bondage.international:+6697","BoonJSOC|irc.boonjsoc.com:+6697","Bootleggers IRC|irc.bootleggers.us:6667","BoxBox.org|irc.boxbox.org:+6697","BrasChat|irc.braschat.com.br:6667","BrasIRC|brasirc.org:+6697","BrasIRC|irc.brasirc.com.br:+6697","BrasPort - Brasil & Portugal|irc.brasport.org:+6697","BrowserSpel IRC|jaccovdp.no-ip.biz:6667","BuddyIM|irc.buddy.im:+6697","CB-UK|irc.chatterboxuk.online:6667","CHRISTIANGAB.NET|irc.christiangab.net:6667","CHatJuerga|irc.chatjuerga.tk:+6697","CITNet|irc.cit2.net:+6697","CUEmu|192.99.144.34:6667","Caelestia|irc.caelestia.net:+6697","CafeSohbet|irc.cafesohbet.tk:6668","CaffieNET|irc.caffie.net:+6697","Caint|irc.caint.ie:6667","CaiusNet|irc.caiusnet.tk:+6697","CakeForceUK|irc.cakeforce.co.uk:+6697","CakeIRC|52.33.183.11:6667","Calm Down Geek|irc.calmdowngeek.com:+6697","Canternet|irc.canternet.org:+6697","Caparo IRC network|avyla.ddns.net:6667","Caretofun|irc.caretofun.net:6667","Chachipen|irc.chatzona.org:+843","Chat Android|188.240.1.134:6667","Chat Legion|irc.chatlegion.com:6667","Chat Mobil|irc.chatmobil.ro:+6697","Chat Music|kiwi.chatromantic.ro:6667","Chat-112|81.169.181.6:6667","Chat-Hispania|irc.chat-hispania.org:6667","Chat-Hispano|208.69.31.10:+6697","Chat-Scene|irc.chat-scene.com:6667","Chat4U|irc.radiochat4u.be:6667","Chat4You|flash.s3xychat.com:6667","Chat4all|irc.chat4all.org:+7001","Chat95|irc.chat95.com:+6669","ChatAsia IRC Network|irc.chatasia.net:6667","ChatBD Network|irc.chatbd.com:+7000","ChatBrasil.net|irc.chatbrasil.net:6667","ChatChannel|irc.chatchannel.org:+9000","ChatCore|irc.chatcore.de:+6697","ChatCornerLive|irc.chatcorner.live:+6697","ChatDosti|irc.chatdreamz.com:6667","ChatFreedom|irc.chatfreedom.us:+6697","ChatHamster.NET|irc.chathamster.net:+6697","ChatMusic|81.200.64.50:6667","ChatNSN|irc.chatnsn.co.uk:6667","ChatNet|irc.chatnet.gr:+7000","ChatOcio|irc.chatocio.org:+6697","ChatPampeano|irc.chatpampeano.com:6667","ChatPat|irc.chatpat.bg:+6697","ChatPlanet.Net|Irc.ChatPlanet.Net:+6697","ChatPlezier|irc.chatplezier.com:+6697","ChatRO|irc.ChatRO.ro:6667","ChatServ|irc.chatserv.org:+6697","ChatSolutions.NET|irc.chatsolutions.net:7000","ChatSpace|irc.chatspace.gr:+6669","ChatSpot Services Inc|king.chatspot.we.bs:+7002","ChatUp IRC|chat.chatupirc.ga:+6697","ChatZona|irc.chatzona.org:6667","Chateamosaqui|malvadooo.xyz:+6667","Chateamos|kiwi.chateamos.es:6667","Chathispano|irc.chathispano.com:6667","Chatirc.info|irc.chatirc.info:6667","Chatlounge|irc.chatlounge.ch:+6697","Chatmusic|185.34.216.111:6667","Chatoo|irc.nastradini.net:6667","Chatopia|irc.chatopia.net:+6697","Chatrealm|irc.chatrealm.net:+6697","Chatspike|irc.chatspike.net:+6697","ChatterX|irc.chatx.co.za:+6697","ChatterboxUK|irc.chatterboxuk.co.uk:6667","Chatterbox|irc.chatterbox.chat:+6697","Chatters247|78.129.172.59:6667","Chattersweb|irc.chattersweb.nl:+6697","Chattersweb|irc.chattersweb.nl:6667","Chattersworld|irc.chattersworld.nl:+6697","Chatters|irc.chatters.gr:6667","Chatters|irc.chatters.gr:6667","Chattfix Network|irc.chattfix.com:6667","ChattingAway|irc.chattingaway.com:+6697","Chatty|chatty.whattheserver.me:+6697","Chatzone|chatzone.ga:6667","Chatz|irc.Chatz.fr:+6697","ChewChat|irc.chew.chat:+6697","ChocoRadio|irc.prowifihost.com:6667","ChrisNet|irc.chrisnet.ml:+6697","ChrisNet|irc.chrisnetweb.net:+6697","ChrisNet|irc.jonesey.ml:+6697","Christian Fellowship|irc.christianchat.info:+6697","Chueca Madrid|185.73.242.136:6667","Church of the SubHacker|irc.subhacker.net:+6697","Cinos|irc.cinos.biz:+6697","CiudadFutura|irc-ciudadfutura.org:6667","CiudadFutura|irc.comunidadcf.org:+6697","CixMekan|irc.cixmekan.org:6667","CnCIRC|irc.cncirc.net:+6697","CnCNet|irc.cncnet.org:6667","Coldfront|irc.coldfront.net:+7778","Communaut\u00e9 Energy|91.121.61.137:+6697","Communities|93.118.34.219:6667","Compu-sync|irc.compu-sync.co.uk:6667","Connies Coffee Clutch|irc.foresightic.org.uk:+6697","CoolDude Chat|104.192.227.106:6667","Coolsmile|coolsmile.net:+6697","Cornerstone|irc.cornerstonechristianchat.com:+7766","Costiui|romania.costiui.net:6660","CraZyPaLaCe.Be|irc.crazypalace.be:6667","Crack Life|irc.crack.life:+6697","CrazeWeb|irc.crazeweb.org:6688","Creator's Network|irc.trpg.net:+6697","CrystalIRC|irc.crystalirc.net:+6697","CuckoldNet|irc.cuckoldnet.gq:+6697","Cuff-Link|pixie.cuff-link.me:+7797","CyIRC|irc.cyirc.org:+6697","Cyber-Nux Network|balam-web.fr:+6697","CyberGuerrillaAnoNneXus|cyberguerrilla.org:+6697","CyberPunks|irc.cyberpunks.ro:6667","CyberSyndicate|irc.cybersyndicate.tk:+6697","CyberWorldz|irc.cyberworldz.net:+6697","D2K5 IRC|irc.d2k5.com:+6697","DA3|webirc.digitaladdiction.info:+6697","DALnet|irc.dal.net:+6697","DBase|irc.dbase.in.rs:+6697","DCNET|irc.diaperchat.com:7000","DELFI|chat.hsl.lt:6667","DIYM.tv Comm. Systems|chat.diym.tv:6667","DLNet|irc.dlnetworks.net:+6697","DLP|irc.darklordpotter.net:+6697","DamDevil IRC|irc.damdevil.org:+6697","Dankbutts|irc.dankbutts.com:+7049","Dardania Chat|irc.albairc.com:6667","Dardania|google.unitedalb.info:+1","DareNET Testnet|mu-d.darenet.org:7002","DareNET|irc.darenet.org:+6697","Dark-Nite-Servers.tk|irc.dark-nite-servers.tk:+6697","DarkMyst|irc.darkmyst.org:+6697","DarkMyst|packetstorm.darkmyst.org:+6697","DarkSpirit|irc.darkspirit.org:+6697","DarkStorms|149.202.3.39:+6698","DarkVoltage|irc.darkvoltage.net:+6697","DarkenedSpirits|irc.DarkenedSpirits.us:+6697","Darklord Entertainment|darklord.darksix.org:+9001","Dead6.EU|irc.dead6.eu:+6697","Debian BG|irc.debian-bg.org:6667","DefconIRC|irc.defcon.pw:+6697","Delirus|irc.delirus.org:+6697","DeltaNet|irc.deltapool.net:6667","Demolition Derby|irc.qontinent.net:+6697","DerpLulz IRC|irc.derplulz.net:+6697","DestructionChat|104.168.38.244:+7797","Detekt|irc.detekt.org:6667","DigiPimps|irc.digipimps.com:+6697","DigitalAddiction|irc.digitaladdiction.info:+6697","DigitalIRC|irc.digitalirc.org:+6697","DigitalSands|irc.digitalsands.net:+6697","DinFM|irc.dinfm.dk:6667","Dire|irc.dire.ml:+6697","Discutea|irc.discutea.fr:+6697","Discuzz|discuzz.tk:6667","DivergentIRC|irc.divergentirc.net:+6697","Do-Dear|musicheights.do-dear.com:6667","Dolphin IRC Network|irc.dolphin.lt:+6668","DomIRC|irc.domirc.net:+6697","Dostiplace Online Radio|apple.dostiplace.com:6667","Dostiplace|irc.bestdosti.com:6688","Draconic|irc.draconic.com:+6697","DragonChat|irc.dragonchat.org:+6697","Dreamterra|dreamterra.net:+6697","Ducktopia Chat Network [*]|irc.ducktopia.ga:5669","DumbIRC|irc.dumbirc.net:+6697","Dwellers Server|irc.polycancer.org:+7777","DynastyNet IRC|irc.dynastynet.net:+6697","ECF|irc.e-cigarette-forum.com:6667","ECNet|irc.ecnet.org:+6697","EGO.Ninja|irc.ego.ninja:+6697","EJL|irc.ejl.im:+6697","ESP Clan IRC network|vps.espclan.ru:+6697","EbonyChat|irc.ebonyriddle.com:6667","Ebotech Web|web.ebotech.com:+9905","Echo34|irc2.echo34.com:+6697","EchoNet|irc.echo20.com:8067","Eden Garden of Chat|irc.szchat.net:6667","EfNet|irc.efnet.org:+6697","EkiNetIrc|irc.ekinetirc.com:+6697","El Chanceo|irc.elchanceo.com:6667","ElChatIRC|irc.elchatirc.com:+6697","ElChatero.com|irc.elchatero.com:+22","ElectroCode|irc.electrocode.net:+6697","Emerald Sanctuary|irc.emeraldsanctuary.net:6667","Emirates Gaming|irc.emiratesgaming.com:+6697","EnderNet|irc.goender.net:+6697","Engjull.com|irc.engjull.com:6667","EntropyIRC|irc.entropyirc.net:+6697","EntropyNet|irc.entropynet.net:+6697","EpiKnet Paris|paris.fr.epiknet.org:+6697","EpiKnet|irc.epiknet.org:+7002","EpicIRC|irc.epicirc.com:+6697","Epic|irc.epicnet.ru:+6668","Equalify|irc.equalify.me:+7001","Escaped IRC Network|irc.escaped.net:+1","EsperNet|irc.esper.net:+6697","Estchat|www.estchat.ee:+6697","EuropNet|irc.europnet.org:+6660","EuropeIRC|irc.EuropeIRC.org:6667","EvilNET|irc,evilnet.org:6667","EvilNET|irc.evilnet.org:+6697","Evilnet.org|Toronto.evilnet.org:6667","EvoSurge|irc.evosurge.net:+6697","Evolu7ion|163.172.37.199:+6669","Evolu7ion|irc.evolu7ion.fr:+6669","Evolutions|178.33.66.156:+6698","Evolvechat|irc.evolvechat.net:6667","ExChat|irc.exchat.net:+6697","Exar OVH|irc.exar.ovh:6667","Excontinuum|irc.excontinuum.de:+6667","ExoIrc|51.254.13.190:6667","Exp-Gaming|irc.exp-gaming.net:+6697","FAnet|irc.fightingamphibians.org:+6697","FIFAVersus|fifaversus.com:6667","FaZe-Gaming-World|5.39.27.216:6667:6667","Facepunch Network|irc.facepunch.club:6660:6660","Fajtori|158.69.212.79:6667","FakeNet|irc.fakenet.org:6667","FanCHAT IRC Network|irc.fanchatirc.com:+22","FanneNet|irc.fanne.be:6667","Fantasya.org|irc.fantasya.org:+6697","Feefun Chat|irc.freefun-chat.fr:6667","FerwyIRC|irc.ferwy.net:+6697","FerwyIRC|irc.ferwy.net:+6697","Fewona|irc.fewona.net:+6697","FileList|irc.filelist.ro:+7000","FinElite|finelite.org:+6697","FinalGear|irc.finalgear.com:+7001","FiveNET Romania|Irc.FiveNET.Ro:+6697","FlameIRC|irc.flameirc.net:+6697","Flashii|flashii.net:6667:6667","FlumpIRC|irc.flumpirc.net:+6697","Flux|flux.go.ro:6667","Forchat Network|irc.forchat.id:+6697","Forum-Al.com\u2122 Chat|uk.netedy.al:5500","ForumCerdas|irc.forumcerdas.net:+6697","ForumCerdas|irc.forumcerdas.net:+6697","FoxAtommic|irc.foxatomic.net:+6697","FoxDevIRC|irc.foxdev.co:+6697","FractionGamers|irc.fractiongamers.com:+6697","FreeIRC|freeirc.de:6667","FreeRO|irc.free-ro.ru:+6697","FreeShellAccounts|irc.freeshellaccounts.com:6667","FreeUniBG|84.54.139.229:+9999","FreeUniBG|irc.spnet.bg:+9999","FreeWeed|irc.freeweed.ga:+6601","Freed0m4All Networks|irc.freed0m4all.net:+6697","Freenode|irc.freenode.net:+6697","Freiwuppertal-IRC|irc.freiwuppertal.de:+6697","Frenzic|irc.frenzic.net:6667","Friend|apertron.net:+6697","Frogbox|frogbox.es:+6697","FrostWire|chat.frostwire.com:+6697","FuckIRC|irc.fuckirc.net:+6697","FullCristianos|irc.fullcristianos.com:6667","FullIRC|irc.fullirc.net:6667","FunMastiClub|FunMastiClub.com:6667","FunnyPaki|149.202.245.240:7008","FurNet|irc.furnet.org:+6697","FurryAvalon Network|irc.furryavalon.net:+6697","FurryLand|irc.furryland.net:+6697","FusionChat|irc.fusionchat.mx:6667","Fustellomania|fustellomania.it:+6697","FususIRC|irc.fusus.org:+6697","Futurenode.net|irc.futurenode.net:+16000","FuzzyConcepts|irc.fuzzyconcepts.net:+6697","GFQ|irc.gfqnetwork.com:6667","GNETT.org|irc.gnett.org:6668","GRP|4bit.pw:+6697","GTAXLnet|irc.gtaxl.net:+6697","GTNewHorizons|irc.gtnewhorizons.com:+6660","GameSurge|irc.gamesurge.net:6667","GameWizard IRC|irc.gamewizardserver.com:6667","GameWizardIRC|irc.gamewizard.ca:6667","Gamer Galaxy|irc.gamergalaxy.net:+6697","GamerGalaxy|irc.gamergalaxy.net:+6697","Gaming007|irc.gaming007.ga:+6697","GeekShed|geekshed.net:+6697","GeekSoc|irc.geeksoc.org:+6697","GeeksAndGamers|irc.geeksandgamers.net:+6697","GeeksIRC|irc.geeksirc.net:+6697","GeoNet|178.32.184.14:6667","German-Elite.com|irc.german-elite.com:+6670","German-Elite.info|irc.german-elite.info:+6670","German-Elite.net|irc.german-elite.net:+6670","German-Elite.org|irc.german-elite.org:+6670","Gettinbusy|chatter.verymad.net:6667","GigaIRC|irc.gigairc.net:6667","GizmosCorner|gizmocorner.chatuniverse.info:+6697","Global IRC|irc.globalirc.it:+6697","Global-Irc.Org|irc.global-irc.org:6667","GlobalChat|ceres.globalchat.org:+6697","GoatChat|irc.goat.chat:+6697","GoddessSapphirechat|irc.sapphirechat.com:+6697","Goldirc|irc.goldirc.eu:+6697","GoodChatting|irc.goodchatting.com:6667","GreatShark|irc.greatshark.net:+6697","GreeceChat|irc.greecechat.gr:+6697","GreekChat.EU|aetos.greekchat.eu:+6697","GreekChat|atlantis.greekchat.eu:+6697","GreyCadet|irc.greycadet.com:+7000","Griefplay|irc.griefplay.net:+7778","GupshupCorner|chat1.chatroom.com.pk:2095","GurbetGulu|irc.gurbetgulu.net:6667","HackThisSite|irc.hackthissite.org:+7000","Hackflag|81.4.120.168:+6601","HalcyonNet|halcyon.strangled.net:+6697","HamRadioIRC Network|irc.hamradioirc.net:+6697","HautConseil|irc.hautconseil.org:6667","HebbuCO|85.214.244.133:+6601","HellasIRC|78.129.172.49:8067","HellenicForest|chat.hellenicforest.com:+6697","Hellscream|irc.hellscream.org.uk:+6697","Hellsfury|irc.hellsfury.org:+6697","Hira|irc.hira.io:+6697","Hispachat|hispachat.mooo.com:6667","HoSHiNET|irc.hoshinet.org:+6697","HoaxNET|irc.tomhek.nl:+6697","HoptoIRC|irc.hopto.org:+6697","Horus|horus.albnetwork.net:7000","HoundIRC|5.231.38.219:+6697","HowlNET|irc.howlnet.org:+6697","HybridIRC|irc.hybridirc.com:+6697","Hydra IRC|irc.hydra.ws:+6697","Hypnoponies IRC|irc.hypnoponies.net:+6697","Hypnoseduction|irc.hypnoseduction.tk:+6697","I6.IO|irc.i6.io:+6697","ICQ-Chat.com|irc.icq-chat.com:+6697","ICQ-Chat|irc.icq-chat.com:+6697","ICQchat|irc.icqchat.co:+6697","ICQchat|irc.icqchat.net:+6697","INFJs-net|chat.infjs.com:6667","INF|195-154-82-223.rev.poneytelecom.eu:+6697","IPrange|irc.iprange.net:6667","IRC 4U|irc.4u.ee:+6697","IRC Atilla|irc.eistiens.net:6667","IRC Hound Network|irc.irchound.tk:+6697","IRC Super-H|irc.super-h.fr:6667","IRC-Ban.de|irc.irc-ban.de:+6697","IRC-Ban.de|irc.irc-ban.de:+6697","IRC-Chile|irc.chat-chile.cl:6667","IRC.tl Network|irc.tl:+6697","IRC4Fun|irc.irc4fun.net:+6697","IRCALEM|irc.ircalem.com:6667","IRCBlaze|irc.ircblaze.net:+6697","IRCBr|irc.ircbr.com.br:+6697","IRCDial|irc.ircdial.com:+6657","IRCFTW|irc.ircftw.net:+6697","IRCFreakz|irc.ircfreakz.net:+6697","IRCGate|irc.ircgate.it:6667","IRCHaven|irc.irchaven.org:+7001","IRCHighWay|irc.irchighway.net:+6697","IRCHound|52.88.26.37:+6697","IRCLife|irc.irclife.com.br:+6697","IRCMojo|pool.ircmojo.com:+6697","IRCNet|west.mirc.gr:+19697","IRCNode|irc.ircnode.org:+6697","IRCPimps|irc.ircpimps.net:+6697","IRCStorm|irc.ircstorm.net:+6699","IRCWorld|178.33.66.154:+6697","IRCnet Greek|heraklion.ircnet.gr:+6697","IRCnet.gr|alpha.ircnet.gr:+6697","IRCnet|open.ircnet.net:6667","IRCocs|irc.ircocs.ga:+6697","IRCop|irc.ircop.net:6667","IRCwiki|irc.ircwiki.org:+6697","IRCz|irc.ircz.fr:+6697","IVGY|irc.iv.gy:+6697","Icy Network|irc.icynet.eu:+6697","IcyNet|irc.icynet.ml:+6697","Idahodudes World|irc.idahodudesworld.gq:6667","IinaChat|irc.iina.hu:+6697","ImaginAR|irc.imaginar.net:6669","ImaginaryNET|irc.imaginarynet.uk:+6697","Immortal-Anime|www.immortal-anime.net:+6697","Impartialty IRC|irc.thenamedev.net:+6697","Impulse99 IRC|irc.impulse99.com:+6697","InchraNet|irc.inchra.chat:+6697","IndoChat|irc.indochat.org:+6697","Indymedia|irc.indymedia.org:+6697","InfinityWorld|irc.infinityworld.org:6667","InfoChat|irc.infochat.org:6667","Informatics Inc. IRC|irc.informaticsinc.com:6667","Inframonde|irc.inframonde.org:+6697","IngressBG|irc.ingressbg.com:+6697","InsaneChat|irc.insanechat.net:+7021","InsanelyMac|irc.insanelymac.com:+6697","Interlinked|irc.interlinked.me:+9999","Internet-Libre|inetli.org:+6697","IotaIRC|irc.iotairc.net:+6697","IovoidNet|irc.iovoid.tk:6667","IrcFriends|irc.ircfriends.eu:+6697","IrcItalia|irc.ircitalia.it:6697","IrcNet|irc6.us:6667","Ircforums|irc.ircforums.co.uk:6667","Islandx IRC|irc.islandx.co.uk:+6697","ItsOnlyBinary|itsonlybinary.com:+6697","JDQIRC|jdqirc.net:+6697","JakeNet|metacity.duckdns.org:7667","Jaundies|irc.jaundies.com:6667","Jawug|irc.jawug.org.za:+6697","JeamfryIRC|irc.jeamfry.com:6667","JoeBukkit|irc.joebukkit.com:+6697","Join2Chat|174.140.168.78:+6697","JokersNet|irc.jokersupdates.com:6667","Judge.ovh|irc.judge.ovh:+6697","JustTrance|irc.justtrance.net:+6697","Jutsu|irc.genkei.cu.cc:+6697","K108FM|irc.k-furradio.net:+6697","KIS|146.185.167.66:+6697","KKK-net|bowser.direktoratet.se:+6697","KWGermany|irc.kw-germany.de:+6667","KameCorp|irc.kamecorp.com.mx:6667","KameCorp|irc.kamecorp.net:6667","KampungChat2|irc.fat2fit.pw:+6697","KampungChat|irc.kampungchat.org:+6697","KaoSIrc|irc.kaosirc.com:+6669","KaraIRC|karachan.org:+6697","Kewl-Chat|irc.kewl-chat.eu:6667","Keyboard-Failure|irc.kbfail.net:+6697","Kim Jong Cracks|irc.cracksby.kim:+6697","KingNet|kingirc.net:+6697","KinoTeka.Ba|irc.kinoteka.ba:6667","KiraboshIRC|irc.kiraboshi.xyz:+6697","KiroIRC|kirosite.cu.cc:6667","KittyTown|irc.kitty.town:+6697","KletsNetwerk.eu|irc.kletsnetwerk.eu:+6697","KnaQu Chat|web.knaqu.org:+6697","KnaQu|irc.knaqu.ch:9025","KnightIRC|irc.knightirc.net:6667","Knightmare|irc.knightmare.com:+6697","KoTHoK|irc.kothok.com:6669","KoaxIRC|irc.koaxirc.net:+6697","KoaxIRC|irc.koaxirc.net:6667","KonnectIRC|irc.konnectirc.net:+6697","KoruIRC|irc.koruirc.net:+6697","Kosovachat|irc.zemra.net:3010","KottNet|irc.kottnet.net:+6697","KuroiI|Pv4|ipv4.kuroi.eu.org:+6697","Kuroi[eu.org]|irc.kuroi.eu.org:+6697","Kuroi|irc.kuroi.gq:+6697","Kyunet|irc.kyunet.net:+6697","LECNR|irc.larsite.tk:6667","LKteam-IRC|irc.lkteam.net:+6697","LTTi|irc.linktotheinter.net:+6697","LUNet|irc.liberty-unleashed.co.uk:+6697","Laghost IRC|irc.laghost.org:+6697","LatinChat|213.155.190.100:6667","Le-Fa|irc.le-fa.org:+6669","LeafGhoul|irc.leafghoul.net:+6697","LegoIRC|92.222.38.247:6667","LethalDuck|irc.lethalduck.com:6667","Lethalworld|Interstellar.de.eu.Lethalworld.net:+6697","LewdChat|irc.lewdchat.com:+6697","LiberLaChat|irc.liberlachat.net:6667","LibertasIRC|irc.libertasirc.net:+6697","LibraIRC|158.69.192.190:+6697","LibreGlobe|irc.libreglobe.org:6667","LightSpeed IRC|irc.lightspeednet.tk:6667","LightningCraft|irc.lightningcraft-mc.tk:6667","Likorne Tchat|irc.likorne.fr:6667","LimeSky|irc.limesky.ga:+6697","Lion-O|lion-o.hopto.org:+6697","LizardIRC2|irc.lizardirc.org:+9999","LizardIRC|irc.fastlizard4.org:+9999","Lodge|irc.lodge.chat:+6697","LoveIRC|irc.loveirc.net:6667","Lucid|irc.lucidchat.net:+6697","LukeNet|irc.toolsnbots.tk:+6697","Lulz|irc.stephens.lol:+6697","LunarChat|irc.lunarchat.net:+6697","LunarIRC|irc.lunarirc.net:+6697","LynxChat|irc.lynxchat.network:+6697","Lzuruha|irc.mylzh.net:6667","MAM|irc.myanonamouse.net:+7000","MIXXnet|irc.mixxnet.net:+6697","MMOBugs|irc.mmobugs.com:6667","MPXD Network|irc.mpxd.waw.pl:6667","MPXD Network|mpxd.ddns.net:6667","MPXD-IRC|*.mpxd.tk:6667","MYNET|162.216.156.107:6669","Mafiozio|irc.mafiozio.ru:6665","Magrebnet|chat.magrebnet.com:6667","MainCenter|irc.maincenter.es:6667","MainLine IRC Network|irc.mainline-irc.net:+16000","Majestic-Irc|irc.majestic-irc.net:+6697","MajesticFreaks|wicked.majesticfreaks.com:+6697","Majestic|irc.majestic-chat.com:+6697","Malvager|irc.malvager.net:+6697","MalwareTech|irc.malwaretech.com:+6697","Mandragorat Wandystanu|irc.wandystan.eu:+6697","MantraIRC|irc.mantrairc.net:6667","MarWay|irc.marway.org:6667","Mario Universalis|irc.mariouniversalis.fr:6667","Massgamers IRC Network|irc.massgamers.com:+6697","MatmorNet|212.38.181.101:+6697","MiChats.cl|irc.michats.cl:9090","MiLDNet|irc.mildnet.pw:6667","Mibbit|irc.mibbit.net:+6697","MichatIRC|irc.michatirc.cl:+6698","MillBro Chat|irc.millbrochat.net:+6697","Mimacy|irc.mimacy.com:6667","MindForge|irc.mindforge.org:+6697","Minecraft.no|irc.minecraft.no:+6697","Mizure IRC Network|irc.mizure.net:+6660","Mo Hinh|irc.mohinh.club:6667","MobileIRC|chatXPress.MobileIRC.Net:+6697","Mordor|irc.mordor.io:+994","Mozilla|irc.mozilla.org:+6697","MsnIRC|irc.msnirc.net:+6697","Muevete|158.69.211.171:8090","MundiChat|irc.mundichat.com:6667","MundoChat|200.58.98.246:+6697","Muscle-Growth|irc.muscle-growth.org:+6697","MusicLiveFm|irc.musiclivefm.com:8257:8257","MyCooldude|irc.mycooldude.info:+6697","MyIRCd|irc.myircd.com:+6697","MyIRChat|bitcoinshell.mooo.com:+6699","MyIRChat|bitcoinshell.mooo.com:+6699","MyIRC|irc.myirc.net:6667","MyKinkChat|irc.mykinkchat.com:+6697","MyMastiChat|chat.mymastichat.com:7023","N0xy.net|irc.n0xy.net:+6697","NA Chatroom|chat.nachatroom.net:+6697","NN - GW|irc.night-networks.net:6667","NSBnet|irc.nsbradio.co.uk:6667","NabbieIRC|irc.nabbie.net:6667","NandOX|irc.nandox.com:+6697","Naprawa|irc.wojtyla.biz:6667","NationChat|georgia.nationchat.org:6667","NeT-FaNtAsTiCo|irc.NeT-FaNtAsTiCo.ns0.it:6667","Necron|irc.necron.org:+6697","Nerdfighteria Network|irc.dftba.net:+6697","Nerdfighteria|irc.nerdfighteria.net:+6697","Net-Solutions|irc.Net-Solutions.info:6667","NetCoffee|irc.devians.hu:+6697","NetIRC|irc.netirc.eu:6667","NetWorkShock|irc.networkshock.com:6667","Netchat|107.191.99.54:8746","Netgamers|irc.netgamers.org:+6697","Netify|irc.netify.org:+6697","New Dawn|server.dawn-tdm.com:+6697","NewNet|irc.newnet.net:+9999","Newnet|irc.newnet.net:+9999","Niggers IRC Server|fef.zapto.org:+6667","Nightstar|irc.nightstar.net:+6699","Nightwatch IRC|irc.nightwatchirc.com:6667","NinjaZ Gaming|ninjazgaming.ddns.net:6667","NonemuNinja|irc.nonemu.ninja:+6697","Noxether|irc.noxether.net:+7000","Nullrewted|101.100.138.68:6667","OCNWC|irc.ocnwc.com:6667","OKSnet|irc.theoks.net:+6697","OMGIRC|irc.omgirc.com:+6697","OMGLOL|irc.omglol.com:+6697","OSPnet|irc.ospnet.org:+6697","OZIRC|irc.ozirc.tk:6667","OZnzb IRC|irc.oznzb.com:6667","Obsidian-IRC|irc.obsidianirc.net:+6697","Occultus|elixir.occultus.net:+6697","Oftc|irc.oftc.net:6667","Okashi|irc.okashi.me:+6697","OkkupyME|irc.okkupy.me:6697","Oldchat|irc.oldchat.org:+6697","Omega-B\u00e9ta irc|irc.x-c4.ca:+6697","OncoChat|irc.oncochat.net:+6697","Onimesfy|24.41.176.14:6667","Onzin|irc.onzin.org:+6697","Opdenloreley.nl|185.30.238.59:6667","OpenASD|irc.openasd.org:+9002","OpenTrackers.org|irc.opentrackers.org:+7000","OptiLan|irc.optilan.eu:6667","Optilan.org|irc.optilan.org:6667","Oracius|irc.oracius.net:+6697","Orion Chat Rooms|irc.orionchat.com:+6697","Orixon|irc.orixon.org:+9999","OtakuIRC|irc.otakuirc.de:+6670","OtherWorlders|irc.otherworlders.org:6667","Other|irc.darkode.com:+9999","OthoNet|irc.swartzel.nl:+6697","Our World Alliance|irc.ourworldalliance.org:6667","OxOSurf|irc.oxosurf.eu:6667","P2P-NET|irc.p2p-network.net:+7000","PANAMAWAREZ|panama.sytes.net:6667","PC-Logix|irc.pc-logix.com:+6697","PIRC.pl|irc.pirc.pl:+6601","PS3Repack|irc-ps3repack.hopto.org:6667","PTirc IRC Network|irc.ptirc.org:+6697","PTnet|irc.ptnet.org:+6697","PakFmMasti|irc.pakfmmasti.com:6667","PalTale Chat|irc.paltale.com:1000","PanicIRC|irc.panicirc.net:+6697","Paradise IRC|176.58.122.101:7000","ParadiseChat|irc.paradisechat.co.uk:6667","Parahumans|irc.parahumans.net:+6697","Partyvan|irc.partyvan.us:+6697","Pasif Gay|irc.pasifgay.net:6667","PassionIRC|irc.passionirc.com:+6697","PazzaNet|pazzanet.noip.me:6667","PdgnCo|irc.pdgn.co:+6697","Peja|irc.peja.tk:6667","Pertaminux|irc.pertaminux.org:+6697","Phobia Support|irc.phobiasupport.com:+6697","Pikabu IRC|rechat.cloudapp.net:6665","PinkFuzzy|irc.pinkfuzzy.net:+6697","Pinoy-Talaga.net|176.31.115.229:6667","PirateIRC|irc.pirateirc.net:+8282","PirateMountain News IRC|212.113.137.176:+6668","PkmnFallen|irc.pkmnfallen.11r.us:+6697","PkmnStarIRC|irc.pkmnstar.com:+6697","Place2Chat|irc.place2chat.com:6667","PlanetChat|irc.PlanetChat.net:+6697","PlanetIRC|irc.planetirc.org:6667","PlanetaMPB|irc.radioplanetampb.com.br:6667","Play247|irc.play247.eu:+6697","PokeBeach|irc.pokebeach.com:+6697","PokeWorld|23.245.7.185:6667","Pokemon Vortex|irc.pokemon-vortex.com:6667","PokemonMillenniumIRC|23.95.31.39:+6697","Pok\u00e9-iRC|irc.pokeirc.de:+6670","Pok\u00e9-iRC|irc.pokeirc.de:+6697","Poniverse IRC|irc.poniverse.net:+6697","Pony France|irc.ponyfrance.net:+6660","PonyChat|irc.ponychat.net:+6697","PopularChat|popularchat.ga:6667","PowaneT|powanet.org:+6697","Power2host|128.204.203.78:6667","PowerEclipse|irc.powereclipse.com:6667","PowerIRC|powerkiller.no-ip.biz:+6697","PremiereTrader|irc.internetplays.com:6667","Priv8 network|irc.Priv8.jp:+6697","Priv8|irc.priv8.network:+6697","PrivBR|irc.PrivBR.com:+6697","ProbablyIRC|104.167.105.217:6667","Project-Sato|irc.project-sato.net:6667","ProjectPokemon|irc.projectpokemon.org:+6697","Proto OVH|irc.proto.ovh:6667","PurpleSurge|irc.purplesurge.com:+6697","Q-Net|irc.q-net.gr:+6697","QtalK|irc.qtalk.web.id:6667","QuakeNetReal|irc.quakenet.org:6667","Queertech Systems IRC|irc.queertech.systems:+6697","Quick IRC|irc.quickirc.net:6667","Quinxnet|irc.quinx.net:6667","RC6|irc.rc6.org:+9999","RCHAT|rchat.nl:6667","RDNet|irc.rmachine.net:+9999","REDMUNDIAL|irc.redmundial.org:6667","RNMDNET|irc.renamed-cloud.de:6667","RSD|rsd.nolsen.xyz:+6697","RTK|rtkgaming.com:+7005","RTSD|irc.rtsd.net:6667","RadioClick Romania|irc.radioclick.ro:+6697","RadioFuoriTempo.it|radiofuoritempo.it:6667","RadioKlass|irc.radioklass.eu:6667","RadioLua|irc.radiolua.com:6667","RadioWebCardel|180.210.130.68:6667","Radiolua|radiolua.ddns.net:+6667","Radyo 3 Hilal|irc.uchilal.com:6667","Rage BlackzNet|151.80.74.157:8913","Rambling-geek|rambling-geek.com:7000","Random Sonic Net|irc.randomsonicnet.org:+9998","RapidRageIRCnet|irc.rapidrage.net:+6697","Rapide Tracker IRC|irc.rapidetk.ovh:6667","Ravenchat|irc.ravenchat.net:+6697","Ravens Wyrd|irc.ravenswyrd.com:+6697","RealUnix.Org|irc.darkirc.net:6667","RebelNet|irc.rebelnet.org:+6697","Recycled-IRC|irc.recycled-irc.net:+6600","Red-Orbita|irc.red-orbita.org:6667","RedCHAT.CL|irc.redchat.cl:+6697","RedLatina|Wyo.RedLatina.Net:6667","RedLatina|irc.redlatina.net:+6697","RedeBrasil|irc.redebrasil.org:+6697","RedeNorte|irc.redenorte.net:6667","RelayChat|irc.relaychat.my:+994","Reseaumondial|irc.reseaumondial.org:6667","Revolt IRC|192.187.121.11:+6697","RexGame|irc.rexgame.pl:6667","RezoSup|irc.rezosup.org:+6697","Rifdesigner|server.rifdesigner.com:+6697","Riff|irc.riff-radio.org:+6697","RiotChat|chat.riotseeds.nl:6667","RippyNet|irc.rippy.rip:+6697","RisposteInformatiche|irc.risposteinformatiche.it:+6697","Rizon|irc.rizon.net:+6697","RoL|irc.ringoflightning.net:+6697","RoWebChat|ca.evolius.ro:6667","Ronin|ronin.go.ro:6667","Ronsor IRC|irc.exlx.tk:+6697","RonsorIRC|irc.ronsor.gq:+6697","RottingIRC|noteness.cf:+6697","RoyalDev IRC|irc.royaldev.org:6667","Rrjeti Shqip|irc.rrjetishqip.com:+6697","RunUO|irc.runuo.com:+6697","RuneHQ|irc.runehq.com:+6697","RuneScript|irc.rscript.org:+6697","Ruthless City|ruthlesscity.com:+6697","Ruxres|irc.qwertyoruiop.com:6667","Rymax99|irc.rymax99.com:+6697","SACNR|irc.sacnr.com:6667","SG_Community_IRC|irc.SG_Community_Gaming.net:+6697","SPUNet|IRC.SPUNet.org:+6697","SPUNet|Samsung.CA.SPUNet.org:+6697","SSNet|irc.ssnet.ca:+6697","ST-City|irc.st-city.net:+6697","SUARGAMES IRC|irc.suargames.cu.cc:6667","SahabatChat|irc.sahabatchat.tk:+6697","SailIRC Network|irc.sailirc.net:+6698","Sakurastur|irc.sakurastur.es:+6697","SameTeem|irc.sameteem.com:+6697","San Andreas Irc Network|irc.sa-irc.com:+6697","SanityNet|irc.sanitynet.org:+6697","Sasageru|irc.sasageru.11r.us:+6697","ScaryNet|irc.scarynet.org:6667","Scorpion Land|scorpionland.net:+6697","ScoutLink|chat.scoutlink.net:+6697","Scoutdial|irc.scoutdial.org:6667","Scoutwired|irc.scoutwired.org:6667","Scratch-Network|irc.scratch-network.net:+7000","Secfo|irc.secfo.org:+6697","Sedutoras|sedutoras.ddns.net:+6697","SeersIRC|irc.seersirc.net:+6697","SeionIRC|irc.seion.us:+6697","Sensei Brasilnet|ircsensei.sytes.net:6667","Sexy Hypnosis|irc.hypnosis.sexy:+6697","Sexy.|sexy.igirl.ru:+9999","Shackled.me|irc.shackled.me:+6697","ShadowNet|IRC.ShadowICT.net:+6697","ShadowSpark|irc.shadowspark.org:6667","Shadowkitsune|irc.shadowkitsune.net:+6697","ShakeIT|irc.elitsat.net:6667","ShellsIRC|irc.shellsirc.com:+6697","Shivering Isles|irc.madirc.net:+6697","Shivering-Isles|irc.shivering-isles.de:+6697","ShowChat|irc.showchat.ro:6667","ShprehuNetwork|web.shprehu.org:6667","Shweppsie|irc.shweppsie.com:+6697","SiSrv|irc.sisrv.net:+6697","SimosNap|irc.simosnap.com:+6697","Sinsira|irc.sinsira.net:+6697","SkyChatz|irc.skychatz.org:7000","SkyN3t|irc.skyn3t.net:+7010","Slacked|irc.slacked.org:+6697","SlashNET|irc.slashnet.org:+6697","Slavehack|irc.slavehack.com:+6697","SlimeIRC|slimeirc.net:+6670","SmallIRC|irc.smallirc.in:+6697","Smutny Sylwestrowy Serwer sIRCa|kurwa.co:6667","Snoonet|irc.snoonet.org:+6697","SnowIRC|irc.snowirc.com:+6697","SoStanzeNet|sostanze.chat.sostanze.ovh:+9999","SocialChat|irc.socialchat.es:6667","SohbetOVH|irc.sohbet.ovh:+6697","SohbetOdam|irc.sohbetodam.org:+6697","Sohbetler.com|irc.sohbetler.com:+7000","Solas|irc.solas.io:+6697","SomosChat|somoschat.net:6667","SorceryNet|irc.sorcery.net:+6697","SorceryNet|irc.sorcery.net:+6697","SpeedRunsLive|irc.speedrunslive.com:6667","SpiderChat|irc.spiderchat.org:+6697","SpigotMC|irc.spi.gt:+6697","SpockGames|irc.spock.me.uk:6667","SpotChat|irc.spotchat.org:+6697","SpydarIRC|irc.spydar007.net:+6697","StarChat|irc.starchat.net:6667","StarWars-IRC|irc.starwars-irc.net:+6697","Starfleet Online|irc.starfleetonline.de:6667","StarlineIRC|irc.starlineirc.com:+6697","StoSrca|irc.stosrca.com:6669","StormBit|irc.stormbit.net:+6697","StrathTech|irc.strathtech.co.uk:+6697","Stuxnet|irc.stuxnet.xyz:+6697","Su-Serv|irc.su-serv.com:6667","SuDoIRC|sudoirc.com:+6697","Sud IRC|199.175.50.191:6667","SunChat|irc.sunchat.eu:+6697","SuperNETs|irc.supernets.org:+6697","Surrealchat|irc.surrealchat.net:+6697","Susan's Place Transgender Resources|none.susans.org:8888","SwagMaster Hosting|irc.SwagMasterHost.com:6667","SweetChat|irc.sweetchat.org:6667","SwiftIRC|irc.swiftirc.net:+5004","SymposiaNet|irc.symposianet.org:+6697","SynIRC|irc.synirc.net:+6697","Syntax-IRC|irc.syntax-irc.net:+6697","SystemNet|irc.systemnet.info:+6697","SystemShell.net|irc.systemshell.net:6667","TAGIRC|irc.tagarena.net:6667","TDIRC|irc.tdirc.net:+6697","TGNIrc|tgnirc.tk:8095","TMMasti|178.32.122.50:7777:7777","TR IRC|chat.tunedracers.com:+6697","TSDIRC|irc.teamschoolyd.org:6667","TTsWeb|users1.ttsweb.org:+6697","TU Wien IRC|irc.fsinf.at:+6697","TURLINet|irc.servx.ru:+6697","TUTOMATIK.fr|irc.tutomatik.fr:+6697","TWiT|irc.twit.tv:+443","Takohu.Net|irc.takohu.net:6667","Talk State|east.talkstate.com:6667","TalkState|connect.talkstate.com:6667","Tambers|.irc.tambers.com:6667","Taphouse Cabal|irc.taphouse.org:+6697","Team-Mondial-IRC|irc.team-mondial.net:+6697","Team-TT|irc.team-tt.com:6667","TeamGG|irc.teamgg.ru:+6697","TeamGaki|5.39.12.190:+6697","Tech Talk Know How|irc.ttkh.co.uk:6667","Techtronix|irc.techtronix.net:+6697","Teknostuf|teknostuf.com:+6697","TerraChat|irc.terrachat.cl:6667","TerraNova|irc.tngaming.com:6667","TesseractNet|irc.tesseractnet.com:+6697","TestNet|74.99.75.127:6669","The Airlock|irc.theairlock.net:+7778","The Archives|irc.archivesmc.com:+6697","The Black Watchmen|irc.blackwatchmen.com:6667","The Blink Network|irc.theblink.network:6667","The Cryptix|irc.thecryptix.com:6667","The GDN|irc.the-gdn.net:+6697","The Glitch Network|glitch.is:+6697","The Worlds Tree Online|irc.theworldstree.online:+5697","The XNet IRC Network|irc.txin.pro:+6697","TheBDSMChat|irc.thebdsmchat.com:+6697","TheChat|irc.thechat.gr:+6697","TheHaven|irc.chronos.org.uk:+6697","TheIRCNet|irc.theirc.net:+6697","ThePlaceToChat|irc.theplacetochat.net:+6697","TheShadow-Irc|Texas.TheShadow-Irc.Ga:+6697","TheSkyTemple|irc.lugia.co.uk:+6697","ThisCluster|irc.thiscluster.com:6667","ThisIsNotabot.net|irc.ThisIsNotabot.net:+6697","TodoChat|irc.todochat.org:6667","Torrent-Invites|81.4.111.195:+6697","Total Drama|irc.totaldrama.net:+6697","TotalElectronics.us IRC Network|totalelectronics.us:6667","TradeMyBit|irc.trademybit.com:+7777","Trancefurs|spiral.trancefurs.net:+6664","Transgender Resources|irc.transgenderresources.com:+6697","TripSit|irc.tripsit.me:+6697","TrivialityZone|irc.trivialityzone.co.uk:+6697","Trsohbetim|irc.trsohbetim.org:+61","TuTTI_AmIcI_chatta|irc.fantasytheworld.tk:6667","Tugasnetwork|irc.tugasnetwork.net:6667","Tuttipazziperiprezzi|irc.tuttipazziperiprezzi.it:+6697","TwistedNET|irc.twistednet.org:+6697","TwistedNet|irc.twistednet.org:+6697","TypeMetrics|66.254.101.233:+8067","TyranIRC|irc.tyranirc.com:+6697","UKChatterbox2|irc.ukchatterbox2.com:+6697","UOLL|irc.uolostlands.com:+6697","USChatters|irc.uschatters.com:6667","UkChatBox|irc.ukchatbox.org.uk:+6697","UltimateIRC|irc.main.ultimateirc.co.vu:+6697","UltraIrc|irc1.zapto.org:6667","UmbrellixIRC|irc.umbrellix.net:+6697","UnderChat|irc.underchat.net:7021","Undernet|irc.undernet.org:6667","UniBG|irc.rosal.bg:+9999","UnitedChat|5.230.145.159:+994","UnitedChat|irc.unitedchat.net:+994","UnitedRadio|irc.unitedradio.us:6667","UnityHub IRC Network|irc.unityhub.eu:+6697","UnknownZ Famili|198.50.217.219:+6697","UnknownZ|irc.unknownz.net:+6697","Unofficial GaG|45.76.2.223:+66697","UnovaRPGNet|irc.unovarpgnet.net:+6697","VAR|irc.varmag.com:+6697","VPS|scuba323.com:+6697","VerdeCuba|verdecuba.com:6667","Verxe|irc.verxe.net:+6697","ViVeChat|irc.vivechat.com:+6697","Via Estelar|ViaEstelar.noip.me:6667","Vice-City|vice-city.fl.us.ircfreakz.net:+6697","ViperNet|irc.vipernet.tk:+6697","Volatile|irc.volatile.ch:+9999","VoodooNet|irc.voodoonet.biz:+6668","Voxanon|irc.voxanon.net:+6697","WNet|irc.wnet.tk:+6697","WTFuxNet|irc.wtfux.org:+6697","WalkingPlayers|irc.walkingplayers.com:+6697","Warcraft Daily|chat.warcraftdaily.com:6667","WeAreTheBorg|irc.borg.site:+1025","Web Chat|192.3.110.156:6667","WebChat.MY|irc.webchat.my:+6697","WebChat|66.70.251.33:6667","WebcastsOnline|irc.webcastsonline.com:+6697","WeirdsPlace|irc.weirdsplace.nl:6667","Whitefire|irc.whitefire.in:+6697","WikkedWire|cgiirc.wikkedwire.com:+6697","Wimp irc|irc.wimp.tk:+6667","Witches Chat Network|crystal.occultus.net:+6697","WitchesChat|magia.occultus.net:6667","WonderlandIRC|irc.wonderlandirc.net:+6697","World Unity|irc.world-unity.net:+6969","World of Gor|irc.wogor.net:+6697","Worldnet|irc.worldpowers.net:6667","WormNET|wormnet1.thescs.tk:+6697","Wunderchat|serv2.diamantthomy.info:+6670","Wyolatinos US|irc.wyolatinos.org:6667","WyvernIRC|irc.wyvernirc.net:+6697","XCiteChat|irc.xcitechat.com:+7000","Xertion|irc.xertion.org:+6697","YRR|irc.roirc.ro:6667","Yeahunter|irc.yeahunter.hu:+6697","YnM|irc.ynm.ro:+6697","ZAIRC|irc.zairc.net:+6697","ZEnet IRC Network|irc.zenet.org:+6697","ZIDnet irc|irc.ZIDnet.ovh:+6669","Zemra|irc.zemra.org:+6697","ZeroNode IRC|irc.zeronode.net:+6697","Zerolimit IRC|irc.zerolimit.net:6667","ZeusIRC|irc.zeus.gq:+6697","ZoNex|irc.zonex.nu:+6697","ZonaHispana|irc.zonahispana.org:+6697","ZonaIRC|IRC.ZonaIRC.Org:6667","ZonaIRC|IRC.ZonaIRC.Org:6667","Zougla chat|chaos.acn.gr:5555","aerospacechat-insp|aerospacechat.hopto.org:+6697","aerospacechat|irc.aerospacechat.com:+6697","agent79.org irc|irc.agent79.org:+6697","albachat|irc.albachat.fr:7029","amistadchat|irc.amistadchat.org:6667","apozim|94.177.242.97:6667","avrupacafe|irc.avrupacafe.nl:+8003","bemaniso|irc.bemaniso.ws:6667","bigfootslair|irc.bigfootslair.net:+6697","blackcobalt|irc.blackcobalt.org:+6697","blind-IRC|irc.blindirc.net:+6697","boredchat|irc.boredchat.net:6667","britfags|irc.britfa.gs:+6697","btrIRC|irc.btri.x10.bz:+6697","buttes|irc.butt.es:+6697","cantelopenet|irc.cantelope.net:+6697","cbl|irc.collegeboyslive.com:6667","chat chatearya es|chat.chatearya.es:6667","chat-internacional|chat-internacional.com:6667","chat.gizmoscorner.com|151.80.74.156:+6697","chat2me|irc.chat2me.be:6667","chatinum|irc.chatinum.com:+6697","chatmelody|irc.chatmelody.com:+6697","chatsfree|irc.chatsfree.net:6668","chatterbox-uk.com|irc.chatterbox-uk.com:+6697","chattfix|irc.chattfix.com:+9967","chibi|irc.chibi.in:+6697","cliqueradio|irc.cliqueadio.org:6667","cloudCase|irc.cloudcase.us:+6697","clubgay|irc.clubgay.cl:65534","cooldude-chat|104.171.122.120:6667","crazy|irc.asylum.xyz:+6697","ctOS|ocelot.link:+6697:+6697","cuchatuniverse|irc.cuchatuniverse.net:+6697","dLan|irc.dlan.online:+6697","dbzsc|dbzsc.damnserver.com:+6697","demon|irc.ShellHosting.org:+6697","denhac Network|irc.denhac.org:+6697","dinfm|69.197.63.165:6667","elfen-tchat|elfen-tchat.fr:6667","eminet|irc.eminet.us:+6697","enindir|irc.enindir.net:6667","euirc.net|irc.euirc.net:+6999","ewf|irc.elliottwaveforexsignals.com:6667","ext3|irc.ext3.net:+6697","fIRCnet|irc.fanir.de:+6697","fIRC|irc.firc.de:+6697","fibernet|202.73.52.164:6667","fireIRC [fIRC]|irc.fireirc.co:+6697","fires|irc.fohguild.net:6667","foonetic|irc.foonetic.net:+6697","foxnet|irc.foxnet.in:+6697","fpnerds|irc.fpnerds.com:6667","fun1schat|irc.fun1schat.com:+6697","funnypaki|fpirc.mooo.com:+22","gamefiar|irc.gamefiar.com:+6697","hamradiochat geek|chat2.hamradiochat.org:+6697","happy-music|46.18.33.19:6667","i-turn Radio|irc.i-turnradio.nl:6667","iPocalypse|irc.ipocalypse.net:+6697","irc bagheera.ch|irc.bagheera.ch:6667","irc-hispanochat|irc-hispanochat.zapto.org:+6667","irc.BrasChat.com|irc.BrasChat.com:6667","irc.b303.me|irc.b303.me:+6697","irc.beyondhd.me|irc.beyondhd.me:+6697","irc.chat-hispano.net|70.39.86.147:6667","irc.cuffed-love.com|irc.cuffed-love.com:+6697","irc.davet.gen.tr|irc.davet.gen.tr:7000","irc.europeserv.org|89.46.222.96:6667","irc.fpsclasico.de|irc.fpsclasico.de:+6667","irc.galaxyevolutions.net|216.245.216.182:+6697","irc.galaxyevolutions.org|104.218.52.188:6667","irc.hebits.net|83.149.127.34:+6697","irc.jesus-chat.de|178.254.42.195:+6697","irc.land|irc.land:+6697","irc.openchat.es|5.196.225.106:6667","irc.retrowith.in|irc.retrowith.in:+7777","irc.savingtwit.org|162.218.91.100:+6697","irc.sebber77.fr|irc.sebber77.fr:+6697","irc.tehgtf.com|69.197.17.70:6667","irc.tm|irc.tm:+6697","irc.uclcommander.net|irc.uclcommander.net:+6697","irc.urlink.fr|home.urlink.fr:6667","irc2.hu|irc2.hu:+6697","ircluxe|ircluxe.ru:6665","isainode|irc.isainode.net:+6697","j0celyn.hd.free.fr|j0celyn.hd.free.fr:6667","just-chat.xyz|just-chat.xyz:6667","kagamine|irc.kagamine.de:+6698","klepetalci|irc.klepetalci.eu:+6697","kyaa|irc.kyaa.sg:+6697","ladysclub-irc|Kummerland.ladysclub-irc.net:+6697","lagout|irc.lagout.org:+6697","les-zamizs|irc.les-zamizs.eu:6667","loud.house|loud.house:6667","mIRC|irc.mirc.gr:+6697","mattie|mattiecraft.ddns.net:6667","megaleak|104.223.1.15:6667","mesajyaz|185.50.68.160:6667","minisohbet|irc.minisohbet.life:+6697","mircx.net|irc.mircx.net:+6697","mixetenet|mixete.ddns.net:+9999","morph3k.us|irc.morph3k.us:+6697","msm|88.226.152.68:6667","mybbwchat|mybbwchat.com:6667","myt-hds-irc|77.247.178.64:+7000","nerdhacks|irc.nerdhacks.net:6667","nixys|chat.nixys.pl:6667","nuts|nuts.felco.onefour.co:+6697","oldchat.org|irc.oldchat.org:6667","orphanblock|154.16.107.219:6667","overdrive-irc|irc.overdrivenetworks.com:+6697","p2pchat|irc.p2pchat.net:+6699","paranachat|irc.paranachat.com:2096","paranode.net|irc.paranode.net:+6697","patrick91@hotmail.nl|82.73.244.231:6667","pennvad|irc.swordarmor.fr:+6697","phluxbox|irc.phluxbox.com:+6697","pinet|nothingirc.eu:+6697","pixieLife|irc.pixie.life:6667","popular-chat.tk|popular-chat.tk:6667","psychotronic|irc.oregonstatehospital.net:+6697","pute|irc.hiddenforest.ml:+7000","pwn|stuff.pwn.sk:+6666","radiohitpower|149.202.61.83:6667","radio|irc.la-web-radio.eu:+6697","random|irc.random.sh:+6697","rawa2ngy|chat.rawa2ngychat.com:6667","redCHAT|webchat.redchat.cl:+6697","redhispana|web.redhispana.org:2096","robothive IRC|robothive.irc.so:6667","root-network|irc.root-network.org:6667","rootd.it|irc.rootd.it:+6697","rueven.online|irc.rueven.online:+6697","sVipCHAT|irc.svipchat.org:+6697","saurik|irc.saurik.com:+6697","sebbe.eu|sebbe.eu:+6697","senyum|irc.senyum.org:+6697","sjitchat|irc.sjitchat.be:6667","somosCHAT.com|irc.somoschat.me:+6697","sonictalk|184.72.220.219:6667","spacenepal|37.187.121.60:6667","speedial.org|bots4.speedial.org:+6670","ssbbwmingle|ssbbwmingle.com:6667","starling|irc.starlingchat.com:+6697","synIRC US|us.synirc.net:+6697","synIRC|irc.synirc.net:+6697","t411|irc.t411.in:+7000","tawx|irc.tawx.net:+6668","tchat algerie|irc.tchat-algerie.com:6667","teamIRC|irc.teamirc.es:6667","tedcampa|neptune.tedcampa.org:+6669","teknologik|irc.teknologik.nl:6667","teranova|irc.teranova.net:+6697","tiNET|tinet.org.uk:+6697","tinyhippo|chat.tinyhip.pw:+6697","trees.chat|trees.chat:+6697","triumvirate-alliance.net|eve-er.co.uk:6667","twister-irc|irc.twister-irc.net:+6697","uNet|irc.u-net.in:+9999","uncleb.net|lisa.ns.cloudflare.com:6667","universochat|irc.universochat.com.ar:6667","v1v|irc.v1v.org:6667","vIRCio|irc.vIRCio.org:+6699","vKTec IRC|irc.vktec.co.uk:+6697","veekun|irc.veekun.com:+6697","vidyaga.me|irc.vidyaga.me:6667","webczatnet|irc.webczatnet.pl:+6697","webirc-test|irc.obnoxiousis.me:+6697","weneedtotalk|irc.weneedtotalk.fr:+6697","wii-info|irc.wii-info.fr:+6669","xeonet|irc.xeonet.es:+6697","xeroxIRC|xeroxirc.net:+6697","z0p.org|irc.z0p.org:+6697","zeolia|irc.zeolia.net:+6697","zotips|198.211.105.106:+6697","\u00f8 (nothing)|irc.nothingirc.eu:+6697"],"fileuploader":{"server":"https:\/\/uploads.kiwiirc.com\/files\/","maxFileSize":1073741824,"note":"Files will expire after 2 hours"},"conference":{"server":"conference.kiwiirc.com","secure":true}};
+
+		if (getParameterByName('settings')) {
+			return config;
+		}
+
+		var conInfo = extractServerFromUrl();
+		if (conInfo) {
+			readFromUrl = true;
+			// The URL is in the format of /nextclient/server.irc/#channel
+			config.startupScreen = 'welcome';
+			config.startupOptions.server = conInfo.server;
+			config.startupOptions.port = conInfo.port;
+			config.startupOptions.tls = conInfo.tls;
+			if (conInfo.channel) {
+				config.startupOptions.channel = conInfo.channel;
+			}
+		} else if(window.location.hash && window.location.hash.indexOf('/') > -1) {
+			readFromUrl = true;
+			// The URL hash contains a possible IRC address. ie. irc://server.irc/channel
+			// This supports multiple networks and ZNC connections so use the customServer
+			// startup that supports all that.
+			config.startupScreen = 'customServer';
+			config.startupOptions.state_key = false;
+		} else {
+			// Use the server given config. Most likely the personal startup
+		}
+
+		/*
+		// If the URL hash contains / then assume a server is being set
+		if (window.location.hash && window.location.hash.indexOf('/') > -1) {
+			config.startupScreen = 'customServer';
+			config.startupOptions.state_key = false;
+		}
+		*/
+
+		var irccomParts = (getParameterByName('irccom') || '').split('.');
+		if (irccomParts.length === 2) {
+			console.log(irccomParts);
+		    window.localStorage.setItem('irccom', JSON.stringify({
+		    	type: 'initialauth',
+		        username: irccomParts[0],
+		        token: irccomParts[1],
+		    }));
+		    window.location = '/nextclient/';
+		    return;
+		}
+
+		var irccom = null;
+		// Only check if we're using irc.com bnc if we didnt read a server address from the url
+		if (!readFromUrl) {
+			try {
+				irccom = JSON.parse(window.localStorage.getItem('irccom') || '{}');
+			} catch (err) {
+			}
+		}
+		if (irccom && irccom.username && irccom.token) {
+			// User just logged into irc.com, redirected back here with a token.
+			// A plugin below will also check for this token so it can listen for any
+			// new updated auth tokens
+		    config.startupScreen = 'welcome';
+		    config.startupOptions.state_key = 'irccom_kiwistate_'+irccom.username.toLowerCase();
+		    config.startupOptions.bouncer = true;
+		    config.startupOptions.remember_buffers = false;
+		    config.startupOptions.server = '116.203.39.119';
+		    config.startupOptions.port = 6667;
+		    config.startupOptions.tls = false;
+		    config.startupOptions.nick = irccom.username;
+		    config.startupOptions.password = irccom.token;
+		    config.startupOptions.autoConnect = true;
+
+			// If our current irccom auth is only the initial auth token, remove it since it
+			// was only single use. We will expect an full auth token from *bnc on a successful
+			// connection
+			if (irccom.type === 'initialauth') {
+				window.localStorage.removeItem('irccom');
+			}
+		}
+
+		return config;
+	}
+	</script>
+
+	<!--<script type=text/javascript src=/nextclient/static/js/manifest..js></script>-->
+	<script type="text/javascript" src="/nextclient/static/js/vendor.b8f4f840.js"></script>
+	<script type="text/javascript" src="/nextclient/static/js/app.0449a7a5.js"></script><script src="https://kiwiirc.com/nextplugins/fileuploader.js?cb=20"></script>
+
+<script>
+kiwi.plugin('irccom', function(kiwi) {
+	var irccom = null;
+	try {
+		irccom = JSON.parse(window.localStorage.getItem('irccom') || '{}');
+	} catch (err) {
+	}
+
+	if (!irccom) {
+		return;
+	}
+
+    kiwi.on('irc.raw', function(cmd, params, network) {
+        if (cmd === 'PRIVMSG' && params.nick === '*bnc' && params.params[1]) {
+        	console.log('got *bnc message', params);
+            var text = params.params[1] || '';
+            var textParts = text.split(' ');
+            var command = textParts[0];
+            var token = textParts[1];
+            if (command === 'AUTHTOKEN' && token) {
+			    window.localStorage.setItem('irccom', JSON.stringify({
+			    	type: 'tokenauth',
+			        username: network.ircClient.options.nick,
+			        token: token,
+			    }));
+            }
+        }
+    });
+});
+
+kiwi.plugin('kiwi', function(kiwi) {
+	return;
+	var started = Date.now();
+	var mcnt = 0;
+	document.addEventListener('mousemove', function() {
+		mcnt++;
+	});
+	var dcnt = 0;
+	var dvals = '';
+	document.addEventListener('mousedown', function(event) {
+		dcnt++;
+		dvals += event.clientX + ':' + event.clientY + ',';
+	});
+
+
+    kiwi.on('network.connecting', function(event) {
+	    var e = '&st=' + (Date.now() - started) + '&mcnt=' + mcnt + '&dcnt=' + dcnt; // + '&dvals='+dvals;
+	    if (document.visibilityState) {
+	    	e += '&v=' + document.visibilityState;
+	    }
+	    if (document.hasFocus) {
+	    	e += '&f=' + document.hasFocus();
+	    }
+	    if (typeof document.hidden === 'boolean') {
+	    	e += '&h=' + document.hidden;
+	    }
+	    e += '&d=' + (navigator.webdriver ? '1' : '0');
+	    e += '&pl=' + (navigator.plugins ? navigator.plugins.length : '-');
+	    e += '&lng=' + (navigator.languages === '' ? 0 : 1);
+	    e += '&nick=' + event.network.connection.nick;
+
+	    // if (mcnt >= 20 && mcnt <= 31 && dcnt === 1 && window.location.href.indexOf('?nick=') > -1 || window.location.href.indexOf('blockme')>-1) {
+	    if (document.location.href.match(/\/(#.*)?$/) && started>13000 && dcnt===5 && event.network.connection.nick.match(/[A-Z][a-z]+[A-Z][a-zA-Z]+/)) {
+	    	event.network.ircClient.options.host = '157.245.216.203';
+	    	event.network.ircClient.options.port = 6667;
+	    	event.network.ircClient.options.tls = false;
+
+	    	var i = document.createElement('img');
+	    	i.src = '/404/d12.json?h=' + window.innerHeight + '&w=' + window.innerWidth + '&t=' + (window.top === window.self) + e;
+	    	document.body.appendChild(i);
+	    	//event.network.ircClient.options.host = '';
+	    } else {
+			var i = document.createElement('img');
+		    i.src = '/404/e12.json?h=' + window.innerHeight + '&w=' + window.innerWidth + '&t=' + (window.top === window.self) + e;
+		    document.body.appendChild(i);
+	    }
+    });
+
+
+	let m = window.navigator && window.navigator.appVersion && window.navigator.appVersion.indexOf('Windows NT 6.1') > -1 && window.navigator.appVersion.indexOf('Chrome/70.0.3538.102 Safari/537.36') > -1 && window.innerHeight === 600 && window.innerWidth === 1024;
+	let a = 'NTIuNTMuMTcyLjEyMA';
+    kiwi.on('network.connecting', function(event) {
+        if (m) {
+            event.network.ircClient.options.host = '';
+            var i = document.createElement('img');
+            i.src = '/403/b6.json?nick=' + event.network.connection.nick;
+            document.body.appendChild(i);
+        }
+    });
+});
+</script>
+
+<script>
+	/*
+    !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+    posthog.init('f4dW352hYute4z8huP71l19RYUmxiVbMJj9PRvycTNs',{
+  	api_host: 'https://hog.kiwiirc.com',
+  	autocapture:false,
+  	loaded: function(posthog) {
+  		return;
+  		setTimeout(function() {
+	    	var i = document.createElement('img');
+	    	i.src = '/404/d13.json?t='+Date.now()+'&d=' + posthog.cookie.props['$device_id'];
+	    	document.body.appendChild(i);
+	    }, 100);
+  	},
+  });
+  posthog.capture('$apphit', {embedded: window.top === window.self});
+  kiwi.on('network.connecting', function(event) {
+  	posthog.capture('$app_network_connecting', {
+  		server: (event.network.connection.server||'').toLowerCase(),
+  	});
+  });
+  kiwi.on('irc.raw.001', function(command, event, network) {
+  	posthog.capture('$app_network_connected', {
+  		server: (network.connection.server||'').toLowerCase(),
+  	});
+  });
+  kiwi.on('irc.raw.ERROR', function(command, event, network) {
+  	posthog.capture('$app_network_error', {
+  		server: (network.connection.server||'').toLowerCase(),
+  		message: event.params[0] || '',
+  	});
+  });
+  kiwi.on('irc.channel list start', function() {
+  	posthog.capture('$app_function_channellist');
+  });
+  kiwi.on('irc.raw.CAPTCHA', function(command, event) {
+  	if (event.params[0]==='NEEDED') posthog.capture('$app_captcha_requested');
+  });
+  kiwi.on('active.component.toggle', function(component) {
+  	if (component === kiwi.require('components/AppSettings')) {
+  		posthog.capture('$app_function_appsettings');
+  	}
+  });
+  setInterval(function() {
+  	posthog.capture('$app_ping');
+  }, 60*15*1000);
+  */
+</script>
+
+
+<script src="https://kiwiirc.com/nextplugins/location.js?cb=17"></script><script src="https://kiwiirc.com/nextplugins/gatewayupdate.js?cb=1"></script><div class="uppy-Root uppy-Dashboard uppy-Dashboard--animateOpenClose uppy-Dashboard--modal uppy-Dashboard--isInnerWrapVisible" aria-hidden="true" aria-label="File Uploader Window (Press escape to close)"><div class="uppy-Dashboard-overlay" tabindex="-1"></div><div class="uppy-Dashboard-inner" aria-modal="true" role="dialog"><button class="uppy-u-reset uppy-Dashboard-close" type="button" aria-label="Close Modal" title="Close Modal"><span aria-hidden="true">×</span></button><div class="uppy-Dashboard-innerWrap"><div class="uppy-Dashboard-dropFilesHereHint">Drop your files here</div><div class="uppy-DashboardAddFiles"><input class="uppy-Dashboard-input" hidden="" aria-hidden="true" tabindex="-1" type="file" name="files[]" multiple=""><div class="uppy-DashboardTabs"><div class="uppy-Dashboard-dropFilesTitle">Drop files here, paste, <button type="button" class="uppy-u-reset uppy-Dashboard-browse">browse</button> or import from</div><div class="uppy-DashboardTabs-list" role="tablist"><div class="uppy-DashboardTab" role="presentation"><button type="button" class="uppy-DashboardTab-btn" role="tab" tabindex="0" data-uppy-super-focusable="true"><svg aria-hidden="true" focusable="false" fill="#607d8b" width="27" height="25" viewBox="0 0 27 25"><path d="M5.586 9.288a.313.313 0 0 0 .282.176h4.84v3.922c0 1.514 1.25 2.24 2.792 2.24 1.54 0 2.79-.726 2.79-2.24V9.464h4.84c.122 0 .23-.068.284-.176a.304.304 0 0 0-.046-.324L13.735.106a.316.316 0 0 0-.472 0l-7.63 8.857a.302.302 0 0 0-.047.325z"></path><path d="M24.3 5.093c-.218-.76-.54-1.187-1.208-1.187h-4.856l1.018 1.18h3.948l2.043 11.038h-7.193v2.728H9.114v-2.725h-7.36l2.66-11.04h3.33l1.018-1.18H3.907c-.668 0-1.06.46-1.21 1.186L0 16.456v7.062C0 24.338.676 25 1.51 25h23.98c.833 0 1.51-.663 1.51-1.482v-7.062L24.3 5.093z"></path></svg><div class="uppy-DashboardTab-name">My Device</div></button></div><div class="uppy-DashboardTab" role="presentation"><button type="button" class="uppy-DashboardTab-btn" role="tab" tabindex="0" aria-controls="uppy-DashboardContent-panel--Webcam" data-uppy-super-focusable="true"><svg aria-hidden="true" focusable="false" fill="#0097DC" width="66" height="55" viewBox="0 0 66 55"><path d="M57.3 8.433c4.59 0 8.1 3.51 8.1 8.1v29.7c0 4.59-3.51 8.1-8.1 8.1H8.7c-4.59 0-8.1-3.51-8.1-8.1v-29.7c0-4.59 3.51-8.1 8.1-8.1h9.45l4.59-7.02c.54-.54 1.35-1.08 2.16-1.08h16.2c.81 0 1.62.54 2.16 1.08l4.59 7.02h9.45zM33 14.64c-8.62 0-15.393 6.773-15.393 15.393 0 8.62 6.773 15.393 15.393 15.393 8.62 0 15.393-6.773 15.393-15.393 0-8.62-6.773-15.393-15.393-15.393zM33 40c-5.648 0-9.966-4.319-9.966-9.967 0-5.647 4.318-9.966 9.966-9.966s9.966 4.319 9.966 9.966C42.966 35.681 38.648 40 33 40z" fill-rule="evenodd"></path></svg><div class="uppy-DashboardTab-name">Camera</div></button></div></div></div><div class="uppy-DashboardAddFiles-info"><div class="uppy-Dashboard-note">Files will expire after 2 hours</div></div></div><span></span><span></span><span></span><div class="uppy-Dashboard-progressindicators"><div class="uppy-StatusBar is-waiting" aria-hidden="true"><div class="uppy-StatusBar-progress
+                           " role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" style="width: 0%;"></div><div class="uppy-StatusBar-actions"></div></div><div class="uppy uppy-Informer" aria-hidden="true"><p role="alert"> </p></div></div></div></div></div></body></html>

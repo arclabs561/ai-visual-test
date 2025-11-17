@@ -1,0 +1,702 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="profile" href="http://gmpg.org/xfn/11">
+<link rel="pingback" href="https://cantongoodfellows.org/xmlrpc.php">
+
+<title>GET ASSISTANCE – Canton Goodfellows</title>
+<meta name="robots" content="max-image-preview:large">
+<meta name="google-site-verification" content="DW876X3ZtMYy_ExN1cpO1TwPBK6y7J58vmZqEdTd3Rg">
+<meta name="msvalidate.01" content="8897A312C6CF1464666986D87D77EDFD">
+
+<!-- Async WordPress.com Remote Login -->
+<script id="wpcom_remote_login_js">
+var wpcom_remote_login_extra_auth = '';
+function wpcom_remote_login_remove_dom_node_id( element_id ) {
+	var dom_node = document.getElementById( element_id );
+	if ( dom_node ) { dom_node.parentNode.removeChild( dom_node ); }
+}
+function wpcom_remote_login_remove_dom_node_classes( class_name ) {
+	var dom_nodes = document.querySelectorAll( '.' + class_name );
+	for ( var i = 0; i < dom_nodes.length; i++ ) {
+		dom_nodes[ i ].parentNode.removeChild( dom_nodes[ i ] );
+	}
+}
+function wpcom_remote_login_final_cleanup() {
+	wpcom_remote_login_remove_dom_node_classes( "wpcom_remote_login_msg" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_key" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_validate" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_js" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_request_access_iframe" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_request_access_styles" );
+}
+
+// Watch for messages back from the remote login
+window.addEventListener( "message", function( e ) {
+	if ( e.origin === "https://r-login.wordpress.com" ) {
+		var data = {};
+		try {
+			data = JSON.parse( e.data );
+		} catch( e ) {
+			wpcom_remote_login_final_cleanup();
+			return;
+		}
+
+		if ( data.msg === 'LOGIN' ) {
+			// Clean up the login check iframe
+			wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_key" );
+
+			var id_regex = new RegExp( /^[0-9]+$/ );
+			var token_regex = new RegExp( /^.*|.*|.*$/ );
+			if (
+				token_regex.test( data.token )
+				&& id_regex.test( data.wpcomid )
+			) {
+				// We have everything we need to ask for a login
+				var script = document.createElement( "script" );
+				script.setAttribute( "id", "wpcom_remote_login_validate" );
+				script.src = '/remote-login.php?wpcom_remote_login=validate'
+					+ '&wpcomid=' + data.wpcomid
+					+ '&token=' + encodeURIComponent( data.token )
+					+ '&host=' + window.location.protocol
+					+ '//' + window.location.hostname
+					+ '&postid=24'
+					+ '&is_singular=';
+				document.body.appendChild( script );
+			}
+
+			return;
+		}
+
+		// Safari ITP, not logged in, so redirect
+		if ( data.msg === 'LOGIN-REDIRECT' ) {
+			window.location = 'https://wordpress.com/log-in?redirect_to=' + window.location.href;
+			return;
+		}
+
+		// Safari ITP, storage access failed, remove the request
+		if ( data.msg === 'LOGIN-REMOVE' ) {
+			var css_zap = 'html { -webkit-transition: margin-top 1s; transition: margin-top 1s; } /* 9001 */ html { margin-top: 0 !important; } * html body { margin-top: 0 !important; } @media screen and ( max-width: 782px ) { html { margin-top: 0 !important; } * html body { margin-top: 0 !important; } }';
+			var style_zap = document.createElement( 'style' );
+			style_zap.type = 'text/css';
+			style_zap.appendChild( document.createTextNode( css_zap ) );
+			document.body.appendChild( style_zap );
+
+			var e = document.getElementById( 'wpcom_request_access_iframe' );
+			e.parentNode.removeChild( e );
+
+			document.cookie = 'wordpress_com_login_access=denied; path=/; max-age=31536000';
+
+			return;
+		}
+
+		// Safari ITP
+		if ( data.msg === 'REQUEST_ACCESS' ) {
+			console.log( 'request access: safari' );
+
+			// Check ITP iframe enable/disable knob
+			if ( wpcom_remote_login_extra_auth !== 'safari_itp_iframe' ) {
+				return;
+			}
+
+			// If we are in a "private window" there is no ITP.
+			var private_window = false;
+			try {
+				var opendb = window.openDatabase( null, null, null, null );
+			} catch( e ) {
+				private_window = true;
+			}
+
+			if ( private_window ) {
+				console.log( 'private window' );
+				return;
+			}
+
+			var iframe = document.createElement( 'iframe' );
+			iframe.id = 'wpcom_request_access_iframe';
+			iframe.setAttribute( 'scrolling', 'no' );
+			iframe.setAttribute( 'sandbox', 'allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-top-navigation-by-user-activation' );
+			iframe.src = 'https://r-login.wordpress.com/remote-login.php?wpcom_remote_login=request_access&origin=' + encodeURIComponent( data.origin ) + '&wpcomid=' + encodeURIComponent( data.wpcomid );
+
+			var css = 'html { -webkit-transition: margin-top 1s; transition: margin-top 1s; } /* 9001 */ html { margin-top: 46px !important; } * html body { margin-top: 46px !important; } @media screen and ( max-width: 660px ) { html { margin-top: 71px !important; } * html body { margin-top: 71px !important; } #wpcom_request_access_iframe { display: block; height: 71px !important; } } #wpcom_request_access_iframe { border: 0px; height: 46px; position: fixed; top: 0; left: 0; width: 100%; min-width: 100%; z-index: 99999; background: #23282d; } ';
+
+			var style = document.createElement( 'style' );
+			style.type = 'text/css';
+			style.id = 'wpcom_request_access_styles';
+			style.appendChild( document.createTextNode( css ) );
+			document.body.appendChild( style );
+
+			document.body.appendChild( iframe );
+		}
+
+		if ( data.msg === 'DONE' ) {
+			wpcom_remote_login_final_cleanup();
+		}
+	}
+}, false );
+
+// Inject the remote login iframe after the page has had a chance to load
+// more critical resources
+window.addEventListener( "DOMContentLoaded", function( e ) {
+	var iframe = document.createElement( "iframe" );
+	iframe.style.display = "none";
+	iframe.setAttribute( "scrolling", "no" );
+	iframe.setAttribute( "id", "wpcom_remote_login_key" );
+	iframe.src = "https://r-login.wordpress.com/remote-login.php"
+		+ "?wpcom_remote_login=key"
+		+ "&origin=aHR0cHM6Ly9jYW50b25nb29kZmVsbG93cy5vcmc%3D"
+		+ "&wpcomid=113355230"
+		+ "&time=1656149043";
+	document.body.appendChild( iframe );
+}, false );
+</script>
+<link rel="dns-prefetch" href="//s0.wp.com">
+<link rel="dns-prefetch" href="//cantongoodfellows.wordpress.com">
+<link rel="dns-prefetch" href="//wordpress.com">
+<link rel="dns-prefetch" href="//fonts.googleapis.com">
+<link href="https://fonts.gstatic.com" crossorigin="" rel="preconnect">
+<link rel="alternate" type="application/rss+xml" title="Canton Goodfellows » Feed" href="https://cantongoodfellows.org/feed/">
+<link rel="alternate" type="application/rss+xml" title="Canton Goodfellows » Comments Feed" href="https://cantongoodfellows.org/comments/feed/">
+	<script type="text/javascript">
+		/* <![CDATA[ */
+		function addLoadEvent(func) {
+			var oldonload = window.onload;
+			if (typeof window.onload != 'function') {
+				window.onload = func;
+			} else {
+				window.onload = function () {
+					oldonload();
+					func();
+				}
+			}
+		}
+		/* ]]> */
+	</script>
+	<script type="text/javascript">
+window._wpemojiSettings = {"baseUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/72x72\/","ext":".png","svgUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/s0.wp.com\/wp-includes\/js\/wp-emoji-release.min.js?m=1652185836h&ver=6.0-RC4-53438"}};
+/*! This file is auto-generated */
+!function(e,a,t){var n,r,o,i=a.createElement("canvas"),p=i.getContext&&i.getContext("2d");function s(e,t){var a=String.fromCharCode,e=(p.clearRect(0,0,i.width,i.height),p.fillText(a.apply(this,e),0,0),i.toDataURL());return p.clearRect(0,0,i.width,i.height),p.fillText(a.apply(this,t),0,0),e===i.toDataURL()}function c(e){var t=a.createElement("script");t.src=e,t.defer=t.type="text/javascript",a.getElementsByTagName("head")[0].appendChild(t)}for(o=Array("flag","emoji"),t.supports={everything:!0,everythingExceptFlag:!0},r=0;r<o.length;r++)t.supports[o[r]]=function(e){if(!p||!p.fillText)return!1;switch(p.textBaseline="top",p.font="600 32px Arial",e){case"flag":return s([127987,65039,8205,9895,65039],[127987,65039,8203,9895,65039])?!1:!s([55356,56826,55356,56819],[55356,56826,8203,55356,56819])&&!s([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]);case"emoji":return!s([129777,127995,8205,129778,127999],[129777,127995,8203,129778,127999])}return!1}(o[r]),t.supports.everything=t.supports.everything&&t.supports[o[r]],"flag"!==o[r]&&(t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&t.supports[o[r]]);t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&!t.supports.flag,t.DOMReady=!1,t.readyCallback=function(){t.DOMReady=!0},t.supports.everything||(n=function(){t.readyCallback()},a.addEventListener?(a.addEventListener("DOMContentLoaded",n,!1),e.addEventListener("load",n,!1)):(e.attachEvent("onload",n),a.attachEvent("onreadystatechange",function(){"complete"===a.readyState&&t.readyCallback()})),(e=t.source||{}).concatemoji?c(e.concatemoji):e.wpemoji&&e.twemoji&&(c(e.twemoji),c(e.wpemoji)))}(window,document,window._wpemojiSettings);
+</script><script src="https://s0.wp.com/wp-includes/js/wp-emoji-release.min.js?m=1652185836h&amp;ver=6.0-RC4-53438" type="text/javascript" defer=""></script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 0.07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	<link crossorigin="anonymous" rel="stylesheet" id="all-css-0-1" href="https://s0.wp.com/_static/??-eJytkttSwyAQhl9IwDQTrReOz8JhB7eFhGGhKW8vYazGtrZeeMPws/v9swfEHJiexgRjEj6z4LLFkcQc9OQZeXRQzhTXRA/iOuZwDyR2kILUe9bURfop1+YqFURbIxHEoev5wB+FyuiMUG5qBirKWASl4uA/jNI7+G8jHLXLZimYhAeDElwNLx2tRHCyQGQOrNSFexzv4zW21j+g34tvla6GJ8uUE7MRzZ/7P7OIMuFo6Q6up09sw7st7xihDw5YhAPfCIOUvjLYdaPV/pcF1Hcf5OUUbmAzGgup4nS6swTH20j7kkqFCESsnh6zZ22/7cu9+dfuaRhe+u3w3O8+ADhUFWE=?cssminify=yes" type="text/css" media="all">
+<style id="wp-block-library-inline-css">
+.has-text-align-justify {
+	text-align:justify;
+}
+</style>
+<style id="global-styles-inline-css">
+body{--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--color--purple: #980560;--wp--preset--color--blue: #20c9f3;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--duotone--dark-grayscale: url('#wp-duotone-dark-grayscale');--wp--preset--duotone--grayscale: url('#wp-duotone-grayscale');--wp--preset--duotone--purple-yellow: url('#wp-duotone-purple-yellow');--wp--preset--duotone--blue-red: url('#wp-duotone-blue-red');--wp--preset--duotone--midnight: url('#wp-duotone-midnight');--wp--preset--duotone--magenta-yellow: url('#wp-duotone-magenta-yellow');--wp--preset--duotone--purple-green: url('#wp-duotone-purple-green');--wp--preset--duotone--blue-orange: url('#wp-duotone-blue-orange');--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+</style>
+<link crossorigin="anonymous" rel="stylesheet" id="all-css-2-1" href="https://s0.wp.com/_static/??/wp-content/mu-plugins/comment-likes/css/comment-likes.css,/i/noticons/noticons.css?m=1436783281j&amp;cssminify=yes" type="text/css" media="all">
+<link crossorigin="anonymous" rel="stylesheet" id="pena-fonts-css" href="https://fonts.googleapis.com/css?family=Merriweather%3A400%2C300%2C300italic%2C400italic%2C700%2C700italic%2C900%2C900italic%7CMontserrat%3A400%2C700&amp;subset=latin%2Clatin-ext" media="all">
+<link crossorigin="anonymous" rel="stylesheet" id="all-css-4-1" href="https://s0.wp.com/_static/??-eJx9jcEOAiEMRH9I7BKzejJ+C5KKNbQlFGL278UbHtzbm8y8DLyLiyoNpUF7IqNBqcjUGQpKAGtbxmM0O8C05O5K7onEIKFgpVH8wT3XNFLIjlH6zPt36rLG0EjlJ7hHDlT31Ir3rGlggrGa4le68dWfT8u6XLxfXx+8DWf9?cssminify=yes" type="text/css" media="all">
+<link crossorigin="anonymous" rel="stylesheet" id="print-css-5-1" href="https://s0.wp.com/wp-content/mu-plugins/global-print/global-print.css?m=1465851035h&amp;cssminify=yes" type="text/css" media="print">
+<style id="jetpack-global-styles-frontend-style-inline-css">
+:root { --font-headings: unset; --font-base: unset; --font-headings-default: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif; --font-base-default: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;}
+</style>
+<link crossorigin="anonymous" rel="stylesheet" id="all-css-8-1" href="https://s0.wp.com/_static/??-eJxti8sKgCAQAH8oW6KXHaJvMTE1Vldapd+PDh2iTsPADJxJaIrZxAyhiITF+siQiLPYUPkD2KnDR/uw1swV/F9M2isUSJbe8pmyM8EwuA4s0qrwDpYwN0PfymmUstsvZXo34g==?cssminify=yes" type="text/css" media="all">
+<script id="media-video-jwt-bridge-js-extra">
+var videopressAjax = {"ajaxUrl":"https:\/\/cantongoodfellows.wordpress.com\/wp-admin\/admin-ajax.php","bridgeUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/videopress\/js\/videopress-token-bridge.js","post_id":"24"};
+</script>
+<script id="wpcom-actionbar-placeholder-js-extra">
+var actionbardata = {"siteID":"113355230","siteURL":"https:\/\/cantongoodfellows.org","xhrURL":"https:\/\/cantongoodfellows.org\/wp-admin\/admin-ajax.php","nonce":"37d9eec2e4","isLoggedIn":"","statusMessage":"","subsEmailDefault":"instantly","proxyScriptUrl":"https:\/\/s0.wp.com\/wp-content\/js\/wpcom-proxy-request.js?ver=20211021","shortlink":"https:\/\/wp.me\/P7FCSa-o","i18n":{"followedText":"New posts from this site will now appear in your <a href=\"https:\/\/wordpress.com\/read\">Reader<\/a>","foldBar":"Collapse this bar","unfoldBar":"Expand this bar"}};
+</script>
+<script crossorigin="anonymous" type="text/javascript" src="https://s0.wp.com/_static/??/wp-content/js/mobile-useragent-info.js,/wp-content/js/rlt-proxy.js,/wp-content/mu-plugins/videopress/js/videopress-token-bridge.js?m=1652791886j"></script>
+<script type="text/javascript">
+	window.addEventListener( 'DOMContentLoaded', function() {
+		rltInitialize( {"token":null,"iframeOrigins":["https:\/\/widgets.wp.com"]} );
+	} );
+</script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://cantongoodfellows.wordpress.com/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://s0.wp.com/wp-includes/wlwmanifest.xml"> 
+<meta name="generator" content="WordPress.com">
+<link rel="canonical" href="https://cantongoodfellows.org/welcome/get-assistance/">
+<link rel="shortlink" href="https://wp.me/P7FCSa-o">
+<link rel="alternate" type="application/json+oembed" href="https://public-api.wordpress.com/oembed/?format=json&amp;url=https%3A%2F%2Fcantongoodfellows.org%2Fwelcome%2Fget-assistance%2F&amp;for=wpcom-auto-discovery"><link rel="alternate" type="application/xml+oembed" href="https://public-api.wordpress.com/oembed/?format=xml&amp;url=https%3A%2F%2Fcantongoodfellows.org%2Fwelcome%2Fget-assistance%2F&amp;for=wpcom-auto-discovery">
+<!-- Jetpack Open Graph Tags -->
+<meta property="og:type" content="article">
+<meta property="og:title" content="GET ASSISTANCE">
+<meta property="og:url" content="https://cantongoodfellows.org/welcome/get-assistance/">
+<meta property="og:description" content="If you live in Canton, Michigan, have children under the age of 18, and need help with Christmas gifts, Canton Goodfellows is here to help.">
+<meta property="article:published_time" content="2016-07-05T19:58:15+00:00">
+<meta property="article:modified_time" content="2022-01-21T18:24:03+00:00">
+<meta property="og:site_name" content="Canton Goodfellows">
+<meta property="og:image" content="https://cantongoodfellows.files.wordpress.com/2016/07/young-girl-opening-christmas-present.jpg">
+<meta property="og:image:width" content="840">
+<meta property="og:image:height" content="546">
+<meta property="og:image:alt" content="Young girl, sitting on the floor, opening Christmas present">
+<meta property="og:locale" content="en_US">
+<meta property="article:publisher" content="https://www.facebook.com/WordPresscom">
+<meta name="twitter:text:title" content="GET ASSISTANCE">
+<meta name="twitter:image" content="https://cantongoodfellows.files.wordpress.com/2016/07/young-girl-opening-christmas-present.jpg?w=640">
+<meta name="twitter:image:alt" content="Young girl, sitting on the floor, opening Christmas present">
+<meta name="twitter:card" content="summary_large_image">
+
+<!-- End Jetpack Open Graph Tags -->
+<link rel="shortcut icon" type="image/x-icon" href="https://secure.gravatar.com/blavatar/e905cae10a47962b0b76164ad4c265a3?s=32" sizes="16x16">
+<link rel="icon" type="image/x-icon" href="https://secure.gravatar.com/blavatar/e905cae10a47962b0b76164ad4c265a3?s=32" sizes="16x16">
+<link rel="apple-touch-icon" href="https://secure.gravatar.com/blavatar/e905cae10a47962b0b76164ad4c265a3?s=114">
+<link rel="search" type="application/opensearchdescription+xml" href="https://cantongoodfellows.org/osd.xml" title="Canton Goodfellows">
+<link rel="search" type="application/opensearchdescription+xml" href="https://s1.wp.com/opensearch.xml" title="WordPress.com">
+<meta name="application-name" content="Canton Goodfellows"><meta name="msapplication-window" content="width=device-width;height=device-height"><meta name="msapplication-task" content="name=Subscribe;action-uri=https://cantongoodfellows.org/feed/;icon-uri=https://secure.gravatar.com/blavatar/e905cae10a47962b0b76164ad4c265a3?s=16"><meta name="msapplication-task" content="name=Sign up for a free blog;action-uri=http://wordpress.com/signup/;icon-uri=https://s0.wp.com/i/favicon.ico"><meta name="msapplication-task" content="name=WordPress.com Support;action-uri=http://support.wordpress.com/;icon-uri=https://s0.wp.com/i/favicon.ico"><meta name="msapplication-task" content="name=WordPress.com Forums;action-uri=http://forums.wordpress.com/;icon-uri=https://s0.wp.com/i/favicon.ico"><meta name="description" content="If you live in Canton, Michigan, have children under the age of 18, and need help with Christmas gifts, Canton Goodfellows is here to help.">
+	<style type="text/css">
+			.site-title,
+		.site-description {
+			position: absolute;
+			clip: rect(1px, 1px, 1px, 1px);
+		}
+		</style>
+	<!-- There is no amphtml version available for this URL. -->		<link rel="stylesheet" id="custom-css-css" type="text/css" href="https://s0.wp.com/?custom-css=1&amp;csblog=7FCSa&amp;cscache=6&amp;csrev=101">
+		<!-- Your Google Analytics Plugin is missing the tracking ID -->
+<link rel="stylesheet" type="text/css" id="gravatar-card-css" href="https://0.gravatar.com/dist/css/hovercard.min.css?ver=202225z"><link rel="stylesheet" type="text/css" id="gravatar-card-services-css" href="https://0.gravatar.com/dist/css/services.min.css?ver=202225z"><link href="https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.css?v=20210915" type="text/css" rel="stylesheet"></head>
+
+<body class="page-template-default page page-id-24 page-child parent-pageid-51 wp-custom-logo customizer-styles-applied singular standard-menu highlander-enabled highlander-light jp-sharing-input-touch">
+	<a class="skip-link screen-reader-text" href="#content">Skip to content</a>
+
+	<header id="masthead" class="site-header" role="banner">
+		<div class="site-branding">
+				<a href="https://cantongoodfellows.org/" class="custom-logo-link" rel="home"><img width="350" height="91" src="https://cantongoodfellows.files.wordpress.com/2016/07/logo.png" class="custom-logo" alt="Canton Goodfellows" srcset="https://cantongoodfellows.files.wordpress.com/2016/07/logo.png 350w, https://cantongoodfellows.files.wordpress.com/2016/07/logo.png?w=150&amp;h=39 150w, https://cantongoodfellows.files.wordpress.com/2016/07/logo.png?w=300&amp;h=78 300w" sizes="(max-width: 350px) 100vw, 350px" data-attachment-id="264" data-permalink="https://cantongoodfellows.org/logo/" data-orig-file="https://cantongoodfellows.files.wordpress.com/2016/07/logo.png" data-orig-size="350,91" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;0&quot;}" data-image-title="Canton Goodfellows logo" data-image-description="" data-image-caption="" data-medium-file="https://cantongoodfellows.files.wordpress.com/2016/07/logo.png?w=300" data-large-file="https://cantongoodfellows.files.wordpress.com/2016/07/logo.png?w=350"></a>									<p class="site-title"><a href="https://cantongoodfellows.org/" rel="home">Canton Goodfellows</a></p>
+						</div><!-- .site-branding -->
+			<nav id="site-navigation" class="main-navigation" role="navigation">
+				<button class="menu-toggle" aria-controls="primary-menu" aria-expanded="false">Menu</button>
+				<div class="menu-primary-container"><ul id="menu-1-menu" class="menu nav-menu" aria-expanded="false"><li id="menu-item-12" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-12"><a href="/">Home</a></li>
+<li id="menu-item-604" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-604"><a href="https://cantongoodfellows.org/updates/">Updates</a></li>
+<li id="menu-item-13" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-13"><a href="https://cantongoodfellows.org/welcome/about/">ABOUT</a></li>
+<li id="menu-item-40" class="menu-item menu-item-type-post_type menu-item-object-page current-menu-item page_item page-item-24 current_page_item menu-item-has-children menu-item-40" aria-haspopup="true"><a href="https://cantongoodfellows.org/welcome/get-assistance/" aria-current="page">GET ASSISTANCE</a>
+<ul class="sub-menu">
+	<li id="menu-item-36" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-36"><a href="https://cantongoodfellows.org/assistance-faq/">FAQs for Assistance</a></li>
+</ul>
+</li>
+<li id="menu-item-38" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38"><a href="https://cantongoodfellows.org/welcome/get-involved/">GET INVOLVED</a></li>
+<li id="menu-item-37" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-37"><a href="https://cantongoodfellows.org/calendar/">Calendar</a></li>
+<li id="menu-item-965" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-965"><a href="https://cantongoodfellows.org/notes-from-parents/">NOTES FROM PARENTS</a></li>
+<li id="menu-item-937" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-937"><a href="https://cantongoodfellows.org/corporate-supporters/">OUR PARTNERS</a></li>
+<li id="menu-item-14" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-14"><a href="https://cantongoodfellows.org/contact/">Contact</a></li>
+<li id="menu-item-39" class="blue menu-item menu-item-type-post_type menu-item-object-page menu-item-39"><a href="https://cantongoodfellows.org/donate/">Donate</a></li>
+</ul></div>			</nav><!-- #site-navigation -->
+	</header>
+		<div class="featured-image">
+									<div class="header section pages" style="background-image:url(https://cantongoodfellows.files.wordpress.com/2016/07/young-girl-opening-christmas-present.jpg);">
+				<div class="entry-content">
+			<h1>GET ASSISTANCE</h1>
+		</div>
+		<span class="overlay"></span>
+		</div>
+		</div>
+	<div class="hfeed site page-content">
+		<div class="content site-content">
+			<div id="primary" class="content-area">
+				<main id="main" class="site-main" role="main">
+
+					
+						
+<article id="post-24" class="post-24 page type-page status-publish has-post-thumbnail hentry tag-application tag-apply tag-assistance tag-christmas-program">
+
+	<div class="entry-content">
+		
+<div class="wp-container-1 wp-block-group"><div class="wp-block-group__inner-container">
+<p>Is your family in need of gift and food assistance for Christmas? And do you have children ages 18 or under? If so, the Canton Goodfellows are here to help.</p>
+
+
+
+<span id="more-24"></span>
+
+
+
+<p></p>
+
+
+
+<p></p>
+
+
+
+<p></p>
+
+
+
+<h2 id="guidelines"><strong>GUIDELINES</strong></h2>
+
+
+
+<p>We supply gifts for children (not adults) and assist only Canton families, without regard to race or religion, who meet the following guidelines:</p>
+
+
+
+<ol><li>You must live in Canton.</li><li>Your children must live with you.</li><li>Your family must meet the income guidelines for a family of your size. We use the current year’s <strong><a href="https://www.michigan.gov/mdhhs/0,5885,7-339-71547_5531_7872---,00.html">Michigan Dept of Health &amp; Human Services (MDHHS) Emergency Relief</a> family&nbsp;income guidelines for Energy Related Assistance.</strong></li><li>Your application must be postmarked by the cut-off date (mid-October) and approved by our committee. Applications are reviewed on a first-come, first-served basis.</li></ol>
+
+
+
+<h2 id="applications"><strong>APPLICATIONS</strong></h2>
+
+
+
+<p>The application packet contains:</p>
+
+
+
+<ol><li>Parent letter</li><li>Application instructions</li><li>Application form</li><li>Wish list form       </li></ol>
+
+
+
+<p>Applications <strong>must be mailed to our P.O. Box address</strong> by the cut-off date included in the parent letter.</p>
+
+
+
+<p>Families who send their applications by the cut-off date will <strong>receive a postcard by November 1</strong>, indicating whether their family will receive assistance.</p>
+
+
+
+<p><strong>All decisions are final</strong>.</p>
+
+
+
+<p>If your family is approved for assistance:    </p>
+
+
+
+<ol><li>Your children will receive clothing items and age appropriate gifts        </li><li>We will also supply your family with books, gift wrapping paper, and tape.</li><li>In addition, you will receive a box of nonperishable food, a frozen holiday dinner from SYSCO, and gift cards to purchase additional food.</li></ol>
+
+
+
+<p>Approved families will pick up their packages on a Saturday in December, between 9:00AM and noon at the Canton Township Administration Building. All pick-up information will be listed on your postcard.</p>
+
+
+
+<p>For more information, you can <a href="https://cantongoodfellows.org/contact/">contact us by email</a>.</p>
+
+
+
+<p>Questions? Visit <a href="https://cantongoodfellows.org/assistance-faq/">FAQs for assistance</a> to get answers.</p>
+</div></div>
+<div id="jp-post-flair" class="sharedaddy sd-like-enabled sd-sharing-enabled"><div class="sharedaddy sd-sharing-enabled"><div class="robots-nocontent sd-block sd-social sd-social-icon-text sd-sharing"><h3 class="sd-title">Share this:</h3><div class="sd-content"><ul data-sharing-events-added="true"><li class="share-twitter"><a rel="nofollow noopener noreferrer" data-shared="sharing-twitter-24" class="share-twitter sd-button share-icon" href="https://cantongoodfellows.org/welcome/get-assistance/?share=twitter&amp;nb=1" target="_blank" title="Click to share on Twitter"><span>Twitter</span></a></li><li class="share-facebook"><a rel="nofollow noopener noreferrer" data-shared="sharing-facebook-24" class="share-facebook sd-button share-icon" href="https://cantongoodfellows.org/welcome/get-assistance/?share=facebook&amp;nb=1" target="_blank" title="Click to share on Facebook"><span>Facebook</span></a></li><li class="share-end"></li></ul></div></div></div><div class="sharedaddy sd-block sd-like jetpack-likes-widget-wrapper jetpack-likes-widget-loaded" id="like-post-wrapper-113355230-24-62b6d43357f98" data-src="//widgets.wp.com/likes/index.html?ver=20220105#blog_id=113355230&amp;post_id=24&amp;origin=cantongoodfellows.wordpress.com&amp;obj_id=113355230-24-62b6d43357f98&amp;domain=cantongoodfellows.org" data-name="like-post-frame-113355230-24-62b6d43357f98" data-title="Like or Reblog"><h3 class="sd-title">Like this:</h3><div class="likes-widget-placeholder post-likes-widget-placeholder" style="height: 55px; display: none;"><span class="button"><span>Like</span></span> <span class="loading">Loading...</span></div><iframe class="post-likes-widget jetpack-likes-widget" name="like-post-frame-113355230-24-62b6d43357f98" src="//widgets.wp.com/likes/index.html?ver=20220105#blog_id=113355230&amp;post_id=24&amp;origin=cantongoodfellows.wordpress.com&amp;obj_id=113355230-24-62b6d43357f98&amp;domain=cantongoodfellows.org" height="55px" width="100%" frameborder="0" scrolling="no" title="Like or Reblog"></iframe><span class="sd-text-color"></span><a class="sd-link-color"></a></div></div>			</div><!-- .entry-content -->
+
+			<footer class="entry-footer">
+					</footer><!-- .entry-footer -->
+	</article><!-- #post-## -->
+						
+					
+				</main><!-- #main -->
+			</div><!-- #primary -->
+			
+<div id="secondary" class="widget-area" role="complementary">
+	<aside id="search-1" class="widget widget_search"><h2 class="widget-title">Search</h2><form role="search" method="get" class="search-form" action="https://cantongoodfellows.org/">
+				<label>
+					<span class="screen-reader-text">Search for:</span>
+					<input type="search" class="search-field" placeholder="Search …" value="" name="s">
+				</label>
+				<input type="submit" class="search-submit" value="Search">
+			</form></aside><aside id="text-4" class="widget widget_text"><h2 class="widget-title">NEWS FLASH</h2>			<div class="textwidget"><p><strong>1/22/22&nbsp; &nbsp;</strong>Our 2022 Christmas Assistance&nbsp; Application Packets will be available on September 16, 2022.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</div>
+		</aside><aside id="text-1" class="widget widget_text"><h2 class="widget-title">Why I Volunteer</h2>			<div class="textwidget"><p>"My eyes were really opened to the herculean efforts put out by the Goodfellows when I volunteered to help during the week that they get the bags ready to be picked up by the recipients. Every effort was made to see that all the children would receive what they needed and have at least one wish granted.  I have been a Goodfellow volunteer for a number of years and will continue because it's such a noble mission."</p>
+</div>
+		</aside><aside id="media_image-3" class="widget widget_media_image"><style>.widget.widget_media_image { overflow: hidden; }.widget.widget_media_image img { height: auto; max-width: 100%; }</style><img width="320" height="480" src="https://cantongoodfellows.files.wordpress.com/2016/07/boy-carrying-presents.jpg" class="image wp-image-120 alignnone attachment-full size-full" alt="Young boy in blue sweater smiles as he carries Christmas presents" loading="lazy" style="max-width: 100%; height: auto;" srcset="https://cantongoodfellows.files.wordpress.com/2016/07/boy-carrying-presents.jpg 320w, https://cantongoodfellows.files.wordpress.com/2016/07/boy-carrying-presents.jpg?w=100&amp;h=150 100w, https://cantongoodfellows.files.wordpress.com/2016/07/boy-carrying-presents.jpg?w=200&amp;h=300 200w" sizes="(max-width: 320px) 100vw, 320px" data-attachment-id="120" data-permalink="https://cantongoodfellows.org/boy-carrying-presents/" data-orig-file="https://cantongoodfellows.files.wordpress.com/2016/07/boy-carrying-presents.jpg" data-orig-size="320,480" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;Bigstock&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;0&quot;}" data-image-title="Young boy carrying presents" data-image-description="" data-image-caption="" data-medium-file="https://cantongoodfellows.files.wordpress.com/2016/07/boy-carrying-presents.jpg?w=200" data-large-file="https://cantongoodfellows.files.wordpress.com/2016/07/boy-carrying-presents.jpg?w=320"></aside></div><!-- #secondary -->		</div><!-- .content -->
+	</div><!-- .site -->
+
+	<div class="social-block">
+				<nav class="jetpack-social-navigation jetpack-social-navigation-genericons" aria-label="Social Links Menu">
+			<div class="menu-social-media-container"><ul id="menu-social-media" class="menu"><li id="menu-item-15" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-15"><a href="https://www.facebook.com/CantonGoodfellows"><span class="screen-reader-text">Facebook</span></a></li>
+</ul></div>		</nav><!-- .jetpack-social-navigation -->
+			</div>
+	
+	
+	<footer id="colophon" class="site-footer" role="contentinfo">
+
+		<div class="hfeed site">
+
+			<div class="content site-content">
+
+				<div class="footer-widgets clear">
+
+					
+						<div class="widget-area">
+
+							<aside id="text-2" class="widget widget_text"><h2 class="widget-title">One Volunteer’s Testimonial</h2>			<div class="textwidget"><p>“&nbsp;It has been my pleasure and honor to give back by joining the Canton Goodfellows to do what I can to help families in need like mine was when I was young.</p>
+<p>Everything that comes into this organization goes right back to the children and families who need the help – not to administration costs or any other wasteful things and how cool is that?!”</p>
+</div>
+		</aside>
+						</div><!-- .widget-area -->
+
+					
+					
+						<div class="widget-area">
+
+							<aside id="media_image-2" class="widget widget_media_image"><style>.widget.widget_media_image { overflow: hidden; }.widget.widget_media_image img { height: auto; max-width: 100%; }</style><img width="375" height="250" src="https://cantongoodfellows.files.wordpress.com/2016/07/girl-santa-hat-christmas-present.jpg" class="image wp-image-112 alignnone attachment-full size-full" alt="Young girl wearing Santa hat, sits on floor in front of Christmas tree, opening present" loading="lazy" style="max-width: 100%; height: auto;" srcset="https://cantongoodfellows.files.wordpress.com/2016/07/girl-santa-hat-christmas-present.jpg 375w, https://cantongoodfellows.files.wordpress.com/2016/07/girl-santa-hat-christmas-present.jpg?w=150&amp;h=100 150w, https://cantongoodfellows.files.wordpress.com/2016/07/girl-santa-hat-christmas-present.jpg?w=300&amp;h=200 300w" sizes="(max-width: 375px) 100vw, 375px" data-attachment-id="112" data-permalink="https://cantongoodfellows.org/girl-santa-hat-christmas-present/" data-orig-file="https://cantongoodfellows.files.wordpress.com/2016/07/girl-santa-hat-christmas-present.jpg" data-orig-size="375,250" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;Bigstock&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;0&quot;}" data-image-title="Young girl in Santa hat opening present" data-image-description="" data-image-caption="" data-medium-file="https://cantongoodfellows.files.wordpress.com/2016/07/girl-santa-hat-christmas-present.jpg?w=300" data-large-file="https://cantongoodfellows.files.wordpress.com/2016/07/girl-santa-hat-christmas-present.jpg?w=375"></aside>
+						</div><!-- .widget-area -->
+
+					
+					
+						<div class="widget-area">
+
+							<aside id="text-3" class="widget widget_text"><h2 class="widget-title">Canton Goodfellows</h2>			<div class="textwidget"><p>PO Box 87532<br>
+Canton, MI 48187<br>
+<a href="https://cantongoodfellows.wordpress.com/contact/">Contact us</a></p>
+<p><span class="take-action"><a href="https://cantongoodfellows.wordpress.com/donate/">Donate</a></span></p>
+<p>cantongoodfellows@gmail.com<br>
+ 734-664-1044</p>
+</div>
+		</aside>
+						</div><!-- .widget-area -->
+
+				
+				</div><!-- .footer-widgets -->
+
+			</div><!-- .site -->
+
+		</div><!-- .content -->
+
+	</footer><!-- #colophon -->
+				<div class="site-info">
+				<div class="hfeed site">
+					<div class="content site-content">
+						<a href="https://wordpress.com/?ref=footer_custom_svg" title="Create a website or blog at WordPress.com" rel="nofollow"><svg style="fill: currentColor; position: relative; top: 1px;" width="14px" height="15px" viewBox="0 0 14 15" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-labelledby="title" role="img">
+				<desc id="title">Create a website or blog at WordPress.com</desc>
+				<path d="M12.5225848,4.97949746 C13.0138466,5.87586309 13.2934037,6.90452431 13.2934037,7.99874074 C13.2934037,10.3205803 12.0351007,12.3476807 10.1640538,13.4385638 L12.0862862,7.88081544 C12.4453251,6.98296834 12.5648813,6.26504621 12.5648813,5.62667922 C12.5648813,5.39497674 12.549622,5.17994084 12.5225848,4.97949746 L12.5225848,4.97949746 Z M7.86730089,5.04801561 C8.24619178,5.02808979 8.58760099,4.98823815 8.58760099,4.98823815 C8.9267139,4.94809022 8.88671369,4.44972248 8.54745263,4.46957423 C8.54745263,4.46957423 7.52803983,4.54957381 6.86996227,4.54957381 C6.25158863,4.54957381 5.21247202,4.46957423 5.21247202,4.46957423 C4.87306282,4.44972248 4.83328483,4.96816418 5.17254589,4.98823815 C5.17254589,4.98823815 5.49358462,5.02808979 5.83269753,5.04801561 L6.81314716,7.73459399 L5.43565839,11.8651647 L3.14394256,5.04801561 C3.52312975,5.02808979 3.86416859,4.98823815 3.86416859,4.98823815 C4.20305928,4.94809022 4.16305906,4.44972248 3.82394616,4.46957423 C3.82394616,4.46957423 2.80475558,4.54957381 2.14660395,4.54957381 C2.02852925,4.54957381 1.88934333,4.54668493 1.74156477,4.54194422 C2.86690406,2.83350881 4.80113651,1.70529256 6.99996296,1.70529256 C8.638342,1.70529256 10.1302017,2.33173369 11.2498373,3.35765419 C11.222726,3.35602457 11.1962815,3.35261718 11.1683554,3.35261718 C10.5501299,3.35261718 10.1114609,3.89113285 10.1114609,4.46957423 C10.1114609,4.98823815 10.4107217,5.42705065 10.7296864,5.94564049 C10.969021,6.36482346 11.248578,6.90326506 11.248578,7.68133501 C11.248578,8.21992476 11.0413918,8.84503256 10.7696866,9.71584277 L10.1417574,11.8132391 L7.86730089,5.04801561 Z M6.99996296,14.2927074 C6.38218192,14.2927074 5.78595654,14.2021153 5.22195356,14.0362644 L7.11048207,8.54925635 L9.04486267,13.8491542 C9.05760348,13.8802652 9.07323319,13.9089317 9.08989995,13.9358945 C8.43574834,14.1661896 7.73285573,14.2927074 6.99996296,14.2927074 L6.99996296,14.2927074 Z M0.706448182,7.99874074 C0.706448182,7.08630113 0.902152921,6.22015756 1.25141403,5.43749503 L4.25357806,13.6627848 C2.15393732,12.6427902 0.706448182,10.4898387 0.706448182,7.99874074 L0.706448182,7.99874074 Z M6.99996296,0.999 C3.14016476,0.999 0,4.13905746 0,7.99874074 C0,11.8585722 3.14016476,14.999 6.99996296,14.999 C10.8596871,14.999 14,11.8585722 14,7.99874074 C14,4.13905746 10.8596871,0.999 6.99996296,0.999 L6.99996296,0.999 Z" id="wordpress-logo-simplified-cmyk" stroke="none" fill="“currentColor”" fill-rule="evenodd"></path>
+			</svg></a>
+						
+											</div><!-- .content -->
+				</div><!-- .site -->
+			</div><!-- .site-info -->
+<!--  -->
+<script src="//0.gravatar.com/js/gprofiles.js?ver=202225z" id="grofiles-cards-js"></script>
+<script id="wpgroho-js-extra">
+var WPGroHo = {"my_hash":""};
+</script>
+<script crossorigin="anonymous" type="text/javascript" src="https://s0.wp.com/wp-content/mu-plugins/gravatar-hovercards/wpgroho.js?m=1610363240h"></script>
+
+	<script>
+		// Initialize and attach hovercards to all gravatars
+		( function() {
+			function init() {
+				if ( typeof Gravatar === 'undefined' ) {
+					return;
+				}
+
+				if ( typeof Gravatar.init !== 'function' ) {
+					return;
+				}
+
+				Gravatar.profile_cb = function ( hash, id ) {
+					WPGroHo.syncProfileData( hash, id );
+				};
+
+				Gravatar.my_hash = WPGroHo.my_hash;
+				Gravatar.init( 'body', '#wp-admin-bar-my-account' );
+			}
+
+			if ( document.readyState !== 'loading' ) {
+				init();
+			} else {
+				document.addEventListener( 'DOMContentLoaded', init );
+			}
+		} )();
+	</script>
+
+		<div style="display:none">
+	</div>
+	<div id="actionbar" class="actnbr-premium-pena actnbr-has-follow">
+		<ul>
+						<li class="actnbr-ellipsis actnbr-hidden">
+				<svg class="gridicon gridicons-ellipsis" height="24" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M7 12c0 1.104-.896 2-2 2s-2-.896-2-2 .896-2 2-2 2 .896 2 2zm12-2c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2zm-7 0c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2z"></path></g></svg>				<div class="actnbr-popover tip tip-top-left actnbr-more">
+					<div class="tip-arrow"></div>
+					<div class="tip-inner">
+						<ul>
+									<li class="actnbr-sitename">
+			<a href="https://cantongoodfellows.org">
+				<img alt="" src="https://secure.gravatar.com/blavatar/e905cae10a47962b0b76164ad4c265a3?s=50&amp;d=https%3A%2F%2Fs0.wp.com%2Fi%2Flogo%2Fwpcom-gray-white.png" class="avatar avatar-50" height="50" width="50" originals="50" scale="2">				Canton Goodfellows			</a>
+		</li>
+								<li class="actnbr-folded-customize">
+								<a href="https://cantongoodfellows.wordpress.com/wp-admin/customize.php?url=https%3A%2F%2Fcantongoodfellows.wordpress.com%2Fwelcome%2Fget-assistance%2F">
+									<svg class="gridicon gridicons-customize" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M2 6c0-1.505.78-3.08 2-4 0 .845.69 2 2 2 1.657 0 3 1.343 3 3 0 .386-.08.752-.212 1.09.74.594 1.476 1.19 2.19 1.81L8.9 11.98c-.62-.716-1.214-1.454-1.807-2.192C6.753 9.92 6.387 10 6 10c-2.21 0-4-1.79-4-4zm12.152 6.848l1.34-1.34c.607.304 1.283.492 2.008.492 2.485 0 4.5-2.015 4.5-4.5 0-.725-.188-1.4-.493-2.007L18 9l-2-2 3.507-3.507C18.9 3.188 18.225 3 17.5 3 15.015 3 13 5.015 13 7.5c0 .725.188 1.4.493 2.007L3 20l2 2 6.848-6.848c1.885 1.928 3.874 3.753 5.977 5.45l1.425 1.148 1.5-1.5-1.15-1.425c-1.695-2.103-3.52-4.092-5.448-5.977z"></path></g></svg>									<span>Customize</span>
+								</a>
+							</li>
+																<li class="actnbr-signup"><a href="https://wordpress.com/start/">Sign up</a></li>
+									<li class="actnbr-login"><a href="https://wordpress.com/log-in?redirect_to=https%3A%2F%2Fr-login.wordpress.com%2Fremote-login.php%3Faction%3Dlink%26back%3Dhttps%253A%252F%252Fcantongoodfellows.org%252Fwelcome%252Fget-assistance%252F">Log in</a></li>
+																	<li class="actnbr-shortlink"><a href="https://wp.me/P7FCSa-o">Copy shortlink</a></li>
+																	<li class="flb-report"><a href="http://en.wordpress.com/abuse/">Report this content</a></li>
+																	<li class="actnbr-subs">
+										<a href="https://subscribe.wordpress.com/">Manage subscriptions</a>
+									</li>
+														</ul>
+					</div>
+				</div>
+			</li>
+		</ul>
+	</div>
+	
+<script>
+window.addEventListener( "load", function( event ) {
+	var link = document.createElement( "link" );
+	link.href = "https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.css?v=20210915";
+	link.type = "text/css";
+	link.rel = "stylesheet";
+	document.head.appendChild( link );
+
+	var script = document.createElement( "script" );
+	script.src = "https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.js?v=20220329";
+	script.defer = true;
+	document.body.appendChild( script );
+} );
+</script>
+
+	<style>.wp-container-1 > .alignleft { float: left; margin-inline-start: 0; margin-inline-end: 2em; }.wp-container-1 > .alignright { float: right; margin-inline-start: 2em; margin-inline-end: 0; }.wp-container-1 > .aligncenter { margin-left: auto !important; margin-right: auto !important; }</style>
+
+	<script type="text/javascript">
+		window.WPCOM_sharing_counts = {"https:\/\/cantongoodfellows.org\/welcome\/get-assistance\/":24};
+	</script>
+				<script id="comment-like-js-extra">
+var comment_like_text = {"loading":"Loading...","swipeUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/comment-likes\/js\/lib\/swipe.js?ver=20131008"};
+</script>
+<script id="sharing-js-js-extra">
+var sharing_js_options = {"lang":"en","counts":"1","is_stats_active":"1"};
+</script>
+<script crossorigin="anonymous" type="text/javascript" src="https://s0.wp.com/_static/??-eJyNj1FuAjEMRC/U1EJtYftR9Swm6931JnbSOKEcnyCEhEBCfNkaz9OM4T87n7SSVlgNRjqwp3x8X+0Nbk7SXI5tZjWIHMjgr1GjBXWMVJ6YfRLpkrtA651wD9aFpNtyIeEmkEnxzCgeeMbKSV8ELHDuCRrclHwzN/Gzh3AUVrfHAoJWqfTN1YI+PPS7gXKy6qaIXMAWLKzzdXboV34226+P4Xs3DJ/rCT8JhGY="></script>
+<script type="text/javascript">
+var windowOpen;
+			( function () {
+				function matches( el, sel ) {
+					return !! (
+						el.matches && el.matches( sel ) ||
+						el.msMatchesSelector && el.msMatchesSelector( sel )
+					);
+				}
+
+				document.body.addEventListener( 'click', function ( event ) {
+					if ( ! event.target ) {
+						return;
+					}
+
+					var el;
+					if ( matches( event.target, 'a.share-twitter' ) ) {
+						el = event.target;
+					} else if ( event.target.parentNode && matches( event.target.parentNode, 'a.share-twitter' ) ) {
+						el = event.target.parentNode;
+					}
+
+					if ( el ) {
+						event.preventDefault();
+
+						// If there's another sharing window open, close it.
+						if ( typeof windowOpen !== 'undefined' ) {
+							windowOpen.close();
+						}
+						windowOpen = window.open( el.getAttribute( 'href' ), 'wpcomtwitter', 'menubar=1,resizable=1,width=600,height=350' );
+						return false;
+					}
+				} );
+			} )();
+var windowOpen;
+			( function () {
+				function matches( el, sel ) {
+					return !! (
+						el.matches && el.matches( sel ) ||
+						el.msMatchesSelector && el.msMatchesSelector( sel )
+					);
+				}
+
+				document.body.addEventListener( 'click', function ( event ) {
+					if ( ! event.target ) {
+						return;
+					}
+
+					var el;
+					if ( matches( event.target, 'a.share-facebook' ) ) {
+						el = event.target;
+					} else if ( event.target.parentNode && matches( event.target.parentNode, 'a.share-facebook' ) ) {
+						el = event.target.parentNode;
+					}
+
+					if ( el ) {
+						event.preventDefault();
+
+						// If there's another sharing window open, close it.
+						if ( typeof windowOpen !== 'undefined' ) {
+							windowOpen.close();
+						}
+						windowOpen = window.open( el.getAttribute( 'href' ), 'wpcomfacebook', 'menubar=1,resizable=1,width=600,height=400' );
+						return false;
+					}
+				} );
+			} )();
+</script>
+<script type="text/javascript">
+// <![CDATA[
+(function() {
+try{
+  if ( window.external &&'msIsSiteMode' in window.external) {
+    if (window.external.msIsSiteMode()) {
+      var jl = document.createElement('script');
+      jl.type='text/javascript';
+      jl.async=true;
+      jl.src='/wp-content/plugins/ie-sitemode/custom-jumplist.php';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(jl, s);
+    }
+  }
+}catch(e){}
+})();
+// ]]>
+</script>	<iframe src="https://widgets.wp.com/likes/master.html?ver=20220105#ver=20220105&amp;origin=https://cantongoodfellows.org" scrolling="no" id="likes-master" name="likes-master" style="display:none;"></iframe>
+	<div id="likes-other-gravatars">
+		<div class="likes-text">
+			<span>%d</span> bloggers like this:		</div>
+		<ul class="wpl-avatars sd-like-gravatars"></ul>
+	</div>
+
+		<script src="//stats.wp.com/w.js?63" defer=""></script> <script type="text/javascript">
+_tkq = window._tkq || [];
+_stq = window._stq || [];
+_tkq.push(['storeContext', {'blog_id':'113355230','blog_tz':'-4','user_lang':'en','blog_lang':'en','user_id':'0'}]);
+_stq.push(['view', {'blog':'113355230','v':'wpcom','tz':'-4','user_id':'0','post':'24','subd':'cantongoodfellows'}]);
+_stq.push(['extra', {'crypt':'UE40eW5QN0p8M2Y/RE1TaVhzUzFMbjdWNHpwZGhTayxPSUFCMGRVYVNrSFguN3FwSmQ5RGtNX3VQcj1yVzhiflM1THQtLGFdQ2toOXYlK2lYLGQ2ZS1hbVUtMDNvbyZ2U0g9ZGZBfGxzQ18mdls5NFVGbi5GL2VET3I9T2V4aC5nZ0ZzSDJ8YSVJSEZ1UGU9Lkg/QmV2Lll2aWVwaGhZV0V0a0omVERZMWtaNF1lUkE2b2NOc0xzdVdITnA4eCY5azh+Zm5VTlpwXzYrOXE5UTdJT1R1aEYwcmE/Um0tQ2hjaXNjdU9YeDN8aT1acXNQLTQ1bTZhWHNoeUE2cDg0UTY0VDFmUko='}]);
+_stq.push([ 'clickTrackerInit', '113355230', '24' ]);
+	</script>
+<noscript><img src="https://pixel.wp.com/b.gif?v=noscript" style="height:1px;width:1px;overflow:hidden;position:absolute;bottom:1px;" alt="" /></noscript>
+<script>
+if ( 'object' === typeof wpcom_mobile_user_agent_info ) {
+
+	wpcom_mobile_user_agent_info.init();
+	var mobileStatsQueryString = "";
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedPlatformName )
+		mobileStatsQueryString += "&x_" + 'mobile_platforms' + '=' + wpcom_mobile_user_agent_info.matchedPlatformName;
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedUserAgentName )
+		mobileStatsQueryString += "&x_" + 'mobile_devices' + '=' + wpcom_mobile_user_agent_info.matchedUserAgentName;
+	
+	if( wpcom_mobile_user_agent_info.isIPad() )
+		mobileStatsQueryString += "&x_" + 'ipad_views' + '=' + 'views';
+
+	if( "" != mobileStatsQueryString ) {
+		new Image().src = document.location.protocol + '//pixel.wp.com/g.gif?v=wpcom-no-pv' + mobileStatsQueryString + '&baba=' + Math.random();
+	}
+	
+}
+</script>
+
+<style>img#wpstats {
+			position: absolute !important;
+			clip: rect(0, 0, 0, 0);
+			padding: 0 !important;
+			border: 0 !important;
+			height: 0 !important;
+			width: 0 !important;
+			overflow: hidden;
+		}</style><img src="https://pixel.wp.com/g.gif?blog=113355230&amp;v=wpcom&amp;tz=-4&amp;user_id=0&amp;post=24&amp;subd=cantongoodfellows&amp;host=cantongoodfellows.org&amp;ref=&amp;rand=0.8207618794298044" alt=":)" id="wpstats"><div class="comment-likes-overlay" style="display: none;"></div><iframe scrolling="no" id="wpcom_remote_login_key" src="https://r-login.wordpress.com/remote-login.php?wpcom_remote_login=key&amp;origin=aHR0cHM6Ly9jYW50b25nb29kZmVsbG93cy5vcmc%3D&amp;wpcomid=113355230&amp;time=1656149043" style="display: none;"></iframe><script src="https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.js?v=20220329" defer=""></script></body></html>

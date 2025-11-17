@@ -1,0 +1,819 @@
+<!DOCTYPE html><html class=" plat_osx arch_32"><head>
+<title>Sublime Text - Text Editing, Done Right</title>
+<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="/blog/feed">
+<meta name="description" content="Sublime Text is a sophisticated text editor for code, markup and prose. You'll love the slick user interface, extraordinary features and amazing performance.">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Sublime Text - the sophisticated text editor for code, markup and prose">
+<meta name="twitter:site" content="@SublimeHQ">
+<meta property="twitter:description" content="Available on Mac, Windows and Linux">
+<meta name="twitter:image" content="https://www.sublimetext.com/images/og-full.jpg">
+
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://www.sublimetext.com/images/og-full.jpg">
+<meta property="og:title" content="Sublime Text - the sophisticated text editor for code, markup and prose">
+<meta property="og:description" content="Available on Mac, Windows and Linux">
+<meta property="og:url" content="https://www.sublimetext.com/">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=480, user-scalable=yes">
+    <link rel="stylesheet" type="text/css" href="/sublime_v3.css?v=41d4663019cdec81dff8c3e57f80d4ec">
+    <link rel="icon" href="/favicon.ico">
+    <link rel="icon" size="64x64" href="/favicon.ico">
+    <link rel="icon" sizes="192x192" href="/images/icon.png">
+    <link rel="apple-touch-icon-precomposed" sizes="192x192" href="/images/icon.png">
+    <script type="text/javascript">
+    var plat = 'windows'
+    if (/Mac OS X/.test(navigator.userAgent))
+        plat = 'osx'
+    else if (/Linux|FreeBSD/.test(navigator.userAgent))
+        plat = 'linux'
+    var arch = /WOW64|Win64|x86_64/.test(navigator.userAgent) ? '64' : '32'
+    document.documentElement.className += ' plat_' + plat + ' arch_' + arch
+    function byid(x)
+    {
+        return document.getElementById(x)
+    }
+    var scale = 1
+    function res()
+    {
+        scale = window.devicePixelRatio >= 1.3 ? 2 : 1
+        return scale == 2 ? '@2x' : ''
+    }
+    </script>
+    <!--[if lt IE 9]>
+    <script>
+        var els = ['header', 'nav', 'section', 'main', 'article', 'aside', 'footer']
+        for (var i = 0; i < els.length; ++i)
+            document.createElement(els[i]);
+    </script>
+    <style>
+        header, nav, section, main, article, aside, footer {
+            display: block;
+        }
+    </style>
+    <![endif]-->
+</head>
+<body id="homepage">
+    <header>
+        <section>
+            <a id="logo" href="/">
+                <img src="/images/logo.svg" alt="Sublime Text">
+            </a>
+            <nav>
+                <a href="/download">Download</a>
+                <a href="https://www.sublimehq.com/store/text">Buy</a>
+                <a href="/support">Support</a>
+                <span class="vr"></span>
+                <a href="/blog/">News</a>
+                <a href="https://forum.sublimetext.com">Forum</a>
+            </nav>
+        </section>
+    </header>
+
+<script>
+var theme = 'dark'
+var width = 1200
+var height = 576
+
+// Use a separate scale for the screencasts that factors in the
+// window width, mostly to prevent excess bandwidth on mobile
+var sc_scale = 1
+function sc_res()
+{
+    sc_scale = window.devicePixelRatio >= 1.3 && document.body.clientWidth > 1024 ? 2 : 1
+    return sc_scale == 2 ? '@2x' : ''
+}
+</script>
+<div id="masthead">
+    <section>
+        <div class="tagline"><span>Text Editing, Done Right</span></div>
+    <div class="download">
+        <div class="button">
+            <span class="win show_32"><a href="/download_thanks?target=win-x64">Download for Windows</a></span>
+            <span class="win show_64"><a href="/download_thanks?target=win-x64">Download for Windows</a></span>
+            <span class="linux"><a href="/docs/linux_repositories.html">Install for Linux</a></span>
+            <span class="mac"><a href="/download_thanks?target=mac">Download for Mac</a></span>
+        </div>
+        <div class="current_version">Sublime Text 4 <i>(Build 4126)</i></div>
+        <div class="changelog"><a href="/blog/articles/sublime-text-4">See What's New</a></div>
+    </div>
+    </section>
+    <section class="screencast">
+        <div class="theme-selector">
+            <a id="theme-selector-dark" href="javascript:switch_theme('dark')" class="current">Dark</a>
+            <a id="theme-selector-light" href="javascript:switch_theme('light')" class="">Light</a>
+        </div>
+        <div class="os-selector">
+            <a id="os-selector-windows" href="javascript:switch_os('windows')" class="">Windows</a>
+            <a id="os-selector-mac" href="javascript:switch_os('osx')" class="current">Mac</a>
+            <a id="os-selector-linux" href="javascript:switch_os('linux')" class="">Linux</a>
+        </div>
+        <script>
+            function update_theme_selector()
+            {
+                byid('theme-selector-light').className = theme == 'light' ? 'current' : '';
+                byid('theme-selector-dark').className = theme == 'dark' ? 'current' : '';
+            }
+            if (window.location.hash == '#light')
+                theme = 'light';
+            update_theme_selector();
+
+            function update_os_selector()
+            {
+                byid('os-selector-linux').className = plat == 'linux' ? 'current' : '';
+                byid('os-selector-mac').className = plat == 'osx' ? 'current' : '';
+                byid('os-selector-windows').className = plat == 'windows' ? 'current' : '';
+            }
+            update_os_selector();
+        </script>
+        <div class="wrap plat_osx" id="screencast-wrap">
+            <!-- Transparent gif to fill space without broken image icon -->
+            <img id="screencast-title-bar" src="/images/osx_title_bar_dark.png?v2" class="plat_osx" style="background-color: transparent;">
+            <script>
+                function update_wrap_class()
+                {
+                    var wrap = byid('screencast-wrap');
+                    wrap.className = 'wrap plat_' + plat;
+                }
+                function show_title_bar()
+                {
+                    var bar = byid('screencast-title-bar');
+                    bar.className = 'plat_' + plat;
+                    bar.src = '/images/' + plat + '_title_bar_' + theme + sc_res() + '.png?v2';
+                    update_wrap_class();
+                    bar.onload = function()
+                    {
+                        bar.style.backgroundColor = 'transparent';
+                    };
+                }
+                show_title_bar();
+            </script>
+            <div id="anim_shell">
+                <div id="anim_container">
+                    <canvas id="target" style="width: 1200px; height: 576px;" width="1200" height="576"></canvas>
+                    <div id="fallback" style="width: 1200px; height: 576px"></div>
+                </div>
+            </div>
+            <div id="title-overlay" class=""><div>Side-by-Side Mode for Definitions</div></div>
+        </div>
+    </section>
+</div>
+<main>
+    <section class="screencast-meta">
+        <div id="indicators">
+            <a href="javascript:jump_to(0)" id="indicator1" class="">
+                <span class="jump"></span>
+            </a>
+            <a href="javascript:jump_to(1)" id="indicator2" class="active">
+                <span class="jump"></span>
+            </a>
+            <a href="javascript:jump_to(2)" id="indicator3" class="">
+                <span class="jump"></span>
+            </a>
+            <a href="javascript:jump_to(3)" id="indicator4" class="">
+                <span class="jump"></span>
+            </a>
+        </div>
+        <div class="buttons">
+            <a href="javascript:play()" class="button" id="button-play" title="Play">
+                <svg width="12" height="12" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg">
+                    <title>Play</title>
+                    <path d="M3 0v14l11-7z"></path>
+                    <path d="M0 0h14v14H0z" fill="none"></path>
+                </svg>
+            </a>
+            <a href="javascript:pause()" class="button" id="button-pause" title="Pause">
+                <svg width="12" height="12" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg">
+                    <title>Pause</title>
+                    <path d="M1 14h4V0H1v14zm8-14v14h4V0h-4z"></path>
+                    <path d="M0 0h14v14H0z" fill="none"></path>
+                </svg>
+            </a>
+        </div>
+        <div class="captions">
+            <div id="caption1" style="display: none;">
+                <b>Effortlessly Split Panes and Navigate Between Code</b>
+                With the new <em>Tab Multi-Select</em> functionality, tabs become first-class citizens in the interface. A simple modifier when performing actions will split the interface to show multiple tabs at once. Works with the side bar, tab bar, Goto Anything and more!
+            </div>
+
+            <div id="caption2" style="display: block;">
+                <b>Side-by-Side Mode for Definitions</b>
+                The <em>Definitions</em> popup now supports side-by-side mode via the icon, or holding <span class="keys pc"><b>Ctrl</b></span><span class="keys mac"><b>⌘</b></span> while clicking a link. Goto Definition, Goto Reference and Goto Symbol in Project also support side-by-side viewing. Explore the full definition, not just a summary in a small popup.
+            </div>
+
+            <div id="caption3" style="display: none">
+                <b>View Definitions in Auto Complete</b>
+                When an auto-complete word is a symbol with a definition, click the <em>Definition</em> link, or pressing <span class="keys"><b>F12</b></span> will open the definition to the right. When focus returns to the original file, the auto complete window will return to its last state.
+            </div>
+
+            <div id="caption4" style="display: none">
+                <b>Use <span class="feature">Multiple Selections</span> to rename variables quickly</b>
+                Here <span class="keys pc"><b>Ctrl</b><i>+</i><b>D</b></span><span class="keys mac"><b>⌘</b><i>+</i><b>D</b></span> is used to select the next occurrence of the current word. <span class="keys pc"><b>Ctrl</b><i>+</i><b>K</b>, <b>Ctrl</b><i>+</i><b>D</b></span><span class="keys mac"><b>⌘</b><i>+</i><b>K</b>, <b>⌘</b><i>+</i><b>D</b></span> will skip an occurence.
+                Once created, each selection allows for full-featured editing.
+            </div>
+        </div>
+    </section>
+    <script>
+    var captions =
+    [
+        byid("caption1"),
+        byid("caption2"),
+        byid("caption3"),
+        byid("caption4")
+    ]
+    var indicators =
+    [
+        byid("indicator1"),
+        byid("indicator2"),
+        byid("indicator3"),
+        byid("indicator4")
+    ]
+    var images = []
+
+    var target = byid('target')
+    var use_canvas = target && target.getContext
+    if (!use_canvas)
+    {
+        byid('target').style.display = 'none'
+        target = byid('fallback')
+        target.style.display = 'block'
+    }
+
+    function load_animation()
+    {
+        var script = byid('anim_script')
+        if (script)
+            script.parentNode.removeChild(script)
+        script = document.createElement('script')
+        script.setAttribute('src', 'screencasts/' + plat + '_' + theme + sc_res() + '.js?v2')
+        document.body.appendChild(script)
+
+        if (use_canvas)
+        {
+            target.width = sc_scale * width
+            target.height = sc_scale * height
+        }
+    }
+
+    load_animation()
+
+    if (window.matchMedia)
+    {
+        window.matchMedia('screen and (-webkit-min-device-pixel-ratio: 1.3) and (min-width: 1025px), ' +
+            'only screen and (-o-min-device-pixel-ratio: 13/10) and (min-width: 1025px), ' +
+            'only screen and (min-resolution: 120dpi) and (min-width: 1025px)').addListener(function(e)
+        {
+            show_title_bar()
+            load_animation()
+        })
+    }
+
+    function handle_resize(e)
+    {
+        target.style.height = Math.floor(target.clientWidth / width * height) + 'px'
+    }
+
+    handle_resize()
+
+    if (window.addEventListener)
+        window.addEventListener('resize', handle_resize, false)
+    else if (window.attachEvent)
+        window.attachEvent('onresize', handle_resize)
+
+    var cur_screencast = 0
+    var subcasts = 0
+    var sub_screencast = 0
+    var auto_cycle = true
+
+    function count_subcasts(force)
+    {
+        if (!force && subcasts != 0)
+            return
+        if (typeof animation_urls[cur_screencast] != "string")
+            subcasts = animation_urls[cur_screencast].length
+        else
+            subcasts = 1
+    }
+
+    function reset_subcasts()
+    {
+        sub_screencast = 0
+        count_subcasts(true)
+    }
+
+    function next()
+    {
+        auto_cycle = false
+        show_pause_button()
+        auto_next()
+    }
+
+    function auto_next()
+    {
+        cur_screencast = (cur_screencast + 1) % captions.length
+        reset_subcasts()
+        transition()
+    }
+
+    function prev()
+    {
+        auto_cycle = false
+        show_pause_button()
+        auto_prev()
+    }
+
+    function auto_prev()
+    {
+        --cur_screencast;
+        if (cur_screencast < 0) cur_screencast = captions.length - 1
+        reset_subcasts()
+        transition()
+    }
+
+    function jump_to(num)
+    {
+        while (num < 0)
+            num = captions.length + num
+        cur_screencast = num % captions.length
+        reset_subcasts()
+        transition()
+    }
+
+    function switch_theme(t)
+    {
+        theme = t
+        if (window && window.history)
+            window.history.replaceState({}, '', t == 'light' ? '/#' + t : '/')
+        update_theme_selector()
+        show_title_bar()
+        load_animation()
+    }
+
+    function switch_os(os)
+    {
+        plat = os
+        update_wrap_class()
+        update_os_selector()
+        show_title_bar()
+        load_animation()
+    }
+
+    var continuation = null
+    var start_time = null
+    var remaining_time = 0
+    var timer = null
+
+    function set_timeout(f, timeout)
+    {
+        start_time = new Date().getTime()
+        remaining_time = timeout
+        continuation = f
+        timer = window.setTimeout(f, timeout)
+    }
+
+    // Only run a callback once an animation frame is available, allowing
+    // the animation to be paused when in the background, etc
+    function sync_frame(f)
+    {
+        if (!window.requestAnimationFrame)
+            f()
+        else
+            window.requestAnimationFrame(f)
+    }
+
+    // Run a timeout synced to the animation frame
+    function sync_timeout(f, timeout)
+    {
+        set_timeout(function() { sync_frame(f) }, timeout)
+    }
+
+    function pause_timeout()
+    {
+        var elapsed = (new Date().getTime()) - start_time
+        remaining_time = Math.max(remaining_time - elapsed, 0)
+        window.clearTimeout(timer)
+    }
+
+    function continue_timeout()
+    {
+        start_time = new Date().getTime()
+        timer = window.setTimeout(continuation, remaining_time)
+    }
+
+    function show_play_button()
+    {
+        byid('button-pause').style.display = 'none'
+        byid('button-play').style.display = 'inline-block'
+    }
+
+    function show_pause_button()
+    {
+        byid('button-play').style.display = 'none'
+        byid('button-pause').style.display = 'inline-block'
+    }
+
+    function play()
+    {
+        show_pause_button()
+        continue_timeout()
+    }
+
+    function pause()
+    {
+        pause_timeout()
+        show_play_button()
+    }
+
+    var delay_scale = 0.7
+
+    var overlay = byid('title-overlay')
+
+    function display_error()
+    {
+        window.clearTimeout(timer)
+        continuation = null
+        if (use_canvas)
+        {
+            var ctx = target.getContext('2d')
+            ctx.clearRect(0, 0, target.width, target.height)
+        }
+        else
+        {
+            target.innerHTML = ''
+        }
+        overlay.getElementsByTagName('div')[0].innerHTML = '<i>Error loading screencast</i>';
+        overlay.className = 'show'
+    }
+
+    function update_meta()
+    {
+        for (var i = 0; i < captions.length; ++i)
+        {
+            if (i == cur_screencast)
+                continue;
+            captions[i].style.display = "none"
+            indicators[i].className = ""
+        }
+
+        captions[cur_screencast].style.display = "block"
+        indicators[cur_screencast].className = "active"
+
+        var b_tags = captions[cur_screencast].getElementsByTagName('B')
+        if (b_tags.length > 0)
+        {
+            overlay.getElementsByTagName('div')[0].innerHTML = b_tags[0].innerHTML;
+            overlay.className = 'show'
+        }
+    }
+
+    function hide_overlay()
+    {
+        overlay.className = ''
+    }
+
+    function transition()
+    {
+        if (timer) window.clearTimeout(timer)
+
+        sync_frame(function() {
+            count_subcasts(false)
+
+            var img_url = animation_urls[cur_screencast]
+            var timeline = animation_timelines[cur_screencast]
+            if (subcasts > 1)
+            {
+                img_url = img_url[sub_screencast]
+                timeline = timeline[sub_screencast]
+            }
+
+            var next_index = (cur_screencast + 1) % captions.length
+            var next_img_url = animation_urls[next_index]
+
+            if (subcasts > 1 && sub_screencast < subcasts - 1)
+                next_img_url = animation_urls[cur_screencast][sub_screencast + 1]
+            else if (typeof next_img_url != "string")
+                next_img_url = next_img_url[0]
+
+            var img = prep_animation(img_url, timeline, next_img_url)
+
+            if (sub_screencast == 0)
+            {
+                sync_timeout(function()
+                {
+                    hide_overlay()
+                    animate(img, timeline, target, 0)
+                }, 2400)
+            }
+            else
+            {
+                animate(img, timeline, target, 0)
+            }
+        })
+    }
+
+    function draw_canvas(img, element, frame, blits)
+    {
+        var ctx = element.getContext('2d')
+
+        for (j = 0; j < blits.length; ++j)
+        {
+            var blit = blits[j]
+            var sx = blit[0]
+            var sy = blit[1]
+            var w = blit[2]
+            var h = blit[3]
+            var dx = blit[4]
+            var dy = blit[5]
+            ctx.drawImage(img, sx, sy, w, h, dx, dy, w, h)
+        }
+    }
+
+    function draw_fallback(img, element, frame, blits)
+    {
+        if (frame == 0)
+        {
+            while (element.hasChildNodes())
+                element.removeChild(element.lastChild)
+        }
+
+        for (j = 0; j < blits.length; ++j)
+        {
+            var blit = blits[j]
+            var sx = blit[0] / sc_scale
+            var sy = blit[1] / sc_scale
+            var w = blit[2] / sc_scale
+            var h = blit[3] / sc_scale
+            var dx = blit[4] / sc_scale
+            var dy = blit[5] / sc_scale
+
+            var d = document.createElement('div')
+            d.style.position = 'absolute'
+            d.style.left = dx + "px"
+            d.style.top = dy + "px"
+            d.style.width = w + "px"
+            d.style.height = h + "px"
+            d.style.backgroundImage = "url('" + img.src + "')"
+            d.style.backgroundPosition = "-" + sx + "px -" + sy + "px"
+            d.style.backgroundSize = width + "px auto"
+
+            element.appendChild(d)
+        }
+    }
+
+    function draw(img, element, frame, blits)
+    {
+        if (use_canvas)
+            draw_canvas(img, element, frame, blits)
+        else
+            draw_fallback(img, element, frame, blits)
+    }
+
+    function animate(img, timeline, element, start_frame)
+    {
+        var i = start_frame;
+
+        var f = function()
+        {
+            var frame = i++ % timeline.length
+            var delay = timeline[frame].delay * delay_scale
+            var blits = timeline[frame].blit
+
+            draw(img, element, frame, blits)
+
+            var callback = f
+            if (i == timeline.length * 2 && subcasts > 1
+                && sub_screencast < subcasts - 1)
+            {
+                sub_screencast += 1
+                callback = transition
+            }
+            else if (i == timeline.length * 2 && auto_cycle)
+            {
+                callback = auto_next
+            }
+            sync_timeout(callback, delay)
+        }
+
+        if (timer) window.clearTimeout(timer)
+        sync_frame(f)
+    }
+
+    function prep_animation(img_url, timeline, preload_url)
+    {
+        var ready = function()
+        {
+            sync_frame(function() {
+                if (sub_screencast == 0)
+                    update_meta()
+                draw(images[img_url], target, 0, timeline[0].blit)
+            })
+            if (!(preload_url in images))
+            {
+                images[preload_url] = new Image()
+                images[preload_url].src = preload_url
+            }
+        }
+
+        if (img_url in images)
+        {
+            ready()
+        }
+        else
+        {
+            images[img_url] = new Image()
+            images[img_url].onload = ready
+            images[img_url].onerror = function()
+            {
+                delete images[img_url]
+                display_error()
+            }
+            images[img_url].src = img_url
+        }
+        return images[img_url]
+    }
+    </script>
+    <section class="swimlane">
+        <section>
+            <div class="col span_6_of_6">
+                <h2 class="love"><span>What’s New</span></h2>
+
+                <p style="text-align: center; font-style: italic;">
+                    Sublime Text 4 is packed with new features and enhancements, including:
+                </p>
+            </div>
+
+            <div class="section group">
+                <div class="col span_3_of_6">
+                    <h3>GPU Rendering</h3>
+                    <img src="/images/icon_gpu.svg" class="col span_2_of_6 icon">
+                    <p class="col span_4_of_6">
+                        Sublime Text can now utilize your GPU on Linux, Mac and Windows
+                        when rendering the interface. This results in a fluid UI all
+                        the way up to 8K resolutions, all while using less power than
+                        before.
+                    </p>
+                </div>
+
+                <div class="col span_3_of_6">
+                    <h3>Apple Silicon and Linux ARM64</h3>
+
+                    <img src="/images/icon_arm64.svg" class="col span_2_of_6 icon">
+                    <p class="col span_4_of_6">
+                        Sublime Text for Mac now includes native support for Apple
+                        Silicon processors. Linux ARM64 builds are also available for
+                        devices like the Raspberry Pi.
+                    </p>
+                </div>
+            </div>
+            <div class="section group">
+                <div class="col span_3_of_6">
+                    <h3>Tab Multi-Select</h3>
+                    <p class="col span_4_of_6">
+                        File tabs have been enhanced to make split views effortless,
+                        with support throughout the interface and built-in commands.
+                        The side bar, tab bar, Goto Anything, Goto Definition, auto
+                        complete and more have all been tweaked to make code
+                        navigation easier and more intuitive than ever.
+                    </p>
+                    <img src="/images/icon_tab_multi.svg" class="col span_2_of_6 icon">
+                </div>
+
+                <div class="col span_3_of_6">
+                    <h3>Context-Aware Auto Complete</h3>
+                    <p class="col span_4_of_6">
+                        The auto complete engine has been rewritten to provide smart
+                        completions based on existing code in a project. Suggestions
+                        are also augmented with info about their kind, and provide
+                        links to definitions.
+                    </p>
+                    <img src="/images/icon_auto_complete.svg" class="col span_2_of_6 icon">
+                </div>
+            </div>
+            <div class="section group">
+                <div class="col span_3_of_6">
+                    <h3>Refreshed UI</h3>
+                    <img src="/images/icon_dark_mode.svg" class="col span_2_of_6 icon">
+                    <p class="col span_4_of_6">
+                        The Default and Adaptive themes have been refreshed with new
+                        tab styles and inactive pane dimming. Themes and Color Schemes
+                        support auto dark-mode switching. The Adaptive theme on
+                        Windows and Linux now features custom title bars.
+                    </p>
+                </div>
+
+                <div class="col span_3_of_6">
+                    <h3>TypeScript, JSX and TSX Support</h3>
+                    <img src="/images/icon_ts.svg" class="col span_2_of_6 icon">
+                    <p class="col span_4_of_6">
+                        Support for one of the most popular new programming languages
+                        is now shipped by default. Utilize all of the smart
+                        syntax-based features of Sublime Text within the modern
+                        JavaScript ecosystem.
+                    </p>
+                </div>
+            </div>
+            <div class="section group">
+                <div class="col span_3_of_6">
+                    <h3>Superpowered Syntax Definitions</h3>
+                    <p class="col span_4_of_6">
+                        The syntax highlighting engine has been significantly improved,
+                        with new features like handling non-deterministic grammars,
+                        multi-line constructs, lazy embeds and syntax inheritance.
+                        Memory usage has been reduced, and load times are faster than
+                        ever.
+                    </p>
+                    <img src="/images/icon_syntax.svg" class="col span_2_of_6 icon">
+                </div>
+
+                <div class="col span_3_of_6">
+                    <h3>Updated Python API</h3>
+                    <p class="col span_4_of_6">
+                        The Sublime Text API has been updated to Python 3.8, while
+                        keeping backwards compatibility with packages built for
+                        Sublime Text 3. The API has been significantly expanded,
+                        adding features that allow plugins like LSP to work better
+                        than ever. Read the revamped documentation <a href="/docs">here</a>.
+                    </p>
+                    <img src="/images/icon_python.svg" class="col span_2_of_6 icon">
+                </div>
+            </div>
+        </section>
+        <section>
+    <div class="section group"><h2 class="centered">Meet the Sublime Family</h2></div>
+
+    <div class="section group">
+       <div class="col span_3_of_6 text">
+            <div class="product_card">
+                <div class="product_card_header">
+                    <img src="https://www.sublimehq.com/images/sublime_text.png" class="product_card_icon" alt="Sublime Text Icon">
+                    <h1>Sublime Text</h1>
+                </div>
+                <div class="product_card_body">
+                    <p>The sophisticated text editor for code, markup and prose</p>
+                </div>
+                <div class="product_card_buttons">
+                    <div class="download">
+                        <div class="button">
+                            <span class="win"><a href="https://www.sublimetext.com/download">Download</a></span>
+                            <span class="linux"><a href="https://www.sublimetext.com/download">Download</a></span>
+                            <span class="mac"><a href="https://www.sublimetext.com/download">Download</a></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+       </div>
+        <div class="col span_3_of_6 text">
+            <div class="product_card">
+                <div class="product_card_header">
+                    <img src="https://www.sublimehq.com/images/sublime_merge.png" class="product_card_icon" alt="Sublime Merge Icon">
+                    <h1>Sublime Merge</h1>
+                </div>
+                <div class="product_card_body">
+                    <p>A cross-platform Git client, done the Sublime Text way</p>
+                </div>
+                <div class="product_card_buttons">
+                    <div class="download">
+                        <div class="button">
+                            <a href="https://www.sublimemerge.com/">Find out more</a>
+                        </div>
+                    </div>
+                    <div class="download">
+                        <div class="button">
+                            <span class="win"><a href="https://www.sublimemerge.com/download">Download</a></span>
+                            <span class="linux"><a href="https://www.sublimemerge.com/download">Download</a></span>
+                            <span class="mac"><a href="https://www.sublimemerge.com/download">Download</a></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+       </div>
+   </div>
+</section>
+    </section>
+</main><script src="screencasts/osx_dark.js?v2"></script>
+<footer>
+    <section>
+            <div class="footer_start">
+                <p>© <a href="https://www.sublimehq.com">Sublime HQ Pty Ltd</a></p>
+                <p>Woollahra, Sydney.</p>
+            </div>
+            <div class="footer_end">
+                <p>
+                    </p><div class="twitter_follow">
+                        <a target="_blank" rel="noopener noreferrer" href="https://twitter.com/sublimehq?ref_src=twsrc%5Etfw">
+                            <i></i>
+                        Follow @sublimehq</a>
+                    </div>
+                <p></p>
+            </div>
+    </section>
+</footer>
+<!--[if lt IE 9]>
+<script>
+    var logo_img = byid('logo').getElementsByTagName('IMG')[0]
+    logo_img.src = logo_img.src.replace('.svg', '.png')
+</script>
+<![endif]-->
+
+</body></html>

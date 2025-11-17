@@ -1,0 +1,209 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us"><head>
+        <title>IRC Specifications</title>
+
+        <!-- Homepage CSS -->
+        <link href="/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+        <!-- http://realfavicongenerator.net \o/ -->
+        <link rel="apple-touch-icon" sizes="57x57" href="/favicons/apple-touch-icon-57x57.png">
+        <link rel="apple-touch-icon" sizes="60x60" href="/favicons/apple-touch-icon-60x60.png">
+        <link rel="apple-touch-icon" sizes="72x72" href="/favicons/apple-touch-icon-72x72.png">
+        <link rel="apple-touch-icon" sizes="76x76" href="/favicons/apple-touch-icon-76x76.png">
+        <link rel="apple-touch-icon" sizes="114x114" href="/favicons/apple-touch-icon-114x114.png">
+        <link rel="apple-touch-icon" sizes="120x120" href="/favicons/apple-touch-icon-120x120.png">
+        <link rel="apple-touch-icon" sizes="144x144" href="/favicons/apple-touch-icon-144x144.png">
+        <link rel="apple-touch-icon" sizes="152x152" href="/favicons/apple-touch-icon-152x152.png">
+        <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon-180x180.png">
+        <link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
+        <link rel="icon" type="image/png" href="/favicons/android-chrome-192x192.png" sizes="192x192">
+        <link rel="icon" type="image/png" href="/favicons/favicon-96x96.png" sizes="96x96">
+        <link rel="icon" type="image/png" href="/favicons/favicon-16x16.png" sizes="16x16">
+        <link rel="manifest" href="/favicons/manifest.json">
+        <link rel="mask-icon" href="/favicons/safari-pinned-tab.svg" color="#5bbad5">
+        <link rel="shortcut icon" href="/favicons/favicon.ico">
+        <meta name="apple-mobile-web-app-title" content="stats.ircdocs.horse">
+        <meta name="application-name" content="stats.ircdocs.horse">
+        <meta name="msapplication-TileColor" content="#da532c">
+        <meta name="msapplication-TileImage" content="/favicons/mstile-144x144.png">
+        <meta name="msapplication-config" content="/favicons/browserconfig.xml">
+        <meta name="theme-color" content="#444455">
+    </head>
+    <body class="">
+        <a onclick="toggledarkmode()" id="darkmodebtn"><i class="fa fa-sun-o show-when-dark"></i><i class="fa fa-moon-o show-when-light"></i></a>
+
+        <nav>
+            <div class="wrapper linklist">
+                <a href="/" class="wordmark" title="ircdocs.horse">ircdocs</a>
+                <a href="/tools/wstester" title="websocket tester">websocket tester</a>
+            </div>
+        </nav>
+        <div id="content">
+            <div class="wrapper">
+                <h1 id="logo">
+	Internet Relay Chat
+	<subtitle>
+		specifications
+	</subtitle>
+</h1>
+
+<p class="note">Lots of behaviour in the IRC protocol as implemented in clients and servers today is not formally specified. If you are looking to implement IRC software, the best thing to do is look at specifications, information, and how other software behaves as a guide.</p>
+
+<hr>
+
+<h2>Useful Specifications</h2>
+
+<div class="link-block">
+	<div class="name">
+		<h3><a href="https://modern.ircdocs.horse/">Modern IRC</a></h3>
+	</div>
+	<div class="details">
+		<p>The Modern IRC documents describe the IRC client protocol, formatting, and other related tech. The primary document on this site is an updated replacement to RFCs 1459 and 2812.</p>
+		
+		<p>These docs don't specify new stuff, just existing behaviour and what I consider best-practices for new software. I intend for them to help improve interoperability with the wider IRC ecosystem, and provide a good starting-point on the base protocol for new implementations.</p>
+
+		<p><strong>Full disclosure:</strong> I'm an author and/or editor on most of the Modern specs.</p>
+	</div>
+</div>
+
+<div class="link-block">
+	<div class="name">
+		<h3><a href="http://tools.ietf.org/html/rfc1459">RFC1459</a> and <a href="http://tools.ietf.org/html/rfc2812">RFC2812</a></h3>
+	</div>
+	<div class="details">
+		<p>The earlier and the later 'canonical' IRC specifications, respectively.</p>
+
+		<p>Some software holds <a href="http://tools.ietf.org/html/rfc1459">RFC1459</a> in higher regard than <a href="http://tools.ietf.org/html/rfc2812">RFC2812</a>, and some hold the opposite in higher regard. Honestly, the truth tends to lie somewhere in the middle.</p>
+
+		<p>There are many parts of the newer <a href="http://tools.ietf.org/html/rfc2812">RFC2812</a> that software authors (reasonably) consider insane. And there are many parts that have updated <a href="http://tools.ietf.org/html/rfc1459">RFC1459</a> in useful ways and have been widely-implemented by clients and servers today.</p>
+
+		<p>In the same way, <a href="http://tools.ietf.org/html/rfc1459">RFC1459</a> has many useful parts, and there are also many places where due to its age or simply deviating implementations, it also has information that's totally incorrect.</p>
+
+		<p>Honestly, use these as a rough reference, say for a basic implementation. And then compare <strong>everything</strong> with multiple real-world servers and clients to find out how broken and incompatible your to-the-spec implementation is with the actual ones out there today.</p>
+
+		<p>If you're looking at these, it's worth taking a look at the <a href="https://modern.ircdocs.horse/">Modern IRC</a> docs which I'm writing up. The main doc there acts essentially as a replacement to these two, but is still very, very much a work in progress.</p>
+
+		<p><strong>Do not</strong> take RFC 1459 or 2812 of these original specifications as gospel. They are both very old, and have lots of places where either due to age or decision, modern software specifically does not follow them.</p>
+
+		<p>Welcome to IRC, where the base specs we work off are all old and broken and regarded more as suggestions than anything binding. Strap in and "Thanks for flying IRC!"</p>
+	</div>
+</div>
+
+<div class="link-block">
+	<div class="name">
+		<h3><a href="http://tools.ietf.org/html/rfc7194">Default Port for IRC via TLS/SSL (RFC 7194)</a></h3>
+	</div>
+	<div class="details">
+		<p>6697 is IRC's TLS port. It's now in an RFC. Hooray.</p>
+
+		<p>This also specifies some details about certificates that are useful to keep in mind, and some bits about certificates that isn't really true these days.</p>
+	</div>
+</div>
+
+<div class="link-block">
+	<div class="name">
+		<h3><a href="https://modern.ircdocs.horse/#feature-advertisement">RPL_ISUPPORT numeric</a></h3>
+	</div>
+	<div class="details">
+		<p>Every server implements this. This is mandatory for any client implementing any sort of intelligence. The <span class="mono">RPL_ISUPPORT</span> numeric is implemented by literally everything.</p>
+
+		<p>The original <span class="mono">RPL_ISUPPORT</span> specs are old and describe keys which are no longer used today. This one describes the widely-used parameters that clients and servers SHOULD implement. There is also the <a href="https://defs.ircdocs.horse/defs/isupport.html">RPL_ISUPPORT Token list</a> I maintain over on my <a href="https://defs.ircdocs.horse/">irc-defs</a> page</p>
+
+		<p><strong>Full disclosure:</strong> I wrote on the spec I'm linking here. The original spec people tend to refer to is the <a href="https://github.com/grawity/irc-docs/blob/master/client/RPL_ISUPPORT/draft-hardy-irc-isupport-00.txt">RPL_ISUPPORT Hardy Internet-Draft</a>.</p>
+	</div>
+</div>
+
+<div class="link-block">
+	<div class="name">
+		<h3><a href="http://ircv3.net/irc/">IRCv3 Working Group</a></h3>
+	</div>
+	<div class="details">
+		<p>This is a working group made up of a whole bunch of IRC software authors. IRCv3 specifications are written by various software authors, submitted, and accepted if the majority of the group agrees on them. These are recommended and tend to introduce new and useful features to the IRC protocol.</p>
+
+		<p>Regarding specific IRCv3 specifications, here are rough support matrixes for <a href="http://ircv3.net/software/clients.html">clients</a> and <a href="http://ircv3.net/software/servers.html">servers</a>.</p>
+	</div>
+</div>
+
+<div class="link-block">
+	<div class="name">
+		<h3><a href="https://raw.githubusercontent.com/DanielOaks/irc-rfcs/master/dist/draft-oakley-irc-ctcp-latest.txt">Client-to-Client Protocol (CTCP)</a></h3>
+	</div>
+	<div class="details">
+		<p>CTCP is the Client-to-Client Protocol. Supported by a large amount of software, it allows for special messages to be exchanged between clients. Very useful, and clients need to implement certain parts of it.</p>
+
+		<p>The original CTCP specifications required insanely extensive quoting mechanisms which didn't end up getting supported and/or got explicitly rejected by the clients out there today. As such, I've linked a newer, lean CTCP specification which describes just the parts that are generally useful to clients today.</p>
+
+		<p><strong>Full disclosure:</strong> I'm the editor of the spec I'm linking here.</p>
+	</div>
+</div>
+
+<div class="link-block">
+	<div class="name">
+		<h3><a href="https://tools.ietf.org/html/draft-butcher-irc-url-04">Butcher IRC URL draft</a></h3>
+	</div>
+	<div class="details">
+		<p>Like the canonical RFCs, this is an old document. Like the <span class="mono">RPL_ISUPPORT</span> draft, not everything in here is parsed by clients.</p>
+
+		<p>However, it is the best document describing the <span class="mono">irc</span> and related URL schemes around today. Clients should largely implement this document when implementing parsing for the IRC URL schemes (within reason, for instance use 6697 as the default for <span class="mono">ircs</span> URLs these days).</p>
+	</div>
+</div>
+
+<div class="link-block">
+	<div class="name">
+		<h3><a href="http://ircv3.net/specs/extensions/webirc.html">WEBIRC Command</a></h3>
+	</div>
+	<div class="details">
+		<p>The <span class="mono">WEBIRC</span> command is widely used in the implementation of web-based IRC clients in connecting to IRCds. Only privileged hosts can use this command, since <span class="mono">WEBIRC</span> lets the client sending it to set the hostname/IP address of the current connection.</p>
+
+		<p>This specification is one done up with the IRCv3 WG that basically describes how it works today. It's WiP but should be pretty accurate.</p>
+	</div>
+</div>
+
+<div class="link-block">
+	<div class="name">
+		<h3>DCC/XDCC</h3>
+	</div>
+	<div class="details">
+		<p>DCC stands for Direct Client-to-Client. XDCC is an extension which stands for Xabi's DCC (widely referred to as Extended DCC these days). These protocols allow for traffic to be exchanged directly between clients (again, with a number of caveats). Proposed uses for this have also included 'whiteboards' and direct chatting. However, these days DCC/XDCC is primarily used for file exchange between clients. DCC file transfers don't use any sort of encryption, and as such… I'd recommend building something better these days.</p>
+
+		<p>I haven't linked any specs here because there are a bunch of differing, old specifications. It's difficult to point to one as authoritative without combing through all of them to see how closely they're followed these days. However, I've been writing up <a href="https://modern.ircdocs.horse/dcc.html">this</a> very work-in-progress one that may be useful (but doesn't describe everything or all the extensions yet).</p>
+	</div>
+</div>
+
+            </div>
+        </div>
+        <footer>
+            <div class="wrapper">
+                <a href="https://ircdocs.horse">ircdocs</a> ·
+                <a href="https://compendium.ircdocs.horse">compendium</a> ·
+                <a href="https://defs.ircdocs.horse">defs</a> ·
+                <a href="https://modern.ircdocs.horse">modern docs</a> ·
+                <a href="https://stats.ircdocs.horse">stats</a> ·
+                <a href="https://wooooms.ircdocs.horse">wooooms</a>
+                <br>
+                <a href="ircs://irc.libera.chat:6697/#ircdocs">#ircdocs on Libera.Chat</a> ·
+                <a href="https://github.com/ircdocs">GitHub</a>
+                <br>
+                <a href="http://danieloaks.net">Made by Daniel Oaks</a>
+            </div>
+        </footer>
+    
+    <script>
+        function toggledarkmode() {
+            document.body.classList.toggle("dark");
+            if (document.body.classList.contains("dark")) {
+                document.cookie = "darkmode=true;path=/";
+            } else {
+                document.cookie = "darkmode=false;path=/";
+            }
+        }
+
+        // set dark mode if we should do so
+        if (document.cookie == 'darkmode=true') {
+            document.body.classList.add('dark');
+        }
+    </script>
+
+</body></html>

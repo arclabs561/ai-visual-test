@@ -1,0 +1,1870 @@
+<!DOCTYPE html><html lang="en" class="yui3-js-enabled js"><div id="yui3-css-stamp" style="position: absolute !important; visibility: hidden !important" class=""></div><head><script type="text/javascript" src="https://bam.nr-data.net/1/10df3eefc2?a=1588666464&amp;sa=1&amp;v=1216.487a282&amp;t=Unnamed%20Transaction&amp;rst=10693&amp;ck=0&amp;ref=https://scholarworks.wmich.edu/honors_theses/830/&amp;be=1297&amp;fe=10491&amp;dc=6391&amp;af=err,xhr,stn,ins,spa&amp;perf=%7B%22timing%22:%7B%22of%22:1656002499588,%22n%22:0,%22f%22:243,%22dn%22:243,%22dne%22:243,%22c%22:243,%22ce%22:243,%22rq%22:243,%22rp%22:252,%22rpe%22:253,%22dl%22:257,%22di%22:6203,%22ds%22:6203,%22de%22:6693,%22dc%22:10490,%22l%22:10490,%22le%22:10498%7D,%22navigation%22:%7B%7D%7D&amp;fp=3091&amp;fcp=3091&amp;jsonp=NREUM.setToken"></script><script src="https://js-agent.newrelic.com/nr-spa-1216.min.js"></script><script type="text/javascript" src="https://m.addthis.com/live/red_lojson/300lo.json?si=62b497c8fbd97263&amp;bkl=0&amp;bl=1&amp;pdt=393&amp;sid=62b497c8fbd97263&amp;pub=bepress&amp;rev=v8.28.8-wp&amp;ln=en&amp;pc=men&amp;cb=0&amp;ab=-&amp;dp=scholarworks.wmich.edu&amp;fp=honors_theses%2F830%2F&amp;fr=&amp;of=0&amp;pd=0&amp;irt=0&amp;vcl=0&amp;md=0&amp;ct=1&amp;tct=0&amp;abt=0&amp;cdn=0&amp;pi=1&amp;rb=0&amp;gen=100&amp;chr=UTF-8&amp;colc=1656002506083&amp;jsl=1&amp;uvs=62b497c824a00305000&amp;skipb=1&amp;callback=addthis.cbs.jsonp__61536924934686830"></script><script type="text/javascript" src="https://v1.addthisedge.com/live/boost/bepress/_ate.track.config_resp"></script><script async="" src="//www.google-analytics.com/analytics.js"></script><script type="text/javascript" src="https://z.moatads.com/addthismoatframe568911941483/moatframe.js"></script><!-- inj yui3-seed: --><script type="text/javascript" async="" src="https://cdn.amplitude.com/libs/amplitude-4.5.2-min.gz.js" integrity="5ceGNbvkytO+PTI82JRl6GwJjVCw6k79kP4le5L5/m0Zny1P7taAF6YVvC4z4Pgj"></script><script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/yui/yui-min.js"></script><script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><!-- Adobe Analytics SiteCatalyst --><script type="text/javascript" src="https://assets.adobedtm.com/376c5346e33126fdb6b2dbac81e307cbacfd7935/satelliteLib-fac053ad0cbd6e703a1df9a51f69fde523024cef.js"></script><script src="https://assets.adobedtm.com/extensions/EP5e9ec493dfa0465eaa797b523b09d3f7/AppMeasurement.min.js" async=""></script><script>
+var pageDataTracker = {
+    eventCookieName: 'eventTrack',
+    debugCookie: 'els-aa-debugmode',
+    debugCounter: 1,
+    warnings: [],
+    measures: {},
+    timeoffset: 0
+
+    ,trackPageLoad: function(data) {
+        if (window.pageData && ((pageData.page && pageData.page.noTracking == 'true') || window.pageData_isLoaded)) {
+            return false;
+        }
+
+        if (data) {
+            window.pageData = data;
+        }
+
+        this.initWarnings();
+        if(!(window.pageData && pageData.page && pageData.page.name)) {
+            console.error('pageDataTracker.trackPageLoad() called without pageData.page.name being defined!');
+            return;
+        }
+
+        this.processIdPlusData(window.pageData);
+
+        if(window.pageData && pageData.page && !pageData.page.loadTime) {
+          pageData.page.loadTime = performance ? Math.round((performance.now())).toString() : '';
+        }
+
+        if(window.pageData && pageData.page) {
+            var localTime = new Date().getTime();
+            if(pageData.page.loadTimestamp) {
+                // calculate timeoffset
+                var serverTime = parseInt(pageData.page.loadTimestamp);
+                if(!isNaN(serverTime)) {
+                    this.timeoffset = pageData.page.loadTimestamp - localTime;
+                }
+            } else {
+                pageData.page.loadTimestamp = localTime;
+            }
+        }
+
+        this.validateData(window.pageData);
+
+        try {
+            var cookieTest = 'aa-cookie-test';
+            this.setCookie(cookieTest, cookieTest);
+            if(this.getCookie(cookieTest) != cookieTest) {
+                this.warnings.push('dtm5');
+            }
+            this.deleteCookie(cookieTest);
+        } catch(e){
+            this.warnings.push('dtm5');
+        }
+
+        this.registerCallbacks();
+        this.setAnalyticsData();
+
+        // handle any cookied event data
+        this.getEvents();
+
+        window.pageData_isLoaded = true;
+
+        this.debugMessage('Init - trackPageLoad()', window.pageData);
+
+        _satellite.track('eventDispatcher', JSON.stringify({
+          eventName: 'newPage',
+          eventData: {eventName: 'newPage'},
+          pageData: window.pageData
+        }));
+    }
+
+    ,trackEvent: function(event, data, callback) {
+        if (window.pageData && pageData.page && pageData.page.noTracking == 'true') {
+            return false;
+        }
+        
+        if(!window.pageData_isLoaded) {
+            if(this.isDebugEnabled()) {
+                console.log('[AA] pageDataTracker.trackEvent() called without calling trackPageLoad() first.');
+            }
+            return false;
+        }
+
+        if (event) {
+            this.initWarnings();
+            if(event === 'newPage') {
+                // auto fillings
+                if(data.page && !data.page.loadTimestamp) {
+                    data.page.loadTimestamp = ''+(new Date().getTime() + this.timeoffset);
+                }
+                this.processIdPlusData(data);
+            }
+
+            window.eventData = data ? data : {};
+            window.eventData.eventName = event;
+            this.handleEventData(event, data);
+
+            if(event === 'newPage') {
+                this.validateData(window.pageData);
+            }
+            this.debugMessage('Event: ' + event, data);
+
+            _satellite.track('eventDispatcher', JSON.stringify({
+              eventName: event,
+              eventData: window.eventData,
+              pageData: window.pageData
+            }));
+        }
+
+        if (typeof(callback) == 'function') {
+            callback.call();
+        }
+    }
+
+    ,processIdPlusData: function(data) {
+        if(data && data.visitor && data.visitor.idPlusData) {
+            var idPlusFields = ['userId', 'accessType', 'accountId', 'accountName'];
+            for(var i=0; i < idPlusFields.length; i++) {
+                if(typeof data.visitor.idPlusData[idPlusFields[i]] !== 'undefined') {
+                    data.visitor[idPlusFields[i]] = data.visitor.idPlusData[idPlusFields[i]];
+                }
+            }
+            data.visitor.idPlusData = undefined;
+        }
+    }
+
+    ,validateData: function(data) {
+        if(!data) {
+            this.warnings.push('dv0');
+            return;
+        }
+
+        // top 5
+        if(!(data.visitor && data.visitor.accessType)) {
+            this.warnings.push('dv1');
+        }
+        if(data.visitor && (data.visitor.accountId || data.visitor.accountName)) {
+            if(!data.visitor.accountName) {
+                this.warnings.push('dv2');
+            }
+            if(!data.visitor.accountId) {
+                this.warnings.push('dv3');
+            }
+        }
+        if(!(data.page && data.page.productName)) {
+            this.warnings.push('dv4');
+        }
+        if(!(data.page && data.page.businessUnit)) {
+            this.warnings.push('dv5');
+        }
+        if(!(data.page && data.page.name)) {
+            this.warnings.push('dv6');
+        }
+
+        // rp mandatory
+        if(data.page && data.page.businessUnit && (data.page.businessUnit.toLowerCase().indexOf('els:rp:') !== -1 || data.page.businessUnit.toLowerCase().indexOf('els:rap:') !== -1)) {
+            if(!(data.page && data.page.loadTimestamp)) {
+                this.warnings.push('dv7');
+            }
+            if(!(data.page && data.page.loadTime)) {
+                this.warnings.push('dv8');
+            }
+            if(!(data.visitor && data.visitor.ipAddress)) {
+                this.warnings.push('dv9');
+            }
+            if(!(data.page && data.page.type)) {
+                this.warnings.push('dv10');
+            }
+            if(!(data.page && data.page.language)) {
+                this.warnings.push('dv11');
+            }
+        }
+
+        // other
+        if(data.page && data.page.environment) {
+            var env = data.page.environment.toLowerCase();
+            if(!(env === 'dev' || env === 'cert' || env === 'prod')) {
+                this.warnings.push('dv12');
+            }
+        }
+        if(data.content && data.content.constructor !== Array) {
+            this.warnings.push('dv13');
+        }
+    }
+
+    ,initWarnings: function() {
+        this.warnings = [];
+        try {
+            var hdn = document.head.childNodes;
+            var libf = false;
+            for(var i=0; i<hdn.length; i++) {
+                if(hdn[i].src && (hdn[i].src.indexOf('satelliteLib') !== -1 || hdn[i].src.indexOf('launch') !== -1)) {
+                    libf = true;
+                    break;
+                }
+            }
+            if(!libf) {
+                this.warnings.push('dtm1');
+            }
+        } catch(e) {
+        }
+    }
+
+    ,getMessages: function() {
+        return this.warnings.join('|');
+    }
+    ,addMessage: function(message) {
+        this.warnings.push(message);
+    }
+
+    ,getPerformance: function() {
+        var copy = {};
+        for (var attr in this.measures) {
+            if(this.measures.hasOwnProperty(attr)) {
+                copy[attr] = this.measures[attr];
+            }
+        }
+
+        this.measures = {};
+        return copy;
+    }
+
+    ,dtmCodeDesc: {
+        dtm1: 'satellite-lib must be placed in the <head> section',
+        dtm2: 'trackPageLoad() must be placed and called before the closing </body> tag',
+        dtm3: 'trackEvent() must be called at a stage where Document.readyState=complete (e.g. on the load event or a user event)',
+        dv1: 'visitor.accessType not set but mandatory',
+        dv2: 'visitor.accountName not set but mandatory',
+        dv3: 'visitor.accountId not set but mandatory',
+        dv4: 'page.productName not set but mandatory',
+        dv5: 'page.businessUnit not set but mandatory',
+        dv6: 'page.name not set but mandatory',
+        dv7: 'page.loadTimestamp not set but mandatory',
+        dv8: 'page.loadTime not set but mandatory',
+        dv9: 'visitor.ipAddress not set but mandatory',
+        dv10: 'page.type not set but mandatory',
+        dv11: 'page.language not set but mandatory',
+        dv12: 'page.environment must be set to \'prod\', \'cert\' or \'dev\'',
+        dv13: 'content must be of type array of objects'
+    }
+
+    ,debugMessage: function(event, data) {
+        if(this.isDebugEnabled()) {
+            console.log('[AA] --------- [' + (this.debugCounter++) + '] Web Analytics Data ---------');
+            console.log('[AA] ' + event);
+            console.groupCollapsed("[AA] AA Data: ");
+            if(window.eventData) {
+                console.log("[AA] eventData:\n" + JSON.stringify(window.eventData, true, 2));
+            }
+            if(window.pageData) {
+                console.log("[AA] pageData:\n" + JSON.stringify(window.pageData, true, 2));
+            }
+            console.groupEnd();
+            if(this.warnings.length > 0) {
+                console.groupCollapsed("[AA] Warnings ("+this.warnings.length+"): ");
+                for(var i=0; i<this.warnings.length; i++) {
+                    var error = this.dtmCodeDesc[this.warnings[i]] ? this.dtmCodeDesc[this.warnings[i]] : 'Error Code: ' + this.warnings[i];
+                    console.log('[AA] ' + error);
+                }
+                console.log('[AA] More can be found here: https://confluence.cbsels.com/display/AA/AA+Error+Catalog');
+                console.groupEnd();
+            }
+            console.log("This mode can be disabled by calling 'pageDataTracker.disableDebug()'");
+        }
+    }
+
+    ,getTrackingCode: function() {
+      var campaign = _satellite.getVar('Campaign - ID');
+      if(!campaign) {
+        campaign = window.sessionStorage ? sessionStorage.getItem('dgcid') : '';
+      }
+      return campaign;
+    }
+
+    ,isDebugEnabled: function() {
+        if(typeof this.debug === 'undefined') {
+            this.debug = (document.cookie.indexOf(this.debugCookie) !== -1) || (window.pageData && pageData.page && pageData.page.environment && pageData.page.environment.toLowerCase() === 'dev');
+            //this.debug = (document.cookie.indexOf(this.debugCookie) !== -1);
+        }
+        return this.debug;
+    }
+
+    ,enableDebug: function(expire) {
+        if (typeof expire === 'undefined') {
+            expire = 86400;
+        }
+        console.log('You just enabled debug mode for Adobe Analytics tracking. This mode will persist for 24h.');
+        console.log("This mode can be disabled by calling 'pageDataTracker.disableDebug()'");
+        this.setCookie(this.debugCookie, 'true', expire, document.location.hostname);
+        this.debug = true;
+    }
+
+    ,disableDebug: function() {
+        console.log('Debug mode is now disabled.');
+        this.deleteCookie(this.debugCookie);
+        this.debug = false;
+    }
+
+    ,setAnalyticsData: function() {
+        if(!(window.pageData && pageData.page && pageData.page.productName && pageData.page.name)) {
+            return;
+        }
+        pageData.page.analyticsPagename = pageData.page.productName + ':' + pageData.page.name;
+
+        var pageEls = pageData.page.name.indexOf(':') > -1 ? pageData.page.name.split(':') : [pageData.page.name];
+        pageData.page.sectionName = pageData.page.productName + ':' + pageEls[0];
+    }
+
+    ,getEvents: function() {
+        pageData.savedEvents = {};
+        pageData.eventList = [];
+
+        var val = this.getCookie(this.eventCookieName);
+        if (val) {
+            pageData.savedEvents = val;
+        }
+
+        this.deleteCookie(this.eventCookieName);
+    }
+
+    ,handleEventData: function(event, data) {
+        var val;
+        switch(event) {
+            case 'newPage':
+                if (data && typeof(data) === 'object') {
+                    for (var x in data) {
+                        if(data.hasOwnProperty(x) && data[x] instanceof Array) {
+                            pageData[x] = data[x];
+                        } else if(data.hasOwnProperty(x) && typeof(data[x]) === 'object') {
+                            if(!pageData[x]) {
+                                pageData[x] = {};
+                            }
+                            for (var y in data[x]) {
+                                if(data[x].hasOwnProperty(y)) {
+                                    pageData[x][y] = data[x][y];
+                                }
+                            }
+                        }
+                    }
+                }
+                this.setAnalyticsData();
+            case 'saveSearch':
+            case 'searchResultsUpdated':
+                if (data) {
+                    // overwrite page-load object
+                    if (data.search && typeof(data.search) == 'object') {
+                        window.eventData.search.resultsPosition = '';
+                        pageData.search = pageData.search || {};
+                        var fields = ['advancedCriteria', 'criteria', 'currentPage', 'dataFormCriteria', 'facets', 'resultsByType', 'resultsPerPage', 'sortType', 'totalResults', 'type', 'database',
+                        'suggestedClickPosition','suggestedLetterCount','suggestedResultCount', 'autoSuggestCategory', 'autoSuggestDetails','typedTerm','selectedTerm', 'channel',
+                        'facetOperation', 'details'];
+                        for (var i=0; i<fields.length; i++) {
+                            if (data.search[fields[i]]) {
+                                pageData.search[fields[i]] = data.search[fields[i]];
+                            }
+                        }
+                    }
+                }
+                this.setAnalyticsData();
+                break;
+            case 'navigationClick':
+                if (data && data.link) {
+                    window.eventData.navigationLink = {
+                        name: ((data.link.location || 'no location') + ':' + (data.link.name || 'no name'))
+                    };
+                }
+                break;
+            case 'autoSuggestClick':
+                if (data && data.search) {
+                    val = {
+                        autoSuggestSearchData: (
+                            'letterct:' + (data.search.suggestedLetterCount || 'none') +
+                            '|resultct:' + (data.search.suggestedResultCount || 'none') +
+                            '|clickpos:' + (data.search.suggestedClickPosition || 'none')
+                        ).toLowerCase(),
+                        autoSuggestSearchTerm: (data.search.typedTerm || ''),
+                        autoSuggestTypedTerm: (data.search.typedTerm || ''),
+                        autoSuggestSelectedTerm: (data.search.selectedTerm || ''),
+                        autoSuggestCategory: (data.search.autoSuggestCategory || ''),
+                        autoSuggestDetails: (data.search.autoSuggestDetails || '')
+                    };
+                }
+                break;
+            case 'linkOut':
+                if (data && data.content && data.content.length > 0) {
+                    window.eventData.linkOut = data.content[0].linkOut;
+                    window.eventData.referringProduct = _satellite.getVar('Page - Product Name') + ':' + data.content[0].id;
+                }
+                break;
+            case 'socialShare':
+                if (data && data.social) {
+                    window.eventData.sharePlatform = data.social.sharePlatform || '';
+                }
+                break;
+            case 'contentInteraction':
+                if (data && data.action) {
+                    window.eventData.action.name = pageData.page.productName + ':' + data.action.name;
+                }
+                break;
+            case 'searchWithinContent':
+                if (data && data.search) {
+                    window.pageData.search = window.pageData.search || {};
+                    pageData.search.withinContentCriteria = data.search.withinContentCriteria;
+                }
+                break;
+            case 'contentShare':
+                if (data && data.content) {
+                    window.eventData.sharePlatform = data.content[0].sharePlatform;
+                }
+                break;
+            case 'contentLinkClick':
+                if (data && data.link) {
+                    window.eventData.action = { name: pageData.page.productName + ':' + (data.link.type || 'no link type') + ':' + (data.link.name || 'no link name') };
+                }
+                break;
+            case 'contentWindowLoad':
+            case 'contentTabClick':
+                if (data && data.content) {
+                    window.eventData.tabName = data.content[0].tabName || '';
+                    window.eventData.windowName = data.content[0].windowName || '';
+                }
+                break;
+            case 'userProfileUpdate':
+                if (data && data.user) {
+                    if (Object.prototype.toString.call(data.user) === "[object Array]") {
+                        window.eventData.user = data.user[0];
+                    }
+                }
+                break;
+            case 'videoStart':
+                if (data.video) {
+                    data.video.length = parseFloat(data.video.length || '0');
+                    data.video.position = parseFloat(data.video.position || '0');
+                    s.Media.open(data.video.id, data.video.length, s.Media.playerName);
+                    s.Media.play(data.video.id, data.video.position);
+                }
+                break;
+            case 'videoPlay':
+                if (data.video) {
+                    data.video.position = parseFloat(data.video.position || '0');
+                    s.Media.play(data.video.id, data.video.position);
+                }
+                break;
+            case 'videoStop':
+                if (data.video) {
+                    data.video.position = parseFloat(data.video.position || '0');
+                    s.Media.stop(data.video.id, data.video.position);
+                }
+                break;
+            case 'videoComplete':
+                if (data.video) {
+                    data.video.position = parseFloat(data.video.position || '0');
+                    s.Media.stop(data.video.id, data.video.position);
+                    s.Media.close(data.video.id);
+                }
+                break;
+            case 'addWebsiteExtension':
+                if(data && data.page) {
+                    val = {
+                        wx: data.page.websiteExtension
+                    }
+                }
+                break;
+        }
+
+        if (val) {
+            this.setCookie(this.eventCookieName, val);
+        }
+    }
+
+    ,registerCallbacks: function() {
+        var self = this;
+        if(window.usabilla_live) {
+            window.usabilla_live('setEventCallback', function(category, action, label, value) {
+                if(action == 'Campaign:Open') {
+                    self.trackEvent('ctaImpression', {
+                        cta: {
+                            ids: ['usabillaid:' + label]
+                        }
+                    });
+                } else if(action == 'Campaign:Success') {
+                    self.trackEvent('ctaClick', {
+                        cta: {
+                            ids: ['usabillaid:' + label]
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    ,getConsortiumAccountId: function() {
+        var id = '';
+        if (window.pageData && pageData.visitor && (pageData.visitor.consortiumId || pageData.visitor.accountId)) {
+            id = (pageData.visitor.consortiumId || 'no consortium ID') + '|' + (pageData.visitor.accountId || 'no account ID');
+        }
+
+        return id;
+    }
+
+    ,getSearchClickPosition: function() {
+        if (window.eventData && eventData.search && eventData.search.resultsPosition) {
+            var pos = parseInt(eventData.search.resultsPosition), clickPos;
+            if (!isNaN(pos)) {
+                var page = pageData.search.currentPage ? parseInt(pageData.search.currentPage) : '', perPage = pageData.search.resultsPerPage ? parseInt(pageData.search.resultsPerPage) : '';
+                if (!isNaN(page) && !isNaN(perPage)) {
+                    clickPos = pos + ((page - 1) * perPage);
+                }
+            }
+            return clickPos ? clickPos.toString() : eventData.search.resultsPosition;
+        }
+        return '';
+    }
+
+    ,getSearchFacets: function() {
+        var facetList = '';
+        if (window.pageData && pageData.search && pageData.search.facets) {
+            if (typeof(pageData.search.facets) == 'object') {
+                for (var i=0; i<pageData.search.facets.length; i++) {
+                    var f = pageData.search.facets[i];
+                    facetList += (facetList ? '|' : '') + f.name + '=' + f.values.join('^');
+                }
+            }
+        }
+        return facetList;
+    }
+
+    ,getSearchResultsByType: function() {
+        var resultTypes = '';
+        if (window.pageData && pageData.search && pageData.search.resultsByType) {
+            for (var i=0; i<pageData.search.resultsByType.length; i++) {
+                var r = pageData.search.resultsByType[i];
+                resultTypes += (resultTypes ? '|' : '') + r.name + (r.results || r.values ? '=' + (r.results || r.values) : '');
+            }
+        }
+        return resultTypes;
+    }
+
+    ,getJournalInfo: function() {
+        var info = '';
+        if (window.pageData && pageData.journal && (pageData.journal.name || pageData.journal.specialty || pageData.journal.section || pageData.journal.issn || pageData.journal.issueNumber || pageData.journal.volumeNumber)) {
+            var journal = pageData.journal;
+            return (journal.name || 'no name') + '|' + (journal.specialty || 'no specialty') + '|' + (journal.section || 'no section') + '|' + (journal.issn || 'no issn') + '|' + (journal.issueNumber || 'no issue #') + '|' + (journal.volumeNumber || 'no volume #');
+        }
+        return info;
+    }
+
+    ,getBibliographicInfo: function(doc) {
+        if (!doc || !(doc.publisher || doc.indexTerms || doc.publicationType || doc.publicationRights || doc.volumeNumber || doc.issueNumber || doc.subjectAreas || doc.isbn)) {
+            return '';
+        }
+
+        var terms = doc.indexTerms ? doc.indexTerms.split('+') : '';
+        if (terms) {
+            terms = terms.slice(0, 5).join('+');
+            terms = terms.length > 100 ? terms.substring(0, 100) : terms;
+        }
+
+        var areas = doc.subjectAreas ? doc.subjectAreas.split('>') : '';
+        if (areas) {
+            areas = areas.slice(0, 5).join('>');
+            areas = areas.length > 100 ? areas.substring(0, 100) : areas;
+        }
+
+        var biblio	= (doc.publisher || 'none')
+            + '^' + (doc.publicationType || 'none')
+            + '^' + (doc.publicationRights || 'none')
+            + '^' + (terms || 'none')
+            + '^' + (doc.volumeNumber || 'none')
+            + '^' + (doc.issueNumber || 'none')
+            + '^' + (areas || 'none')
+            + '^' + (doc.isbn || 'none');
+
+        return this.stripProductDelimiters(biblio).toLowerCase();
+    }
+
+    ,getContentItem: function() {
+        var docs = window.eventData && eventData.content ? eventData.content : pageData.content;
+        if (docs && docs.length > 0) {
+            return docs[0];
+        }
+    }
+
+    ,getFormattedDate: function(ts) {
+        if (!ts) {
+            return '';
+        }
+
+        var d = new Date(parseInt(ts) * 1000);
+
+        // now do formatting
+        var year = d.getFullYear()
+            ,month = ((d.getMonth() + 1) < 10 ? '0' : '') + (d.getMonth() + 1)
+            ,date = (d.getDate() < 10 ? '0' : '') + d.getDate()
+            ,hours = d.getHours() > 12 ? d.getHours() - 12 : d.getHours()
+            ,mins = (d.getMinutes() < 10 ? '0' : '') + d.getMinutes()
+            ,ampm = d.getHours() > 12 ? 'pm' : 'am';
+
+        hours = (hours < 10 ? '0' : '') + hours;
+        return year + '-' + month + '-' + date;
+    }
+
+    ,getVisitorId: function() {
+        var orgId = '4D6368F454EC41940A4C98A6@AdobeOrg';
+        if(Visitor && Visitor.getInstance(orgId)) {
+            return Visitor.getInstance(orgId).getMarketingCloudVisitorID();
+        } else {
+            return ''
+        }
+    }
+
+    ,setProductsVariable: function() {
+        var prodList = window.eventData && eventData.content ? eventData.content : pageData.content
+            ,prods = [];
+        if (prodList) {
+            for (var i=0; i<prodList.length; i++) {
+                if (prodList[i].id || prodList[i].type || prodList[i].publishDate || prodList[i].onlineDate) {
+                    if (!prodList[i].id) {
+                        prodList[i].id = 'no id';
+                    }
+                    var prodName = (pageData.page.productName || 'xx').toLowerCase();
+                    if (prodList[i].id.indexOf(prodName + ':') != 0) {
+                        prodList[i].id = prodName + ':' + prodList[i].id;
+                    }
+                    prodList[i].id = this.stripProductDelimiters(prodList[i].id);
+                    var merch = [];
+                    if (prodList[i].format) {
+                        merch.push('evar17=' + this.stripProductDelimiters(prodList[i].format.toLowerCase()));
+                    }
+                    if (prodList[i].type) {
+                        var type = prodList[i].type;
+                        if (prodList[i].accessType) {
+                            type += ':' + prodList[i].accessType;
+                        }
+                        merch.push('evar20=' + this.stripProductDelimiters(type.toLowerCase()));
+
+                        if(type.indexOf(':manuscript') > 0) {
+                            var regex = /[a-z]+:manuscript:id:([a-z]+-[a-z]-[0-9]+-[0-9]+)/gmi;
+                            var m = regex.exec(prodList[i].id);
+                            if(m) {
+                                merch.push('evar200=' + m[1]);
+                            }
+                        }
+                    }
+                    if(!prodList[i].title) {
+                        prodList[i].title = prodList[i].name;
+                    }
+                    if (prodList[i].title) {
+                        merch.push('evar75=' + this.stripProductDelimiters(prodList[i].title.toLowerCase()));
+                    }
+                    if (prodList[i].breadcrumb) {
+                        merch.push('evar63=' + this.stripProductDelimiters(prodList[i].breadcrumb).toLowerCase());
+                    }
+                    var nowTs = new Date().getTime()/1000;
+                    if (prodList[i].onlineDate && !isNaN(prodList[i].onlineDate)) {
+                        if(prodList[i].onlineDate > 32503680000) {
+                            prodList[i].onlineDate = prodList[i].onlineDate/1000;
+                        }
+                        merch.push('evar122=' + this.stripProductDelimiters(pageDataTracker.getFormattedDate(prodList[i].onlineDate)));
+                        var onlineAge = Math.floor((nowTs - prodList[i].onlineDate) / 86400);
+                        onlineAge = (onlineAge === 0) ? 'zero' : onlineAge;
+                        merch.push('evar128=' + onlineAge);
+                    }
+                    if (prodList[i].publishDate && !isNaN(prodList[i].publishDate)) {
+                        if(prodList[i].publishDate > 32503680000) {
+                            prodList[i].publishDate = prodList[i].publishDate/1000;
+                        }
+                        merch.push('evar123=' + this.stripProductDelimiters(pageDataTracker.getFormattedDate(prodList[i].publishDate)));
+                        var publishAge = Math.floor((nowTs - prodList[i].publishDate) / 86400);
+                        publishAge = (publishAge === 0) ? 'zero' : publishAge;
+                        merch.push('evar127=' + publishAge);
+                    }
+                    if (prodList[i].onlineDate && prodList[i].publishDate) {
+                        merch.push('evar38=' + this.stripProductDelimiters(pageDataTracker.getFormattedDate(prodList[i].onlineDate) + '^' + pageDataTracker.getFormattedDate(prodList[i].publishDate)));
+                    }
+                    if (prodList[i].mapId) {
+                        merch.push('evar70=' + this.stripProductDelimiters(prodList[i].mapId));
+                    }
+					if (prodList[i].relevancyScore) {
+						merch.push('evar71=' + this.stripProductDelimiters(prodList[i].relevancyScore));
+					}
+                    if (prodList[i].status) {
+                        merch.push('evar73=' + this.stripProductDelimiters(prodList[i].status));
+                    }
+                    if (prodList[i].previousStatus) {
+                        merch.push('evar111=' + this.stripProductDelimiters(prodList[i].previousStatus));
+                    }
+                    if (prodList[i].entitlementType) {
+                        merch.push('evar80=' + this.stripProductDelimiters(prodList[i].entitlementType));
+                    }
+                    if (prodList[i].recordType) {
+                        merch.push('evar93=' + this.stripProductDelimiters(prodList[i].recordType));
+                    }
+                    if (prodList[i].exportType) {
+                        merch.push('evar99=' + this.stripProductDelimiters(prodList[i].exportType));
+                    }
+                    if (prodList[i].importType) {
+                        merch.push('evar142=' + this.stripProductDelimiters(prodList[i].importType));
+                    }
+                    if (prodList[i].section) {
+                        merch.push('evar100=' + this.stripProductDelimiters(prodList[i].section));
+                    }
+                    if (prodList[i].detail) {
+                        merch.push('evar104=' + this.stripProductDelimiters(prodList[i].detail.toLowerCase()));
+                    } else if(prodList[i].details) {
+                        merch.push('evar104=' + this.stripProductDelimiters(prodList[i].details.toLowerCase()));
+                    }
+                    if (prodList[i].position) {
+                        merch.push('evar116=' + this.stripProductDelimiters(prodList[i].position));
+                    }
+                    if (prodList[i].publicationTitle) {
+                        merch.push('evar129=' + this.stripProductDelimiters(prodList[i].publicationTitle));
+                    }
+                    if (prodList[i].specialIssueTitle) {
+                        merch.push('evar130=' + this.stripProductDelimiters(prodList[i].specialIssueTitle));
+                    }
+                    if (prodList[i].specialIssueNumber) {
+                        merch.push('evar131=' + this.stripProductDelimiters(prodList[i].specialIssueNumber));
+                    }
+                    if (prodList[i].referenceModuleTitle) {
+                        merch.push('evar139=' + this.stripProductDelimiters(prodList[i].referenceModuleTitle));
+                    }
+                    if (prodList[i].referenceModuleISBN) {
+                        merch.push('evar140=' + this.stripProductDelimiters(prodList[i].referenceModuleISBN));
+                    }
+                    if (prodList[i].volumeTitle) {
+                        merch.push('evar132=' + this.stripProductDelimiters(prodList[i].volumeTitle));
+                    }
+                    if (prodList[i].publicationSection) {
+                        merch.push('evar133=' + this.stripProductDelimiters(prodList[i].publicationSection));
+                    }
+                    if (prodList[i].publicationSpecialty) {
+                        merch.push('evar134=' + this.stripProductDelimiters(prodList[i].publicationSpecialty));
+                    }
+                    if (prodList[i].issn) {
+                        merch.push('evar135=' + this.stripProductDelimiters(prodList[i].issn));
+                    }
+                    if (prodList[i].id2) {
+                        merch.push('evar159=' + this.stripProductDelimiters(prodList[i].id2));
+                    }
+                    if (prodList[i].id3) {
+                        merch.push('evar160=' + this.stripProductDelimiters(prodList[i].id3));
+                    }
+                    if (prodList[i].provider) {
+                        merch.push('evar164=' + this.stripProductDelimiters(prodList[i].provider));
+                    }
+                    if (prodList[i].citationStyle) {
+                        merch.push('evar170=' + this.stripProductDelimiters(prodList[i].citationStyle));
+                    }
+
+                    var biblio = this.getBibliographicInfo(prodList[i]);
+                    if (biblio) {
+                        merch.push('evar28=' + biblio);
+                    }
+
+                    if (prodList[i].turnawayId) {
+                        pageData.eventList.push('product turnaway');
+                    }
+
+                    var price = prodList[i].price || '', qty = prodList[i].quantity || '', evts = [];
+                    if (price && qty) {
+                        qty = parseInt(qty || '1');
+                        price = parseFloat(price || '0');
+                        price = (price * qty).toFixed(2);
+
+                        if (window.eventData && eventData.eventName && eventData.eventName == 'cartAdd') {
+                            evts.push('event20=' + price);
+                        }
+                    }
+
+                    var type = window.pageData && pageData.page && pageData.page.type ? pageData.page.type : '', evt = window.eventData && eventData.eventName ? eventData.eventName : '';
+                    if (type.match(/^CP\-/gi) !== null && (!evt || evt == 'newPage' || evt == 'contentView')) {
+                        evts.push('event181=1');
+                    }
+                    if (evt == 'contentDownload' || type.match(/^CP\-DL/gi) !== null) {
+                        evts.push('event182=1');
+                    }
+                    if (evt == 'contentDownloadRequest') {
+                        evts.push('event319=1');
+                    }
+                    if (evt == 'contentExport') {
+                        evts.push('event184=1');
+                    }
+                    if (this.eventFires('recommendationViews')) {
+                        evts.push('event264=1');
+                    }
+
+                    if(prodList[i].datapoints) {
+                        evts.push('event239=' + prodList[i].datapoints);
+                    }
+                    if(prodList[i].documents) {
+                        evts.push('event240=' + prodList[i].documents);
+                    }
+
+                    prods.push([
+                        ''					// empty category
+                        ,prodList[i].id		// id
+                        ,qty				// qty
+                        ,price				// price
+                        ,evts.join('|')		// events
+                        ,merch.join('|')	// merchandising eVars
+                    ].join(';'));
+                }
+            }
+        }
+
+        return prods.join(',');
+    }
+    ,eventFires: function(eventName) {
+      var evt = window.eventData && eventData.eventName ? eventData.eventName : '';
+      if(evt == eventName) {
+        return true;
+      }
+      // initial pageload and new pages
+      if((!window.eventData || evt == 'newPage') && window.pageData && window.pageData.trackEvents) {
+        var tEvents = window.pageData.trackEvents;
+        for(var i=0; i<tEvents.length; i++) {
+          if(tEvents[i] == eventName) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    ,md5: function(s){function L(k,d){return(k<<d)|(k>>>(32-d))}function K(G,k){var I,d,F,H,x;F=(G&2147483648);H=(k&2147483648);I=(G&1073741824);d=(k&1073741824);x=(G&1073741823)+(k&1073741823);if(I&d){return(x^2147483648^F^H)}if(I|d){if(x&1073741824){return(x^3221225472^F^H)}else{return(x^1073741824^F^H)}}else{return(x^F^H)}}function r(d,F,k){return(d&F)|((~d)&k)}function q(d,F,k){return(d&k)|(F&(~k))}function p(d,F,k){return(d^F^k)}function n(d,F,k){return(F^(d|(~k)))}function u(G,F,aa,Z,k,H,I){G=K(G,K(K(r(F,aa,Z),k),I));return K(L(G,H),F)}function f(G,F,aa,Z,k,H,I){G=K(G,K(K(q(F,aa,Z),k),I));return K(L(G,H),F)}function D(G,F,aa,Z,k,H,I){G=K(G,K(K(p(F,aa,Z),k),I));return K(L(G,H),F)}function t(G,F,aa,Z,k,H,I){G=K(G,K(K(n(F,aa,Z),k),I));return K(L(G,H),F)}function e(G){var Z;var F=G.length;var x=F+8;var k=(x-(x%64))/64;var I=(k+1)*16;var aa=Array(I-1);var d=0;var H=0;while(H<F){Z=(H-(H%4))/4;d=(H%4)*8;aa[Z]=(aa[Z]| (G.charCodeAt(H)<<d));H++}Z=(H-(H%4))/4;d=(H%4)*8;aa[Z]=aa[Z]|(128<<d);aa[I-2]=F<<3;aa[I-1]=F>>>29;return aa}function B(x){var k="",F="",G,d;for(d=0;d<=3;d++){G=(x>>>(d*8))&255;F="0"+G.toString(16);k=k+F.substr(F.length-2,2)}return k}function J(k){k=k.replace(/rn/g,"n");var d="";for(var F=0;F<k.length;F++){var x=k.charCodeAt(F);if(x<128){d+=String.fromCharCode(x)}else{if((x>127)&&(x<2048)){d+=String.fromCharCode((x>>6)|192);d+=String.fromCharCode((x&63)|128)}else{d+=String.fromCharCode((x>>12)|224);d+=String.fromCharCode(((x>>6)&63)|128);d+=String.fromCharCode((x&63)|128)}}}return d}var C=Array();var P,h,E,v,g,Y,X,W,V;var S=7,Q=12,N=17,M=22;var A=5,z=9,y=14,w=20;var o=4,m=11,l=16,j=23;var U=6,T=10,R=15,O=21;s=J(s);C=e(s);Y=1732584193;X=4023233417;W=2562383102;V=271733878;for(P=0;P<C.length;P+=16){h=Y;E=X;v=W;g=V;Y=u(Y,X,W,V,C[P+0],S,3614090360);V=u(V,Y,X,W,C[P+1],Q,3905402710);W=u(W,V,Y,X,C[P+2],N,606105819);X=u(X,W,V,Y,C[P+3],M,3250441966);Y=u(Y,X,W,V,C[P+4],S,4118548399);V=u(V,Y,X,W,C[P+5],Q,1200080426);W=u(W,V,Y,X,C[P+6],N,2821735955);X=u(X,W,V,Y,C[P+7],M,4249261313);Y=u(Y,X,W,V,C[P+8],S,1770035416);V=u(V,Y,X,W,C[P+9],Q,2336552879);W=u(W,V,Y,X,C[P+10],N,4294925233);X=u(X,W,V,Y,C[P+11],M,2304563134);Y=u(Y,X,W,V,C[P+12],S,1804603682);V=u(V,Y,X,W,C[P+13],Q,4254626195);W=u(W,V,Y,X,C[P+14],N,2792965006);X=u(X,W,V,Y,C[P+15],M,1236535329);Y=f(Y,X,W,V,C[P+1],A,4129170786);V=f(V,Y,X,W,C[P+6],z,3225465664);W=f(W,V,Y,X,C[P+11],y,643717713);X=f(X,W,V,Y,C[P+0],w,3921069994);Y=f(Y,X,W,V,C[P+5],A,3593408605);V=f(V,Y,X,W,C[P+10],z,38016083);W=f(W,V,Y,X,C[P+15],y,3634488961);X=f(X,W,V,Y,C[P+4],w,3889429448);Y=f(Y,X,W,V,C[P+9],A,568446438);V=f(V,Y,X,W,C[P+14],z,3275163606);W=f(W,V,Y,X,C[P+3],y,4107603335);X=f(X,W,V,Y,C[P+8],w,1163531501);Y=f(Y,X,W,V,C[P+13],A,2850285829);V=f(V,Y,X,W,C[P+2],z,4243563512);W=f(W,V,Y,X,C[P+7],y,1735328473);X=f(X,W,V,Y,C[P+12],w,2368359562);Y=D(Y,X,W,V,C[P+5],o,4294588738);V=D(V,Y,X,W,C[P+8],m,2272392833);W=D(W,V,Y,X,C[P+11],l,1839030562);X=D(X,W,V,Y,C[P+14],j,4259657740);Y=D(Y,X,W,V,C[P+1],o,2763975236);V=D(V,Y,X,W,C[P+4],m,1272893353);W=D(W,V,Y,X,C[P+7],l,4139469664);X=D(X,W,V,Y,C[P+10],j,3200236656);Y=D(Y,X,W,V,C[P+13],o,681279174);V=D(V,Y,X,W,C[P+0],m,3936430074);W=D(W,V,Y,X,C[P+3],l,3572445317);X=D(X,W,V,Y,C[P+6],j,76029189);Y=D(Y,X,W,V,C[P+9],o,3654602809);V=D(V,Y,X,W,C[P+12],m,3873151461);W=D(W,V,Y,X,C[P+15],l,530742520);X=D(X,W,V,Y,C[P+2],j,3299628645);Y=t(Y,X,W,V,C[P+0],U,4096336452);V=t(V,Y,X,W,C[P+7],T,1126891415);W=t(W,V,Y,X,C[P+14],R,2878612391);X=t(X,W,V,Y,C[P+5],O,4237533241);Y=t(Y,X,W,V,C[P+12],U,1700485571);V=t(V,Y,X,W,C[P+3],T,2399980690);W=t(W,V,Y,X,C[P+10],R,4293915773);X=t(X,W,V,Y,C[P+1],O,2240044497);Y=t(Y,X,W,V,C[P+8],U,1873313359);V=t(V,Y,X,W,C[P+15],T,4264355552);W=t(W,V,Y,X,C[P+6],R,2734768916);X=t(X,W,V,Y,C[P+13],O,1309151649);Y=t(Y,X,W,V,C[P+4],U,4149444226);V=t(V,Y,X,W,C[P+11],T,3174756917);W=t(W,V,Y,X,C[P+2],R,718787259);X=t(X,W,V,Y,C[P+9],O,3951481745);Y=K(Y,h);X=K(X,E);W=K(W,v);V=K(V,g)}var i=B(Y)+B(X)+B(W)+B(V);return i.toLowerCase()}
+    ,stripProductDelimiters: function(val) {
+        if (val) {
+            return val.replace(/\;|\||\,/gi, '-');
+        }
+    }
+
+    ,setCookie: function(name, value, seconds, domain) {
+        domain = document.location.hostname;
+        var expires = '';
+        var expiresNow = '';
+        var date = new Date();
+        date.setTime(date.getTime() + (-1 * 1000));
+        expiresNow = "; expires=" + date.toGMTString();
+
+        if (typeof(seconds) != 'undefined') {
+            date.setTime(date.getTime() + (seconds * 1000));
+            expires = '; expires=' + date.toGMTString();
+        }
+
+        var type = typeof(value);
+        type = type.toLowerCase();
+        if (type != 'undefined' && type != 'string') {
+            value = JSON.stringify(value);
+        }
+
+        // fix scoping issues
+        // keep writing the old cookie, but make it expire
+        document.cookie = name + '=' + value + expiresNow + '; path=/';
+
+        // now just set the right one
+        document.cookie = name + '=' + value + expires + '; path=/; domain=' + domain;
+    }
+
+    ,getCookie: function(name) {
+        name = name + '=';
+        var carray = document.cookie.split(';'), value;
+
+        for (var i=0; i<carray.length; i++) {
+            var c = carray[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1, c.length);
+            }
+            if (c.indexOf(name) == 0) {
+                value = c.substring(name.length, c.length);
+                try {
+                    value = JSON.parse(value);
+                } catch(ex) {}
+
+                return value;
+            }
+        }
+
+        return null;
+    }
+
+    ,deleteCookie: function(name) {
+        this.setCookie(name, '', -1);
+        this.setCookie(name, '', -1, document.location.hostname);
+    }
+
+    ,mapAdobeVars: function(s) {
+        var vars = {
+            pageName		: 'Page - Analytics Pagename'
+            ,channel		: 'Page - Section Name'
+            ,campaign		: 'Campaign - ID'
+            ,currencyCode	: 'Page - Currency Code'
+            ,purchaseID		: 'Order - ID'
+            ,prop1			: 'Visitor - Account ID'
+            ,prop2			: 'Page - Product Name'
+            ,prop4			: 'Page - Type'
+            ,prop6			: 'Search - Type'
+            ,prop7			: 'Search - Facet List'
+            ,prop8			: 'Search - Feature Used'
+            ,prop12			: 'Visitor - User ID'
+            ,prop13			: 'Search - Sort Type'
+            ,prop14			: 'Page - Load Time'
+            ,prop15         : 'Support - Topic Name'
+            ,prop16			: 'Page - Business Unit'
+            ,prop21			: 'Search - Criteria'
+            ,prop24			: 'Page - Language'
+            ,prop25			: 'Page - Product Feature'
+            ,prop28         : 'Support - Search Criteria'
+            ,prop30			: 'Visitor - IP Address'
+            ,prop33         : 'Page - Product Application Version'
+            ,prop34         : 'Page - Website Extensions'
+            ,prop60			: 'Search - Data Form Criteria'
+            ,prop65         : 'Page - Online State'
+            ,prop67         : 'Research Networks'
+            ,prop40: 'Page - UX Properties'
+
+            ,eVar3			: 'Search - Total Results'
+            ,eVar7			: 'Visitor - Account Name'
+            ,eVar15			: 'Event - Search Results Click Position'
+            ,eVar19			: 'Search - Advanced Criteria'
+            ,eVar21			: 'Promo - Clicked ID'
+            ,eVar22			: 'Page - Test ID'
+            ,eVar27			: 'Event - AutoSuggest Search Data'
+            ,eVar157		: 'Event - AutoSuggest Search Typed Term'
+            ,eVar156		: 'Event - AutoSuggest Search Selected Term'
+            ,eVar162		: 'Event - AutoSuggest Search Category'
+            ,eVar163		: 'Event - AutoSuggest Search Details'
+            ,eVar33			: 'Visitor - Access Type'
+            ,eVar34			: 'Order - Promo Code'
+            ,eVar39			: 'Order - Payment Method'
+            ,eVar41			: 'Visitor - Industry'
+            ,eVar42			: 'Visitor - SIS ID'
+            ,eVar43			: 'Page - Error Type'
+            ,eVar44			: 'Event - Updated User Fields'
+            ,eVar48			: 'Email - Recipient ID'
+            ,eVar51			: 'Email - Message ID'
+            ,eVar52			: 'Visitor - Department ID'
+            ,eVar53			: 'Visitor - Department Name'
+            ,eVar60			: 'Search - Within Content Criteria'
+            ,eVar61			: 'Search - Within Results Criteria'
+            ,eVar62			: 'Search - Result Types'
+            ,eVar74			: 'Page - Journal Info'
+            ,eVar76			: 'Email - Broadlog ID'
+            ,eVar78			: 'Visitor - Details'
+            ,eVar80         : 'Visitor - Usage Path Info'
+            ,eVar102		: 'Form - Name'
+            ,eVar103        : 'Event - Conversion Driver'
+            ,eVar105        : 'Search - Current Page'
+            ,eVar106        : 'Visitor - App Session ID'
+            ,eVar107        : 'Page - Secondary Product Name'
+            ,eVar117        : 'Search - Database'
+            ,eVar126        : 'Page - Environment'
+            ,eVar141        : 'Search - Criteria Original'
+            ,eVar143        : 'Page - Tabs'
+            ,eVar161        : 'Search - Channel'
+            ,eVar169        : 'Search - Facet Operation'
+            ,eVar173        : 'Search - Details'
+            ,eVar174        : 'Campaign - Spredfast ID'
+            ,eVar175        : 'Visitor - TMX Device ID'
+            ,eVar176        : 'Visitor - TMX Request ID'
+            ,eVar148        : 'Visitor - Platform Name'
+            ,eVar149        : 'Visitor - Platform ID'
+            ,eVar152        : 'Visitor - Product ID'
+            ,eVar153        : 'Visitor - Superaccount ID'
+            ,eVar154        : 'Visitor - Superaccount Name'
+            ,eVar177        : 'Page - Context Domain'
+            ,eVar189    : 'Page - Experimentation User Id'
+            ,eVar190    : 'Page - Identity User'
+            ,eVar199    : 'Page - ID+ Parameters'
+
+            ,list2			: 'Page - Widget Names'
+            ,list3			: 'Promo - IDs'
+        };
+
+        for (var i in vars) {
+            s[i] = s[i] ? s[i] : _satellite.getVar(vars[i]);
+        }
+    }
+};
+
+// async support fallback
+(function(w) {
+	var eventBuffer = [];
+	if(w.appData) {
+		if(Array.isArray(w.appData)) {
+			eventBuffer = w.appData;
+		} else {
+			console.error('Elsevier DataLayer "window.appData" must be specified as array');
+			return;
+		}
+    }
+
+	w.appData = [];
+
+	var oldPush = w.appData.push;
+
+	var appDataPush = function() {
+        oldPush.apply(w.appData, arguments);
+        for(var i=0; i<arguments.length; i++) {
+            var data = arguments[i];
+            if(data.event) {
+                if(data.event == 'pageLoad') {
+                    w.pageDataTracker.trackPageLoad(data);
+                } else {
+                    w.pageDataTracker.trackEvent(data.event, data);
+                }
+            }
+        }
+	};
+
+	w.appData.push = appDataPush;
+	for(var i=0; i<eventBuffer.length; i++) {
+	    var data = eventBuffer[i];
+	    w.appData.push(data);
+	}
+})(window);
+
+</script><script>
+function AppMeasurement_Module_Media(q){var b=this;b.s=q;q=window;q.s_c_in||(q.s_c_il=[],q.s_c_in=0);b._il=q.s_c_il;b._in=q.s_c_in;b._il[b._in]=b;q.s_c_in++;b._c="s_m";b.list=[];b.open=function(d,c,e,k){var f={},a=new Date,l="",g;c||(c=-1);if(d&&e){b.list||(b.list={});b.list[d]&&b.close(d);k&&k.id&&(l=k.id);if(l)for(g in b.list)!Object.prototype[g]&&b.list[g]&&b.list[g].R==l&&b.close(b.list[g].name);f.name=d;f.length=c;f.offset=0;f.e=0;f.playerName=b.playerName?b.playerName:e;f.R=l;f.C=0;f.a=0;f.timestamp=
+Math.floor(a.getTime()/1E3);f.k=0;f.u=f.timestamp;f.c=-1;f.n="";f.g=-1;f.D=0;f.I={};f.G=0;f.m=0;f.f="";f.B=0;f.L=0;f.A=0;f.F=0;f.l=!1;f.v="";f.J="";f.K=0;f.r=!1;f.H="";f.complete=0;f.Q=0;f.p=0;f.q=0;b.list[d]=f}};b.openAd=function(d,c,e,k,f,a,l,g){var h={};b.open(d,c,e,g);if(h=b.list[d])h.l=!0,h.v=k,h.J=f,h.K=a,h.H=l};b.M=function(d){var c=b.list[d];b.list[d]=0;c&&c.monitor&&clearTimeout(c.monitor.interval)};b.close=function(d){b.i(d,0,-1)};b.play=function(d,c,e,k){var f=b.i(d,1,c,e,k);f&&!f.monitor&&
+(f.monitor={},f.monitor.update=function(){1==f.k&&b.i(f.name,3,-1);f.monitor.interval=setTimeout(f.monitor.update,1E3)},f.monitor.update())};b.click=function(d,c){b.i(d,7,c)};b.complete=function(d,c){b.i(d,5,c)};b.stop=function(d,c){b.i(d,2,c)};b.track=function(d){b.i(d,4,-1)};b.P=function(d,c){var e="a.media.",k=d.linkTrackVars,f=d.linkTrackEvents,a="m_i",l,g=d.contextData,h;c.l&&(e+="ad.",c.v&&(g["a.media.name"]=c.v,g[e+"pod"]=c.J,g[e+"podPosition"]=c.K),c.G||(g[e+"CPM"]=c.H));c.r&&(g[e+"clicked"]=
+!0,c.r=!1);g["a.contentType"]="video"+(c.l?"Ad":"");g["a.media.channel"]=b.channel;g[e+"name"]=c.name;g[e+"playerName"]=c.playerName;0<c.length&&(g[e+"length"]=c.length);g[e+"timePlayed"]=Math.floor(c.a);0<Math.floor(c.a)&&(g[e+"timePlayed"]=Math.floor(c.a));c.G||(g[e+"view"]=!0,a="m_s",b.Heartbeat&&b.Heartbeat.enabled&&(a=c.l?b.__primetime?"mspa_s":"msa_s":b.__primetime?"msp_s":"ms_s"),c.G=1);c.f&&(g[e+"segmentNum"]=c.m,g[e+"segment"]=c.f,0<c.B&&(g[e+"segmentLength"]=c.B),c.A&&0<c.a&&(g[e+"segmentView"]=
+!0));!c.Q&&c.complete&&(g[e+"complete"]=!0,c.S=1);0<c.p&&(g[e+"milestone"]=c.p);0<c.q&&(g[e+"offsetMilestone"]=c.q);if(k)for(h in g)Object.prototype[h]||(k+=",contextData."+h);l=g["a.contentType"];d.pe=a;d.pev3=l;var q,s;if(b.contextDataMapping)for(h in d.events2||(d.events2=""),k&&(k+=",events"),b.contextDataMapping)if(!Object.prototype[h]){a=h.length>e.length&&h.substring(0,e.length)==e?h.substring(e.length):"";l=b.contextDataMapping[h];if("string"==typeof l)for(q=l.split(","),s=0;s<q.length;s++)l=
+q[s],"a.contentType"==h?(k&&(k+=","+l),d[l]=g[h]):"view"==a||"segmentView"==a||"clicked"==a||"complete"==a||"timePlayed"==a||"CPM"==a?(f&&(f+=","+l),"timePlayed"==a||"CPM"==a?g[h]&&(d.events2+=(d.events2?",":"")+l+"="+g[h]):g[h]&&(d.events2+=(d.events2?",":"")+l)):"segment"==a&&g[h+"Num"]?(k&&(k+=","+l),d[l]=g[h+"Num"]+":"+g[h]):(k&&(k+=","+l),d[l]=g[h]);else if("milestones"==a||"offsetMilestones"==a)h=h.substring(0,h.length-1),g[h]&&b.contextDataMapping[h+"s"][g[h]]&&(f&&(f+=","+b.contextDataMapping[h+
+"s"][g[h]]),d.events2+=(d.events2?",":"")+b.contextDataMapping[h+"s"][g[h]]);g[h]&&(g[h]=0);"segment"==a&&g[h+"Num"]&&(g[h+"Num"]=0)}d.linkTrackVars=k;d.linkTrackEvents=f};b.i=function(d,c,e,k,f){var a={},l=(new Date).getTime()/1E3,g,h,q=b.trackVars,s=b.trackEvents,t=b.trackSeconds,u=b.trackMilestones,v=b.trackOffsetMilestones,w=b.segmentByMilestones,x=b.segmentByOffsetMilestones,p,n,r=1,m={},y;b.channel||(b.channel=b.s.w.location.hostname);if(a=d&&b.list&&b.list[d]?b.list[d]:0)if(a.l&&(t=b.adTrackSeconds,
+u=b.adTrackMilestones,v=b.adTrackOffsetMilestones,w=b.adSegmentByMilestones,x=b.adSegmentByOffsetMilestones),0>e&&(e=1==a.k&&0<a.u?l-a.u+a.c:a.c),0<a.length&&(e=e<a.length?e:a.length),0>e&&(e=0),a.offset=e,0<a.length&&(a.e=a.offset/a.length*100,a.e=100<a.e?100:a.e),0>a.c&&(a.c=e),y=a.D,m.name=d,m.ad=a.l,m.length=a.length,m.openTime=new Date,m.openTime.setTime(1E3*a.timestamp),m.offset=a.offset,m.percent=a.e,m.playerName=a.playerName,m.mediaEvent=0>a.g?"OPEN":1==c?"PLAY":2==c?"STOP":3==c?"MONITOR":
+4==c?"TRACK":5==c?"COMPLETE":7==c?"CLICK":"CLOSE",2<c||c!=a.k&&(2!=c||1==a.k)){f||(k=a.m,f=a.f);if(c){1==c&&(a.c=e);if((3>=c||5<=c)&&0<=a.g&&(r=!1,q=s="None",a.g!=e)){h=a.g;h>e&&(h=a.c,h>e&&(h=e));p=u?u.split(","):0;if(0<a.length&&p&&e>=h)for(n=0;n<p.length;n++)(g=p[n]?parseFloat(""+p[n]):0)&&h/a.length*100<g&&a.e>=g&&(r=!0,n=p.length,m.mediaEvent="MILESTONE",a.p=m.milestone=g);if((p=v?v.split(","):0)&&e>=h)for(n=0;n<p.length;n++)(g=p[n]?parseFloat(""+p[n]):0)&&h<g&&e>=g&&(r=!0,n=p.length,m.mediaEvent=
+"OFFSET_MILESTONE",a.q=m.offsetMilestone=g)}if(a.L||!f){if(w&&u&&0<a.length){if(p=u.split(","))for(p.push("100"),n=h=0;n<p.length;n++)if(g=p[n]?parseFloat(""+p[n]):0)a.e<g&&(k=n+1,f="M:"+h+"-"+g,n=p.length),h=g}else if(x&&v&&(p=v.split(",")))for(p.push(""+(0<a.length?a.length:"E")),n=h=0;n<p.length;n++)if((g=p[n]?parseFloat(""+p[n]):0)||"E"==p[n]){if(e<g||"E"==p[n])k=n+1,f="O:"+h+"-"+g,n=p.length;h=g}f&&(a.L=!0)}(f||a.f)&&f!=a.f&&(a.F=!0,a.f||(a.m=k,a.f=f),0<=a.g&&(r=!0));(2<=c||100<=a.e)&&a.c<e&&
+(a.C+=e-a.c,a.a+=e-a.c);if(2>=c||3==c&&!a.k)a.n+=(1==c||3==c?"S":"E")+Math.floor(e),a.k=3==c?1:c;!r&&0<=a.g&&3>=c&&(t=t?t:0)&&a.a>=t&&(r=!0,m.mediaEvent="SECONDS");a.u=l;a.c=e}if(!c||3>=c&&100<=a.e)2!=a.k&&(a.n+="E"+Math.floor(e)),c=0,q=s="None",m.mediaEvent="CLOSE";7==c&&(r=m.clicked=a.r=!0);if(5==c||b.completeByCloseOffset&&(!c||100<=a.e)&&0<a.length&&e>=a.length-b.completeCloseOffsetThreshold)r=m.complete=a.complete=!0;l=m.mediaEvent;"MILESTONE"==l?l+="_"+m.milestone:"OFFSET_MILESTONE"==l&&(l+=
+"_"+m.offsetMilestone);a.I[l]?m.eventFirstTime=!1:(m.eventFirstTime=!0,a.I[l]=1);m.event=m.mediaEvent;m.timePlayed=a.C;m.segmentNum=a.m;m.segment=a.f;m.segmentLength=a.B;b.monitor&&4!=c&&b.monitor(b.s,m);b.Heartbeat&&b.Heartbeat.enabled&&0<=a.g&&(r=!1);0==c&&b.M(d);r&&a.D==y&&(d={contextData:{}},d.linkTrackVars=q,d.linkTrackEvents=s,d.linkTrackVars||(d.linkTrackVars=""),d.linkTrackEvents||(d.linkTrackEvents=""),b.P(d,a),d.linkTrackVars||(d["!linkTrackVars"]=1),d.linkTrackEvents||(d["!linkTrackEvents"]=
+1),b.s.track(d),a.F?(a.m=k,a.f=f,a.A=!0,a.F=!1):0<a.a&&(a.A=!1),a.n="",a.p=a.q=0,a.a-=Math.floor(a.a),a.g=e,a.D++)}return a};b.O=function(d,c,e,k,f){var a=0;if(d&&(!b.autoTrackMediaLengthRequired||c&&0<c)){if(b.list&&b.list[d])a=1;else if(1==e||3==e)b.open(d,c,"HTML5 Video",f),a=1;a&&b.i(d,e,k,-1,0)}};b.attach=function(d){var c,e,k;d&&d.tagName&&"VIDEO"==d.tagName.toUpperCase()&&(b.o||(b.o=function(c,a,d){var e,h;b.autoTrack&&(e=c.currentSrc,(h=c.duration)||(h=-1),0>d&&(d=c.currentTime),b.O(e,h,a,
+d,c))}),c=function(){b.o(d,1,-1)},e=function(){b.o(d,1,-1)},b.j(d,"play",c),b.j(d,"pause",e),b.j(d,"seeking",e),b.j(d,"seeked",c),b.j(d,"ended",function(){b.o(d,0,-1)}),b.j(d,"timeupdate",c),k=function(){d.paused||d.ended||d.seeking||b.o(d,3,-1);setTimeout(k,1E3)},k())};b.j=function(b,c,e){b.attachEvent?b.attachEvent("on"+c,e):b.addEventListener&&b.addEventListener(c,e,!1)};void 0==b.completeByCloseOffset&&(b.completeByCloseOffset=1);void 0==b.completeCloseOffsetThreshold&&(b.completeCloseOffsetThreshold=
+1);b.Heartbeat={};b.N=function(){var d,c;if(b.autoTrack&&(d=b.s.d.getElementsByTagName("VIDEO")))for(c=0;c<d.length;c++)b.attach(d[c])};b.j(q,"load",b.N)}
+
+</script><!-- Cookies --><link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.3/cookieconsent.min.css"><script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.3/cookieconsent.min.js"></script><script type="text/javascript" src="/assets/nr_browser_production.js"></script>
+
+<!-- def.1 -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>
+"Turning and Turning in the Widening Gyre: An Exploration of the Poetry" by Natalie Luhrs
+</title>
+
+
+<!-- FILE article_meta-tags.inc --><!-- FILE: /srv/sequoia/main/data/assets/site/article_meta-tags.inc -->
+<meta itemprop="name" content="Turning and Turning in the Widening Gyre: An Exploration of the Poetry of William Butler Yeats">
+<meta property="og:title" content="Turning and Turning in the Widening Gyre: An Exploration of the Poetry of William Butler Yeats">
+<meta name="twitter:title" content="Turning and Turning in the Widening Gyre: An Exploration of the Poetry of William Butler Yeats">
+<meta property="article:author" content="Natalie Luhrs">
+<meta name="author" content="Natalie Luhrs">
+<meta name="robots" content="noodp, noydir">
+<meta name="description" content="A gyre, as William Butler Yeats saw it, is two cones that are inextricably connected and dependent upon each other: the base of one is the apex of the other. They rotate in opposite directions, constantly spiraling in and spiraling out. Yeats used this idea of a gyre in his philosophical writings and as a major image in his poetry. The gyre represents the cycles of history, which are always expanding and then collapsing in upon themselves. One can take this idea and apply it to Yeats's own poetry. His interests seem to spiral in and out like a gyre, spinning from a personal concern to a worldly concern and then back to a subjective view at the end of his life. However, his end view, while concerned with his personal feelings, is tempered by the knowledge he had gained through his life, and is therefore less naive than his earlier poetry, where he had been waiting for &quot;the bosom of his fairy bride&quot; (&quot;The Circus Animals' Desertion&quot; 16).">
+<meta itemprop="description" content="A gyre, as William Butler Yeats saw it, is two cones that are inextricably connected and dependent upon each other: the base of one is the apex of the other. They rotate in opposite directions, constantly spiraling in and spiraling out. Yeats used this idea of a gyre in his philosophical writings and as a major image in his poetry. The gyre represents the cycles of history, which are always expanding and then collapsing in upon themselves. One can take this idea and apply it to Yeats's own poetry. His interests seem to spiral in and out like a gyre, spinning from a personal concern to a worldly concern and then back to a subjective view at the end of his life. However, his end view, while concerned with his personal feelings, is tempered by the knowledge he had gained through his life, and is therefore less naive than his earlier poetry, where he had been waiting for &quot;the bosom of his fairy bride&quot; (&quot;The Circus Animals' Desertion&quot; 16).">
+<meta name="twitter:description" content="A gyre, as William Butler Yeats saw it, is two cones that are inextricably connected and dependent upon each other: the base of one is the apex of the other. They rotate in opposite directions, constantly spiraling in and spiraling out. Yeats used this idea of a gyre in his philosophical writings and as a major image in his poetry. The gyre represents the cycles of history, which are always expanding and then collapsing in upon themselves. One can take this idea and apply it to Yeats's own poetry. His interests seem to spiral in and out like a gyre, spinning from a personal concern to a worldly concern and then back to a subjective view at the end of his life. However, his end view, while concerned with his personal feelings, is tempered by the knowledge he had gained through his life, and is therefore less naive than his earlier poetry, where he had been waiting for &quot;the bosom of his fairy bride&quot; (&quot;The Circus Animals' Desertion&quot; 16).">
+<meta property="og:description" content="A gyre, as William Butler Yeats saw it, is two cones that are inextricably connected and dependent upon each other: the base of one is the apex of the other. They rotate in opposite directions, constantly spiraling in and spiraling out. Yeats used this idea of a gyre in his philosophical writings and as a major image in his poetry. The gyre represents the cycles of history, which are always expanding and then collapsing in upon themselves. One can take this idea and apply it to Yeats's own poetry. His interests seem to spiral in and out like a gyre, spinning from a personal concern to a worldly concern and then back to a subjective view at the end of his life. However, his end view, while concerned with his personal feelings, is tempered by the knowledge he had gained through his life, and is therefore less naive than his earlier poetry, where he had been waiting for &quot;the bosom of his fairy bride&quot; (&quot;The Circus Animals' Desertion&quot; 16).">
+<meta name="bepress_citation_dissertation_institution" content="Western Michigan University">
+<meta name="bepress_citation_author" content="Luhrs, Natalie">
+<meta name="bepress_citation_title" content="Turning and Turning in the Widening Gyre: An Exploration of the Poetry of William Butler Yeats">
+<meta name="bepress_citation_date" content="1995">
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_download_link.inc -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/article_meta-tags.inc (cont) -->
+<meta name="bepress_citation_pdf_url" content="https://scholarworks.wmich.edu/cgi/viewcontent.cgi?article=1861&amp;context=honors_theses">
+<meta name="bepress_citation_abstract_html_url" content="https://scholarworks.wmich.edu/honors_theses/830">
+<meta name="bepress_citation_online_date" content="2012/7/12">
+<meta name="viewport" content="width=device-width">
+<!-- Additional Twitter data -->
+<meta name="twitter:card" content="summary">
+<!-- Additional Open Graph data -->
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://scholarworks.wmich.edu/honors_theses/830">
+<meta property="og:site_name" content="ScholarWorks at WMU">
+
+
+<!-- Amplitude -->
+<script type="text/javascript">
+(function(e,t){var n=e.amplitude||{_q:[],_iq:{}};var r=t.createElement("script")
+;r.type="text/javascript";r.async=true
+;r.src="https://cdn.amplitude.com/libs/amplitude-4.5.2-min.gz.js"
+;r.integrity="5ceGNbvkytO+PTI82JRl6GwJjVCw6k79kP4le5L5/m0Zny1P7taAF6YVvC4z4Pgj"
+;r.onload=function(){if(e.amplitude.runQueuedFunctions){
+e.amplitude.runQueuedFunctions()}else{
+console.log("[Amplitude] Error: could not load SDK")}}
+;var i=t.getElementsByTagName("script")[0];i.parentNode.insertBefore(r,i)
+;function s(e,t){e.prototype[t]=function(){
+this._q.push([t].concat(Array.prototype.slice.call(arguments,0)));return this}}
+var o=function(){this._q=[];return this}
+;var a=["add","append","clearAll","prepend","set","setOnce","unset"]
+;for(var u=0;u<a.length;u++){s(o,a[u])}n.Identify=o;var c=function(){this._q=[]
+;return this}
+;var l=["setProductId","setQuantity","setPrice","setRevenueType","setEventProperties"]
+;for(var p=0;p<l.length;p++){s(c,l[p])}n.Revenue=c
+;var d=["init","logEvent","logRevenue","setUserId","setUserProperties","setOptOut","setVersionName","setDomain","setDeviceId","setGlobalUserProperties","identify","clearUserProperties","setGroup","logRevenueV2","regenerateDeviceId","groupIdentify","logEventWithTimestamp","logEventWithGroups","setSessionId","resetSessionId"]
+;function v(e){function t(t){e[t]=function(){
+e._q.push([t].concat(Array.prototype.slice.call(arguments,0)))}}
+for(var n=0;n<d.length;n++){t(d[n])}}v(n);n.getInstance=function(e){
+e=(!e||e.length===0?"$default_instance":e).toLowerCase()
+;if(!n._iq.hasOwnProperty(e)){n._iq[e]={_q:[]};v(n._iq[e])}return n._iq[e]}
+;e.amplitude=n})(window,document);
+
+amplitude.getInstance().init("1d890e80ea7a0ccc43c2b06438458f50");
+</script>
+
+<!-- FILE: article_meta-tags.inc (cont) -->
+<meta name="bepress_is_article_cover_page" content="1">
+
+
+<!-- sh.1 -->
+<link rel="stylesheet" href="/ir-style.css" type="text/css" media="screen">
+<link rel="stylesheet" href="/ir-custom.css" type="text/css" media="screen">
+<link rel="stylesheet" href="../ir-custom.css" type="text/css" media="screen">
+<link rel="stylesheet" href="/ir-local.css" type="text/css" media="screen">
+<link rel="stylesheet" href="../ir-local.css" type="text/css" media="screen">
+<link rel="stylesheet" href="/ir-print.css" type="text/css" media="print">
+<link type="text/css" rel="stylesheet" href="/assets/floatbox/floatbox.css">
+<link rel="alternate" type="application/rss+xml" title="Site Feed" href="/recent.rss">
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+<!--[if IE]>
+<link rel="stylesheet" href="/ir-ie.css" type="text/css" media="screen">
+<![endif]-->
+
+<!-- JS -->
+<script type="text/javascript" src="/assets/jsUtilities.js"></script>
+<script type="text/javascript" src="/assets/footnoteLinks.js"></script><script charset="utf-8" id="yui_3_5_0_1_1656002500486_2" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/oop/oop-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_1_1656002500486_3" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/event-custom-base/event-custom-base-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_1_1656002500486_4" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/dom-core/dom-core-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_1_1656002500486_5" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/dom-base/dom-base-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_1_1656002500486_6" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/selector-native/selector-native-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_1_1656002500486_7" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/selector/selector-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_1_1656002500486_8" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/node-core/node-core-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_1_1656002500486_9" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/node-base/node-base-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_1_1656002500486_10" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/event-base/event-base-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_1_1656002500486_11" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/event-delegate/event-delegate-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_1_1656002500486_12" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/node-event-delegate/node-event-delegate-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_1_1656002500486_13" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/pluginhost-base/pluginhost-base-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_1_1656002500486_14" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/pluginhost-config/pluginhost-config-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_1_1656002500486_15" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/node-pluginhost/node-pluginhost-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_1_1656002500486_16" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/dom-style/dom-style-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_1_1656002500486_17" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/dom-screen/dom-screen-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_1_1656002500486_18" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/node-screen/node-screen-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_1_1656002500486_19" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/node-style/node-style-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_1_1656002500486_20" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/cookie/cookie-min.js" async=""></script>
+<script type="text/javascript" src="/assets/scripts/yui-init.pack.js"></script>
+<script type="text/javascript" src="/assets/scripts/bepress-init.debug.js"></script>
+<script type="text/javascript" src="/assets/scripts/JumpListYUI.pack.js"></script>
+
+<!-- end sh.1 -->
+
+
+
+
+<script type="text/javascript">var pageData = {"page":{"environment":"prod","productName":"bpdg","language":"en","name":"ir_etd:article","businessUnit":"els:rp:st"},"visitor":{}};</script>
+
+<style type="text/css">.js .nav-collapse-0.opened{max-height:300px !important} .js .nav-collapse-0.opened.dropdown-active {max-height:9999px !important}</style><link id="plx-css-popup" type="text/css" rel="stylesheet" href="//cdn.plu.mx/popup.css"><script type="text/javascript" src="//cdn.plu.mx/extjs/xss.js"></script><style type="text/css">.at-icon{fill:#fff;border:0}.at-icon-wrapper{display:inline-block;overflow:hidden}a .at-icon-wrapper{cursor:pointer}.at-rounded,.at-rounded-element .at-icon-wrapper{border-radius:12%}.at-circular,.at-circular-element .at-icon-wrapper{border-radius:50%}.addthis_32x32_style .at-icon{width:2pc;height:2pc}.addthis_24x24_style .at-icon{width:24px;height:24px}.addthis_20x20_style .at-icon{width:20px;height:20px}.addthis_16x16_style .at-icon{width:1pc;height:1pc}#at16lb{display:none;position:absolute;top:0;left:0;width:100%;height:100%;z-index:1001;background-color:#000;opacity:.001}#at_complete,#at_error,#at_share,#at_success{position:static!important}.at15dn{display:none}#at15s,#at16p,#at16p form input,#at16p label,#at16p textarea,#at_share .at_item{font-family:arial,helvetica,tahoma,verdana,sans-serif!important;font-size:9pt!important;outline-style:none;outline-width:0;line-height:1em}* html #at15s.mmborder{position:absolute!important}#at15s.mmborder{position:fixed!important;width:250px!important}#at15s{background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABtJREFUeNpiZGBgaGAgAjAxEAlGFVJHIUCAAQDcngCUgqGMqwAAAABJRU5ErkJggg==);float:none;line-height:1em;margin:0;overflow:visible;padding:5px;text-align:left;position:absolute}#at15s a,#at15s span{outline:0;direction:ltr;text-transform:none}#at15s .at-label{margin-left:5px}#at15s .at-icon-wrapper{width:1pc;height:1pc;vertical-align:middle}#at15s .at-icon{width:1pc;height:1pc}.at4-icon{display:inline-block;background-repeat:no-repeat;background-position:top left;margin:0;overflow:hidden;cursor:pointer}.addthis_16x16_style .at4-icon,.addthis_default_style .at4-icon,.at4-icon,.at-16x16{width:1pc;height:1pc;line-height:1pc;background-size:1pc!important}.addthis_32x32_style .at4-icon,.at-32x32{width:2pc;height:2pc;line-height:2pc;background-size:2pc!important}.addthis_24x24_style .at4-icon,.at-24x24{width:24px;height:24px;line-height:24px;background-size:24px!important}.addthis_20x20_style .at4-icon,.at-20x20{width:20px;height:20px;line-height:20px;background-size:20px!important}.at4-icon.circular,.circular .at4-icon,.circular.aticon{border-radius:50%}.at4-icon.rounded,.rounded .at4-icon{border-radius:4px}.at4-icon-left{float:left}#at15s .at4-icon{text-indent:20px;padding:0;overflow:visible;white-space:nowrap;background-size:1pc;width:1pc;height:1pc;background-position:top left;display:inline-block;line-height:1pc}.addthis_vertical_style .at4-icon,.at4-follow-container .at4-icon{margin-right:5px}html>body #at15s{width:250px!important}#at15s.atm{background:none!important;padding:0!important;width:10pc!important}#at15s_inner{background:#fff;border:1px solid #fff;margin:0}#at15s_head{position:relative;background:#f2f2f2;padding:4px;cursor:default;border-bottom:1px solid #e5e5e5}.at15s_head_success{background:#cafd99!important;border-bottom:1px solid #a9d582!important}.at15s_head_success a,.at15s_head_success span{color:#000!important;text-decoration:none}#at15s_brand,#at15sptx,#at16_brand{position:absolute}#at15s_brand{top:4px;right:4px}.at15s_brandx{right:20px!important}a#at15sptx{top:4px;right:4px;text-decoration:none;color:#4c4c4c;font-weight:700}#at15sptx:hover{text-decoration:underline}#at16_brand{top:5px;right:30px;cursor:default}#at_hover{padding:4px}#at_hover .at_item,#at_share .at_item{background:#fff!important;float:left!important;color:#4c4c4c!important}#at_share .at_item .at-icon-wrapper{margin-right:5px}#at_hover .at_bold{font-weight:700;color:#000!important}#at_hover .at_item{width:7pc!important;padding:2px 3px!important;margin:1px;text-decoration:none!important}#at_hover .at_item.athov,#at_hover .at_item:focus,#at_hover .at_item:hover{margin:0!important}#at_hover .at_item.athov,#at_hover .at_item:focus,#at_hover .at_item:hover,#at_share .at_item.athov,#at_share .at_item:hover{background:#f2f2f2!important;border:1px solid #e5e5e5;color:#000!important;text-decoration:none}.ipad #at_hover .at_item:focus{background:#fff!important;border:1px solid #fff}.at15t{display:block!important;height:1pc!important;line-height:1pc!important;padding-left:20px!important;background-position:0 0;text-align:left}.addthis_button,.at15t{cursor:pointer}.addthis_toolbox a.at300b,.addthis_toolbox a.at300m{width:auto}.addthis_toolbox a{margin-bottom:5px;line-height:initial}.addthis_toolbox.addthis_vertical_style{width:200px}.addthis_button_facebook_like .fb_iframe_widget{line-height:100%}.addthis_button_facebook_like iframe.fb_iframe_widget_lift{max-width:none}.addthis_toolbox a.addthis_button_counter,.addthis_toolbox a.addthis_button_facebook_like,.addthis_toolbox a.addthis_button_facebook_send,.addthis_toolbox a.addthis_button_facebook_share,.addthis_toolbox a.addthis_button_foursquare,.addthis_toolbox a.addthis_button_linkedin_counter,.addthis_toolbox a.addthis_button_pinterest_pinit,.addthis_toolbox a.addthis_button_tweet{display:inline-block}.addthis_toolbox span.addthis_follow_label{display:none}.addthis_toolbox.addthis_vertical_style span.addthis_follow_label{display:block;white-space:nowrap}.addthis_toolbox.addthis_vertical_style a{display:block}.addthis_toolbox.addthis_vertical_style.addthis_32x32_style a{line-height:2pc;height:2pc}.addthis_toolbox.addthis_vertical_style .at300bs{margin-right:4px;float:left}.addthis_toolbox.addthis_20x20_style span{line-height:20px}.addthis_toolbox.addthis_32x32_style span{line-height:2pc}.addthis_toolbox.addthis_pill_combo_style .addthis_button_compact .at15t_compact,.addthis_toolbox.addthis_pill_combo_style a{float:left}.addthis_toolbox.addthis_pill_combo_style a.addthis_button_tweet{margin-top:-2px}.addthis_toolbox.addthis_pill_combo_style .addthis_button_compact .at15t_compact{margin-right:4px}.addthis_default_style .addthis_separator{margin:0 5px;display:inline}div.atclear{clear:both}.addthis_default_style .addthis_separator,.addthis_default_style .at4-icon,.addthis_default_style .at300b,.addthis_default_style .at300bo,.addthis_default_style .at300bs,.addthis_default_style .at300m{float:left}.at300b img,.at300bo img{border:0}a.at300b .at4-icon,a.at300m .at4-icon{display:block}.addthis_default_style .at300b,.addthis_default_style .at300bo,.addthis_default_style .at300m{padding:0 2px}.at300b,.at300bo,.at300bs,.at300m{cursor:pointer}.addthis_button_facebook_like.at300b:hover,.addthis_button_facebook_like.at300bs:hover,.addthis_button_facebook_send.at300b:hover,.addthis_button_facebook_send.at300bs:hover{opacity:1}.addthis_20x20_style .at15t,.addthis_20x20_style .at300bs{overflow:hidden;display:block;height:20px!important;width:20px!important;line-height:20px!important}.addthis_32x32_style .at15t,.addthis_32x32_style .at300bs{overflow:hidden;display:block;height:2pc!important;width:2pc!important;line-height:2pc!important}.at300bs{overflow:hidden;display:block;background-position:0 0;height:1pc;width:1pc;line-height:1pc!important}.addthis_default_style .at15t_compact,.addthis_default_style .at15t_expanded{margin-right:4px}#at_share .at_item{width:123px!important;padding:4px;margin-right:2px;border:1px solid #fff}#at16p{background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABtJREFUeNpiZGBgaGAgAjAxEAlGFVJHIUCAAQDcngCUgqGMqwAAAABJRU5ErkJggg==);z-index:10000001;position:absolute;top:50%;left:50%;width:300px;padding:10px;margin:0 auto;margin-top:-185px;margin-left:-155px;font-family:arial,helvetica,tahoma,verdana,sans-serif;font-size:9pt;color:#5e5e5e}#at_share{margin:0;padding:0}#at16pt{position:relative;background:#f2f2f2;height:13px;padding:5px 10px}#at16pt a,#at16pt h4{font-weight:700}#at16pt h4{display:inline;margin:0;padding:0;font-size:9pt;color:#4c4c4c;cursor:default}#at16pt a{position:absolute;top:5px;right:10px;color:#4c4c4c;text-decoration:none;padding:2px}#at15sptx:focus,#at16pt a:focus{outline:thin dotted}#at15s #at16pf a{top:1px}#_atssh{width:1px!important;height:1px!important;border:0!important}.atm{width:10pc!important;padding:0;margin:0;line-height:9pt;letter-spacing:normal;font-family:arial,helvetica,tahoma,verdana,sans-serif;font-size:9pt;color:#444;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABtJREFUeNpiZGBgaGAgAjAxEAlGFVJHIUCAAQDcngCUgqGMqwAAAABJRU5ErkJggg==);padding:4px}.atm-f{text-align:right;border-top:1px solid #ddd;padding:5px 8px}.atm-i{background:#fff;border:1px solid #d5d6d6;padding:0;margin:0;box-shadow:1px 1px 5px rgba(0,0,0,.15)}.atm-s{margin:0!important;padding:0!important}.atm-s a:focus{border:transparent;outline:0;transition:none}#at_hover.atm-s a,.atm-s a{display:block;text-decoration:none;padding:4px 10px;color:#235dab!important;font-weight:400;font-style:normal;transition:none}#at_hover.atm-s .at_bold{color:#235dab!important}#at_hover.atm-s a:hover,.atm-s a:hover{background:#2095f0;text-decoration:none;color:#fff!important}#at_hover.atm-s .at_bold{font-weight:700}#at_hover.atm-s a:hover .at_bold{color:#fff!important}.atm-s a .at-label{vertical-align:middle;margin-left:5px;direction:ltr}.at_PinItButton{display:block;width:40px;height:20px;padding:0;margin:0;background-image:url(//s7.addthis.com/static/t00/pinit00.png);background-repeat:no-repeat}.at_PinItButton:hover{background-position:0 -20px}.addthis_toolbox .addthis_button_pinterest_pinit{position:relative}.at-share-tbx-element .fb_iframe_widget span{vertical-align:baseline!important}#at16pf{height:auto;text-align:right;padding:4px 8px}.at-privacy-info{position:absolute;left:7px;bottom:7px;cursor:pointer;text-decoration:none;font-family:helvetica,arial,sans-serif;font-size:10px;line-height:9pt;letter-spacing:.2px;color:#666}.at-privacy-info:hover{color:#000}.body .wsb-social-share .wsb-social-share-button-vert{padding-top:0;padding-bottom:0}.body .wsb-social-share.addthis_counter_style .addthis_button_tweet.wsb-social-share-button{padding-top:40px}.body .wsb-social-share.addthis_counter_style .addthis_button_facebook_like.wsb-social-share-button{padding-top:21px}@media print{#at4-follow,#at4-share,#at4-thankyou,#at4-whatsnext,#at4m-mobile,#at15s,.at4,.at4-recommended{display:none!important}}@media screen and (max-width:400px){.at4win{width:100%}}@media screen and (max-height:700px) and (max-width:400px){.at4-thankyou-inner .at4-recommended-container{height:122px;overflow:hidden}.at4-thankyou-inner .at4-recommended .at4-recommended-item:first-child{border-bottom:1px solid #c5c5c5}}</style><style type="text/css">.at-branding-logo{font-family:helvetica,arial,sans-serif;text-decoration:none;font-size:10px;display:inline-block;margin:2px 0;letter-spacing:.2px}.at-branding-logo .at-branding-icon{background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAMAAAC67D+PAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAAZQTFRF////+GlNUkcc1QAAAB1JREFUeNpiYIQDBjQmAwMmkwEM0JnY1WIxFyDAABGeAFEudiZsAAAAAElFTkSuQmCC")}.at-branding-logo .at-branding-icon,.at-branding-logo .at-privacy-icon{display:inline-block;height:10px;width:10px;margin-left:4px;margin-right:3px;margin-bottom:-1px;background-repeat:no-repeat}.at-branding-logo .at-privacy-icon{background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAKCAMAAABR24SMAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABhQTFRF8fr9ot/xXcfn2/P5AKva////////AKTWodjhjAAAAAd0Uk5T////////ABpLA0YAAAA6SURBVHjaJMzBDQAwCAJAQaj7b9xifV0kUKJ9ciWxlzWEWI5gMF65KUTv0VKkjVeTerqE/x7+9BVgAEXbAWI8QDcfAAAAAElFTkSuQmCC")}.at-branding-logo span{text-decoration:none}.at-branding-logo .at-branding-addthis,.at-branding-logo .at-branding-powered-by{color:#666}.at-branding-logo .at-branding-addthis:hover{color:#333}.at-cv-with-image .at-branding-addthis,.at-cv-with-image .at-branding-addthis:hover{color:#fff}a.at-branding-logo:visited{color:initial}.at-branding-info{display:inline-block;padding:0 5px;color:#666;border:1px solid #666;border-radius:50%;font-size:10px;line-height:9pt;opacity:.7;transition:all .3s ease;text-decoration:none}.at-branding-info span{border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px}.at-branding-info:before{content:'i';font-family:Times New Roman}.at-branding-info:hover{color:#0780df;border-color:#0780df}</style><script charset="utf-8" id="yui_3_5_0_2_1656002500486_5" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/querystring-stringify-simple/querystring-stringify-simple-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_2_1656002500486_6" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/io-base/io-base-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_2_1656002500486_7" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/json-parse/json-parse-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_2_1656002500486_8" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/selector-css2/selector-css2-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_2_1656002500486_9" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/selector-css3/selector-css3-min.js" async=""></script><script src="https://assets.adobedtm.com/4a848ae9611a/d0e96722185b/42c8dcf08360/RC9ee8a1a6722044939b85041d6cb46010-source.min.js" async=""></script><link charset="utf-8" rel="stylesheet" id="yui_3_5_0_3_1656002500486_2" href="/assets/styles/followable.css"><script charset="utf-8" id="yui_3_5_0_3_1656002500486_3" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/event-custom-complex/event-custom-complex-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_4" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/event-synthetic/event-synthetic-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_5" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/event-mousewheel/event-mousewheel-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_6" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/event-mouseenter/event-mouseenter-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_7" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/event-key/event-key-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_8" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/event-focus/event-focus-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_9" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/event-resize/event-resize-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_10" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/event-hover/event-hover-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_11" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/event-outside/event-outside-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_12" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/event-touch/event-touch-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_13" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/event-move/event-move-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_14" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/event-flick/event-flick-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_15" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/event-valuechange/event-valuechange-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_16" src="/assets/scripts/webservice-base-20131105.pack.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_17" src="/assets/scripts/followable-20160726.pack.js" async=""></script><link charset="utf-8" rel="stylesheet" id="yui_3_5_0_3_1656002500486_18" href="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/widget-base/assets/skins/sam/widget-base.css"><link charset="utf-8" rel="stylesheet" id="yui_3_5_0_3_1656002500486_19" href="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/widget-stack/assets/skins/sam/widget-stack.css"><link charset="utf-8" rel="stylesheet" id="yui_3_5_0_3_1656002500486_20" href="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/overlay/assets/skins/sam/overlay.css"><script charset="utf-8" id="yui_3_5_0_3_1656002500486_21" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/json-stringify/json-stringify-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_22" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/jsonp/jsonp-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_23" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/attribute-core/attribute-core-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_24" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/attribute-events/attribute-events-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_25" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/attribute-extras/attribute-extras-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_26" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/attribute-base/attribute-base-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_27" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/attribute-complex/attribute-complex-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_28" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/base-core/base-core-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_29" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/base-base/base-base-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_30" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/base-pluginhost/base-pluginhost-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_31" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/classnamemanager/classnamemanager-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_32" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/widget-base/widget-base-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_33" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/widget-htmlparser/widget-htmlparser-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_34" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/widget-skin/widget-skin-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_35" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/widget-uievents/widget-uievents-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_36" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/base-build/base-build-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_37" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/widget-stdmod/widget-stdmod-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_38" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/widget-position/widget-position-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_39" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/widget-position-align/widget-position-align-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_40" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/widget-stack/widget-stack-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_41" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/widget-position-constrain/widget-position-constrain-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_42" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/overlay/overlay-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_43" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/anim-base/anim-base-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_44" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/plugin/plugin-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_45" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/widget-anim/widget-anim-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_46" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/substitute/substitute-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_47" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/querystring-parse-simple/querystring-parse-simple-min.js" async=""></script><script charset="utf-8" id="yui_3_5_0_3_1656002500486_48" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/dump/dump-min.js" async=""></script><style></style></head>
+<body class="desktop yui3-skin-sam" style=""><div role="dialog" aria-live="polite" aria-label="cookieconsent" aria-describedby="cookieconsent:desc" class="cc-window cc-banner cc-type-info cc-theme-classic cc-bottom cc-color-override-1913119267 " style=""><!--googleoff: all--><span id="cookieconsent:desc" class="cc-message">We use cookies to help provide and enhance our service and tailor content. By closing this message, you agree to the
+ <a aria-label="learn more about cookies" role="button" tabindex="0" class="cc-link" href="/cookies.html" target="_blank">use of cookies.</a></span><div class="cc-compliance"><a aria-label="dismiss cookie message" role="button" tabindex="0" class="cc-btn cc-dismiss">Close</a></div><!--googleon: all--></div>
+<!-- FILE /srv/sequoia/main/data/scholarworks.wmich.edu/assets/header.pregen --><!-- FILE: /srv/sequoia/main/data/assets/site/mobile_nav.inc --><!--[if !IE]>-->
+<script src="/assets/scripts/dc-mobile/dc-responsive-nav.js"></script>
+
+<header id="mobile-nav" class="nav-down device-fixed-height" style="visibility: hidden;">
+  
+  
+  <a href="#" class="nav-toggle device-fixed-width" aria-hidden="false">Menu</a><nav class="nav-collapse nav-collapse-0 closed" style="transition: max-height 284ms ease 0s; position: absolute;" aria-hidden="true">
+    <ul>
+      <li class="menu-item active device-fixed-width"><a href="https://scholarworks.wmich.edu" title="Home" data-scroll="">Home</a></li>
+      <li class="menu-item device-fixed-width"><a href="https://scholarworks.wmich.edu/do/search/advanced/" title="Search" data-scroll=""><i class="icon-search"></i> Search</a></li>
+      <li class="menu-item device-fixed-width"><a href="https://scholarworks.wmich.edu/communities.html" title="Browse" data-scroll="">Browse Collections</a></li>
+      <li class="menu-item device-fixed-width"><a href="/cgi/myaccount.cgi?context=honors_theses" title="My Account" data-scroll="">My Account</a></li>
+      <li class="menu-item device-fixed-width"><a href="https://scholarworks.wmich.edu/about.html" title="About" data-scroll="">About</a></li>
+      <li class="menu-item device-fixed-width"><a href="https://network.bepress.com" title="Digital Commons Network" data-scroll=""><img width="16" height="16" alt="DC Network" style="vertical-align:top;" src="/assets/md5images/8e240588cf8cd3a028768d4294acd7d3.png"> Digital Commons Network™</a></li>
+    </ul>
+  </nav>
+</header>
+
+<script src="/assets/scripts/dc-mobile/dc-mobile-nav.js"></script>
+<!--<![endif]-->
+<!-- FILE: /srv/sequoia/main/data/scholarworks.wmich.edu/assets/header.pregen (cont) -->
+
+
+
+<div id="wmich">
+	<div id="container">
+		<a href="#main" class="skiplink" accesskey="2">Skip to main content</a>
+
+					
+			<div id="header" role="banner" style="width: 980px; height: 92px; padding: 0px; margin: 0px; font-size: 12px;">
+				<a href="https://scholarworks.wmich.edu" id="banner_link" title="ScholarWorks at WMU" style="width: 980px; height: 92px; padding: 0px; margin: 0px; font-size: 12px;">
+					<img id="banner_image" alt="ScholarWorks at WMU" width="980" height="92" src="/assets/md5images/d505334b31dfb4c199bbdc1f7c7fb847.png" style="width: 980px; height: 92px; padding: 0px; margin: 0px; font-size: 12px;">
+				</a>	
+				
+			</div>
+					
+			<div id="navigation" style="width: 980px; height: 92px; padding: 0px; margin: 0px; font-size: 12px;">
+				<!-- FILE: /srv/sequoia/main/data/scholarworks.wmich.edu/assets/ir_navigation.inc --><div id="tabs" style="width: 980px; height: 23px; padding: 0px; margin: 0px; font-size: 11px;"><ul id="yui_3_5_0_1_1656002500486_30" style="width: 980px; height: 23px; padding: 0px; margin: 0px; font-size: 11px;"><li id="tabone" style="width: 68px; height: 23px; padding: 0px; margin: 0px; font-size: 11px;"><a href="https://scholarworks.wmich.edu" title="Home" id="yui_3_5_0_1_1656002500486_31" style="width: 42px; height: 15px; padding: 0px 11px 9px 15px; margin: 0px; font-size: 14px;"><span id="yui_3_5_0_1_1656002500486_32" style="padding: 0px; margin: 0px; font-size: 14px;">Home</span></a></li><li id="tabtwo" style="width: 72px; height: 23px; padding: 0px; margin: 0px; font-size: 11px;"><a href="https://scholarworks.wmich.edu/about.html" title="About" id="yui_3_5_0_1_1656002500486_33" style="width: 50px; height: 15px; padding: 0px 11px 9px; margin: 0px; font-size: 14px;"><span id="yui_3_5_0_1_1656002500486_34" style="padding: 0px; margin: 0px; font-size: 14px;">About</span></a></li><li id="tabthree" style="width: 50px; height: 23px; padding: 0px; margin: 0px; font-size: 11px;"><a href="https://scholarworks.wmich.edu/faq.html" title="FAQ" id="yui_3_5_0_1_1656002500486_35" style="width: 28px; height: 15px; padding: 0px 11px 9px; margin: 0px; font-size: 14px;"><span id="yui_3_5_0_1_1656002500486_36" style="padding: 0px; margin: 0px; font-size: 14px;">FAQ</span></a></li><li id="tabfour" style="width: 117px; height: 23px; padding: 0px; margin: 0px; font-size: 11px;"><a href="https://scholarworks.wmich.edu/cgi/myaccount.cgi?context=honors_theses" title="My Account" id="yui_3_5_0_1_1656002500486_37" style="width: 95px; height: 15px; padding: 0px 11px 9px; margin: 0px; font-size: 14px;"><span id="yui_3_5_0_1_1656002500486_38" style="padding: 0px; margin: 0px; font-size: 14px;">My Account</span></a></li></ul></div>
+
+
+
+<div id="sitetitle" style="width: 980px; height: 69px; padding: 0px; margin: 0px; font-size: 12px;">
+	<a href="https://scholarworks.wmich.edu" id="yui_3_5_0_1_1656002500486_39" style="width: 980px; height: 45px; padding: 12px 0px; margin: 0px; font-size: 36px;">
+		ScholarWorks@WMU
+	</a>
+</div><!-- FILE: /srv/sequoia/main/data/scholarworks.wmich.edu/assets/header.pregen (cont) -->
+			</div>
+		
+
+		<div id="wrapper">
+			<div id="content">
+				<div id="main" class="text" role="main">
+
+
+<script type="text/javascript" src="/assets/floatbox/floatbox.js"></script>
+<!-- FILE: /srv/sequoia/main/data/assets/site/article_pager.inc -->
+
+<div id="breadcrumb"><ul id="pager">
+
+                
+                 
+<li>&lt; <a href="https://scholarworks.wmich.edu/honors_theses/1878" class="ignore">Previous</a></li>
+        
+        
+        
+
+                
+                 
+<li><a href="https://scholarworks.wmich.edu/honors_theses/1187" class="ignore">Next</a> &gt;</li>
+        
+        
+        
+<li>&nbsp;</li></ul><div class="crumbs"><!-- FILE: /srv/sequoia/main/data/assets/site/ir_breadcrumb.inc -->
+
+<div class="crumbs" role="navigation" aria-label="Breadcrumb">
+	<p>
+	
+	
+			<a href="https://scholarworks.wmich.edu" class="ignore">Home</a>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	 <span aria-hidden="true">&gt;</span> 
+		<a href="https://scholarworks.wmich.edu/honors" class="ignore">Honors College</a>
+	
+	
+	
+	
+	
+	
+	 <span aria-hidden="true">&gt;</span> 
+		<a href="https://scholarworks.wmich.edu/honors_theses" class="ignore">Honors Theses</a>
+	
+	
+	
+	
+	
+	 <span aria-hidden="true">&gt;</span> 
+		<a href="https://scholarworks.wmich.edu/honors_theses/830" class="ignore" aria-current="page">830</a>
+	
+	
+	
+	</p>
+</div>
+
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/article_pager.inc (cont) --></div>
+</div>
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_etd/article/index.html (cont) -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_etd/article/article_info.inc --><!-- FILE: /srv/sequoia/main/data/assets/site/openurl.inc -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_etd/article/article_info.inc (cont) -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_download_link.inc -->
+
+
+
+
+
+
+
+
+
+	
+	
+	
+    
+    
+    
+	
+		
+		
+		
+	
+	
+	
+	
+	
+	
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_etd/article/article_info.inc (cont) -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_etd/article/ir_article_header.inc --><div id="series-header">
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_etd/ir_etd_logo.inc -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_etd/article/ir_article_header.inc (cont) --><h2 id="series-title"><a href="https://scholarworks.wmich.edu/honors_theses">Honors Theses</a></h2></div>
+<div style="clear: both"></div><div id="sub">
+<div id="alpha">
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_etd/article/article_info.inc (cont) --><div id="title" class="element">
+<h4>Title</h4>
+<p><a href="https://scholarworks.wmich.edu/cgi/viewcontent.cgi?article=1861&amp;context=honors_theses">Turning and Turning in the Widening Gyre: An Exploration of the Poetry of William Butler Yeats</a></p>
+</div>
+<div class="clear"></div>
+<div id="authors" class="element">
+<h4>Author</h4>
+<p class="author"><a href="https://scholarworks.wmich.edu/do/search/?q=author_lname%3A%22Luhrs%22%20author_fname%3A%22Natalie%22&amp;start=0&amp;context=1620950"><strong>Natalie Luhrs</strong></a><br>
+</p></div>
+<div class="clear"></div>
+<div id="publication_date" class="element">
+<h4>Date of Defense</h4>
+<p>12-7-1995</p>
+</div>
+<div class="clear"></div>
+<div id="department" class="element">
+<h4>Department</h4>
+<p>English</p>
+</div>
+<div class="clear"></div>
+<div id="advisor1" class="element">
+<h4>First Advisor</h4>
+<p>Dr. Jil Larson</p>
+</div>
+<div class="clear"></div>
+<div id="advisor2" class="element">
+<h4>Second Advisor</h4>
+<p>Dr. C.J. Gianarkaris</p>
+</div>
+<div class="clear"></div>
+<div id="advisor3" class="element">
+<h4>Third Advisor</h4>
+<p>Dr. Thomas Seiler</p>
+</div>
+<div class="clear"></div>
+<div id="abstract" class="element">
+<h4>Abstract</h4>
+<p>A gyre, as William Butler Yeats saw it, is two cones that are inextricably connected and dependent upon each other: the base of one is the apex of the other. They rotate in opposite directions, constantly spiraling in and spiraling out. Yeats used this idea of a gyre in his philosophical writings and as a major image in his poetry. The gyre represents the cycles of history, which are always expanding and then collapsing in upon themselves. One can take this idea and apply it to Yeats's own poetry. His interests seem to spiral in and out like a gyre, spinning from a personal concern to a worldly concern and then back to a subjective view at the end of his life. However, his end view, while concerned with his personal feelings, is tempered by the knowledge he had gained through his life, and is therefore less naive than his earlier poetry, where he had been waiting for "the bosom of his fairy bride" ("The Circus Animals' Desertion" 16).</p>
+</div>
+<div class="clear"></div>
+<div id="recommended_citation" class="element">
+<h4>Recommended Citation</h4>
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_etd/ir_citation.inc --><p>
+    Luhrs, Natalie, "Turning and Turning in the Widening Gyre: An Exploration of the Poetry of William Butler Yeats" (1995). <em>Honors Theses</em>.  830.
+    <br>
+    
+    
+        https://scholarworks.wmich.edu/honors_theses/830
+    
+</p>
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_etd/article/article_info.inc (cont) --></div>
+<div class="clear"></div>
+<div id="document_type" class="element">
+<h4>Access Setting</h4>
+<p>Honors Thesis-Campus Only</p>
+</div>
+<div class="clear"></div>
+</div>
+    </div>
+    <div id="beta_7-3">
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_7_3.inc --><!-- FILE: /srv/sequoia/main/data/assets/site/openurl.inc -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_7_3.inc (cont) -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_download_link.inc -->
+
+
+
+
+
+
+
+
+
+	
+	
+	
+    
+    
+    
+	
+		
+		
+		
+	
+	
+	
+	
+	
+	
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_7_3.inc (cont) -->
+
+
+	<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_download_button.inc --><div class="aside download-button">
+      <a id="pdf" class="btn" href="https://scholarworks.wmich.edu/cgi/viewcontent.cgi?article=1861&amp;context=honors_theses" title="PDF (489&nbsp;KB) opens in new window" target="_blank"> 
+    	<i class="icon-download-alt" aria-hidden="true"></i>
+        Download
+      </a>
+</div>
+
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_7_3.inc (cont) -->
+	<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_embargo.inc -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_7_3.inc (cont) -->
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_custom_upper.inc -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_7_3.inc (cont) -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_openurl.inc -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_7_3.inc (cont) -->
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_article_metrics.inc -->
+
+
+
+
+
+
+<div id="article-stats" class="aside">
+
+    <p class="article-downloads-wrapper hidden"><span id="article-downloads"></span> DOWNLOADS</p>
+    <p class="article-stats-date hidden plum-border">Since July 12, 2012</p>
+
+    <p class="article-plum-metrics">
+        <div class="plum-bigben-theme"><div class="PlumX-Popup"><div class="ppp-container ppp-small ppp-badge"><a target="_blank" class="plx-wrapping-print-link" href="https://plu.mx/plum/a/?repo_url=https://scholarworks.wmich.edu/honors_theses/830&amp;theme=plum-bigben-theme" title="PlumX Metrics Detail Page"><div class="plx-print"><svg viewBox="0 0 100 100" width="100%" height="100%" aria-labelledby="widget-plumprint-1"><title id="widget-plumprint-1">Plum Print visual indicator of research metrics</title><path fill="#6e1a62" stroke="#6e1a62" stroke-width="1" d="M 36.075524746876404,57.96956599135724 C 47.24224000477168,47.68596460512846 53.05297314616313,51.90770935123954 46.72339182284403,65.70569425459581 L 53.27660817715597,65.70569425459581 C 46.94702685383687,51.90770935123954 52.75775999522832,47.68596460512846 63.924475253123596,57.96956599135724 L 65.94953047442182,51.73708687489691 C 50.87091882415881,53.493064614593585 47.936606025565,44.89292070045754 69.95485983844539,38.658528212506766 L 54.61998983742336,27.517092995330643 C 55.49474485125723,50.38422998989144 46.40876941906463,50.25112330547885 43.419256239361054,35.36788447550181 L 38.11759284090686,39.21976840364822 C 51.348583736297286,46.662138123559565 49.12908117584119,53.493064614593585 34.05046952557818,51.73708687489691 Z"></path><circle fill="#6e1a62" stroke="#6e1a62" stroke-width="1" r="4" cx="32.880982706687234" cy="55.56230589874905"></circle><circle fill="#6e1a62" stroke="#6e1a62" stroke-width="1" r="4" cx="50" cy="68"></circle><circle fill="#6e1a62" stroke="#6e1a62" stroke-width="1" r="4" cx="67.11901729331277" cy="55.56230589874905"></circle><circle fill="#6dd54d" stroke="#6e1a62" stroke-width="1" r="11.569855608330947" cx="66.1880833007053" cy="27.71901481782792"></circle><circle fill="none" stroke="#ffffff" stroke-width="1.5" r="10.069855608330947" cx="66.1880833007053" cy="27.71901481782792"></circle><circle fill="#6e1a62" stroke="#6e1a62" stroke-width="1" r="4" cx="39.41986545873549" cy="35.43769410125095"></circle></svg></div>PlumX Metrics</a><div class="ppp-pop ppp-pop-left"><div class="ppp-branding"><img alt="plumX logo" class="plx-logo" src="//cdn.plu.mx/aa49358c1c9f6a8c537942b2f77a5c36/plumx-inverse-logo.png"></div><ul><li class="plx-usage"><div class="ppp-title">Usage</div><ul><li class="plx-usage"><span class="ppp-label">Abstract Views: </span><span class="ppp-count">94</span></li><li class="plx-usage"><span class="ppp-label">Downloads: </span><span class="ppp-count">1</span></li></ul></li></ul><a target="_blank" href="https://plu.mx/plum/a/?repo_url=https://scholarworks.wmich.edu/honors_theses/830&amp;theme=plum-bigben-theme" title="PlumX Metrics Detail Page">see details</a></div></div></div></div>
+    </p>
+</div>
+<script type="text/javascript" src="//cdn.plu.mx/widget-popup.js"></script>
+
+
+
+<!-- Article Download Counts -->
+<script type="text/javascript" src="/assets/scripts/article-downloads.pack.js"></script>
+<script type="text/javascript">
+    insertDownloads(3082525);
+</script>
+
+
+<!-- Add border to Plum badge & download counts when visible -->
+<script>
+// bind to event when PlumX widget loads
+jQuery('body').bind('plum:widget-load', function(e){
+// if Plum badge is visible
+  if (jQuery('.PlumX-Popup').length) {
+// remove 'hidden' class
+  jQuery('#article-stats').removeClass('hidden');
+  jQuery('.article-stats-date').addClass('plum-border');
+  }
+});
+// bind to event when page loads
+jQuery(window).bind('load',function(e){
+// if DC downloads are visible
+  if (jQuery('#article-downloads').text().length > 0) {
+// add border to aside
+  jQuery('#article-stats').removeClass('hidden');
+  }
+});
+</script>
+
+<!-- Amplitude Event Tracking -->
+
+
+<script>
+$(function() {
+
+  // This is the handler for Plum popup engagement on mouseover
+  $("#article-stats").on("mouseover", "a.plx-wrapping-print-link", function(event) {
+    // Send the event to Amplitude
+    amplitude.getInstance().logEvent("plumPopupMouseover");
+  });
+
+  // This is the handler for Plum badge and 'see details' link clickthrough
+  $("#article-stats").on("click", "div.ppp-container.ppp-small.ppp-badge", function(event) {
+    // Send the event to Amplitude
+    amplitude.getInstance().logEvent("plumDetailsClick");
+  });
+
+  // This is the handler for AddThis link clickthrough
+  $(".addthis_toolbox").on("click", "a", function(event) {
+    // Send the event to Amplitude
+    amplitude.getInstance().logEvent("addThisClick");
+  });
+
+  // This is the handler for AddThis link clickthrough
+  $(".aside.download-button").on("click", "a", function(event) {
+    // Send the event to Amplitude
+    amplitude.getInstance().logEvent("downloadClick");
+  });
+
+});
+</script>
+
+
+
+
+<!-- Adobe Analytics: Download Click Tracker -->
+<script>
+
+$(function() {
+
+  // Download button click event tracker for PDFs
+  $(".aside.download-button").on("click", "a#pdf", function(event) {
+    pageDataTracker.trackEvent('navigationClick', {
+      link: {
+          location: 'aside download-button',
+          name: 'pdf'
+      }
+    });
+  });
+
+  // Download button click event tracker for native files
+  $(".aside.download-button").on("click", "a#native", function(event) {
+    pageDataTracker.trackEvent('navigationClick', {
+        link: {
+            location: 'aside download-button',
+            name: 'native'
+        }
+     });
+  });
+
+});
+
+</script>
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_7_3.inc (cont) -->
+
+
+
+	<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_disciplines.inc -->
+
+
+
+
+	
+		
+	
+
+
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_7_3.inc (cont) -->
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/bookmark_widget.inc -->
+<div id="share" class="aside">
+<h4>Share</h4>
+	
+	<p class="addthis_toolbox addthis_default_style">
+		<a class="addthis_button_facebook ignore at300b" title="Facebook" href="#"><span class="at-icon-wrapper" style="background-color: rgb(59, 89, 152); line-height: 16px; height: 16px; width: 16px;"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32" version="1.1" role="img" aria-labelledby="at-svg-facebook-1" title="Facebook" alt="Facebook" style="width: 16px; height: 16px;" class="at-icon at-icon-facebook"><title id="at-svg-facebook-1">Facebook</title><g><path d="M22 5.16c-.406-.054-1.806-.16-3.43-.16-3.4 0-5.733 1.825-5.733 5.17v2.882H9v3.913h3.837V27h4.604V16.965h3.823l.587-3.913h-4.41v-2.5c0-1.123.347-1.903 2.198-1.903H22V5.16z" fill-rule="evenodd"></path></g></svg></span></a>
+		<a class="addthis_button_twitter ignore at300b" title="Twitter" href="#"><span class="at-icon-wrapper" style="background-color: rgb(29, 161, 242); line-height: 16px; height: 16px; width: 16px;"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32" version="1.1" role="img" aria-labelledby="at-svg-twitter-2" title="Twitter" alt="Twitter" style="width: 16px; height: 16px;" class="at-icon at-icon-twitter"><title id="at-svg-twitter-2">Twitter</title><g><path d="M27.996 10.116c-.81.36-1.68.602-2.592.71a4.526 4.526 0 0 0 1.984-2.496 9.037 9.037 0 0 1-2.866 1.095 4.513 4.513 0 0 0-7.69 4.116 12.81 12.81 0 0 1-9.3-4.715 4.49 4.49 0 0 0-.612 2.27 4.51 4.51 0 0 0 2.008 3.755 4.495 4.495 0 0 1-2.044-.564v.057a4.515 4.515 0 0 0 3.62 4.425 4.52 4.52 0 0 1-2.04.077 4.517 4.517 0 0 0 4.217 3.134 9.055 9.055 0 0 1-5.604 1.93A9.18 9.18 0 0 1 6 23.85a12.773 12.773 0 0 0 6.918 2.027c8.3 0 12.84-6.876 12.84-12.84 0-.195-.005-.39-.014-.583a9.172 9.172 0 0 0 2.252-2.336" fill-rule="evenodd"></path></g></svg></span></a>
+		<a class="addthis_button_linkedin ignore at300b" target="_blank" title="LinkedIn" href="#"><span class="at-icon-wrapper" style="background-color: rgb(0, 119, 181); line-height: 16px; height: 16px; width: 16px;"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32" version="1.1" role="img" aria-labelledby="at-svg-linkedin-3" title="LinkedIn" alt="LinkedIn" style="width: 16px; height: 16px;" class="at-icon at-icon-linkedin"><title id="at-svg-linkedin-3">LinkedIn</title><g><path d="M26 25.963h-4.185v-6.55c0-1.56-.027-3.57-2.175-3.57-2.18 0-2.51 1.7-2.51 3.46v6.66h-4.182V12.495h4.012v1.84h.058c.558-1.058 1.924-2.174 3.96-2.174 4.24 0 5.022 2.79 5.022 6.417v7.386zM8.23 10.655a2.426 2.426 0 0 1 0-4.855 2.427 2.427 0 0 1 0 4.855zm-2.098 1.84h4.19v13.468h-4.19V12.495z" fill-rule="evenodd"></path></g></svg></span></a>
+		<a class="addthis_button_email ignore at300b" target="_blank" title="Email" href="#"><span class="at-icon-wrapper" style="background-color: rgb(132, 132, 132); line-height: 16px; height: 16px; width: 16px;"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32" version="1.1" role="img" aria-labelledby="at-svg-email-4" title="Email" alt="Email" style="width: 16px; height: 16px;" class="at-icon at-icon-email"><title id="at-svg-email-4">Email</title><g><g fill-rule="evenodd"></g><path d="M27 22.757c0 1.24-.988 2.243-2.19 2.243H7.19C5.98 25 5 23.994 5 22.757V13.67c0-.556.39-.773.855-.496l8.78 5.238c.782.467 1.95.467 2.73 0l8.78-5.238c.472-.28.855-.063.855.495v9.087z"></path><path d="M27 9.243C27 8.006 26.02 7 24.81 7H7.19C5.988 7 5 8.004 5 9.243v.465c0 .554.385 1.232.857 1.514l9.61 5.733c.267.16.8.16 1.067 0l9.61-5.733c.473-.283.856-.96.856-1.514v-.465z"></path></g></svg></span></a>
+
+
+		<a href="https://www.addthis.com/bookmark.php?v=300&amp;pubid=bepress" class="addthis_button_compact at300m"><span class="at-icon-wrapper" style="background-color: rgb(255, 101, 80); line-height: 16px; height: 16px; width: 16px;"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32" version="1.1" role="img" aria-labelledby="at-svg-addthis-5" title="More" alt="More" style="width: 16px; height: 16px;" class="at-icon at-icon-addthis"><title id="at-svg-addthis-5">AddThis</title><g><path d="M18 14V8h-4v6H8v4h6v6h4v-6h6v-4h-6z" fill-rule="evenodd"></path></g></svg></span></a>
+	<div class="atclear"></div></p>
+	<script type="text/javascript" src="https://s7.addthis.com/js/300/addthis_widget.js#pubid=bepress"></script>
+
+</div>
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_7_3.inc (cont) -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_geolocate.inc --><!-- FILE: /srv/sequoia/main/data/assets/site/ir_geolocate_enabled_and_displayed.inc -->
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_geolocate.inc (cont) -->
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_7_3.inc (cont) -->
+
+	<!-- FILE: /srv/sequoia/main/data/assets/site/zotero_coins.inc -->
+
+<span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft_id=https%3A%2F%2Fscholarworks.wmich.edu%2Fhonors_theses%2F830&amp;rft.atitle=Turning%20and%20Turning%20in%20the%20Widening%20Gyre%3A%20An%20Exploration%20of%20the%20Poetry%20of%20William%20Butler%20Yeats&amp;rft.aufirst=Natalie&amp;rft.aulast=Luhrs&amp;rft.jtitle=Honors%20Theses&amp;rft.date=1995-12-07">COinS</span>
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_7_3.inc (cont) -->
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_custom_lower.inc -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_7_3.inc (cont) -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_etd/article/article_info.inc (cont) --></div>
+
+
+<div class="clear">&nbsp;</div>
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_etd/article/ir_article_custom_fields.inc -->
+
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_etd/article/article_info.inc (cont) -->
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_etd/article/index.html (cont) -->
+<!-- FILE /srv/sequoia/main/data/assets/site/footer.pregen --></div>
+	<div class="verticalalign">&nbsp;</div>
+	<div class="clear">&nbsp;</div>
+
+</div>
+
+	<div id="sidebar" role="complementary">
+	<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_7_8.inc -->
+
+	<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_sort_sba.inc --><!-- FILE: /srv/sequoia/main/data/scholarworks.wmich.edu/assets/ir_sidebar_custom_upper_7_8.inc --><div id="sb-custom-upper">
+	<h2 class="sb-custom-title">ScholarWorks</h2>
+		<ul class="sb-custom-ul">
+			<li class="sb-custom-li">
+				<a href="https://scholarworks.wmich.edu/cgi/myaccount.cgi?context=honors_theses" title="My Account">
+						<span>My Account</span>
+				</a>
+			</li>
+			<li class="sb-custom-li">
+				<a href="https://scholarworks.wmich.edu/faq.html" title="FAQ">
+						<span>FAQ</span>
+				</a>
+			</li>
+
+			
+			<li class="sb-custom-li">
+				<a href="https://scholarworks.wmich.edu" title="Home" accesskey="3">
+						<span>Home</span>
+				</a>
+			</li>
+			</ul>
+</div><!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_sort_sba.inc (cont) -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_search_7_8.inc -->
+
+
+	
+<form method="get" action="https://scholarworks.wmich.edu/do/search/" id="sidebar-search">
+	<label for="search" accesskey="4">
+		Enter search terms:
+	</label>
+		<div>
+			<span class="border">
+				<input type="text" name="q" class="search" id="search">
+			</span> 
+			<input type="submit" value="Search" class="searchbutton" style="font-size:11px;">
+		</div>
+	<label for="context" style="display:none;">
+		Select context to search:
+	</label> 
+		<div>
+			<span class="border">
+				<select name="fq" id="context">
+					
+					
+						<option value="virtual_ancestor_link:&quot;https://scholarworks.wmich.edu/honors_theses&quot;">in this series</option>
+					
+					
+					
+					<option value="virtual_ancestor_link:&quot;https://scholarworks.wmich.edu&quot;">in this repository</option>
+					<option value="virtual_ancestor_link:&quot;http:/&quot;">across all repositories</option>
+				</select>
+			</span>
+		</div>
+</form>
+
+<p class="advanced">
+	
+	
+		<a href="https://scholarworks.wmich.edu/do/search/advanced/?fq=virtual_ancestor_link:%22https://scholarworks.wmich.edu/honors_theses%22">
+			Advanced Search
+		</a>
+	
+</p>
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_sort_sba.inc (cont) -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_notify_7_8.inc -->
+
+
+	<ul id="side-notify">
+		<li class="notify">
+			<a href="https://scholarworks.wmich.edu/honors_theses/announcements.html" title="Email or RSS Notifications">
+				Notify me via email or <acronym title="Really Simple Syndication">RSS</acronym>
+			</a>
+		</li>
+	</ul>
+
+
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/urc_badge.inc -->
+
+
+
+
+
+
+
+
+<div id="urc-badge">
+<a href="http://undergraduatecommons.com" title="Undergraduate Research Commons">Undergraduate Research Commons</a>
+</div>
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_notify_7_8.inc (cont) -->
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_sort_sba.inc (cont) -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_custom_middle_7_8.inc --><!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_sort_sba.inc (cont) -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_browse.inc --><h2>Browse</h2>
+<ul id="side-browse">
+
+
+<li class="collections"><a href="https://scholarworks.wmich.edu/communities.html" title="Browse by Collections">Collections</a></li>
+<li class="discipline-browser"><a href="https://scholarworks.wmich.edu/do/discipline_browser/disciplines" title="Browse by Disciplines">Disciplines</a></li>
+<li class="author"><a href="https://scholarworks.wmich.edu/authors.html" title="Browse by Author">Authors</a></li>
+
+
+</ul>
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_sort_sba.inc (cont) -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_author_7_8.inc --><h2>Author Corner</h2>
+
+
+
+
+
+
+	<ul id="side-author">
+		<li class="faq">
+			<a href="https://scholarworks.wmich.edu/faq.html" title="Author FAQ">
+				Author FAQ
+			</a>
+		</li>
+		
+		
+		
+			<li class="submit">
+				<a href="https://scholarworks.wmich.edu/cgi/ir_submit.cgi?context=honors_theses">
+					Submit Research
+				</a>
+			</li>
+		
+	</ul>
+
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_sort_sba.inc (cont) -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_custom_lower_7_8.inc --><!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_homepage_links_7_8.inc --><h2>Links</h2>
+	<ul id="homepage-links">
+		<li class="sb-homepage">
+			
+				<a href="http://www.wmich.edu/honors/" title="honors_theses Home Page">
+						Lee Honors College
+				</a>
+			
+			
+			
+		</li>
+	</ul>
+
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_custom_lower_7_8.inc (cont) -->
+	
+
+
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_sort_sba.inc (cont) -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_sw_links_7_8.inc -->
+
+	
+		
+	
+
+
+	<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_sort_sba.inc (cont) -->
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_geolocate.inc --><!-- FILE: /srv/sequoia/main/data/assets/site/ir_geolocate_enabled_and_displayed.inc -->
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_geolocate.inc (cont) -->
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_sort_sba.inc (cont) -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_custom_lowest_7_8.inc -->
+
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_sort_sba.inc (cont) -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_7_8.inc (cont) -->
+
+
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/footer.pregen (cont) -->
+	<div class="verticalalign">&nbsp;</div>
+	</div>
+
+</div>
+
+<!-- FILE: /srv/sequoia/main/data/scholarworks.wmich.edu/assets/ir_footer_content.inc --><div id="footer">
+	
+	
+	<!-- FILE: /srv/sequoia/main/data/assets/site/ir_bepress_logo.inc --><div id="bepress">
+
+<a href="https://www.bepress.com/products/digital-commons" title="Digital Commons: Powered by bepress">
+	<em>Digital Commons</em>
+</a>
+
+</div>
+<!-- FILE: /srv/sequoia/main/data/scholarworks.wmich.edu/assets/ir_footer_content.inc (cont) -->
+<div id="wmich_address"><p>  Western Michigan University Libraries, Kalamazoo MI 49008-5353 USA | (269) 387-5611</p></div>
+		<p>
+			<a href="https://scholarworks.wmich.edu" title="Home page" accesskey="1">
+					Home
+			</a> | 
+			<a href="https://scholarworks.wmich.edu/about.html" title="About">
+					About
+			</a> | 
+			<a href="https://scholarworks.wmich.edu/faq.html" title="FAQ">
+					FAQ
+			</a> | 
+			<a href="/cgi/myaccount.cgi?context=honors_theses" title="My Account Page" accesskey="3">
+					My Account
+			</a> | 
+			<a href="https://scholarworks.wmich.edu/accessibility.html" title="Accessibility Statement" accesskey="0">
+					Accessibility Statement
+			</a>
+		</p>
+	<p>
+        <a class="secondary-link" href="http://www.bepress.com/privacy.html" title="Privacy Policy">
+                                Privacy
+        </a> | 
+        <a class="secondary-link" href="http://www.bepress.com/copyright_infringement.html" title="Copyright Policy">
+                                Copyright
+        </a> 
+	</p>		
+	
+</div><!-- FILE: /srv/sequoia/main/data/assets/site/footer.pregen (cont) -->
+
+</div>
+</div><iframe sandbox="allow-scripts allow-same-origin" title="Adobe ID Syncing iFrame" id="destination_publishing_iframe_elsevier_0" name="destination_publishing_iframe_elsevier_0_name" src="https://elsevier.demdex.net/dest5.html?d_nsid=0#https%3A%2F%2Fscholarworks.wmich.edu" style="display: none; width: 0px; height: 0px;" class="aamIframeLoaded"></iframe><div id="_atssh" style="visibility: hidden; height: 1px; width: 1px; position: absolute; top: -9999px; z-index: 100000;"><iframe id="_atssh460" title="AddThis utility frame" style="height: 1px; width: 1px; position: absolute; top: 0px; z-index: 100000; border: 0px; left: 0px;" src="https://s7.addthis.com/static/sh.f48a1a04fe8dbf021b4cda1d.html#rand=0.35736187456018453&amp;iit=1656002505989&amp;tmr=load%3D1656002504281%26core%3D1656002504584%26main%3D1656002505984%26ifr%3D1656002506078&amp;cb=0&amp;cdn=0&amp;md=0&amp;kw=&amp;ab=-&amp;dh=scholarworks.wmich.edu&amp;dr=&amp;du=https%3A%2F%2Fscholarworks.wmich.edu%2Fhonors_theses%2F830%2F&amp;href=https%3A%2F%2Fscholarworks.wmich.edu%2Fhonors_theses%2F830%2F&amp;dt=Turning%20and%20Turning%20in%20the%20Widening%20Gyre%3A%20An%20Exploration%20of%20the%20Poetry%20of%20William%20Butler%20Yeats&amp;dbg=0&amp;cap=tc%3D0%26ab%3D0&amp;inst=1&amp;jsl=1&amp;prod=undefined&amp;lng=en&amp;ogt=site_name%2Curl%2Ctype%3Darticle%2Cdescription%2Ctitle&amp;pc=men&amp;pub=bepress&amp;ssl=1&amp;sid=62b497c8fbd97263&amp;srf=0.01&amp;ver=300&amp;xck=0&amp;xtr=0&amp;og=title%3DTurning%2520and%2520Turning%2520in%2520the%2520Widening%2520Gyre%253A%2520An%2520Exploration%2520of%2520the%2520Poetry%2520of%2520William%2520Butler%2520Yeats%26description%3DA%2520gyre%252C%2520as%2520William%2520Butler%2520Yeats%2520saw%2520it%252C%2520is%2520two%2520cones%2520that%2520are%2520inextricably%2520connected%2520and%2520dependent%2520upon%2520each%2520other%253A%2520the%2520base%2520of%2520one%2520is%2520the%2520apex%2520of%2520the%2520other.%2520They%2520rotate%2520in%2520opposite%2520directions%252C%2520constantly%2520spiraling%2520in%2520and%2520spiraling%2520out.%2520Yeats%2520used%2520this%2520idea%2520of%2520a%2520gyre%2520in%2520his%2520philosophical%2520writings%2520and%2520as%2520a%2520major%2520image%2520in%2520his%2520poetry.%2520The%2520gyre%2520represents%2520the%2520cycles%2520of%2520history%252C%2520which%2520are%2520always%2520expanding%2520and%2520then%2520collapsing%2520in%2520upon%2520themselves.%2520One%2520can%2520take%2520this%2520idea%2520and%2520apply%2520it%2520to%2520Yeats's%2520own%2520poetry.%2520His%2520interests%2520seem%2520to%2520spiral%2520in%2520and%2520out%2520like%2520a%2520gyre%252C%2520spinning%2520from%2520a%2520personal%2520concern%2520to%2520a%2520worldly%2520concern%2520and%2520then%2520back%2520to%2520a%2520subjective%2520view%2520at%2520the%2520end%2520of%2520his%2520life.%2520However%252C%2520his%2520end%2520view%252C%2520while%2520concerned%2520with%2520his%2520personal%2520feelings%252C%2520is%2520tempered%2520by%2520the%2520knowledge%2520he%2520had%2520gained%2520through%2520his%2520life%252C%2520and%2520is%2520therefore%2520less%2520naive%2520than%2520his%2520earlier%2520poetry%252C%2520where%2520he%2520had%2520been%2520waiting%2520for%2520%2522the%2520bosom%2520of%2520his%2520fairy%2520bride%2522%2520(%2522The%2520Circus%2520Animals'%2520Desertion%2522%252016).%26type%3Darticle%26url%3Dhttps%253A%252F%252Fscholarworks.wmich.edu%252Fhonors_theses%252F830%26site_name%3DScholarWorks%2520at%2520WMU&amp;csi=undefined&amp;rev=v8.28.8-wp&amp;ct=1&amp;xld=1&amp;xd=1"></iframe></div><style id="service-icons-0"></style>
+
+<!-- FILE: /srv/sequoia/main/data/scholarworks.wmich.edu/assets/ir_analytics.inc --><!-- Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-22058584-2', 'auto');
+  ga('create', 'UA-2595311-1', 'auto', {'name': 'newTracker'});  // Admin tracker.
+
+  ga('send', 'pageview');
+  ga('newTracker.send', 'pageview'); // Send page view for admin tracker.
+
+</script>
+<!-- End Google Analytics --><!-- FILE: /srv/sequoia/main/data/assets/site/footer.pregen (cont) -->
+
+<script type="text/javascript" src="/assets/scripts/bpbootstrap-20160726.pack.js"></script><script type="text/javascript">BPBootstrap.init({appendCookie:''})</script>
+<script>_satellite["__runScript1"](function(event, target) {
+_satellite.logger.log("eventDispatcher: clearing tracking state");try{s.events="",s.linkTrackVars="",s.linkTrackEvents=""}catch(e){_satellite.logger.log("eventDispatcher: s object - could not reset state.")}try{dispatcherData=JSON.parse(event.detail),window.eventData=dispatcherData.eventData,window.pageData=dispatcherData.pageData,_satellite.track(dispatcherData.eventName)}catch(e){_satellite.logger.log("eventDispatcher: exception"),_satellite.logger.log(e)}
+});</script><img src="/do/tracking-gif/cover-page.gif?article_uri=https%3A%2F%2Fscholarworks.wmich.edu%2Fhonors_theses%2F830%2F" height="1" width="1" alt="" style="display: none"></body></html>

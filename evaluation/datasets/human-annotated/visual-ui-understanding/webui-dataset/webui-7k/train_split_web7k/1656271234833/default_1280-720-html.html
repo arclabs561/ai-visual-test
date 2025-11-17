@@ -1,0 +1,193 @@
+<html><head>
+<!-- Document Metadata -->
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Language" content="en">
+<title>Datenbankzugriffe parallelisieren mit ØMQ | Austrian Perl Workshop 2014 | 10th and 11th October</title>
+<!-- CSS stylesheets -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="/apw2014/css/bootstrap-3.1.1.min.css" rel="stylesheet" media="screen">
+<link rel="stylesheet" type="text/css" href="/apw2014/css/main.css">
+<link rel="stylesheet" type="text/css" href="/apw2014/css/print.css" media="print">
+<!-- OpenId -->  <!-- Atom news feed -->
+<link rel="alternate" type="application/atom+xml" title="Austrian Perl Workshop 2014" href="http://act.useperl.at/apw2014/atom/en.xml">
+    <!-- Favorite icon -->
+    <link rel="shortcut icon" type="image/png" href="/favicon.png">
+</head>
+<body style="">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2">
+                <div id="logo">
+                <a href="/apw2014/">
+                    <object type="image/svg+xml" data="/apw2014/images/apw2014-salzburg.svg"></object>
+                </a>
+                </div>
+                <div id="menu"> <div class="menu_box">
+  <a href="/apw2014/index.html"><i class="glyphicon-home"></i>Workshop</a>
+  <a href="/apw2014/wiki?node=HackaThon"><i class="glyphicon-cog"></i>Hackathon</a>
+  <a href="/apw2014/venue.html"><i class="glyphicon-map-marker"></i>Venue</a>
+  <a href="/apw2014/impressum.html"><i class="glyphicon-envelope"></i>Contact </a>
+  <a href="/apw2014/sponsors.html"><i class="glyphicon-cutlery"></i>Sponsors </a>
+</div>
+<div class="menu_box user"><!-- user menu -->  <div class="menu_section"> Register </div>
+  <a href="/apw2014/main"><i class="glyphicon-log-in"></i>Log in</a>      <span id="goto-lang"> <a href="/apw2014/talk/5738?language=de">→&nbsp;Deutsch</a>  </span></div>
+<div class="menu_box users"><!-- users menu --> <div class="menu_section"> Users </div>
+  <a href="/apw2014/search">
+ <i class="glyphicon-search"></i>Search </a>    <a href="/apw2014/stats">
+ <i class="glyphicon-stats"></i>Statistics </a></div>
+<div class="menu_box news"><div class="menu_section"> <a href="/apw2014/news"><i class="glyphicon-inbox"></i>News</a> </div></div>
+<div class="menu_box wiki"><div class="menu_section"> <a href="/apw2014/wiki"><i class="glyphicon-book"></i>Wiki</a> </div></div>
+<div class="menu_box talks"><!-- talks menu --> <div class="menu_section"> <a href="/apw2014/talks">
+ <i class="glyphicon-bullhorn"></i>Presentations </a> </div>
+  <a href="/apw2014/favtalks">
+ <i class="glyphicon-star"></i>Favorite Talks </a>      <a href="/apw2014/schedule">
+    <i class="glyphicon-time"></i>Schedule </a>    <a href="/apw2014/timetable.ics">
+    <i class="glyphicon-calendar"></i>iCal export </a></div>
+<div class="menu_box events"></div>
+<div class="menu_box treasurer"><!-- money menu --></div>
+<div class="menu_box admin"><!-- admin menu --></div>
+<div class="menu_box act_confs"><div class="menu_section"> <a href="http://act.mongueurs.net/conferences.html">Other conferences</a> </div>
+  <a href="http://act.perl-workshop.ch/srpmc2020/">Swiss Raku and Perl Miniconf 2022</a>   <a href="http://act.perl-workshop.ch/srpmc2022/">Swiss Raku and Perl Miniconf 2022</a>   <a href="https://act.yapc.eu/gpw2023/">German Perl/Raku Workshop 2023</a></div>
+ </div>
+            </div>
+            <div id="content" class="col-md-8"><h1>Datenbankzugriffe parallelisieren mit ØMQ</h1>  <script type="text/javascript">
+if (window.act) {
+    var titles = [  'remove from personal schedule',  'add to personal schedule',  ];
+    toggle_image = function(elem, talk_id, set) {
+        var data = { img_name: set ? 'picked' : 'unpicked',
+                     title:    titles[set ? 0 : 1 ],
+                     talk_id:  talk_id,
+                     set:      set
+        };
+        $(elem).replaceWith( act.template("tpl_mtbutton", data) );  $("#my-"+talk_id+"-text").replaceWith( act.template("tpl_mtlabel", data) );  };
+    toggle_count = function(talk_id, set) {
+        var elemcount = "#starcount-" + talk_id;
+        $(elemcount).replaceWith(
+            act.template("tpl_starcount",
+                         { talk_id: talk_id,
+                           count: (parseInt($(elemcount + " > .starcount").text()) || 0) + (set ? 1 : -1)
+                         }
+                        ));
+    };
+    toggle_talk = function(elem, talk_id, set) {
+        $.post(act.make_uri('apw2014', 'updatemytalks_a'), {talk_id: talk_id} );
+        toggle_image(elem, talk_id, !set);
+        toggle_count(talk_id, !set);
+    };
+    $(function() {
+        $(".mytalks_submit").remove();
+        $(":checkbox").each(function() {
+            toggle_image(this, $(this).val(), $(this).prop("checked"));
+        });
+    });
+}
+</script>
+
+ <script type="text/html" id="tpl_mtbutton">
+<img class="mtbutton" src="/images/<%=img_name%>.gif" title="<%=title%>"
+     onClick ="toggle_talk(this,<%=talk_id%>,<%=set%>);" />
+</script>
+
+<script type="text/html" id="tpl_mtlabel">
+<span id="my-<%=talk_id%>-text"><%=title%></span>
+</script>
+
+<script type="text/html" id="tpl_starcount">
+<span id="starcount-<%=talk_id%>" style="white-space:nowrap"><% if (count) { %><span class="starcount"><%=count%></span><img style="vertical-align:middle" src="/images/picked.gif" /><% } %></span>
+</script>
+ <h1>Datenbankzugriffe parallelisieren mit ØMQ</h1>
+<p>
+<b>By</b> <a href="/apw2014/user/198">Peter Holzer (‎hjp‎)</a>   from  <a href="http://vienna.pm.org/">Vienna.pm</a>   <br>  <b>Date:</b> <a href="/apw2014/schedule?day=2014-10-10">Friday, 10 October 2014</a> 13:30<br>
+
+<b>Duration:</b> 40 minutes<br>   <b>Target audience:</b> Intermediate<br>   <b>Language:</b> Deutsch<br>   <b>Tags:</b> <a href="/apw2014/talks/tag/databases">databases</a> <a href="/apw2014/talks/tag/parallelization">parallelization</a> <a href="/apw2014/talks/tag/perl">perl</a> <a href="/apw2014/talks/tag/%C3%B8mq">ømq</a>  </p>  <p> You can find more information on the speaker's site:</p>
+ <ul>   <li>Talk: <a href="http://www.hjp.at/publ/zmq/">http://www.hjp.at/publ/zmq/</a>
+      </li>  </ul>   <hr>  <p>Die volkswirtschaftliche Datenbank des WIFO besteht seit 1973 und<br>
+enthält eine bunte Mischung wirtschaftswissenschaftlicher Daten in Form<br>
+von Zeitreihen.<br>
+<br>
+Nach der Umstellung von einer hierarchischen Datenbank auf Unisys auf<br>
+eine relationale Datenbank (Oracle) unter Unix Anfang der 90er-Jahre<br>
+steht nun der zweite große Rewrite an.<br>
+<br>
+Für typische Querys müssen potentiell große Teile der Datenbank<br>
+durchsucht werden, das Datenmodell erlaubt aber eine effiziente<br>
+Parallelisierung.<br>
+<br>
+Querys werden daher in einfachere Querys aufgespaltet, diese werden<br>
+parallel von mehreren Worker-Prozessen abgearbeitet und die Ergebnisse<br>
+schließlich wieder kombiniert.<br>
+<br>
+Die Kommunikation zwischen den beteiligten Prozessen erfolgt über ØMQ,<br>
+ein sprachunabhängiges, low-level Framework für<br>
+Interprozesskommunikation.</p>  <hr>  <b>Attended by:</b>  <a href="/apw2014/user/1611">Markus Förster</a>,  <a href="/apw2014/user/1888">Thomas Heine</a>,  <a href="/apw2014/user/6858">David Schmidt (‎davewood‎)</a>,  <a href="/apw2014/user/4953">Stephen Riehm</a>,  <a href="/apw2014/user/8726">Johann Rolschewski (‎jorol‎)</a>,  <a href="/apw2014/user/9055">Philipp Gortan (‎mephinet‎)</a>,  <a href="/apw2014/user/305">Stefan Seifert (‎Nine‎)</a>,  <a href="/apw2014/user/198">Peter Holzer (‎hjp‎)</a>,  <a href="/apw2014/user/10692">Nina Bieringer</a>,  <a href="/apw2014/user/10835">Sebastian Hofer</a>,  <a href="/apw2014/user/10962">Ernst Lammer</a>,  <a href="/apw2014/user/1026">Elizabeth Mattijsen (‎liz‎)</a>,  <a href="/apw2014/user/2020">Roland Ortner</a>,  <a href="/apw2014/user/10478">Timo Paulssen (‎timotimo‎)</a>,  <a href="/apw2014/user/4756">Wendy Van Dijk (‎woolfy‎)</a>,      </div>
+            <div class="col-md-2">
+                <div id="sponsor"> <h2>Sponsors</h2>
+
+<div class="sponsor">
+<a href="http://www.yelsterdigital.com/"><img src="/apw2014/images/sponsors/yelsterdigital_logo.png" alt="yelsterdigital.com"></a>
+</div>
+
+<div class="sponsor">
+<a href="http://www.techno-z.at/"><img src="/apw2014/images/sponsors/technoz_logo.png" alt="Techno-Z"></a>
+</div>
+
+<div class="sponsor">
+<a href="http://ncm.at/"><img src="/apw2014/images/sponsors/ncm.png" alt="ncm.at"></a><br>
+</div>
+
+<div class="sponsor">
+<a href="http://perl6.org/"><img src="/apw2014/images/sponsors/camelia-logo.png" alt="perl6.org"></a><br>
+</div>
+
+<div class="sponsor">
+<a href="http://vienna.pm.org/"><img src="/apw2014/images/sponsors/viennapm_logo-140x143.png" alt="Vienna Perl Mongers"></a><br>
+</div>
+
+<div class="sponsor">
+<a href="http://2ndquadrant.com/"><img src="/apw2014/images/sponsors/2ndQuadrant.png" alt="2nd Quadrant"></a><br>
+</div>
+
+<div class="sponsor">
+<a href="http://www.baumer-its.ch/"><img src="/apw2014/images/sponsors/baumer_its_ch_logo.png" alt="baumer it-services"></a>
+</div>
+
+<div class="sponsor">
+<h4><a href="/apw2014/sponsors.html">Become a sponsor!</a></h4>
+</div>
+
+<h2>Partners</h2>
+
+<div style="margin-top:1em;">
+<a href="http://perlweekly.com/" style="
+  background-color: #004065;
+  color: #FFF;
+  text-decoration: none;
+  font-weight: bold;
+  font-family: Gadget;
+  border-radius: 2px;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  border: 1px solid #000;
+  padding: 10px;
+">Perl Weekly</a>
+</div>
+ </div>
+            </div>
+        </div>
+        <div class="row" id="footer">
+            <div class="col-md-3"></div>
+            <div class="col-md-8">
+                © 2003-2014 Verein 'Vienna.pm - Verein zur Förderung der Programmiersprache Perl'.<br>
+                To contact the organisers send e-mail to apw2014@plix.at
+                <br>
+                <a href="/apw2014/impressum.html"> About </a>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+    </div>
+    <script type="text/javascript" src="/apw2014/js/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="/js/act.js"></script>
+    <script type="text/javascript" src="/apw2014/js/bootstrap-3.1.1.min.js"></script>
+
+
+ </body></html>

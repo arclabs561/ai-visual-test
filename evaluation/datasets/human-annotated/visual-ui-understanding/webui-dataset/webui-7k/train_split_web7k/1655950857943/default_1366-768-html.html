@@ -1,0 +1,524 @@
+<!DOCTYPE html><html lang="en-US"><head><meta charset="UTF-8"><script>if(navigator.userAgent.match(/MSIE|Internet Explorer/i)||navigator.userAgent.match(/Trident\/7\..*?rv:11/i)){var href=document.location.href;if(!href.match(/[?&]nowprocket/)){if(href.indexOf("?")==-1){if(href.indexOf("#")==-1){document.location.href=href+"?nowprocket=1"}else{document.location.href=href.replace("#","?nowprocket=1#")}}else{if(href.indexOf("#")==-1){document.location.href=href+"&nowprocket=1"}else{document.location.href=href.replace("#","&nowprocket=1#")}}}}</script><script>class RocketLazyLoadScripts{constructor(e){this.triggerEvents=e,this.eventOptions={passive:!0},this.userEventHandler=this.triggerListener.bind(this),this.delayedScripts={normal:[],async:[],defer:[]},this.allJQueries=[]}_addUserInteractionListener(e){this.triggerEvents.forEach((t=>window.addEventListener(t,e.userEventHandler,e.eventOptions)))}_removeUserInteractionListener(e){this.triggerEvents.forEach((t=>window.removeEventListener(t,e.userEventHandler,e.eventOptions)))}_interceptClicks(e){e.interceptedClicks=[],e.clickHandler=e._saveClicks.bind(e),window.addEventListener("click",e.clickHandler)}_saveClicks(e){this.interceptedClicks.push(e),e.target.matches('a[href="#"], a[href="#"] *')&&e.preventDefault()}_replayClicks(){window.removeEventListener("click",this.clickHandler),this.interceptedClicks.forEach((e=>{e.target.dispatchEvent(new MouseEvent("click",{view:e.view,bubbles:!0,cancelable:!0}))}))}triggerListener(){this._removeUserInteractionListener(this),"loading"===document.readyState?document.addEventListener("DOMContentLoaded",this._loadEverythingNow.bind(this)):this._loadEverythingNow()}async _loadEverythingNow(){this._delayEventListeners(),this._delayJQueryReady(this),this._handleDocumentWrite(),this._registerAllDelayedScripts(),this._preloadAllScripts(),await this._loadScriptsFromList(this.delayedScripts.normal),await this._loadScriptsFromList(this.delayedScripts.defer),await this._loadScriptsFromList(this.delayedScripts.async),await this._triggerDOMContentLoaded(),await this._triggerWindowLoad(),window.dispatchEvent(new Event("rocket-allScriptsLoaded")),this._replayClicks()}_registerAllDelayedScripts(){document.querySelectorAll("script[type=rocketlazyloadscript]").forEach((e=>{e.hasAttribute("src")?e.hasAttribute("async")&&!1!==e.async?this.delayedScripts.async.push(e):e.hasAttribute("defer")&&!1!==e.defer||"module"===e.getAttribute("data-rocket-type")?this.delayedScripts.defer.push(e):this.delayedScripts.normal.push(e):this.delayedScripts.normal.push(e)}))}async _transformScript(e){return await this._requestAnimFrame(),new Promise((t=>{const n=document.createElement("script");[...e.attributes].forEach((e=>{let t=e.nodeName;"type"!==t&&("data-rocket-type"===t&&(t="type"),n.setAttribute(t,e.nodeValue))})),e.hasAttribute("src")?(n.addEventListener("load",t),n.addEventListener("error",t)):(n.text=e.text,t()),e.parentNode.replaceChild(n,e)}))}async _loadScriptsFromList(e){const t=e.shift();return t?(await this._transformScript(t),this._loadScriptsFromList(e)):Promise.resolve()}_preloadAllScripts(){var e=document.createDocumentFragment();[...this.delayedScripts.normal,...this.delayedScripts.defer,...this.delayedScripts.async].forEach((t=>{const n=t.getAttribute("src");if(n){const t=document.createElement("link");t.href=n,t.rel="preload",t.as="script",e.appendChild(t)}})),document.head.appendChild(e)}_delayEventListeners(){let e={};function t(t,n){!function(t){function n(n){return e[t].eventsToRewrite.indexOf(n)>=0?"rocket-"+n:n}e[t]||(e[t]={originalFunctions:{add:t.addEventListener,remove:t.removeEventListener},eventsToRewrite:[]},t.addEventListener=function(){arguments[0]=n(arguments[0]),e[t].originalFunctions.add.apply(t,arguments)},t.removeEventListener=function(){arguments[0]=n(arguments[0]),e[t].originalFunctions.remove.apply(t,arguments)})}(t),e[t].eventsToRewrite.push(n)}function n(e,t){let n=e[t];Object.defineProperty(e,t,{get:()=>n||function(){},set(i){e["rocket"+t]=n=i}})}t(document,"DOMContentLoaded"),t(window,"DOMContentLoaded"),t(window,"load"),t(window,"pageshow"),t(document,"readystatechange"),n(document,"onreadystatechange"),n(window,"onload"),n(window,"onpageshow")}_delayJQueryReady(e){let t=window.jQuery;Object.defineProperty(window,"jQuery",{get:()=>t,set(n){if(n&&n.fn&&!e.allJQueries.includes(n)){n.fn.ready=n.fn.init.prototype.ready=function(t){e.domReadyFired?t.bind(document)(n):document.addEventListener("rocket-DOMContentLoaded",(()=>t.bind(document)(n)))};const t=n.fn.on;n.fn.on=n.fn.init.prototype.on=function(){if(this[0]===window){function e(e){return e.split(" ").map((e=>"load"===e||0===e.indexOf("load.")?"rocket-jquery-load":e)).join(" ")}"string"==typeof arguments[0]||arguments[0]instanceof String?arguments[0]=e(arguments[0]):"object"==typeof arguments[0]&&Object.keys(arguments[0]).forEach((t=>{delete Object.assign(arguments[0],{[e(t)]:arguments[0][t]})[t]}))}return t.apply(this,arguments),this},e.allJQueries.push(n)}t=n}})}async _triggerDOMContentLoaded(){this.domReadyFired=!0,await this._requestAnimFrame(),document.dispatchEvent(new Event("rocket-DOMContentLoaded")),await this._requestAnimFrame(),window.dispatchEvent(new Event("rocket-DOMContentLoaded")),await this._requestAnimFrame(),document.dispatchEvent(new Event("rocket-readystatechange")),await this._requestAnimFrame(),document.rocketonreadystatechange&&document.rocketonreadystatechange()}async _triggerWindowLoad(){await this._requestAnimFrame(),window.dispatchEvent(new Event("rocket-load")),await this._requestAnimFrame(),window.rocketonload&&window.rocketonload(),await this._requestAnimFrame(),this.allJQueries.forEach((e=>e(window).trigger("rocket-jquery-load"))),window.dispatchEvent(new Event("rocket-pageshow")),await this._requestAnimFrame(),window.rocketonpageshow&&window.rocketonpageshow()}_handleDocumentWrite(){const e=new Map;document.write=document.writeln=function(t){const n=document.currentScript,i=document.createRange(),r=n.parentElement;let a=e.get(n);void 0===a&&(a=n.nextSibling,e.set(n,a));const s=document.createDocumentFragment();i.setStart(s,0),s.appendChild(i.createContextualFragment(t)),r.insertBefore(s,a)}}async _requestAnimFrame(){return new Promise((e=>requestAnimationFrame(e)))}static run(){const e=new RocketLazyLoadScripts(["keydown","mousedown","mousemove","touchmove","touchstart","touchend","wheel"]);e._addUserInteractionListener(e),e._interceptClicks(e)}}RocketLazyLoadScripts.run();</script>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	
+	
+	<meta name="robots" content="index, follow">
+	<meta name="google-site-verification" content="uFrMY5NcYVWQlIigU6_n3a5N3sBU9YnEmzg1C7uKvK8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="msvalidate.01" content="A3430F268A01CE415E56C776B15556D2">
+	<meta http-equiv="content-language" content="en-us">
+    <link rel="pingback" href="https://webpundits.in/xmlrpc.php">
+	
+		<!-- All in One SEO Pro 4.1.7 -->
+		<title>Cheap Dedicated Server – 4 Locations – Each Cheap server for 60$</title><link rel="preload" as="style" href="https://fonts.googleapis.com/css?family=PT%20Sans%20Caption%7CRaleway%7COpen%20Sans&amp;subset=latin&amp;display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT%20Sans%20Caption%7CRaleway%7COpen%20Sans&amp;subset=latin&amp;display=swap" media="all" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT%20Sans%20Caption%7CRaleway%7COpen%20Sans&#038;subset=latin&#038;display=swap" /></noscript><link rel="stylesheet" href="https://webpundits.in/wp-content/cache/min/1/4829b21aefb89a0d797473a2a88b344e.css" media="all" data-minify="1">
+		<meta name="description" content="Buy cheap dedicated server hosting in USA, Canada, Germany and france fully with Windows, Linux and many more. We offers powerful and low cost dedicated servers at unbelievable price.">
+		<meta name="robots" content="max-image-preview:large">
+		<meta name="google-site-verification" content="uFrMY5NcYVWQlIigU6_n3a5N3sBU9YnEmzg1C7uKvK8">
+		<meta name="keywords" content="dedicated servers,cheap managed linux dedicated server hosting,cheap dedicated servers,linux dedicated server,windows dedicated server">
+		<link rel="canonical" href="https://webpundits.in/cheap-dedicated-server-hosting-usa-canada-germany-france/">
+		<meta name="google" content="nositelinkssearchbox">
+		<script type="rocketlazyloadscript" data-rocket-type="text/javascript">
+			window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+			ga('create', "UA-56543360-1", { 'cookieDomain': 'webpundits.in' } );
+			ga('require', 'outboundLinkTracker');
+			ga('send', 'pageview');
+		</script>
+		<script type="rocketlazyloadscript" async="" src="https://www.google-analytics.com/analytics.js"></script>
+		<script type="rocketlazyloadscript" data-minify="1" async="" src="https://webpundits.in/wp-content/cache/min/1/wp-content/plugins/all-in-one-seo-pack-pro/app/Common/Assets/js/autotrack.js?ver=1654928522' defer onload='"></script>
+		<!-- All in One SEO Pro -->
+
+
+<meta name="viewport" content="width=device-width">
+<link rel="apple-touch-icon-precomposed" href="apple-touch-icon.png">
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="apple-touch-icon-57x57.png">
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="apple-touch-icon-72x72.png">
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="apple-touch-icon-114x114.png">
+<link rel="dns-prefetch" href="//fonts.googleapis.com">
+<link href="https://fonts.gstatic.com" crossorigin="" rel="preconnect">
+<link rel="alternate" type="application/rss+xml" title="Buy RDP Online - Buy Cheap RDP - USA/UK/NL/FR/CA/DE/AU/SG » Feed" href="https://webpundits.in/feed/">
+<link rel="alternate" type="application/rss+xml" title="Buy RDP Online - Buy Cheap RDP - USA/UK/NL/FR/CA/DE/AU/SG » Comments Feed" href="https://webpundits.in/comments/feed/">
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	
+
+
+
+
+
+
+
+
+
+<style id="ainex-style-inline-css" type="text/css">
+ body{ background: #FFF; }                         #header{
+margin: 0 auto;
+}                    .header_inner #header.sticky #trueHeader{background-color: #272727;
+			background-image: -webkit-gradient(linear, left top, left bottom, from(#454545), to(#272727));
+			background-image: -webkit-linear-gradient(top, #454545, #272727);
+			background-image: -moz-linear-gradient(top, #454545, #272727);
+			background-image: -o-linear-gradient(top, #454545, #272727);
+			background-image: linear-gradient(to bottom, #454545, #272727);}
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style id="rocket-lazyload-inline-css" type="text/css">
+.rll-youtube-player{position:relative;padding-bottom:56.23%;height:0;overflow:hidden;max-width:100%;}.rll-youtube-player iframe{position:absolute;top:0;left:0;width:100%;height:100%;z-index:100;background:0 0}.rll-youtube-player img{bottom:0;display:block;left:0;margin:auto;max-width:100%;width:100%;position:absolute;right:0;top:0;border:none;height:auto;cursor:pointer;-webkit-transition:.4s all;-moz-transition:.4s all;transition:.4s all}.rll-youtube-player img:hover{-webkit-filter:brightness(75%)}.rll-youtube-player .play{height:72px;width:72px;left:50%;top:50%;margin-left:-36px;margin-top:-36px;position:absolute;background:url(https://webpundits.in/wp-content/plugins/wp-rocket/assets/img/youtube.png) no-repeat;cursor:pointer}
+</style>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://webpundits.in/wp-includes/js/jquery/jquery.min.js?ver=3.5.1" defer="" onload="" id="jquery-core-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://webpundits.in/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.3.2" defer="" onload="" id="jquery-migrate-js"></script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://webpundits.in/wp-content/cache/min/1/wp-content/plugins/ds-live-composer/js/plugins.js?ver=1654928522" defer="" onload="" id="dslc-plugins-js-js"></script>
+<script type="text/javascript" id="dslc-main-js-js-extra">
+/* <![CDATA[ */
+var DSLCAjax = {"ajaxurl":"https:\/\/webpundits.in\/wp-admin\/admin-ajax.php"};
+/* ]]> */
+</script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://webpundits.in/wp-content/plugins/ds-live-composer/js/main.min.js?ver=1.2.4.1" defer="" onload="" id="dslc-main-js-js"></script>
+<link rel="https://api.w.org/" href="https://webpundits.in/wp-json/"><link rel="alternate" type="application/json" href="https://webpundits.in/wp-json/wp/v2/pages/2638"><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://webpundits.in/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://webpundits.in/wp-includes/wlwmanifest.xml"> 
+<meta name="generator" content="WordPress 5.7.6">
+<link rel="shortlink" href="https://webpundits.in/?p=2638">
+<link rel="shortcut icon" href="https://webpundits.in/wp-content/uploads/2020/06/favicon-16x16-1.png">
+<style type="text/css">@import url("//fonts.googleapis.com/css?family=Open+Sans:100,200,300,400,500,600,700,800,900&subset=latin,cyrillic"); .dslc-modules-section-wrapper, .dslca-add-modules-section { width : 1170px; } .dslc-modules-section { background-image:disabled;background-repeat:repeat;background-position:left top;background-attachment:scroll;background-size:auto;border-width:0px;border-style:solid;margin-left:0%;margin-right:0%;margin-bottom:0px;padding-bottom:80px;padding-top:80px;padding-left:0%;padding-right:0%; }#dslc-content #dslc-module-704 .ainex-title h3 { background-color : transparent ; border-width : 0px; border-style : solid solid solid solid  ; border-top-left-radius : 0px; border-top-right-radius : 0px; border-bottom-left-radius : 0px; border-bottom-right-radius : 0px; font-size : 30px; font-weight : 400; font-family : Open Sans ; line-height : 27px; margin-bottom : 0px; padding-top : 0px; padding-bottom : 0px; padding-left : 0px; padding-right : 0px; text-align : left ;  } #dslc-content #dslc-module-704 .ainex-title p { text-align : right ; margin-bottom : 15px;  } #dslc-content #dslc-module-704 .ainex-title { margin-left : 0px; margin-right : 0px; margin-top : 0px; margin-bottom : 31px; padding-top : 0px; padding-bottom : 0px; padding-left : 0px; padding-right : 0px;  }  { margin-top : 0px; margin-bottom : 0px;  } #dslc-content #dslc-module-138 .ainex-title h3 { background-color : transparent ; border-width : 0px; border-style : solid solid solid solid  ; border-top-left-radius : 0px; border-top-right-radius : 0px; border-bottom-left-radius : 0px; border-bottom-right-radius : 0px; font-size : 30px; font-weight : 400; font-family : Open Sans ; line-height : 27px; margin-bottom : 0px; padding-top : 0px; padding-bottom : 0px; padding-left : 0px; padding-right : 0px; text-align : left ;  } #dslc-content #dslc-module-138 .ainex-title p { text-align : center ; margin-bottom : 15px;  } #dslc-content #dslc-module-138 .ainex-title { margin-left : 0px; margin-right : 0px; margin-top : 20px; margin-bottom : 24px; padding-top : 5px; padding-bottom : 5px; padding-left : 0px; padding-right : 0px;  }  { margin-top : 0px; margin-bottom : 0px;  } #dslc-content #dslc-module-23 .whyus { margin-bottom : 0px;  } </style>		<style type="text/css" id="wp-custom-css">
+			.footer_sectwo .payments_list li img {
+    height: 32px;
+}
+.footerlink li {
+	display:inline-block;
+	margin:10px;
+}
+
+.Breadcrumbss {
+display: none;
+}		</style>
+		<style type="text/css" title="dynamic-css" class="options-output">body{font-family:PT Sans Caption;font-weight:normal;font-style:normal;}.nav{font-family:Raleway;font-weight:normal;font-style:normal;}h1{font-family:Open Sans;font-weight:normal;font-style:normal;}h2{font-family:Open Sans;font-weight:normal;font-style:normal;}h3{font-family:Open Sans;font-weight:normal;font-style:normal;}h4{font-family:Open Sans;font-weight:normal;font-style:normal;}h5{font-family:Open Sans;font-weight:normal;font-style:normal;}h6{font-family:Open Sans;font-weight:normal;font-style:normal;}.page_title{background-color:#EEEEEE;}.main_header{background-color:#272727;background-repeat:no-repeat;}</style><noscript><style id="rocket-lazyload-nojs-css">.rll-youtube-player, [data-lazy-src]{display:none !important;}</style></noscript>	<!-- Global site tag (gtag.js) - Google Ads: 948288423 -->
+<script type="rocketlazyloadscript" async="" src="https://www.googletagmanager.com/gtag/js?id=AW-948288423"></script>
+<script type="rocketlazyloadscript">
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-948288423');
+</script>
+</head>
+<body class="page-template-default page page-id-2638 dslc-page dslc-page-has-content">
+          <div class="site_wrapper">
+  <!-- HEADER -->
+  <div class="header_inner">
+    <header id="header">
+        <div class="main_header">
+                      <!-- Top header bar -->
+            <div id="topHeader">
+              <div class="wrapper">
+                <div class="top_contact_info">
+                  <div class="container">
+                                          <div class="date_wrap">
+                        <script type="rocketlazyloadscript" data-rocket-type="text/javascript">
+                          var mydate=new Date()
+                          var year=mydate.getYear()
+                          if (year < 1000)
+                          year+=1900
+                          var day=mydate.getDay()
+                          var month=mydate.getMonth()
+                          var daym=mydate.getDate()
+                          if (daym<10)
+                          daym="0"+daym
+                          var montharray=new Array("January","February","March","April","May","June","July","August","September","October","November","December")
+                           document.write("<b class='date'>"+montharray[month]+" "+daym+", "+year+"</b>")
+                        </script>
+                        </div><!-- end date -->
+                                        <ul class="tci_list">
+             <li class="empty two">
+        </li><li class="empty two"><a target="_blank" href="https://webpundits.in/clients/register.php">Register</a> |</li>
+        <li class="empty two"><a target="_blank" href="https://webpundits.in/clients/clientarea.php">Login</a> |</li>
+        <li class="empty two"><a target="_blank" href="https://webpundits.in/clients/submitticket.php">Contact</a></li>
+        <li class="space"></li>
+    
+     
+    
+            <li class="empty"><a target="_blank" href="https://api.whatsapp.com/send?phone=919610015111"><i class="fa fa-whatsapp">+91-9610015111</i> </a> </li>
+       
+
+        <li class="empty"><a href="skype:webpunditsrdp?chat"><i class="fa fa-skype">webpunditsrdp</i> </a> </li>
+       
+
+                        <li><a href="https://facebook.com/WebPundits"><i class="fa fa-facebook"></i></a></li>
+                    <li><a href="https://www.youtube.com/c/WebpunditsIn"><i class="fa fa-youtube"></i></a></li>
+                    <li><a href="https://twitter.com/webpundits"><i class="fa fa-twitter"></i></a></li>
+            
+    <li></li>
+    
+</ul>                  </div>
+                </div><!-- end top contact info -->
+              </div>
+            </div>
+          
+          <!-- Top header bar -->
+          <div id="trueHeader">
+          <div class="wrapper">
+            <div class="container">
+              <!-- Logo -->
+              <div class="one_fourth">
+                                  <a href="https://webpundits.in" class="ainex_logo">
+                    <img src="https://webpundits.in/wp-content/uploads/2014/08/logowebpundits1.png" alt="">
+                  </a>
+                              </div>
+              <!-- Menu -->
+              <div class="three_fourth last">
+                <nav id="access" class="access" role="navigation">
+                  <div id="menu" class="menu">
+                    <ul id="tiny"><li id="menu-item-2298" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-home menu-item-2298"><a title="Home" href="https://webpundits.in/">Home</a></li>
+<li id="menu-item-2227" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children dropdown menu-item-2227 dropdown"><a title="Buy RDP" href="https://webpundits.in/buy-rdp-online-paypal-payza-webmoney-perfect-money-bank-transfers/" data-toggle="dropdown" class="dropdown-toggle js-activated">Buy RDP<i class="fa fa-angle-down"></i></a>
+<ul role="menu" class=" dropdown-menu">
+	<li id="menu-item-2484" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2484"><a title="USA RDP (22 Locations)" target="_blank" href="https://webpundits.in/buy-usa-rdp/">USA RDP (22 Locations)</a></li>
+	<li id="menu-item-2391" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2391"><a title="Cheap RDP" target="_blank" href="https://webpundits.in/buy-cheap-rdp/">Cheap RDP</a></li>
+	<li id="menu-item-2567" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2567"><a title="Cheap RDP (SSD)" href="https://webpundits.in/buy-ssd-cheap-rdp/">Cheap RDP (SSD)</a></li>
+	<li id="menu-item-2455" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-2455"><a title="Cheap RDP (SAS)" href="https://webpundits.in/windows-cheap-rdp-sas/">Cheap RDP (SAS)</a></li>
+	<li id="menu-item-2615" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2615"><a title="Singapore RDP [NEW]" href="https://webpundits.in/buy-singapore-rdp-from-12/">Singapore RDP [NEW]</a></li>
+	<li id="menu-item-2599" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2599"><a title="Australia RDP" href="https://webpundits.in/buy-cheap-australia-rdp/">Australia RDP</a></li>
+	<li id="menu-item-2523" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2523"><a title="UK RDP" target="_blank" href="https://webpundits.in/buy-uk-rdp/">UK RDP</a></li>
+	<li id="menu-item-2396" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2396"><a title="France RDP" href="https://webpundits.in/windows-fr-upload-rdp/">France RDP</a></li>
+	<li id="menu-item-2536" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2536"><a title="Canada RDP" href="https://webpundits.in/buy-canada-rdp/">Canada RDP</a></li>
+	<li id="menu-item-2542" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2542"><a title="Germany RDP" href="https://webpundits.in/buy-cheap-germany-rdp/">Germany RDP</a></li>
+	<li id="menu-item-2392" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2392"><a title="Netherlands RDP" href="https://webpundits.in/buy-rdp-nl-online/">Netherlands RDP</a></li>
+	<li id="menu-item-2397" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2397"><a title="Encoding(ADMIN) RDP" href="https://webpundits.in/buy-encoding-rdp/">Encoding(ADMIN) RDP</a></li>
+</ul>
+</li>
+<li id="menu-item-2642" class="menu-item menu-item-type-custom menu-item-object-custom current-menu-ancestor current-menu-parent menu-item-has-children dropdown menu-item-2642 dropdown"><a title="Dedicated Servers" href="#" data-toggle="dropdown" class="dropdown-toggle js-activated">Dedicated Servers<i class="fa fa-angle-down"></i></a>
+<ul role="menu" class=" dropdown-menu">
+	<li id="menu-item-2591" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2591"><a title="USA Dedicated Server" href="https://webpundits.in/cheap-usa-dedicated-server/">USA Dedicated Server</a></li>
+	<li id="menu-item-2641" class="menu-item menu-item-type-post_type menu-item-object-page current-menu-item page_item page-item-2638 current_page_item menu-item-2641 active"><a title="60$ Cheap Dedicated Server" target="_blank" href="https://webpundits.in/cheap-dedicated-server-hosting-usa-canada-germany-france/">60$ Cheap Dedicated Server</a></li>
+	<li id="menu-item-2757" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2757"><a title="Arizona Dedicated Servers" href="https://webpundits.in/dedicated-servers-in-arizona-usa/">Arizona Dedicated Servers</a></li>
+	<li id="menu-item-2761" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2761"><a title="Chicago Dedicated Servers" href="https://webpundits.in/dedicated-servers-in-chicago-illinois/">Chicago Dedicated Servers</a></li>
+	<li id="menu-item-2760" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2760"><a title="Dallas, Texas Dedicated Servers" href="https://webpundits.in/dedicated-servers-in-dallas-usa/">Dallas, Texas Dedicated Servers</a></li>
+	<li id="menu-item-2756" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2756"><a title="Encino Dedicated Servers" href="https://webpundits.in/dedicated-servers-in-encino-california-usa/">Encino Dedicated Servers</a></li>
+	<li id="menu-item-2731" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2731"><a title="Iowa Dedicated Servers" href="https://webpundits.in/dedicated-server-in-iowa-usa/">Iowa Dedicated Servers</a></li>
+	<li id="menu-item-2758" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2758"><a title="Kansas City Dedicated Servers" href="https://webpundits.in/dedicated-servers-in-kansas-city-usa/">Kansas City Dedicated Servers</a></li>
+	<li id="menu-item-2732" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2732"><a title="Los Angeles Dedicated Servers" href="https://webpundits.in/dedicated-server-in-los-angeles-usa-web-pundits/">Los Angeles Dedicated Servers</a></li>
+	<li id="menu-item-2759" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2759"><a title="New York Dedicated Servers" href="https://webpundits.in/dedicated-server-in-new-york-rochester-usa/">New York Dedicated Servers</a></li>
+	<li id="menu-item-2755" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2755"><a title="Washington Dedicated Servers" href="https://webpundits.in/dedicated-server-in-washington-usa/">Washington Dedicated Servers</a></li>
+</ul>
+</li>
+<li id="menu-item-2633" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2633"><a title="RDP Sale" href="https://webpundits.in/buy-rdp-stock-clearance-sale/">RDP Sale</a></li>
+<li id="menu-item-2443" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children dropdown menu-item-2443 dropdown"><a title="Support Area" href="#" data-toggle="dropdown" class="dropdown-toggle js-activated">Support Area<i class="fa fa-angle-down"></i></a>
+<ul role="menu" class=" dropdown-menu">
+	<li id="menu-item-2234" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-2234"><a title="Client Area" target="_blank" href="https://webpundits.in/clients/clientarea.php">Client Area</a></li>
+	<li id="menu-item-2441" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-2441"><a title="Order your RDP" target="_blank" href="https://webpundits.in/clients/cart.php">Order your RDP</a></li>
+	<li id="menu-item-2235" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-2235"><a title="Support Ticket" target="_blank" href="http://webpundits.in/clients/supporttickets.php">Support Ticket</a></li>
+	<li id="menu-item-2338" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-2338"><a title="Knowledgebase" target="_blank" href="https://webpundits.in/clients/index.php?rp=/knowledgebase">Knowledgebase</a></li>
+</ul>
+</li>
+<li id="menu-item-2348" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children dropdown menu-item-2348 dropdown"><a title="Contact Us" href="https://webpundits.in/contact" data-toggle="dropdown" class="dropdown-toggle js-activated">Contact Us<i class="fa fa-angle-down"></i></a>
+<ul role="menu" class=" dropdown-menu">
+	<li id="menu-item-2609" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-2609"><a title="Email Us!" target="_blank" href="https://webpundits.in/clients/submitticket.php?step=2&amp;deptid=2">Email Us!</a></li>
+	<li id="menu-item-2608" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-2608"><a title="Chat On Facebook!" target="_blank" href="https://www.messenger.com/t/Webpundits">Chat On Facebook!</a></li>
+</ul>
+</li>
+</ul>                  </div>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+  </div>
+  <div class="clearfix"></div>	<div class="page_title">
+	  	<div class="container">
+	    	<div class="title">
+	      	<h1>Cheap Dedicated Server – 4 Locations – Each Cheap server for 60$</h1>
+	    	</div>
+	    	<div class="pagenation"><a href="https://webpundits.in">Home</a> <i>/</i> <i>Cheap Dedicated Server – 4 Locations – Each Cheap server for 60$</i></div>
+	  	</div>
+	</div>
+
+<div class="content_fullwidth">
+	<div class="container">
+		<div id="page-2638" class="post-2638 page type-page status-publish hentry">
+			<div id="dslc-content" class="dslc-content dslc-clearfix"><div id="dslc-main">
+		<div class="dslc-modules-section " style="background-color:rgb(255, 255, 255);border-right-style: hidden; border-left-style: hidden; margin-left:%;margin-right:%;margin-bottom:px;padding-bottom:0px;padding-top:0px;">
+
+				<div class="dslc-bg-video dslc-force-show"><div class="dslc-bg-video-inner"></div><div class="dslc-bg-video-overlay" style="background-color:#000000; "></div></div>
+
+				<div class="dslc-modules-section-wrapper dslc-clearfix"> <div class="dslc-modules-area dslc-col dslc-12-col dslc-last-col" data-size="12"> 
+		<div id="dslc-module-704" class="dslc-module-front dslc-module-Ainex_Title_Block dslc-in-viewport-check dslc-in-viewport-anim-none  dslc-col dslc-12-col dslc-last-col  dslc-module-handle-like-regular" data-module-id="704" data-dslc-module-id="Ainex_Title_Block" data-dslc-module-size="12" data-dslc-anim="none" data-dslc-anim-delay="0" data-dslc-anim-duration="650" data-dslc-anim-easing="ease" data-dslc-preset="">
+
+			
+			
+				
+		<div class="ainex-title">
+							<h3>Buy Cheap Dedicated Servers from Web Pundits at affordable rates. Choose from US, FRANCE, CANADA and Germany at $60 each.</h3>
+								</div>
+	
+	
+			
+			
+		</div><!-- .dslc-module -->
+		 
+		<div id="dslc-module-705" class="dslc-module-front dslc-module-Ainex_Pricing_Table dslc-in-viewport-check dslc-in-viewport-anim-none  dslc-col dslc-12-col dslc-last-col  dslc-module-handle-like-regular" data-module-id="705" data-dslc-module-id="Ainex_Pricing_Table" data-dslc-module-size="12" data-dslc-anim="none" data-dslc-anim-delay="" data-dslc-anim-duration="[dslc_modules_section show_on=\" desktop="" tablet="" phone\"="" type="\&quot;\&quot;" columns_spacing="\&quot;spacing\&quot;" bg_color="\&quot;rgb(255," 255,="" 255)\"="" bg_image_thumb="\&quot;\&quot;" bg_image="\&quot;\&quot;" bg_image_repeat="\&quot;repeat\&quot;" bg_image_position="\&quot;left" top\"="" bg_image_attachment="\&quot;scroll\&quot;" bg_image_size="\&quot;auto\&quot;" bg_video="\&quot;\&quot;" bg_video_overlay_color="\&quot;#000000\&quot;" bg_video_overlay_opacity="\&quot;0\&quot;" border_color="\&quot;\&quot;" border_width="\&quot;0\&quot;" border_style="\&quot;solid\&quot;" border="\&quot;top" bottom\"="" margin_h="\&quot;\&quot;" margin_b="\&quot;\&quot;" padding="\&quot;0\&quot;" padding_h="\&quot;0\&quot;" custom_class="\&quot;\&quot;" custom_id="\&quot;\&quot;" ]="" [dslc_modules_area="" last="\&quot;yes\&quot;" first="\&quot;no\&quot;" size="\&quot;12\&quot;]" [dslc_module="" [="" dslc_modules_area]="" dslc_modules_section]="" [dslc_modules_section="" show_on="\&quot;desktop" "="" data-dslc-anim-easing="ease" data-dslc-preset="">
+
+			
+			
+			<div class="hosting_plans">
+									<div class="one_fourth">
+		        	<div class="plan">
+		            	<div class="title">
+		                	<h4>USA</h4>
+		                    <strong>$60 <em>/ per mo</em></strong>              
+		                </div>
+		                <ul>
+		                    <li class="fa fa-check">Dell 2xL5420 Special</li><li class="fa fa-check">					16GB RAM</li><li class="fa fa-check">                                        2 X 1TB HDD</li><li class="fa fa-check">					1 Gbps Port</li><li class="fa fa-check">                                        Free Centos/Ubuntu</li><li class="fa fa-check">					Windows 2008/2012</li><li class="fa fa-check">					10TB Bandwidth</li><li class="fa fa-check">                                        Full Admin Access</li><li class="fa fa-check">                                        Mining/iMacros Allowed</li><li class="fa fa-check">                                        VPN/SEO Tools Allowed</li>						</ul>
+		                <a href="http://webpundits.in/clients/cart.php?a=add&amp;pid=72" class="but_signup">Order NOW</a>
+		            </div>
+		        </div><!-- end plan -->
+		    				<div class="one_fourth">
+		        	<div class="plan active">
+		            	<div class="title">
+		                	<h4>FRANCE</h4>
+		                    <strong>$60 <em>/ per mo</em></strong>              
+		                </div>
+		                <ul>
+		                    <li class="fa fa-check">Xeon E3-1230 v2 (3.3 Ghz 4 cores)</li><li class="fa fa-check">					16GB RAM</li><li class="fa fa-check">                                        2 × 1 TB HDD</li><li class="fa fa-check">					1 Gbps Unmetered (Fair Usage)</li><li class="fa fa-check">                                        Free Centos/Ubuntu</li><li class="fa fa-check">					Windows 2008/2012 Std</li><li class="fa fa-check">                                        Free Setup</li><li class="fa fa-check">                                        Full Admin Access</li><li class="fa fa-check">                                        Mining/iMacros Allowed</li><li class="fa fa-check">                                        VPN/SEO Tools Allowed</li>						</ul>
+		                <a href="http://webpundits.in/clients/cart.php?a=add&amp;pid=73" class="but_signup">Order NOW</a>
+		            </div>
+		        </div><!-- end plan -->
+		    				<div class="one_fourth">
+		        	<div class="plan">
+		            	<div class="title">
+		                	<h4>GERMANY</h4>
+		                    <strong>$60 <em>/ per mo</em></strong>              
+		                </div>
+		                <ul>
+		                    <li class="fa fa-check">Intel Core i7-2600</li><li class="fa fa-check">					16GB RAM</li><li class="fa fa-check">                                        2 X 1TB HDD</li><li class="fa fa-check">					1 Gbps Port</li><li class="fa fa-check">                                        Free Centos/Ubuntu</li><li class="fa fa-check">					Windows 2008/2012 Std Extra</li><li class="fa fa-check">					20TB Bandwidth</li><li class="fa fa-check">                                        Full Admin Access</li><li class="fa fa-check">                                        Mining/iMacros Allowed</li><li class="fa fa-check">                                        VPN/SEO Tools Allowed</li>						</ul>
+		                <a href="http://webpundits.in/clients/cart.php?a=add&amp;pid=74" class="but_signup">Order NOW</a>
+		            </div>
+		        </div><!-- end plan -->
+		    				<div class="one_fourth last">
+		        	<div class="plan">
+		            	<div class="title">
+		                	<h4>CANADA</h4>
+		                    <strong>$60 <em>/ per mo</em></strong>              
+		                </div>
+		                <ul>
+		                    <li class="fa fa-check">Intel  i5-750 (2.67 Ghz 2 Core)</li><li class="fa fa-check">					16GB RAM</li><li class="fa fa-check">                                        2TB HDD</li><li class="fa fa-check">					100 Mbps Port</li><li class="fa fa-check">                                        Free Centos/Ubuntu</li><li class="fa fa-check">					Windows 2008/2012 Std. Extra</li><li class="fa fa-check">					10TB Bandwidth</li><li class="fa fa-check">                                        Full Admin Access</li><li class="fa fa-check">                                        Mining/iMacros Allowed</li><li class="fa fa-check">                                        VPN/SEO Tools Allowed</li>						</ul>
+		                <a href="https://webpundits.in/clients/cart.php?a=add&amp;pid=75" class="but_signup">Order NOW</a>
+		            </div>
+		        </div><!-- end plan -->
+		    			</div>
+	<div class="clearfix"></div>
+	
+			
+			
+		</div><!-- .dslc-module -->
+		 
+		<div id="dslc-module-138" class="dslc-module-front dslc-module-Ainex_Title_Block dslc-in-viewport-check dslc-in-viewport-anim-none  dslc-col dslc-12-col dslc-last-col  dslc-module-handle-like-regular" data-module-id="138" data-dslc-module-id="Ainex_Title_Block" data-dslc-module-size="12" data-dslc-anim="none" data-dslc-anim-delay="" data-dslc-anim-duration="[dslc_modules_section show_on=\" desktop="" tablet="" phone\"="" type="\&quot;\&quot;" columns_spacing="\&quot;spacing\&quot;" bg_color="\&quot;rgb(255," 255,="" 255)\"="" bg_image_thumb="\&quot;\&quot;" bg_image="\&quot;\&quot;" bg_image_repeat="\&quot;repeat\&quot;" bg_image_position="\&quot;left" top\"="" bg_image_attachment="\&quot;scroll\&quot;" bg_image_size="\&quot;auto\&quot;" bg_video="\&quot;\&quot;" bg_video_overlay_color="\&quot;#000000\&quot;" bg_video_overlay_opacity="\&quot;0\&quot;" border_color="\&quot;\&quot;" border_width="\&quot;0\&quot;" border_style="\&quot;solid\&quot;" border="\&quot;top" bottom\"="" margin_h="\&quot;\&quot;" margin_b="\&quot;\&quot;" padding="\&quot;0\&quot;" padding_h="\&quot;0\&quot;" custom_class="\&quot;\&quot;" custom_id="\&quot;\&quot;" ]="" [dslc_modules_area="" last="\&quot;yes\&quot;" first="\&quot;no\&quot;" size="\&quot;12\&quot;]" [dslc_module="" [="" dslc_modules_area]="" dslc_modules_section]="" [dslc_modules_section="" show_on="\&quot;desktop" "="" data-dslc-anim-easing="ease" data-dslc-preset="">
+
+			
+			
+				
+		<div class="ainex-title">
+							<h3><center>* All prices are subject to Payment Gateway Fees.</center>
+<center>* No refunds on dedicated servers</center>
+<center>* Delivery time: 4-5 Business days</center></h3>
+								</div>
+	
+	
+			
+			
+		</div><!-- .dslc-module -->
+		 </div> </div></div> 
+		<div class="dslc-modules-section " style="background-color:rgb(255, 255, 255);border-right-style: hidden; border-left-style: hidden; margin-left:%;margin-right:%;margin-bottom:px;padding-bottom:0px;padding-top:0px;">
+
+				<div class="dslc-bg-video dslc-force-show"><div class="dslc-bg-video-inner"></div><div class="dslc-bg-video-overlay" style="background-color:#000000; "></div></div>
+
+				<div class="dslc-modules-section-wrapper dslc-clearfix"> <div class="dslc-modules-area dslc-col dslc-12-col dslc-last-col" data-size="12"> 
+		<div id="dslc-module-23" class="dslc-module-front dslc-module-Ainex_Box_List dslc-in-viewport-check dslc-in-viewport-anim-none  dslc-col dslc-12-col dslc-last-col  dslc-module-handle-like-regular" data-module-id="23" data-dslc-module-id="Ainex_Box_List" data-dslc-module-size="12" data-dslc-anim="none" data-dslc-anim-delay="0" data-dslc-anim-duration="650" data-dslc-anim-easing="ease" data-dslc-preset="">
+
+			
+			
+		
+      	<div class="one_full">
+	        <div class="whyus">
+	        	<strong>Why Choose Us?</strong>
+	            <ul>
+	            	<li><i class="fa fa-coffee"></i>Anti-DDoS</li>
+	                <li><i class="fa fa-thumbs-up"></i>Affordable Prices</li>
+	                <li><i class="fa fa-user"></i>99.9% network uptime</li>
+	            </ul>
+	            <ul>
+	            	<li><i class="fa fa-truck"></i>No Overloaded Servers</li>
+	                <li>&nbsp;<i class="fa fa-lock"></i>Full Ticket Support System</li>
+	                <li><i class="fa fa-money"></i>Enhanced FIREWALL</li>
+	            </ul>	        </div>
+        </div><!-- end why choose us -->
+    	<div class="clearfix"></div>
+	
+	
+			
+			
+		</div><!-- .dslc-module -->
+		 </div> </div></div> </div></div>		</div>
+
+			</div>
+</div>
+              
+    <div class="footer">
+              <div class="container">
+<div class="one_fourth"><div class="nav_menu-2 widget widget_nav_menu"><h2 class="widget-title">Best <i>Sellers</i></h2><div class="menu-footer-service-container"><ul id="menu-footer-service" class="menu"><li id="menu-item-2685" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2685"><a target="_blank" rel="noopener" href="https://webpundits.in/buy-usa-rdp/">Buy USA RDP (22 locations)</a></li>
+<li id="menu-item-2687" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2687"><a target="_blank" rel="noopener" href="https://webpundits.in/cheap-usa-dedicated-server/">Cheap USA dedicated Server</a></li>
+<li id="menu-item-2890" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2890"><a target="_blank" rel="noopener" href="https://webpundits.in/buy-cheap-rdp/">Cheap RDP (4$)</a></li>
+<li id="menu-item-2891" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2891"><a title="Buy UK RDP" target="_blank" rel="noopener" href="https://webpundits.in/buy-uk-rdp/">Buy UK RDP (8$)</a></li>
+</ul></div></div></div><div class="one_fourth"><div class="nav_menu-3 widget widget_nav_menu"><h2 class="widget-title">Support</h2><div class="menu-footer-support-container"><ul id="menu-footer-support" class="menu"><li id="menu-item-2689" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-2689"><a target="_blank" rel="noopener" href="https://webpundits.in/clients/clientarea.php">Clients Area</a></li>
+<li id="menu-item-2690" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-2690"><a target="_blank" rel="noopener" href="http://webpundits.in/clients/supporttickets.php">Support Ticket</a></li>
+<li id="menu-item-2691" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-2691"><a target="_blank" rel="noopener" href="http://webpundits.in/clients/knowledgebase.php">Knowledgebase</a></li>
+<li id="menu-item-2692" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2692"><a target="_blank" rel="noopener" href="https://webpundits.in/contact/">Contact Us</a></li>
+</ul></div></div></div><div class="one_fourth"><div class="nav_menu-4 widget widget_nav_menu"><h2 class="widget-title">Company</h2><div class="menu-footer-company-container"><ul id="menu-footer-company" class="menu"><li id="menu-item-2938" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2938"><a target="_blank" rel="noopener" href="https://webpundits.in/about-us/">About Us</a></li>
+<li id="menu-item-2694" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2694"><a target="_blank" rel="noopener" href="https://webpundits.in/terms-of-service/">Terms of Service</a></li>
+<li id="menu-item-2693" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-2693"><a target="_blank" rel="noopener" href="https://webpundits.in/cancellation-and-refund-policy/">Refund Policy</a></li>
+<li id="menu-item-2695" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-privacy-policy menu-item-2695"><a target="_blank" rel="noopener" href="https://webpundits.in/privacy-policy/">Privacy Policy</a></li>
+</ul></div></div></div><div class="one_fourth last"><div class="widget_text custom_html-2 widget widget_custom_html"><div class="textwidget custom-html-widget"><h2 class="widget-title"> <a href="skype:webpunditsrdp?chat"><i class="fa fa-skype">webpunditsrdp</i> </a> </h2>
+<div class="copyrigh"><img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E" data-lazy-src="https://webpundits.in/wp-content/uploads/2021/10/instantssl_trust_seal_sm_118x32.png"><noscript><img src ="https://webpundits.in/wp-content/uploads/2021/10/instantssl_trust_seal_sm_118x32.png"></noscript></div>
+<br>
+<div class="copyrigh"> <a href="https://api.whatsapp.com/send?phone=919610015111" style="color:white;"><i class="fa fa-whatsapp"> Live Help on Whatsapp</i> </a></div>
+<ul class="footerlink">
+<li><a href="https://www.facebook.com/WebPundits"><i class="fa fa-facebook"></i></a></li><li><a href="https://www.youtube.com/c/WebpunditsIn"><i class="fa fa-youtube"></i></a></li><li><a href="https://twitter.com/webpundits"><i class="fa fa-twitter"></i></a></li></ul></div></div></div></div>          </div>
+    <div class="clearfix"></div>
+
+    <div class="copyright_info">
+      <div class="container"> 
+        <div class="one_half">
+          <b>Copyright © 2013-2022 Web Pundits™, All rights reserved </b>        </div>
+        
+        <div class="one_half last">
+        
+   	                  <div class="footer_sectwo">
+                  <div class="payments_list" "="">
+                    
+                                                                                </div><!-- end free script installs -->
+                  <div class="payments_list">
+                                          <h4>Payments We Accept</h4>
+                                                                                                              <ul>
+                                                      <li><img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E" alt="" data-lazy-src="https://webpundits.in/wp-content/uploads/2020/05/paypal-logo.png"><noscript><img src="https://webpundits.in/wp-content/uploads/2020/05/paypal-logo.png" alt="" /></noscript></li>
+                                                      <li><img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E" alt="" data-lazy-src="https://webpundits.in/wp-content/uploads/2018/09/bitcoin.png"><noscript><img src="https://webpundits.in/wp-content/uploads/2018/09/bitcoin.png" alt="" /></noscript></li>
+                                                      <li><img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E" alt="" data-lazy-src="https://webpundits.in/wp-content/uploads/2014/08/webmoney.png"><noscript><img src="https://webpundits.in/wp-content/uploads/2014/08/webmoney.png" alt="" /></noscript></li>
+                                                      <li><img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E" alt="" data-lazy-src="https://webpundits.in/wp-content/uploads/2015/03/pm.jpg"><noscript><img src="https://webpundits.in/wp-content/uploads/2015/03/pm.jpg" alt="" /></noscript></li>
+                                                      <li><img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E" alt="" data-lazy-src="https://webpundits.in/wp-content/uploads/2020/05/ccavenue-logo.jpg"><noscript><img src="https://webpundits.in/wp-content/uploads/2020/05/ccavenue-logo.jpg" alt="" /></noscript></li>
+                                                  </ul>
+                                                            </div><!-- end payments accept -->
+            </div>
+                  </div>
+                
+      </div>
+    </div>
+    <div class="clearfix"></div>
+    <!-- Footer
+    ======================================= -->
+    <a href="#" class="scrollup">Scroll</a><!-- end scroll to top of the page-->
+  </div>
+        
+<!--Start of Tawk.to Script (0.7.1)-->
+<script type="rocketlazyloadscript" id="tawk-script" data-rocket-type="text/javascript">
+var Tawk_API = Tawk_API || {};
+var Tawk_LoadStart=new Date();
+(function(){
+	var s1 = document.createElement( 'script' ),s0=document.getElementsByTagName( 'script' )[0];
+	s1.async = true;
+	s1.src = 'https://embed.tawk.to/5863ec597418a41587c4a437/default';
+	s1.charset = 'UTF-8';
+	s1.setAttribute( 'crossorigin','*' );
+	s0.parentNode.insertBefore( s1, s0 );
+})();
+</script>
+<!--End of Tawk.to Script (0.7.1)-->
+<script type="rocketlazyloadscript">                                            </script><script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://webpundits.in/wp-includes/js/dist/vendor/wp-polyfill.min.js?ver=7.4.4" defer="" onload="" id="wp-polyfill-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" id="wp-polyfill-js-after">
+( 'fetch' in window ) || document.write( '<script src="https://webpundits.in/wp-includes/js/dist/vendor/wp-polyfill-fetch.min.js?ver=3.0.0' defer onload='"></scr' + 'ipt>' );( document.contains ) || document.write( '<script src="https://webpundits.in/wp-includes/js/dist/vendor/wp-polyfill-node-contains.min.js?ver=3.42.0' defer onload='"></scr' + 'ipt>' );( window.DOMRect ) || document.write( '<script src="https://webpundits.in/wp-includes/js/dist/vendor/wp-polyfill-dom-rect.min.js?ver=3.42.0' defer onload='"></scr' + 'ipt>' );( window.URL && window.URL.prototype && window.URLSearchParams ) || document.write( '<script src="https://webpundits.in/wp-includes/js/dist/vendor/wp-polyfill-url.min.js?ver=3.6.4' defer onload='"></scr' + 'ipt>' );( window.FormData && window.FormData.prototype.keys ) || document.write( '<script src="https://webpundits.in/wp-includes/js/dist/vendor/wp-polyfill-formdata.min.js?ver=3.0.12' defer onload='"></scr' + 'ipt>' );( Element.prototype.matches && Element.prototype.closest ) || document.write( '<script src="https://webpundits.in/wp-includes/js/dist/vendor/wp-polyfill-element-closest.min.js?ver=2.0.2' defer onload='"></scr' + 'ipt>' );( 'objectFit' in document.documentElement.style ) || document.write( '<script src="https://webpundits.in/wp-includes/js/dist/vendor/wp-polyfill-object-fit.min.js?ver=2.3.4' defer onload='"></scr' + 'ipt>' );
+</script>
+<script type="text/javascript" id="contact-form-7-js-extra">
+/* <![CDATA[ */
+var wpcf7 = {"api":{"root":"https:\/\/webpundits.in\/wp-json\/","namespace":"contact-form-7\/v1"},"cached":"1"};
+/* ]]> */
+</script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://webpundits.in/wp-content/cache/min/1/wp-content/plugins/contact-form-7/includes/js/index.js?ver=1654928522" defer="" onload="" id="contact-form-7-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" id="mediaelement-core-js-before">
+var mejsL10n = {"language":"en","strings":{"mejs.download-file":"Download File","mejs.install-flash":"You are using a browser that does not have Flash player enabled or installed. Please turn on your Flash player plugin or download the latest version from https:\/\/get.adobe.com\/flashplayer\/","mejs.fullscreen":"Fullscreen","mejs.play":"Play","mejs.pause":"Pause","mejs.time-slider":"Time Slider","mejs.time-help-text":"Use Left\/Right Arrow keys to advance one second, Up\/Down arrows to advance ten seconds.","mejs.live-broadcast":"Live Broadcast","mejs.volume-help-text":"Use Up\/Down Arrow keys to increase or decrease volume.","mejs.unmute":"Unmute","mejs.mute":"Mute","mejs.volume-slider":"Volume Slider","mejs.video-player":"Video Player","mejs.audio-player":"Audio Player","mejs.captions-subtitles":"Captions\/Subtitles","mejs.captions-chapters":"Chapters","mejs.none":"None","mejs.afrikaans":"Afrikaans","mejs.albanian":"Albanian","mejs.arabic":"Arabic","mejs.belarusian":"Belarusian","mejs.bulgarian":"Bulgarian","mejs.catalan":"Catalan","mejs.chinese":"Chinese","mejs.chinese-simplified":"Chinese (Simplified)","mejs.chinese-traditional":"Chinese (Traditional)","mejs.croatian":"Croatian","mejs.czech":"Czech","mejs.danish":"Danish","mejs.dutch":"Dutch","mejs.english":"English","mejs.estonian":"Estonian","mejs.filipino":"Filipino","mejs.finnish":"Finnish","mejs.french":"French","mejs.galician":"Galician","mejs.german":"German","mejs.greek":"Greek","mejs.haitian-creole":"Haitian Creole","mejs.hebrew":"Hebrew","mejs.hindi":"Hindi","mejs.hungarian":"Hungarian","mejs.icelandic":"Icelandic","mejs.indonesian":"Indonesian","mejs.irish":"Irish","mejs.italian":"Italian","mejs.japanese":"Japanese","mejs.korean":"Korean","mejs.latvian":"Latvian","mejs.lithuanian":"Lithuanian","mejs.macedonian":"Macedonian","mejs.malay":"Malay","mejs.maltese":"Maltese","mejs.norwegian":"Norwegian","mejs.persian":"Persian","mejs.polish":"Polish","mejs.portuguese":"Portuguese","mejs.romanian":"Romanian","mejs.russian":"Russian","mejs.serbian":"Serbian","mejs.slovak":"Slovak","mejs.slovenian":"Slovenian","mejs.spanish":"Spanish","mejs.swahili":"Swahili","mejs.swedish":"Swedish","mejs.tagalog":"Tagalog","mejs.thai":"Thai","mejs.turkish":"Turkish","mejs.ukrainian":"Ukrainian","mejs.vietnamese":"Vietnamese","mejs.welsh":"Welsh","mejs.yiddish":"Yiddish"}};
+</script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://webpundits.in/wp-includes/js/mediaelement/mediaelement-and-player.min.js?ver=4.2.16" defer="" onload="" id="mediaelement-core-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://webpundits.in/wp-includes/js/mediaelement/mediaelement-migrate.min.js?ver=5.7.6" defer="" onload="" id="mediaelement-migrate-js"></script>
+<script type="text/javascript" id="mediaelement-js-extra">
+/* <![CDATA[ */
+var _wpmejsSettings = {"pluginPath":"\/wp-includes\/js\/mediaelement\/","classPrefix":"mejs-","stretching":"responsive"};
+/* ]]> */
+</script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://webpundits.in/wp-includes/js/mediaelement/wp-mediaelement.min.js?ver=5.7.6" defer="" onload="" id="wp-mediaelement-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" id="rocket-browser-checker-js-after">
+"use strict";var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||!1,descriptor.configurable=!0,"value"in descriptor&&(descriptor.writable=!0),Object.defineProperty(target,descriptor.key,descriptor)}}return function(Constructor,protoProps,staticProps){return protoProps&&defineProperties(Constructor.prototype,protoProps),staticProps&&defineProperties(Constructor,staticProps),Constructor}}();function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor))throw new TypeError("Cannot call a class as a function")}var RocketBrowserCompatibilityChecker=function(){function RocketBrowserCompatibilityChecker(options){_classCallCheck(this,RocketBrowserCompatibilityChecker),this.passiveSupported=!1,this._checkPassiveOption(this),this.options=!!this.passiveSupported&&options}return _createClass(RocketBrowserCompatibilityChecker,[{key:"_checkPassiveOption",value:function(self){try{var options={get passive(){return!(self.passiveSupported=!0)}};window.addEventListener("test",null,options),window.removeEventListener("test",null,options)}catch(err){self.passiveSupported=!1}}},{key:"initRequestIdleCallback",value:function(){!1 in window&&(window.requestIdleCallback=function(cb){var start=Date.now();return setTimeout(function(){cb({didTimeout:!1,timeRemaining:function(){return Math.max(0,50-(Date.now()-start))}})},1)}),!1 in window&&(window.cancelIdleCallback=function(id){return clearTimeout(id)})}},{key:"isDataSaverModeOn",value:function(){return"connection"in navigator&&!0===navigator.connection.saveData}},{key:"supportsLinkPrefetch",value:function(){var elem=document.createElement("link");return elem.relList&&elem.relList.supports&&elem.relList.supports("prefetch")&&window.IntersectionObserver&&"isIntersecting"in IntersectionObserverEntry.prototype}},{key:"isSlowConnection",value:function(){return"connection"in navigator&&"effectiveType"in navigator.connection&&("2g"===navigator.connection.effectiveType||"slow-2g"===navigator.connection.effectiveType)}}]),RocketBrowserCompatibilityChecker}();
+</script>
+<script type="text/javascript" id="rocket-preload-links-js-extra">
+/* <![CDATA[ */
+var RocketPreloadLinksConfig = {"excludeUris":"\/clients\/|\/(.+\/)?feed\/?.+\/?|\/(?:.+\/)?embed\/|\/(index\\.php\/)?wp\\-json(\/.*|$)|\/wp-admin\/|\/logout\/|\/wp-login.php","usesTrailingSlash":"1","imageExt":"jpg|jpeg|gif|png|tiff|bmp|webp|avif","fileExt":"jpg|jpeg|gif|png|tiff|bmp|webp|avif|php|pdf|html|htm","siteUrl":"https:\/\/webpundits.in","onHoverDelay":"100","rateThrottle":"3"};
+/* ]]> */
+</script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" id="rocket-preload-links-js-after">
+(function() {
+"use strict";var r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},e=function(){function i(e,t){for(var n=0;n<t.length;n++){var i=t[n];i.enumerable=i.enumerable||!1,i.configurable=!0,"value"in i&&(i.writable=!0),Object.defineProperty(e,i.key,i)}}return function(e,t,n){return t&&i(e.prototype,t),n&&i(e,n),e}}();function i(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}var t=function(){function n(e,t){i(this,n),this.browser=e,this.config=t,this.options=this.browser.options,this.prefetched=new Set,this.eventTime=null,this.threshold=1111,this.numOnHover=0}return e(n,[{key:"init",value:function(){!this.browser.supportsLinkPrefetch()||this.browser.isDataSaverModeOn()||this.browser.isSlowConnection()||(this.regex={excludeUris:RegExp(this.config.excludeUris,"i"),images:RegExp(".("+this.config.imageExt+")$","i"),fileExt:RegExp(".("+this.config.fileExt+")$","i")},this._initListeners(this))}},{key:"_initListeners",value:function(e){-1<this.config.onHoverDelay&&document.addEventListener("mouseover",e.listener.bind(e),e.listenerOptions),document.addEventListener("mousedown",e.listener.bind(e),e.listenerOptions),document.addEventListener("touchstart",e.listener.bind(e),e.listenerOptions)}},{key:"listener",value:function(e){var t=e.target.closest("a"),n=this._prepareUrl(t);if(null!==n)switch(e.type){case"mousedown":case"touchstart":this._addPrefetchLink(n);break;case"mouseover":this._earlyPrefetch(t,n,"mouseout")}}},{key:"_earlyPrefetch",value:function(t,e,n){var i=this,r=setTimeout(function(){if(r=null,0===i.numOnHover)setTimeout(function(){return i.numOnHover=0},1e3);else if(i.numOnHover>i.config.rateThrottle)return;i.numOnHover++,i._addPrefetchLink(e)},this.config.onHoverDelay);t.addEventListener(n,function e(){t.removeEventListener(n,e,{passive:!0}),null!==r&&(clearTimeout(r),r=null)},{passive:!0})}},{key:"_addPrefetchLink",value:function(i){return this.prefetched.add(i.href),new Promise(function(e,t){var n=document.createElement("link");n.rel="prefetch",n.href=i.href,n.onload=e,n.onerror=t,document.head.appendChild(n)}).catch(function(){})}},{key:"_prepareUrl",value:function(e){if(null===e||"object"!==(void 0===e?"undefined":r(e))||!1 in e||-1===["http:","https:"].indexOf(e.protocol))return null;var t=e.href.substring(0,this.config.siteUrl.length),n=this._getPathname(e.href,t),i={original:e.href,protocol:e.protocol,origin:t,pathname:n,href:t+n};return this._isLinkOk(i)?i:null}},{key:"_getPathname",value:function(e,t){var n=t?e.substring(this.config.siteUrl.length):e;return n.startsWith("/")||(n="/"+n),this._shouldAddTrailingSlash(n)?n+"/":n}},{key:"_shouldAddTrailingSlash",value:function(e){return this.config.usesTrailingSlash&&!e.endsWith("/")&&!this.regex.fileExt.test(e)}},{key:"_isLinkOk",value:function(e){return null!==e&&"object"===(void 0===e?"undefined":r(e))&&(!this.prefetched.has(e.href)&&e.origin===this.config.siteUrl&&-1===e.href.indexOf("?")&&-1===e.href.indexOf("#")&&!this.regex.excludeUris.test(e.href)&&!this.regex.images.test(e.href))}}],[{key:"run",value:function(){"undefined"!=typeof RocketPreloadLinksConfig&&new n(new RocketBrowserCompatibilityChecker({capture:!0,passive:!0}),RocketPreloadLinksConfig).init()}}]),n}();t.run();
+}());
+</script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://webpundits.in/wp-content/cache/min/1/wp-content/themes/ainex/assets/js/mainmenu/ddsmoothmenu.js?ver=1654928522" defer="" onload="" id="ddsmoothmenu-js"></script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://webpundits.in/wp-content/cache/min/1/wp-content/themes/ainex/assets/js/mainmenu/selectnav.js?ver=1654928522" defer="" onload="" id="selectnav-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://webpundits.in/wp-content/themes/ainex/assets/js/jcarousel/jquery.jcarousel.min.js?ver=1.0.0.0" defer="" onload="" id="jquery.jcarousel.min-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://webpundits.in/wp-content/themes/ainex/assets/js/revolutionslider/rs-plugin/js/jquery.themepunch.revolution.min.js?ver=1.0.0.0" defer="" onload="" id="jquery.themepunch.revolution.min-js"></script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://webpundits.in/wp-content/cache/min/1/wp-content/themes/ainex/assets/js/mainmenu/scripts.js?ver=1654928522" defer="" onload="" id="scripts-js"></script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://webpundits.in/wp-content/cache/min/1/wp-content/themes/ainex/assets/js/tabs/tabs.js?ver=1654928522" defer="" onload="" id="tabs-js"></script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://webpundits.in/wp-content/cache/min/1/wp-content/themes/ainex/assets/js/tabs/tabs-style2.js?ver=1654928522" defer="" onload="" id="tabs-style2-js"></script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://webpundits.in/wp-content/cache/min/1/wp-content/themes/ainex/assets/js/accordion/custom.js?ver=1654928522" defer="" onload="" id="accordion-custom-js"></script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://webpundits.in/wp-content/cache/min/1/wp-content/themes/ainex/assets/js/sticky-menu/core.js?ver=1654928522" defer="" onload="" id="menu-core-js"></script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://webpundits.in/wp-content/cache/min/1/wp-content/themes/ainex/assets/js/sticky-menu/modernizr.custom.75180.js?ver=1654928522" defer="" onload="" id="modernizr.custom.75180-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://webpundits.in/wp-content/themes/ainex/assets/js/jquery.flexslider-min.js?ver=1.0.0.0" defer="" onload="" id="jquery.flexslider-min-js"></script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://webpundits.in/wp-content/cache/min/1/wp-content/themes/ainex/assets/js/custom.js?ver=1654928522" defer="" onload="" id="custom-js-js"></script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://webpundits.in/wp-content/cache/min/1/wp-content/themes/ainex/assets/js/portfolio/source/jquery.fancybox.js?ver=1654928522" defer="" onload="" id="jquery.fancybox-js"></script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://webpundits.in/wp-content/cache/min/1/wp-content/themes/ainex/assets/js/portfolio/source/helpers/jquery.fancybox-media.js?ver=1654928522" defer="" onload="" id="jquery.fancybox-media-js"></script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://webpundits.in/wp-content/cache/min/1/wp-content/themes/ainex/assets/js/portfolio/jquery.isotope.js?ver=1654928522" defer="" onload="" id="jquery.isotope-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://webpundits.in/wp-content/themes/ainex/assets/js/animate/wow.min.js?ver=1.0.0.0" defer="" onload="" id="animation-wow-js"></script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://webpundits.in/wp-content/cache/min/1/wp-content/themes/ainex/assets/js/subscribe/modernizr-custom.js?ver=1654928522" defer="" onload="" id="modernizr-custom-js"></script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://webpundits.in/wp-content/cache/min/1/wp-content/themes/ainex/assets/js/subscribe/precise-frontend-jquery.js?ver=1654928522" id="precise-frontend-jquery-js" defer=""></script>
+<script>window.lazyLoadOptions={elements_selector:"img[data-lazy-src],.rocket-lazyload,iframe[data-lazy-src]",data_src:"lazy-src",data_srcset:"lazy-srcset",data_sizes:"lazy-sizes",class_loading:"lazyloading",class_loaded:"lazyloaded",threshold:300,callback_loaded:function(element){if(element.tagName==="IFRAME"&&element.dataset.rocketLazyload=="fitvidscompatible"){if(element.classList.contains("lazyloaded")){if(typeof window.jQuery!="undefined"){if(jQuery.fn.fitVids){jQuery(element).parent().fitVids()}}}}}};window.addEventListener('LazyLoad::Initialized',function(e){var lazyLoadInstance=e.detail.instance;if(window.MutationObserver){var observer=new MutationObserver(function(mutations){var image_count=0;var iframe_count=0;var rocketlazy_count=0;mutations.forEach(function(mutation){for(i=0;i<mutation.addedNodes.length;i++){if(typeof mutation.addedNodes[i].getElementsByTagName!=='function'){continue}
+if(typeof mutation.addedNodes[i].getElementsByClassName!=='function'){continue}
+images=mutation.addedNodes[i].getElementsByTagName('img');is_image=mutation.addedNodes[i].tagName=="IMG";iframes=mutation.addedNodes[i].getElementsByTagName('iframe');is_iframe=mutation.addedNodes[i].tagName=="IFRAME";rocket_lazy=mutation.addedNodes[i].getElementsByClassName('rocket-lazyload');image_count+=images.length;iframe_count+=iframes.length;rocketlazy_count+=rocket_lazy.length;if(is_image){image_count+=1}
+if(is_iframe){iframe_count+=1}}});if(image_count>0||iframe_count>0||rocketlazy_count>0){lazyLoadInstance.update()}});var b=document.getElementsByTagName("body")[0];var config={childList:!0,subtree:!0};observer.observe(b,config)}},!1)</script><script data-no-minify="1" async="" src="https://webpundits.in/wp-content/plugins/wp-rocket/assets/js/lazyload/16.1/lazyload.min.js"></script><script>function lazyLoadThumb(e){var t='<img loading="lazy" data-lazy-src="https://i.ytimg.com/vi/ID/hqdefault.jpg" alt="" width="480" height="360"><noscript><img src="https://i.ytimg.com/vi/ID/hqdefault.jpg" alt="" width="480" height="360"></noscript>',a='<div class="play"></div>';return t.replace("ID",e)+a}function lazyLoadYoutubeIframe(){var e=document.createElement("iframe"),t="ID?autoplay=1";t+=0===this.dataset.query.length?'':'&'+this.dataset.query;e.setAttribute("src",t.replace("ID",this.dataset.src)),e.setAttribute("frameborder","0"),e.setAttribute("allowfullscreen","1"),e.setAttribute("allow", "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"),this.parentNode.replaceChild(e,this)}document.addEventListener("DOMContentLoaded",function(){var e,t,a=document.getElementsByClassName("rll-youtube-player");for(t=0;t<a.length;t++)e=document.createElement("div"),e.setAttribute("data-id",a[t].dataset.id),e.setAttribute("data-query", a[t].dataset.query),e.setAttribute("data-src", a[t].dataset.src),e.innerHTML=lazyLoadThumb(a[t].dataset.id),e.onclick=lazyLoadYoutubeIframe,a[t].appendChild(e)});</script><link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-2/js/fontawesome.min.js" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-2/js/fontawesome.min.js"></noscript>
+
+
+<!-- This website is like a Rocket, isn't it? Performance optimized by WP Rocket. Learn more: https://wp-rocket.me - Debug: cached@1655930919 --></body></html>

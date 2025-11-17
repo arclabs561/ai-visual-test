@@ -1,0 +1,57 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Dion Moult">
+    <meta name="description" content="Inkscape and pstoedit can be used to convert between PDF, EPS, DXF, and DWG on the command line. This is very useful when bulk file conversions need to be done.">
+    <title>How to bulk convert PDFs to DXF or DWG</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>How to bulk convert PDFs to DXF or DWG</h1>
+        <nav>
+            <ul>
+                <li><a href="https://thinkmoult.com/">Homepage</a></li>
+                <li><a href="https://thinkmoult.com/archive.html">Archive</a></li>
+                <li><a href="https://thinkmoult.com/atom-feed.html">Atom feed</a></li>
+            </ul>
+        </nav>
+                <p class="author">Dion Moult</p>
+                        <p class="date">2019-04-02</p>
+            </header>
+    <article>
+<p>Architectural, engineering, and construction drawings are usually produced in both PDF and DWG format. Often, a DWG is used for accurate scaling or inclusion in other programs. So if you only have a PDF, you might need to convert a PDF to a DXF or DWG.</p>
+<p>If you want to <a href="https://knowledge.autodesk.com/support/autocad/troubleshooting/caas/sfdcarticles/sfdcarticles/How-to-convert-a-PDF-to-a-DWG-in-AutoCAD.html">convert a PDF to a DWG</a>, it is possible to do this in AutoCAD using the <code>pdfimport</code> command. However, this is a manual process and will be slow when you have many files to convert.</p>
+<p>Additionally, DWG is not an open data format. Using <a href="assets/../ethical-implications-of-openbim.html">non-open data formats in construction is not ethical</a> and should be discouraged in the industry. Instead, a DXF file should be produced. A DXF is functionally equivalent to a DWG for 2D content, and can be opened in other software. It may be larger, as it is in ASCII format, but it can be compressed. If your DWG contains 3D data, it may be worth converting it into an OBJ instead, or ideally, an IFC file if it contains construction data.</p>
+<p>To convert a PDF to a DXF, we will first convert from PDF to EPS (Encapsulated PostScript format), and then convert from EPS to DXF. You will require <a href="https://inkscape.org/">Inkscape</a>, a free and open-source vector editing program similar to Adobe Illustrator. You will also require <a href="http://www.calvina.de/pstoedit/pstoedit.htm">pstoedit</a>, which is an open-source command line PostScript conversion tool.</p>
+<p>We will run the scripts using the command line, as it will be much faster than using a GUI. On Windows, you can run both commands using <a href="https://www.cygwin.com/">cygwin</a>.</p>
+<pre><code>./inkscape.exe -z --export-eps="file.eps" "file.pdf"
+pstoedit -f "dxf" "file.eps" "file.dxf"</code></pre>
+<p>Here is a simple shell script that converts all files in a folder called <code>pdf/</code> into an output folder called <code>dxf/</code>:</p>
+<pre><code>#!/bin/bash
+mkdir -p eps
+mkdir -p dxf
+for FILE in pdf/*.pdf; do
+    export BASEFILE=`basename "$FILE"`
+    echo "Processing $FILE"
+    ./inkscape.exe -z --export-eps="eps/$BASEFILE" "pdf/$BASEFILE"
+    pstoedit -f "dxf" "eps/$BASEFILE" "dxf/$BASEFILE"
+done
+cd dxf/ &amp;&amp; rename ".pdf" ".dxf" *.pdf</code></pre>
+<p>It is worth mentioning that the <a href="https://inkscape.org/doc/inkscape-man.html">Inkscape man page</a> describes how to export to SVG format, and that <code>pstoedit</code> also supports conversion to many other formats such as Adobe Illustrator files, plaintext, or even PowerPoint!</p>
+    </article>
+    <section>
+	<h2>Comments</h2>
+	<p>
+	    If you have any comments, please send them to <a href="mailto:dion@thinkmoult.com">dion@thinkmoult.com</a>.
+	</p>
+	    </section>
+    <footer>
+    	<h3>License</h3>
+    	<p>
+	    This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>, unless explicitly mentioned in the article.
+    	</p>
+    </footer>
+
+
+</body></html>

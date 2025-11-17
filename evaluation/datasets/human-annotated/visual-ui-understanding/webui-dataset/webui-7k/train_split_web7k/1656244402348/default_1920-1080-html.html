@@ -1,0 +1,101 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Martin Matuška - mfsBSD and mfslinux</title>
+<link rel="stylesheet" type="text/css" href="../base.css">
+<script type="text/javascript" async="" src="https://ssl.google-analytics.com/ga.js"></script><script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-15365053-1']);
+  _gaq.push(['_gat._anonymizeIp']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</head>
+<body>
+<h1>mfsBSD and mfslinux</h1>
+This is a set of scripts that generates a bootable image (and/or ISO file),
+that creates a working minimal installation of <a href="https://www.freebsd.org" target="_blank">FreeBSD</a> (mfsBSD) or Linux (mfslinux).<br>
+It is completely loaded into memory. Mfslinux is based on <a href="https://openwrt.org" target="_blank">OpenWrt</a>.
+<h2>Downloads</h2>
+<h4>mfsBSD ISO images for 13-series release:</h4>
+<ul>
+<li><a href="files/iso/13/amd64/mfsbsd-13.1-RELEASE-amd64.iso">13.1-RELEASE-amd64</a> (90MB)
+<small><a href="files/iso/13/amd64/mfsbsd-13.1-RELEASE-amd64.iso.sums.txt">checksums</a></small>
+</li><li><a href="files/iso/13/amd64/mfsbsd-se-13.1-RELEASE-amd64.iso">13.1-RELEASE-amd64 special edition</a> (325MB)
+<small><a href="files/iso/13/amd64/mfsbsd-se-13.1-RELEASE-amd64.iso.sums.txt">checksums</a></small>
+</li><li><a href="files/iso/13/amd64/mfsbsd-mini-13.1-RELEASE-amd64.iso">13.1-RELEASE-amd64 mini edition</a> (38MB)
+<small><a href="files/iso/13/amd64/mfsbsd-mini-13.1-RELEASE-amd64.iso.sums.txt">checksums</a></small>
+</li></ul>
+<h4>mfslinux ISO images</h4>
+<ul>
+<li><a href="files/iso/mfslinux/mfslinux-0.1.10-f9c75a4.iso">mfslinux-0.1.10-f9c75a4.iso</a> (based on OpenWrt 21.02.2)
+</li></ul>
+<h4>mfsBSD USB memstick images:</h4>
+<ul>
+<li><a href="files/images">Download from here</a>
+</li></ul>
+<h4>Old release archive:</h4>
+<ul>
+<li><a href="files/">Download from here</a>
+</li></ul>
+Root password for all images: <b>mfsroot</b><br>
+<hr>
+<h3>mfsBSD Image Information</h3>
+All images have EFI and legacy boot.<br><br>
+mfsbsd.autodhcp is set - all network cards are configured for DHCP.<br><br>
+The following kernel modules are included in all mfsBSD ISO's:<br>
+acpi (preloaded), ahci (preloaded), aesni, crypto, cryptodev, ext2fs, geom_eli, geom_mirror, geom_nopi, ipmi, ntfs, nullfs, opensolaris, smbusi, snp, tmpfs, zfs
+<br><br>
+The following packages are included in all mfsBSD ISO's:<br>
+cpdup, dmidecode, ipmitool, nano, rsync, smartmontools, tmux
+<br><br>
+All distributions contain the <b>zfsinstall</b> script for an easy ZFS-based installation of FreeBSD.<br>
+You can easily install ZFS-on-root FreeBSD with this script.<br>
+<ul>
+<li>Example 1 (install over network):
+<br><code>zfsinstall -d /dev/ada0</code><br>
+</li><li>Example 2 (install from dist cdrom, swap 4G):<br>
+<code>zfsinstall -d /dev/ada0 -u /cdrom/11.0-RELEASE-amd64 -s 4G</code><br>
+</li></ul>
+
+The <b>special edition</b> contains FreeBSD distribution files base.txz and kernel.txz
+
+<br><br>
+The <b>mini edition</b> is a stripped-down distribution with the dropbear SSH server and client.
+<br><br>
+<b><a href="https://github.com/mmatuska/mfsbsd/blob/master/BUILD.md">Build Instructions</a></b>
+<br><br>
+<hr>
+<h3>mfslinux Image Information</h3>
+mfslinux is a initramfs distribution based on <a href="https://www.openwrt.org">OpenWrt</a>.
+<hr>
+<h3>Source releases and repositories</h3>
+<ul>
+<li><a href="https://github.com/mmatuska/mfsbsd" target="_blank">https://github.com/mmatuska/mfsbsd</a>
+</li><li><a href="https://github.com/mmatuska/mfslinux" target="_blank">https://github.com/mmatuska/mfslinux</a>
+</li></ul>
+<br>
+
+<hr>
+<h3>Contributing</h3>
+You can contribute to mfsBSD or mfslinux in more ways:
+<ul>
+<li>submit your own code changes or suggestions on github</li>
+<li>be a tester or debugger</li>
+</ul>
+<hr>
+<table border="0" width="100%">
+<tbody><tr>
+<td valign="top">Martin Matuška &lt;mm at FreeBSD dot org&gt;<br>
+<a href="http://blog.vx.sk?user_language=en" target="_blank">My blog</a></td>
+<td align="right"><a href="http://www.vxsolutions.eu" target="_blank"><img src="/images/vx_service.png" alt="Service by VX Solutions" border="0"></a></td>
+</tr></tbody></table>
+
+
+</body></html>

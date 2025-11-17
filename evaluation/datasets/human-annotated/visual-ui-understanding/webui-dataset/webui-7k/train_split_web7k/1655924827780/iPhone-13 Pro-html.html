@@ -1,0 +1,280 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Integrating Pagy with Hanami | katafrakt's garden</title>
+
+<meta name="description" content="Write an awesome description for your new site here. It will appear in your document head meta (for Google search results) and in your feed.xml site description.">
+
+<link rel="stylesheet" href="/_bridgetown/static/index.T73C7S4B.css">
+<script async="" src="//www.google-analytics.com/analytics.js"></script><script src="/_bridgetown/static/index.BULOWCGV.js" defer=""></script>
+
+  <script type="text/javascript" async="" src="//katafraktme.disqus.com/embed.js"></script><link rel="prefetch" as="style" href="https://c.disquscdn.com/next/embed/styles/lounge.63860eb743c7d9d2adf0fa435788abe7.css"><link rel="prefetch" as="script" href="https://c.disquscdn.com/next/embed/common.bundle.33bc87b2c4f9324203cc85b7dd1d0492.js"><link rel="prefetch" as="script" href="https://c.disquscdn.com/next/embed/lounge.bundle.39ef974e33e97bdc315c595632f05d3c.js"><link rel="prefetch" as="script" href="https://disqus.com/next/config.js"></head>
+  <body class="post ">
+    <nav class="nav main">
+  <div class="nav-left">
+    <a class="brand" href="/">katafrakt.me</a>
+    <a href="/posts">Posts</a>
+  </div>
+  <div class="nav-right">
+    <div class="tabs">
+      <a href="/now">Now!</a>
+    </div>
+  </div>
+</nav>
+
+    <main>
+      <article class="post " itemscope="" itemtype="http://schema.org/BlogPosting">
+  <h1 class="header">Integrating Pagy with Hanami</h1>
+
+  <h6 class="infoline">by Paweł Świątkowski
+  <br>01 Jun 2018</h6>
+
+  <div>
+    <p><a href="https://github.com/ddnexus/pagy">Pagy</a> – “the ultimate pagination gem that outperforms the others in each and every benchmark and comparison” – made all Ruby-related news lately. It is no surprise, after all it promises a lot: being simple, being fast, being ORM-agnostic and working with every Rack-based framework.</p>
+
+<p>All of these are really good features. Afer all, it’s true what the gem’s website says: pagination is not a rocket science and it should be kept simple, stupid. Current solutions, namely will_paginate and kaminary, grew very complex and tightly coupled to Ruby on Rails. We really needed (and deserved) something better. And I’m glad it’s here.</p>
+
+<p>However, I’m going to check its other promises: working with every ORM and every framework. To do so, I present you a tutorial about integrating Pagy with Hanami.</p>
+
+<h2 id="preparations">Preparations</h2>
+
+<p>Let’s start by taking a demo Hanami app - “Bookshelf” from <a href="https://github.com/hanami/bookshelf">here</a>. I clone it and then make one little adjustment in <code class="highlighter-rouge">apps/web/templates/books/index.html.erb</code>, changing from ugly <code class="highlighter-rouge">div</code>-based displaying of books into unordered list:</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">ul</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="sx">% books.each </span><span class="k">do</span> <span class="o">|</span><span class="n">book</span><span class="o">|</span> <span class="sx">%&gt;
+    &lt;li class="book"&gt;</span>
+      <span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;&lt;</span><span class="sx">%= book.author %&gt;: &lt;em&gt;&lt;%=</span> <span class="n">book</span><span class="p">.</span><span class="nf">title</span> <span class="sx">%&gt;&lt;/em&gt;</span><span class="o">&lt;</span><span class="sr">/p&gt;
+    &lt;/</span><span class="n">li</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="sx">% end </span><span class="o">%&gt;</span>
+<span class="o">&lt;</span><span class="sr">/ul&gt;</span></code></pre></figure>
+
+<p>This is an extra step, of course you don’t need to do this. Another optional thing is to create a Rake task to fill our database with sample data. Here’s my code, using <a href="https://github.com/fzaninotto/Faker">Faker</a> gem (in <code class="highlighter-rouge">Rakefile</code>):</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">task</span> <span class="ss">:seed</span> <span class="k">do</span>
+  <span class="nb">require</span> <span class="s1">'faker'</span>
+  <span class="nb">require_relative</span> <span class="s1">'config/environment'</span>
+  <span class="no">Hanami</span><span class="p">.</span><span class="nf">boot</span>
+
+  <span class="n">number</span> <span class="o">=</span> <span class="no">ENV</span><span class="p">[</span><span class="s1">'NUMBER'</span><span class="p">]</span> <span class="o">||</span> <span class="mi">40</span>
+  <span class="n">number</span><span class="p">.</span><span class="nf">times</span> <span class="k">do</span>
+    <span class="n">author</span> <span class="o">=</span> <span class="no">Faker</span><span class="o">::</span><span class="no">FunnyName</span><span class="p">.</span><span class="nf">name</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Fallout</span><span class="p">.</span><span class="nf">quote</span>
+    <span class="no">BookRepository</span><span class="p">.</span><span class="nf">new</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="ss">author: </span><span class="n">author</span><span class="p">,</span> <span class="ss">title: </span><span class="n">title</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></figure>
+
+<h2 id="controller">Controller</h2>
+
+<p>Now let’s turn to real task. I added <code class="highlighter-rouge">gem 'pagy'</code> to my <code class="highlighter-rouge">Gemfile</code> and then followed the tutorial.</p>
+
+<p>In <code class="highlighter-rouge">Web::Controllers::Books</code> I added required inclusion line: <code class="highlighter-rouge">include Pagy::Backend</code> and then edided its <code class="highlighter-rouge">call</code> method to include using Pagy:</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">expose</span> <span class="ss">:books</span><span class="p">,</span> <span class="ss">:pagy_data</span>
+
+<span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+  <span class="vi">@pagy_data</span><span class="p">,</span> <span class="vi">@books</span> <span class="o">=</span> <span class="n">pagy</span><span class="p">(</span><span class="no">BookRepository</span><span class="p">.</span><span class="nf">new</span><span class="p">)</span>
+<span class="k">end</span></code></pre></figure>
+
+<p>There are couple of things to note here:</p>
+
+<ul>
+  <li>First, we need to add <code class="highlighter-rouge">pagy_data</code> to our exposures, since, unlike other frameworks, Hanami does not let you use all the instance variables from controller in views and templates.</li>
+  <li>Second, we cannot use name <code class="highlighter-rouge">pagy</code> for the instance variable (like the tutorial suggests), because it would introduce a naming conflict between exposed method and internal <code class="highlighter-rouge">pagy</code> mathod. The result is a nasty error about wrong number of arguments, which was quite hard to debug.</li>
+  <li>Instead of a model, we pass a repository to <code class="highlighter-rouge">pagy</code> method. Hanami does not use models (unlike ActiveRecord) at all. We have entities and repositories here and repository is a place to put the logic connected to pagination (setting offsets and limits).</li>
+</ul>
+
+<h2 id="repository">Repository</h2>
+
+<p>Since we are passing a repository, it’s easy to guess we need to add some code there. Two methods, to be precise. One is <code class="highlighter-rouge">count</code> - to calculate number of all records in the database. I don’t quite understand why the method is not htere by default, after all it’s equally useful/useless as <code class="highlighter-rouge">all</code> method, but it’s not.</p>
+
+<p>Second thing is actual method for fetchng data from the database. I called it <code class="highlighter-rouge">page</code>, which is probably not the best name, but it works in this simple example. Here is the code for those two:</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">BookRepository</span> <span class="o">&lt;</span> <span class="no">Hanami</span><span class="o">::</span><span class="no">Repository</span>
+  <span class="k">def</span> <span class="nf">page</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+    <span class="n">books</span><span class="p">.</span><span class="nf">offset</span><span class="p">(</span><span class="n">offset</span><span class="p">).</span><span class="nf">limit</span><span class="p">(</span><span class="n">size</span><span class="p">).</span><span class="nf">to_a</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">count</span>
+    <span class="n">books</span><span class="p">.</span><span class="nf">count</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></figure>
+
+<h2 id="back-to-the-controller">Back to the controller</h2>
+
+<p>This step is the first one where we have to dive a bit into Pagy’s internals. Fortunately, this is described <a href="https://ddnexus.github.io/pagy/api/backend">in the docs</a>:</p>
+
+<blockquote>
+  <h3 id="pagy_get_itemscollection-pagy">pagy_get_items(collection, pagy)</h3>
+
+  <p>Sub-method called only by the <code class="highlighter-rouge">pagy</code> method, it returns the page items (i.e. the records belonging to the current page).</p>
+</blockquote>
+
+<p>The original implementation works for ActiveRecord (and other ORMs formed after it, so using active record pattern, such as Mongoid), but does not work for data mapper pattern (like Hanami::Model or ROM). This is how it looks:</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">pagy_get_items</span><span class="p">(</span><span class="n">collection</span><span class="p">,</span> <span class="n">pagy</span><span class="p">)</span>
+  <span class="n">collection</span><span class="p">.</span><span class="nf">offset</span><span class="p">(</span><span class="n">pagy</span><span class="p">.</span><span class="nf">offset</span><span class="p">).</span><span class="nf">limit</span><span class="p">(</span><span class="n">pagy</span><span class="p">.</span><span class="nf">items</span><span class="p">)</span>
+<span class="k">end</span></code></pre></figure>
+
+<p>We need to overwrite it to use our repository (passed as first argument). I did it in the controller, but of course, if you are going to have more paginations on more models, it would be a good idea to put it in some separate module and include everywhere:</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">pagy_get_items</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">pagy</span><span class="p">)</span>
+  <span class="n">repo</span><span class="p">.</span><span class="nf">page</span><span class="p">(</span><span class="n">pagy</span><span class="p">.</span><span class="nf">offset</span><span class="p">,</span> <span class="n">pagy</span><span class="p">.</span><span class="nf">items</span><span class="p">)</span>
+<span class="k">end</span></code></pre></figure>
+
+<p>With that, the so-called backend part is done. Now let’s go to views and templates.</p>
+
+<h2 id="template">Template</h2>
+
+<p>We are going to the template first. The docs tell us to put pagy view methods in it and call it a day. All we need to do here is to replace instance variables <code class="highlighter-rouge">@pagy</code> with our <code class="highlighter-rouge">pagy_data</code>:</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="sx">%= pagy_nav(pagy_data) %&gt;
+&lt;%=</span> <span class="n">pagy_info</span><span class="p">(</span><span class="n">pagy_data</span><span class="p">)</span> <span class="o">%&gt;</span></code></pre></figure>
+
+<p>With little surprise, it does not work. But the rest of the job is to be done in the view.</p>
+
+<h2 id="view">View</h2>
+
+<p>First thing to do is to <code class="highlighter-rouge">include Pagy::Frontend</code>. Then we need some custom hacking too. First thing is <code class="highlighter-rouge">pagy_url_for</code>. Now, this is more or less where I stopped liking Pagy a bit. Let’s take a look at the original implementation:</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">pagy_url_for</span><span class="p">(</span><span class="n">page</span><span class="p">,</span> <span class="n">pagy</span><span class="p">)</span>
+  <span class="n">params</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="no">GET</span><span class="p">.</span><span class="nf">merge</span><span class="p">(</span><span class="n">pagy</span><span class="p">.</span><span class="nf">vars</span><span class="p">[</span><span class="ss">:page_param</span><span class="p">]</span> <span class="o">=&gt;</span> <span class="n">page</span><span class="p">).</span><span class="nf">merge!</span><span class="p">(</span><span class="n">pagy</span><span class="p">.</span><span class="nf">vars</span><span class="p">[</span><span class="ss">:params</span><span class="p">])</span>
+  <span class="s2">"</span><span class="si">#{</span><span class="n">request</span><span class="p">.</span><span class="nf">path</span><span class="si">}</span><span class="s2">?</span><span class="si">#{</span><span class="no">Rack</span><span class="o">::</span><span class="no">Utils</span><span class="p">.</span><span class="nf">build_nested_query</span><span class="p">(</span><span class="n">pagy_get_params</span><span class="p">(</span><span class="n">params</span><span class="p">))</span><span class="si">}#{</span><span class="n">pagy</span><span class="p">.</span><span class="nf">vars</span><span class="p">[</span><span class="ss">:anchor</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
+<span class="k">end</span></code></pre></figure>
+
+<p>What it does is assuming there is a <code class="highlighter-rouge">request</code> method/object available here in the template. This is a huge violation of MVC, because why on Earth would a template or view need to know about a low-level object from Rack? It shouldn’t. Hanami goes very far in enforcing it and simply disallows you to expose it from the controller.</p>
+
+<p>There is probably a more universal solution out there, but I decided to keep it simple. Here’s how my method looks like:</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">pagy_url_for</span><span class="p">(</span><span class="n">page</span><span class="p">,</span> <span class="n">pagy</span><span class="p">)</span>
+  <span class="n">options</span> <span class="o">=</span> <span class="p">{</span> <span class="n">pagy_data</span><span class="p">.</span><span class="nf">vars</span><span class="p">[</span><span class="ss">:page_param</span><span class="p">]</span> <span class="o">=&gt;</span> <span class="n">page</span> <span class="p">}.</span><span class="nf">merge</span><span class="p">(</span><span class="n">pagy_data</span><span class="p">.</span><span class="nf">vars</span><span class="p">[</span><span class="ss">:params</span><span class="p">])</span>
+  <span class="n">routes</span><span class="p">.</span><span class="nf">path</span><span class="p">(</span><span class="ss">:books</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+<span class="k">end</span></code></pre></figure>
+
+<p>It mixes a little bit of Pagy’s magic (uses its <code class="highlighter-rouge">vars</code> object with all the configuration for pagination) with simple Hanami routes. I real-life usage you might want to add a check if page number is one and if it is - not add a page to params.</p>
+
+<p>One last thing to take care of is HTML escaping. <code class="highlighter-rouge">Pagy::Frontend</code> generates strings and you can’t just throw them in the template, but first “unescape” (i.e. mark as safe) in the view:</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">pagy_nav</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+  <span class="n">_raw</span> <span class="k">super</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">pagy_info</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+  <span class="n">_raw</span> <span class="k">super</span>
+<span class="k">end</span></code></pre></figure>
+
+<p>And that’s it! Now you can enjoy working pagination in your Bookshelf application in Hanami.</p>
+
+<p>The complete code can be found <a href="https://github.com/katafrakt/bookshelf/tree/pagy">in my fork on separate branch</a>.</p>
+
+<h2 id="verdict">Verdict</h2>
+
+<p>I really like what Pagy attempts to do: bring back Ruby into Rails-world.</p>
+
+<p>However, I had to write quite a lot of custom code to make it work with Hanami. The backend part is actually close to writing this all by hand (as I said, it’s no rocket science). A bit more work is done by Pagy’s frontend part. In the end, I think it should be advertised as <strong>ORM-agnostic (if your ORM has API like ActiveRecord) and working on every Rack-based framework (if it’s similar to Rails)</strong>.</p>
+
+<p>Should you use Pagy or write your own pagination? It’s rather up to you. Now you see how many customizations are required to work with simplest setup. I did not play with it enough (yet) to tell how it would look in more complex situation. For example, if you don’t want to name your repository method <code class="highlighter-rouge">count</code>, you need to override one more Pagy’s intenal method (it just assumes that it’s called <code class="highlighter-rouge">count</code>). But it’s totally doable.</p>
+
+<p>One thing that looks promising are Pagy extras - for example a module to make pagination template part look nice in Boostrap. Hopefully, this part will grow and there will be more low-hanging fruits for those who decided to use Pagy in their Hanami application.</p>
+
+<p>Please also note that there is alternative <a href="https://github.com/davydovanton/hanami-pagination"><code class="highlighter-rouge">hanami-pagination</code></a> gem available. It’s written by Anton Davydov, one of the core developers of Hanami.</p>
+
+  </div>
+</article>
+
+<div class="divider">end of the article</div>
+
+<section class="container post-footer">
+  <p>This article was written by <strong>Paweł Świątkowski</strong> on <strong>01 Jun 2018</strong>.
+  You can <a href="https://twitter.com/katafrakt_pl">follow me on Twitter</a> if you want.</p>
+  <p>Tags:
+    
+      <span class="tag is-small">
+        <a href="/tag/hanami/">hanami</a>
+      </span>
+    
+      <span class="tag is-small">
+        <a href="/tag/pagination/">pagination</a>
+      </span>
+    
+  </p>
+  <h5>Related posts:</h5>
+  <ul>
+    
+      <li>
+        <a href="/2018/06/06/hidden-jewels-ruby-stdlib/">Hidden jewels of Ruby stdlib</a>
+        <small>(06 Jun 2018)</small>
+      </li>
+    
+      <li>
+        <a href="/2020/05/03/understanding-ruby-app-with-profiling/">Understanding complex Ruby application with profiling tools</a>
+        <small>(03 May 2020)</small>
+      </li>
+    
+      <li>
+        <a href="/2018/07/04/writing-service-objects/">Notes on writing Service Objects</a>
+        <small>(04 Jul 2018)</small>
+      </li>
+    
+      <li>
+        <a href="/2016/09/15/regain-control-of-modules/">Selective include: Regain control of your modules / helpers</a>
+        <small>(15 Sep 2016)</small>
+      </li>
+    
+      <li>
+        <a href="/2016/07/06/regular-expressions/">Regular expressions: how do they work?</a>
+        <small>(06 Jul 2016)</small>
+      </li>
+    
+  </ul>
+</section>
+
+<section class="container">
+  
+  <h3>Comments</h3>
+  <div id="disqus_thread"><iframe id="dsq-app4572" name="dsq-app4572" allowtransparency="true" frameborder="0" scrolling="no" tabindex="0" title="Disqus" width="100%" src="https://disqus.com/embed/comments/?base=default&amp;f=katafraktme&amp;t_u=http%3A%2F%2Fkatafrakt.me%2F2018%2F06%2F01%2Fintegrating-pagy-with-hanami%2F&amp;t_d=Integrating%20Pagy%20with%20Hanami%20%7C%20katafrakt's%20garden&amp;t_t=Integrating%20Pagy%20with%20Hanami%20%7C%20katafrakt's%20garden&amp;s_o=default#version=cfefa856cbcd7efb87102e7242c9a829" style="width: 1px !important; min-width: 100% !important; border: none !important; overflow: hidden !important; height: 990px !important;" horizontalscrolling="no" verticalscrolling="no"></iframe></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES * * */
+        var disqus_shortname = 'katafraktme';
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+  
+</section>
+    </main>
+
+    <hr>
+<footer>
+  <div>
+      <p class="copyright">© 2013-2021. Unless stated otherwise, all text available under <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank">CC BY-SA 3.0</a> license.</p>
+  </div>
+</footer>
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-2580998-6', 'auto');
+ga('send', 'pageview');
+
+</script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css">
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
+<script type="text/javascript">
+const lightbox = GLightbox({});
+</script>
+<script src="//static.getclicky.com/js" type="text/javascript"></script>
+<script type="text/javascript">try{ clicky.init(101034055); }catch(e){}</script>
+<noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/101034055ns.gif" /></p></noscript><p></p>
+
+  
+
+<iframe style="display: none;"></iframe></body></html>

@@ -1,0 +1,959 @@
+<!DOCTYPE html><html lang="en" class="js"><head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="profile" href="https://gmpg.org/xfn/11">
+		<script>(function(html){html.className = html.className.replace(/\bno-js\b/,'js')})(document.documentElement);</script>
+<title>Book – Mind Hacks</title>
+<meta name="robots" content="max-image-preview:large">
+
+<!-- Async WordPress.com Remote Login -->
+<script id="wpcom_remote_login_js">
+var wpcom_remote_login_extra_auth = '';
+function wpcom_remote_login_remove_dom_node_id( element_id ) {
+	var dom_node = document.getElementById( element_id );
+	if ( dom_node ) { dom_node.parentNode.removeChild( dom_node ); }
+}
+function wpcom_remote_login_remove_dom_node_classes( class_name ) {
+	var dom_nodes = document.querySelectorAll( '.' + class_name );
+	for ( var i = 0; i < dom_nodes.length; i++ ) {
+		dom_nodes[ i ].parentNode.removeChild( dom_nodes[ i ] );
+	}
+}
+function wpcom_remote_login_final_cleanup() {
+	wpcom_remote_login_remove_dom_node_classes( "wpcom_remote_login_msg" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_key" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_validate" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_js" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_request_access_iframe" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_request_access_styles" );
+}
+
+// Watch for messages back from the remote login
+window.addEventListener( "message", function( e ) {
+	if ( e.origin === "https://r-login.wordpress.com" ) {
+		var data = {};
+		try {
+			data = JSON.parse( e.data );
+		} catch( e ) {
+			wpcom_remote_login_final_cleanup();
+			return;
+		}
+
+		if ( data.msg === 'LOGIN' ) {
+			// Clean up the login check iframe
+			wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_key" );
+
+			var id_regex = new RegExp( /^[0-9]+$/ );
+			var token_regex = new RegExp( /^.*|.*|.*$/ );
+			if (
+				token_regex.test( data.token )
+				&& id_regex.test( data.wpcomid )
+			) {
+				// We have everything we need to ask for a login
+				var script = document.createElement( "script" );
+				script.setAttribute( "id", "wpcom_remote_login_validate" );
+				script.src = '/remote-login.php?wpcom_remote_login=validate'
+					+ '&wpcomid=' + data.wpcomid
+					+ '&token=' + encodeURIComponent( data.token )
+					+ '&host=' + window.location.protocol
+					+ '//' + window.location.hostname
+					+ '&postid=9'
+					+ '&is_singular=';
+				document.body.appendChild( script );
+			}
+
+			return;
+		}
+
+		// Safari ITP, not logged in, so redirect
+		if ( data.msg === 'LOGIN-REDIRECT' ) {
+			window.location = 'https://wordpress.com/log-in?redirect_to=' + window.location.href;
+			return;
+		}
+
+		// Safari ITP, storage access failed, remove the request
+		if ( data.msg === 'LOGIN-REMOVE' ) {
+			var css_zap = 'html { -webkit-transition: margin-top 1s; transition: margin-top 1s; } /* 9001 */ html { margin-top: 0 !important; } * html body { margin-top: 0 !important; } @media screen and ( max-width: 782px ) { html { margin-top: 0 !important; } * html body { margin-top: 0 !important; } }';
+			var style_zap = document.createElement( 'style' );
+			style_zap.type = 'text/css';
+			style_zap.appendChild( document.createTextNode( css_zap ) );
+			document.body.appendChild( style_zap );
+
+			var e = document.getElementById( 'wpcom_request_access_iframe' );
+			e.parentNode.removeChild( e );
+
+			document.cookie = 'wordpress_com_login_access=denied; path=/; max-age=31536000';
+
+			return;
+		}
+
+		// Safari ITP
+		if ( data.msg === 'REQUEST_ACCESS' ) {
+			console.log( 'request access: safari' );
+
+			// Check ITP iframe enable/disable knob
+			if ( wpcom_remote_login_extra_auth !== 'safari_itp_iframe' ) {
+				return;
+			}
+
+			// If we are in a "private window" there is no ITP.
+			var private_window = false;
+			try {
+				var opendb = window.openDatabase( null, null, null, null );
+			} catch( e ) {
+				private_window = true;
+			}
+
+			if ( private_window ) {
+				console.log( 'private window' );
+				return;
+			}
+
+			var iframe = document.createElement( 'iframe' );
+			iframe.id = 'wpcom_request_access_iframe';
+			iframe.setAttribute( 'scrolling', 'no' );
+			iframe.setAttribute( 'sandbox', 'allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-top-navigation-by-user-activation' );
+			iframe.src = 'https://r-login.wordpress.com/remote-login.php?wpcom_remote_login=request_access&origin=' + encodeURIComponent( data.origin ) + '&wpcomid=' + encodeURIComponent( data.wpcomid );
+
+			var css = 'html { -webkit-transition: margin-top 1s; transition: margin-top 1s; } /* 9001 */ html { margin-top: 46px !important; } * html body { margin-top: 46px !important; } @media screen and ( max-width: 660px ) { html { margin-top: 71px !important; } * html body { margin-top: 71px !important; } #wpcom_request_access_iframe { display: block; height: 71px !important; } } #wpcom_request_access_iframe { border: 0px; height: 46px; position: fixed; top: 0; left: 0; width: 100%; min-width: 100%; z-index: 99999; background: #23282d; } ';
+
+			var style = document.createElement( 'style' );
+			style.type = 'text/css';
+			style.id = 'wpcom_request_access_styles';
+			style.appendChild( document.createTextNode( css ) );
+			document.body.appendChild( style );
+
+			document.body.appendChild( iframe );
+		}
+
+		if ( data.msg === 'DONE' ) {
+			wpcom_remote_login_final_cleanup();
+		}
+	}
+}, false );
+
+// Inject the remote login iframe after the page has had a chance to load
+// more critical resources
+window.addEventListener( "DOMContentLoaded", function( e ) {
+	var iframe = document.createElement( "iframe" );
+	iframe.style.display = "none";
+	iframe.setAttribute( "scrolling", "no" );
+	iframe.setAttribute( "id", "wpcom_remote_login_key" );
+	iframe.src = "https://r-login.wordpress.com/remote-login.php"
+		+ "?wpcom_remote_login=key"
+		+ "&origin=aHR0cHM6Ly9taW5kaGFja3MuY29t"
+		+ "&wpcomid=7022593"
+		+ "&time=1655953877";
+	document.body.appendChild( iframe );
+}, false );
+</script>
+<link rel="dns-prefetch" href="//s0.wp.com">
+<link rel="dns-prefetch" href="//mindhacksblog.wordpress.com">
+<link rel="dns-prefetch" href="//fonts.googleapis.com">
+<link href="https://fonts.gstatic.com" crossorigin="" rel="preconnect">
+<link rel="alternate" type="application/rss+xml" title="Mind Hacks » Feed" href="https://mindhacks.com/feed/">
+<link rel="alternate" type="application/rss+xml" title="Mind Hacks » Comments Feed" href="https://mindhacks.com/comments/feed/">
+	<script type="text/javascript">
+		/* <![CDATA[ */
+		function addLoadEvent(func) {
+			var oldonload = window.onload;
+			if (typeof window.onload != 'function') {
+				window.onload = func;
+			} else {
+				window.onload = function () {
+					oldonload();
+					func();
+				}
+			}
+		}
+		/* ]]> */
+	</script>
+	<script>
+window._wpemojiSettings = {"baseUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/72x72\/","ext":".png","svgUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/s0.wp.com\/wp-includes\/js\/wp-emoji-release.min.js?m=1652185836h&ver=6.0-RC4-53438"}};
+/*! This file is auto-generated */
+!function(e,a,t){var n,r,o,i=a.createElement("canvas"),p=i.getContext&&i.getContext("2d");function s(e,t){var a=String.fromCharCode,e=(p.clearRect(0,0,i.width,i.height),p.fillText(a.apply(this,e),0,0),i.toDataURL());return p.clearRect(0,0,i.width,i.height),p.fillText(a.apply(this,t),0,0),e===i.toDataURL()}function c(e){var t=a.createElement("script");t.src=e,t.defer=t.type="text/javascript",a.getElementsByTagName("head")[0].appendChild(t)}for(o=Array("flag","emoji"),t.supports={everything:!0,everythingExceptFlag:!0},r=0;r<o.length;r++)t.supports[o[r]]=function(e){if(!p||!p.fillText)return!1;switch(p.textBaseline="top",p.font="600 32px Arial",e){case"flag":return s([127987,65039,8205,9895,65039],[127987,65039,8203,9895,65039])?!1:!s([55356,56826,55356,56819],[55356,56826,8203,55356,56819])&&!s([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]);case"emoji":return!s([129777,127995,8205,129778,127999],[129777,127995,8203,129778,127999])}return!1}(o[r]),t.supports.everything=t.supports.everything&&t.supports[o[r]],"flag"!==o[r]&&(t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&t.supports[o[r]]);t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&!t.supports.flag,t.DOMReady=!1,t.readyCallback=function(){t.DOMReady=!0},t.supports.everything||(n=function(){t.readyCallback()},a.addEventListener?(a.addEventListener("DOMContentLoaded",n,!1),e.addEventListener("load",n,!1)):(e.attachEvent("onload",n),a.attachEvent("onreadystatechange",function(){"complete"===a.readyState&&t.readyCallback()})),(e=t.source||{}).concatemoji?c(e.concatemoji):e.wpemoji&&e.twemoji&&(c(e.twemoji),c(e.wpemoji)))}(window,document,window._wpemojiSettings);
+</script><script src="https://s0.wp.com/wp-includes/js/wp-emoji-release.min.js?m=1652185836h&amp;ver=6.0-RC4-53438" type="text/javascript" defer=""></script>
+<style>
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 0.07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	<link crossorigin="anonymous" rel="stylesheet" id="all-css-0-1" href="https://s0.wp.com/_static/??-eJytkt1OwzAMhV+INJsYsF0gniU/VvCWpFHsrMvbk1YbKoUVLriJcmR/znFsOSRh+sgQWYYiki8OI8khmT4ICuihLlRniB7kz5jpMwh+hwDUwiEpljy0nEp4YYC4xno8AckjcFLmJCb1Lf2W60qTGrIT44vyvH3sdt1G6oLeSu37qYDOKldJXD38R6Gprc9CGI0vdjRMMoBFBb6Fx45mInlVIQsPTpnaBYy/4y0211+g++Ynp7PPU7UvLFxG++f+FyWyYoyO7uDLkV9nvTS/gg1oHXDD6XYXDJd1ZNpCrVMGItHOgCVct23k3sLr9vlpt9+87A+H4wfFoRJi?cssminify=yes" type="text/css" media="all">
+<style id="wp-block-library-inline-css">
+.has-text-align-justify {
+	text-align:justify;
+}
+</style>
+<style id="global-styles-inline-css">
+body{--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #fff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--color--dark-gray: #1a1a1a;--wp--preset--color--medium-gray: #686868;--wp--preset--color--light-gray: #e5e5e5;--wp--preset--color--blue-gray: #4d545c;--wp--preset--color--bright-blue: #007acc;--wp--preset--color--light-blue: #9adffd;--wp--preset--color--dark-brown: #402b30;--wp--preset--color--medium-brown: #774e24;--wp--preset--color--dark-red: #640c1f;--wp--preset--color--bright-red: #ff675f;--wp--preset--color--yellow: #ffef8e;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--duotone--dark-grayscale: url('#wp-duotone-dark-grayscale');--wp--preset--duotone--grayscale: url('#wp-duotone-grayscale');--wp--preset--duotone--purple-yellow: url('#wp-duotone-purple-yellow');--wp--preset--duotone--blue-red: url('#wp-duotone-blue-red');--wp--preset--duotone--midnight: url('#wp-duotone-midnight');--wp--preset--duotone--magenta-yellow: url('#wp-duotone-magenta-yellow');--wp--preset--duotone--purple-green: url('#wp-duotone-purple-green');--wp--preset--duotone--blue-orange: url('#wp-duotone-blue-orange');--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+</style>
+<link crossorigin="anonymous" rel="stylesheet" id="twentysixteen-fonts-css" href="https://fonts.googleapis.com/css?family=Merriweather%3A400%2C700%2C900%2C400italic%2C700italic%2C900italic%7CMontserrat%3A400%2C700%7CInconsolata%3A400&amp;subset=latin%2Clatin-ext&amp;display=fallback" media="all">
+<link crossorigin="anonymous" rel="stylesheet" id="all-css-4-1" href="https://s0.wp.com/_static/??-eJyNjcEOQDAQRH9ILdIIB/Evmg2l3TZ2G/y9xslF4jZ58yYDR1QmkCAJ+KSiS7MlhhkJd5uLj1ga5gJeW1nQI0NME8iRwcX2FEQClsvhfz2LMLlgtudi9EPdat03Va279QZyi0C1?cssminify=yes" type="text/css" media="all">
+<!--[if lt IE 10]>
+<link rel='stylesheet' id='twentysixteen-ie-css'  href='https://s0.wp.com/wp-content/themes/pub/twentysixteen/css/ie.css?m=1448353951h&#038;ver=20170530' media='all' />
+<![endif]-->
+<!--[if lt IE 9]>
+<link rel='stylesheet' id='twentysixteen-ie8-css'  href='https://s0.wp.com/wp-content/themes/pub/twentysixteen/css/ie8.css?m=1493067000h&#038;ver=20170530' media='all' />
+<![endif]-->
+<!--[if lt IE 8]>
+<link rel='stylesheet' id='twentysixteen-ie7-css'  href='https://s0.wp.com/wp-content/themes/pub/twentysixteen/css/ie7.css?m=1448353951h&#038;ver=20170530' media='all' />
+<![endif]-->
+<link crossorigin="anonymous" rel="stylesheet" id="all-css-10-1" href="https://s0.wp.com/_static/??-eJx9jUEOwjAMBD+EMRGtxAXxljYyISixo9pR2t+TcgEu3HZWGg22Al7YiA3tQZkUS53RWj82jasRMXpVVNsSQSte8rHzAb/EXKGkGiIrBhJI4ieLwj8A9zTF5Z+60Jwk9BnewQ/u0i1f3eiG8XR27vJ8AeH3Q6k=?cssminify=yes" type="text/css" media="all">
+<style id="jetpack-global-styles-frontend-style-inline-css">
+:root { --font-headings: unset; --font-base: unset; --font-headings-default: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif; --font-base-default: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;}
+</style>
+<link crossorigin="anonymous" rel="stylesheet" id="all-css-12-1" href="https://s0.wp.com/_static/??-eJxti8sKgCAQAH8oW6KXHaJvMTE1Vldapd+PDh2iTsPADJxJaIrZxAyhiITF+siQiLPYUPkD2KnDR/uw1swV/F9M2isUSJbe8pmyM8EwuA4s0qrwDpYwN0PfymmUstsvZXo34g==?cssminify=yes" type="text/css" media="all">
+<script id="media-video-jwt-bridge-js-extra">
+var videopressAjax = {"ajaxUrl":"https:\/\/mindhacksblog.wordpress.com\/wp-admin\/admin-ajax.php","bridgeUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/videopress\/js\/videopress-token-bridge.js","post_id":"9"};
+</script>
+<script id="wpcom-actionbar-placeholder-js-extra">
+var actionbardata = {"siteID":"7022593","siteURL":"https:\/\/mindhacks.com","xhrURL":"https:\/\/mindhacks.com\/wp-admin\/admin-ajax.php","nonce":"fff49a6787","isLoggedIn":"","statusMessage":"","subsEmailDefault":"instantly","proxyScriptUrl":"https:\/\/s0.wp.com\/wp-content\/js\/wpcom-proxy-request.js?ver=20211021","shortlink":"https:\/\/wp.me\/PtsTD-9","i18n":{"followedText":"New posts from this site will now appear in your <a href=\"https:\/\/wordpress.com\/read\">Reader<\/a>","foldBar":"Collapse this bar","unfoldBar":"Expand this bar"}};
+</script>
+<script crossorigin="anonymous" type="text/javascript" src="https://s0.wp.com/_static/??-eJyFjkkOwjAMRS+EiYrUUhaIs3QwqUvihMSh7e0JiIphw8ry/+9ZVpOHzrEgixqjsq4lg5AihkbnDIjPbjvGjfrmghHwwc3LbycDWozKp1bJlIMl0iyI/JAGsaZcBeLOpD6juRivCcPyGltL/BcCSzo0gp/w+oJN4E3SxFHdqEfnA8bnhfcG4i7I0AbqNWb/ZI9FVe72h6Kuq/EOURdmyA=="></script>
+<script type="text/javascript">
+	window.addEventListener( 'DOMContentLoaded', function() {
+		rltInitialize( {"token":null,"iframeOrigins":["https:\/\/widgets.wp.com"]} );
+	} );
+</script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://mindhacksblog.wordpress.com/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://s0.wp.com/wp-includes/wlwmanifest.xml"> 
+<meta name="generator" content="WordPress.com">
+<link rel="canonical" href="https://mindhacks.com/book/">
+<link rel="shortlink" href="https://wp.me/PtsTD-9">
+<link rel="alternate" type="application/json+oembed" href="https://public-api.wordpress.com/oembed/?format=json&amp;url=https%3A%2F%2Fmindhacks.com%2Fbook%2F&amp;for=wpcom-auto-discovery"><link rel="alternate" type="application/xml+oembed" href="https://public-api.wordpress.com/oembed/?format=xml&amp;url=https%3A%2F%2Fmindhacks.com%2Fbook%2F&amp;for=wpcom-auto-discovery">
+<!-- Jetpack Open Graph Tags -->
+<meta property="og:type" content="article">
+<meta property="og:title" content="Book">
+<meta property="og:url" content="https://mindhacks.com/book/">
+<meta property="og:description" content="Mind Hacks: Mind Hacks is a collection of probes into the moment-by-moment workings of our brain with a view to understanding ourselves a little better and learning a little more, in a very real se…">
+<meta property="article:published_time" content="2009-09-09T20:41:22+00:00">
+<meta property="article:modified_time" content="2010-08-04T14:09:55+00:00">
+<meta property="og:site_name" content="Mind Hacks">
+<meta property="og:image" content="https://secure.gravatar.com/blavatar/e1a4389e311de66187044dee40297f7e?s=200&amp;ts=1655953877">
+<meta property="og:image:width" content="200">
+<meta property="og:image:height" content="200">
+<meta property="og:image:alt" content="">
+<meta property="og:locale" content="en_US">
+<meta property="article:publisher" content="https://www.facebook.com/WordPresscom">
+<meta name="twitter:creator" content="@mindhacksblog">
+<meta name="twitter:site" content="@mindhacksblog">
+<meta name="twitter:text:title" content="Book">
+<meta name="twitter:image" content="https://secure.gravatar.com/blavatar/e1a4389e311de66187044dee40297f7e?s=240">
+<meta name="twitter:card" content="summary">
+
+<!-- End Jetpack Open Graph Tags -->
+<link rel="shortcut icon" type="image/x-icon" href="https://secure.gravatar.com/blavatar/e1a4389e311de66187044dee40297f7e?s=32" sizes="16x16">
+<link rel="icon" type="image/x-icon" href="https://secure.gravatar.com/blavatar/e1a4389e311de66187044dee40297f7e?s=32" sizes="16x16">
+<link rel="apple-touch-icon" href="https://secure.gravatar.com/blavatar/e1a4389e311de66187044dee40297f7e?s=114">
+<link rel="openid.server" href="https://mindhacks.com/?openidserver=1">
+<link rel="openid.delegate" href="https://mindhacks.com/">
+<link rel="search" type="application/opensearchdescription+xml" href="https://mindhacks.com/osd.xml" title="Mind Hacks">
+<link rel="search" type="application/opensearchdescription+xml" href="https://s1.wp.com/opensearch.xml" title="WordPress.com">
+<style>.recentcomments a{display:inline !important;padding:0 !important;margin:0 !important;}</style>		<style type="text/css">
+			.recentcomments a {
+				display: inline !important;
+				padding: 0 !important;
+				margin: 0 !important;
+			}
+
+			table.recentcommentsavatartop img.avatar, table.recentcommentsavatarend img.avatar {
+				border: 0px;
+				margin: 0;
+			}
+
+			table.recentcommentsavatartop a, table.recentcommentsavatarend a {
+				border: 0px !important;
+				background-color: transparent !important;
+			}
+
+			td.recentcommentsavatarend, td.recentcommentsavatartop {
+				padding: 0px 0px 1px 0px;
+				margin: 0px;
+			}
+
+			td.recentcommentstextend {
+				border: none !important;
+				padding: 0px 0px 2px 10px;
+			}
+
+			.rtl td.recentcommentstextend {
+				padding: 0px 10px 2px 0px;
+			}
+
+			td.recentcommentstexttop {
+				border: none;
+				padding: 0px 0px 0px 10px;
+			}
+
+			.rtl td.recentcommentstexttop {
+				padding: 0px 10px 0px 0px;
+			}
+		</style>
+		<meta name="application-name" content="Mind Hacks"><meta name="msapplication-window" content="width=device-width;height=device-height"><meta name="msapplication-tooltip" content="Neuroscience and psychology news and views."><meta name="msapplication-task" content="name=Subscribe;action-uri=https://mindhacks.com/feed/;icon-uri=https://secure.gravatar.com/blavatar/e1a4389e311de66187044dee40297f7e?s=16"><meta name="msapplication-task" content="name=Sign up for a free blog;action-uri=http://wordpress.com/signup/;icon-uri=https://s0.wp.com/i/favicon.ico"><meta name="msapplication-task" content="name=WordPress.com Support;action-uri=http://support.wordpress.com/;icon-uri=https://s0.wp.com/i/favicon.ico"><meta name="msapplication-task" content="name=WordPress.com Forums;action-uri=http://forums.wordpress.com/;icon-uri=https://s0.wp.com/i/favicon.ico"><meta name="description" content="Mind Hacks: Mind Hacks is a collection of probes into the moment-by-moment workings of our brain with a view to understanding ourselves a little better and learning a little more, in a very real sense, about what makes us tick. It’s by Tom Stafford and Matt Webb, and published by O’Reilly. → Visit O’Reilly’s Mind…">
+<!-- There is no amphtml version available for this URL. --><link rel="stylesheet" type="text/css" id="gravatar-card-css" href="https://0.gravatar.com/dist/css/hovercard.min.css?ver=202225z"><link rel="stylesheet" type="text/css" id="gravatar-card-services-css" href="https://0.gravatar.com/dist/css/services.min.css?ver=202225z"><link href="https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.css?v=20210915" type="text/css" rel="stylesheet"></head>
+
+<body class="page-template-default page page-id-9 page-parent wp-embed-responsive customizer-styles-applied group-blog highlander-enabled highlander-light jp-sharing-input-touch">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-dark-grayscale"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></feColorMatrix><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0 0.49803921568627"></feFuncR><feFuncG type="table" tableValues="0 0.49803921568627"></feFuncG><feFuncB type="table" tableValues="0 0.49803921568627"></feFuncB><feFuncA type="table" tableValues="1 1"></feFuncA></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-grayscale"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></feColorMatrix><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0 1"></feFuncR><feFuncG type="table" tableValues="0 1"></feFuncG><feFuncB type="table" tableValues="0 1"></feFuncB><feFuncA type="table" tableValues="1 1"></feFuncA></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-purple-yellow"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></feColorMatrix><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0.54901960784314 0.98823529411765"></feFuncR><feFuncG type="table" tableValues="0 1"></feFuncG><feFuncB type="table" tableValues="0.71764705882353 0.25490196078431"></feFuncB><feFuncA type="table" tableValues="1 1"></feFuncA></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-blue-red"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></feColorMatrix><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0 1"></feFuncR><feFuncG type="table" tableValues="0 0.27843137254902"></feFuncG><feFuncB type="table" tableValues="0.5921568627451 0.27843137254902"></feFuncB><feFuncA type="table" tableValues="1 1"></feFuncA></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-midnight"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></feColorMatrix><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0 0"></feFuncR><feFuncG type="table" tableValues="0 0.64705882352941"></feFuncG><feFuncB type="table" tableValues="0 1"></feFuncB><feFuncA type="table" tableValues="1 1"></feFuncA></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-magenta-yellow"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></feColorMatrix><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0.78039215686275 1"></feFuncR><feFuncG type="table" tableValues="0 0.94901960784314"></feFuncG><feFuncB type="table" tableValues="0.35294117647059 0.47058823529412"></feFuncB><feFuncA type="table" tableValues="1 1"></feFuncA></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-purple-green"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></feColorMatrix><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0.65098039215686 0.40392156862745"></feFuncR><feFuncG type="table" tableValues="0 1"></feFuncG><feFuncB type="table" tableValues="0.44705882352941 0.4"></feFuncB><feFuncA type="table" tableValues="1 1"></feFuncA></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-blue-orange"><feColorMatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></feColorMatrix><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0.098039215686275 1"></feFuncR><feFuncG type="table" tableValues="0 0.66274509803922"></feFuncG><feFuncB type="table" tableValues="0.84705882352941 0.41960784313725"></feFuncB><feFuncA type="table" tableValues="1 1"></feFuncA></feComponentTransfer><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs></svg><div id="page" class="site">
+	<div class="site-inner">
+		<a class="skip-link screen-reader-text" href="#content">Skip to content</a>
+
+		<header id="masthead" class="site-header">
+			<div class="site-header-main">
+				<div class="site-branding">
+					<a href="https://mindhacks.com/" class="site-logo-link" rel="home" itemprop="url"></a>
+											<p class="site-title"><a href="https://mindhacks.com/" rel="home">Mind Hacks</a></p>
+												<p class="site-description">Neuroscience and psychology news and views.</p>
+									</div><!-- .site-branding -->
+
+							</div><!-- .site-header-main -->
+
+					</header><!-- .site-header -->
+
+		<div id="content" class="site-content">
+
+<div id="primary" class="content-area">
+	<main id="main" class="site-main">
+		
+<article id="post-9" class="post-9 page type-page status-publish hentry">
+	<header class="entry-header">
+		<h1 class="entry-title">Book</h1>	</header><!-- .entry-header -->
+
+	
+	<div class="entry-content">
+		<div class="section">
+<h3>Mind Hacks:</h3>
+<p class="first"><em>Mind Hacks</em> is a collection of probes into the moment-by-moment workings of our brain with a view to understanding ourselves a little better and learning a little more, in a very real sense, about what makes us tick. It’s by Tom Stafford and Matt Webb, and published by O’Reilly.</p>
+<p>→ Visit <a href="http://www.oreilly.com/catalog/mindhks/">O’Reilly’s Mind Hacks catalog page</a> for a longer description, sample hacks, the table of contents and a full index.</p>
+<p>→ Buy <em>Mind Hacks</em> at <a href="http://www.amazon.com/exec/obidos/ASIN/0596007795/mattwebbsinter02">Amazon</a> or <a href="http://www.amazon.co.uk/exec/obidos/ASIN/0596007795/mattwebbsinterco">Amazon UK</a>.</p>
+</div>
+<div class="section">
+<h3>This site:</h3>
+<p class="first">On mindhacksblog.wordpress.com you’ll find a <a href="https://mindhacksblog.wordpress.com/">blog</a> where Tom and Matt (and guest authors) post extra demos and commentary on how to look inside your brain using neuroscience and psychology.</p>
+<p>The book itself has pointers to many places on the Web. To save you typing them in, here are <a href="/book/links/">all the book links on one page</a>. If a link is dead, we’ll give a replacement there too.</p>
+<p>If you like the book or this site, there are <a href="/links/">more links</a> to other sites you’ll enjoy.</p>
+</div>
+<div class="section">
+<h3>Reviews:</h3>
+<p class="first">Want to know what other people think? Here are some of the reviews Mind Hacks has had.</p>
+<p><q>The authors have compiled a fascinating “collection of probes into the moment-by-moment works of the brain” … Mind Hacks allows you to test the theories of neuroscience on your own grey matter. If you’ve always wanted to get closer to your cerebellum but never plucked up the courage to take that DIY neurosurgery course, this is the book for you.</q> — <a href="http://books.guardian.co.uk/review/story/0,12084,1389842,00.html">The Guardian</a></p>
+<p><q>A wonderful annotated bibliography, with a light touch and hackish humour that inspires further reading.</q> — <a href="http://www.newscientist.com/article.ns?id=mg18524852.400">New Scientist</a></p>
+<p><q>totally overflowing with examples and simple exercises … “Mind Hacks” is helpfully structured to take you just as deep as you want to go.</q> — <a href="http://bookzen.blogspot.com/2005_01_01_bookzen_archive.html#110609234145944039">Bookzen</a></p>
+<p><q>Mind Hacks is a rewarding mind trip, one that stretches the boundaries of what we know about how the brain works and playfully presents that information in an engaging, thought-provoking way.</q> — <a href="http://blogcritics.org/archives/2005/01/31/120539.php">Blogcritics</a></p>
+</div>
+<div id="jp-post-flair" class="sharedaddy sd-like-enabled sd-sharing-enabled"><div class="sharedaddy sd-sharing-enabled"><div class="robots-nocontent sd-block sd-social sd-social-icon-text sd-sharing"><h3 class="sd-title">Share this:</h3><div class="sd-content"><ul data-sharing-events-added="true"><li class="share-twitter"><a rel="nofollow noopener noreferrer" data-shared="sharing-twitter-9" class="share-twitter sd-button share-icon" href="https://mindhacks.com/book/?share=twitter&amp;nb=1" target="_blank" title="Click to share on Twitter"><span>Twitter</span></a></li><li class="share-facebook"><a rel="nofollow noopener noreferrer" data-shared="sharing-facebook-9" class="share-facebook sd-button share-icon" href="https://mindhacks.com/book/?share=facebook&amp;nb=1" target="_blank" title="Click to share on Facebook"><span>Facebook</span></a></li><li class="share-reddit"><a rel="nofollow noopener noreferrer" data-shared="" class="share-reddit sd-button share-icon" href="https://mindhacks.com/book/?share=reddit&amp;nb=1" target="_blank" title="Click to share on Reddit"><span>Reddit</span></a></li><li class="share-end"></li></ul></div></div></div><div class="sharedaddy sd-block sd-like jetpack-likes-widget-wrapper jetpack-likes-widget-loaded" id="like-post-wrapper-7022593-9-62b3d9d5f02d1" data-src="//widgets.wp.com/likes/index.html?ver=20220105#blog_id=7022593&amp;post_id=9&amp;origin=mindhacksblog.wordpress.com&amp;obj_id=7022593-9-62b3d9d5f02d1&amp;domain=mindhacks.com" data-name="like-post-frame-7022593-9-62b3d9d5f02d1" data-title="Like or Reblog"><h3 class="sd-title">Like this:</h3><div class="likes-widget-placeholder post-likes-widget-placeholder" style="height: 55px; display: none;"><span class="button"><span>Like</span></span> <span class="loading">Loading...</span></div><iframe class="post-likes-widget jetpack-likes-widget" name="like-post-frame-7022593-9-62b3d9d5f02d1" src="//widgets.wp.com/likes/index.html?ver=20220105#blog_id=7022593&amp;post_id=9&amp;origin=mindhacksblog.wordpress.com&amp;obj_id=7022593-9-62b3d9d5f02d1&amp;domain=mindhacks.com" height="55px" width="100%" frameborder="0" scrolling="no" title="Like or Reblog"></iframe><span class="sd-text-color"></span><a class="sd-link-color"></a></div></div>	</div><!-- .entry-content -->
+
+	
+</article><!-- #post-9 -->
+
+	</main><!-- .site-main -->
+
+	<aside id="content-bottom-widgets" class="content-bottom-widgets">
+			<div class="widget-area">
+			
+		<section id="recent-posts-2" class="widget widget_recent_entries">
+		<h2 class="widget-title">Recent Posts</h2><nav aria-label="Recent Posts">
+		<ul>
+											<li>
+					<a href="https://mindhacks.com/2022/05/01/chromostereopsis/">Chromostereopsis</a>
+									</li>
+											<li>
+					<a href="https://mindhacks.com/2021/01/29/pandemoniums-friendly-demons/">Pandemonium’s friendly demons</a>
+									</li>
+											<li>
+					<a href="https://mindhacks.com/2020/03/20/do-we-suffer-behavioural-fatigue-for-pandemic-prevention-measures/">Do we suffer ‘behavioural fatigue’ for pandemic prevention&nbsp;measures?</a>
+									</li>
+											<li>
+					<a href="https://mindhacks.com/2018/09/13/the-choice-engine/">The Choice Engine</a>
+									</li>
+											<li>
+					<a href="https://mindhacks.com/2018/08/15/after-the-methods-crisis-the-theory-crisis/">After the methods crisis, the theory&nbsp;crisis</a>
+									</li>
+											<li>
+					<a href="https://mindhacks.com/2018/08/14/open-science-essentials-preprints/">Open Science Essentials:&nbsp;Preprints</a>
+									</li>
+											<li>
+					<a href="https://mindhacks.com/2018/06/17/believing-everyone-else-is-wrong-is-a-danger-sign/">Believing everyone else is wrong is a danger&nbsp;sign</a>
+									</li>
+											<li>
+					<a href="https://mindhacks.com/2018/04/04/review-john-barghs-before-you-know-it/">Review: John Bargh’s “Before You Know&nbsp;It”</a>
+									</li>
+											<li>
+					<a href="https://mindhacks.com/2018/04/03/did-the-victorians-have-faster-reactions/">Did the Victorians have faster&nbsp;reactions?</a>
+									</li>
+											<li>
+					<a href="https://mindhacks.com/2018/02/26/spaced-repetition-darwins-golden-rule/">spaced repetition &amp; Darwin’s golden&nbsp;rule</a>
+									</li>
+					</ul>
+
+		</nav></section><section id="recent-comments-2" class="widget widget_recent_comments"><h2 class="widget-title">Recent Comments</h2>				<ul id="recentcomments">
+											<li class="recentcomments">
+							<a href="https://idiolect.org.uk/notes/2022/05/01/chromosteopsis-colophon/" rel="external nofollow ugc" class="url">Chromosteopsis: colophon – idiolect</a> on <a href="https://mindhacks.com/2022/05/01/chromostereopsis/#comment-685527">Chromostereopsis</a>						</li>
+
+												<li class="recentcomments">
+							Anit on <a href="https://mindhacks.com/2022/05/01/chromostereopsis/#comment-684957">Chromostereopsis</a>						</li>
+
+												<li class="recentcomments">
+							Michelle on <a href="https://mindhacks.com/2007/10/04/strippers-earning-potential-affected-by-hormone-cycle/#comment-684857">Strippers’ earning potential affected by hormone&nbsp;cycle</a>						</li>
+
+												<li class="recentcomments">
+							Nathan Williams on <a href="https://mindhacks.com/2022/05/01/chromostereopsis/#comment-684106">Chromostereopsis</a>						</li>
+
+												<li class="recentcomments">
+							Jack on <a href="https://mindhacks.com/2018/06/17/believing-everyone-else-is-wrong-is-a-danger-sign/#comment-665357">Believing everyone else is wrong is a danger&nbsp;sign</a>						</li>
+
+										</ul>
+				</section><section id="categories-3" class="widget widget_categories"><h2 class="widget-title">Sections</h2><form action="https://mindhacks.com" method="get"><label class="screen-reader-text" for="cat">Sections</label><select name="cat" id="cat" class="postform">
+	<option value="-1">Select Category</option>
+	<option class="level-0" value="521">advertising</option>
+	<option class="level-0" value="10904">Attention</option>
+	<option class="level-0" value="726">Authors</option>
+	<option class="level-0" value="178">books</option>
+	<option class="level-0" value="756">Comics</option>
+	<option class="level-0" value="27915">gender</option>
+	<option class="level-0" value="14884">Graffiti</option>
+	<option class="level-0" value="40125656">Hearing and Language</option>
+	<option class="level-0" value="544731">Inside the Brain</option>
+	<option class="level-0" value="1196130">Integrating</option>
+	<option class="level-0" value="264">Learning</option>
+	<option class="level-0" value="409">Linkage</option>
+	<option class="level-0" value="10049">Moving</option>
+	<option class="level-0" value="103">News</option>
+	<option class="level-0" value="891">Nonsense</option>
+	<option class="level-0" value="29542">Other People</option>
+	<option class="level-0" value="61252">Reasoning</option>
+	<option class="level-0" value="11115">Remembering</option>
+	<option class="level-0" value="12226">Seeing</option>
+	<option class="level-0" value="3549">Theory</option>
+	<option class="level-0" value="209776">Togetherness</option>
+	<option class="level-0" value="1">Uncategorized</option>
+</select>
+</form>
+<script>
+/* <![CDATA[ */
+(function() {
+	var dropdown = document.getElementById( "cat" );
+	function onCatChange() {
+		if ( dropdown.options[ dropdown.selectedIndex ].value > 0 ) {
+			dropdown.parentNode.submit();
+		}
+	}
+	dropdown.onchange = onCatChange;
+})();
+/* ]]> */
+</script>
+
+			</section><section id="archives-3" class="widget widget_archive"><h2 class="widget-title">Archives</h2><nav aria-label="Archives">
+			<ul>
+					<li><a href="https://mindhacks.com/2022/05/">May 2022</a></li>
+	<li><a href="https://mindhacks.com/2021/01/">January 2021</a></li>
+	<li><a href="https://mindhacks.com/2020/03/">March 2020</a></li>
+	<li><a href="https://mindhacks.com/2018/09/">September 2018</a></li>
+	<li><a href="https://mindhacks.com/2018/08/">August 2018</a></li>
+	<li><a href="https://mindhacks.com/2018/06/">June 2018</a></li>
+	<li><a href="https://mindhacks.com/2018/04/">April 2018</a></li>
+	<li><a href="https://mindhacks.com/2018/02/">February 2018</a></li>
+	<li><a href="https://mindhacks.com/2018/01/">January 2018</a></li>
+	<li><a href="https://mindhacks.com/2017/12/">December 2017</a></li>
+	<li><a href="https://mindhacks.com/2017/11/">November 2017</a></li>
+	<li><a href="https://mindhacks.com/2017/09/">September 2017</a></li>
+	<li><a href="https://mindhacks.com/2017/08/">August 2017</a></li>
+	<li><a href="https://mindhacks.com/2017/07/">July 2017</a></li>
+	<li><a href="https://mindhacks.com/2017/05/">May 2017</a></li>
+	<li><a href="https://mindhacks.com/2017/04/">April 2017</a></li>
+	<li><a href="https://mindhacks.com/2017/03/">March 2017</a></li>
+	<li><a href="https://mindhacks.com/2017/02/">February 2017</a></li>
+	<li><a href="https://mindhacks.com/2016/12/">December 2016</a></li>
+	<li><a href="https://mindhacks.com/2016/11/">November 2016</a></li>
+	<li><a href="https://mindhacks.com/2016/10/">October 2016</a></li>
+	<li><a href="https://mindhacks.com/2016/09/">September 2016</a></li>
+	<li><a href="https://mindhacks.com/2016/07/">July 2016</a></li>
+	<li><a href="https://mindhacks.com/2016/06/">June 2016</a></li>
+	<li><a href="https://mindhacks.com/2016/05/">May 2016</a></li>
+	<li><a href="https://mindhacks.com/2016/04/">April 2016</a></li>
+	<li><a href="https://mindhacks.com/2016/03/">March 2016</a></li>
+	<li><a href="https://mindhacks.com/2016/02/">February 2016</a></li>
+	<li><a href="https://mindhacks.com/2016/01/">January 2016</a></li>
+	<li><a href="https://mindhacks.com/2015/12/">December 2015</a></li>
+	<li><a href="https://mindhacks.com/2015/11/">November 2015</a></li>
+	<li><a href="https://mindhacks.com/2015/10/">October 2015</a></li>
+	<li><a href="https://mindhacks.com/2015/09/">September 2015</a></li>
+	<li><a href="https://mindhacks.com/2015/08/">August 2015</a></li>
+	<li><a href="https://mindhacks.com/2015/07/">July 2015</a></li>
+	<li><a href="https://mindhacks.com/2015/06/">June 2015</a></li>
+	<li><a href="https://mindhacks.com/2015/05/">May 2015</a></li>
+	<li><a href="https://mindhacks.com/2015/04/">April 2015</a></li>
+	<li><a href="https://mindhacks.com/2015/03/">March 2015</a></li>
+	<li><a href="https://mindhacks.com/2015/02/">February 2015</a></li>
+	<li><a href="https://mindhacks.com/2015/01/">January 2015</a></li>
+	<li><a href="https://mindhacks.com/2014/12/">December 2014</a></li>
+	<li><a href="https://mindhacks.com/2014/11/">November 2014</a></li>
+	<li><a href="https://mindhacks.com/2014/10/">October 2014</a></li>
+	<li><a href="https://mindhacks.com/2014/09/">September 2014</a></li>
+	<li><a href="https://mindhacks.com/2014/08/">August 2014</a></li>
+	<li><a href="https://mindhacks.com/2014/07/">July 2014</a></li>
+	<li><a href="https://mindhacks.com/2014/06/">June 2014</a></li>
+	<li><a href="https://mindhacks.com/2014/05/">May 2014</a></li>
+	<li><a href="https://mindhacks.com/2014/04/">April 2014</a></li>
+	<li><a href="https://mindhacks.com/2014/03/">March 2014</a></li>
+	<li><a href="https://mindhacks.com/2014/02/">February 2014</a></li>
+	<li><a href="https://mindhacks.com/2014/01/">January 2014</a></li>
+	<li><a href="https://mindhacks.com/2013/12/">December 2013</a></li>
+	<li><a href="https://mindhacks.com/2013/11/">November 2013</a></li>
+	<li><a href="https://mindhacks.com/2013/10/">October 2013</a></li>
+	<li><a href="https://mindhacks.com/2013/09/">September 2013</a></li>
+	<li><a href="https://mindhacks.com/2013/08/">August 2013</a></li>
+	<li><a href="https://mindhacks.com/2013/07/">July 2013</a></li>
+	<li><a href="https://mindhacks.com/2013/06/">June 2013</a></li>
+	<li><a href="https://mindhacks.com/2013/05/">May 2013</a></li>
+	<li><a href="https://mindhacks.com/2013/04/">April 2013</a></li>
+	<li><a href="https://mindhacks.com/2013/03/">March 2013</a></li>
+	<li><a href="https://mindhacks.com/2013/02/">February 2013</a></li>
+	<li><a href="https://mindhacks.com/2013/01/">January 2013</a></li>
+	<li><a href="https://mindhacks.com/2012/12/">December 2012</a></li>
+	<li><a href="https://mindhacks.com/2012/11/">November 2012</a></li>
+	<li><a href="https://mindhacks.com/2012/10/">October 2012</a></li>
+	<li><a href="https://mindhacks.com/2012/09/">September 2012</a></li>
+	<li><a href="https://mindhacks.com/2012/08/">August 2012</a></li>
+	<li><a href="https://mindhacks.com/2012/07/">July 2012</a></li>
+	<li><a href="https://mindhacks.com/2012/06/">June 2012</a></li>
+	<li><a href="https://mindhacks.com/2012/05/">May 2012</a></li>
+	<li><a href="https://mindhacks.com/2012/04/">April 2012</a></li>
+	<li><a href="https://mindhacks.com/2012/03/">March 2012</a></li>
+	<li><a href="https://mindhacks.com/2012/02/">February 2012</a></li>
+	<li><a href="https://mindhacks.com/2012/01/">January 2012</a></li>
+	<li><a href="https://mindhacks.com/2011/12/">December 2011</a></li>
+	<li><a href="https://mindhacks.com/2011/11/">November 2011</a></li>
+	<li><a href="https://mindhacks.com/2011/10/">October 2011</a></li>
+	<li><a href="https://mindhacks.com/2011/09/">September 2011</a></li>
+	<li><a href="https://mindhacks.com/2011/08/">August 2011</a></li>
+	<li><a href="https://mindhacks.com/2011/07/">July 2011</a></li>
+	<li><a href="https://mindhacks.com/2011/06/">June 2011</a></li>
+	<li><a href="https://mindhacks.com/2011/05/">May 2011</a></li>
+	<li><a href="https://mindhacks.com/2011/04/">April 2011</a></li>
+	<li><a href="https://mindhacks.com/2011/03/">March 2011</a></li>
+	<li><a href="https://mindhacks.com/2011/02/">February 2011</a></li>
+	<li><a href="https://mindhacks.com/2011/01/">January 2011</a></li>
+	<li><a href="https://mindhacks.com/2010/12/">December 2010</a></li>
+	<li><a href="https://mindhacks.com/2010/11/">November 2010</a></li>
+	<li><a href="https://mindhacks.com/2010/10/">October 2010</a></li>
+	<li><a href="https://mindhacks.com/2010/09/">September 2010</a></li>
+	<li><a href="https://mindhacks.com/2010/08/">August 2010</a></li>
+	<li><a href="https://mindhacks.com/2010/07/">July 2010</a></li>
+	<li><a href="https://mindhacks.com/2010/06/">June 2010</a></li>
+	<li><a href="https://mindhacks.com/2010/05/">May 2010</a></li>
+	<li><a href="https://mindhacks.com/2010/04/">April 2010</a></li>
+	<li><a href="https://mindhacks.com/2010/03/">March 2010</a></li>
+	<li><a href="https://mindhacks.com/2010/02/">February 2010</a></li>
+	<li><a href="https://mindhacks.com/2010/01/">January 2010</a></li>
+	<li><a href="https://mindhacks.com/2009/12/">December 2009</a></li>
+	<li><a href="https://mindhacks.com/2009/11/">November 2009</a></li>
+	<li><a href="https://mindhacks.com/2009/10/">October 2009</a></li>
+	<li><a href="https://mindhacks.com/2009/09/">September 2009</a></li>
+	<li><a href="https://mindhacks.com/2009/08/">August 2009</a></li>
+	<li><a href="https://mindhacks.com/2009/07/">July 2009</a></li>
+	<li><a href="https://mindhacks.com/2009/06/">June 2009</a></li>
+	<li><a href="https://mindhacks.com/2009/05/">May 2009</a></li>
+	<li><a href="https://mindhacks.com/2009/04/">April 2009</a></li>
+	<li><a href="https://mindhacks.com/2009/03/">March 2009</a></li>
+	<li><a href="https://mindhacks.com/2009/02/">February 2009</a></li>
+	<li><a href="https://mindhacks.com/2009/01/">January 2009</a></li>
+	<li><a href="https://mindhacks.com/2008/12/">December 2008</a></li>
+	<li><a href="https://mindhacks.com/2008/11/">November 2008</a></li>
+	<li><a href="https://mindhacks.com/2008/10/">October 2008</a></li>
+	<li><a href="https://mindhacks.com/2008/09/">September 2008</a></li>
+	<li><a href="https://mindhacks.com/2008/08/">August 2008</a></li>
+	<li><a href="https://mindhacks.com/2008/07/">July 2008</a></li>
+	<li><a href="https://mindhacks.com/2008/06/">June 2008</a></li>
+	<li><a href="https://mindhacks.com/2008/05/">May 2008</a></li>
+	<li><a href="https://mindhacks.com/2008/04/">April 2008</a></li>
+	<li><a href="https://mindhacks.com/2008/03/">March 2008</a></li>
+	<li><a href="https://mindhacks.com/2008/02/">February 2008</a></li>
+	<li><a href="https://mindhacks.com/2008/01/">January 2008</a></li>
+	<li><a href="https://mindhacks.com/2007/12/">December 2007</a></li>
+	<li><a href="https://mindhacks.com/2007/11/">November 2007</a></li>
+	<li><a href="https://mindhacks.com/2007/10/">October 2007</a></li>
+	<li><a href="https://mindhacks.com/2007/09/">September 2007</a></li>
+	<li><a href="https://mindhacks.com/2007/08/">August 2007</a></li>
+	<li><a href="https://mindhacks.com/2007/07/">July 2007</a></li>
+	<li><a href="https://mindhacks.com/2007/06/">June 2007</a></li>
+	<li><a href="https://mindhacks.com/2007/05/">May 2007</a></li>
+	<li><a href="https://mindhacks.com/2007/04/">April 2007</a></li>
+	<li><a href="https://mindhacks.com/2007/03/">March 2007</a></li>
+	<li><a href="https://mindhacks.com/2007/02/">February 2007</a></li>
+	<li><a href="https://mindhacks.com/2007/01/">January 2007</a></li>
+	<li><a href="https://mindhacks.com/2006/12/">December 2006</a></li>
+	<li><a href="https://mindhacks.com/2006/11/">November 2006</a></li>
+	<li><a href="https://mindhacks.com/2006/10/">October 2006</a></li>
+	<li><a href="https://mindhacks.com/2006/09/">September 2006</a></li>
+	<li><a href="https://mindhacks.com/2006/08/">August 2006</a></li>
+	<li><a href="https://mindhacks.com/2006/07/">July 2006</a></li>
+	<li><a href="https://mindhacks.com/2006/06/">June 2006</a></li>
+	<li><a href="https://mindhacks.com/2006/05/">May 2006</a></li>
+	<li><a href="https://mindhacks.com/2006/04/">April 2006</a></li>
+	<li><a href="https://mindhacks.com/2006/03/">March 2006</a></li>
+	<li><a href="https://mindhacks.com/2006/02/">February 2006</a></li>
+	<li><a href="https://mindhacks.com/2006/01/">January 2006</a></li>
+	<li><a href="https://mindhacks.com/2005/12/">December 2005</a></li>
+	<li><a href="https://mindhacks.com/2005/11/">November 2005</a></li>
+	<li><a href="https://mindhacks.com/2005/10/">October 2005</a></li>
+	<li><a href="https://mindhacks.com/2005/09/">September 2005</a></li>
+	<li><a href="https://mindhacks.com/2005/08/">August 2005</a></li>
+	<li><a href="https://mindhacks.com/2005/07/">July 2005</a></li>
+	<li><a href="https://mindhacks.com/2005/06/">June 2005</a></li>
+	<li><a href="https://mindhacks.com/2005/05/">May 2005</a></li>
+	<li><a href="https://mindhacks.com/2005/04/">April 2005</a></li>
+	<li><a href="https://mindhacks.com/2005/03/">March 2005</a></li>
+	<li><a href="https://mindhacks.com/2005/02/">February 2005</a></li>
+	<li><a href="https://mindhacks.com/2005/01/">January 2005</a></li>
+	<li><a href="https://mindhacks.com/2004/12/">December 2004</a></li>
+	<li><a href="https://mindhacks.com/2004/11/">November 2004</a></li>
+			</ul>
+
+			</nav></section>		</div><!-- .widget-area -->
+	
+	</aside><!-- .content-bottom-widgets -->
+
+</div><!-- .content-area -->
+
+
+	<aside id="secondary" class="sidebar widget-area">
+		<section id="pages-4" class="widget widget_pages"><h2 class="widget-title">Pages</h2><nav aria-label="Pages">
+			<ul>
+				<li class="page_item page-item-9 current_page_item"><a href="https://mindhacks.com/book/" aria-current="page">Book</a></li>
+<li class="page_item page-item-12"><a href="https://mindhacks.com/links/">Links</a></li>
+			</ul>
+
+			</nav></section><section id="search-3" class="widget widget_search">
+<form role="search" method="get" class="search-form" action="https://mindhacks.com/">
+	<label>
+		<span class="screen-reader-text">Search for:</span>
+		<input type="search" class="search-field" placeholder="Search …" value="" name="s">
+	</label>
+	<button type="submit" class="search-submit"><span class="screen-reader-text">Search</span></button>
+</form>
+</section><section id="text-4" class="widget widget_text">			<div class="textwidget"><p>Neuroscience and psychology tricks to find out what's going on inside your brain.</p>
+<p><a href="http://mind-hacks.wikia.com/wiki/Mind_Hacks_Wiki">mindhacks.com wiki</a><br>
+ - explore our back pages!</p>
+<p><a class="image" href="https://mindhacksblog.wordpress.com/book/"><img src="https://i0.wp.com/mindhacks-legacy.s3.amazonaws.com/theme/bookcover.png" height="180" width="120" border="0" srcset="https://i0.wp.com/mindhacks-legacy.s3.amazonaws.com/theme/bookcover.png?zoom=2 3x" scale="3"></a></p>
+<p>Mind Hacks is a book by Tom Stafford and Matt Webb. <a href="https://mindhacksblog.wordpress.com/book/">Find out more</a>, or buy it:</p>
+<ul>
+<li>→ <a href="http://www.amazon.com/exec/obidos/ASIN/0596007795/mattwebbsinter02">at Amazon</a> (34% off)</li>
+<li>→ <a href="http://www.amazon.co.uk/exec/obidos/ASIN/0596007795/mattwebbsinterco">at Amazon UK</a> (30% off)</li>
+</ul>
+</div>
+		</section><section id="text-5" class="widget widget_text"><h2 class="widget-title">Contact</h2>			<div class="textwidget"><p>Automatic blog feed on twitter <a href="https://twitter.com/mindhacksblog">@mindhacksblog</a>. Follow us individually as <a href="https://twitter.com/vaughanbell">@vaughanbell</a> and <a href="https://twitter.com/tomstafford">@tomstafford</a></p>
+<p>Emails to <em>tom@[thedomainnameofthissite]</em> have been retired. Tweet us instead!</p>
+<p>Please do not contact us about promoting anything</p>
+</div>
+		</section><section id="text-9" class="widget widget_text"><h2 class="widget-title">free ebooks</h2>			<div class="textwidget"><p><a href="http://www.smashwords.com/books/view/118271"><img src="https://mindhacksblog.files.wordpress.com/2011/12/lucid_cover2_thumb.jpg?w=140" width="140" height="198" srcset="https://mindhacksblog.files.wordpress.com/2011/12/lucid_cover2_thumb.jpg?w=140&amp;zoom=2 3x" scale="3"></a></p>
+<p><a href="http://www.smashwords.com/books/view/110777"><img src="https://mindhacksblog.files.wordpress.com/2011/12/cover2.jpg?w=140" width="140" height="185" srcset="https://mindhacksblog.files.wordpress.com/2011/12/cover2.jpg?w=140&amp;zoom=2 3x" scale="3"></a></p>
+</div>
+		</section><section id="text-10" class="widget widget_text"><h2 class="widget-title">@ChoiceEngine</h2>			<div class="textwidget"><p><img loading="lazy" class="aligncenter size-thumbnail wp-image-34313" src="https://mindhacksblog.files.wordpress.com/2018/09/logo.gif?w=150" alt="" width="150" height="150">Follow and tweet <a href="https://twitter.com/intent/tweet?text=@ChoiceEngine%20START">START @ChoiceEngine</a> to explore this interactive essay about the neuroscience, psychology and philosophy of free will.</p>
+</div>
+		</section><section id="text-6" class="widget widget_text"><h2 class="widget-title">Links &amp; Ads Policy</h2>			<div class="textwidget"><p>Mindhacks.com does not take sponsorship for links or reviews. Everything linked here is done so because we find it interesting.</p>
+<p>As soon as I read the words "advertising", "sponsored links" or "business partnership" in an email I delete it. We will not place adverts for you, so please don't ask.</p>
+</div>
+		</section><section id="text-7" class="widget widget_text">			<div class="textwidget"><a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><img alt="Creative Commons Licence" style="border-width:0;" src="https://i0.wp.com/i.creativecommons.org/l/by-nc-sa/3.0/88x31.png" width="88" height="31" srcset="https://i0.wp.com/i.creativecommons.org/l/by-nc-sa/3.0/88x31.png?zoom=2 3x" scale="3"></a><br><span>All blog posts</span> by <a href="https://mindhacks.com/" rel="cc:attributionURL">https://mindhacks.com/</a> are licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License</a>.</div>
+		</section>	</aside><!-- .sidebar .widget-area -->
+
+		</div><!-- .site-content -->
+
+		<footer id="colophon" class="site-footer">
+			
+			
+			<div class="site-info">
+								<span class="site-title"><a href="https://mindhacks.com/" rel="home">Mind Hacks</a></span>
+								<a href="https://wordpress.com/?ref=footer_blog" rel="nofollow">Blog at WordPress.com.</a>
+			</div><!-- .site-info -->
+		</footer><!-- .site-footer -->
+	</div><!-- .site-inner -->
+</div><!-- .site -->
+
+<!--  -->
+<script src="//0.gravatar.com/js/gprofiles.js?ver=202225z" id="grofiles-cards-js"></script>
+<script id="wpgroho-js-extra">
+var WPGroHo = {"my_hash":""};
+</script>
+<script crossorigin="anonymous" type="text/javascript" src="https://s0.wp.com/wp-content/mu-plugins/gravatar-hovercards/wpgroho.js?m=1610363240h"></script>
+
+	<script>
+		// Initialize and attach hovercards to all gravatars
+		( function() {
+			function init() {
+				if ( typeof Gravatar === 'undefined' ) {
+					return;
+				}
+
+				if ( typeof Gravatar.init !== 'function' ) {
+					return;
+				}
+
+				Gravatar.profile_cb = function ( hash, id ) {
+					WPGroHo.syncProfileData( hash, id );
+				};
+
+				Gravatar.my_hash = WPGroHo.my_hash;
+				Gravatar.init( 'body', '#wp-admin-bar-my-account' );
+			}
+
+			if ( document.readyState !== 'loading' ) {
+				init();
+			} else {
+				document.addEventListener( 'DOMContentLoaded', init );
+			}
+		} )();
+	</script>
+
+		<div style="display:none">
+	</div>
+	<div id="actionbar" class="actnbr-pub-twentysixteen actnbr-has-follow">
+		<ul>
+								<li class="actnbr-btn actnbr-hidden">
+								<a class="actnbr-action actnbr-actn-follow " href="">
+			<svg class="gridicon gridicons-reader-follow" height="24" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M23 16v2h-3v3h-2v-3h-3v-2h3v-3h2v3h3zM20 2v9h-4v3h-3v4H4c-1.1 0-2-.9-2-2V2h18zM8 13v-1H4v1h4zm3-3H4v1h7v-1zm0-2H4v1h7V8zm7-4H4v2h14V4z"></path></g></svg><span>Follow</span>
+		</a>
+		<a class="actnbr-action actnbr-actn-following  no-display" href="">
+			<svg class="gridicon gridicons-reader-following" height="24" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M23 13.482L15.508 21 12 17.4l1.412-1.388 2.106 2.188 6.094-6.094L23 13.482zm-7.455 1.862L20 10.89V2H2v14c0 1.1.9 2 2 2h4.538l4.913-4.832 2.095 2.176zM8 13H4v-1h4v1zm3-2H4v-1h7v1zm0-2H4V8h7v1zm7-3H4V4h14v2z"></path></g></svg><span>Following</span>
+		</a>
+							<div class="actnbr-popover tip tip-top-left actnbr-notice" id="follow-bubble">
+							<div class="tip-arrow"></div>
+							<div class="tip-inner actnbr-follow-bubble">
+															<ul>
+											<li class="actnbr-sitename">
+			<a href="https://mindhacks.com">
+				<img alt="" src="https://secure.gravatar.com/blavatar/e1a4389e311de66187044dee40297f7e?s=50&amp;d=https%3A%2F%2Fs0.wp.com%2Fi%2Flogo%2Fwpcom-gray-white.png" class="avatar avatar-50" height="50" width="50" originals="50" scale="3">				Mind Hacks			</a>
+		</li>
+										<form method="post" action="https://subscribe.wordpress.com" accept-charset="utf-8" style="display: none;">
+																						<div class="actnbr-follow-count">Join 29,167 other followers</div>
+																					<div>
+										<input type="email" name="email" placeholder="Enter your email address" class="actnbr-email-field" aria-label="Enter your email address">
+										</div>
+										<input type="hidden" name="action" value="subscribe">
+										<input type="hidden" name="blog_id" value="7022593">
+										<input type="hidden" name="source" value="https://mindhacks.com/book/">
+										<input type="hidden" name="sub-type" value="actionbar-follow">
+										<input type="hidden" id="_wpnonce" name="_wpnonce" value="47cf448eea">										<div class="actnbr-button-wrap">
+											<button type="submit" value="Sign me up">
+												Sign me up											</button>
+										</div>
+									</form>
+									<li class="actnbr-login-nudge">
+										<div>
+											Already have a WordPress.com account? <a href="https://wordpress.com/log-in?redirect_to=https%3A%2F%2Fr-login.wordpress.com%2Fremote-login.php%3Faction%3Dlink%26back%3Dhttps%253A%252F%252Fmindhacks.com%252Fbook%252F">Log in now.</a>										</div>
+									</li>
+								</ul>
+															</div>
+						</div>
+					</li>
+							<li class="actnbr-ellipsis actnbr-hidden">
+				<svg class="gridicon gridicons-ellipsis" height="24" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M7 12c0 1.104-.896 2-2 2s-2-.896-2-2 .896-2 2-2 2 .896 2 2zm12-2c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2zm-7 0c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2z"></path></g></svg>				<div class="actnbr-popover tip tip-top-left actnbr-more">
+					<div class="tip-arrow"></div>
+					<div class="tip-inner">
+						<ul>
+									<li class="actnbr-sitename">
+			<a href="https://mindhacks.com">
+				<img alt="" src="https://secure.gravatar.com/blavatar/e1a4389e311de66187044dee40297f7e?s=50&amp;d=https%3A%2F%2Fs0.wp.com%2Fi%2Flogo%2Fwpcom-gray-white.png" class="avatar avatar-50" height="50" width="50" originals="50" scale="3">				Mind Hacks			</a>
+		</li>
+								<li class="actnbr-folded-customize">
+								<a href="https://mindhacksblog.wordpress.com/wp-admin/customize.php?url=https%3A%2F%2Fmindhacksblog.wordpress.com%2Fbook%2F">
+									<svg class="gridicon gridicons-customize" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M2 6c0-1.505.78-3.08 2-4 0 .845.69 2 2 2 1.657 0 3 1.343 3 3 0 .386-.08.752-.212 1.09.74.594 1.476 1.19 2.19 1.81L8.9 11.98c-.62-.716-1.214-1.454-1.807-2.192C6.753 9.92 6.387 10 6 10c-2.21 0-4-1.79-4-4zm12.152 6.848l1.34-1.34c.607.304 1.283.492 2.008.492 2.485 0 4.5-2.015 4.5-4.5 0-.725-.188-1.4-.493-2.007L18 9l-2-2 3.507-3.507C18.9 3.188 18.225 3 17.5 3 15.015 3 13 5.015 13 7.5c0 .725.188 1.4.493 2.007L3 20l2 2 6.848-6.848c1.885 1.928 3.874 3.753 5.977 5.45l1.425 1.148 1.5-1.5-1.15-1.425c-1.695-2.103-3.52-4.092-5.448-5.977z"></path></g></svg>									<span>Customize</span>
+								</a>
+							</li>
+																<li class="actnbr-folded-follow">
+												<a class="actnbr-action actnbr-actn-follow " href="">
+			<svg class="gridicon gridicons-reader-follow" height="24" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M23 16v2h-3v3h-2v-3h-3v-2h3v-3h2v3h3zM20 2v9h-4v3h-3v4H4c-1.1 0-2-.9-2-2V2h18zM8 13v-1H4v1h4zm3-3H4v1h7v-1zm0-2H4v1h7V8zm7-4H4v2h14V4z"></path></g></svg><span>Follow</span>
+		</a>
+		<a class="actnbr-action actnbr-actn-following  no-display" href="">
+			<svg class="gridicon gridicons-reader-following" height="24" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M23 13.482L15.508 21 12 17.4l1.412-1.388 2.106 2.188 6.094-6.094L23 13.482zm-7.455 1.862L20 10.89V2H2v14c0 1.1.9 2 2 2h4.538l4.913-4.832 2.095 2.176zM8 13H4v-1h4v1zm3-2H4v-1h7v1zm0-2H4V8h7v1zm7-3H4V4h14v2z"></path></g></svg><span>Following</span>
+		</a>
+										</li>
+																	<li class="actnbr-signup"><a href="https://wordpress.com/start/">Sign up</a></li>
+									<li class="actnbr-login"><a href="https://wordpress.com/log-in?redirect_to=https%3A%2F%2Fr-login.wordpress.com%2Fremote-login.php%3Faction%3Dlink%26back%3Dhttps%253A%252F%252Fmindhacks.com%252Fbook%252F">Log in</a></li>
+																	<li class="actnbr-shortlink"><a href="https://wp.me/PtsTD-9">Copy shortlink</a></li>
+																	<li class="flb-report"><a href="http://en.wordpress.com/abuse/">Report this content</a></li>
+																	<li class="actnbr-reader">
+										<a href="https://wordpress.com/read/blogs/7022593/posts/9">
+											View post in Reader										</a>
+									</li>
+																	<li class="actnbr-subs">
+										<a href="https://subscribe.wordpress.com/">Manage subscriptions</a>
+									</li>
+																		<li class="actnbr-fold"><a href="">Collapse this bar</a></li>
+															</ul>
+					</div>
+				</div>
+			</li>
+		</ul>
+	</div>
+	
+<script>
+window.addEventListener( "load", function( event ) {
+	var link = document.createElement( "link" );
+	link.href = "https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.css?v=20210915";
+	link.type = "text/css";
+	link.rel = "stylesheet";
+	document.head.appendChild( link );
+
+	var script = document.createElement( "script" );
+	script.src = "https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.js?v=20220329";
+	script.defer = true;
+	document.body.appendChild( script );
+} );
+</script>
+
+	
+	<script type="text/javascript">
+		window.WPCOM_sharing_counts = {"https:\/\/mindhacks.com\/book\/":9};
+	</script>
+				<script id="twentysixteen-script-js-extra">
+var screenReaderText = {"expand":"expand child menu","collapse":"collapse child menu"};
+</script>
+<script id="sharing-js-js-extra">
+var sharing_js_options = {"lang":"en","counts":"1","is_stats_active":"1"};
+</script>
+<script crossorigin="anonymous" type="text/javascript" src="https://s0.wp.com/_static/??-eJx9jksOwjAMRC9EsBC/skCcJU2d1m3ihtih5faUBRICqauxPPM0A1MybmRFVugFGnyQwzRve9nAlxWLSaG0xAKBBhS4FyzYWW4C5t+wdhiXSCo16LQ8nkKzIvK7QAZKJhAPxo+uiPH017WG+8JOaWRZGWibSGxqmyFaUczLZTRbN6xBaRQ1PljKIJ3NxO1HF+gWr7vTcV9dzlV16F8/+XMe"></script>
+<script type="text/javascript">
+var windowOpen;
+			( function () {
+				function matches( el, sel ) {
+					return !! (
+						el.matches && el.matches( sel ) ||
+						el.msMatchesSelector && el.msMatchesSelector( sel )
+					);
+				}
+
+				document.body.addEventListener( 'click', function ( event ) {
+					if ( ! event.target ) {
+						return;
+					}
+
+					var el;
+					if ( matches( event.target, 'a.share-twitter' ) ) {
+						el = event.target;
+					} else if ( event.target.parentNode && matches( event.target.parentNode, 'a.share-twitter' ) ) {
+						el = event.target.parentNode;
+					}
+
+					if ( el ) {
+						event.preventDefault();
+
+						// If there's another sharing window open, close it.
+						if ( typeof windowOpen !== 'undefined' ) {
+							windowOpen.close();
+						}
+						windowOpen = window.open( el.getAttribute( 'href' ), 'wpcomtwitter', 'menubar=1,resizable=1,width=600,height=350' );
+						return false;
+					}
+				} );
+			} )();
+var windowOpen;
+			( function () {
+				function matches( el, sel ) {
+					return !! (
+						el.matches && el.matches( sel ) ||
+						el.msMatchesSelector && el.msMatchesSelector( sel )
+					);
+				}
+
+				document.body.addEventListener( 'click', function ( event ) {
+					if ( ! event.target ) {
+						return;
+					}
+
+					var el;
+					if ( matches( event.target, 'a.share-facebook' ) ) {
+						el = event.target;
+					} else if ( event.target.parentNode && matches( event.target.parentNode, 'a.share-facebook' ) ) {
+						el = event.target.parentNode;
+					}
+
+					if ( el ) {
+						event.preventDefault();
+
+						// If there's another sharing window open, close it.
+						if ( typeof windowOpen !== 'undefined' ) {
+							windowOpen.close();
+						}
+						windowOpen = window.open( el.getAttribute( 'href' ), 'wpcomfacebook', 'menubar=1,resizable=1,width=600,height=400' );
+						return false;
+					}
+				} );
+			} )();
+</script>
+<script type="text/javascript">
+// <![CDATA[
+(function() {
+try{
+  if ( window.external &&'msIsSiteMode' in window.external) {
+    if (window.external.msIsSiteMode()) {
+      var jl = document.createElement('script');
+      jl.type='text/javascript';
+      jl.async=true;
+      jl.src='/wp-content/plugins/ie-sitemode/custom-jumplist.php';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(jl, s);
+    }
+  }
+}catch(e){}
+})();
+// ]]>
+</script>	<iframe src="https://widgets.wp.com/likes/master.html?ver=20220105#ver=20220105&amp;origin=https://mindhacks.com" scrolling="no" id="likes-master" name="likes-master" style="display:none;"></iframe>
+	<div id="likes-other-gravatars">
+		<div class="likes-text">
+			<span>%d</span> bloggers like this:		</div>
+		<ul class="wpl-avatars sd-like-gravatars"></ul>
+	</div>
+
+		<script src="//stats.wp.com/w.js?63" defer=""></script> <script type="text/javascript">
+_tkq = window._tkq || [];
+_stq = window._stq || [];
+_tkq.push(['storeContext', {'blog_id':'7022593','blog_tz':'1','user_lang':'en','blog_lang':'en','user_id':'0'}]);
+_stq.push(['view', {'blog':'7022593','v':'wpcom','tz':'1','user_id':'0','post':'9','subd':'mindhacksblog'}]);
+_stq.push(['extra', {'crypt':'UE40eW5QN0p8M2Y/RE1TaVhzUzFMbjdWNHpwZGhTayxPSUFCMGNrd29+Smw0TDhnZmRTK0hlRi9QSGh6bi9GXVhBJWIlZlR5U1JMLU8/MkNtblkvY1dzK3YrWW0zdnc4U01tSmJHSXwlUC9udls5NFJicTR+QTNbQXNDdng9Z3VpdGJOX3xOTGxpLHMrRE1nUHp5ZXx4fEtQMVdnLSVmWHlGY2ElbWRmSE18cVAld0V2ZWZ3WzhwST1zc19HYXJLa1JsejhmMDhlWlN6YUc/Ji1yQ1NJZFdYSzc2Rnx2aTdVSk1aU2tyQTBRSWVhTVNtQmJiai53STZoLkJBSE4vU0E2c1lfbVM5cTdWWXByckwrJUt6UllhP1s5TzdCZGlKWA=='}]);
+_stq.push([ 'clickTrackerInit', '7022593', '9' ]);
+	</script>
+<noscript><img src="https://pixel.wp.com/b.gif?v=noscript" style="height:1px;width:1px;overflow:hidden;position:absolute;bottom:1px;" alt="" /></noscript>
+<script>
+if ( 'object' === typeof wpcom_mobile_user_agent_info ) {
+
+	wpcom_mobile_user_agent_info.init();
+	var mobileStatsQueryString = "";
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedPlatformName )
+		mobileStatsQueryString += "&x_" + 'mobile_platforms' + '=' + wpcom_mobile_user_agent_info.matchedPlatformName;
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedUserAgentName )
+		mobileStatsQueryString += "&x_" + 'mobile_devices' + '=' + wpcom_mobile_user_agent_info.matchedUserAgentName;
+	
+	if( wpcom_mobile_user_agent_info.isIPad() )
+		mobileStatsQueryString += "&x_" + 'ipad_views' + '=' + 'views';
+
+	if( "" != mobileStatsQueryString ) {
+		new Image().src = document.location.protocol + '//pixel.wp.com/g.gif?v=wpcom-no-pv' + mobileStatsQueryString + '&baba=' + Math.random();
+	}
+	
+}
+</script>
+
+<!--
+	generated in 0.302 seconds
+	74171 bytes batcached for 300 seconds
+-->
+<style>img#wpstats {
+			position: absolute !important;
+			clip: rect(0, 0, 0, 0);
+			padding: 0 !important;
+			border: 0 !important;
+			height: 0 !important;
+			width: 0 !important;
+			overflow: hidden;
+		}</style><img src="https://pixel.wp.com/g.gif?blog=7022593&amp;v=wpcom&amp;tz=1&amp;user_id=0&amp;post=9&amp;subd=mindhacksblog&amp;host=mindhacks.com&amp;ref=&amp;rand=0.9142740741044781" alt=":)" id="wpstats" scale="0"><iframe scrolling="no" id="wpcom_remote_login_key" src="https://r-login.wordpress.com/remote-login.php?wpcom_remote_login=key&amp;origin=aHR0cHM6Ly9taW5kaGFja3MuY29t&amp;wpcomid=7022593&amp;time=1655953877" style="display: none;"></iframe><script src="https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.js?v=20220329" defer=""></script></body></html>

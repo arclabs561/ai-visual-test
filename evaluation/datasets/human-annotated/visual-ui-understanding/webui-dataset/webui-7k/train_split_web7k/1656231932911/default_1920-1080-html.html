@@ -1,0 +1,340 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head>
+    <title>Mobilitätsportal - Karlsruhe</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Cache-control" content="public">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+
+    <meta name="HandheldFriendly" content="true">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Mobilitätsportal">
+
+    <meta name="description" content="Intelligent mobil ohne Grenzen. Alle Infos zur Mobilität. In Echtzeit im Mobilitätsportal.
+	Ein Projekt der TechnologieRegion Karlsruhe gemeinsam mit den Kommunen im Eurodistrict PAMINA.">
+
+    <meta name="keywords" content="Mobilitätsportal, VMZ, Verkehrsmanagementzentrale, Mobilität, Verkehrslage, Stau, grenzübergreifend, TechnologieRegion Karlsruhe, Karlsruhe, Baden-Baden, Bruchsal, Ettlingen, Germersheim, Haguenau, Rastatt, Rheinstetten, Saverne, Stutensee, Südliche Weinstrasse, Wissembourg, Wörth, Landkreis Karlsruhe, Landkreis Germersheim, Landkreis Rastatt, Landkreis Südliche Weinstrasse, Département Bas-Rhin,Straßen, Autobahn, Rheinbrücke, Südtangente, Baustelle, Baustellen, Baustellenvorschau, Haltestellen, Straßenbahn, Straßenbahnhaltestelle, Bus, Bushaltestelle, Park and Ride, Elektromobilität, E-Ladestelle, E-Ladesäule, Ladestation, E-Ladestation, Parken, Parkhaus, Parkhäuser, Parkhausbelegung, Anzahl, Parkplätze, Stellplätze, frei, belegt,  Mitfahren, Mitfahrparkplatz, Mitfahrparkplätze, Parken und Mitfahren, Parkschein, Parkscheinautomat, Parkscheinautomaten, Sonderparkplatz, Behindertenparkplatz, Sonderparkplätze, Behindertenparkplätze, Carsharing, Flinkster, Stadtmobil, Fahrrad, Radnetz, Fahrradstraße, Fahrradwege, Fahrradweg, Radweg, Radwege, Fahrradroute, Radfernweg, Mietrad, Leihrad, Fahrrad mieten, Fahrrad leihen, Radstation, Fahrradstellplatz, KVV nextbike, Call a bike, Fähren, Fähre, Webcam, Winterdienst">
+
+    <link type="text/css" href="css/entry-ng/jquery-ui-1.11.2.custom.css" rel="Stylesheet">
+    <link type="text/css" rel="stylesheet" href="css/jquery.qtip.min.css">
+    <link type="text/css" rel="stylesheet" href="css/ol.css">
+    <link type="text/css" rel="stylesheet" href="Content/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="css/bootstrap-slider.min.css">
+    <link type="text/css" rel="stylesheet" href="Content/font-awesome.min.css">
+    <link type="text/css" rel="stylesheet" href="css/menu.css">
+    <link type="text/css" rel="stylesheet" href="css/app.css">
+
+    <!-- jQuery -->
+    <script async="" src="https://dienste.karlsruhe.de/piwik/matomo.js"></script><script defer="" type="text/javascript" language="javascript" src="Scripts/jquery-3.6.0.min.js"></script>
+    <script defer="" type="text/javascript" language="javascript" src="Scripts/jquery-ui-1.12.1.min.js"></script>
+    <script defer="" type="text/javascript" language="javascript" src="Scripts/jquery.dateFormat-1.0.js"></script>
+    <script defer="" type="text/javascript" language="javascript" src="js/jquery.qtip.min.js"></script>
+    <script defer="" type="text/javascript" language="javascript" src="Scripts/jquery.validate.min.js"></script>
+    <script defer="" type="text/javascript" language="javascript" src="js/jquery.base64.js"></script>
+
+    <!-- Proj4JS -->
+    <script defer="" type="text/javascript" language="javascript" src="js/proj4js/proj4js-combined.js"></script>
+    <script defer="" type="text/javascript" language="javascript" src="js/proj4js/defs/EPSG31467.js"></script>
+    <script defer="" type="text/javascript" language="javascript" src="js/proj4js/defs/EPSG900913.js"></script>
+
+    <!-- OpenLayers -->
+    <script src="js/ol.js" type="text/javascript"></script>
+
+    <!-- Bootstrap -->
+    <script defer="" type="text/javascript" language="javascript" src="Scripts/bootstrap.min.js"></script>
+    <script defer="" type="text/javascript" language="javascript" src="Scripts/bootstrap-slider.min.js"></script>
+
+    <!-- jQuery i18n -->
+    <script defer="" src="js/jquery.i18n.js" type="text/javascript"></script>
+    <script defer="" src="js/jquery.i18n.messagestore.js" type="text/javascript"></script>
+    <script defer="" src="js/jquery.i18n.fallbacks.js" type="text/javascript"></script>
+    <script defer="" src="js/jquery.i18n.parser.js" type="text/javascript"></script>
+    <script defer="" src="js/jquery.i18n.emitter.js" type="text/javascript"></script>
+    <script defer="" src="js/jquery.i18n.language.js" type="text/javascript"></script>
+
+    <!-- GeoAS -->
+    <script defer="" type="text/javascript" language="javascript" src="js/maptip.js"></script>
+
+    <!-- The awesome EntryNG -->
+    <script defer="" type="text/javascript" language="javascript" src="js/jquery.entryng.js"></script>
+    <script defer="" type="text/javascript" language="javascript" src="js/globalvars.js"></script>
+    <script defer="" type="text/javascript" language="javascript" src="js/app.helper.js"></script>
+    <script defer="" type="text/javascript" language="javascript" src="js/app.base.js"></script>
+    <script defer="" type="text/javascript" language="javascript" src="js/menu.js"></script>
+    <script defer="" type="text/javascript" language="javascript" src="js/app.ol.js"></script>
+    <script defer="" type="text/javascript" language="javascript" src="js/app.popup.js"></script>
+    <script defer="" type="text/javascript" language="javascript" src="js/app.map.js"></script>
+    <script defer="" type="text/javascript" language="javascript" src="js/app.map.style.js"></script>
+    <script defer="" type="text/javascript" language="javascript" src="js/app.portal.js"></script>
+    <script defer="" type="text/javascript" language="javascript" src="js/app.portal-themes.js"></script>
+    <script defer="" type="text/javascript" language="javascript" src="js/app.stopmonitor.js"></script>
+    <!-- Matomo: -->
+	<script defer="" type="text/javascript" language="javascript" src="js/matomo-portal.js"></script>
+</head>
+<body>
+    <div id="entryng">
+        <!-- header -->
+        <div id="header">
+            <div class="dropdown">
+                <table style="width: 100%;" cellpadding="0" cellspacing="0">
+                    <tbody><tr>
+                        <td valign="middle" width="33%">
+                            <table cellpadding="0" cellspacing="0">
+                                <tbody><tr>
+                                    <td>
+                                        <div class="dropdown">
+                                            <button class="btn dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                <!--<img alt="Bitte wählen Sie Ihre Region" src="gfx/customer/nav_red.png"/>-->
+                                                <span class="icon-bars-button">
+                                                    <span class="icon-bar"></span>
+                                                    <span class="icon-bar"></span>
+                                                    <span class="icon-bar"></span>
+                                                </span>
+                                            </button>
+                                            <ul id="ddMenu" class="dropdown-menu" style="padding: 0px; border-radius: 0px; overflow: auto; max-height: 1017px;" aria-labelledby="dropdownMenu1">
+                                                <li><a href="#" id="btnSwitchLangDe" style="">deutsch</a></li>
+                                                <li><a href="#" id="btnSwitchLangFr">francais</a></li>
+                                                <li><a href="#" id="btnSwitchLangEn" style="display: none;">english</a></li>
+                                                <!--<li><a href="#" id="btnShowLegend">Legende</a></li>-->
+                                                <li class="dropdown-header" style="background-color: #F1F1F1; color: #444544; font-weight: bold; padding: 3px;">Städte</li>
+                                                <li><a href="#" id="btnSwitchCityKarlsruhe">Karlsruhe</a></li>
+                                                <li><a href="#" id="btnSwitchCityBadenBaden">Baden-Baden</a></li>
+                                                <li><a href="#" id="btnSwitchCityBruchsal">Bruchsal</a></li>
+                                                <li><a href="#" id="btnSwitchCityBuehl">Bühl</a></li>
+                                                <li><a href="#" id="btnSwitchCityEttlingen">Ettlingen</a></li>
+                                                <li><a href="#" id="btnSwitchCityGaggenau">Gaggenau</a></li>
+                                                <li><a href="#" id="btnSwitchCityGermersheim">Germersheim</a></li>
+                                                <li><a href="#" id="btnSwitchCityHaguenau">Haguenau</a></li>
+                                                <li><a href="#" id="btnSwitchCityLandau">Landau</a></li>
+                                                <li><a href="#" id="btnSwitchCityRastatt">Rastatt</a></li>
+                                                <li><a href="#" id="btnSwitchCityRheinstetten">Rheinstetten</a></li>
+                                                <li><a href="#" id="btnSwitchCitySaverne">Saverne</a></li>
+                                                <li><a href="#" id="btnSwitchCityStutensee">Stutensee</a></li>
+                                                <li><a href="#" id="btnSwitchCityWaghaeusel">Waghäusel</a></li>
+                                                <li><a href="#" id="btnSwitchCityWissembourg">Wissembourg</a></li>
+                                                <li><a href="#" id="btnSwitchCityWoerth">Wörth</a></li>
+                                                <!--<li role="separator" class="divider"></li>-->
+                                                <li class="dropdown-header" style="background-color: #F1F1F1; color: #444544; font-weight: bold; padding: 3px;">Landkreise/District</li>
+                                                <li><a href="#" id="btnSwitchCityLKKarlsruhe">Karlsruhe</a></li>
+                                                <li><a href="#" id="btnSwitchCityLKGermersheim">Germersheim</a></li>
+                                                <li><a href="#" id="btnSwitchCityLKRastatt">Rastatt</a></li>
+                                                <li><a href="#" id="btnSwitchCityLKSuedlicheweinstrasse">Südliche Weinstraße</a></li>
+                                                <li><a href="#" id="btnSwitchCityLKBasrhin">Collectivité européenne d'Alsace</a></li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <a href="index.html" title="Zurück" target="_self">
+                                            <!--<img id="imgLogoLeft" src="gfx/customer/pamina2.png" style="margin-left: 20px; cursor: pointer; height: 40px;" alt="Eurodistrict PAMINA" />-->
+                                            <img id="imgLogoLeft" src="gfx/customer/trk.jpg" style="margin-left: 20px; cursor: pointer; height: 40px;" alt="Mobilitätsportal">
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                        <td valign="middle" align="center">
+                            <!--<h4 style="margin: 0;"><span data-i18n="appname-title" style="white-space: nowrap; ">PAMINA mobil</span></h4>-->
+                            <h4 style="margin: 0;"><span data-i18n="appname-title" style="white-space: nowrap; ">Mobilitätsportal</span></h4>
+                            <h6 style="margin: 0;"><span id="lblCity" style="white-space: nowrap;">Karlsruhe</span></h6>
+                        </td>
+                        <td valign="middle" align="right" width="33%">
+                            <img src="images/staedte/karlsruhe.png" id="logo-city" title="Startansicht" style="cursor: pointer; margin-right: 20px; height:40px;">
+                        </td>
+                    </tr>
+                </tbody></table>
+            </div>
+        </div>
+
+        <!-- mapimage -->
+        <div id="mapcontainer" style="top: 48px; height: 977px;">
+            <div id="ol-map" class="map"><div class="ol-viewport" style="position: relative; overflow: hidden; width: 100%; height: 100%;"><div class="ol-unselectable ol-layers" style="position: absolute; width: 100%; height: 100%; z-index: 0;"><div class="ol-layer" style="position: absolute; width: 100%; height: 100%;"><canvas width="1920" height="977" style="color: unset; font: unset; font-feature-settings: unset; font-kerning: unset; font-optical-sizing: unset; font-palette: unset; font-synthesis: unset; font-variation-settings: unset; forced-color-adjust: unset; text-orientation: unset; text-rendering: unset; -webkit-font-smoothing: unset; -webkit-locale: unset; -webkit-text-orientation: unset; -webkit-writing-mode: unset; writing-mode: unset; zoom: unset; accent-color: unset; place-content: unset; place-items: unset; place-self: unset; alignment-baseline: unset; animation: unset; app-region: unset; appearance: unset; aspect-ratio: unset; backdrop-filter: unset; backface-visibility: unset; background: unset; background-blend-mode: unset; baseline-shift: unset; block-size: unset; border-block: unset; border: unset; border-radius: unset; border-collapse: unset; border-end-end-radius: unset; border-end-start-radius: unset; border-inline: unset; border-start-end-radius: unset; border-start-start-radius: unset; bottom: unset; box-shadow: unset; box-sizing: unset; break-after: unset; break-before: unset; break-inside: unset; buffered-rendering: unset; caption-side: unset; caret-color: unset; clear: unset; clip: unset; clip-path: unset; clip-rule: unset; color-interpolation: unset; color-interpolation-filters: unset; color-rendering: unset; color-scheme: unset; columns: unset; column-fill: unset; gap: unset; column-rule: unset; column-span: unset; contain: unset; contain-intrinsic-block-size: unset; contain-intrinsic-size: unset; contain-intrinsic-inline-size: unset; content: unset; content-visibility: unset; counter-increment: unset; counter-reset: unset; counter-set: unset; cursor: unset; cx: unset; cy: unset; d: unset; display: unset; dominant-baseline: unset; empty-cells: unset; fill: unset; fill-opacity: unset; fill-rule: unset; filter: unset; flex: unset; flex-flow: unset; float: unset; flood-color: unset; flood-opacity: unset; grid: unset; grid-area: unset; height: unset; hyphens: unset; image-orientation: unset; image-rendering: unset; inline-size: unset; inset-block: unset; inset-inline: unset; isolation: unset; left: 0px; letter-spacing: unset; lighting-color: unset; line-break: unset; list-style: unset; margin-block: unset; margin: unset; margin-inline: unset; marker: unset; mask: unset; mask-type: unset; max-block-size: unset; max-height: unset; max-inline-size: unset; max-width: unset; min-block-size: unset; min-height: unset; min-inline-size: unset; min-width: unset; mix-blend-mode: unset; object-fit: unset; object-position: unset; offset: unset; opacity: unset; order: unset; origin-trial-test-property: unset; orphans: unset; outline: unset; outline-offset: unset; overflow-anchor: unset; overflow-clip-margin: unset; overflow-wrap: unset; overflow: unset; overscroll-behavior-block: unset; overscroll-behavior-inline: unset; overscroll-behavior: unset; padding-block: unset; padding: unset; padding-inline: unset; page: unset; page-orientation: unset; paint-order: unset; perspective: unset; perspective-origin: unset; pointer-events: unset; position: absolute; quotes: unset; r: unset; resize: unset; right: unset; ruby-position: unset; rx: unset; ry: unset; scroll-behavior: unset; scroll-margin-block: unset; scroll-margin: unset; scroll-margin-inline: unset; scroll-padding-block: unset; scroll-padding: unset; scroll-padding-inline: unset; scroll-snap-align: unset; scroll-snap-stop: unset; scroll-snap-type: unset; scrollbar-gutter: unset; shape-image-threshold: unset; shape-margin: unset; shape-outside: unset; shape-rendering: unset; size: unset; speak: unset; stop-color: unset; stop-opacity: unset; stroke: unset; stroke-dasharray: unset; stroke-dashoffset: unset; stroke-linecap: unset; stroke-linejoin: unset; stroke-miterlimit: unset; stroke-opacity: unset; stroke-width: unset; tab-size: unset; table-layout: unset; text-align: unset; text-align-last: unset; text-anchor: unset; text-combine-upright: unset; text-decoration: unset; text-decoration-skip-ink: unset; text-emphasis: unset; text-emphasis-position: unset; text-indent: unset; text-overflow: unset; text-shadow: unset; text-size-adjust: unset; text-transform: unset; text-underline-offset: unset; text-underline-position: unset; top: unset; touch-action: unset; transform: matrix(1, 0, 0, 1, 0, 0); transform-box: unset; transform-origin: left top; transform-style: unset; transition: unset; user-select: unset; vector-effect: unset; vertical-align: unset; visibility: unset; border-spacing: unset; -webkit-border-image: unset; -webkit-box-align: unset; -webkit-box-decoration-break: unset; -webkit-box-direction: unset; -webkit-box-flex: unset; -webkit-box-ordinal-group: unset; -webkit-box-orient: unset; -webkit-box-pack: unset; -webkit-box-reflect: unset; -webkit-highlight: unset; -webkit-hyphenate-character: unset; -webkit-line-break: unset; -webkit-line-clamp: unset; -webkit-mask-box-image: unset; -webkit-mask: unset; -webkit-mask-composite: unset; -webkit-perspective-origin-x: unset; -webkit-perspective-origin-y: unset; -webkit-print-color-adjust: unset; -webkit-rtl-ordering: unset; -webkit-ruby-position: unset; -webkit-tap-highlight-color: unset; -webkit-text-combine: unset; -webkit-text-decorations-in-effect: unset; -webkit-text-fill-color: unset; -webkit-text-security: unset; -webkit-text-stroke: unset; -webkit-transform-origin-x: unset; -webkit-transform-origin-y: unset; -webkit-transform-origin-z: unset; -webkit-user-drag: unset; -webkit-user-modify: unset; white-space: unset; widows: unset; width: unset; will-change: unset; word-break: unset; word-spacing: unset; x: unset; y: unset; z-index: unset;"></canvas></div></div><div class="ol-overlaycontainer" style="position: absolute; z-index: 0; width: 100%; height: 100%; pointer-events: none;"></div><div class="ol-overlaycontainer-stopevent" style="position: absolute; z-index: 0; width: 100%; height: 100%; pointer-events: none;"><div class="ol-zoom ol-unselectable ol-control" style="pointer-events: auto;"><button class="ol-zoom-in" type="button" title="Zoom in">+</button><button class="ol-zoom-out" type="button" title="Zoom out">–</button></div><div class="ol-rotate ol-unselectable ol-control ol-hidden" style="pointer-events: auto;"><button class="ol-rotate-reset" type="button" title="Reset rotation"><span class="ol-compass" style="transform: rotate(0rad);">⇧</span></button></div><div class="ol-attribution ol-unselectable ol-control ol-uncollapsible" style="pointer-events: auto;"><button type="button" aria-expanded="true" title="Attributions"><span class="ol-attribution-expand">i</span></button><ul><li>© <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors.</li></ul></div><div class="ol-scale-line ol-unselectable" style="pointer-events: auto;"><div class="ol-scale-line-inner" style="width: 80px;">1000 m</div></div></div></div></div>
+
+            <div id="legend-container" title="Legende" style="display: none;">
+                <div id="legend_los" class="menu" title="Traffic situation" style="display: none;">
+                    <table cellpadding="0" cellspacing="0" style="white-space: nowrap;">
+                        <tbody><tr>
+                            <td align="center"><img src="gfx/customer/los_lvl1.png"></td>
+                            <td><span id="legend_los_freeflowing">Free-flowing traffic</span></td>
+                        </tr>
+                        <tr>
+                            <td align="center"><img src="gfx/customer/los_lvl2.png"></td>
+                            <td><span id="legend_los_slowmoving">Slow-moving traffic</span></td>
+                        </tr>
+                        <tr>
+                            <td align="center"><img src="gfx/customer/los_lvl3.png"></td>
+                            <td><span id="legend_los_trafficjam">Traffic jam</span></td>
+                        </tr>
+                        <tr>
+                            <td align="center"><img src="images/svg/baustelle_legende.svg"></td>
+                            <td><span id="legend_los_trafficobstruction">Traffic obstruction</span></td>
+                        </tr>
+                        <tr>
+                            <td align="center"><img src="images/svg/halbsperrung_legende.svg"></td>
+                            <td><span id="legend_los_singleclosure">Road closure in one direction</span></td>
+                        </tr>
+                        <tr>
+                            <td align="center"><img src="images/svg/vollsperrung_legende.svg"></td>
+                            <td><span id="legend_los_fullclosure">Full closure</span></td>
+                        </tr>
+                        <tr>
+                            <td align="center"><img src="images/svg/ettlingen_verkehr_zoom2.svg"></td>
+                            <td><span id="legend_ettlingen_verkehr">Aktuelle Verkehrsstärke</span></td>
+                        </tr>
+                        <tr>
+                            <td align="center"><img src="images/svg/event_legende.svg"></td>
+                            <td><span id="legend_los_trafficdisruption">Event-related traffic disruption</span></td>
+                        </tr>
+                        <tr>
+                            <td align="center"><img src="images/svg/webcam_legende.svg"></td>
+                            <td><span id="legend_los_webcam">Webcam</span></td>
+                        </tr>
+                        <tr>
+                            <td align="center"><img src="images/svg/info_legende.svg"></td>
+                            <td><span id="legend_los_schilder">Electronic information sign</span></td>
+                        </tr>
+                    </tbody></table>
+                </div>
+                <div id="legend_winter" class="menu" title="Winter road maintenance" style="display: none;">
+                    <ul class="qtip-legend-ul">
+                        <li><img src="gfx/customer/winter_lvl1.png"><span id="legend_winter_prioritaet1">Priority 1</span></li>
+                        <li><img src="gfx/customer/winter_lvl2.png"><span id="legend_winter_prioritaet2">Priority 2</span></li>
+                    </ul>
+                </div>
+                <div id="legend_tempo_zones" class="menu" title="Restricted speed zones" style="display: none;">
+                    <ul class="qtip-legend-ul">
+                        <li><img src="gfx/customer/speed_zone_green.png"><span id="legend_tempo_zones_20_30">speed limit 20/30</span></li>
+                        <li><img src="gfx/customer/speed_zone_yellow.png"><span id="legend_tempo_zones_beruhigt">Traffic-calmed area</span></li>
+                        <li><img src="gfx/customer/speed_zone_red.png"><span id="legend_tempo_zones_fussgaengerzone">Pedestrian zone</span></li>
+                    </ul>
+                </div>
+                <div id="legend_leihfahrraeder" class="menu" title="Rental bikes" style="display: none;">
+                    <ul class="qtip-legend-ul">
+                        <li><img src="gfx/customer/nextbike_zone.png"><span id="legend_leihfahrraeder_faecherzone">Nextbike Flexzone</span></li>
+                        <li>
+                            <img src="images/svg/nextbike_station_legende.svg"><span id="legend_leihfahrraeder_kvvnextbike">KVV.nextbike</span>
+                        </li>
+                        <li>
+                            <img src="images/svg/VRNnextbike_station_legende.svg"><span id="legend_leihfahrraeder_vrnnextbike">VRN.nextbike</span>
+                        </li>
+                        <li>
+                            <img src="images/svg/callabike_station_legende.svg"><span id="legend_leihfahrraeder_callabike">Call a Bike</span>
+                        </li>
+                        <li>
+                            <img src="images/svg/ritmo_haguenau_zoom2.svg"><span id="legend_leihfahrraeder_ritmo">Ritmo</span>
+                        </li>
+                    </ul>
+                </div>
+                <div id="legend_radnetz" class="menu" title="Cycle path network" style="display: none;">
+                    <ul class="qtip-legend-ul">
+                        <li><img src="gfx/customer/fahrradstrasse.png"><span id="legend_radnetz_fahrradstrasse">Bicycle lane</span></li>
+                        <li><img src="gfx/customer/radweg.png"><span id="legend_radnetz_radweg">Cycle paths</span></li>
+                    </ul>
+                </div>
+                <div id="legend_fahrradabstellanlagen" class="menu" title="Parking facilities" style="display: none;">
+                    <ul class="qtip-legend-ul">
+                        <li><img src="images/svg/fahrrad_parkhaus_zoom2.svg"><span id="legend_fahrradabstellanlagen_phaus">Bike parks</span></li>
+                        <li><img src="images/svg/fahrrad_box_zoom2.svg"><span id="legend_fahrradabstellanlagen_box">Bike boxes</span></li>
+                        <li><img src="images/svg/fahrrad_stellplatzdach_zoom2.svg"><span id="legend_fahrradabstellanlagen_dach">Covered bike storage</span></li>
+                        <li><img src="images/svg/fahrrad_stellplatz_zoom2.svg"><span id="legend_fahrradabstellanlagen_offen">Open air bike storage</span></li>
+                    </ul>
+                </div>
+            </div>
+            <span id="disclaimer_link">
+                <a href="#" id="legend_link">Key to symbols</a>
+                <a href="disclaimer.html" id="imprint_link" target="_blank">Website credits</a>
+                <a href="https://www.karlsruhe.de/impressum/datenschutz.de" id="privacy_link" target="_blank">Data security</a>
+            </span>
+
+            <img id="toggleMenu" src="gfx/customer/arrow_down.png" alt="Menü ausblenden">
+
+            <div id="detailplan" title="Detailpläne" style="display: none;"><div><p><a target="_blank" href="https://mobil.trk.de/portal.html?city=Karlsruhe&amp;lang=de&amp;theme=constructionspreview&amp;lat=49.00115132616375&amp;lng=8.3443731829094&amp;zoom=18">B36 Eckenerstraße Knoten Rheinhafenstraße - VBK Gleiserneuerung</a><br><br><a target="_blank" href="https://mobil.trk.de/portal.html?city=Karlsruhe&amp;lang=de&amp;theme=constructionspreview&amp;lat=49.006732583063695&amp;lng=8.352358119146734&amp;zoom=16">B36 Michelinstraße - SWK Erneuerung Gas- u. Wassernetz</a><br><br><a target="_blank" href="https://mobil.trk.de/portal.html?city=Karlsruhe&amp;lang=de&amp;theme=constructionspreview&amp;lat=48.990038536118845&amp;lng=8.394976935825111&amp;zoom=15">Baumaßnahme Edeltrudtunnel</a><br><br><a target="_blank" href="https://mobil.trk.de/portal.html?city=Karlsruhe&amp;lang=de&amp;theme=constructionspreview&amp;lat=48.971333959336334&amp;lng=8.41510035242309&amp;zoom=16">Diakonissenstraße - SWK Erneuerung von Versorgungsleitungen</a><br><br><a target="_blank" href="https://mobil.trk.de/portal.html?city=Karlsruhe&amp;lang=de&amp;theme=constructionspreview&amp;lat=49.01260966993428&amp;lng=8.368526308944492&amp;zoom=17">Händelstraße zw. Kaiserallee und Seldeneckstraße</a><br><br><a target="_blank" href="pdf/210209_KIT-LAZ_Rad.pdf">Radwegweisung Kaiserstraße zw. Durlacher Tor und Englerstraße KIT Neubauprojekt LAZ Mechatronik </a><br><br><a target="_blank" href="https://mobil.trk.de/portal.html?city=Karlsruhe&amp;lang=de&amp;theme=constructionspreview&amp;lat=49.02443062206106&amp;lng=8.424885680390576&amp;zoom=16">Theodor-Heuss-Allee</a><br><br></p></div></div>
+        </div>
+
+        <!-- Slider for Preview-Range -->
+        <div id="preview-range-container" style="left: 1945px; display: none;">
+            <table style="width: 100%; border-spacing: 4px; border-collapse: inherit">
+                <tbody><tr>
+                    <td align="center" colspan="3" id="preview-range-title">Period of 12 month</td>
+                </tr>
+                <tr>
+                    <td align="center" colspan="3"><div class="slider slider-horizontal" id=""><div class="slider-track"><div class="slider-track-low" style="left: 0px; width: 0%;"></div><div class="slider-selection" style="left: 0%; width: 100%;"></div><div class="slider-track-high" style="right: 0px; width: 0%;"></div><div class="slider-handle min-slider-handle round" tabindex="0" style="left: 0%;"></div><div class="slider-handle max-slider-handle round" tabindex="0" style="left: 100%;"></div></div><div class="tooltip tooltip-main bottom" style="top: 22px; left: 50%; margin-left: 0px;"><div class="tooltip-arrow"></div><div class="tooltip-inner">June 2022 - May 2023</div></div><div class="tooltip tooltip-min bottom" style="top: 22px; left: 0%; margin-left: 0px;"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="tooltip tooltip-max top" style="top: 22px; left: 100%; margin-left: 0px;"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div></div><input id="preview-range-slider" type="text" data-value="0,11" value="0,11" style="display: none;"></td>
+                </tr>
+                <tr>
+                    <td align="left"><span id="preview-range-min">June 2022</span></td>
+                    <td align="center">&nbsp;</td>
+                    <td align="right"><span id="preview-range-max">May 2023</span></td>
+
+                </tr>
+                <tr>
+                    <td align="center" colspan="3"><div id="preview-range-expander" style="margin-top: 1px; font-weight: bold; cursor: pointer;">▾ Period of Time ▾</div></td>
+                </tr>
+            </tbody></table>
+            <div id="preview-range" style="visibility: collapse"></div>
+        </div>
+
+        <button id="zoomin" style="position: absolute; left: 122px; top: 210px; display: none;">Zoom in</button>
+        <button id="zoomout" style="position: absolute; left: 122px; top: 472px; display: none;">Zoom out</button>
+
+        <div id="footer" style="height: 55px;">
+            <div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="false">
+                <div id="myCarouselInner" class="carousel-inner" style="width: 1880px;"><div class="item active"><div id="select_traffic" title="Start page" class="selected" onclick="_paq.push(['trackEvent', 'Thema', 'Themenauswahl', 'Startansicht']);"></div><div id="select_constructions" title="Construction sites" data-hasqtip="18" class="current">
+                            <div id="menu_constructions" class="menu" style="display: none;">
+                                <ul class="qtip-menu-ul">
+                                    <li id="select_constructions-current" title="" onclick="_paq.push(['trackEvent', 'Thema', 'Themenauswahl', 'Aktuelle Baustellen']);">Current construction sites</li>
+                                    <li id="select_constructions-preview" title="" onclick="_paq.push(['trackEvent', 'Thema', 'Themenauswahl', 'Baustellenvorschau']);">Construction sites - preview</li>
+                                    <li id="detailplan_link" title="Detailpläne" onclick="_paq.push(['trackEvent', 'Thema', 'Themenauswahl', 'Baustellen Detailpläne']);" data-hasqtip="26">Detailed maps</li>
+                                </ul>
+                            </div>
+                        </div><div id="select_stops" title="Bus stops" onclick="_paq.push(['trackEvent', 'Thema', 'Themenauswahl', 'Haltestellen']);"></div><div id="select_parking-electric" title="Charging stations for electric vehicles" onclick="_paq.push(['trackEvent', 'Thema', 'Themenauswahl', 'E-Ladestationen']);"></div><div id="select_parking" title="Parking" data-hasqtip="19">
+                            <div id="menu_parking" class="menu" title="Parken" style="display: none;">
+                                <table id="tbl_menu_parking" cellpadding="0" cellspacing="0"><tbody><tr><td valign="top"><ul class="qtip-menu-ul"><li id="select_parking-garage" title="" onclick="_paq.push(['trackEvent', 'Thema', 'Themenauswahl', 'Parkhäuser']);">Car parks</li><li id="select_parking-parkandride" title="" onclick="_paq.push(['trackEvent', 'Thema', 'Themenauswahl', 'Park + Ride']);">Park &amp; Ride</li><li id="select_parking-pm" title="" onclick="_paq.push(['trackEvent', 'Thema', 'Themenauswahl', 'Parken + Mitfahren']);">Park &amp; Ride for lift-sharing</li><li id="select_parking-parkschein" title="" onclick="_paq.push(['trackEvent', 'Thema', 'Themenauswahl', 'Parkschein']);">Parking ticket</li><li id="select_parking-parkscheibe" title="" onclick="_paq.push(['trackEvent', 'Thema', 'Themenauswahl', 'Parkscheibe']);">Parking disc</li><li id="select_parking-free" title="" onclick="_paq.push(['trackEvent', 'Thema', 'Themenauswahl', 'Freies Parken']);">Free parking</li><li id="select_parking-sonder" title="" onclick="_paq.push(['trackEvent', 'Thema', 'Themenauswahl', 'Sonderparkplätze']);">Special parking</li><li id="select_parking-handicapped" title="" onclick="_paq.push(['trackEvent', 'Thema', 'Themenauswahl', 'Behindertenparkplätze']);">Disabled parking space</li></ul></td></tr></tbody></table>
+                            </div>
+                        </div><div id="select_zones" title="Zones" data-hasqtip="20">
+                            <div id="menu_zones" class="menu" title="Zonen" style="display: none;">
+                                <ul class="qtip-menu-ul">
+                                    <li id="select_zones-environmental" title="" onclick="_paq.push(['trackEvent', 'Thema', 'Themenauswahl', 'Umweltzonen']);">Low emission zone</li>
+                                    <li id="select_zones-tempo" title="" onclick="_paq.push(['trackEvent', 'Thema', 'Themenauswahl', 'Tempozonen']);">Restricted speed zones</li>
+                                    <li id="select_zones-residents" title="" onclick="_paq.push(['trackEvent', 'Thema', 'Themenauswahl', 'Bewohnerparkzonen']);">Residential parking zones</li>
+                                </ul>
+                            </div>
+                        </div><div id="select_speeding" title="Speed control" data-hasqtip="22">
+                            <div id="menu_speeding" class="menu" title="Geschwindigkeitsüberwachung" style="display: none;">
+                                <ul class="qtip-menu-ul">
+                                    <li id="select_speeding-fixed" title="" onclick="_paq.push(['trackEvent', 'Thema', 'Themenauswahl', 'Blitzer Stationär']);">Fixed speed cameras</li>
+                                    <li id="select_speeding-both" title="" onclick="_paq.push(['trackEvent', 'Thema', 'Themenauswahl', 'Blitzer Stationär &amp; Mobil']);">Fixed &amp; mobile speed cameras</li>
+                                </ul>
+                            </div>
+                        </div><div id="select_carsharing" title="Car sharing" data-hasqtip="23">
+                            <div id="menu_carsharing" class="menu" title="Carsharing" style="display: none;">
+                                <ul class="qtip-menu-ul">
+                                    <li id="select_carsharing-flinkster" title="" onclick="_paq.push(['trackEvent', 'Thema', 'Themenauswahl', 'Flinkster']);">Flinkster</li>
+                                    <li id="select_carsharing-stadtmobil" title="" onclick="_paq.push(['trackEvent', 'Thema', 'Themenauswahl', 'Stadtmobil']);">stadtmobil</li>
+                                </ul>
+                            </div>
+                        </div><div id="select_bike" title="Bicycle" data-hasqtip="21">
+                            <div id="menu_bike" title="Fahrrad" style="display: none;">
+                                <ul class="qtip-menu-ul">
+                                    <li id="select_bike-radnetz" title="" onclick="_paq.push(['trackEvent', 'Thema', 'Themenauswahl', 'Radnetz']);">Cycle path network</li>
+                                    <li id="select_bike-leihfahrraeder" title="" onclick="_paq.push(['trackEvent', 'Thema', 'Themenauswahl', 'Leihfahrräder']);">Rental bikes</li>
+                                    <li id="select_bike-fahrradabstellanlagen" title="" onclick="_paq.push(['trackEvent', 'Thema', 'Themenauswahl', 'Fahrrad Abstellanlagen']);">Parking facilities</li>
+                                </ul>
+                            </div>
+                        </div><div id="select_ferries" title="Rhine Ferries" onclick="_paq.push(['trackEvent', 'Thema', 'Themenauswahl', 'Fähren']);"></div><div id="select_winter" title="Winter road maintenance" data-hasqtip="24">
+                            <div id="menu_winter" title="Winterdienst" style="display: none;">
+                                <ul class="qtip-menu-ul">
+                                    <li id="select_winter-street" title="" onclick="_paq.push(['trackEvent', 'Thema', 'Themenauswahl', 'Winterdienst Straßen']);">Roads</li>
+                                    <li id="select_winter-bike" title="" onclick="_paq.push(['trackEvent', 'Thema', 'Themenauswahl', 'Winterdienst Fahrradwege']);">Cycling paths</li>
+                                </ul>
+                            </div>
+                        </div><div id="select_links" title="Links" onclick="_paq.push(['trackEvent', 'Thema', 'Themenauswahl', 'Links']);" data-hasqtip="25"></div></div></div>
+                <div id="myCarouselControls" class="carousel-controls" style="display: none;">
+                    <a class="left carousel-control" href="#myCarousel" data-slide="prev"><span class="glyphicon glyphicon-chevron-left"></span></a>
+                    <a class="right carousel-control" href="#myCarousel" data-slide="next"><span class="glyphicon glyphicon-chevron-right"></span></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="disclaimer_blocker" style="display: none;"></div>
+
+</body></html>

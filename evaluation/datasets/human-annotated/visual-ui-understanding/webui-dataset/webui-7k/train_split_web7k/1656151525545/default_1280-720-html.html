@@ -1,0 +1,818 @@
+<!DOCTYPE html><html lang="en-US" class=" js flexbox canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers no-applicationcache svg inlinesvg smil svgclippaths" style=""><head>
+		<!-- Global site tag (gtag.js) - Google Analytics -->
+		<script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script><script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-110224924-1"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+	
+			gtag('config', 'UA-110224924-1');
+		</script>
+		<meta charset="UTF-8">
+		<title>  Graphics - Super Mario Bros. X</title>
+
+		<link href="//www.google-analytics.com" rel="dns-prefetch">
+        <link href="https://www.supermariobrosx.org/wp-content/themes/smbx/img/icons/favicon.ico" rel="shortcut icon">
+        <link href="https://www.supermariobrosx.org/wp-content/themes/smbx/img/icons/touch.png" rel="apple-touch-icon-precomposed">
+
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="description" content="">
+
+		<link rel="dns-prefetch" href="//s.w.org">
+		<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/12.0.0-1\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/12.0.0-1\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/www.supermariobrosx.org\/wp-includes\/js\/wp-emoji-release.min.js?ver=5.3.12"}};
+			!function(e,a,t){var n,r,o,i=a.createElement("canvas"),p=i.getContext&&i.getContext("2d");function s(e,t){var a=String.fromCharCode;p.clearRect(0,0,i.width,i.height),p.fillText(a.apply(this,e),0,0);e=i.toDataURL();return p.clearRect(0,0,i.width,i.height),p.fillText(a.apply(this,t),0,0),e===i.toDataURL()}function c(e){var t=a.createElement("script");t.src=e,t.defer=t.type="text/javascript",a.getElementsByTagName("head")[0].appendChild(t)}for(o=Array("flag","emoji"),t.supports={everything:!0,everythingExceptFlag:!0},r=0;r<o.length;r++)t.supports[o[r]]=function(e){if(!p||!p.fillText)return!1;switch(p.textBaseline="top",p.font="600 32px Arial",e){case"flag":return s([127987,65039,8205,9895,65039],[127987,65039,8203,9895,65039])?!1:!s([55356,56826,55356,56819],[55356,56826,8203,55356,56819])&&!s([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]);case"emoji":return!s([55357,56424,55356,57342,8205,55358,56605,8205,55357,56424,55356,57340],[55357,56424,55356,57342,8203,55358,56605,8203,55357,56424,55356,57340])}return!1}(o[r]),t.supports.everything=t.supports.everything&&t.supports[o[r]],"flag"!==o[r]&&(t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&t.supports[o[r]]);t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&!t.supports.flag,t.DOMReady=!1,t.readyCallback=function(){t.DOMReady=!0},t.supports.everything||(n=function(){t.readyCallback()},a.addEventListener?(a.addEventListener("DOMContentLoaded",n,!1),e.addEventListener("load",n,!1)):(e.attachEvent("onload",n),a.attachEvent("onreadystatechange",function(){"complete"===a.readyState&&t.readyCallback()})),(n=t.source||{}).concatemoji?c(n.concatemoji):n.wpemoji&&n.twemoji&&(c(n.twemoji),c(n.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script><script src="https://www.supermariobrosx.org/wp-includes/js/wp-emoji-release.min.js?ver=5.3.12" type="text/javascript" defer=""></script>
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	<link rel="stylesheet" id="wp-block-library-css" href="https://www.supermariobrosx.org/wp-includes/css/dist/block-library/style.min.css?ver=5.3.12" media="all">
+<link rel="stylesheet" id="html5blank-css" href="https://www.supermariobrosx.org/wp-content/themes/smbx/style.css?ver=1.0" media="all">
+<script type="text/javascript" src="https://www.supermariobrosx.org/wp-content/themes/smbx/js/lib/conditionizr-4.3.0.min.js?ver=4.3.0"></script>
+<script type="text/javascript" src="https://www.supermariobrosx.org/wp-content/themes/smbx/js/lib/modernizr-2.7.1.min.js?ver=2.7.1"></script>
+<script type="text/javascript" src="https://www.supermariobrosx.org/wp-includes/js/jquery/jquery.js?ver=1.12.4-wp"></script>
+<script type="text/javascript" src="https://www.supermariobrosx.org/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.4.1"></script>
+<script type="text/javascript" src="https://www.supermariobrosx.org/wp-content/themes/smbx/js/scripts.js?ver=1.0.0"></script>
+<link rel="https://api.w.org/" href="https://www.supermariobrosx.org/wp-json/">
+		<script>
+        // conditionizr.com
+        // configure environment tests
+        conditionizr.config({
+            assets: 'https://www.supermariobrosx.org/wp-content/themes/smbx',
+            tests: {}
+        });
+        </script>
+
+<link rel="stylesheet" type="text/css" href="/wp-content/themes/smbx/mainsite/specific-forest.css">
+	</head>
+	<body class="archive category category-graphics category-3">
+
+    <table id="main-table" cellpadding="0" cellspacing="0" width="100%" style="height: 100%; table-layout: fixed;">
+        <tbody><tr>
+            <td style="vertical-align: top;">
+                <div class="menu">
+                    <a href="https://www.supermariobrosx.org/"><img alt="Super Mario Bros. X" title="Super Mario Bros. X" src="https://www.supermariobrosx.org/logo.png"></a>
+                </div>
+                <table cellpadding="0" cellspacing="0" id="pipes">
+                    <tbody><tr>
+                        <td class="pipe">
+                        </td>
+                        <td class="pipe">
+                        </td>
+                        <td class="pipe">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="pipelabel">
+                            <a class="link-home" title="Home" href="https://www.supermariobrosx.org/"></a>
+                        </td>
+                        <td class="pipelabel">
+                            <a class="link-links" title="Links to other sites" href="https://www.supermariobrosx.org/links"></a>
+                        </td>
+                        <td class="pipelabel">
+                            <a class="link-forums" title="Forums" href="https://www.supermariobrosx.org/forums"></a>
+                        </td>
+                    </tr>
+                </tbody></table>
+
+		<!-- wrapper -->
+		<div class="wrapper">
+
+			<!-- header -->
+			<header class="header clear" role="banner">
+
+                <p class="image"><img src="/luigi-shell.png"></p>
+
+					<table id="everything" cellpadding="0" cellspacing="0" width="100%">
+         
+		<tbody><tr class="green-top">
+
+		<td class="green-top-left"></td>
+		<td class="green-top-center"></td>
+		<td class="green-top-right"></td>
+         
+		</tr>
+		<tr class="green-mid">
+
+		<td class="green-mid-left"></td>
+		<td class="green-mid-center">
+				
+					                <p class="center"><span class="title">Graphics</span></p>
+                <p>Below you will find various graphics that you can use with SMBX. Simply download and extract into folder of the level or episode you want to use them with. If you have trouble with custom graphics, look on <a href="wiki/Custom_Graphics">the wiki</a> for help.</p>
+
+				<br>
+
+				<p>Want more graphics? Check out the <a href="https://www.supermariobrosx.org/forums/viewforum.php?f=31">Graphics forum</a>!</p>
+
+				
+				</td>
+	<td class="green-mid-right"></td>
+
+	</tr>
+	<tr class="green-bot">
+
+	<td class="green-bot-left"></td>
+	<td class="green-bot-center"></td>
+	<td class="green-bot-right"></td>
+
+	</tr>
+
+	</tbody></table>
+			</header>
+			<!-- /header -->
+
+	<main role="main">
+		<!-- section -->
+		<section>
+
+			<div class="archive-header">
+
+				
+
+			</div>
+
+			<div class="archive-body">
+
+				
+
+	<!-- article -->
+	<article id="post-157" class="post-157 post type-post status-publish format-standard has-post-thumbnail hentry category-graphics">
+
+			<table id="everything" cellpadding="0" cellspacing="0" width="100%">
+         
+		<tbody><tr class="green-top">
+
+		<td class="green-top-left"></td>
+		<td class="green-top-center"></td>
+		<td class="green-top-right"></td>
+         
+		</tr>
+		<tr class="green-mid">
+
+		<td class="green-mid-left"></td>
+		<td class="green-mid-center">
+		<div class="featured-image">
+			<!-- post thumbnail -->
+							<a href="https://www.supermariobrosx.org/graphics/november-2018-shikaternias-smb3-tileset-pack-v2/" title="November 2018: Shikaternia’s SMB3 Tileset Pack V2">
+					<img src="https://www.supermariobrosx.org/wp-content/uploads/2018/10/gfx-201810.png" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" srcset="https://www.supermariobrosx.org/wp-content/uploads/2018/10/gfx-201810.png 400w, https://www.supermariobrosx.org/wp-content/uploads/2018/10/gfx-201810-200x150.png 200w, https://www.supermariobrosx.org/wp-content/uploads/2018/10/gfx-201810-250x188.png 250w" sizes="(max-width: 400px) 100vw, 400px">				</a>
+						<!-- /post thumbnail -->
+		</div>
+
+		<!-- post title -->
+		<h2>
+			<a href="https://www.supermariobrosx.org/graphics/november-2018-shikaternias-smb3-tileset-pack-v2/" title="November 2018: Shikaternia’s SMB3 Tileset Pack V2">November 2018: Shikaternia’s SMB3 Tileset Pack V2</a>
+		</h2>
+		<!-- /post title -->
+
+		<!-- post details -->
+		<span class="author">Posted by <a href="https://www.supermariobrosx.org/author/spinda/" title="Posts by underFlo" rel="author">underFlo</a></span><br>
+		<span class="date">November 1, 2018</span>
+		<!-- /post details -->
+
+		
+		</td>
+	<td class="green-mid-right"></td>
+
+	</tr>
+	<tr class="green-bot">
+
+	<td class="green-bot-left"></td>
+	<td class="green-bot-center"></td>
+	<td class="green-bot-right"></td>
+
+	</tr>
+
+	</tbody></table>
+	</article>
+	<!-- /article -->
+
+
+
+	<!-- article -->
+	<article id="post-151" class="post-151 post type-post status-publish format-standard has-post-thumbnail hentry category-graphics">
+
+			<table id="everything" cellpadding="0" cellspacing="0" width="100%">
+         
+		<tbody><tr class="green-top">
+
+		<td class="green-top-left"></td>
+		<td class="green-top-center"></td>
+		<td class="green-top-right"></td>
+         
+		</tr>
+		<tr class="green-mid">
+
+		<td class="green-mid-left"></td>
+		<td class="green-mid-center">
+		<div class="featured-image">
+			<!-- post thumbnail -->
+							<a href="https://www.supermariobrosx.org/graphics/october-2018-prox-box-full-of-graphics/" title="October 2018: PROX’ Box Full of Graphics">
+					<img src="https://www.supermariobrosx.org/wp-content/uploads/2018/10/gfx-201810.png" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" srcset="https://www.supermariobrosx.org/wp-content/uploads/2018/10/gfx-201810.png 400w, https://www.supermariobrosx.org/wp-content/uploads/2018/10/gfx-201810-200x150.png 200w, https://www.supermariobrosx.org/wp-content/uploads/2018/10/gfx-201810-250x188.png 250w" sizes="(max-width: 400px) 100vw, 400px">				</a>
+						<!-- /post thumbnail -->
+		</div>
+
+		<!-- post title -->
+		<h2>
+			<a href="https://www.supermariobrosx.org/graphics/october-2018-prox-box-full-of-graphics/" title="October 2018: PROX’ Box Full of Graphics">October 2018: PROX’ Box Full of Graphics</a>
+		</h2>
+		<!-- /post title -->
+
+		<!-- post details -->
+		<span class="author">Posted by <a href="https://www.supermariobrosx.org/author/spinda/" title="Posts by underFlo" rel="author">underFlo</a></span><br>
+		<span class="date">October 1, 2018</span>
+		<!-- /post details -->
+
+		
+		</td>
+	<td class="green-mid-right"></td>
+
+	</tr>
+	<tr class="green-bot">
+
+	<td class="green-bot-left"></td>
+	<td class="green-bot-center"></td>
+	<td class="green-bot-right"></td>
+
+	</tr>
+
+	</tbody></table>
+	</article>
+	<!-- /article -->
+
+
+
+	<!-- article -->
+	<article id="post-145" class="post-145 post type-post status-publish format-standard has-post-thumbnail hentry category-graphics">
+
+			<table id="everything" cellpadding="0" cellspacing="0" width="100%">
+         
+		<tbody><tr class="green-top">
+
+		<td class="green-top-left"></td>
+		<td class="green-top-center"></td>
+		<td class="green-top-right"></td>
+         
+		</tr>
+		<tr class="green-mid">
+
+		<td class="green-mid-left"></td>
+		<td class="green-mid-center">
+		<div class="featured-image">
+			<!-- post thumbnail -->
+							<a href="https://www.supermariobrosx.org/graphics/september-2018-airships-gfx-pack/" title="September 2018: AirShip’s GFX Pack">
+					<img src="https://www.supermariobrosx.org/wp-content/uploads/2018/08/airsheep.png" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" srcset="https://www.supermariobrosx.org/wp-content/uploads/2018/08/airsheep.png 400w, https://www.supermariobrosx.org/wp-content/uploads/2018/08/airsheep-200x150.png 200w, https://www.supermariobrosx.org/wp-content/uploads/2018/08/airsheep-250x188.png 250w" sizes="(max-width: 400px) 100vw, 400px">				</a>
+						<!-- /post thumbnail -->
+		</div>
+
+		<!-- post title -->
+		<h2>
+			<a href="https://www.supermariobrosx.org/graphics/september-2018-airships-gfx-pack/" title="September 2018: AirShip’s GFX Pack">September 2018: AirShip’s GFX Pack</a>
+		</h2>
+		<!-- /post title -->
+
+		<!-- post details -->
+		<span class="author">Posted by <a href="https://www.supermariobrosx.org/author/aristo/" title="Posts by Aristo" rel="author">Aristo</a></span><br>
+		<span class="date">September 1, 2018</span>
+		<!-- /post details -->
+
+		
+		</td>
+	<td class="green-mid-right"></td>
+
+	</tr>
+	<tr class="green-bot">
+
+	<td class="green-bot-left"></td>
+	<td class="green-bot-center"></td>
+	<td class="green-bot-right"></td>
+
+	</tr>
+
+	</tbody></table>
+	</article>
+	<!-- /article -->
+
+
+
+	<!-- article -->
+	<article id="post-130" class="post-130 post type-post status-publish format-standard has-post-thumbnail hentry category-graphics">
+
+			<table id="everything" cellpadding="0" cellspacing="0" width="100%">
+         
+		<tbody><tr class="green-top">
+
+		<td class="green-top-left"></td>
+		<td class="green-top-center"></td>
+		<td class="green-top-right"></td>
+         
+		</tr>
+		<tr class="green-mid">
+
+		<td class="green-mid-left"></td>
+		<td class="green-mid-center">
+		<div class="featured-image">
+			<!-- post thumbnail -->
+							<a href="https://www.supermariobrosx.org/graphics/august-2018-mosaics-gfx-pack/" title="August 2018: Mosaic’s GFX Pack">
+					<img src="https://www.supermariobrosx.org/wp-content/uploads/2018/08/mosaic.png" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" srcset="https://www.supermariobrosx.org/wp-content/uploads/2018/08/mosaic.png 400w, https://www.supermariobrosx.org/wp-content/uploads/2018/08/mosaic-200x150.png 200w, https://www.supermariobrosx.org/wp-content/uploads/2018/08/mosaic-250x188.png 250w" sizes="(max-width: 400px) 100vw, 400px">				</a>
+						<!-- /post thumbnail -->
+		</div>
+
+		<!-- post title -->
+		<h2>
+			<a href="https://www.supermariobrosx.org/graphics/august-2018-mosaics-gfx-pack/" title="August 2018: Mosaic’s GFX Pack">August 2018: Mosaic’s GFX Pack</a>
+		</h2>
+		<!-- /post title -->
+
+		<!-- post details -->
+		<span class="author">Posted by <a href="https://www.supermariobrosx.org/author/aristo/" title="Posts by Aristo" rel="author">Aristo</a></span><br>
+		<span class="date">August 1, 2018</span>
+		<!-- /post details -->
+
+		
+		</td>
+	<td class="green-mid-right"></td>
+
+	</tr>
+	<tr class="green-bot">
+
+	<td class="green-bot-left"></td>
+	<td class="green-bot-center"></td>
+	<td class="green-bot-right"></td>
+
+	</tr>
+
+	</tbody></table>
+	</article>
+	<!-- /article -->
+
+
+
+	<!-- article -->
+	<article id="post-109" class="post-109 post type-post status-publish format-standard has-post-thumbnail hentry category-graphics">
+
+			<table id="everything" cellpadding="0" cellspacing="0" width="100%">
+         
+		<tbody><tr class="green-top">
+
+		<td class="green-top-left"></td>
+		<td class="green-top-center"></td>
+		<td class="green-top-right"></td>
+         
+		</tr>
+		<tr class="green-mid">
+
+		<td class="green-mid-left"></td>
+		<td class="green-mid-center">
+		<div class="featured-image">
+			<!-- post thumbnail -->
+							<a href="https://www.supermariobrosx.org/graphics/july-2018-h2643s-smb2-hardcoded-gfx-pack/" title="July 2018: h2643’s SMB2 Hardcoded GFX Pack">
+					<img src="https://www.supermariobrosx.org/wp-content/uploads/2018/06/8lLT4iw.png" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" srcset="https://www.supermariobrosx.org/wp-content/uploads/2018/06/8lLT4iw.png 400w, https://www.supermariobrosx.org/wp-content/uploads/2018/06/8lLT4iw-200x150.png 200w, https://www.supermariobrosx.org/wp-content/uploads/2018/06/8lLT4iw-250x188.png 250w" sizes="(max-width: 400px) 100vw, 400px">				</a>
+						<!-- /post thumbnail -->
+		</div>
+
+		<!-- post title -->
+		<h2>
+			<a href="https://www.supermariobrosx.org/graphics/july-2018-h2643s-smb2-hardcoded-gfx-pack/" title="July 2018: h2643’s SMB2 Hardcoded GFX Pack">July 2018: h2643’s SMB2 Hardcoded GFX Pack</a>
+		</h2>
+		<!-- /post title -->
+
+		<!-- post details -->
+		<span class="author">Posted by <a href="https://www.supermariobrosx.org/author/aristo/" title="Posts by Aristo" rel="author">Aristo</a></span><br>
+		<span class="date">July 1, 2018</span>
+		<!-- /post details -->
+
+		
+		</td>
+	<td class="green-mid-right"></td>
+
+	</tr>
+	<tr class="green-bot">
+
+	<td class="green-bot-left"></td>
+	<td class="green-bot-center"></td>
+	<td class="green-bot-right"></td>
+
+	</tr>
+
+	</tbody></table>
+	</article>
+	<!-- /article -->
+
+
+
+	<!-- article -->
+	<article id="post-99" class="post-99 post type-post status-publish format-standard has-post-thumbnail hentry category-graphics">
+
+			<table id="everything" cellpadding="0" cellspacing="0" width="100%">
+         
+		<tbody><tr class="green-top">
+
+		<td class="green-top-left"></td>
+		<td class="green-top-center"></td>
+		<td class="green-top-right"></td>
+         
+		</tr>
+		<tr class="green-mid">
+
+		<td class="green-mid-left"></td>
+		<td class="green-mid-center">
+		<div class="featured-image">
+			<!-- post thumbnail -->
+							<a href="https://www.supermariobrosx.org/graphics/june-2018-crazydevs-supa-graphics-pack/" title="June 2018: crazydev’s Supa Graphics Pack">
+					<img src="https://www.supermariobrosx.org/wp-content/uploads/2018/05/Iu1WEY4.png" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" srcset="https://www.supermariobrosx.org/wp-content/uploads/2018/05/Iu1WEY4.png 800w, https://www.supermariobrosx.org/wp-content/uploads/2018/05/Iu1WEY4-200x150.png 200w, https://www.supermariobrosx.org/wp-content/uploads/2018/05/Iu1WEY4-250x188.png 250w, https://www.supermariobrosx.org/wp-content/uploads/2018/05/Iu1WEY4-768x576.png 768w, https://www.supermariobrosx.org/wp-content/uploads/2018/05/Iu1WEY4-700x525.png 700w" sizes="(max-width: 800px) 100vw, 800px">				</a>
+						<!-- /post thumbnail -->
+		</div>
+
+		<!-- post title -->
+		<h2>
+			<a href="https://www.supermariobrosx.org/graphics/june-2018-crazydevs-supa-graphics-pack/" title="June 2018: crazydev’s Supa Graphics Pack">June 2018: crazydev’s Supa Graphics Pack</a>
+		</h2>
+		<!-- /post title -->
+
+		<!-- post details -->
+		<span class="author">Posted by <a href="https://www.supermariobrosx.org/author/aristo/" title="Posts by Aristo" rel="author">Aristo</a></span><br>
+		<span class="date">June 1, 2018</span>
+		<!-- /post details -->
+
+		
+		</td>
+	<td class="green-mid-right"></td>
+
+	</tr>
+	<tr class="green-bot">
+
+	<td class="green-bot-left"></td>
+	<td class="green-bot-center"></td>
+	<td class="green-bot-right"></td>
+
+	</tr>
+
+	</tbody></table>
+	</article>
+	<!-- /article -->
+
+
+
+	<!-- article -->
+	<article id="post-73" class="post-73 post type-post status-publish format-standard has-post-thumbnail hentry category-graphics">
+
+			<table id="everything" cellpadding="0" cellspacing="0" width="100%">
+         
+		<tbody><tr class="green-top">
+
+		<td class="green-top-left"></td>
+		<td class="green-top-center"></td>
+		<td class="green-top-right"></td>
+         
+		</tr>
+		<tr class="green-mid">
+
+		<td class="green-mid-left"></td>
+		<td class="green-mid-center">
+		<div class="featured-image">
+			<!-- post thumbnail -->
+							<a href="https://www.supermariobrosx.org/graphics/may-2018-vitos-custom-mario-bros-yoshis-and-npcs/" title="May 2018: Vito’s Custom Mario Bros, Yoshis and NPCs">
+					<img src="https://www.supermariobrosx.org/wp-content/uploads/2018/05/IgQlFmp-e1526935516107.png" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" srcset="https://www.supermariobrosx.org/wp-content/uploads/2018/05/IgQlFmp-e1526935516107.png 320w, https://www.supermariobrosx.org/wp-content/uploads/2018/05/IgQlFmp-e1526935516107-200x150.png 200w, https://www.supermariobrosx.org/wp-content/uploads/2018/05/IgQlFmp-e1526935516107-250x188.png 250w" sizes="(max-width: 320px) 100vw, 320px">				</a>
+						<!-- /post thumbnail -->
+		</div>
+
+		<!-- post title -->
+		<h2>
+			<a href="https://www.supermariobrosx.org/graphics/may-2018-vitos-custom-mario-bros-yoshis-and-npcs/" title="May 2018: Vito’s Custom Mario Bros, Yoshis and NPCs">May 2018: Vito’s Custom Mario Bros, Yoshis and NPCs</a>
+		</h2>
+		<!-- /post title -->
+
+		<!-- post details -->
+		<span class="author">Posted by <a href="https://www.supermariobrosx.org/author/aristo/" title="Posts by Aristo" rel="author">Aristo</a></span><br>
+		<span class="date">May 1, 2018</span>
+		<!-- /post details -->
+
+		
+		</td>
+	<td class="green-mid-right"></td>
+
+	</tr>
+	<tr class="green-bot">
+
+	<td class="green-bot-left"></td>
+	<td class="green-bot-center"></td>
+	<td class="green-bot-right"></td>
+
+	</tr>
+
+	</tbody></table>
+	</article>
+	<!-- /article -->
+
+
+
+	<!-- article -->
+	<article id="post-69" class="post-69 post type-post status-publish format-standard has-post-thumbnail hentry category-graphics">
+
+			<table id="everything" cellpadding="0" cellspacing="0" width="100%">
+         
+		<tbody><tr class="green-top">
+
+		<td class="green-top-left"></td>
+		<td class="green-top-center"></td>
+		<td class="green-top-right"></td>
+         
+		</tr>
+		<tr class="green-mid">
+
+		<td class="green-mid-left"></td>
+		<td class="green-mid-center">
+		<div class="featured-image">
+			<!-- post thumbnail -->
+							<a href="https://www.supermariobrosx.org/graphics/april-2018-turnips-crystal-cave-tileset/" title="April 2018: Turnip’s Crystal Cave Tileset">
+					<img src="https://www.supermariobrosx.org/wp-content/uploads/2018/05/oiwx7s5.png" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" srcset="https://www.supermariobrosx.org/wp-content/uploads/2018/05/oiwx7s5.png 400w, https://www.supermariobrosx.org/wp-content/uploads/2018/05/oiwx7s5-200x150.png 200w, https://www.supermariobrosx.org/wp-content/uploads/2018/05/oiwx7s5-250x188.png 250w" sizes="(max-width: 400px) 100vw, 400px">				</a>
+						<!-- /post thumbnail -->
+		</div>
+
+		<!-- post title -->
+		<h2>
+			<a href="https://www.supermariobrosx.org/graphics/april-2018-turnips-crystal-cave-tileset/" title="April 2018: Turnip’s Crystal Cave Tileset">April 2018: Turnip’s Crystal Cave Tileset</a>
+		</h2>
+		<!-- /post title -->
+
+		<!-- post details -->
+		<span class="author">Posted by <a href="https://www.supermariobrosx.org/author/aristo/" title="Posts by Aristo" rel="author">Aristo</a></span><br>
+		<span class="date">April 1, 2018</span>
+		<!-- /post details -->
+
+		
+		</td>
+	<td class="green-mid-right"></td>
+
+	</tr>
+	<tr class="green-bot">
+
+	<td class="green-bot-left"></td>
+	<td class="green-bot-center"></td>
+	<td class="green-bot-right"></td>
+
+	</tr>
+
+	</tbody></table>
+	</article>
+	<!-- /article -->
+
+
+
+	<!-- article -->
+	<article id="post-66" class="post-66 post type-post status-publish format-standard has-post-thumbnail hentry category-graphics">
+
+			<table id="everything" cellpadding="0" cellspacing="0" width="100%">
+         
+		<tbody><tr class="green-top">
+
+		<td class="green-top-left"></td>
+		<td class="green-top-center"></td>
+		<td class="green-top-right"></td>
+         
+		</tr>
+		<tr class="green-mid">
+
+		<td class="green-mid-left"></td>
+		<td class="green-mid-center">
+		<div class="featured-image">
+			<!-- post thumbnail -->
+							<a href="https://www.supermariobrosx.org/graphics/march-2018-dms-gfx-pack/" title="March 2018: DM’s GFX Pack">
+					<img src="https://www.supermariobrosx.org/wp-content/uploads/2018/05/aFKKxNl.png" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" srcset="https://www.supermariobrosx.org/wp-content/uploads/2018/05/aFKKxNl.png 400w, https://www.supermariobrosx.org/wp-content/uploads/2018/05/aFKKxNl-200x150.png 200w, https://www.supermariobrosx.org/wp-content/uploads/2018/05/aFKKxNl-250x188.png 250w" sizes="(max-width: 400px) 100vw, 400px">				</a>
+						<!-- /post thumbnail -->
+		</div>
+
+		<!-- post title -->
+		<h2>
+			<a href="https://www.supermariobrosx.org/graphics/march-2018-dms-gfx-pack/" title="March 2018: DM’s GFX Pack">March 2018: DM’s GFX Pack</a>
+		</h2>
+		<!-- /post title -->
+
+		<!-- post details -->
+		<span class="author">Posted by <a href="https://www.supermariobrosx.org/author/aristo/" title="Posts by Aristo" rel="author">Aristo</a></span><br>
+		<span class="date">March 1, 2018</span>
+		<!-- /post details -->
+
+		
+		</td>
+	<td class="green-mid-right"></td>
+
+	</tr>
+	<tr class="green-bot">
+
+	<td class="green-bot-left"></td>
+	<td class="green-bot-center"></td>
+	<td class="green-bot-right"></td>
+
+	</tr>
+
+	</tbody></table>
+	</article>
+	<!-- /article -->
+
+
+
+	<!-- article -->
+	<article id="post-63" class="post-63 post type-post status-publish format-standard has-post-thumbnail hentry category-graphics">
+
+			<table id="everything" cellpadding="0" cellspacing="0" width="100%">
+         
+		<tbody><tr class="green-top">
+
+		<td class="green-top-left"></td>
+		<td class="green-top-center"></td>
+		<td class="green-top-right"></td>
+         
+		</tr>
+		<tr class="green-mid">
+
+		<td class="green-mid-left"></td>
+		<td class="green-mid-center">
+		<div class="featured-image">
+			<!-- post thumbnail -->
+							<a href="https://www.supermariobrosx.org/graphics/february-2018-spindas-graphics-pack/" title="February 2018: Spinda’s Graphics Pack">
+					<img src="https://www.supermariobrosx.org/wp-content/uploads/2018/05/e3a9TER.png" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" srcset="https://www.supermariobrosx.org/wp-content/uploads/2018/05/e3a9TER.png 800w, https://www.supermariobrosx.org/wp-content/uploads/2018/05/e3a9TER-200x150.png 200w, https://www.supermariobrosx.org/wp-content/uploads/2018/05/e3a9TER-250x188.png 250w, https://www.supermariobrosx.org/wp-content/uploads/2018/05/e3a9TER-768x576.png 768w, https://www.supermariobrosx.org/wp-content/uploads/2018/05/e3a9TER-700x525.png 700w" sizes="(max-width: 800px) 100vw, 800px">				</a>
+						<!-- /post thumbnail -->
+		</div>
+
+		<!-- post title -->
+		<h2>
+			<a href="https://www.supermariobrosx.org/graphics/february-2018-spindas-graphics-pack/" title="February 2018: Spinda’s Graphics Pack">February 2018: Spinda’s Graphics Pack</a>
+		</h2>
+		<!-- /post title -->
+
+		<!-- post details -->
+		<span class="author">Posted by <a href="https://www.supermariobrosx.org/author/aristo/" title="Posts by Aristo" rel="author">Aristo</a></span><br>
+		<span class="date">February 1, 2018</span>
+		<!-- /post details -->
+
+		
+		</td>
+	<td class="green-mid-right"></td>
+
+	</tr>
+	<tr class="green-bot">
+
+	<td class="green-bot-left"></td>
+	<td class="green-bot-center"></td>
+	<td class="green-bot-right"></td>
+
+	</tr>
+
+	</tbody></table>
+	</article>
+	<!-- /article -->
+
+
+
+	<!-- article -->
+	<article id="post-57" class="post-57 post type-post status-publish format-standard has-post-thumbnail hentry category-graphics">
+
+			<table id="everything" cellpadding="0" cellspacing="0" width="100%">
+         
+		<tbody><tr class="green-top">
+
+		<td class="green-top-left"></td>
+		<td class="green-top-center"></td>
+		<td class="green-top-right"></td>
+         
+		</tr>
+		<tr class="green-mid">
+
+		<td class="green-mid-left"></td>
+		<td class="green-mid-center">
+		<div class="featured-image">
+			<!-- post thumbnail -->
+							<a href="https://www.supermariobrosx.org/graphics/january-2018-witchking666s-graphics-pack/" title="January 2018: Witchking666’s Graphics Pack">
+					<img src="https://www.supermariobrosx.org/wp-content/uploads/2018/05/IGKoV5S-e1526934859910.png" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" srcset="https://www.supermariobrosx.org/wp-content/uploads/2018/05/IGKoV5S-e1526934859910.png 800w, https://www.supermariobrosx.org/wp-content/uploads/2018/05/IGKoV5S-e1526934859910-200x150.png 200w, https://www.supermariobrosx.org/wp-content/uploads/2018/05/IGKoV5S-e1526934859910-250x188.png 250w, https://www.supermariobrosx.org/wp-content/uploads/2018/05/IGKoV5S-e1526934859910-768x576.png 768w, https://www.supermariobrosx.org/wp-content/uploads/2018/05/IGKoV5S-e1526934859910-700x525.png 700w" sizes="(max-width: 800px) 100vw, 800px">				</a>
+						<!-- /post thumbnail -->
+		</div>
+
+		<!-- post title -->
+		<h2>
+			<a href="https://www.supermariobrosx.org/graphics/january-2018-witchking666s-graphics-pack/" title="January 2018: Witchking666’s Graphics Pack">January 2018: Witchking666’s Graphics Pack</a>
+		</h2>
+		<!-- /post title -->
+
+		<!-- post details -->
+		<span class="author">Posted by <a href="https://www.supermariobrosx.org/author/aristo/" title="Posts by Aristo" rel="author">Aristo</a></span><br>
+		<span class="date">January 1, 2018</span>
+		<!-- /post details -->
+
+		
+		</td>
+	<td class="green-mid-right"></td>
+
+	</tr>
+	<tr class="green-bot">
+
+	<td class="green-bot-left"></td>
+	<td class="green-bot-center"></td>
+	<td class="green-bot-right"></td>
+
+	</tr>
+
+	</tbody></table>
+	</article>
+	<!-- /article -->
+
+
+
+			</div>
+
+			<div class="archive-footer">
+
+				<!-- pagination -->
+<div class="pagination">
+	</div>
+<!-- /pagination -->
+
+			</div>
+
+		</section>
+		<!-- /section -->
+	</main>
+
+<!-- sidebar -->
+<aside class="sidebar" role="complementary">
+
+	<div class="sidebar-widget">
+			</div>
+
+	<div class="sidebar-widget">
+			</div>
+
+</aside>
+<!-- /sidebar -->
+
+		
+			<!-- footer -->
+			<footer class="footer" role="contentinfo">
+
+				<!-- copyright -->
+				<!-- /copyright -->
+
+			</footer>
+			<!-- /footer -->
+
+		</div>
+		<!-- /wrapper -->
+
+		<script type="text/javascript" src="https://www.supermariobrosx.org/wp-includes/js/wp-embed.min.js?ver=5.3.12"></script>
+
+
+            </td>
+
+        </tr>
+
+
+
+        <tr>
+
+            <td id="footer">
+
+                <table id="footer-links" cellpadding="0" cellspacing="0">
+
+                    <tbody><tr>
+
+                        <td>
+
+                            <div class="footer-left">
+
+                                <a href="https://www.supermariobrosx.org/credits.php">2013-2017 SuperMarioBrosX.org</a> • <a href="https://www.supermariobrosx.org/">Home</a> • <a href="https://www.supermariobrosx.org/view/episodes">Episodes</a> • <a href="https://www.supermariobrosx.org/view/graphics">Graphics</a> • <a href="https://www.supermariobrosx.org/links">Links</a> • <a href="https://www.supermariobrosx.org/wiki">Wiki</a> • <a href="https://www.supermariobrosx.org/forums">Forums</a>
+
+                            </div>
+
+                        </td>
+
+                        <td>
+
+                            <div class="footer-right">
+
+                                <a href="https://www.smwcentral.net">SMWCentral</a> • <a href="http://talkhaus.raocow.com">Talkhaus</a> • <a href="http://www.mfgg.net/">Mario Fan Games Galaxy</a> • <a href="http://rvlution.net/">RVLution</a> • <a href="http://board.kafuka.org/">Kafuka</a> • <a href="https://www.mariowiki.com">MarioWiki</a> • <a href="https://www.smbxequipoestelar.com/">SMBX Equipo Estelar</a>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                </tbody></table>
+
+            </td>
+
+        </tr>    </tbody></table>
+
+
+<!-- Page generated by LiteSpeed Cache 3.6.4 on 2022-06-20 21:58:13 --></body></html>

@@ -1,0 +1,735 @@
+<!DOCTYPE html><html lang="fr"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+<meta name="mirego/config/environment" content="%7B%22modulePrefix%22%3A%22mirego%22%2C%22podModulePrefix%22%3A%22mirego/pods%22%2C%22environment%22%3A%22production%22%2C%22rootURL%22%3A%22/%22%2C%22locationType%22%3A%22auto%22%2C%22EmberENV%22%3A%7B%22FEATURES%22%3A%7B%7D%2C%22LOG_VERSION%22%3Afalse%2C%22EXTEND_PROTOTYPES%22%3Afalse%2C%22_APPLICATION_TEMPLATE_WRAPPER%22%3Afalse%2C%22_JQUERY_INTEGRATION%22%3Afalse%7D%2C%22APP%22%3A%7B%22version%22%3A%221.0.50%22%2C%22LOCALES%22%3A%5B%22en%22%2C%22fr%22%5D%2C%22DEFAULT_LOCALE%22%3A%22en%22%7D%2C%22API%22%3A%7B%7D%2C%22STORAGE%22%3A%7B%22FAVORITE_LOCALE%22%3A%22MiregoWebsite-FavoriteLocale%22%7D%2C%22apollo%22%3A%7B%22apiURL%22%3A%22https%3A//api.mirego.com/graphql%22%2C%22SSR_CACHE_KEY%22%3A%22apollo-cache%22%7D%2C%22contentSecurityPolicy%22%3A%7B%22default-src%22%3A%22%27none%27%22%2C%22form-action%22%3A%22%27self%27%22%2C%22media-src%22%3A%5B%22%27self%27%22%2C%22https%3A//images.mirego.com%22%2Cnull%5D%2C%22img-src%22%3A%5B%22%27self%27%22%2C%22data%3A%22%2C%22https%3A//images.mirego.com%22%2Cnull%5D%2C%22script-src%22%3A%5B%22%27self%27%22%2C%22%27unsafe-inline%27%22%2C%22%27unsafe-eval%27%22%2C%22www.googletagmanager.com%22%2Cnull%5D%2C%22font-src%22%3A%5B%22%27self%27%22%2C%22fonts.gstatic.com%22%2C%22fonts.mirego.com%22%2C%22www.mirego.com%22%5D%2C%22connect-src%22%3A%5B%22%27self%27%22%2C%22https%3A//sentry.io%22%2C%22https%3A//api.mirego.com%22%5D%2C%22style-src%22%3A%5B%22%27self%27%22%2C%22%27unsafe-inline%27%22%2C%22fonts.googleapis.com%22%2C%22www.mirego.com%22%5D%7D%2C%22fastboot%22%3A%7B%22fastbootHeaders%22%3Atrue%2C%22hostWhitelist%22%3A%5B%22www.mirego.com%22%5D%7D%2C%22metricsAdapters%22%3A%5B%7B%22name%22%3A%22GoogleTagManager%22%2C%22environments%22%3A%5B%22all%22%5D%2C%22config%22%3A%7B%22id%22%3A%22GTM-TW4FPB3%22%2C%22debug%22%3Afalse%2C%22trace%22%3Afalse%7D%7D%5D%2C%22sentry%22%3A%7B%22dsn%22%3A%22https%3A//f2097f493e8d4310af224fcd727126f8@sentry.io/1246183%22%2C%22whitelistUrls%22%3A%5B%22www.mirego.com%22%5D%2C%22development%22%3Afalse%7D%2C%22contentSecurityPolicyHeader%22%3A%22Content-Security-Policy-Report-Only%22%7D">
+<!-- EMBER_CLI_FASTBOOT_TITLE -->  
+
+
+    <link rel="icon" type="image/png" href="https://www.mirego.com/assets/favicon-cf63f36be7b8fe1ddcd772ff833420c0.png">
+
+    <link rel="apple-touch-icon" sizes="57x57" href="https://www.mirego.com/assets/images/icons/57x57-a7d23e2c747d0a901e348d9314a4a0de.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="https://www.mirego.com/assets/images/icons/72x72-280287406c7981b1cea36f9f8ebe868a.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="https://www.mirego.com/assets/images/icons/76x76-e09d9fa6b98182b908d215c41a4d4435.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="https://www.mirego.com/assets/images/icons/114x114-9461fccb66c15bef3765030d355a5da1.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="https://www.mirego.com/assets/images/icons/120x120-d39e99388ac6d95919577a2a9cfe2288.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="https://www.mirego.com/assets/images/icons/144x144-14111942d879d1dd06b38d4e0b642b90.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="https://www.mirego.com/assets/images/icons/152x152-6e1400006ffedd4bbdaccd714218c540.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="https://www.mirego.com/assets/images/icons/167x167-f73d966755476a47c6b74b0e03505462.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://www.mirego.com/assets/images/icons/180x180-cd0773e7d0e5c5a34e95fb7b69329f04.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="https://www.mirego.com/assets/images/icons/192x192-49dcd03ab4499436c60c15dbd2f52d05.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="https://www.mirego.com/assets/images/icons/512x512-834fb703c4d4c4eb0261cbbd5a70bfb6.png">
+
+    <link integrity="" rel="stylesheet" href="https://www.mirego.com/assets/vendor-c5a27bd28ef45cdf4ff3628e12384d62.css">
+    <link integrity="" rel="stylesheet" href="https://www.mirego.com/assets/mirego-bed3bf89608b731f7af7a4f81bf4ee58.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,500,700">
+
+    
+    <meta name="ember-cli-head-start" content=""><title>Accueil – Mirego</title>
+
+<!---->
+  <meta name="language" content="fr">
+
+    <link rel="alternate" href="https://www.mirego.com/en" hreflang="en">
+    <link rel="alternate" href="https://www.mirego.com/fr" hreflang="fr">
+
+  <link rel="canonical" href="https://www.mirego.com/fr">
+
+  <meta property="og:title" content="Accueil">
+
+  <meta property="og:url" content="https://www.mirego.com/fr">
+
+<!---->
+  <meta property="og:locale" content="fr_CA">
+
+  <meta property="og:image" content="https://www.mirego.com/assets/images/img-opengraph-8968155589231e1a83192e71d5eed99a.jpg">
+
+  <meta property="og:image:width" content="2400">
+  <meta property="og:image:height" content="1260">
+
+  <meta property="og:site_name" content="Mirego">
+
+  <meta property="og:type" content="website">
+<meta name="ember-cli-head-end" content="">
+<script src="https://js.hscollectedforms.net/collectedforms.js" type="text/javascript" id="CollectedForms-20410332" crossorigin="anonymous" data-leadin-portal-id="20410332" data-leadin-env="prod" data-loader="hs-scriptloader" data-hsjs-portal="20410332" data-hsjs-env="prod" data-hsjs-hublet="na1"></script><script src="https://js.hs-banner.com/20410332.js" type="text/javascript" id="cookieBanner-20410332" data-cookieconsent="ignore" data-hs-ignore="true" data-loader="hs-scriptloader" data-hsjs-portal="20410332" data-hsjs-env="prod" data-hsjs-hublet="na1"></script><script src="https://js.hs-analytics.net/analytics/1655952000000/20410332.js" type="text/javascript" id="hs-analytics"></script><script async="" src="https://script.hotjar.com/modules.b871a939666125f20d79.js" charset="utf-8"></script><style type="text/css">iframe#_hjRemoteVarsFrame {display: none !important; width: 1px !important; height: 1px !important; opacity: 0 !important; pointer-events: none !important;}</style></head>
+
+  <body class="ember-application">
+    
+
+    <script src="https://connect.facebook.net/signals/config/1938470986385120?v=2.9.62&amp;r=stable" async=""></script><script async="" src="https://connect.facebook.net/en_US/fbevents.js"></script><script type="text/javascript" async="" src="https://www.redditstatic.com/ads/pixel.js"></script><script type="text/javascript" async="" src="https://static.ads-twitter.com/uwt.js"></script><script type="text/javascript" async="" src="https://snap.licdn.com/li.lms-analytics/insight.min.js"></script><script type="text/javascript" async="" src="https://static.hotjar.com/c/hotjar-1745536.js?sv=7"></script><script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=G-QP6B4W63TL&amp;l=dataLayer&amp;cx=c"></script><script async="" src="https://www.googletagmanager.com/gtm.js?id=GTM-TW4FPB3"></script><script src="https://www.mirego.com/assets/vendor-e3d4939220b34c997d66a36b1c0e306e.js"></script>
+    <script src="https://www.mirego.com/assets/mirego-7775fa6b6c4387e520dc06b09555e6ba.js"></script><!---->
+
+<header id="ember4" class="application-header ember-view headroom headroom--top headroom--not-bottom"><div class="_application-header__nav_84be5d">
+  <div class="_application-header-nav__column_84be5d">
+    <button aria-label="Voir la navigation" data-tracking-id="gtm-burger" class="_burger-button_1pw9uj" type="button" data-ember-action="" data-ember-action-6="6">
+  <div class="_burger-button__rows_1pw9uj">
+    <div class="_burger-button__row_1pw9uj"></div>
+    <div class="_burger-button__row_1pw9uj"></div>
+    <div class="_burger-button__row_1pw9uj"></div>
+  </div>
+</button>
+
+
+<a id="ember7" data-tracking-id="gtm-navigation-logo" href="/fr" class="_link_84be5d active ember-view">      <svg class="_link__logo_84be5d" viewBox="0 0 87 16" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="1.414"><path d="M14.2 0h-.343c-.106 0-.3.09-.364.222l-4.966 9.6h-.043L3.516.222C3.453.09 3.26 0 3.154 0H2.81a.415.415 0 0 0-.385.355L.005 15.287c-.042.29.15.492.41.492h2.524c.214 0 .384-.18.407-.358l.94-6.866h.044l3.62 7.2c.063.133.235.244.362.244h.386c.106 0 .3-.11.364-.245l3.596-7.2h.043l.965 6.867a.44.44 0 0 0 .405.357h2.528c.257 0 .45-.202.407-.493L14.585.355A.412.412 0 0 0 14.2 0m9.26.222h-2.57c-.214 0-.407.2-.407.422v14.712c0 .222.193.423.406.423h2.57c.213 0 .405-.202.405-.424V.644c0-.222-.192-.422-.405-.422m16.284 4.8c0-2.644-2.098-4.8-4.668-4.8h-6.4c-.236 0-.408.2-.408.422v14.712c0 .222.172.423.408.423h2.547c.214 0 .406-.202.406-.424V9.69h1.477l2.848 5.888c.043.09.17.2.343.2h2.846c.364 0 .514-.356.364-.644l-2.93-5.644c1.86-.78 3.168-2.423 3.168-4.47m-4.946 1.846h-3.17V3.4h3.17c.877 0 1.628.756 1.628 1.688 0 .935-.75 1.778-1.628 1.778M52.655.222h-8.863c-.235 0-.405.2-.405.422v14.712c0 .222.17.423.405.423h8.863a.417.417 0 0 0 .408-.424v-2.422a.415.415 0 0 0-.408-.423h-5.93V9.513h4.882c.213 0 .405-.18.405-.425v-2.42c0-.223-.192-.423-.405-.423h-4.882V3.49h5.93c.236 0 .408-.2.408-.424V.644a.415.415 0 0 0-.408-.422m15.75 7.556H64.1c-.236 0-.408.178-.408.422v2.2c0 .222.172.4.408.4h1.348v1.287c-.64.268-1.284.357-1.905.357-2.334 0-4.24-2-4.24-4.422 0-2.444 1.885-4.488 4.22-4.488 1.048 0 1.99.288 2.803 1.065.17.134.408.134.58-.022l1.69-1.867a.4.4 0 0 0-.043-.6C67.1.8 65.13.02 63.33.02c-4.26 0-7.685 3.558-7.685 8.002 0 4.445 3.426 7.956 7.686 7.956 3.105 0 5.31-1.443 5.31-1.443a.572.572 0 0 0 .172-.357L68.79 8.2c0-.222-.17-.422-.386-.422M79.294 0c-4.282 0-7.687 3.578-7.687 8.022 0 4.445 3.405 7.978 7.686 7.978C83.573 16 87 12.467 87 8.022 87 3.578 83.574 0 79.293 0m0 12.444c-2.333 0-4.26-2-4.26-4.422 0-2.444 1.927-4.467 4.26-4.467 2.355 0 4.28 2.023 4.28 4.467 0 2.42-1.925 4.422-4.28 4.422"></path></svg>
+</a>  </div>
+
+  <img src="https://www.mirego.com/assets/images/crest-mirego-0dd4ee1379f9f396925e2cc88cee54fa.svg" class="_application-header-nav__crest_84be5d">
+</div>
+
+<div class="_application-header__overlay_84be5d">
+  <div class="_application-header__nav_84be5d">
+    <div class="_application-header-nav__column_84be5d">
+      <button aria-label="Voir la navigation" data-tracking-id="gtm-burger" class="_burger-button_1pw9uj _burger-button--active_1pw9uj" type="button" data-ember-action="" data-ember-action-9="9">
+  <div class="_burger-button__rows_1pw9uj">
+    <div class="_burger-button__row_1pw9uj"></div>
+    <div class="_burger-button__row_1pw9uj"></div>
+    <div class="_burger-button__row_1pw9uj"></div>
+  </div>
+</button>
+
+
+<a id="ember10" data-tracking-id="gtm-navigation-logo" href="/fr" class="_link_84be5d active ember-view">        <svg class="_link__logo_84be5d" viewBox="0 0 87 16" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="1.414"><path d="M14.2 0h-.343c-.106 0-.3.09-.364.222l-4.966 9.6h-.043L3.516.222C3.453.09 3.26 0 3.154 0H2.81a.415.415 0 0 0-.385.355L.005 15.287c-.042.29.15.492.41.492h2.524c.214 0 .384-.18.407-.358l.94-6.866h.044l3.62 7.2c.063.133.235.244.362.244h.386c.106 0 .3-.11.364-.245l3.596-7.2h.043l.965 6.867a.44.44 0 0 0 .405.357h2.528c.257 0 .45-.202.407-.493L14.585.355A.412.412 0 0 0 14.2 0m9.26.222h-2.57c-.214 0-.407.2-.407.422v14.712c0 .222.193.423.406.423h2.57c.213 0 .405-.202.405-.424V.644c0-.222-.192-.422-.405-.422m16.284 4.8c0-2.644-2.098-4.8-4.668-4.8h-6.4c-.236 0-.408.2-.408.422v14.712c0 .222.172.423.408.423h2.547c.214 0 .406-.202.406-.424V9.69h1.477l2.848 5.888c.043.09.17.2.343.2h2.846c.364 0 .514-.356.364-.644l-2.93-5.644c1.86-.78 3.168-2.423 3.168-4.47m-4.946 1.846h-3.17V3.4h3.17c.877 0 1.628.756 1.628 1.688 0 .935-.75 1.778-1.628 1.778M52.655.222h-8.863c-.235 0-.405.2-.405.422v14.712c0 .222.17.423.405.423h8.863a.417.417 0 0 0 .408-.424v-2.422a.415.415 0 0 0-.408-.423h-5.93V9.513h4.882c.213 0 .405-.18.405-.425v-2.42c0-.223-.192-.423-.405-.423h-4.882V3.49h5.93c.236 0 .408-.2.408-.424V.644a.415.415 0 0 0-.408-.422m15.75 7.556H64.1c-.236 0-.408.178-.408.422v2.2c0 .222.172.4.408.4h1.348v1.287c-.64.268-1.284.357-1.905.357-2.334 0-4.24-2-4.24-4.422 0-2.444 1.885-4.488 4.22-4.488 1.048 0 1.99.288 2.803 1.065.17.134.408.134.58-.022l1.69-1.867a.4.4 0 0 0-.043-.6C67.1.8 65.13.02 63.33.02c-4.26 0-7.685 3.558-7.685 8.002 0 4.445 3.426 7.956 7.686 7.956 3.105 0 5.31-1.443 5.31-1.443a.572.572 0 0 0 .172-.357L68.79 8.2c0-.222-.17-.422-.386-.422M79.294 0c-4.282 0-7.687 3.578-7.687 8.022 0 4.445 3.405 7.978 7.686 7.978C83.573 16 87 12.467 87 8.022 87 3.578 83.574 0 79.293 0m0 12.444c-2.333 0-4.26-2-4.26-4.422 0-2.444 1.927-4.467 4.26-4.467 2.355 0 4.28 2.023 4.28 4.467 0 2.42-1.925 4.422-4.28 4.422"></path></svg>
+</a>    </div>
+
+    <div class="_application-header-nav__column_84be5d">
+      <button aria-label="Switch to English version" class="_locale-button_84be5d" type="button" data-ember-action="" data-ember-action-11="11">
+        <span class="_locale-button__full-name_84be5d">
+          English
+        </span>
+
+        <span class="_locale-button__short-name_84be5d">
+          En
+        </span>
+      </button>
+
+      <img src="https://www.mirego.com/assets/images/crest-mirego-0dd4ee1379f9f396925e2cc88cee54fa.svg" class="_application-header-nav__crest_84be5d">
+    </div>
+  </div>
+
+  <div class="_application-header__content_84be5d">
+    <div class="_application-header__column-container_84be5d">
+      <div class="_application-header__column_84be5d">
+        <h1 class="_application-header-column__title_84be5d">
+          Contenu
+        </h1>
+
+          <nav id="ember12" aria-label="Navigation Principale" class="ember-view"><ul role="menubar" class="_list_17e4y3">
+    <li role="menuitem" class="_list__item_17e4y3">
+      <div id="ember14" class="  ember-view _list-item__link_17e4y3"><a id="ember15" data-tracking-id="gtm-burger-element" target="_self" href="/fr/a-propos" class="link ember-view">      À propos
+
+<!----></a></div>
+    </li>
+    <li role="menuitem" class="_list__item_17e4y3">
+      <div id="ember17" class="  ember-view _list-item__link_17e4y3"><a id="ember18" data-tracking-id="gtm-burger-element" target="_self" href="/fr/quoi" class="link ember-view">      Services
+
+<!----></a></div>
+    </li>
+    <li role="menuitem" class="_list__item_17e4y3">
+      <div id="ember20" class="  ember-view _list-item__link_17e4y3"><a id="ember21" data-tracking-id="gtm-burger-element" target="_self" href="/fr/realisations" class="link ember-view">      Nos projets
+
+<!----></a></div>
+    </li>
+    <li role="menuitem" class="_list__item_17e4y3">
+      <div id="ember23" class="  ember-view _list-item__link_17e4y3"><a id="ember24" data-tracking-id="gtm-burger-element" target="_self" href="/fr/entrevues-clients-mirego-client-livre" class="link ember-view">      Entrevues
+
+<!----></a></div>
+    </li>
+    <li role="menuitem" class="_list__item_17e4y3">
+      <div id="ember26" class="  ember-view _list-item__link_17e4y3"><a id="ember27" data-tracking-id="gtm-burger-element" target="_self" href="/fr/manifeste" class="link ember-view">      Manifeste
+
+<!----></a></div>
+    </li>
+    <li role="menuitem" class="_list__item_17e4y3">
+      <div id="ember29" class="  ember-view _list-item__link_17e4y3"><a id="ember30" data-tracking-id="gtm-burger-element" target="_self" href="/fr/pourquoi" class="link ember-view">      Pourquoi
+
+<!----></a></div>
+    </li>
+    <li role="menuitem" class="_list__item_17e4y3">
+      <div id="ember32" class="  ember-view _list-item__link_17e4y3"><a id="ember33" data-tracking-id="gtm-burger-element" target="_self" href="/fr/formulaire-nouveau-projet" class="link ember-view">      Votre projet
+
+<!----></a></div>
+    </li>
+</ul>
+</nav>
+      </div>
+
+      <div class="_application-header__column_84be5d">
+        <h1 class="_application-header-column__title_84be5d">
+          ADN
+        </h1>
+
+        <ul id="ember34" class="_list_f1vf7 _list--at-application-header_f1vf7 ember-view"><li class="_list__item_f1vf7">
+  <a href="https://vie.mirego.com/fr" data-tracking-id="gtm-burger-element" class="_list-item__link_f1vf7">
+    Vie
+  </a>
+</li>
+
+<li class="_list__item_f1vf7">
+  <a href="https://open.mirego.com" data-tracking-id="gtm-burger-element" class="_list-item__link_f1vf7">
+    Code
+  </a>
+</li>
+
+<li class="_list__item_f1vf7">
+  <a href="https://shift.mirego.com/fr" data-tracking-id="gtm-burger-element" class="_list-item__link_f1vf7">
+    Blogue
+  </a>
+</li>
+
+<li class="_list__item_f1vf7">
+  <a href="https://vie.mirego.com/fr/postes-disponibles" data-tracking-id="gtm-burger-element" class="_list-item__link_f1vf7">
+    Postes disponibles
+  </a>
+</li>
+</ul>
+      </div>
+    </div>
+  </div>
+  <div class="_social-links-container_84be5d">
+    <ul id="ember35" class="_list_h7eiuk _list--at-application-header_h7eiuk ember-view"><li class="_list__item_h7eiuk">
+  <a href="https://www.facebook.com/mirego" title="Facebook" class="_list-item__link_h7eiuk">
+    <svg class="_list-item__icon_h7eiuk" xmlns="http://www.w3.org/2000/svg"><path d="M18.143 10.2H21V6h-3.29c-4.658 0-4.547 3.68-4.547 4.229v2.77H11V17.2h2.163V27h4.266v-9.8h2.857L21 13h-3.571v-2.1c0-.46.267-.7.714-.7"></path></svg>
+  </a>
+</li>
+
+<li class="_list__item_h7eiuk">
+  <a href="https://twitter.com/mirego" title="Twitter" class="_list-item__link_h7eiuk">
+    <svg class="_list-item__icon_h7eiuk" xmlns="http://www.w3.org/2000/svg"><path d="M26.393 9.333a8.998 8.998 0 0 1-2.868 1.101A4.488 4.488 0 0 0 20.231 9c-2.491 0-4.512 2.035-4.512 4.544 0 .356.04.702.117 1.035-3.752-.19-7.077-1.997-9.304-4.75a4.56 4.56 0 0 0-.611 2.287 4.55 4.55 0 0 0 2.008 3.782 4.49 4.49 0 0 1-2.046-.566v.056a4.537 4.537 0 0 0 3.622 4.455c-.378.107-.777.16-1.189.16a4.49 4.49 0 0 1-.85-.08 4.522 4.522 0 0 0 4.216 3.154 9.013 9.013 0 0 1-5.605 1.945c-.364 0-.724-.02-1.077-.062A12.734 12.734 0 0 0 11.919 27c8.303 0 12.842-6.923 12.842-12.928 0-.198-.004-.395-.012-.589A9.156 9.156 0 0 0 27 11.131a8.927 8.927 0 0 1-2.591.715 4.547 4.547 0 0 0 1.984-2.513"></path></svg>
+  </a>
+</li>
+
+<li class="_list__item_h7eiuk">
+  <a href="https://www.linkedin.com/company/mirego/" title="LinkedIn" class="_list-item__link_h7eiuk">
+    <svg class="_list-item__icon_h7eiuk" xmlns="http://www.w3.org/2000/svg"><path d="M4.603 26.866V12.89h4.47v13.977h-4.47zM21.326 12.89c3.178 0 5.674 2.01 5.674 6.34V27h-5.07v-7.233c0-1.893-.793-3.185-2.537-3.185-1.333 0-2.075.872-2.42 1.712-.13.302-.11.723-.11 1.143V27H11.84s.065-12.812 0-13.977h5.023v2.194c.297-.96 1.902-2.328 4.463-2.328zM6.731 6c1.65 0 2.664 1.043 2.696 2.423 0 1.354-1.047 2.426-2.728 2.426h-.031C5.048 10.85 4 9.781 4 8.427 4 7.047 5.08 6 6.73 6z"></path></svg>
+  </a>
+</li>
+
+<li class="_list__item_h7eiuk">
+  <a href="https://github.com/mirego" title="GitHub" class="_list-item__link_h7eiuk">
+    <svg class="_list-item__icon_h7eiuk" xmlns="http://www.w3.org/2000/svg"><path d="M15.765 6C9.821 6 5 10.82 5 16.767c0 4.756 3.084 8.79 7.363 10.215.539.098.735-.234.735-.52 0-.255-.01-.932-.015-1.83-2.994.65-3.626-1.444-3.626-1.444-.49-1.244-1.195-1.574-1.195-1.574-.978-.668.074-.655.074-.655 1.08.076 1.649 1.11 1.649 1.11.96 1.644 2.519 1.17 3.133.894.098-.696.375-1.17.683-1.44-2.39-.27-4.904-1.195-4.904-5.32 0-1.175.42-2.136 1.109-2.889-.111-.272-.48-1.367.105-2.849 0 0 .904-.29 2.96 1.104.86-.24 1.78-.358 2.696-.363a10.31 10.31 0 0 1 2.695.363c2.055-1.393 2.957-1.104 2.957-1.104.588 1.482.218 2.577.107 2.85.69.752 1.107 1.713 1.107 2.888 0 4.136-2.517 5.046-4.915 5.312.386.333.73.99.73 1.994 0 1.439-.013 2.6-.013 2.953 0 .288.194.623.74.518 4.275-1.427 7.357-5.459 7.357-10.213C26.532 10.82 21.712 6 15.765 6"></path></svg>
+  </a>
+</li>
+
+<li class="_list__item_h7eiuk">
+  <a href="https://instagram.com/mirego" title="Instagram" class="_list-item__link_h7eiuk">
+    <svg class="_list-item__icon_h7eiuk" xmlns="http://www.w3.org/2000/svg" viewBox="-100 -120 712 712"><path d="M256 49.471c67.266 0 75.233.257 101.8 1.469 24.562 1.121 37.9 5.224 46.778 8.674a78.052 78.052 0 0 1 28.966 18.845 78.052 78.052 0 0 1 18.845 28.966c3.45 8.877 7.554 22.216 8.674 46.778 1.212 26.565 1.469 34.532 1.469 101.8s-.257 75.233-1.469 101.8c-1.121 24.562-5.225 37.9-8.674 46.778a83.427 83.427 0 0 1-47.811 47.811c-8.877 3.45-22.216 7.554-46.778 8.674-26.56 1.212-34.527 1.469-101.8 1.469s-75.237-.257-101.8-1.469c-24.562-1.121-37.9-5.225-46.778-8.674a78.051 78.051 0 0 1-28.966-18.845 78.053 78.053 0 0 1-18.845-28.966c-3.45-8.877-7.554-22.216-8.674-46.778-1.212-26.564-1.469-34.532-1.469-101.8s.257-75.233 1.469-101.8c1.121-24.562 5.224-37.9 8.674-46.778a78.052 78.052 0 0 1 18.847-28.967 78.053 78.053 0 0 1 28.966-18.845c8.877-3.45 22.216-7.554 46.778-8.674 26.565-1.212 34.532-1.469 101.8-1.469m0-45.391c-68.418 0-77 .29-103.866 1.516-26.815 1.224-45.127 5.482-61.151 11.71a123.488 123.488 0 0 0-44.62 29.057A123.488 123.488 0 0 0 17.3 90.982c-6.223 16.025-10.481 34.337-11.7 61.152C4.369 179 4.079 187.582 4.079 256s.29 77 1.521 103.866c1.224 26.815 5.482 45.127 11.71 61.151a123.489 123.489 0 0 0 29.057 44.62 123.486 123.486 0 0 0 44.62 29.057c16.025 6.228 34.337 10.486 61.151 11.71 26.87 1.226 35.449 1.516 103.866 1.516s77-.29 103.866-1.516c26.815-1.224 45.127-5.482 61.151-11.71a128.817 128.817 0 0 0 73.677-73.677c6.228-16.025 10.486-34.337 11.71-61.151 1.226-26.87 1.516-35.449 1.516-103.866s-.29-77-1.516-103.866c-1.224-26.815-5.482-45.127-11.71-61.151a123.486 123.486 0 0 0-29.057-44.62A123.487 123.487 0 0 0 421.018 17.3c-16.025-6.223-34.337-10.481-61.152-11.7C333 4.369 324.418 4.079 256 4.079z"></path><path d="M256 126.635A129.365 129.365 0 1 0 385.365 256 129.365 129.365 0 0 0 256 126.635zm0 213.338A83.973 83.973 0 1 1 339.974 256 83.974 83.974 0 0 1 256 339.973z"></path><circle cx="390.476" cy="121.524" r="30.23"></circle></svg>
+  </a>
+</li>
+</ul>
+  </div>
+</div>
+</header>
+
+      <div id="ember38" style="background-color: #211e25;color: #ffffff" class="_block_1vgpnr _block--left_1vgpnr  ember-view"><!---->
+<!---->
+  <div id="ember39" class="_block-animation_2qbhax  _block-animation--enter_2qbhax _block-animation--is-video-playable_2qbhax    ember-view"><div data-tracking-id="gtm-hero-video-cursor" class="_content_2qbhax _page-spacer_usrlg3 _centered-content_usrlg3">
+      <div id="ember40" class="ember-view _spinning-poster_2qbhax"><div style="background-image: url('https://images.mirego.com/resize?key=bQeDc3mlsG0b7334dzOU1Tl9&amp;nocrop=true&amp;quality=90&amp;stripmeta=true&amp;url=https%3A%2F%2Fs3.amazonaws.com%2Fmirego-website%2Fmirego-website-api-prod%2FiRGflSAR5q7Riv3h4mThYA.png&amp;width=1920')" class="_spinning-poster_1c4552"></div>
+</div>
+
+        <div id="ember41" class="_scroll-down_d439gk ember-view _scroll-down_2qbhax">Défilez vers le bas
+
+<div class="_arrow_d439gk">
+  <svg class="_arrow__icon_d439gk" viewBox="0 0 26 12" xmlns="http://www.w3.org/2000/svg"><path d="M25.528 5.605L19.664.165a.594.594 0 0 0-.822 0 .512.512 0 0 0 0 .773l4.847 4.52H.585c-.313 0-.586.257-.586.552 0 .294.273.55.586.55h23.106l-4.848 4.52a.513.513 0 0 0 0 .774.61.61 0 0 0 .43.146.616.616 0 0 0 .43-.146l5.865-5.44.43-.404-.472-.405z" fill-rule="evenodd"></path></svg>
+</div>
+</div>
+
+<!---->
+  <h1 class="_title_2qbhax _rich-content_usrlg3">
+          <span class="" style="">Des</span>
+
+          <span class="" style="">produits</span>
+
+          <span class="" style="">numériques</span>
+
+          <span class="" style="">qui</span>
+
+          <span class="" style="">façonnent</span>
+
+          <span class="" style="">l’avenir</span>
+
+          <span style="color: rgb(255, 56, 41);" class="">&nbsp;.</span>
+
+  </h1>
+  <svg class="_play-button_2qbhax" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><circle id="b" cx="40" cy="40" r="35"></circle><filter x="-12.9%" y="-12.9%" width="125.7%" height="125.7%" filterUnits="objectBoundingBox" id="a"><feOffset in="SourceAlpha" result="shadowOffsetOuter1"></feOffset><feGaussianBlur stdDeviation="3" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur><feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.351917614 0" in="shadowBlurOuter1"></feColorMatrix></filter></defs><g fill="none" fill-rule="evenodd"><use fill="#000" filter="url(#a)" xlink:href="#b"></use><use fill="#FF3829" xlink:href="#b"></use><path d="M34.462 54.424l20.432-13.076a1.6 1.6 0 0 0 0-2.696L34.462 25.576A1.6 1.6 0 0 0 32 26.924v26.152a1.6 1.6 0 0 0 2.462 1.348z" fill="#FFF"></path></g></svg>
+</div>
+</div>
+</div>
+    <div id="ember44" style="background-color: #221d26" class="_block_1vgpnr _block--left_1vgpnr  ember-view"><!---->
+<!---->
+  <div id="ember45" class="_columns_dwqap6 _page-spacer_usrlg3 _next-block-is-background-blended_dwqap6 _columns--double-50-50_dwqap6 ember-view">  <div class="_column_dwqap6 _slide-in--enter_12g4kc _column--enter_dwqap6 _slide-in--active_12g4kc">
+        <div id="ember49" class="_block_1vgpnr   ember-view"><!---->
+<!---->
+  <div id="ember50" class="_block-title_b3b52n _centered-content_usrlg3 _page-spacer_usrlg3 _slide-in--enter_12g4kc  _is-nested_b3b52n  ember-view"><h1 class="_title_b3b52n _rich-content_usrlg3"><p><span style="color: rgb(255, 255, 255);">Mirego est une équipe dédiée à la création de produits numériques</span>&nbsp;<span style="color: rgb(255, 56, 41);">.</span></p></h1>
+
+<!---->
+<!----></div>
+</div>
+
+  </div>
+  <div class="_column_dwqap6 _slide-in--enter_12g4kc _column--enter_dwqap6 _slide-in--active_12g4kc">
+        <div id="ember54" class="_block_1vgpnr   ember-view"><!---->
+<!---->
+  <div id="ember55" class="_block-paragraph_1k317y _centered-content_usrlg3 _page-spacer_usrlg3 _slide-in--enter_12g4kc  _is-nested_1k317y  ember-view">  <h1 class="_title_1k317y _rich-content_usrlg3"><p><span style="color: rgb(255, 56, 41);">Nous accompagnons nos clients lors de l’idéation, la validation, le design et le développement de nouveaux produits et services numériques qui propulsent leur transformation.</span></p></h1>
+
+<!---->
+<!----></div>
+</div>
+
+  </div>
+</div>
+</div>
+    <div id="ember57" class="_block_1vgpnr   ember-view"><!---->
+<!---->
+  <div id="ember58" class="  ember-view">    <div id="ember59" class="_block-projects-list-list_1htl8u _centered-content_usrlg3 ember-view">  <div id="ember60" class="_projects-list-title_ze1k4p ember-view"><h1>
+  <span class="_title__hidden_ze1k4p">
+    Projets récents
+  </span>
+
+  <img src="https://www.mirego.com/assets/images/logo-work-fr-bf5480d3fff425042238e1062e62cf24.svg" alt="Projets récents" class="_title__logo_ze1k4p">
+</h1>
+</div>
+
+<ul class="_list_1htl8u">
+      <li id="ember62" class="_item_1qik5w _slide-in--enter_12g4kc   ember-view"><a id="ember63" data-tracking-id="gtm-casestudy" href="/fr/projets/olive" class="_link_1qik5w ember-view">  <div class="_column_1qik5w">
+    <img src="https://images.mirego.com/resize?height=1130&amp;key=bQeDc3mlsG0b7334dzOU1Tl9&amp;nocrop=true&amp;quality=90&amp;stripmeta=true&amp;url=https%3A%2F%2Fs3.amazonaws.com%2Fmirego-website%2Fmirego-website-api-prod%2FsH45PX5iga2zSJjW8Y3NzQ.png&amp;width=1130" srcset="https://images.mirego.com/resize?height=1130&amp;key=bQeDc3mlsG0b7334dzOU1Tl9&amp;nocrop=true&amp;quality=90&amp;stripmeta=true&amp;url=https%3A%2F%2Fs3.amazonaws.com%2Fmirego-website%2Fmirego-website-api-prod%2FsH45PX5iga2zSJjW8Y3NzQ.png&amp;width=1130 1440w,
+        https://images.mirego.com/resize?height=1024&amp;key=bQeDc3mlsG0b7334dzOU1Tl9&amp;nocrop=true&amp;quality=90&amp;stripmeta=true&amp;url=https%3A%2F%2Fs3.amazonaws.com%2Fmirego-website%2Fmirego-website-api-prod%2FsH45PX5iga2zSJjW8Y3NzQ.png&amp;width=1024 1024w,
+        https://images.mirego.com/resize?height=768&amp;key=bQeDc3mlsG0b7334dzOU1Tl9&amp;nocrop=true&amp;quality=90&amp;stripmeta=true&amp;url=https%3A%2F%2Fs3.amazonaws.com%2Fmirego-website%2Fmirego-website-api-prod%2FsH45PX5iga2zSJjW8Y3NzQ.png&amp;width=768 768w,
+        https://images.mirego.com/resize?height=480&amp;key=bQeDc3mlsG0b7334dzOU1Tl9&amp;nocrop=true&amp;quality=90&amp;stripmeta=true&amp;url=https%3A%2F%2Fs3.amazonaws.com%2Fmirego-website%2Fmirego-website-api-prod%2FsH45PX5iga2zSJjW8Y3NzQ.png&amp;width=480 480w" alt="" class="_project-image_1qik5w">
+  </div>
+
+  <div class="_column_1qik5w _column--content_1qik5w _page-spacer_usrlg3">
+    <div>
+      <span class="_client-name_1qik5w">
+        Olive
+      </span>
+    </div>
+
+    <div>
+      <h1 class="_project-name_1qik5w">
+        Faciliter l’accès aux professionnels de la santé
+      </h1>
+    </div>
+
+      <div>
+        <span class="_project-type_1qik5w">
+          Application mobile (iOS, Android), portail Web et API
+        </span>
+      </div>
+  </div>
+</a></li>
+      <li id="ember65" class="_item_1qik5w _slide-in--enter_12g4kc   ember-view"><a id="ember66" data-tracking-id="gtm-casestudy" href="/fr/projets/airthings" class="_link_1qik5w ember-view">  <div class="_column_1qik5w">
+    <img src="https://images.mirego.com/resize?height=1130&amp;key=bQeDc3mlsG0b7334dzOU1Tl9&amp;nocrop=true&amp;quality=90&amp;stripmeta=true&amp;url=https%3A%2F%2Fs3.amazonaws.com%2Fmirego-website%2Fmirego-website-api-prod%2FWZ9uHxwLV1te7si3UxZIww.jpg&amp;width=1130" srcset="https://images.mirego.com/resize?height=1130&amp;key=bQeDc3mlsG0b7334dzOU1Tl9&amp;nocrop=true&amp;quality=90&amp;stripmeta=true&amp;url=https%3A%2F%2Fs3.amazonaws.com%2Fmirego-website%2Fmirego-website-api-prod%2FWZ9uHxwLV1te7si3UxZIww.jpg&amp;width=1130 1440w,
+        https://images.mirego.com/resize?height=1024&amp;key=bQeDc3mlsG0b7334dzOU1Tl9&amp;nocrop=true&amp;quality=90&amp;stripmeta=true&amp;url=https%3A%2F%2Fs3.amazonaws.com%2Fmirego-website%2Fmirego-website-api-prod%2FWZ9uHxwLV1te7si3UxZIww.jpg&amp;width=1024 1024w,
+        https://images.mirego.com/resize?height=768&amp;key=bQeDc3mlsG0b7334dzOU1Tl9&amp;nocrop=true&amp;quality=90&amp;stripmeta=true&amp;url=https%3A%2F%2Fs3.amazonaws.com%2Fmirego-website%2Fmirego-website-api-prod%2FWZ9uHxwLV1te7si3UxZIww.jpg&amp;width=768 768w,
+        https://images.mirego.com/resize?height=480&amp;key=bQeDc3mlsG0b7334dzOU1Tl9&amp;nocrop=true&amp;quality=90&amp;stripmeta=true&amp;url=https%3A%2F%2Fs3.amazonaws.com%2Fmirego-website%2Fmirego-website-api-prod%2FWZ9uHxwLV1te7si3UxZIww.jpg&amp;width=480 480w" alt="" class="_project-image_1qik5w">
+  </div>
+
+  <div class="_column_1qik5w _column--content_1qik5w _page-spacer_usrlg3">
+    <div>
+      <span class="_client-name_1qik5w">
+        Airthings
+      </span>
+    </div>
+
+    <div>
+      <h1 class="_project-name_1qik5w">
+        Permettre au monde de mieux respirer
+      </h1>
+    </div>
+
+      <div>
+        <span class="_project-type_1qik5w">
+          Application mobile (iOS, Android), application Web et API
+        </span>
+      </div>
+  </div>
+</a></li>
+      <li id="ember68" class="_item_1qik5w _slide-in--enter_12g4kc   ember-view"><a id="ember69" data-tracking-id="gtm-casestudy" href="/fr/projets/brp-go" class="_link_1qik5w ember-view">  <div class="_column_1qik5w">
+    <img src="https://images.mirego.com/resize?height=1130&amp;key=bQeDc3mlsG0b7334dzOU1Tl9&amp;nocrop=true&amp;quality=90&amp;stripmeta=true&amp;url=https%3A%2F%2Fs3.amazonaws.com%2Fmirego-website%2Fmirego-website-api-prod%2FJki7ZVXQu-Z20znilsamNg.jpg&amp;width=1130" srcset="https://images.mirego.com/resize?height=1130&amp;key=bQeDc3mlsG0b7334dzOU1Tl9&amp;nocrop=true&amp;quality=90&amp;stripmeta=true&amp;url=https%3A%2F%2Fs3.amazonaws.com%2Fmirego-website%2Fmirego-website-api-prod%2FJki7ZVXQu-Z20znilsamNg.jpg&amp;width=1130 1440w,
+        https://images.mirego.com/resize?height=1024&amp;key=bQeDc3mlsG0b7334dzOU1Tl9&amp;nocrop=true&amp;quality=90&amp;stripmeta=true&amp;url=https%3A%2F%2Fs3.amazonaws.com%2Fmirego-website%2Fmirego-website-api-prod%2FJki7ZVXQu-Z20znilsamNg.jpg&amp;width=1024 1024w,
+        https://images.mirego.com/resize?height=768&amp;key=bQeDc3mlsG0b7334dzOU1Tl9&amp;nocrop=true&amp;quality=90&amp;stripmeta=true&amp;url=https%3A%2F%2Fs3.amazonaws.com%2Fmirego-website%2Fmirego-website-api-prod%2FJki7ZVXQu-Z20znilsamNg.jpg&amp;width=768 768w,
+        https://images.mirego.com/resize?height=480&amp;key=bQeDc3mlsG0b7334dzOU1Tl9&amp;nocrop=true&amp;quality=90&amp;stripmeta=true&amp;url=https%3A%2F%2Fs3.amazonaws.com%2Fmirego-website%2Fmirego-website-api-prod%2FJki7ZVXQu-Z20znilsamNg.jpg&amp;width=480 480w" alt="" class="_project-image_1qik5w">
+  </div>
+
+  <div class="_column_1qik5w _column--content_1qik5w _page-spacer_usrlg3">
+    <div>
+      <span class="_client-name_1qik5w">
+        BRP GO!
+      </span>
+    </div>
+
+    <div>
+      <h1 class="_project-name_1qik5w">
+        Le futur de la conduite
+      </h1>
+    </div>
+
+      <div>
+        <span class="_project-type_1qik5w">
+          Applications iOS et Android, CMS, API 
+        </span>
+      </div>
+  </div>
+</a></li>
+</ul>
+</div>
+
+  <div id="ember70" class="_link-container--cta_11xqlu _link-container--centered_11xqlu ember-view"><a id="ember71" data-tracking-id="gtm-cta" target="_self" href="/fr/realisations" class="link ember-view">      Voir tous nos projets
+
+        <svg class="link__icon" viewBox="0 0 26 12" xmlns="http://www.w3.org/2000/svg"><path d="M25.528 5.605L19.664.165a.594.594 0 0 0-.822 0 .512.512 0 0 0 0 .773l4.847 4.52H.585c-.313 0-.586.257-.586.552 0 .294.273.55.586.55h23.106l-4.848 4.52a.513.513 0 0 0 0 .774.61.61 0 0 0 .43.146.616.616 0 0 0 .43-.146l5.865-5.44.43-.404-.472-.405z" fill-rule="evenodd"></path></svg>
+</a></div>
+</div>
+</div>
+    <div id="ember73" style="background-color: #211e25;color: #ffffff" class="_block_1vgpnr _block--left_1vgpnr  ember-view"><!---->
+<!---->
+  <div id="ember74" class="_columns_dwqap6 _page-spacer_usrlg3 _previous-block-is-background-blended_dwqap6 _columns--double-50-50_dwqap6 ember-view">  <div class="_column_dwqap6 _slide-in--enter_12g4kc">
+        <div id="ember78" class="_block_1vgpnr   ember-view"><!---->
+<!---->
+  <div id="ember79" class="_block-title-with-caption_1y8nn2 _centered-content_usrlg3 _page-spacer_usrlg3 _slide-in--enter_12g4kc  _is-nested_1y8nn2 _parent-has-text-body-color_1y8nn2  ember-view">  <div class="_caption_1y8nn2 _rich-content_usrlg3">
+    <p><span style="color: rgb(255, 56, 41);"><s>Coûteuses</s></span></p>
+  </div>
+
+<h1 class="_title_1y8nn2 _rich-content_usrlg3">
+  <p>Précieuses leçons&nbsp;<span style="color: rgb(255, 56, 41);">.</span></p>
+</h1>
+
+  <div class="_description_1y8nn2 _rich-content_usrlg3">
+    <p dir="ltr">Un seul produit numérique a le pouvoir de transformer une industrie tout entière. La performance et la survie d’un grand nombre d’organisations reposent maintenant sur leur capacité à intégrer le numérique au cœur de leurs pratiques. Notre manifeste documente 16 principes qui, selon notre équipe, constituent les piliers de la création de produits numériques exceptionnels qui atteignent leurs objectifs et passent l’épreuve du temps.</p><p dir="ltr"><br></p><p dir="ltr"><span style="color: rgb(255, 56, 41);"><strong>Découvrez<a href="/fr/manifeste">&nbsp;notre manifeste</a></strong></span></p>
+  </div>
+</div>
+</div>
+
+  </div>
+  <div class="_column_dwqap6 _slide-in--enter_12g4kc">
+        <div id="ember83" class="_block_1vgpnr   ember-view"><!---->
+<!---->
+  <div id="ember84" class="_block-image-with-text_86ra6v _centered-content_usrlg3 _page-spacer_usrlg3 _fade-in--enter_12g4kc   _is-nested_86ra6v _parent-has-text-body-color_86ra6v  ember-view">  <img src="https://images.mirego.com/convert?key=bQeDc3mlsG0b7334dzOU1Tl9&amp;nocrop=true&amp;quality=90&amp;stripmeta=true&amp;type=jpeg&amp;url=https%3A%2F%2Fs3.amazonaws.com%2Fmirego-website%2Fmirego-website-api-prod%2FsQ6Me31rE6GoixhUwLcxIg.jpg" alt="" class="_image_86ra6v _image--full-width_86ra6v">
+
+<div class="_content-wrapper_86ra6v">
+  <div class="_content_86ra6v">
+    <h1 class="_title_86ra6v _rich-content_usrlg3">
+      <p>&nbsp;</p>
+    </h1>
+
+<!---->
+<!---->  </div>
+</div>
+</div>
+</div>
+
+  </div>
+</div>
+</div>
+    <div id="ember86" style="" class="_block_1vgpnr _block--left_1vgpnr  ember-view"><!---->
+<!---->
+  <div id="ember87" class="_columns_dwqap6 _page-spacer_usrlg3 _next-block-is-background-blended_dwqap6 _columns--double-50-50_dwqap6 ember-view">  <div class="_column_dwqap6 _slide-in--enter_12g4kc">
+        <div id="ember91" class="_block_1vgpnr   ember-view"><!---->
+<!---->
+  <div id="ember92" class="_block-title_b3b52n _centered-content_usrlg3 _page-spacer_usrlg3 _slide-in--enter_12g4kc  _is-nested_b3b52n  ember-view"><h1 class="_title_b3b52n _rich-content_usrlg3"><p>Pionniers&nbsp;<span style="color: rgb(255, 56, 41);">.</span></p></h1>
+
+  <h2 class="_subtitle_b3b52n _rich-content_usrlg3"><p><span style="color: rgb(255, 56, 41);">L’histoire qui se cache derrière chaque transformation numérique est aussi unique que fascinante. Puisque bon nombre de nos clients ont osé innover pour permettre à leur organisation de se réinventer afin de prospérer à l’ère numérique, nous avons eu envie de partager leurs histoires pour inspirer d’autres entreprises à suivre cette voie.</span></p></h2>
+
+  <div id="ember93" class="_link-container--cta_11xqlu  ember-view _call-to-action-link_b3b52n"><a id="ember94" data-tracking-id="gtm-cta" target="_self" href="/fr/entrevues-clients-mirego-client-livre" class="link ember-view">      Entrevues clients
+
+        <svg class="link__icon" viewBox="0 0 26 12" xmlns="http://www.w3.org/2000/svg"><path d="M25.528 5.605L19.664.165a.594.594 0 0 0-.822 0 .512.512 0 0 0 0 .773l4.847 4.52H.585c-.313 0-.586.257-.586.552 0 .294.273.55.586.55h23.106l-4.848 4.52a.513.513 0 0 0 0 .774.61.61 0 0 0 .43.146.616.616 0 0 0 .43-.146l5.865-5.44.43-.404-.472-.405z" fill-rule="evenodd"></path></svg>
+</a></div>
+</div>
+</div>
+
+  </div>
+  <div class="_column_dwqap6 _slide-in--enter_12g4kc">
+        <div id="ember98" class="_block_1vgpnr   ember-view"><!---->
+<!---->
+  <div id="ember99" class="_block-image-with-text_86ra6v _centered-content_usrlg3 _page-spacer_usrlg3 _fade-in--enter_12g4kc   _is-nested_86ra6v  ember-view">  <img src="https://images.mirego.com/convert?key=bQeDc3mlsG0b7334dzOU1Tl9&amp;nocrop=true&amp;quality=90&amp;stripmeta=true&amp;type=jpeg&amp;url=https%3A%2F%2Fs3.amazonaws.com%2Fmirego-website%2Fmirego-website-api-prod%2FFLkdg8VGqXB4rV5NG9VsgA.jpg" alt="" class="_image_86ra6v _image--full-width_86ra6v">
+
+<div class="_content-wrapper_86ra6v">
+  <div class="_content_86ra6v">
+    <h1 class="_title_86ra6v _rich-content_usrlg3">
+      <p>&nbsp;</p>
+    </h1>
+
+<!---->
+<!---->  </div>
+</div>
+</div>
+</div>
+
+  </div>
+</div>
+</div>
+    <div id="ember101" class="_block_1vgpnr   ember-view"><!---->
+<!---->
+  <div id="ember102" class="_block-news-articles-list_gfoolx   ember-view"><div class="_column-container_gfoolx _page-spacer_usrlg3 _column-container--column_gfoolx">
+  <div class="_column_gfoolx">
+    <h1 class="_title_gfoolx">
+      Nouvelles
+    </h1>
+  </div>
+
+  <div class="_column_gfoolx">
+    <ul class="_list_gfoolx">
+          <li id="ember104" class="_item_1alm38 _slide-in--enter_12g4kc   ember-view"><a id="ember105" data-tracking-id="gtm-news" href="/fr/nouvelles/projet-team-forward-redonner-pour-batir-un-monde-meilleur" class="_link_1alm38 ember-view">  <p class="_published-at_1alm38">
+    29 novembre 2021
+  </p>
+
+  <h2 class="_title_1alm38">
+    Projet Team Forward&nbsp;: redonner pour bâtir un monde meilleur
+  </h2>
+</a></li>
+          <li id="ember107" class="_item_1alm38 _slide-in--enter_12g4kc   ember-view"><a id="ember108" data-tracking-id="gtm-news" href="/fr/nouvelles/premier-tech-et-mirego-s-unissent-pour-accelerer-la-transformation-numerique-des-entreprises" class="_link_1alm38 ember-view">  <p class="_published-at_1alm38">
+    11 mars 2021
+  </p>
+
+  <h2 class="_title_1alm38">
+    Premier Tech et Mirego s’unissent pour accélérer la transformation numérique des entreprises
+  </h2>
+</a></li>
+          <li id="ember110" class="_item_1alm38 _slide-in--enter_12g4kc   ember-view"><a id="ember111" data-tracking-id="gtm-news" href="/fr/nouvelles/lancement-d-olive-une-nouvelle-clinique-de-sante-virtuelle-developpee-par-l-equipe-de-mirego" class="_link_1alm38 ember-view">  <p class="_published-at_1alm38">
+    25 janvier 2021
+  </p>
+
+  <h2 class="_title_1alm38">
+    Olive, une nouvelle clinique de santé virtuelle développée au Québec   
+  </h2>
+</a></li>
+          <li id="ember113" class="_item_1alm38 _slide-in--enter_12g4kc   ember-view"><a id="ember114" data-tracking-id="gtm-news" href="/fr/nouvelles/lancement-du-livre-the-culture-quotient-mirego-presente-a-titre-d-exemple-pour-sa-culture-d-entreprise" class="_link_1alm38 ember-view">  <p class="_published-at_1alm38">
+    10 novembre 2020
+  </p>
+
+  <h2 class="_title_1alm38">
+    Lancement du livre The Culture Quotient - Mirego présenté à titre d'exemple pour sa culture d'entreprise
+  </h2>
+</a></li>
+    </ul>
+
+    <div id="ember115" class="_pagination--at-news-articles-list_peuu79 ember-view"><!----></div>
+  </div>
+</div>
+</div>
+</div>
+    <div id="ember117" style="background-color: #211e25;color: #ffffff" class="_block_1vgpnr _block--left_1vgpnr  ember-view"><!---->
+<!---->
+  <div id="ember118" class="_columns_dwqap6 _page-spacer_usrlg3 _previous-block-is-background-blended_dwqap6 _columns--double-50-50_dwqap6 ember-view">  <div class="_column_dwqap6 _slide-in--enter_12g4kc">
+        <div id="ember122" class="_block_1vgpnr   ember-view"><!---->
+<!---->
+  <div id="ember123" class="_block-title_b3b52n _centered-content_usrlg3 _page-spacer_usrlg3 _slide-in--enter_12g4kc  _is-nested_b3b52n _parent-has-text-body-color_b3b52n  ember-view"><h1 class="_title_b3b52n _rich-content_usrlg3"><p><a href="https://www.mirego.com/fr/formulaire-nouveau-projet" rel="noopener noreferrer" target="_blank">Parlez-nous de votre projet&nbsp;<span style="color: rgb(255, 56, 41);">.</span></a></p></h1>
+
+<!---->
+<!----></div>
+</div>
+
+  </div>
+  <div class="_column_dwqap6 _slide-in--enter_12g4kc">
+        <div id="ember127" class="_block_1vgpnr   ember-view"><!---->
+<!---->
+  <div id="ember128" class="_block-paragraph_1k317y _centered-content_usrlg3 _page-spacer_usrlg3 _slide-in--enter_12g4kc  _is-nested_1k317y _parent-has-text-body-color_1k317y  ember-view">  <h1 class="_title_1k317y _rich-content_usrlg3"><p><a href="https://www.mirego.com/fr/formulaire-nouveau-projet" rel="noopener noreferrer" target="_blank"><span style="color: rgb(255, 56, 41);">Pour combattre le statu quo, réinventer une façon de faire ou simplement donner vie à une idée, la première étape, c’est d’en parler.</span></a></p></h1>
+
+<!---->
+  <div id="ember129" class="_link-container--cta_11xqlu  ember-view _call-to-action-link_1k317y"><a id="ember130" data-tracking-id="gtm-cta" target="_self" href="/fr/formulaire-nouveau-projet" class="link ember-view">      Remplir le formulaire
+
+        <svg class="link__icon" viewBox="0 0 26 12" xmlns="http://www.w3.org/2000/svg"><path d="M25.528 5.605L19.664.165a.594.594 0 0 0-.822 0 .512.512 0 0 0 0 .773l4.847 4.52H.585c-.313 0-.586.257-.586.552 0 .294.273.55.586.55h23.106l-4.848 4.52a.513.513 0 0 0 0 .774.61.61 0 0 0 .43.146.616.616 0 0 0 .43-.146l5.865-5.44.43-.404-.472-.405z" fill-rule="evenodd"></path></svg>
+</a></div>
+</div>
+</div>
+
+  </div>
+</div>
+</div>
+
+
+
+
+<footer id="ember131" class="_application-footer_1l639x ember-view"><div class="centered-content">
+  <div class="_row_1l639x _row--separator_1l639x">
+      <div id="ember132" class="ember-view _list_1l639x"><ul role="menubar" class="_list_ftawxq">
+    <li role="menuitem" class="_list__item_ftawxq">
+      <div id="ember133" class="  ember-view _list-item__link_ftawxq"><a id="ember134" data-tracking-id="gtm-footer-element" target="_self" href="/fr/quoi" class="link ember-view">      Services
+
+<!----></a></div>
+    </li>
+    <li role="menuitem" class="_list__item_ftawxq">
+      <div id="ember135" class="  ember-view _list-item__link_ftawxq"><a id="ember136" data-tracking-id="gtm-footer-element" target="_self" href="/fr/realisations" class="link ember-view">      Nos projets
+
+<!----></a></div>
+    </li>
+    <li role="menuitem" class="_list__item_ftawxq">
+      <div id="ember137" class="  ember-view _list-item__link_ftawxq"><a id="ember138" data-tracking-id="gtm-footer-element" target="_self" href="/fr/entrevues-clients-mirego-client-livre" class="link ember-view">      Entrevues
+
+<!----></a></div>
+    </li>
+    <li role="menuitem" class="_list__item_ftawxq">
+      <div id="ember139" class="  ember-view _list-item__link_ftawxq"><a id="ember140" data-tracking-id="gtm-footer-element" target="_self" href="/fr/manifeste" class="link ember-view">      Manifeste
+
+<!----></a></div>
+    </li>
+    <li role="menuitem" class="_list__item_ftawxq">
+      <div id="ember141" class="  ember-view _list-item__link_ftawxq"><a id="ember142" data-tracking-id="gtm-footer-element" target="_self" href="/fr/pourquoi" class="link ember-view">      Pourquoi
+
+<!----></a></div>
+    </li>
+    <li role="menuitem" class="_list__item_ftawxq">
+      <div id="ember143" class="  ember-view _list-item__link_ftawxq"><a id="ember144" data-tracking-id="gtm-footer-element" target="_self" href="/fr/formulaire-nouveau-projet" class="link ember-view">      Votre projet
+
+<!----></a></div>
+    </li>
+</ul>
+</div>
+
+    <ul id="ember145" class="_list_f1vf7 ember-view _list_1l639x"><li class="_list__item_f1vf7">
+  <a href="https://vie.mirego.com/fr" data-tracking-id="gtm-footer-element" class="_list-item__link_f1vf7">
+    Vie
+  </a>
+</li>
+
+<li class="_list__item_f1vf7">
+  <a href="https://open.mirego.com" data-tracking-id="gtm-footer-element" class="_list-item__link_f1vf7">
+    Code
+  </a>
+</li>
+
+<li class="_list__item_f1vf7">
+  <a href="https://shift.mirego.com/fr" data-tracking-id="gtm-footer-element" class="_list-item__link_f1vf7">
+    Blogue
+  </a>
+</li>
+
+<li class="_list__item_f1vf7">
+  <a href="https://vie.mirego.com/fr/postes-disponibles" data-tracking-id="gtm-footer-element" class="_list-item__link_f1vf7">
+    Postes disponibles
+  </a>
+</li>
+</ul>
+  </div>
+
+  <div class="_row_1l639x">
+    <ul id="ember146" class="_list_1m1v3r ember-view">  <li class="_list__item_1m1v3r">
+    <h2 class="_list-item__title_1m1v3r">Québec</h2>
+
+    <address itemprop="address" itemscope="" itemtype="http://schema.org/PostalAddress" class="_list-item__content_1m1v3r">
+      <meta name="latitude" content="46.791281">
+      <meta name="longitude" content="-71.287644">
+
+      <span itemprop="streetAddress" class="_row_1m1v3r">2327 boul. du Versant Nord</span>
+      <span class="_row_1m1v3r">Bureau 200, <span itemprop="addressLocality">Québec</span>, <span itemprop="addressRegion">QC</span></span>
+      <span class="_row_1m1v3r"><span itemprop="postalCode">G1N 4C2</span> <span itemprop="addressCountry">Canada</span></span>
+    </address>
+  </li>
+  <li class="_list__item_1m1v3r">
+    <h2 class="_list-item__title_1m1v3r">Montréal</h2>
+
+    <address itemprop="address" itemscope="" itemtype="http://schema.org/PostalAddress" class="_list-item__content_1m1v3r">
+      <meta name="latitude" content="45.4920851">
+      <meta name="longitude" content="-73.5590339">
+
+      <span itemprop="streetAddress" class="_row_1m1v3r">1195 rue Wellington,</span>
+      <span class="_row_1m1v3r">Bureau 501, <span itemprop="addressLocality">Montreal</span>, <span itemprop="addressRegion">QC</span></span>
+      <span class="_row_1m1v3r"><span itemprop="postalCode">H3C 1W1</span> <span itemprop="addressCountry">Canada</span></span>
+    </address>
+  </li>
+  <li class="_list__item_1m1v3r">
+    <h2 class="_list-item__title_1m1v3r">Toronto</h2>
+
+    <address itemprop="address" itemscope="" itemtype="http://schema.org/PostalAddress" class="_list-item__content_1m1v3r">
+      <meta name="latitude" content="43.641859">
+      <meta name="longitude" content="-79.411256">
+
+      <span itemprop="streetAddress" class="_row_1m1v3r">901 King Street West</span>
+      <span class="_row_1m1v3r">Bureau 400, <span itemprop="addressLocality">Toronto</span>, <span itemprop="addressRegion">ON</span></span>
+      <span class="_row_1m1v3r"><span itemprop="postalCode">M5V 3H5</span> <span itemprop="addressCountry">Canada</span></span>
+    </address>
+  </li>
+  <li class="_list__item_1m1v3r">
+    <h2 class="_list-item__title_1m1v3r">Palo Alto</h2>
+
+    <address itemprop="address" itemscope="" itemtype="http://schema.org/PostalAddress" class="_list-item__content_1m1v3r">
+      <meta name="latitude" content="37.449283">
+      <meta name="longitude" content="-122.159902">
+
+      <span itemprop="streetAddress" class="_row_1m1v3r">530 Lytton Ave.</span>
+      <span class="_row_1m1v3r">2<sup>ème</sup> étage, <span itemprop="addressLocality">Palo Alto</span>, <span itemprop="addressRegion">CA</span></span>
+      <span class="_row_1m1v3r"><span itemprop="postalCode">94301</span> <span itemprop="addressCountry">USA</span></span>
+    </address>
+  </li>
+</ul>
+  </div>
+
+  <div class="_row_1l639x">
+      <ul id="ember151" class="_list_w7pcr8 ember-view"><li class="_list__item_w7pcr8">
+  <ul id="ember152" class="_list_h7eiuk ember-view"><li class="_list__item_h7eiuk">
+  <a href="https://www.facebook.com/mirego" title="Facebook" class="_list-item__link_h7eiuk">
+    <svg class="_list-item__icon_h7eiuk" xmlns="http://www.w3.org/2000/svg"><path d="M18.143 10.2H21V6h-3.29c-4.658 0-4.547 3.68-4.547 4.229v2.77H11V17.2h2.163V27h4.266v-9.8h2.857L21 13h-3.571v-2.1c0-.46.267-.7.714-.7"></path></svg>
+  </a>
+</li>
+
+<li class="_list__item_h7eiuk">
+  <a href="https://twitter.com/mirego" title="Twitter" class="_list-item__link_h7eiuk">
+    <svg class="_list-item__icon_h7eiuk" xmlns="http://www.w3.org/2000/svg"><path d="M26.393 9.333a8.998 8.998 0 0 1-2.868 1.101A4.488 4.488 0 0 0 20.231 9c-2.491 0-4.512 2.035-4.512 4.544 0 .356.04.702.117 1.035-3.752-.19-7.077-1.997-9.304-4.75a4.56 4.56 0 0 0-.611 2.287 4.55 4.55 0 0 0 2.008 3.782 4.49 4.49 0 0 1-2.046-.566v.056a4.537 4.537 0 0 0 3.622 4.455c-.378.107-.777.16-1.189.16a4.49 4.49 0 0 1-.85-.08 4.522 4.522 0 0 0 4.216 3.154 9.013 9.013 0 0 1-5.605 1.945c-.364 0-.724-.02-1.077-.062A12.734 12.734 0 0 0 11.919 27c8.303 0 12.842-6.923 12.842-12.928 0-.198-.004-.395-.012-.589A9.156 9.156 0 0 0 27 11.131a8.927 8.927 0 0 1-2.591.715 4.547 4.547 0 0 0 1.984-2.513"></path></svg>
+  </a>
+</li>
+
+<li class="_list__item_h7eiuk">
+  <a href="https://www.linkedin.com/company/mirego/" title="LinkedIn" class="_list-item__link_h7eiuk">
+    <svg class="_list-item__icon_h7eiuk" xmlns="http://www.w3.org/2000/svg"><path d="M4.603 26.866V12.89h4.47v13.977h-4.47zM21.326 12.89c3.178 0 5.674 2.01 5.674 6.34V27h-5.07v-7.233c0-1.893-.793-3.185-2.537-3.185-1.333 0-2.075.872-2.42 1.712-.13.302-.11.723-.11 1.143V27H11.84s.065-12.812 0-13.977h5.023v2.194c.297-.96 1.902-2.328 4.463-2.328zM6.731 6c1.65 0 2.664 1.043 2.696 2.423 0 1.354-1.047 2.426-2.728 2.426h-.031C5.048 10.85 4 9.781 4 8.427 4 7.047 5.08 6 6.73 6z"></path></svg>
+  </a>
+</li>
+
+<li class="_list__item_h7eiuk">
+  <a href="https://github.com/mirego" title="GitHub" class="_list-item__link_h7eiuk">
+    <svg class="_list-item__icon_h7eiuk" xmlns="http://www.w3.org/2000/svg"><path d="M15.765 6C9.821 6 5 10.82 5 16.767c0 4.756 3.084 8.79 7.363 10.215.539.098.735-.234.735-.52 0-.255-.01-.932-.015-1.83-2.994.65-3.626-1.444-3.626-1.444-.49-1.244-1.195-1.574-1.195-1.574-.978-.668.074-.655.074-.655 1.08.076 1.649 1.11 1.649 1.11.96 1.644 2.519 1.17 3.133.894.098-.696.375-1.17.683-1.44-2.39-.27-4.904-1.195-4.904-5.32 0-1.175.42-2.136 1.109-2.889-.111-.272-.48-1.367.105-2.849 0 0 .904-.29 2.96 1.104.86-.24 1.78-.358 2.696-.363a10.31 10.31 0 0 1 2.695.363c2.055-1.393 2.957-1.104 2.957-1.104.588 1.482.218 2.577.107 2.85.69.752 1.107 1.713 1.107 2.888 0 4.136-2.517 5.046-4.915 5.312.386.333.73.99.73 1.994 0 1.439-.013 2.6-.013 2.953 0 .288.194.623.74.518 4.275-1.427 7.357-5.459 7.357-10.213C26.532 10.82 21.712 6 15.765 6"></path></svg>
+  </a>
+</li>
+
+<li class="_list__item_h7eiuk">
+  <a href="https://instagram.com/mirego" title="Instagram" class="_list-item__link_h7eiuk">
+    <svg class="_list-item__icon_h7eiuk" xmlns="http://www.w3.org/2000/svg" viewBox="-100 -120 712 712"><path d="M256 49.471c67.266 0 75.233.257 101.8 1.469 24.562 1.121 37.9 5.224 46.778 8.674a78.052 78.052 0 0 1 28.966 18.845 78.052 78.052 0 0 1 18.845 28.966c3.45 8.877 7.554 22.216 8.674 46.778 1.212 26.565 1.469 34.532 1.469 101.8s-.257 75.233-1.469 101.8c-1.121 24.562-5.225 37.9-8.674 46.778a83.427 83.427 0 0 1-47.811 47.811c-8.877 3.45-22.216 7.554-46.778 8.674-26.56 1.212-34.527 1.469-101.8 1.469s-75.237-.257-101.8-1.469c-24.562-1.121-37.9-5.225-46.778-8.674a78.051 78.051 0 0 1-28.966-18.845 78.053 78.053 0 0 1-18.845-28.966c-3.45-8.877-7.554-22.216-8.674-46.778-1.212-26.564-1.469-34.532-1.469-101.8s.257-75.233 1.469-101.8c1.121-24.562 5.224-37.9 8.674-46.778a78.052 78.052 0 0 1 18.847-28.967 78.053 78.053 0 0 1 28.966-18.845c8.877-3.45 22.216-7.554 46.778-8.674 26.565-1.212 34.532-1.469 101.8-1.469m0-45.391c-68.418 0-77 .29-103.866 1.516-26.815 1.224-45.127 5.482-61.151 11.71a123.488 123.488 0 0 0-44.62 29.057A123.488 123.488 0 0 0 17.3 90.982c-6.223 16.025-10.481 34.337-11.7 61.152C4.369 179 4.079 187.582 4.079 256s.29 77 1.521 103.866c1.224 26.815 5.482 45.127 11.71 61.151a123.489 123.489 0 0 0 29.057 44.62 123.486 123.486 0 0 0 44.62 29.057c16.025 6.228 34.337 10.486 61.151 11.71 26.87 1.226 35.449 1.516 103.866 1.516s77-.29 103.866-1.516c26.815-1.224 45.127-5.482 61.151-11.71a128.817 128.817 0 0 0 73.677-73.677c6.228-16.025 10.486-34.337 11.71-61.151 1.226-26.87 1.516-35.449 1.516-103.866s-.29-77-1.516-103.866c-1.224-26.815-5.482-45.127-11.71-61.151a123.486 123.486 0 0 0-29.057-44.62A123.487 123.487 0 0 0 421.018 17.3c-16.025-6.223-34.337-10.481-61.152-11.7C333 4.369 324.418 4.079 256 4.079z"></path><path d="M256 126.635A129.365 129.365 0 1 0 385.365 256 129.365 129.365 0 0 0 256 126.635zm0 213.338A83.973 83.973 0 1 1 339.974 256 83.974 83.974 0 0 1 256 339.973z"></path><circle cx="390.476" cy="121.524" r="30.23"></circle></svg>
+  </a>
+</li>
+</ul>
+</li>
+
+<li class="_list__item_w7pcr8">
+  <a href="mailto:info@mirego.com" class="_list-item__link_w7pcr8">
+    info@mirego.com
+  </a>
+</li>
+
+<li class="_list__item_w7pcr8">
+  <a href="tel:1 888 437 4258" class="_list-item__link_w7pcr8">
+    1 888 437 4258
+  </a>
+</li>
+</ul>
+  </div>
+
+  <div class="_row_1l639x">
+    <div id="ember153" class="_copyright_1ulwy6 ember-view">© 2022 Mirego
+</div>
+  </div>
+</div>
+</footer>
+
+
+
+
+    <div id="ember-basic-dropdown-wormhole"></div>
+  
+
+
+
+<script type="text/javascript" id="">!function(b,e,f,g,a,c,d){b.fbq||(a=b.fbq=function(){a.callMethod?a.callMethod.apply(a,arguments):a.queue.push(arguments)},b._fbq||(b._fbq=a),a.push=a,a.loaded=!0,a.version="2.0",a.queue=[],c=e.createElement(f),c.async=!0,c.src=g,d=e.getElementsByTagName(f)[0],d.parentNode.insertBefore(c,d))}(window,document,"script","https://connect.facebook.net/en_US/fbevents.js");fbq("init","1938470986385120");fbq("track","PageView");</script>
+
+<noscript>
+
+<img height="1" width="1" src="https://www.facebook.com/tr?id=1938470986385120&amp;ev=PageView
+
+&amp;noscript=1">
+
+</noscript>
+
+<script type="text/javascript" id="">window.intercomSettings={app_id:"tph2mz1w"};</script>
+
+<script type="text/javascript" id="">(function(){var a=window,b=a.Intercom;if("function"===typeof b)b("reattach_activator"),b("update",a.intercomSettings);else{var d=document,c=function(){c.c(arguments)};c.q=[];c.c=function(a){c.q.push(a)};a.Intercom=c;b=function(){var a=d.createElement("script");a.type="text/javascript";a.async=!0;a.src="https://widget.intercom.io/widget/tph2mz1w";var b=d.getElementsByTagName("script")[0];b.parentNode.insertBefore(a,b)};a.attachEvent?a.attachEvent("onload",b):a.addEventListener("load",b,!1)}})();</script>
+<script type="text/javascript" id="hs-script-loader" src="//js.hs-scripts.com/20410332.js"></script><img src="https://t.co/i/adsct?bci=3&amp;eci=2&amp;event_id=0212a310-d3e7-4fdb-adf9-4d814ff070e9&amp;events=%5B%5B%22pageview%22%2C%7B%7D%5D%5D&amp;p_id=Twitter&amp;p_user_id=0&amp;pl_id=31cf26cb-d275-42a1-980b-3b2e8611a003&amp;tw_document_href=https%3A%2F%2Fwww.mirego.com%2Ffr&amp;tw_iframe_status=0&amp;tw_order_quantity=0&amp;tw_sale_amount=0&amp;txn_id=o62d8&amp;type=javascript&amp;version=2.4.12" height="1" width="1" style="display: none;"><img src="https://analytics.twitter.com/i/adsct?bci=3&amp;eci=2&amp;event_id=0212a310-d3e7-4fdb-adf9-4d814ff070e9&amp;events=%5B%5B%22pageview%22%2C%7B%7D%5D%5D&amp;p_id=Twitter&amp;p_user_id=0&amp;pl_id=31cf26cb-d275-42a1-980b-3b2e8611a003&amp;tw_document_href=https%3A%2F%2Fwww.mirego.com%2Ffr&amp;tw_iframe_status=0&amp;tw_order_quantity=0&amp;tw_sale_amount=0&amp;txn_id=o62d8&amp;type=javascript&amp;version=2.4.12" height="1" width="1" style="display: none;"><iframe name="_hjRemoteVarsFrame" title="_hjRemoteVarsFrame" id="_hjRemoteVarsFrame" src="https://vars.hotjar.com/box-63c3a81830bf549dafe40b369003f751.html" style="display: none !important; width: 1px !important; height: 1px !important; opacity: 0 !important; pointer-events: none !important;"></iframe>
+<iframe id="_hjSafeContext_38991179" src="about:blank" style="display: none !important; width: 1px !important; height: 1px !important; opacity: 0 !important; pointer-events: none !important;"></iframe><iframe owner="archetype" title="archetype" style="display: none; visibility: hidden;"></iframe></body></html>

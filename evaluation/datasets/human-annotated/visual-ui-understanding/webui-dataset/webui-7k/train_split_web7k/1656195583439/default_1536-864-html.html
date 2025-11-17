@@ -1,0 +1,171 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1.0, width=device-width">
+
+<title>What does `identical?` do? - quanttype</title>
+
+
+<link rel="stylesheet" href="https://quanttype.net/css/main.min.761f9d28699cc5464d784620e82c058822875409577361d41f634c48b749c2cb.css" integrity="sha256-dh+dKGmcxUZNeEYg6CwFiCKHVAlXc2HUH2NMSLdJwss=">
+
+<link rel="canonical" href="https://quanttype.net/posts/2022-06-15-what-does-identical-do.html">
+
+
+<meta name="description" content="I was confused about how clojure.core/identical? works; let me explain it to you.">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="What does `identical?` do?">
+<meta name="twitter:description" content="I was confused about how clojure.core/identical? works; let me explain it to you.">
+<meta property="og:title" content="What does `identical?` do?">
+<meta property="og:type" content="article">
+<meta property="og:description" content="I was confused about how clojure.core/identical? works; let me explain it to you.">
+<meta property="og:url" content="https://quanttype.net/posts/2022-06-15-what-does-identical-do.html">
+
+<meta property="og:image" content="https://quanttype.net/images/skorvan7.jpg">
+<meta name="twitter:image" content="https://quanttype.net/images/skorvan7.jpg">
+
+
+
+<script async="" defer="" data-domain="quanttype.net" src="https://plausible.io/js/plausible.js"></script>
+
+
+</head><body><nav>
+  
+  
+  
+  <a href="/"><h1>quanttype</h1></a>,
+  
+  <a href="/about.html">about</a>,
+  
+  <a href="/posts.html">archive</a>
+  
+</nav>
+<div id="content">
+<div class="h-entry">
+    <header>
+        <h1 class="p-name">What does `identical?` do?</h1>
+        <h2><time class="dt-published" datetime="2022-06-15">2022-06-15</time></h2>
+    </header>
+
+    <article class="e-content">
+      <figure>
+<picture>
+
+
+<source srcset="/images/skorvan7.jpg.webp" type="image/webp">
+
+<img src="/images/skorvan7.jpg">
+
+</picture>
+</figure>
+
+<p>Dear fellow Clojure enthusiasts, do you know what the following two code
+snippets evaluate to? And <em>why</em> is that the result?</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-clojure" data-lang="clojure"><span class="line"><span class="cl"><span class="p">(</span><span class="nb">identical? </span><span class="o">##</span><span class="nv">NaN</span> <span class="o">##</span><span class="nv">NaN</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">x</span> <span class="o">##</span><span class="nv">NaN</span><span class="p">]</span> <span class="p">(</span><span class="nb">identical? </span><span class="nv">x</span> <span class="nv">x</span><span class="p">))</span>
+</span></span></code></pre></div><p>I didn’t know it a couple of days ago and it took me a while to understand it.
+Now I want to share my understanding.</p>
+<p>Go on, make a guess and check it with a REPL. When you’re ready – or if you
+already saw me post about it <a href="https://twitter.com/arcatan">on Twitter</a> – scroll past the photos below for an
+explanation.</p>
+<p><em>The photos in this post are from Lill-Skorvan island near Porkkalanniemi, Finland.</em></p>
+<p></p><figure>
+<picture>
+
+
+<source srcset="/images/skorvan5.jpg.webp" type="image/webp">
+
+<img src="/images/skorvan5.jpg">
+
+</picture>
+</figure>
+
+<figure>
+<picture>
+
+
+<source srcset="/images/skorvan3.jpg.webp" type="image/webp">
+
+<img src="/images/skorvan3.jpg">
+
+</picture>
+</figure>
+
+<figure>
+<picture>
+
+
+<source srcset="/images/skorvan6.jpg.webp" type="image/webp">
+
+<img src="/images/skorvan6.jpg">
+
+</picture>
+</figure>
+<p></p>
+<p>Here are the results on Clojure 1.11.1:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-clojure" data-lang="clojure"><span class="line"><span class="cl"><span class="p">(</span><span class="nb">identical? </span><span class="o">##</span><span class="nv">NaN</span> <span class="o">##</span><span class="nv">NaN</span><span class="p">)</span>          <span class="c1">; =&gt; true</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">x</span> <span class="o">##</span><span class="nv">NaN</span><span class="p">]</span> <span class="p">(</span><span class="nb">identical? </span><span class="nv">x</span> <span class="nv">x</span><span class="p">))</span>  <span class="c1">; =&gt; false</span>
+</span></span></code></pre></div><p>At first I thought that this is the <code>NaN != NaN</code> feature<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup> of IEEE 754 floats, but
+that is not the case.</p>
+<p><code>clojure.core/identical?</code> checks the <em>reference</em> equality of its arguments.
+Its <a href="https://clojuredocs.org/clojure.core/identical_q">docstring</a> says:</p>
+<blockquote>
+<p>Tests if 2 arguments are the same object</p>
+</blockquote>
+<p><code>##NaN</code> refers to the constant <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html#NaN"><code>Double/NaN</code></a>, which is a primitive double. That is, it’s not
+an object. When a primitive value is passed to a Clojure function as an
+argument, it gets wrapped into an object. This is called <a href="https://en.wikipedia.org/wiki/Object_type_(object-oriented_programming)#Boxing">boxing</a>. Concretely this means calling
+<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html#valueOf(double)"><code>Double/valueOf</code></a>, which converts the primitive <code>double</code> into a
+<code>java.lang.Double</code> object.</p>
+<p>The two snippets evaluate to different values because in the first snippet
+<code>##NaN</code> gets boxed only once, but in the second snippet each function argument
+is boxed separately. This comes down to implementation details of Clojure.
+You can see the behavior in the disassembled byte code I posted on <a href="https://ask.clojure.org/index.php/11963/identical-treat-bound-nan-differently-direct-reference">Ask Clojure</a>.</p>
+<p>When the reference equality of two boxed doubles is compared, they’re considered
+not equal even if they wrap the same value. This explains the results we saw.</p>
+<p>Here’s a bonus exercise: what does this evaluate to and why?</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-clojure" data-lang="clojure"><span class="line"><span class="cl"><span class="p">(</span><span class="nb">identical? </span><span class="mf">1.0</span> <span class="mf">1.0</span><span class="p">)</span>
+</span></span></code></pre></div><!-- Evaluates to false -->
+<hr>
+<p>I’ve used Clojure for a decade and there are still nooks and crannies I’m not familiar with.
+I guess it just takes a while to learn a programming language properly.</p>
+<section class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1" role="doc-endnote">
+<p><a href="https://stackoverflow.com/a/1573715">There are good reasons for the feature</a>, or at least they were good back in the day. A lot of programmers dislike floats, but my hot take is that they’re actually successful solution to a complicated problem. What we should do is to start using <a href="https://www.crockford.com/dec64.html">decimal floats</a>, which would match programmer intuitions better than binary floats.&nbsp;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+    </article>
+
+    <hr>
+
+    <p class="contact">Comments or questions? <a href="https://twitter.com/arcatan">Tweet to
+    me</a> or <a href="mailto:hello+there@quanttype.net">send me an
+    e-mail</a>.</p>
+
+    <ul>
+      
+      <li>Previous post: <a href="https://quanttype.net/posts/2022-05-16-tasks-of-schema-migration-tool.html">Tasks of a schema migration tool</a></li>
+      
+      
+      <li>Next post: <a href="https://quanttype.net/posts/2022-06-20-sql-clojure-editor-support.html">SQL, Clojure, and editor support</a></li>
+      
+      
+    </ul>
+
+    
+    <footer>
+      <p><a href="https://miikka.me/" class="h-card p-author" rel="author">arcatan</a> <span class="revision">
+        bfc739b
+        (2022-06-15 10:56:02 +0300 EEST)
+        New post: What does identical? do
+
+      </span></p>
+    </footer>
+    
+</div>
+
+        </div>
+
+</body></html>

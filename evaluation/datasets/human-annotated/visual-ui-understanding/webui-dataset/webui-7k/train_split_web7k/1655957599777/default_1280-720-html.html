@@ -1,0 +1,590 @@
+<!DOCTYPE html><html><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>
+    How to Install WordPress on DigitalOcean - ServerPilot
+</title>
+
+
+
+
+
+<link rel="stylesheet" href="https://serverpilot.io/assets/css/main.min.5280feb23f751efc93624c5b05860f98fc09b443d33c2abad6355594dcd1efd3.css" integrity="sha256-UoD+sj91HvyTYkxbBYYPmPwJtEPTPCq61jVVlNzR79M=" media="screen">
+
+
+
+<meta name="description" content="If you have connected your server to ServerPilot, you can install WordPress with one click when you create an app.">
+
+
+
+
+
+
+<script type="text/javascript" async="" src="https://www.googleadservices.com/pagead/conversion_async.js"></script><script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=AW-696356541&amp;l=dataLayer&amp;cx=c"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=UA-41746617-1&amp;l=dataLayer&amp;cx=c"></script><script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script><script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-151773904-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-151773904-1');
+
+  gtag('config', 'UA-41746617-1');
+
+  gtag('config', 'AW-696356541');
+
+  
+        
+        if (document.cookie.indexOf('uid=') == -1) {
+          gtag('event', 'conversion', {'send_to':
+            'AW-696356541/Z0U2CNvY5uEBEL2dhswC'});
+        }
+
+  
+      function gtag_report_clickSignup(url) {
+        var callback = function () { if (typeof(url) != 'undefined') { window.location = url; } };
+        gtag('event', 'conversion', { 'send_to': 'AW-696356541/In_6CPnNy-EBEL2dhswC', 'event_callback': callback });
+        return false;
+      }
+
+</script>
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicon/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon/favicon-16x16.png"><link rel="manifest" href="/assets/img/favicon/site.webmanifest"><link rel="mask-icon" href="/assets/img/favicon/safari-pinned-tab.svg" color="#5bbad5"><link rel="shortcut icon" href="/assets/img/favicon/favicon.ico"><meta name="msapplication-TileColor" content="#2b5797"><meta name="msapplication-config" content="/assets/img/favicon/browserconfig.xml"><meta name="theme-color" content="#ffffff"><meta http-equiv="origin-trial" content="A9wkrvp9y21k30U9lU7MJMjBj4USjLrGwV+Z8zO3J3ZBH139DOnCv3XLK2Ii40S94HG1SZ/Zeg2GSHOD3wlWngYAAAB7eyJvcmlnaW4iOiJodHRwczovL3d3dy5nb29nbGV0YWdtYW5hZ2VyLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjYxMjk5MTk5LCJpc1RoaXJkUGFydHkiOnRydWV9"><script src="https://googleads.g.doubleclick.net/pagead/viewthroughconversion/696356541/?random=1655957603687&amp;cv=9&amp;fst=1655957603687&amp;num=1&amp;bg=ffffff&amp;guid=ON&amp;resp=GooglemKTybQhCsO&amp;eid=376635470&amp;u_h=600&amp;u_w=800&amp;u_ah=600&amp;u_aw=800&amp;u_cd=24&amp;u_his=2&amp;u_tz=0&amp;u_java=false&amp;u_nplug=0&amp;u_nmime=0&amp;gtm=2oa6m0&amp;sendb=1&amp;ig=1&amp;data=event%3Dgtag.config&amp;frm=0&amp;url=https%3A%2F%2Fserverpilot.io%2Fdocs%2Fhow-to-install-wordpress-on-digitalocean%2F&amp;tiba=How%20to%20Install%20WordPress%20on%20DigitalOcean%20-%20ServerPilot&amp;hn=www.googleadservices.com&amp;async=1&amp;rfmt=3&amp;fmt=4"></script><meta http-equiv="origin-trial" content="Azy2GzGQxPvGmQwVDdEL1jRuKSXIdSSASA06JCA6PCeaVHpFYf8Rw5/q+9adc9CrBTxfCeUwxkuDM4PWEmdqywwAAACKeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZWFkc2VydmljZXMuY29tOjQ0MyIsImZlYXR1cmUiOiJQcml2YWN5U2FuZGJveEFkc0FQSXMiLCJleHBpcnkiOjE2NjEyOTkxOTksImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9"><script src="https://www.googleadservices.com/pagead/conversion/696356541/?random=1655957603782&amp;cv=9&amp;fst=1655957603782&amp;num=1&amp;label=Z0U2CNvY5uEBEL2dhswC&amp;bg=ffffff&amp;guid=ON&amp;resp=GooglemKTybQhCsO&amp;eid=376635470&amp;u_h=600&amp;u_w=800&amp;u_ah=600&amp;u_aw=800&amp;u_cd=24&amp;u_his=2&amp;u_tz=0&amp;u_java=false&amp;u_nplug=0&amp;u_nmime=0&amp;gtm=2oa6m0&amp;sendb=1&amp;ig=1&amp;data=event%3Dconversion&amp;frm=0&amp;url=https%3A%2F%2Fserverpilot.io%2Fdocs%2Fhow-to-install-wordpress-on-digitalocean%2F&amp;tiba=How%20to%20Install%20WordPress%20on%20DigitalOcean%20-%20ServerPilot&amp;gtm_ee=1&amp;auid=1498611407.1655957603&amp;hn=www.googleadservices.com&amp;async=1&amp;rfmt=3&amp;fmt=4"></script></head>
+
+
+
+
+
+
+
+
+
+<body>
+
+  
+
+<style>
+  
+  .collapsing {
+    -webkit-transition: height 0.1s ease-in-out;
+         -o-transition: height 0.1s ease-in-out;
+            transition: height 0.1s ease-in-out;
+  }
+</style>
+<header class=" header-light ">
+  <div class="container">
+    <nav class="navbar navbar-expand-lg  navbar-light ">
+      
+        <a class="navbar-brand" href="/">
+            <img class="navbar-logo navbar-logo-light" src="/assets/img/shared/logos/serverpilot-horizontal-white.svg" alt="Logo">
+            <img class="navbar-logo navbar-logo-dark" src="/assets/img/shared/logos/serverpilot-horizontal-black.svg" alt="Logo">
+        </a>
+      
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="burger"><span></span></span></button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav align-items-center mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="https://www.earlydog.com/" target="_blank" style="white-space: nowrap; line-height: 1;">
+              Built by
+              <img class="navbar-earlydog-logo navbar-earlydog-logo-light" style="height: 15px; margin-left: 4px;" src="/assets/img/shared/logos/earlydog-horizontal-white.svg" alt="EarlyDog logo">
+              <img class="navbar-earlydog-logo navbar-earlydog-logo-dark" style="height: 15px; margin-left: 4px;" src="/assets/img/shared/logos/earlydog-horizontal.svg" alt="EarlyDog logo">
+            </a>
+          </li>
+        </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <ul class="navbar-nav align-items-center mr-0">
+
+          
+          <li class="nav-item d-none d-lg-block">
+            <a class="btn btn-sm btn-rounded  btn-outline-gray " onclick="return gtag_report_clickSignup('https://manage.serverpilot.io/signup');" href="https://manage.serverpilot.io/signup" role="button">
+              Free Trial
+            </a>
+          </li>
+          
+
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/features/" role="button">
+              Features
+            </a>
+          </li>
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/use-cases/" role="button">
+              Use Cases
+            </a>
+          </li>
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/pricing/" role="button">
+              Pricing
+            </a>
+          </li>
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/docs/" role="button">
+              Docs
+            </a>
+          </li>
+          
+
+          
+          <li class="nav-item">
+            <a class="nav-link" href="https://manage.serverpilot.io/login" role="button">
+              Sign in →
+            </a>
+          </li>
+          
+
+        </ul>
+
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+<section class="hero hero-with-header pb-1 pt-10 search-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-10">
+        
+        <form>
+          <div class="form-group">
+            <span class="algolia-autocomplete" style="position: relative; display: inline-block; direction: ltr;"><input type="text" class="form-control form-control-sm aa-hint" readonly="" aria-hidden="true" autocomplete="off" spellcheck="false" tabindex="-1" style="position: absolute; top: 0px; left: 0px; border-color: transparent; box-shadow: none; opacity: 1; background: none 0% 0% / auto repeat scroll padding-box padding-box rgb(255, 255, 255);"><input type="text" id="search-input" class="form-control form-control-sm aa-input" placeholder="Search documentation..." autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="both" aria-expanded="false" aria-owns="algolia-autocomplete-listbox-0" dir="auto" style="position: relative; vertical-align: top; background-color: transparent;"><pre aria-hidden="true" style="position: absolute; visibility: hidden; white-space: pre; font-family: camphor, sans-serif; font-size: 14.4px; font-style: normal; font-variant: normal; font-weight: 400; word-spacing: 0px; letter-spacing: 0px; text-indent: 0px; text-rendering: auto; text-transform: none;"></pre><span class="aa-dropdown-menu" role="listbox" id="algolia-autocomplete-listbox-0" style="position: absolute; top: 100%; left: 0px; z-index: 100; display: none; right: auto;"><div class="aa-dataset-1"></div></span></span>
+          </div>
+        </form>
+        
+      </div>
+    </div>
+  </div>
+</section>
+   
+
+
+
+
+
+
+
+
+
+
+
+
+   
+<section class="pt-5 pb-7 text article">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-12 col-md-10">
+
+            <p class="mb-2">
+              
+                <a href="/docs/" class="docs-breadcrumb">← ServerPilot Docs</a>
+              
+            </p>
+
+            <h1>How to Install WordPress on DigitalOcean</h1>
+
+            
+<p>If you have <a href="https://serverpilot.io/docs/how-to-connect-a-server-to-serverpilot/">connected
+    your server to ServerPilot</a>, you can install WordPress with one click
+    when you create an app.</p>
+
+<h2>Step One: Create an App in ServerPilot</h2>
+
+<p>An app is a web application, such as WordPress.</p>
+
+<p>In ServerPilot, click <b>Create App</b>; this can be done
+    immediately after connecting a server or by going to the Apps page.</p>
+
+<p>Give your app a name and enter your site's domain if you have one.
+    Select the PHP version and the server you want this app to be on (probably
+    the one you just set up).
+    You may also select the system user you want to run this app.</p>
+
+    <img src="/docs/images/tutorial/create-app.png">
+
+<h2>Step Two: Use the One-Click Installer</h2>
+
+<p>Now, place a check mark next to <b>WordPress</b>; a new form will
+    appear.</p>
+
+<img src="/docs/images/tutorial/wordpress/one-click-wordpress.png">
+
+<p>Enter your site title, your administrator username, a password, and your
+    email address for setup confirmation.
+    The administrator username and password are not the same as those for the
+    app's system user.</p>
+
+<p>Click <b>Create App</b> to submit the form.
+    You'll be shown some details about the app.</p>
+
+    <img src="/docs/images/tutorial/app-details.png">
+
+<h2>Step Three: Review Your Database</h2>
+
+<p>ServerPilot's one-click WordPress installer automatically generates your
+    MySQL database name, username, and password.
+    You can review these in ServerPilot.</p>
+
+<p>Open your app in ServerPilot and go to the Databases tab.
+    Click <b>Create Database</b>.</p>
+
+<p>You'll see your database name and username.</p>
+
+    <img src="/docs/images/tutorial/one-click-wordpress-database.png">
+
+<p>Clicking on the username will allow you to change the database password, if
+    you want to <a href="https://serverpilot.io/docs/how-to-manage-your-database-with-adminer/">install
+        Adminer</a>.</p>
+
+<div class="alert alert-info">If you change the automatically generated
+    password, you will also need to change it in your app's
+    <tt>wp-config.php</tt> file.</div>
+
+<h2>That's It!</h2>
+
+<p>Now, you'll be able to log in to your brand new, blazingly fast
+    WordPress Dashboard when you visit your server's IP address or your domain
+    after you <a href="https://serverpilot.io/docs/how-to-configure-dns-on-digitalocean/">configure
+        DNS to point to your server</a>.</p>
+
+<p>Your WordPress files will be stored on your server in your app's
+    <tt>public</tt> folder (also known as the web root directory) at
+    <code>apps/APPNAME/public</code>.</p>
+
+<p>ServerPilot will keep your server's system packages updated with security
+    updates.
+    ServerPilot also configured a firewall on your server so you don't have to
+    worry about that.</p>
+
+<p>We've taken the pain out of server management so you can focus on your
+    apps.</p>
+
+<p>Happy developing!</p>
+
+
+            
+
+            
+            
+
+            
+
+          </div>
+        </div>
+      </div>
+    </section>    
+    <section class="bg-primary py-6">
+      <div class="container">
+        <div class="text-white">
+          <div class="row d-flex justify-content-center align-items-center text-center">
+            <div class="px-4 py-2">
+              <h3>Launch your first site in 5 minutes</h3>
+            </div>
+            <div class="px-4 py-2">
+              <a onclick="return gtag_report_clickSignup('https://manage.serverpilot.io/signup');" href="https://manage.serverpilot.io/signup" class="btn btn-white btn-rounded">Sign Up</a>
+              <a href="/contact-sales" class="btn btn-outline-white btn-rounded ml-1">Contact Us</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+
+<footer class="">
+  <div>
+    <div class="container py-5">
+      <div class="row justify-content-between align-items-stretch">
+      
+        <div class="col-12 col-xs-6 col-md-3 col-lg">
+          <div>
+            <h3 class="footer-title">
+              
+                Overview
+              
+            </h3>
+          </div>
+          
+          <div class="footer-link">
+            <a href="/wordpress-hosting/">WordPress Hosting</a>
+          </div>
+          
+          <div class="footer-link">
+            <a href="/magento-hosting/">Magento Hosting</a>
+          </div>
+          
+          <div class="footer-link">
+            <a href="/laravel-hosting/">Laravel Hosting</a>
+          </div>
+          
+          <div class="footer-link">
+            <a href="/php-hosting/">PHP Hosting</a>
+          </div>
+          
+          <div class="footer-link">
+            <a href="/terms/">Terms</a>
+          </div>
+          
+          <div class="footer-link">
+            <a href="/privacy/">Privacy</a>
+          </div>
+          
+          <div class="footer-link">
+            <a href="/gdpr/">GDPR</a>
+          </div>
+          
+          
+          <div class="copyright-text pt-1">© Less Bits</div>
+          
+        </div>
+      
+        <div class="col-12 col-xs-6 col-md-3 col-lg">
+          <div>
+            <h3 class="footer-title">
+              
+                &nbsp;
+              
+            </h3>
+          </div>
+          
+          <div class="footer-link">
+            <a href="/pricing/">Pricing</a>
+          </div>
+          
+          <div class="footer-link">
+            <a href="/features/">Features</a>
+          </div>
+          
+          <div class="footer-link">
+            <a href="/company/">Company</a>
+          </div>
+          
+          <div class="footer-link">
+            <a href="/blog/">Blog</a>
+          </div>
+          
+          <div class="footer-link">
+            <a href="/docs/security/">Security</a>
+          </div>
+          
+          <div class="footer-link">
+            <a href="/docs/how-to-use-the-serverpilot-api/">API</a>
+          </div>
+          
+          <div class="footer-link">
+            <a href="/docs/how-to-use-autossl/">AutoSSL</a>
+          </div>
+          
+          
+        </div>
+      
+        <div class="col-12 col-xs-6 col-md-3 col-lg">
+          <div>
+            <h3 class="footer-title">
+              
+                Resources
+              
+            </h3>
+          </div>
+          
+          <div class="footer-link">
+            <a href="/docs/">Documentation</a>
+          </div>
+          
+          <div class="footer-link">
+            <a href="https://manage.serverpilot.io/signup" onclick="return gtag_report_clickSignup('https://manage.serverpilot.io/signup');">Sign Up</a>
+          </div>
+          
+          <div class="footer-link">
+            <a href="/docs/how-to-connect-a-server-to-serverpilot/">Getting Started</a>
+          </div>
+          
+          <div class="footer-link">
+            <a href="/contact/">Contact</a>
+          </div>
+          
+          <div class="footer-link">
+            <a href="/referral-program/">Referral Program</a>
+          </div>
+          
+          <div class="footer-link">
+            <a href="/logos-and-badges/">Logos and Badges</a>
+          </div>
+          
+          <div class="footer-link">
+            <a href="https://heatshield.io/docs/wordpress-firewall/">WordPress Firewall</a>
+          </div>
+          
+          <div class="footer-link">
+            <a href="https://www.earlydog.com/">Managed Hosting</a>
+          </div>
+          
+          
+        </div>
+      
+        <div class="col-12 col-xs-6 col-md-3 col-lg">
+          <div>
+            <h3 class="footer-title">
+              
+                Articles
+              
+            </h3>
+          </div>
+          
+          <div class="footer-link">
+            <a href="/docs/what-is-serverpilot/">What Is ServerPilot?</a>
+          </div>
+          
+          <div class="footer-link">
+            <a href="/docs/how-serverpilot-works/">How ServerPilot Works</a>
+          </div>
+          
+          <div class="footer-link">
+            <a href="/docs/how-to-install-wordpress-on-digitalocean/">WordPress on DigitalOcean</a>
+          </div>
+          
+          <div class="footer-link">
+            <a href="/docs/digitalocean-control-panel/">DigitalOcean Control Panel</a>
+          </div>
+          
+          <div class="footer-link">
+            <a href="/docs/cpanel-alternative/">cPanel Alternative</a>
+          </div>
+          
+          <div class="footer-link">
+            <a href="/docs/plesk-alternative/">Plesk Alternative</a>
+          </div>
+          
+          <div class="footer-link">
+            <a href="/blog/earlydog-managed-cloud-on-aws-and-digitalocean/">Managed Cloud on AWS and DigitalOcean</a>
+          </div>
+          
+          
+        </div>
+      
+
+        <div class="col-12 col-lg">
+          <div class="social-links text-center text-lg-center">
+            
+            <a href="https://twitter.com/ServerPilot" class="fs-20 mr-1" target="_blank"><i class="fab fa-twitter"></i></a>
+            
+            
+            <a href="https://www.facebook.com/ServerPilot" class="fs-20 mr-1" target="_blank"><i class="fab fa-facebook-square"></i></a>
+            
+            
+            <a href="https://www.linkedin.com/showcase/serverpilot/" class="fs-20" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+            
+          </div>
+          <div class="text-center text-lg-center pt-1">
+            <div class="footer-link">
+              <a href="/">English</a>
+            </div>
+            
+            <div class="footer-link">
+              <a href="/de/docs/">Deutsch</a>
+            </div>
+            
+            <div class="footer-link">
+              <a href="/es/docs/">Español</a>
+            </div>
+            
+            <div class="footer-link">
+              <a href="/fr/docs/">Français</a>
+            </div>
+            
+            <div class="footer-link">
+              <a href="/it/docs/">Italiano</a>
+            </div>
+            
+            <div class="footer-link">
+              <a href="/ja/docs/">日本語</a>
+            </div>
+            
+            <div class="footer-link">
+              <a href="/pt/docs/">Português</a>
+            </div>
+            
+            <div class="footer-link">
+              <a href="/ru/docs/">Русский язык</a>
+            </div>
+            
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+var app = {
+  domain: 'serverpilot.io',
+  algolia: {
+    applicationID: 'J2OSTB1JRM',
+    searchOnlyAPIKey: '63ba64b3562891380537be1e83f13f78',
+    index: 'serverpilot_prod',
+  },
+};
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="https://serverpilot.io/assets/static/js/vendor.min.5e2949507584732817d9a7218ed619c3cadda509196f983168fc325063316678461ac60180dd0a9624db65269391daf4bbbd054d3c99587af7cd527cede7dddc.js" integrity="sha512-XilJUHWEcygX2achjtYZw8rdpQkZb5gxaPwyUGMxZnhGGsYBgN0KliTbZSaTkdr0u70FTTyZWHr3zVJ87efd3A=="></script>
+
+
+
+
+<script src="https://serverpilot.io/assets/static/js/app.min.075a5c1f25186b9a900309cf945b686a7b5439f8a59c4828cea27d89228466a9c3e869b0c2acb2ec4f0d7a80a261c997e5ba650a9af9524cacddcc5d1128c5ba.js" integrity="sha512-B1pcHyUYa5qQAwnPlFtoantUOfilnEgozqJ9iSKEZqnD6Gmwwqyy7E8NeoCiYcmX5bplCpr5Ukys3cxdESjFug=="></script>
+
+
+
+
+
+</body></html>

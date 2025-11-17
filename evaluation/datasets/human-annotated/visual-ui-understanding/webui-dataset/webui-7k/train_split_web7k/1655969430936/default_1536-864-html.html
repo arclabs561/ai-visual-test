@@ -1,0 +1,434 @@
+<!DOCTYPE html><html class=" js flexbox canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers no-applicationcache svg inlinesvg smil svgclippaths" lang="en" style=""><!--<![endif]--><head>
+  <meta charset="utf-8">
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ZODB - a native object database for Python — ZODB  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/zodb.ico">
+  
+  
+  
+
+  
+  <script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script><script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script>
+$(document).ready(function() {
+  $('.interface').addClass('class');
+});
+</script>
+        <script async="async" src="/_/static/javascript/readthedocs-doc-embed.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css">
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css">
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css">
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css">
+    <link rel="index" title="Index" href="genindex.html">
+    <link rel="search" title="Search" href="search.html">
+    <link rel="next" title="Introduction" href="introduction.html"> 
+
+<!-- RTD Extra Head -->
+
+<link rel="stylesheet" href="/_/static/css/readthedocs-doc-embed.css" type="text/css">
+
+<script type="application/json" id="READTHEDOCS_DATA">{"ad_free": false, "api_host": "https://readthedocs.org", "build_date": "2022-06-14T06:12:36Z", "builder": "sphinx", "canonical_url": null, "commit": "eb86b222", "docroot": "/docs/", "features": {"docsearch_disabled": false}, "global_analytics_code": "UA-17997319-1", "language": "en", "page": "index", "programming_language": "py", "project": "zodb", "proxied_api_host": "/_", "source_suffix": ".rst", "subprojects": {}, "theme": "sphinx_rtd_theme", "user_analytics_code": "", "version": "stable"}</script>
+
+<!--
+Using this variable directly instead of using `JSON.parse` is deprecated.
+The READTHEDOCS_DATA global variable will be removed in the future.
+-->
+<script type="text/javascript">
+READTHEDOCS_DATA = JSON.parse(document.getElementById('READTHEDOCS_DATA').innerHTML);
+</script>
+
+<script type="text/javascript" src="/_/static/javascript/readthedocs-analytics.js" async="async"></script>
+
+<!-- end RTD <extrahead> -->
+<script src="https://www.googletagmanager.com/gtag/js?id=UA-17997319-1" type="text/javascript" async=""></script><script src="https://media.ethicalads.io/media/client/beta/ethicalads.min.js" type="text/javascript" async="" id="ethicaladsjs"></script><style>[data-ea-publisher].loaded,[data-ea-type].loaded{font-size:14px;font-family:-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;font-weight:normal;font-style:normal;leter-spacing:0px;vertical-align:baseline;line-height:1.3em}[data-ea-publisher].loaded a,[data-ea-type].loaded a{text-decoration:none}[data-ea-publisher].loaded .ea-pixel,[data-ea-type].loaded .ea-pixel{display:none}[data-ea-publisher].loaded .ea-content,[data-ea-type].loaded .ea-content{margin:1em 1em 0.5em 1em;padding:1em;background:rgba(0,0,0,0.03);color:#505050}[data-ea-publisher].loaded .ea-content a:link,[data-ea-type].loaded .ea-content a:link{color:#505050}[data-ea-publisher].loaded .ea-content a:visited,[data-ea-type].loaded .ea-content a:visited{color:#505050}[data-ea-publisher].loaded .ea-content a:hover,[data-ea-type].loaded .ea-content a:hover{color:#373737}[data-ea-publisher].loaded .ea-content a:active,[data-ea-type].loaded .ea-content a:active{color:#373737}[data-ea-publisher].loaded .ea-content a strong,[data-ea-publisher].loaded .ea-content a b,[data-ea-type].loaded .ea-content a strong,[data-ea-type].loaded .ea-content a b{color:#088cdb}[data-ea-publisher].loaded .ea-callout a:link,[data-ea-type].loaded .ea-callout a:link{color:#6a6a6a}[data-ea-publisher].loaded .ea-callout a:visited,[data-ea-type].loaded .ea-callout a:visited{color:#6a6a6a}[data-ea-publisher].loaded .ea-callout a:hover,[data-ea-type].loaded .ea-callout a:hover{color:#505050}[data-ea-publisher].loaded .ea-callout a:active,[data-ea-type].loaded .ea-callout a:active{color:#505050}[data-ea-publisher].loaded .ea-callout a strong,[data-ea-publisher].loaded .ea-callout a b,[data-ea-type].loaded .ea-callout a strong,[data-ea-type].loaded .ea-callout a b{color:#088cdb}[data-ea-publisher].loaded .ea-callout a,[data-ea-type].loaded .ea-callout a{font-size:0.8em}[data-ea-publisher].loaded.dark .ea-content,[data-ea-type].loaded.dark .ea-content{background:rgba(255,255,255,0.05);color:#dcdcdc}[data-ea-publisher].loaded.dark .ea-content a:link,[data-ea-type].loaded.dark .ea-content a:link{color:#dcdcdc}[data-ea-publisher].loaded.dark .ea-content a:visited,[data-ea-type].loaded.dark .ea-content a:visited{color:#dcdcdc}[data-ea-publisher].loaded.dark .ea-content a:hover,[data-ea-type].loaded.dark .ea-content a:hover{color:#f6f6f6}[data-ea-publisher].loaded.dark .ea-content a:active,[data-ea-type].loaded.dark .ea-content a:active{color:#f6f6f6}[data-ea-publisher].loaded.dark .ea-content a strong,[data-ea-publisher].loaded.dark .ea-content a b,[data-ea-type].loaded.dark .ea-content a strong,[data-ea-type].loaded.dark .ea-content a b{color:#50baf9}[data-ea-publisher].loaded.dark .ea-callout a:link,[data-ea-type].loaded.dark .ea-callout a:link{color:#c3c3c3}[data-ea-publisher].loaded.dark .ea-callout a:visited,[data-ea-type].loaded.dark .ea-callout a:visited{color:#c3c3c3}[data-ea-publisher].loaded.dark .ea-callout a:hover,[data-ea-type].loaded.dark .ea-callout a:hover{color:#dcdcdc}[data-ea-publisher].loaded.dark .ea-callout a:active,[data-ea-type].loaded.dark .ea-callout a:active{color:#dcdcdc}[data-ea-publisher].loaded.dark .ea-callout a strong,[data-ea-publisher].loaded.dark .ea-callout a b,[data-ea-type].loaded.dark .ea-callout a strong,[data-ea-type].loaded.dark .ea-callout a b{color:#50baf9}@media (prefers-color-scheme: dark){[data-ea-publisher].loaded.adaptive .ea-content,[data-ea-type].loaded.adaptive .ea-content{background:rgba(255,255,255,0.05);color:#dcdcdc}[data-ea-publisher].loaded.adaptive .ea-content a:link,[data-ea-type].loaded.adaptive .ea-content a:link{color:#dcdcdc}[data-ea-publisher].loaded.adaptive .ea-content a:visited,[data-ea-type].loaded.adaptive .ea-content a:visited{color:#dcdcdc}[data-ea-publisher].loaded.adaptive .ea-content a:hover,[data-ea-type].loaded.adaptive .ea-content a:hover{color:#f6f6f6}[data-ea-publisher].loaded.adaptive .ea-content a:active,[data-ea-type].loaded.adaptive .ea-content a:active{color:#f6f6f6}[data-ea-publisher].loaded.adaptive .ea-content a strong,[data-ea-publisher].loaded.adaptive .ea-content a b,[data-ea-type].loaded.adaptive .ea-content a strong,[data-ea-type].loaded.adaptive .ea-content a b{color:#50baf9}[data-ea-publisher].loaded.adaptive .ea-callout a:link,[data-ea-type].loaded.adaptive .ea-callout a:link{color:#c3c3c3}[data-ea-publisher].loaded.adaptive .ea-callout a:visited,[data-ea-type].loaded.adaptive .ea-callout a:visited{color:#c3c3c3}[data-ea-publisher].loaded.adaptive .ea-callout a:hover,[data-ea-type].loaded.adaptive .ea-callout a:hover{color:#dcdcdc}[data-ea-publisher].loaded.adaptive .ea-callout a:active,[data-ea-type].loaded.adaptive .ea-callout a:active{color:#dcdcdc}[data-ea-publisher].loaded.adaptive .ea-callout a strong,[data-ea-publisher].loaded.adaptive .ea-callout a b,[data-ea-type].loaded.adaptive .ea-callout a strong,[data-ea-type].loaded.adaptive .ea-callout a b{color:#50baf9}}[data-ea-publisher].loaded .ea-content,[data-ea-type].loaded .ea-content{border:0px;border-radius:3px;box-shadow:0px 2px 3px rgba(0,0,0,0.15)}[data-ea-publisher].loaded.raised .ea-content,[data-ea-type].loaded.raised .ea-content{border:0px;border-radius:3px;box-shadow:0px 2px 3px rgba(0,0,0,0.15)}[data-ea-publisher].loaded.bordered .ea-content,[data-ea-type].loaded.bordered .ea-content{border:1px solid rgba(0,0,0,0.04);border-radius:3px;box-shadow:none}[data-ea-publisher].loaded.bordered.dark .ea-content,[data-ea-type].loaded.bordered.dark .ea-content{border:1px solid rgba(255,255,255,0.07)}@media (prefers-color-scheme: dark){[data-ea-publisher].loaded.bordered.adaptive .ea-content,[data-ea-type].loaded.bordered.adaptive .ea-content{border:1px solid rgba(255,255,255,0.07)}}[data-ea-publisher].loaded.flat .ea-content,[data-ea-type].loaded.flat .ea-content{border:0px;border-radius:3px;box-shadow:none}[data-ea-type="image"].loaded,[data-ea-publisher]:not([data-ea-type]).loaded,.ea-type-image{display:inline-block}[data-ea-type="image"].loaded .ea-content,[data-ea-publisher]:not([data-ea-type]).loaded .ea-content,.ea-type-image .ea-content{max-width:180px;overflow:auto;text-align:center}[data-ea-type="image"].loaded .ea-content>a>img,[data-ea-publisher]:not([data-ea-type]).loaded .ea-content>a>img,.ea-type-image .ea-content>a>img{width:120px;height:90px;display:inline-block}[data-ea-type="image"].loaded .ea-content>.ea-text,[data-ea-publisher]:not([data-ea-type]).loaded .ea-content>.ea-text,.ea-type-image .ea-content>.ea-text{margin-top:1em;font-size:1em;text-align:center}[data-ea-type="image"].loaded .ea-callout,[data-ea-publisher]:not([data-ea-type]).loaded .ea-callout,.ea-type-image .ea-callout{max-width:180px;margin:0em 1em 1em 1em;padding-left:1em;padding-right:1em;font-style:italic;text-align:right}[data-ea-type="image"].loaded.horizontal .ea-content,[data-ea-publisher]:not([data-ea-type]).loaded.horizontal .ea-content,.ea-type-image.horizontal .ea-content{max-width:320px}[data-ea-type="image"].loaded.horizontal .ea-content>a>img,[data-ea-publisher]:not([data-ea-type]).loaded.horizontal .ea-content>a>img,.ea-type-image.horizontal .ea-content>a>img{float:left;margin-right:1em}[data-ea-type="image"].loaded.horizontal .ea-content .ea-text,[data-ea-publisher]:not([data-ea-type]).loaded.horizontal .ea-content .ea-text,.ea-type-image.horizontal .ea-content .ea-text{margin-top:0em;text-align:left;overflow:auto}[data-ea-type="image"].loaded.horizontal .ea-callout,[data-ea-publisher]:not([data-ea-type]).loaded.horizontal .ea-callout,.ea-type-image.horizontal .ea-callout{max-width:320px;text-align:right}[data-ea-type="text"].loaded,.ea-type-text{font-size:14px}[data-ea-type="text"].loaded .ea-content,.ea-type-text .ea-content{text-align:left}[data-ea-type="text"].loaded .ea-callout,.ea-type-text .ea-callout{margin:0.5em 1em 1em 1em;padding-left:1em;padding-right:1em;text-align:right;font-style:italic}[data-ea-style="stickybox"].loaded .ea-type-image{z-index:10;position:fixed;bottom:20px;right:20px}[data-ea-style="stickybox"].loaded .ea-type-image .ea-stickybox-hide{cursor:pointer;position:absolute;top:0.75em;right:0.75em;background-color:#fefefe;border:1px solid #088cdb;border-radius:50%;color:#088cdb;font-size:1em;text-align:center;height:1.5em;width:1.5em;line-height:1.5em}@media (max-width: 1300px){[data-ea-style="stickybox"].loaded .ea-type-image{position:static;bottom:0;right:0;margin:auto;text-align:center}[data-ea-style="stickybox"].loaded .ea-type-image .ea-stickybox-hide{display:none}}@media (min-width: 1301px){[data-ea-style="stickybox"].loaded .ea-type-image .ea-content{background:#dcdcdc}[data-ea-style="stickybox"].loaded.dark .ea-type-image .ea-content{background:#505050}}@media (min-width: 1301px) and (prefers-color-scheme: dark){[data-ea-style="stickybox"].loaded.adaptive .ea-type-image .ea-content{background:#505050}}
+</style><script src="https://server.ethicalads.io/api/v1/decision/?publisher=readthedocs&amp;ad_types=image-v1&amp;div_ids=rtd-sidebar&amp;callback=ad_1655969435839_355159&amp;keywords=object-database%7Cpython%7Creadthedocs-project-698%7Creadthedocs-project-zodb%7Ctransactions%7Czodb%7Cdatabase%7Cpython&amp;campaign_types=community%7Chouse%7Cpaid&amp;format=jsonp&amp;client_version=1.5.0&amp;url=https%3A%2F%2Fzodb.org%2Fen%2Fstable%2F" type="text/javascript" async=""></script></head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="#" class="icon icon-home"> ZODB
+          
+
+          
+            
+            <img src="_static/zodb.png" class="logo" alt="Logo">
+          
+          </a>
+
+          
+            
+            
+            
+              <div class="version">
+                stable
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs">
+    <input type="hidden" name="check_keywords" value="yes">
+    <input type="hidden" name="area" value="default">
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/index.html">ZODB programming guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="articles/index.html">ZODB articles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ConflictResolution.html">Conflict Resolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="collaborations.html">Collabortation Diagrams</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cross-database-references.html">Cross-Database References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="event.html">Event support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="historical_connections.html">Historical Connections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="persistentclass.html">Persistent Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">ZODB Utilities Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developers notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Change History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference/index.html">Reference Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">ZODB</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#">Docs</a> »</li>
+        
+      <li>ZODB - a native object database for Python</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/zopefoundation/ZODB/blob/eb86b222eccba5b4e11e9c81209f58182364ffdb/docs/index.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section id="zodb-a-native-object-database-for-python">
+<h1>ZODB - a native object database for Python<a class="headerlink" href="#zodb-a-native-object-database-for-python" title="Permalink to this headline">¶</a></h1>
+<p>Because ZODB is an object database:</p>
+<ul>
+<li><p>no separate language for database operations</p></li>
+<li><p>very little impact on your code to make objects persistent</p></li>
+<li><p>no database mapper that partially hides the database.</p>
+<p>Using an object-relational mapping <strong>is not</strong> like using an object database.</p>
+</li>
+<li><p>almost no seam between code and database.</p></li>
+<li><p>Relationships between objects are handled very naturally, supporting
+complex object graphs without joins.</p></li>
+</ul>
+<p>Check out the <a class="reference internal" href="tutorial.html"><span class="doc">Tutorial</span></a>!</p>
+<p>ZODB runs on Python 2.7 or Python 3.4 and above. It also runs on PyPy.</p>
+<section id="learning-more">
+<h2>Learning more<a class="headerlink" href="#learning-more" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/index.html">ZODB programming guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="articles/index.html">ZODB articles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ConflictResolution.html">Conflict Resolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="collaborations.html">Collabortation Diagrams</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cross-database-references.html">Cross-Database References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="event.html">Event support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="historical_connections.html">Historical Connections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="persistentclass.html">Persistent Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">ZODB Utilities Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developers notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Change History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference/index.html">Reference Documentation</a></li>
+</ul>
+</div>
+<ul class="simple">
+<li><p><a class="reference external" href="http://zodb.readthedocs.org/en/latest/">The ZODB Book (in progress)</a></p></li>
+</ul>
+</section>
+<section id="what-is-the-expansion-of-zodb">
+<h2>What is the expansion of “ZODB”?<a class="headerlink" href="#what-is-the-expansion-of-zodb" title="Permalink to this headline">¶</a></h2>
+<p>The expansion of “ZODB” is the Z Object Database.  But, of course, we
+usually just use “ZODB”.</p>
+<p>In the past, it was the Zope Object Database, because it was
+developed as part of the Zope project.  But ZODB doesn’t depend on
+Zope in any way and is used in many projects that have nothing to do
+with Zope.</p>
+</section>
+<section id="downloads">
+<h2>Downloads<a class="headerlink" href="#downloads" title="Permalink to this headline">¶</a></h2>
+<p>ZODB is distributed through the <a class="reference external" href="https://pypi.org/project/ZODB/">Python Package Index</a>.</p>
+<p>You can install the ZODB using pip command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install ZODB
+</pre></div>
+</div>
+</section>
+<section id="community-and-contributing">
+<h2>Community and contributing<a class="headerlink" href="#community-and-contributing" title="Permalink to this headline">¶</a></h2>
+<p>Discussion occurs on the <a class="reference external" href="https://groups.google.com/forum/#!forum/zodb">ZODB mailing list</a>. (And for the
+transaction system on the <a class="reference external" href="https://groups.google.com/forum/#!forum/python-transaction">transaction list</a>)</p>
+<p>Bug reporting and feature requests are submitted through github issue
+trackers for various ZODB components:</p>
+<ul class="simple">
+<li><p>ZODB <a class="reference external" href="https://github.com/zopefoundation/zodb">repository</a></p></li>
+<li><p>persistent <a class="reference external" href="https://persistent.readthedocs.io/en/stable/">documentation</a> and its <a class="reference external" href="https://github.com/zopefoundation/persistent">repository</a>.</p></li>
+<li><p>transaction <a class="reference external" href="https://transaction.readthedocs.io/en/stable/">documentation</a> and its <a class="reference external" href="https://github.com/zopefoundation/transaction">repository</a></p></li>
+<li><p>BTrees <a class="reference external" href="https://btrees.readthedocs.io/en/stable/">documentation</a> and their <a class="reference external" href="https://github.com/zopefoundation/BTrees">repository</a></p></li>
+<li><p>ZEO (client-server framework) <a class="reference external" href="https://zeo.readthedocs.io/en/stable/">documentation</a> and its <a class="reference external" href="https://github.com/zopefoundation/ZEO">repository</a></p></li>
+<li><p>relstorage <a class="reference external" href="https://relstorage.readthedocs.io/en/latest/">documentation</a> and its <a class="reference external" href="https://github.com/zodb/relstorage/">repository</a></p></li>
+<li><p>zodburi <a class="reference external" href="https://docs.pylonsproject.org/projects/zodburi/en/latest/">documentation</a> and its <a class="reference external" href="https://github.com/Pylons/zodburi">repository</a></p></li>
+<li><p>NEO <a class="reference external" href="https://neo.nexedi.com/">documentation</a> and its <a class="reference external" href="https://lab.nexedi.com/nexedi/neoppod/">repository</a></p></li>
+<li><p>readonlystorage <a class="reference external" href="https://gitlab.com/yaal/readonlystorage">repository</a></p></li>
+<li><p>newt db <a class="reference external" href="https://newt-db.readthedocs.io/en/latest">documentation</a> and its <a class="reference external" href="https://github.com/newtdb/db">repository</a></p></li>
+</ul>
+<p>If you’d like to contribute then we’ll gladly accept work on documentation,
+helping out other developers and users at the mailing list, submitting bugs,
+creating proposals and writing code.</p>
+<p>ZODB is a project managed by the Zope Foundation so you can get write access
+for contributing directly - check out the foundation’s <a class="reference external" href="http://docs.zope.org/developer">Zope Developer Information</a>.</p>
+</section>
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="introduction.html" class="btn btn-neutral float-right" title="Introduction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr><div><div id="rtd-sidebar" data-ea-publisher="readthedocs" data-ea-type="image" data-ea-manual="true" data-ea-style="stickybox" class="ethical-rtd loaded" data-ea-keywords="object-database|python|readthedocs-project-698|readthedocs-project-zodb|transactions|zodb" data-ea-campaign-types="community|house|paid"><div class="ea-placement ea-type-image"><div class="ea-content"><a href="https://server.ethicalads.io/proxy/click/2725/ea19d88f-3891-4442-a3de-10835a3b5164/" rel="nofollow noopener" target="_blank"><img src="https://media.ethicalads.io/media/images/2022/04/DO-AppPlatform.jpeg" alt="Sponsored: DigitalOcean"></a><div class="ea-text"><a href="https://server.ethicalads.io/proxy/click/2725/ea19d88f-3891-4442-a3de-10835a3b5164/" rel="nofollow noopener" target="_blank"><strong>Digital Ocean: </strong><span>Create your world-changing apps on the cloud developers love</span><strong> Try now with a $100 Credit</strong></a></div></div><div class="ea-callout"><a rel="nofollow noopener" target="_blank" href="https://ethicalads.io?ref=ea-image">Ad by EthicalAds</a></div><div class="ea-stickybox-hide">×</div></div></div></div>
+
+  <div role="contentinfo">
+    <p>
+        © Copyright 2009-2022, Zope Foundation
+      
+        <span class="commit">
+          Revision <code>eb86b222</code>.
+        </span>
+      
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      v: stable
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions"><!-- Inserted RTD Footer -->
+
+<div class="injected">
+
+  
+
+      
+      
+      
+      <dl>
+        <dt>Versions</dt>
+        
+        <dd>
+          <a href="https://zodb.org/en/latest/">latest</a>
+        </dd>
+        
+        <dd class="rtd-current-item">
+          <a href="https://zodb.org/en/stable/">stable</a>
+        </dd>
+        
+      </dl>
+      
+      
+
+      
+      
+      <dl>
+        <dt>Downloads</dt>
+        
+        <dd><a href="//zodb.org/_/downloads/en/stable/pdf/">PDF</a></dd>
+        
+        <dd><a href="//zodb.org/_/downloads/en/stable/htmlzip/">HTML</a></dd>
+        
+        <dd><a href="//zodb.org/_/downloads/en/stable/epub/">Epub</a></dd>
+        
+      </dl>
+      
+      
+
+      
+      <dl>
+        
+        <!-- These are kept as relative links for internal installs that are http -->
+        <dt>On Read the Docs</dt>
+        <dd>
+          <a href="//readthedocs.org/projects/zodb/">Project Home</a>
+        </dd>
+        <dd>
+          <a href="//readthedocs.org/projects/zodb/builds/">Builds</a>
+        </dd>
+        <dd>
+          <a href="//readthedocs.org/projects/zodb/downloads/">Downloads</a>
+        </dd>
+      </dl>
+      
+
+      
+
+      
+      <dl>
+        <dt>On GitHub</dt>
+        <dd>
+          <a href="https://github.com/zopefoundation/ZODB/blob/eb86b222eccba5b4e11e9c81209f58182364ffdb/docs/index.rst">View</a>
+        </dd>
+        
+      </dl>
+      
+      
+
+      
+      <dl>
+        <dt>Search</dt>
+        <dd>
+          <div style="padding: 6px;">
+            
+            <form id="flyout-search-form" class="wy-form" target="_blank" action="//readthedocs.org/projects/zodb/search/" method="get">
+              <input type="text" name="q" aria-label="Search docs" placeholder="Search docs">
+              </form>
+          </div>
+        </dd>
+      </dl>
+      
+
+      <hr>
+
+      
+        <small>
+          <span>Hosted by <a href="https://readthedocs.org">Read the Docs</a></span>
+          <span> · </span>
+          <a href="https://docs.readthedocs.io/page/privacy-policy.html">Privacy Policy</a>
+        </small>
+      
+
+      
+
+</div>
+</div>
+  </div>
+
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+   
+
+
+</body></html>

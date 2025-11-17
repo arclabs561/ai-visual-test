@@ -1,0 +1,111 @@
+<!DOCTYPE html><html><head>
+		<title>scribble.audio</title>
+		<link rel="stylesheet" href="/css/style.css">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+		<meta property="og:image" content="http://scribble.audio/images/logo.png">
+		<meta property="og:title" content="scribble.audio">
+		<meta property="og:url" content="http://scribble.audio">
+		<meta property="og:site_name" content="scribble.audio">
+		<meta property="og:description" content="Draw loops of sound with this web synthesizer.">
+		<meta name="description" content="Draw loops of sound with this web synthesizer.">
+		<link rel="icon" type="image/png" href="/favicon_32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="/favicon_16x16.png" sizes="16x16">
+	</head>
+	<body>
+		<canvas id="canvas" resize="" width="1170" height="2532" style="user-select: none; touch-action: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></canvas>
+		<div id="controls" class="mobile_hide">
+			<div class="control_group but_not_on_mobile">
+				<p class="label">note</p>
+				<div id="note" data-note="">C4</div>
+			</div>
+			<div class="control_group">
+				<p class="label">loop length</p><!-- 
+			 --><div id="time" class="control_group_controls">
+					<div class="time-button active" data-time="1">1</div><div class="time-button" data-time="2">2</div><div class="time-button" data-time="3">4</div><div class="time-button" data-time="4">8</div>
+				</div>
+			</div>
+			<div id="oscillators" class="control_group">
+					<p class="label">sound</p><!--
+				 --><div class="control_group_controls">
+	<div id="square" class="oscillator square active">
+		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 29.23 17.65"><polyline points="28.23 1 28.23 16.65 14.75 16.65 14.75 1 1 1 1 16.65"></polyline></svg>
+	</div><!-- 
+ --><div id="sawtooth" class="oscillator sawtooth">
+		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 29.23 17.65"><polyline points="1 16.65 1 1 28.23 16.65"></polyline></svg>
+	</div><!-- 
+ --><div id="triangle" class="oscillator triangle">
+		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 29.36 17.65"><polyline points="1 16.65 14.36 1 28.36 16.65"></polyline></svg>
+	</div><!-- 
+ --><div id="sine" class="oscillator sine">
+		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 29.23 17.1"><path d="M0.38,8C13.95-18.14,14,34.16,27.62,8" transform="translate(0.62 0.55)"></path></svg>
+	</div>
+</div>
+			</div>
+			<div id="metronome" class="control_group">
+				<p class="label">click</p><!-- 
+			 --><div class="metronome_control control_group_controls left">
+				 	<div id="metronome_icon">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><defs><style>.cls-1{fill:none;stroke:#c1c0c0;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.5px;} .active .cls-1{stroke:#FFFB3E;}</style></defs><title>metronome_3</title><polyline class="cls-1" points="15.35 12.34 18.5 18.5 1.5 18.5 9.8 1.5 11.14 4.12"></polyline><line class="cls-1" x1="10.9" y1="12.93" x2="15.19" y2="4.12"></line></svg>
+					</div>
+				</div>
+			</div>
+			<div class="control_group about only_on_mobile">
+				<p class="label">scribble.audio</p><!-- 
+			 --><div class="control_group_controls">
+					<p>was created by <a href="http://kylestetz.com">kyle stetz</a></p>
+				</div>
+			</div>
+			<div class="spacer but_not_on_mobile"></div>
+			<div id="record" class="control_group right but_not_on_mobile">
+				<div id="record_control"></div>
+				<span id="record_text">record wav file</span>
+			</div>
+			<div class="mobile_menu_button only_on_mobile"></div>
+		</div>
+		
+		
+		<div id="keyboard_icon" class="but_not_on_mobile"></div>
+		<div id="keyboard" data-keyboard="" class="visible but_not_on_mobile">
+			<div id="down_icon"></div>
+			<div class="key_container">
+			<div class="key"></div><div class="sharp s1"></div><div class="key"></div><div class="sharp s2"></div><div class="key"></div><div class="key"></div><div class="sharp s3"></div><div class="key"></div><div class="sharp s4"></div><div class="key"></div><div class="sharp s5"></div><div class="key"></div><div class="key"></div><div class="sharp s6"></div><div class="key"></div><div class="sharp s7"></div><div class="key"></div><div class="key"></div><div class="sharp s8"></div><div class="key"></div><div class="sharp s9"></div><div class="key"></div><div class="sharp s10"></div><div class="key"></div><div class="key active"></div><div class="sharp s11"></div><div class="key"></div><div class="sharp s12"></div><div class="key"></div><div class="key"></div><div class="sharp s13"></div><div class="key"></div><div class="sharp s14"></div><div class="key"></div><div class="sharp s15"></div><div class="key"></div><div class="key"></div><div class="sharp s16"></div><div class="key"></div><div class="sharp s17"></div><div class="key"></div><div class="key"></div><div class="sharp s18"></div><div class="key"></div><div class="sharp s19"></div><div class="key"></div><div class="sharp s20"></div><div class="key"></div>
+			</div>
+		</div>
+		<div id="minikeyboard">
+	<div class="octave_bar">
+		<div class="octave_bar_indicator octave2" data-octave-indicator=""></div>
+	</div>
+	<div class="note_readout">
+		<div class="octave_control octave_up" data-octave-up=""></div>
+		<div class="current_note" data-note="">C4</div>
+		<div class="octave_control octave_down" data-octave-down=""></div>
+	</div>
+	<div class="minikeyboard_keys">
+		<div class="key active"></div><div class="sharp s1"></div><div class="key"></div><div class="sharp s2"></div><div class="key"></div><div class="key"></div><div class="sharp s3"></div><div class="key"></div><div class="sharp s4"></div><div class="key"></div><div class="sharp s5"></div><div class="key"></div>
+	</div>
+</div>
+		<div id="start_touch_popover" class="show">
+			<div class="centered_text">tap to start</div>
+		</div>
+		<div id="draw_something">draw something</div>
+		<div class="credit but_not_on_mobile">
+			scribble.audio was created by <a href="http://kylestetz.com">kyle stetz</a>
+		</div>
+		<script async="" src="https://www.google-analytics.com/analytics.js"></script><script src="/js/vendor/jquery/dist/jquery.min.js"></script>
+		<script src="/js/vendor/paper/dist/paper-core.min.js"></script>
+		<script src="/js/vendor/bacon/dist/Bacon.min.js"></script>
+		<script src="/js/vendor/recorder.js"></script>
+		<script src="/js/vendor/touchy.js"></script>
+		<script src="/js/_site-compiled.js"></script>
+
+		<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+		ga('create', 'UA-78253528-1', 'auto');
+		ga('send', 'pageview');
+		</script>
+	
+
+</body></html>

@@ -1,0 +1,799 @@
+<!DOCTYPE html><html lang="en"><head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="IoT PLC Driver / .NET 6.0, 5.0 &amp; Core communications library for A-B by Rockwell Automation, Siemens S7, Modbus / TCP &amp; GE SRTP | Automated Solutions.">
+    <meta name="author" content="Automated Solutions">
+    <meta name="msvalidate.01" content="774D1FC3512F9269F2B56EE0DB24DC63">
+
+    <link rel="canonical" href="https://www.automatedsolutions.com/products/iot/ascommiot/">
+
+      <!-- Global site tag (gtag.js) - Google Analytics -->
+<script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script><script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-142416805-2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-142416805-2');
+</script>
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+
+
+
+    <title>IoT PLC driver for Allen-Bradley, Siemens, Modbus &amp; GE</title>
+
+    <!-- JS files -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="/js/ast.js"></script>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/global.css" rel="stylesheet">
+    <link href="/css/media-queries.css" rel="stylesheet">
+
+    <!-- Google icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style id="ss360-custom-search-input" type="text/css">.ss360-n-button{background:#fefefe;border:0;box-sizing:border-box;display:block;float:none;height:auto;line-height:normal;margin:0;min-width:0;padding:0;text-indent:unset}.ss360-n-button:after,.ss360-n-button:before,.ss360-n-button:focus:after,.ss360-n-button:focus:before,.ss360-n-button:hover:after,.ss360-n-button:hover:before,.ss360-n-li:after,.ss360-n-li:before{content:none}.ss360-n-section{background:transparent;background-image:none;border:0;box-sizing:border-box;display:block;font-size:16px;height:auto;left:0;margin:0;padding:0;position:relative;text-indent:unset;top:0;transform:none;width:100%}.ss360-n-input{background:#fefefe;background-image:none;border:0;border-radius:0}.ss360-search-term-highlight{background-color:#b5f948;padding:2px 4px}.ss360-highlight{font-weight:700}.ss360-sr-only{border:0;clip:rect(0,0,0,0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px}.ss360-skip-link{background:#fefefe;border:1px solid #dedede;left:-999em;pointer-events:none;position:absolute;z-index:9999}.ss360-skip-link:focus{left:0}.ss360-ca{clear:both}.ss360-flex{display:flex;flex-direction:row}.ss360-flex--column{flex-direction:column}.ss360-flex--align-start{align-items:flex-start}.ss360-flex--align-stretch{align-items:stretch}.ss360-flex--align-center{align-items:center}.ss360-flex--align-end{align-items:flex-end}.ss360-flex--justify-star{justify-content:flex-start}.ss360-flex--justify-center{justify-content:center}.ss360-flex--justify-end{justify-content:flex-end}.ss360-flex--wrap{flex-wrap:wrap}.ss360-flex--nowrap{flex-wrap:nowrap}@media (max-width:680px){.ss360-flex--column-sm{flex-direction:column}}.ss360-custom-search{justify-content:center;max-width:100%;padding:8px 0;position:relative;width:100%}.ss360-custom-search:not(.ss360-custom-search--no-margin){margin-bottom:24px;margin-top:-8px;padding-right:16px}.ss360-custom-search .ss360-custom-search__searchbox{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-position:4px 10px;background-repeat:no-repeat;background-size:24px 24px;border:1px solid #dedede;border-radius:0;border-bottom-left-radius:3px;border-top-left-radius:3px;box-shadow:2px 2px 4px rgba(0,0,0,.12);box-sizing:border-box;font-size:1.2em;height:44px;margin:0;max-width:420px;padding:0 8px;width:100%}.ss360-custom-search .ss360-custom-search__searchbutton{align-items:center;box-shadow:2px 2px 4px rgba(0,0,0,.12);box-sizing:border-box;cursor:pointer;display:flex;font-size:1em;height:44px;justify-content:center;margin-top:0;padding:0 16px;transition:background-color .3s ease-in-out,border-color .3s ease-in-out}.ss360-custom-search__searchbutton{border:1px solid;border-left:0 solid;border-radius:0;border-bottom-right-radius:3px;border-top-right-radius:3px}.ss360-custom-search__searchbutton--no-transition{transition:none}.ss360-custom-search__icon{height:24px;left:0;position:absolute;top:10px;width:24px}.ss360-layer:not(.ss360-layer--overlay) .ss360-custom-search{margin:0 auto 16px;max-width:800px}@media (max-width:680px){.ss360-custom-search:not(.ss360-custom-search--no-margin){margin-top:0;max-width:calc(100% - 50px)}}.ss360-fullscreen-layer{background-color:#fefefe;box-sizing:border-box;height:100%;left:0;overflow:auto;padding-top:16px;position:fixed;top:-100%;width:100%;z-index:999998}@media (max-width:991px){.ss360-fullscreen-layer .ss360-custom-search{padding-left:16px;padding-right:16px}}.ss360-fullscreen-layer--fade{display:none;opacity:0;top:0}.ss360-fullscreen-layer .ss360-custom-search{margin-top:0}.ss360-fullscreen-layer__heading{margin-bottom:16px;padding:0 72px;text-align:center}.ss360-fullscreen-layer__results{margin-left:auto;margin-right:auto;max-width:1140px;width:100%}.ss360-fullscreen-layer--fade.ss360-fullscreen-layer--open{display:block;opacity:1}</style><script charset="utf-8" src="https://cdn.sitesearch360.com/v13/ss360-unibox-v13.chunk.27665f6cc18723c8c279.js" crossorigin="anonymous" integrity="sha256-Ytt0Sts2Wz803EI8WkJ1ALd+zwVrVBqHcG2tE5LgvzU= sha384-uzNefapS2AhbkcHrFSApimAdbJ1gdRMuoGrqAVjROcqICiHn4bYxalTlxOolDTxJ"></script><script charset="utf-8" src="https://cdn.sitesearch360.com/v13/ss360-styles-v13.chunk.6ae25745a22b6f76ba5b.js" crossorigin="anonymous" integrity="sha256-seSklo4CwY0DrJgIPj/f7mpaJRSlnT6EdLPF/M23IxM= sha384-R4WmXVsKY1P6YLGbbB1snvrURn5TApXcC9lU1v6rQnjRCxpAubbJd+6bfVkaQcIT"></script><style id="ss360-default-css" type="text/css">@-webkit-keyframes ss360-fid{0%{opacity:0}to{opacity:1}}@keyframes ss360-fid{0%{opacity:0}to{opacity:1}}@-webkit-keyframes ss360-fo{0%{opacity:1}to{opacity:0}}@keyframes ss360-fo{0%{opacity:1}to{opacity:0}}@-webkit-keyframes ss360-upscale{0%{opacity:0;transform:scale(.9)}25%{transform:scale(.9)}to{opacity:1;transform:scale(1)}}@keyframes ss360-upscale{0%{opacity:0;transform:scale(.9)}25%{transform:scale(.9)}to{opacity:1;transform:scale(1)}}@-webkit-keyframes sk-bounce{0%{transform:scale(0)}50%{transform:scale(1)}to{transform:scale(0)}}@keyframes sk-bounce{0%{transform:scale(0)}50%{transform:scale(1)}to{transform:scale(0)}}@-webkit-keyframes sk-rotateplane{0%{transform:perspective(120px)}50%{transform:perspective(120px) rotateY(180deg)}to{transform:perspective(120px) rotateY(180deg) rotateX(180deg)}}@keyframes sk-rotateplane{0%{transform:perspective(120px)}50%{transform:perspective(120px) rotateY(180deg)}to{transform:perspective(120px) rotateY(180deg) rotateX(180deg)}}@-webkit-keyframes ss360-recording{0%{background-color:rgba(224,83,80,0)}50%{background-color:#e05350}to{background-color:rgba(224,83,80,0)}}@keyframes ss360-recording{0%{background-color:rgba(224,83,80,0)}50%{background-color:#e05350}to{background-color:rgba(224,83,80,0)}}.ss360-close-button,.ss360-close-button:focus,.ss360-close-button:hover{border:0;box-sizing:border-box;cursor:pointer;height:64px;position:absolute;right:0;top:0;transform-origin:center;width:64px;z-index:99999}.ss360-close-button__icon{display:block;height:32px;left:16px;opacity:1;position:absolute;top:16px;width:32px}.ss360-close-button__icon-svg{height:100%;width:100%}.ss360-close-button:focus .ss360-close-button__icon,.ss360-close-button:hover .ss360-close-button__icon,.ss360-close-button__icon--active{opacity:0}.ss360-close-button:focus .ss360-close-button__icon--active,.ss360-close-button:hover .ss360-close-button__icon--active{opacity:1}.ss360-darken{background-color:rgba(0,0,0,.65);cursor:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADo0lEQVRYhb1XP2gbZxR/7ztFR4OCWp2wfMa1RUF24BwLdF4aYxAatIjMovVQ0KAMhoJd2XO2DmrwEDzEg0d1Kh6yxSC0eckd2M4NFrVQPeQ4Lh6ubi/osPQ6VBKyIuVOspLfdu973/f73fv+/hA8QpKkgN/vlwFARsTFIWnvAEBpNBoVTdP+8TIuuiXIsiwSUZ6Ikoj4wKtgAHjVbDZ/Pzk5qY4lQJKkAM/zvwDAkxFIPwIRVRzHeTasItygYDweX/D5fL8h4uO7kAMAIGKU47jvI5HIW8Mwrj5q7w/Isiy2Wq3SiOV2BRFdM8Z+VBRF743fqoAkSQHG2AtEnJkkOQAAIvJEJAuC8No0TacTZ71JPM8//8QKn4SIRZ7nn/fGuhVIJBJ5uOOC84gZURRB13UFoL0G2lvt1Rcg7wIRnyiKojMAACLKf0nyXk5OkqSAz+f71a3D8vLyV5FI5J5hGDfDcoLBIFcqlR7Ozs7eOz4+djsJF0OhUInxPJ/0orhQKHy7t7e3kMlkgsPIDw4OFqLR6P3V1dWvg8HgwDOmFzzPJ7np6ek8Ikbdki8uLuxMJiOk0+mwZVmOpmkfett3d3e/W1paelCv1+1cLle1LKvpNiYRASeK4k+IGHZLNgzjRlGUv9Pp9DfJZDJERE1VVf8FACgWi/Nra2uhUcjbaGAikXjjMRkAbpe6XC6/BwBIpVLhMcgBAGBkAf0iAADGJQfoOwm9wrKsZq1WszvftVrNHod8bAHFYnG+U/Z6vW6nUqlwsVicH0sAEZ2P0mFra0vsnfNcLlcdVwQRnTMA0F0z28hms8L6+vqMaZqNzpxbltXM5XJVTdOuxxChc6IoCl4eHtlsVtjZ2Ynatn2zubn55+XlZfdKbTQadHh4eBWLxfypVCoci8X8R0dHlgcBfzDGWMWL1JWVlYBt2zcbGxvV09PTD4Nytre3/yqXy+91XXcGtfeDMVZBAIBEIvESAGS3DnNzc/7eP78jFFVVn3Z2wb6XHhMk73IyAABVVRUiqkxw8E+CiCqqqipdAQAAjuM8g/+NxefGuzYXAPQ8yUzTdKamphRETCMi/zmYiei61Wr9fHZ21t36t+5swzCuIpHIMSIuebkhRyQ/b7VahX6nNNAZtX3gy0m9kIno3HGcp4Pc0cBXi2majiAIrzmO8yPiozuSVxzHKQyzZq7mNB6PLzDG8oiYHJFbAYD9zmofBlcBHbQt2w/gwZ4j4n6/BRuG/wA9X65CnAC2oQAAAABJRU5ErkJggg==") 12 12,auto;height:100%;left:0;position:fixed;top:0;width:100%;z-index:999998}.ss360-darken--noclose{cursor:auto}.ss360-loader{display:none;height:80px;left:49.5%;position:fixed;top:49.5%;width:80px;z-index:999999}.ss360-loader__bounce{-webkit-animation:sk-bounce 2s ease-in-out infinite;animation:sk-bounce 2s ease-in-out infinite;border-radius:50%;height:100%;left:0;opacity:.6;position:absolute;top:0;width:100%}.ss360-loader__bounce--delayed{-webkit-animation-delay:-1s;animation-delay:-1s}.ss360-loader--square{-webkit-animation:sk-rotateplane 1.2s ease-in-out infinite;animation:sk-rotateplane 1.2s ease-in-out infinite;height:60px;width:60px}.ss360-more-results{background:none;border:2px solid;border-radius:3px;box-shadow:2px 2px 4px rgba(0,0,0,.12);box-sizing:border-box;cursor:pointer;display:block;font-size:1.2em;font-weight:400;margin-bottom:24px;margin-left:auto;margin-right:auto;max-width:100%;min-width:180px;padding:8px 32px;text-align:center;transition:background-color .3s ease-in-out,color .3s ease-in-out;width:auto}.ss360-icon--play{border:2px solid #fefefe;border-radius:11px;color:#fefefe;height:22px;left:calc(50% - 11px);top:calc(50% - 11px);transform:scale(2);width:22px}.ss360-icon--play,.ss360-icon--play:after{box-sizing:border-box;display:block;position:absolute}.ss360-icon--play:after{border-bottom:4px solid transparent;border-left:5px solid;border-top:4px solid transparent;content:"";height:8px;left:7px;top:5px;width:0}.ss360-data-points{border:0;font-size:14px;margin-left:0;margin-right:0;width:auto}.ss360-data-point{border:0}.ss360-data-point__cell{border:0;padding:0}.ss360-data-point__cell--key{font-weight:700;padding-right:8px}.ss360-data-point__cell--value{word-break:break-all}.ss360-data-points--row .ss360-data-points__body{display:flex;flex-wrap:wrap}.ss360-data-points--row .ss360-data-point{margin-bottom:8px;margin-right:24px}.ss360-data-points--row .ss360-data-point--last{margin-right:0}.ss360-data-points--column{display:block;max-width:400px;width:100%}.ss360-data-points--column .ss360-data-point__cell{padding-bottom:8px;vertical-align:top}.ss360-group{margin-bottom:0;margin-top:0}.ss360-group .ss360-list{list-style:none;margin-top:0;padding-left:0}.ss360-group__heading{font-size:1.2em;margin-bottom:16px;margin-top:0;padding:8px}.ss360-layer--overlay .ss360-list{padding-left:4px;padding-right:calc(4px + .5em)}.ss360-fullscreen-layer{background-color:#fefefe;box-sizing:border-box;height:100%;left:0;overflow:auto;padding-top:16px;position:fixed;top:-100%;width:100%;z-index:999998}@media (max-width:991px){.ss360-fullscreen-layer .ss360-custom-search{padding-left:16px;padding-right:16px}}.ss360-fullscreen-layer--fade{display:none;opacity:0;top:0}.ss360-fullscreen-layer .ss360-custom-search{margin-top:0}.ss360-fullscreen-layer__heading{margin-bottom:16px;padding:0 72px;text-align:center}.ss360-fullscreen-layer__results{margin-left:auto;margin-right:auto;max-width:1140px;width:100%}.ss360-fullscreen-layer--fade.ss360-fullscreen-layer--open{display:block;opacity:1}@media (min-width:992px){.ss360-grid--lg{display:-ms-grid;display:grid}.ss360-grid--lg .ss360-suggests{max-width:100%;overflow:hidden}.ss360-grid--lg .ss360-suggest__image-container{width:100%}.ss360-grid--lg .ss360-suggests__wrap{flex-direction:column;height:100%}.ss360-grid--lg .ss360-suggests__image-wrap{box-sizing:border-box;height:220px;margin-bottom:24px;min-height:220px;min-width:100%;padding:0 16px;width:100%}.ss360-grid--lg .ss360-suggests__header{max-height:54px;min-height:54px;overflow:hidden;padding-top:0}.ss360-grid--lg .ss360-suggests__content{box-sizing:border-box;display:flex;flex-direction:column;height:100%;justify-content:space-between;margin:0;padding-left:16px;padding-right:16px}.ss360-grid--lg .ss360-suggests__snippet{height:100%}.ss360-grid--lg .ss360-suggests__image{height:100%;max-height:none;width:100%}.ss360-grid--lg .ss360-suggest__image--lazy{height:150px}.ss360-grid--lg .ss360-suggests__image-wrap--object-fit-polyfill{height:150px;width:100%}.ss360-grid--lg .ss360-suggests__image--pdf{-o-object-fit:contain;object-fit:contain}}@media (max-width:991px){.ss360-grid--sm{display:-ms-grid;display:grid}.ss360-grid--sm .ss360-suggests{max-width:100%;overflow:hidden}.ss360-grid--sm .ss360-suggest__image-container{width:100%}.ss360-grid--sm .ss360-suggests__wrap{flex-direction:column;height:100%}.ss360-grid--sm .ss360-suggests__image-wrap{box-sizing:border-box;height:220px;margin-bottom:24px;min-height:220px;min-width:100%;padding:0 16px;width:100%}.ss360-grid--sm .ss360-suggests__header{max-height:54px;min-height:54px;overflow:hidden;padding-top:0}.ss360-grid--sm .ss360-suggests__content{box-sizing:border-box;display:flex;flex-direction:column;height:100%;justify-content:space-between;margin:0;padding-left:16px;padding-right:16px}.ss360-grid--sm .ss360-suggests__snippet{height:100%}.ss360-grid--sm .ss360-suggests__image{height:100%;max-height:none;width:100%}.ss360-grid--sm .ss360-suggest__image--lazy{height:150px}.ss360-grid--sm .ss360-suggests__image-wrap--object-fit-polyfill{height:150px;width:100%}.ss360-grid--sm .ss360-suggests__image--pdf{-o-object-fit:contain;object-fit:contain}}.ss360-grid{grid-column-gap:16px}@media (min-width:992px){.ss360-grid{-ms-grid-columns:1fr 1fr 1fr;grid-template-columns:1fr 1fr 1fr}}@media (min-width:1200px){.ss360-grid{-ms-grid-columns:1fr 1fr 1fr 1fr;grid-template-columns:1fr 1fr 1fr 1fr}}@media (max-width:991px){.ss360-grid{-ms-grid-columns:1fr 1fr;grid-template-columns:1fr 1fr}}@media (max-width:767px){.ss360-grid{-ms-grid-columns:1fr;grid-template-columns:1fr}.ss360-grid .ss360-suggests__header{max-height:unset;min-height:unset;overflow:unset}}@media (min-width:992px){.ss360-grid--lg.ss360-grid--singleline-title .ss360-suggests{min-width:0}.ss360-grid--lg.ss360-grid--singleline-title .ss360-suggests__link-wrap{display:block;max-width:90%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}@media (max-width:991px){.ss360-grid--sm.ss360-grid--singleline-title .ss360-suggests{min-width:0}.ss360-grid--sm.ss360-grid--singleline-title .ss360-suggests__link-wrap{display:block;max-width:90%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}@media (min-width:992px){.ss360-masonry--lg .ss360-group{overflow:hidden}.ss360-masonry--lg.ss360-list{align-content:space-between;display:flex;flex-flow:column wrap;height:2000px;margin-bottom:0;margin-top:0}.ss360-masonry--lg .ss360-suggests__wrap{flex-direction:column}.ss360-masonry--lg .ss360-suggests__image-wrap,.ss360-masonry--lg .ss360-suggests__link{align-items:center;display:flex;justify-content:center;max-width:100%;min-width:100%;width:100%}.ss360-masonry--lg .ss360-suggests__image{height:auto;margin:8px 0;max-height:none;max-width:100%;-o-object-fit:cover;object-fit:cover;width:auto}.ss360-masonry--lg .ss360-suggests__image--lazy{height:150px;width:100%}.ss360-masonry--lg .ss360-masonry-break{content:"";flex-basis:100%;margin:0;padding:0;width:0}}@media (max-width:991px){.ss360-masonry--sm .ss360-group{overflow:hidden}.ss360-masonry--sm.ss360-list{align-content:space-between;display:flex;flex-flow:column wrap;height:2000px;margin-bottom:0;margin-top:0}.ss360-masonry--sm .ss360-suggests__wrap{flex-direction:column}.ss360-masonry--sm .ss360-suggests__image-wrap,.ss360-masonry--sm .ss360-suggests__link{align-items:center;display:flex;justify-content:center;max-width:100%;min-width:100%;width:100%}.ss360-masonry--sm .ss360-suggests__image{height:auto;margin:8px 0;max-height:none;max-width:100%;-o-object-fit:cover;object-fit:cover;width:auto}.ss360-masonry--sm .ss360-suggests__image--lazy{height:150px;width:100%}.ss360-masonry--sm .ss360-masonry-break{content:"";flex-basis:100%;margin:0;padding:0;width:0}}.ss360-layer{background:#fefefe;color:#4a4f62;flex-wrap:wrap;font-size:16px;padding:12px;text-align:left}.ss360-layer--overlay{background-color:#fefefe;box-sizing:content-box;height:80%;left:calc(10% - 28px);max-width:800px;overflow-x:hidden;overflow-y:hidden;padding:32px 24px 32px 32px;position:fixed;top:calc(10% - 30px);width:80%;z-index:99999999999}@media (min-width:1000px){.ss360-layer--overlay{left:calc((100% - 800px)/2 - 28px)}}@media (max-width:680px){.ss360-layer--overlay{box-shadow:none;box-sizing:border-box;height:100%;left:0;overflow-x:auto;padding:12px;position:fixed;top:0;width:100%}}.ss360-layer--wide-overlay{flex-wrap:wrap;left:calc(10% - 28px);max-width:1140px}@media (max-width:680px){.ss360-layer--wide-overlay{left:0}}@media (min-width:1425px){.ss360-layer--wide-overlay{left:calc((100% - 1140px)/2 - 28px)}}.ss360-layer__flex-wrapper{width:100%}.ss360-animated{-webkit-animation:.3s ease 0s 1 normal forwards running;animation:.3s ease 0s 1 normal forwards running}.ss360-animated--fast{-webkit-animation-duration:.15s;animation-duration:.15s}.ss360-fid{-webkit-animation-name:ss360-fid;animation-name:ss360-fid}.ss360-us{-webkit-animation-name:ss360-upscale;animation-name:ss360-upscale}.ss360-fo{-webkit-animation-name:ss360-fo;animation-name:ss360-fo}.ss360-layer__content{margin:0;outline:none;position:relative}.ss360-layer--overlay .ss360-layer__content--filter-top{min-height:325px}.ss360-query-correction{margin-bottom:8px}.ss360-list{margin-left:0}.ss360-layer__heading{font-size:1.2em;margin-bottom:8px;margin-top:0;padding:12px 0}.ss360-layer__heading .ss360-layer__heading-anchor{color:inherit;cursor:default;outline:none;pointer-events:none;text-decoration:none}.ss360-layer__heading--padded{padding:12px 16px}.ss360-layer__content--tabs .ss360-layer__heading{border:0;clip:rect(0,0,0,0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px}.ss360-layer__content--tabs.ss360-layer__content--branded{padding-top:26px}@media (max-width:991px){.ss360-hide-dataPoints--sm .ss360-data-points,.ss360-hide-images--sm .ss360-suggests__image,.ss360-hide-snippet--sm .ss360-suggests__snippet,.ss360-hide-title--sm .ss360-suggests__header,.ss360-hide-url--sm .ss360-suggests__url{display:none}}@media (min-width:992px){.ss360-hide-dataPoints--lg .ss360-data-points,.ss360-hide-images--lg .ss360-suggests__image,.ss360-hide-snippet--lg .ss360-suggests__snippet,.ss360-hide-title--lg .ss360-suggests__header,.ss360-hide-url--lg .ss360-suggests__url{display:none}}@media (prefers-reduced-motion:reduce){.ss360-close-button:hover,.ss360-loader,.ss360-loader--square,.ss360-loader__bounce{-webkit-animation-duration:0;animation-duration:0;-webkit-animation-duration:0s;animation-duration:0s}}.ss360-u-hide-y-overflow{overflow-y:hidden}.ss360-nav--top{padding-bottom:0}.ss360-nav--left{flex:1;padding-right:12px}.ss360-nav__entry{background:#fefefe;border-radius:3px;border-style:solid;border-width:2px;box-shadow:2px 2px 4px rgba(0,0,0,.12);color:#4a4f62;cursor:pointer;display:inline-block;font-size:1em;margin-right:12px;padding:12px;transition:background-color .1s ease-in-out,color .1s ease-in-out,border-color .1s ease-in-out}.ss360-nav__result-count{margin-left:4px}.ss360-nav__result-count:after{content:")"}.ss360-nav__result-count:before{content:"("}.ss360-nav__menu{float:none;list-style:none;margin-top:4px;padding-left:0}.ss360-nav--top .ss360-nav__menu{margin-bottom:16px;margin-left:0}.ss360-nav--top .ss360-nav__menu-item{display:inline-block;margin:4px 0 0}.ss360-nav--top .ss360-nav__entry{margin-right:4px}.ss360-nav--left .ss360-nav__entry{margin-bottom:12px}.ss360-layer .ss360-layer__content--right{flex:4}.ss360-layer__content--tabs .ss360-group:not(.ss360-group--active){display:none}.ss360-layer__content--tabs .ss360-group__heading{border:0;clip:rect(0,0,0,0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px}.ss360-nav--tabs.ss360-nav--left .ss360-nav__menu{margin-top:0}.ss360-nav--tabs.ss360-nav--left .ss360-nav__menu-item{border-right-style:solid;border-right-width:2px;margin-right:0;text-align:right}.ss360-nav--tabs.ss360-nav--left .ss360-nav__entry{border-bottom-left-radius:3px;border-bottom-right-radius:0;border-right:0;border-top-left-radius:3px;border-top-right-radius:0;margin-right:0}.ss360-nav--tabs.ss360-nav--left .ss360-nav__entry--first{margin-top:0}.ss360-nav--tabs.ss360-nav--left .ss360-nav__entry:not(.ss360-nav__entry--last){margin-bottom:8px}.ss360-nav--tabs.ss360-nav--left .ss360-nav__menu-item--active{border-right:0}.ss360-nav--tabs.ss360-nav--left .ss360-nav__menu-item--active .ss360-nav__entry{border-bottom-width:2px;border-color:inherit;border-right-width:0;margin-bottom:0}.ss360-nav--tabs.ss360-nav--left .ss360-nav__menu-item--active+.ss360-nav__menu-item{padding-top:8px}.ss360-nav--tabs.ss360-nav--left .ss360-nav__post,.ss360-nav--tabs.ss360-nav--left .ss360-nav__pre{border-right-style:solid;border-right-width:2px}.ss360-nav--tabs.ss360-nav--left .ss360-nav__pre{height:3em}.ss360-nav--tabs.ss360-nav--top{align-items:flex-end;margin-bottom:16px}.ss360-nav--tabs.ss360-nav--top .ss360-nav__menu-item{border-bottom-style:solid;border-bottom-width:2px}.ss360-nav--tabs.ss360-nav--top .ss360-nav__entry{border-bottom:0;border-bottom-left-radius:0;border-bottom-right-radius:0;border-top-left-radius:3px;border-top-right-radius:3px;margin-bottom:0}.ss360-nav--tabs.ss360-nav--top .ss360-nav__entry--first{margin-left:0}.ss360-nav--tabs.ss360-nav--top .ss360-nav__entry:not(.ss360-nav__entry--last){margin-right:8px}.ss360-nav--tabs.ss360-nav--top .ss360-nav__menu-item--active{border-bottom:0;margin-left:-2px;margin-right:-2px}.ss360-nav--tabs.ss360-nav--top .ss360-nav__menu-item--active .ss360-nav__entry{margin-right:0}.ss360-nav--tabs.ss360-nav--top .ss360-nav__menu-item--active+.ss360-nav__menu-item{padding-left:8px}.ss360-nav--tabs.ss360-nav--top .ss360-nav__post,.ss360-nav--tabs.ss360-nav--top .ss360-nav__pre{border-bottom-style:solid;border-bottom-width:2px}.ss360-nav--tabs.ss360-nav--top .ss360-nav__pre{flex-grow:1}.ss360-nav--tabs .ss360-nav__entry{background:#dedede;border:0;box-shadow:none}.ss360-nav--tabs .ss360-nav__menu-item--active .ss360-nav__entry{background:#fefefe;border-color:inherit;border-style:solid;border-width:2px 2px 0;color:#4a4f62;padding-bottom:12px}.ss360-nav--tabs .ss360-nav__menu-item:not(.ss360-nav__menu-item--active) .ss360-nav__entry:focus,.ss360-nav--tabs .ss360-nav__menu-item:not(.ss360-nav__menu-item--active) .ss360-nav__entry:hover{color:#fefefe;padding-bottom:12px}.ss360-nav--tabs .ss360-nav__menu{margin-bottom:0;margin-right:0}.ss360-nav--tabs .ss360-nav__post{flex-grow:6}.ss360-nav__select{border:0;filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";height:40px;opacity:0;padding:8px 0;position:absolute;top:0;width:100%}.ss360-nav__select-wrapper{cursor:pointer;max-width:20em;position:relative;width:100%}.ss360-nav__select-label{cursor:pointer;margin:0;padding:4px 12px;position:relative}.ss360-nav__select-label:after{border-left:6px solid #fefefe;content:"▼";font-size:14px;padding:4px 16px;position:absolute;right:0;top:0}.ss360-nav__select-label--open:after{content:"▲"}.ss360-nav__select-label--focus{outline:1px dotted #4a4f62;outline:6px auto -webkit-focus-ring-color}.ss360-nav__select-option{background:#fefefe;color:#484848}.ss360-nav__select,.ss360-nav__select-label{display:block;font:400 1em/2em Source Sans Pro,sans-serif}@media (max-width:680px){.ss360-nav--left{clear:both;margin-bottom:16px;padding-right:0}.ss360-nav--left .ss360-nav__menu-item{display:inline-block;margin-top:8px}.ss360-nav--left .ss360-nav__entry{margin-bottom:0;margin-right:8px}.ss360-layer__content--right,.ss360-nav--left{flex:none;width:100%}}.ss360-suggests{box-shadow:-1px 1px 6px rgba(0,0,0,.12);margin:4px 0 24px}.ss360-suggests:after,.ss360-suggests:before{content:none}.ss360-suggests--hidden{display:none}.ss360-suggests__link{color:#3d8fff;font-size:1.2em;text-decoration:none}.ss360-suggests__link:hover{text-decoration:underline}.ss360-suggests__url{color:#006621;display:block;font-size:14px;padding-right:16px;text-decoration:none;word-break:break-word}.ss360-suggests__header{line-height:1.41;margin-bottom:4px;padding:8px 0 0;position:relative;text-align:left}.ss360-suggests__wrap{display:flex;flex-direction:row}.ss360-suggests__content{display:flex;flex-direction:column;margin-left:16px;max-width:100%;overflow:hidden;padding-bottom:12px;width:100%}.ss360-suggests__link-wrap{margin:0}.ss360-suggests__snippet{font-size:14px;line-height:1.5em;margin-bottom:12px;margin-top:12px;padding-right:16px;word-break:break-word}.ss360-suggests__image-wrap{display:block;line-height:0;max-width:33%;min-height:100%;min-width:250px;overflow:hidden;position:relative;text-align:center;width:250px}.ss360-suggests__image-wrap--empty{background:repeating-linear-gradient(-45deg,#fefefe,#fefefe 4px,#efefef 0,#efefef 8px);height:100%;min-height:100%}.ss360-suggests__image{display:inline-block;max-height:200px;max-width:100%;-o-object-fit:scale-down;object-fit:scale-down;width:auto}.ss360-suggests__image--cover{min-height:100px;-o-object-fit:cover;object-fit:cover}.ss360-suggests__image--lazy{height:100px}.ss360-suggests__image--doc{height:150px;max-height:150px}.ss360-suggests__image--pdf{box-sizing:border-box;-o-object-fit:cover;object-fit:cover;padding:24px}.ss360-suggests__image-wrap--object-fit-polyfill{background-repeat:no-repeat;display:block;height:200px;margin:8px 16px 8px 0}.ss360-suggests--assistant{-ms-grid-column:1;-ms-grid-column-span:4;grid-column:1/5}@media (max-width:1199px){.ss360-suggests--assistant{-ms-grid-column:1;-ms-grid-column-span:3;grid-column:1/4}}@media (max-width:991px){.ss360-suggests--assistant{-ms-grid-column:1;-ms-grid-column-span:2;grid-column:1/3}}@media (max-width:767px){.ss360-suggests--assistant{-ms-grid-column:1;-ms-grid-column-span:1;grid-column:1/2}}.ss360-suggests__image-wrap--video .ss360-suggests__image{filter:brightness(.62)}@media (max-width:991px){.ss360-suggests__content{box-sizing:border-box;margin:0;padding:0 12px}.ss360-suggests__wrap{flex-direction:column}.ss360-suggests__image-wrap{-ms-grid-row-align:center;align-self:center;margin-bottom:16px;max-width:none;width:100%}}.ss360-404 .ss360-sorting{display:none}.ss360-layer__heading+.ss360-sorting{margin-bottom:8px;margin-top:-8px}.ss360-sorting{min-height:24px;position:relative;width:100%}.ss360-sorting__label,.ss360-sorting__select{font-size:14px}.ss360-sorting__select{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:0;border-bottom:1px solid #dedede;height:auto;margin:0;max-width:150px;padding:8px 32px 8px 12px;position:relative}.ss360-sorting__select::-ms-expand{display:none}.ss360-sorting:after{content:"▼";font-size:.62em;pointer-events:none;position:absolute;right:12px;top:10px}.ss360-sorting__label{margin:0 8px 0 0;padding-bottom:8px}@media (max-width:680px){.ss360-sorting__select{margin-right:16px}}.ss360-voice-search{background:transparent;border-color:transparent;border-radius:50%;cursor:pointer;padding:0;z-index:2}.ss360-voice-search--recording{-webkit-animation-duration:1.25s;animation-duration:1.25s;-webkit-animation-iteration-count:infinite;animation-iteration-count:infinite;-webkit-animation-name:ss360-recording;animation-name:ss360-recording;background-color:#e05350}.ss360-skeleton__result{box-shadow:none}.ss360-skeleton__result-image{height:125px;width:125px}.ss360-skeleton__result-heading{height:25px;margin-bottom:12px;max-width:350px;width:calc(100% - 50px)}.ss360-skeleton__content-container{display:flex;flex-direction:row}.ss360-skeleton__result-snippet{height:125px;margin:0 0 0 16px;width:100%}.ss360-skeleton__result-snippet-row{height:20px;margin-bottom:12px;width:100%}.ss360-skeleton__result-snippet-row--last{margin-bottom:0;width:62%}.ss360-skeleton__block-heading{height:35px;width:62%}.ss360-skeleton__navigation-entry{display:inline-block;height:37px;margin:16px 4px;width:105px}.ss360-skeleton__navigation-entry--first{margin-left:0}.ss360-skeleton__filter--left{flex:1;padding-right:16px;padding-top:16px}.ss360-skeleton__filter--top{margin-bottom:16px;margin-top:16px;width:100%}.ss360-skeleton--filter-left .ss360-skeleton__block-heading{margin-right:38%;width:100%}.ss360-nav--left.ss360-skeleton__navigation .ss360-skeleton__navigation-entry{margin:8px;width:80%}.ss360-layer__content--skeleton-right{padding-top:8px;width:80%}.ss360-layer__content--skeleton-filter-left{flex:3}.ss360-skeleton__filter--left .ss360-skeleton__filter-block{height:250px;margin-bottom:16px;width:100%}.ss360-skeleton__filter--top .ss360-skeleton__filter-block{height:25px;margin-right:16px;max-width:20%;width:200px}.ss360-shimmer{-webkit-animation-duration:3s;animation-duration:3s;-webkit-animation-fill-mode:forwards;animation-fill-mode:forwards;-webkit-animation-iteration-count:infinite;animation-iteration-count:infinite;-webkit-animation-name:ss360-shimmer;animation-name:ss360-shimmer;-webkit-animation-timing-function:linear;animation-timing-function:linear;background:#ebedee;background-image:linear-gradient(90deg,#ebedee 0,#f8f9f9 20%,#ebedee 40%,#ebedee);background-repeat:no-repeat;background-size:1000px 100%;display:inline-block;position:relative}@-webkit-keyframes ss360-shimmer{0%{background-position:-800px 0}to{background-position:800px 0}}@keyframes ss360-shimmer{0%{background-position:-800px 0}to{background-position:800px 0}}@media (min-width:992px){.ss360-grid--lg .ss360-skeleton__content-container{flex-direction:column}.ss360-grid--lg .ss360-skeleton__result-snippet{margin:16px 0 0;width:100%}.ss360-grid--lg .ss360-skeleton__result-image{height:150px;width:100%}.ss360-grid--lg__block-heading{margin-left:8px}.ss360-skeleton__hide-images--desktop .ss360-skeleton__result-image,.ss360-skeleton__hide-titles--desktop .ss360-skeleton__result-heading{display:none}.ss360-skeleton__hide-images--desktop .ss360-skeleton__result-snippet{margin-left:0}.ss360-skeleton__hide-snippets--desktop .ss360-skeleton__result-snippet{display:none}}@media (max-width:991px){.ss360-grid--sm .ss360-skeleton__content-container{flex-direction:column}.ss360-grid--sm .ss360-skeleton__result-snippet{margin:16px 0 0;width:100%}.ss360-grid--sm .ss360-skeleton__result-image{height:150px;width:100%}.ss360-grid--sm .ss360-skeleton__result-heading{width:100%}.ss360-grid--sm .ss360-skeleton__block-heading{margin-left:8px;width:calc(100% - 16px)}.ss360-skeleton__hide-images--mobile .ss360-skeleton__result-image,.ss360-skeleton__hide-titles--mobile .ss360-skeleton__result-heading,.ss360-skeleton__navigation-entry--last{display:none}.ss360-skeleton__hide-images--mobile .ss360-skeleton__result-snippet{margin-left:0}.ss360-skeleton__hide-snippets--mobile .ss360-skeleton__result-snippet{display:none}.ss360-layer .ss360-layer__content--skeleton-right{padding-left:8px}.ss360-skeleton__filter--left{display:none}}.ss360-suggests__cta-wrap{display:flex}.ss360-suggests__cta-wrap:not(.ss360-suggests__cta-wrap--column){align-items:center}.ss360-suggests__cta-wrap--column{align-items:flex-start;flex-direction:column}.ss360-suggests__cta-wrap--column .ss360-cta{align-self:flex-start}.ss360-suggests__cta-wrap--column .ss360-cta--center{-ms-grid-row-align:center;align-self:center}.ss360-suggests__cta-wrap--column .ss360-cta--right{align-self:flex-end}.ss360-suggests__cta-wrap--row .ss360-cta{margin-right:12px}.ss360-cta{box-sizing:content-box;cursor:pointer;display:inline-block;font-size:1em;margin:12px 0;overflow:visible;position:relative;transition:background-color .3s ease-in-out,color .3s ease-in-out,padding .3s ease-in-out,margin-right .3s ease-in-out,fill .3s ease-in-out}.ss360-cta:not(.ss360-cta--plain){align-items:center;border-radius:4px;border-style:solid;border-width:1px;padding:8px 16px;text-decoration:none}.ss360-cta:not(.ss360-cta--noicon){margin-right:25px}.ss360-cta--noicon:focus,.ss360-cta--noicon:hover{background-color:#fefefe}.ss360-cta__icon{background:#fefefe;height:20px;left:0;overflow:hidden;padding:1px;position:absolute;top:7px;transform:translate3d(-11px,0,0);transition:transform .3s ease-in-out,background-color .3s ease-in-out,fill .3s ease-in-out;width:20px}.ss360-cta__img{max-height:100%;max-width:100%}.ss360-cta:not(.ss360-cta--noicon):focus,.ss360-cta:not(.ss360-cta--noicon):hover{margin-right:12px;padding-left:29px}.ss360-cta:not(.ss360-cta--noicon):focus .ss360-cta__icon,.ss360-cta:not(.ss360-cta--noicon):hover .ss360-cta__icon{background:transparent;transform:translate3d(2px,0,0)}.ss360-error{margin:24px;padding:32px}.ss360-error__icon{margin-right:32px}.ss360-error__cta{width:100%}.ss360-error__heading{font-size:1.5em;margin-bottom:16px;margin-top:0}.ss360-error__message{font-size:1em;line-height:1.41;margin-bottom:32px;margin-top:0}.ss360-error__button{-ms-grid-row-align:center;align-self:center;border:2px solid;border-radius:3px;box-shadow:2px 2px 4px rgba(0,0,0,.12);box-sizing:border-box;cursor:pointer;display:block;font-size:1.2em;font-weight:400;max-width:100%;min-width:180px;padding:8px 32px;text-align:center;text-decoration:none;transition:background-color .3s ease-in-out,color .3s ease-in-out;width:auto}@media (max-width:767px){.ss360-error{flex-direction:column}.ss360-error__description{align-items:center;flex-direction:column}.ss360-error__icon{margin-bottom:16px}.ss360-error__button{-ms-grid-row-align:auto;align-self:auto}}.ss360-product-finder__question--hidden{display:none}.ss360-product-finder__question-title{display:block;font-size:1.2em;font-weight:700;margin-bottom:12px}.ss360-product-finder__answers{display:flex}.ss360-product-finder__answer{border:2px solid #fefefe;cursor:pointer;flex:1;line-height:0;position:relative}.ss360-product-finder__answer-image{height:250px;max-width:100%;-o-object-fit:cover;object-fit:cover;width:100%}.ss360-product-finder__answer-text{background-color:rgba(0,0,0,.72);bottom:0;box-sizing:border-box;color:#fefefe;display:flex;font-weight:700;justify-content:center;line-height:1;padding:8px;position:absolute;width:100%}.ss360-product-finder__controls{box-sizing:border-box;display:flex;justify-content:space-between;padding:12px 2px;width:100%}.ss360-product-finder__button{background-color:#fefefe;border:2px solid;cursor:pointer;font-size:1em;padding:8px 12px}.ss360-product-finder__button--finish,.ss360-product-finder__button--next{font-weight:700}.ss360-product-finder__button:disabled{cursor:auto}.ss360-white-bg--hover:focus,.ss360-white-bg--hover:hover{background:#fefefe}.ss360-tc-c{color:#4a4f62}.ss360-tc-c--hover:focus,.ss360-tc-c--hover:hover{color:#4a4f62}.ss360-tc-b{border-color:#4a4f62}.ss360-tc-b--hover:focus,.ss360-tc-b--hover:hover{border-color:#4a4f62}.ss360-tc-b--focus:focus{border-color:#4a4f62}.ss360-tc-bg{background-color:#4a4f62;color:#fefefe}.ss360-tc-bg--hover:focus,.ss360-tc-bg--hover:hover{background-color:#4a4f62;color:#fefefe}.ss360-tc-bg--focus:focus{background-color:#4a4f62;color:#fefefe}.ss360-ac-c,.ss360-ac-c--hover:focus,.ss360-ac-c--hover:hover{color:#3d8fff}.ss360-ac-b,.ss360-ac-b--focus:focus,.ss360-ac-b--hover:focus,.ss360-ac-b--hover:hover{border-color:#3d8fff}.ss360-ac-bg,.ss360-ac-bg--focus:focus,.ss360-ac-bg--hover:focus,.ss360-ac-bg--hover:hover{background-color:#3d8fff;color:#fefefe}.ss360-acd-bg--hover:focus,.ss360-acd-bg--hover:hover{background-color:#3378d6;color:#fefefe}.ss360-acd-b--hover:focus,.ss360-acd-b--hover:hover{border-color:#3378d6}#ss360-layer .ss360-white-bg--hover:focus,#ss360-layer .ss360-white-bg--hover:hover{background:#fefefe}#ss360-layer .ss360-tc-c{color:#4a4f62}#ss360-layer .ss360-tc-c--hover:focus,#ss360-layer .ss360-tc-c--hover:hover{color:#4a4f62}#ss360-layer .ss360-tc-b{border-color:#4a4f62}#ss360-layer .ss360-tc-b--hover:focus,#ss360-layer .ss360-tc-b--hover:hover{border-color:#4a4f62}#ss360-layer .ss360-tc-b--focus:focus{border-color:#4a4f62}#ss360-layer .ss360-tc-bg{background-color:#4a4f62;color:#fefefe}#ss360-layer .ss360-tc-bg--hover:focus,#ss360-layer .ss360-tc-bg--hover:hover{background-color:#4a4f62;color:#fefefe}#ss360-layer .ss360-tc-bg--focus:focus{background-color:#4a4f62;color:#fefefe}#ss360-layer .ss360-ac-c,#ss360-layer .ss360-ac-c--hover:focus,#ss360-layer .ss360-ac-c--hover:hover{color:#3d8fff}#ss360-layer .ss360-ac-b,#ss360-layer .ss360-ac-b--focus:focus,#ss360-layer .ss360-ac-b--hover:focus,#ss360-layer .ss360-ac-b--hover:hover{border-color:#3d8fff}#ss360-layer .ss360-ac-bg,#ss360-layer .ss360-ac-bg--focus:focus,#ss360-layer .ss360-ac-bg--hover:focus,#ss360-layer .ss360-ac-bg--hover:hover{background-color:#3d8fff;color:#fefefe}#ss360-layer .ss360-acd-bg--hover:focus,#ss360-layer .ss360-acd-bg--hover:hover{background-color:#3378d6;color:#fefefe}#ss360-layer .ss360-acd-b--hover:focus,#ss360-layer .ss360-acd-b--hover:hover{border-color:#3378d6}</style><style id="unibox-css" type="text/css">.unibox-n-button{background:#fefefe;border:0;box-sizing:border-box;display:block;float:none;height:auto;line-height:normal;margin:0;min-width:0;padding:0;text-indent:unset}.unibox-n-button:after,.unibox-n-button:before,.unibox-n-button:focus:after,.unibox-n-button:focus:before,.unibox-n-button:hover:after,.unibox-n-button:hover:before,.unibox-n-li:after,.unibox-n-li:before{content:none}.unibox-n-section{background:transparent;background-image:none;border:0;box-sizing:border-box;display:block;font-size:16px;height:auto;left:0;margin:0;padding:0;position:relative;text-indent:unset;top:0;transform:none;width:100%}.unibox-n-input{background:#fefefe;background-image:none;border:0;border-radius:0}.unibox-sr-only{border:0;clip:rect(0,0,0,0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px}.unibox-stretch{height:100%}.unibox{background-color:#fefefe;box-shadow:1px 1px 6px rgba(0,0,0,.12);color:#4a4f62;display:none;overflow:hidden;position:absolute;z-index:1500}.unibox--empty{visibility:hidden}.unibox__content-container{box-sizing:border-box;max-width:calc(100% - 60px);padding:12px 8px 16px 16px;width:100%}.unibox__search-content{display:block;margin-bottom:4px;text-align:left}.unibox__search-content--link{color:#4a4f62;overflow:hidden;text-decoration:none}.unibox__suggest-heading{color:#4a4f62;font-size:1.2em;margin:8px;padding:0;text-align:left}.unibox__selectable{clear:both;display:flex;font-size:1em;position:relative;text-align:left}.unibox__vis{width:70px}.unibox__img-container{align-items:center;box-sizing:border-box;display:flex;justify-content:flex-start;min-width:68px;padding:4px 0 4px 8px}.unibox__img{left:0;max-height:60px;max-width:60px;position:relative;top:0;transform:none}.unibox__highlight{font-weight:700}.unibox__result-content{margin-bottom:16px;margin-top:4px}.unibox__ca{clear:both}.unibox__invisible{display:none;height:0;position:relative;text-align:left;visibility:hidden}.unibox__ivf{height:76px;left:-15px;position:absolute;top:-89px;width:76px}.unibox__ivf-img{bottom:0;margin:auto;max-width:76px;position:absolute;top:0;transform:rotateX(-90deg) translateY(100%);transition:.3s ease-out}.unibox__ivf-img--l{transform:rotateX(0) translateY(0)}.unibox__selectable--show-all{align-items:center;background:none;border:0;display:flex;flex-direction:row;justify-content:center;padding:4px 8px;width:100%}.unibox__show-all-icon{margin-left:8px;margin-top:4px}.unibox__cluster--no-img .unibox__content-container{max-width:100%}.unibox__selectable--active,.unibox__selectable:hover{cursor:pointer}.unibox__selectable--active .unibox__content-container,.unibox__selectable--active .unibox__highlight-container,.unibox__selectable:hover .unibox__content-container,.unibox__selectable:hover .unibox__highlight-container{background:#dedede}.unibox__selectable--active.unibox__selectable--show-all,.unibox__selectable:hover.unibox__selectable--show-all{text-decoration:underline}.unibox--fullwidth .unibox__selectable{padding:16px}.unibox--fullwidth .unibox__extra{left:86px;top:41px}.unibox-special{height:100%;left:0;overflow:hidden;position:fixed;top:0;width:100%;z-index:1000000}.unibox-special,.unibox-special__input-wrap{margin:0;padding:0}.unibox-special__input-wrap{background:#fefefe;border:1px solid #dedede;box-sizing:border-box;width:100%}.unibox-special__searchbox{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:1px solid #dedede;border-radius:0;font-size:1.2em;height:48px;margin:16px 63px;padding:0 12px;width:calc(100% - 126px)}.unibox-special__icon{background:transparent;border:0;cursor:pointer;height:50px;padding:0;position:absolute;top:16px;width:50px}.unibox-special__icon--close{background:url("data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjI0IiB3aWR0aD0iMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTE5IDYuNDFMMTcuNTkgNSAxMiAxMC41OSA2LjQxIDUgNSA2LjQxIDEwLjU5IDEyIDUgMTcuNTkgNi40MSAxOSAxMiAxMy40MSAxNy41OSAxOSAxOSAxNy41OSAxMy40MSAxMnoiLz48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PC9zdmc+") no-repeat 50%;background-size:24px;border-right:1px solid #dedede;left:0}.unibox-special__icon--searchbutton{background:url("data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjI0IiB3aWR0aD0iMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTE1LjUgMTRoLS43OWwtLjI4LS4yN0E2LjQ3MSA2LjQ3MSAwIDAwMTYgOS41IDYuNSA2LjUgMCAxMDkuNSAxNmMxLjYxIDAgMy4wOS0uNTkgNC4yMy0xLjU3bC4yNy4yOHYuNzlsNSA0Ljk5TDIwLjQ5IDE5bC00Ljk5LTV6bS02IDBDNy4wMSAxNCA1IDExLjk5IDUgOS41UzcuMDEgNSA5LjUgNSAxNCA3LjAxIDE0IDkuNSAxMS45OSAxNCA5LjUgMTR6Ii8+PHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==") no-repeat 50%;background-size:24px;border-left:1px solid #dedede;right:0}.unibox-special .unibox--special{display:block;height:100%;margin-top:4px;-webkit-overflow-scrolling:touch;overflow-x:hidden;overflow-y:scroll;position:absolute;width:100%}.unibox-special .unibox__selectable{min-height:50px}.unibox-special__background{pointer-events:none;transform:translateZ(0);transition-delay:0s;transition-timing-function:ease-out;will-change:transform}.unibox-special__background--left{transform:translate3d(-100%,0,0)}.unibox-special__background--right{transform:translateZ(0)}.unibox__selectable--group-cta{background:#fefefe;border:0;color:#4a4f62;display:block;font-size:14px;margin-bottom:12px;text-align:right;width:100%}.unibox__selectable--group-cta.unibox__selectable--active,.unibox__selectable--group-cta:hover{text-decoration:underline}.unibox__selectable--history .unibox__content-container{align-items:center;display:flex;justify-content:space-between;padding:8px 8px 8px 16px}.unibox__delete-history{background:transparent;border:0;cursor:pointer}.unibox__delete-history-icon{display:block}.unibox-tc-c{color:#4a4f62}.unibox-tc-c--hover:focus,.unibox-tc-c--hover:hover{color:#4a4f62}.unibox-tc-b{border-color:#4a4f62}.unibox-tc-b--hover:focus,.unibox-tc-b--hover:hover{border-color:#4a4f62}.unibox-tc-b--focus:focus{border-color:#4a4f62}.unibox-tc-bg{background-color:#4a4f62;color:#fefefe}.unibox-tc-bg--hover:focus,.unibox-tc-bg--hover:hover{background-color:#4a4f62;color:#fefefe}.unibox-tc-bg--focus:focus{background-color:#4a4f62;color:#fefefe}#unibox-suggest-box .unibox-tc-c{color:#4a4f62}#unibox-suggest-box .unibox-tc-c--hover:focus,#unibox-suggest-box .unibox-tc-c--hover:hover{color:#4a4f62}#unibox-suggest-box .unibox-tc-b{border-color:#4a4f62}#unibox-suggest-box .unibox-tc-b--hover:focus,#unibox-suggest-box .unibox-tc-b--hover:hover{border-color:#4a4f62}#unibox-suggest-box .unibox-tc-b--focus:focus{border-color:#4a4f62}#unibox-suggest-box .unibox-tc-bg{background-color:#4a4f62;color:#fefefe}#unibox-suggest-box .unibox-tc-bg--hover:focus,#unibox-suggest-box .unibox-tc-bg--hover:hover{background-color:#4a4f62;color:#fefefe}#unibox-suggest-box .unibox-tc-bg--focus:focus{background-color:#4a4f62;color:#fefefe}</style></head>
+
+<body>
+
+    <!-- Navigation -->
+    <div class="fixed-top">
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <div id="logo_container">
+                <a href="/">
+                    <img id="logo" class="thumbnail" src="/images/logos/ast/Automated-Solutions-Stacked-Logo-ORANGE-meduim.png" alt="automated solutions logo">
+                </a>
+            </div>
+
+            <div class="flex-container nav-container mobile">
+
+                <!-- Mobile search button -->
+                <div id="mobileSearch" class="">
+                    <a class="" href="#">
+                        <i id="openSearchMobile" class="material-icons">search</i>
+                        <i id="closeSearchMobile" class="material-icons">close</i>
+                    </a>
+                </div>
+
+                <!--Mobile Nav button-->
+                <button id="mobileMenu" class="navbar-toggler navbar-inverse navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    <i id="hamburgerMenu" class="material-icons">menu</i>
+                    <i id="hamburgerClose" class="material-icons">close</i>
+                </button>
+
+            </div>
+
+            <div id="navbarWrapper">
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ml-auto">
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span>Products</span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-left">
+                                <a class="dropdown-item" href="/products">All Products</a>
+                                <a class="dropdown-item" href="/technotes/componentmatrix">Component
+                  Comparison</a>
+                                <hr>
+                                <a class="dropdown-item" href="/products/iot">.Net 6/5 &amp; Core Products</a>
+                                <a class="dropdown-item" href="/products/dotnet">.NET Framework Products</a>
+                                <a class="dropdown-item" href="/products/dotnet/ascomm/excel-addin.asp">Office Products</a>
+                                <a class="dropdown-item" href="/products/opc-da">OPC Products</a>
+                                <a class="dropdown-item" href="/products/activex/">ActiveX Products</a>
+                                <hr>
+                                <a class="dropdown-item" href="/products/ablogix.asp">Allen-Bradley Logix Compatible</a>
+                                <a class="dropdown-item" href="/products/ablegacy.asp">Allen-Bradley Legacy Compatible</a>
+                                <a class="dropdown-item" href="/products/siemenss7.asp">Siemens S7 Compatible</a>
+                                <a class="dropdown-item" href="/products/ge.asp">GE Compatible</a>
+                                <a class="dropdown-item" href="/products/modbus.asp">Modbus Compatible</a>
+                                <a class="dropdown-item" href="/products/automationdirect.asp">Automation Direct Compatible</a>
+                                <a class="dropdown-item" href="/products/opc-da/acmbtcp-opc.asp">Acromag Compatible</a>
+                            </div>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/purchase">
+                                <span>Purchase</span>
+                            </a>
+                        </li>
+
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/demos">
+                                <span>Downloads</span>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/services">
+                                <span>Services</span>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/support">
+                                <span>Support</span>
+                            </a>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span>About</span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-left">
+                                <a class="dropdown-item" href="/about">About Us</a>
+                                <a class="dropdown-item" href="/contact/contactform.aspx">Contact</a>
+                                <a class="dropdown-item" href="/partners">Our Partners</a>
+                                <a class="dropdown-item" href="/customers">Our Customers</a>
+                                <a class="dropdown-item" href="/quotations">Customer Feedback</a>
+                            </div>
+                        </li>
+
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/contact/contactform.aspx">
+                                <span>Contact</span>
+                            </a>
+                        </li>
+                        <!--Search button-->
+                        <li id="search" class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i id="openSearch" class="material-icons">search</i>
+                                <i id="closeSearch" class="material-icons">close</i>
+                            </a>
+                            <!-- </div> -->
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="https://secure.softwarekey.com/solo/customers/default.aspx?AuthorID=2474078">
+                                <span>Login</span>
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+        <!-- End container-->
+    </nav>
+
+
+    <!--Search Bar-->
+    <div id="searchBar" class="gcse-search">
+        <div class="container">
+            <section role="search" data-ss360="true" class="ss360-flex ss360-n-section ss360-custom-search ss360-custom-search--no-margin" style="position: relative;"><div id="unibox-suggest-box" class="unibox" role="listbox" aria-label="Search Suggestions" style="min-width: 0px; padding: 5px; margin-top: 0px; color: rgb(51, 51, 51); background-color: rgb(255, 255, 255); border: 1px solid rgb(221, 221, 221); border-radius: 0px;"></div>
+                <input id="searchBox" type="search" class="ss360-custom-search__searchbox ss360-n-input" aria-label="Search query" autocomplete="off" role="combobox" aria-describedby="unibox-controls-description" aria-owns="unibox-suggest-box" aria-controls="unibox-suggest-box" aria-expanded="false" style="color: rgb(51, 51, 51); font-size: 14px; border: 1px solid rgb(221, 221, 221); border-radius: 0px; padding: 8px; background-image: url(&quot;data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGw9IiM2NjY2NjYiIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgY2xhc3M9IiIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMTUuNSAxNGgtLjc5bC0uMjgtLjI3QzE1LjQxIDEyLjU5IDE2IDExLjExIDE2IDkuNSAxNiA1LjkxIDEzLjA5IDMgOS41IDNTMyA1LjkxIDMgOS41IDUuOTEgMTYgOS41IDE2YzEuNjEgMCAzLjA5LS41OSA0LjIzLTEuNTdsLjI3LjI4di43OWw1IDQuOTlMMjAuNDkgMTlsLTQuOTktNXptLTYgMEM3LjAxIDE0IDUgMTEuOTkgNSA5LjVTNy4wMSA1IDkuNSA1IDE0IDcuMDEgMTQgOS41IDExLjk5IDE0IDkuNSAxNHoiLz48L3N2Zz4=&quot;); background-repeat: no-repeat; background-position: 8px 9px; background-color: rgb(255, 255, 255);">
+                <button id="searchButton" class="ss360-custom-search__searchbutton ss360-n-button ss360-ac-b ss360-ac-bg ss360-acd-b--hover ss360-acd-bg--hover" aria-label="Search" style="color: rgb(51, 51, 51); font-size: 14px; border: 1px solid rgb(221, 221, 221); border-radius: 0px; padding: 8px; background-color: rgb(255, 255, 255);"><svg xmlns="http://www.w3.org/2000/svg" fill="#333333" width="24" height="24" class="" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg></button>
+            <span id="unibox-controls-description" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0" class="unibox-sr-only" tabindex="-1">Use the up and down arrows to select a result. Press enter to go to the selected search result. Touch device users can use touch and swipe gestures.</span><span id="unibox-status-message" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0" tabindex="-1" aria-live="polite" aria-atomic="true" role="status" class="unibox-sr-only"></span><div id="unibox-invisible" class="unibox__invisible" style="display: none;">&nbsp;<span>&nbsp;</span></div></section>
+        </div>
+    </div>
+    <!--End search bar-->
+</div>
+
+
+    <!-- Header -->
+    <header id="interiorHeader" style="height: 702.25px;">
+        <!-- Banner content & overlay -->
+        <div id="hero-overlay">
+            <div class="container">
+                <!-- intro -->
+                <div id="interiorIntro">
+                    <h1>IoT PLC Driver Library</h1>
+                    <h2>ASComm IoT</h2>
+                    <h2>Allen-Bradley, Siemens S7, GE SRTP &amp; Modbus Communication Drivers</h2>
+                    <h2>For .NET 6.0, 5.0 &amp; Core</h2>
+                    <br>
+                    <h3>Click the button below to download Machine Edition</h3>
+                    <h4>(Includes 30 Day Trial License for new users)</h4>
+                    <div id="headerTrialBtn">
+                        <a href="/demos/demoform_ascommiot.aspx" class="btn trialBtn orangeBtn generalBtn">Download Machine Edition</a>
+                    </div>
+                </div>
+                <!-- end intro -->
+            </div>
+        </div>
+        <!-- end banner content & overlay -->
+    </header>
+
+    <!-- To darken website when search bar and mobile menu are in focus-->
+    <div id="pageOverlay"></div>
+
+    <!-- Adjust page banner to interior intro -->
+    <script>
+        adjustBanner();
+    </script>
+
+    <!-- PAGE CONTENT -->
+
+    <!-- Product Summary -->
+    <div id="productSummary" class="pageContent">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card h-100">
+                        <div class="card-body">
+
+                            <div class="intContHead">
+                                <h2>ASComm IoT</h2>
+                                <h2>IoT PLC Driver Library Product Summary</h2>
+                            </div>
+                            <div class="container alert alert-info">
+                                <p>
+                                    This product does not use DCOM and therefore is not affected by Microsoft DCOM hardening patch mentioned in this article
+                <br>
+                                    <a target="_blank" href="https://support.microsoft.com/en-us/topic/kb5004442-manage-changes-for-windows-dcom-server-security-feature-bypass-cve-2021-26414-f1400b52-c141-43d2-941e-37ed901c769c">KB5004442 Manage changes for Windows DCOM Server Security Feature Bypass (CVE-2021-26414)</a>
+                                </p>
+                            </div>
+
+                            <p>
+                                The ASComm IoT PLC Driver Library by Automated Solutions, is a fully-managed .NET Standard 2.0 library that delivers communications connectivity between
+                                .NET 6.0, 5.0 and Core applications. Run your application on Windows, Linux, macOS and Android to read and write registers on a broad range of industrial devices
+                                (including Allen-Bradley by Rockwell Automation, Siemens S7, Modbus / TCP &amp; GE SRTP) using industrial
+                                communications protocols.
+                            </p>
+
+                            <p>
+                                All supported protocol drivers are implemented in the ASComm IoT class library, providing a single, consistent API regardless of the underlying protocols or hardware devices. Development licenses for each driver can be licensed individually, so you only
+                                pay for the drivers that you are developing with.
+                            </p>
+
+                            <p>
+                                Use Visual Basic, C#, C++, and ASP.NET to create HMI, SCADA, data logging, and Industrial IoT applications targeting .NET 6.0, 5.0 and Core, Universal Windows Platform (UWP), Windows Desktop, ASP .NET Core, service, Linux and Xamarin.
+                            </p>
+
+                            <p>Powerful pre-built example applications with VB and C# source code included in development package.</p>
+
+                            <p>Runtime-free for <a href="/license/agreements/ascommiot">qualified applications</a></p>
+
+                            <div class="btnContainer">
+                                <h4 class="btnContainerHeader">Click the button below to download Machine Edition (Includes 30 Day Trial License for new users)</h4>
+                                <a href="/demos/demoform_ascommiot.aspx" class="btn trialBtn orangeBtn generalBtn">Download Machine Edition</a>
+                            </div>
+
+                            <div class="btnContainer row">
+                                <div class="col-sm-12 col-md-4">
+                                    <a href="/pub/ascommiot/readme.html" class="btn oneThirdBtn generalBtn">Revision History</a>
+                                </div>
+                                <div class="col-sm-12 col-md-4">
+                                    <a href="/license/agreements/ascommiot" class="btn oneThirdBtn generalBtn">License
+                    Agreement</a>
+                                </div>
+                                <div class="col-sm-12 col-md-4">
+                                    <a href="/license/ascommiot" class="btn oneThirdBtn generalBtn">License
+                    Instructions</a>
+                                </div>
+                            </div>
+
+                        </div>
+                        <br>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End pageContent-->
+
+    <!-- Driver availability -->
+    <div class="pageContent darkerBG">
+        <div class="container">
+            <div class="intContHead">
+                <h2>Driver Availability</h2>
+                <h3>Click on a driver from the list below for details, pricing and ordering information</h3>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Individual Drivers</th>
+                        <th scope="col">Available</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><a href="./ab.logix.net.asp">Allen-Bradley Ethernet Driver for Logix Family (ControlLogix,
+                CompactLogix, GuardLogix, etc.) and Micro800</a></td>
+                        <td><a href="./ab.logix.net.asp#catalogInfo">Buy Now</a></td>
+                    </tr>
+                    <tr>
+                        <td><a href="./ab.legacy.net.asp">Allen-Bradley Ethernet Driver for Legacy Controllers (PLC-5, SLC 500,
+                MicroLogix))</a></td>
+                        <td><a href="./ab.legacy.net.asp#catalogInfo">Buy Now</a></td>
+                    </tr>
+                    <tr>
+                        <td><a href="./ge.srtp.net.asp">GE SRTP Ethernet Driver for PACSystems, Series-90, and VersaMax</a></td>
+                        <td><a href="./ge.srtp.net.asp#catalogInfo">Buy Now</a></td>
+                    </tr>
+                    <tr>
+                        <td><a href="./mb.client.net.asp">Modbus/TCP Client (Master) Driver</a></td>
+                        <td><a href="./mb.client.net.asp#catalogInfo">Buy Now</a></td>
+                    </tr>
+                    <tr>
+                        <td><a href="./si.s7.net.asp">Siemens S7 Ethernet Driver for S7-200, S7-300, S7-400, S7-1200, S7-1500</a>
+                        </td>
+                        <td><a href="./si.s7.net.asp#catalogInfo">Buy Now</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <br>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Driver Suites</th>
+                        <th scope="col">Available</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <a href="./ab.suite.net.asp">Allen-Bradley Ethernet Suite for Logix Family (ControlLogix, CompactLogix,
+                Micro800, etc.)<br>
+                                + Legacy Controllers (PLC-5, SLC 500, and MicroLogix)</a>
+                        </td>
+                        <td><a href="./ab.suite.net.asp#catalogInfo">Buy Now</a></td>
+                    </tr>
+                    <tr>
+                        <td><a href="./as.suite.net.asp">Ethernet Suite for A-B Logix, A-B Micro800, A-B Legacy, GE SRTP,
+                Modbus/TCP, and Siemens S7</a></td>
+                        <td><a href="./as.suite.net.asp#catalogInfo">Buy Now</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!--End driver availability-->
+
+    <!-- Page Image -->
+    <div class="pageContent">
+        <div class="container">
+            <div class="intContHead">
+                <h2>ASComm IoT PLC Communications Library Portal</h2>
+            </div>
+        </div>
+
+        <div class="flex-container container">
+            <div class="col-sm-12 col-md-7 col-lg-8 pageImg">
+                <img src="/images/examples/ascomm-iot-plc-driver-library-portal.png" alt="IoT PLC Driver library portal">
+                <br>
+                <br>
+                <div class="tablet_only portalBtns">
+                    <a href="/demos/demoform_ascommiot.aspx" class="btn generalBtn orangeBtn">Download Machine Edition</a>
+                    <a href="/contact/contactform.aspx" class="btn generalBtn orangeBtn">Contact Us</a>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-5 col-lg-4 mt-5 mt-md-0">
+                <p>
+                    The Automated Solutions ASComm IoT PLC Driver library portal (available in both Developer and Machine Edition) allows you to browse through example applications 
+                    and projects that we built to show you some possible ways our libraries can be used. In addition, we have a very well documented help system
+                    with thorough explanations and code examples. You can also activate and deactivate product libraries through our License Manager application.
+                </p>
+
+                <div class="mobile_desktop portalBtns">
+                    <p>Click the button below to download Machine Edition (Includes 30 Day Trial License for new users)</p>
+                    <a href="/demos/demoform_ascommiot.aspx" class="btn generalBtn orangeBtn">Download Machine Edition</a>
+                    <a href="/contact/contactform.aspx" class="btn generalBtn orangeBtn">Contact Us</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key benefits -->
+    <div id="keyBenefits" class="pageContent">
+        <div class="container">
+            <div class="intContHead">
+                <h2>Key Benefits</h2>
+            </div>
+            <div class="flex-container">
+                <div class="mb-2 col-sm-12 col-md-4">
+                    <img class="d-inline-block" src="/images/icons/bullet.png" alt="automated solutions bullet point">
+                    <p class="float-right">Non-commercial and Commercial licensing available</p>
+                </div>
+                <div class="mb-2 col-sm-12 col-md-4">
+                    <img class="d-inline-block" src="/images/icons/bullet.png" alt="automated solutions bullet point">
+                    <p class="float-right">Runs on Windows 10 IoT Core devices like Raspberry Pi</p>
+                </div>
+                <div class="mb-2 col-sm-12 col-md-4">
+                    <img class="d-inline-block" src="/images/icons/bullet.png" alt="automated solutions bullet point">
+                    <p class="float-right">Can be used to power your IoT edge devices</p>
+                </div>
+                <div class="mb-2 col-sm-12 col-md-4">
+                    <img class="d-inline-block" src="/images/icons/bullet.png" alt="automated solutions bullet point">
+                    <p class="float-right">100% managed code</p>
+                </div>
+                <div class="mb-2 col-sm-12 col-md-4">
+                    <img class="d-inline-block" src="/images/icons/bullet.png" alt="automated solutions bullet point">
+                    <p class="float-right">.NET 6.0 and 5.0 compatible</p>
+                </div>
+                <div class="mb-2 col-sm-12 col-md-4">
+                    <img class="d-inline-block" src="/images/icons/bullet.png" alt="automated solutions bullet point">
+                    <p class="float-right">NET Core 2.0 and higher compatible</p>
+                </div>
+                <div class="mb-2 col-sm-12 col-md-4">
+                    <img class="d-inline-block" src="/images/icons/bullet.png" alt="automated solutions bullet point">
+                    <p class="float-right">Visual Studio.NET 2017, 2019 &amp; 2022 Compatible</p>
+                </div>
+                <div class="mb-2 col-sm-12 col-md-4">
+                    <img class="d-inline-block" src="/images/icons/bullet.png" alt="automated solutions bullet point">
+                    <p class="float-right">Supported Project types include UWP, Web, Windows Desktop, WPF, console, and service apps</p>
+                </div>
+                <div class="mb-2 col-sm-12 col-md-4">
+                    <img class="d-inline-block" src="/images/icons/bullet.png" alt="automated solutions bullet point">
+                    <p class="float-right">Extremely high performance - 5~10 mSec typical transaction time</p>
+                </div>
+                <div class="mb-2 col-sm-12 col-md-4">
+                    <img class="d-inline-block" src="/images/icons/bullet.png" alt="automated solutions bullet point">
+                    <p class="float-right">Highly optimized to minimize communications transactions</p>
+                </div>
+                <div class="mb-2 col-sm-12 col-md-4">
+                    <img class="d-inline-block" src="/images/icons/bullet.png" alt="automated solutions bullet point">
+                    <p class="float-right">All PLC drivers included in single component, providing consistent API regardless of target device brand or model</p>
+                </div>
+                <div class="mb-2 col-sm-12 col-md-4">
+                    <img class="d-inline-block" src="/images/icons/bullet.png" alt="automated solutions bullet point">
+                    <p class="float-right">Development licenses for each driver can be licensed individually, so you only pay for the drivers that you need</p>
+                </div>
+                <div class="mb-2 col-sm-12 col-md-4">
+                    <img class="d-inline-block" src="/images/icons/bullet.png" alt="automated solutions bullet point">
+                    <p class="float-right">Data items can be added to groups, which can be configured for timed polling</p>
+                </div>
+                <div class="mb-2 col-sm-12 col-md-4">
+                    <img class="d-inline-block" src="/images/icons/bullet.png" alt="automated solutions bullet point">
+                    <p class="float-right">Multiple groups can be created per device to accommodate multiple update rates</p>
+                </div>
+                <div class="mb-2 col-sm-12 col-md-4">
+                    <img class="d-inline-block" src="/images/icons/bullet.png" alt="automated solutions bullet point">
+                    <p class="float-right">Supports data change and error events</p>
+                </div>
+                <div class="mb-2 col-sm-12 col-md-4">
+                    <img class="d-inline-block" src="/images/icons/bullet.png" alt="automated solutions bullet point">
+                    <p class="float-right">Built-in serialization allows you to save/load your entire communications configuration with a single line of code</p>
+                </div>
+                <div class="mb-2 col-sm-12 col-md-4">
+                    <img class="d-inline-block" src="/images/icons/bullet.png" alt="automated solutions bullet point">
+                    <p class="float-right">Single component runs multiple concurrent protocols</p>
+                </div>
+                <div class="mb-2 col-sm-12 col-md-4">
+                    <img class="d-inline-block" src="/images/icons/bullet.png" alt="automated solutions bullet point">
+                    <p class="float-right">Object inheritance provides consistent user interface, regardless of underlying communications protocol</p>
+                </div>
+
+                <div class="mb-2 col-sm-12 col-md-4">
+                    <img class="d-inline-block" src="/images/icons/bullet.png" alt="automated solutions bullet point">
+                    <p class="float-right">Licensing can be accomplished via Internet, telephone, or email</p>
+                </div>
+                <div class="mb-2 col-sm-12 col-md-4">
+                    <img class="d-inline-block" src="/images/icons/bullet.png" alt="automated solutions bullet point">
+                    <p class="float-right">Extensive documentation</p>
+                </div>
+                <div class="mb-2 col-sm-12 col-md-4">
+                    <img class="d-inline-block" src="/images/icons/bullet.png" alt="automated solutions bullet point">
+                    <p class="float-right">High quality .NET Core, UWP and Desktop example applications with C# and VB source code</p>
+                </div>
+                <div class="mb-2 col-sm-12 col-md-4">
+                    <img class="d-inline-block" src="/images/icons/bullet.png" alt="automated solutions bullet point">
+                    <p class="float-right">No Hardware Keys - software licensing mechanism is simple and intuitive</p>
+                </div>
+                <div class="mb-2 col-sm-12 col-md-4">
+                    <img class="d-inline-block" src="/images/icons/bullet.png" alt="automated solutions bullet point">
+                    <p class="float-right">Allows for unattended license transfer across machines</p>
+                </div>
+                <div class="mb-2 col-sm-12 col-md-4">
+                    <img class="d-inline-block" src="/images/icons/bullet.png" alt="automated solutions bullet point">
+                    <p class="float-right">Easily connect to your factory floor systems.</p>
+                </div>
+                <div class="mb-2 col-sm-12 col-md-4">
+                    <img class="d-inline-block" src="/images/icons/bullet.png" alt="automated solutions bullet point">
+                    <p class="float-right">Immediate Internet delivery and online license activation.</p>
+                </div>
+                <div class="mb-2 col-sm-12 col-md-4">
+                    <img class="d-inline-block" src="/images/icons/bullet.png" alt="automated solutions bullet point">
+                    <p class="float-right">
+                        No runtime fees or keys for
+                            <a role="button" href="/license/agreements/ascommiot">qualified applications.</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End key benefits-->
+
+    <!-- License Types -->
+    <div class="pageContent darkerBG">
+        <div class="container">
+            <div class="intContHead">
+                <h2>License Types</h2>
+            </div>
+            <div class="row">
+                <div class="mb-3 mb-lg-0 col-sm-12 col-lg-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h3>Non-Commercial Developer License</h3>
+                            <p>
+                                Allows for application development on a single PC and runtime-free deployment to multiple PCs.
+                            </p>
+                            <p>
+                                Runtime license is embedded into executable, so no licensing steps or files are required on runtime PCs.
+                            </p>
+                            <h4>Who should purchase</h4>
+                            <ul>
+                                <li>End users that require runtime-free deployment within their organization.
+                                </li>
+                                <li>Equipment OEMs, machine builders, and system integrators building applications that qualify for runtime-free distribution per
+                                    <a href="/license/agreements/ascomm">license agreement.
+                                    </a>
+                                </li>
+                                <li>Developers building applications that qualify for runtime-free distribution per
+                                    <a href="/license/agreements/ascomm">license agreement.
+                                    </a>
+                                </li>
+                            </ul>
+                            <p>Discounted Team Edition pricing is available for teams starting at two developers.</p>
+                            <p>
+                                Commercial developers, please contact our
+                                <script type="text/javascript">
+                                    var part1 = "sales";
+                                    var part2 = "automatedsolutions.com";
+                                    //var part3 = "Contact Sales Team";
+                                    document.write('<a href="mai' + 'lto:' + part1 + '@' + part2 + '?subject=Automated Solutions Commercial License Inquiry...&body=Please contact me regarding commercial licensing.%0A%0AName:%0ACompany:%0APhone:">');
+                                    document.write(' Sales Group </a>');
+                                    //document.write(' Sales Group ');
+                                </script><a href="mailto:sales@automatedsolutions.com?subject=Automated Solutions Commercial License Inquiry...&amp;body=Please contact me regarding commercial licensing.%0A%0AName:%0ACompany:%0APhone:"> Sales Group </a>
+                                to inquire about commercial licensing.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3 mb-lg-0 col-sm-12 col-lg-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h3>Machine License</h3>
+                            <p>Allows for application development and runtime on a single PC.</p>
+                            <p>Suitable for commercial and non-commercial use.</p>
+                            <p>Cannot be used to build deployable applications (with embedded runtime license).</p>
+                            <p>Cannot be used to build UWP applications on any platform.</p>
+                            <p>Cannot be used to build applications that run on Windows 10 IoT Core, Xamarin, or Linux.</p>
+
+                            <h4>Who should purchase</h4>
+
+                            <ul>
+                                <li>Developers that will be developing and running their application on a single PC.</li>
+                                <li>Developers building applications for customers where application source code is included.</li>
+                                <li>Developers building applications that do not qualify for runtime-free distribution per license agreement.
+                                </li>
+                                <li>Development houses that have multiple developers and a single 'build PC' with Developer License.
+                                </li>
+                            </ul>
+
+                            <p>Quantity discounts available starting at five licenses. </p>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-lg-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h3>Commercial Developer License</h3>
+                            <p>Details coming soon</p>
+                            <p>
+                                Commercial software/system vendors, please contact our
+                                <script type="text/javascript">
+                                    var part1 = "sales";
+                                    var part2 = "automatedsolutions.com";
+                                    //var part3 = "Contact Sales Team";
+                                    document.write('<a href="mai' + 'lto:' + part1 + '@' + part2 + '?subject=Automated Solutions Commercial License Inquiry...&body=Please contact me regarding commercial licensing.%0A%0AName:%0ACompany:%0APhone:">');
+                                    document.write(' Sales Group </a>');
+                                    //document.write(' Sales Group ');
+                                </script><a href="mailto:sales@automatedsolutions.com?subject=Automated Solutions Commercial License Inquiry...&amp;body=Please contact me regarding commercial licensing.%0A%0AName:%0ACompany:%0APhone:"> Sales Group </a>
+                                to inquire about commercial licensing.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End license types-->
+
+    <!-- Compatibility -->
+    <div id="compatibility" class="pageContent">
+        <div class="container">
+            <div class="intContHead">
+                <h2>Compatibility</h2>
+            </div>
+            <div class="row">
+                <div class="mb-3 mb-lg-0 col-sm-12 col-lg-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h3>Runtime Platforms</h3>
+                            <h4>Developer &amp; Team Edition</h4>
+                            <ul>
+                                <li>.NET 6.0 and 5.0</li>
+                                <li>.NET Core 2.0 or higher</li>
+                                <li>.NET Framework 4.7.2 or higher</li>
+                                <li>Mono 5.4 or higher</li>
+                                <li>Universal Windows Platform 10.0.16299 or higher</li>
+                                <li>Xamarin.Android 8.0 or higher</li>
+                                <li>Xamarin.iOS (coming soon) 10.14 or higher</li>
+                                <li>Xamarin.Mac (coming soon) 3.8 or higher</li>
+                            </ul>
+                            <h4>Machine Edition</h4>
+                            <ul>
+                                <li>.NET 6.0 and 5.0</li>
+                                <li>.NET Core 2.0 or higher</li>
+                                <li>.NET Framework 4.7.2 or higher</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3 mb-lg-0 col-sm-12 col-lg-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h3>Operating Systems</h3>
+                            <h4>Developer &amp; Team Edition</h4>
+                            <ul>
+                                <li>Windows 11</li>
+                                <li>Windows 10</li>
+                                <li>Windows 10 IoT Enterprise</li>
+                                <li>Windows 10 IoT Core</li>
+                                <li>Linux</li>
+                                <li>Android</li>
+                                <li>iOS (coming soon)</li>
+                                <li>Mac (coming soon)</li>
+                            </ul>
+                            <h4>Machine Edition</h4>
+                            <ul>
+                                <li>Windows 11</li>
+                                <li>Windows 10</li>
+                                <li>Windows 10 IoT Enterprise</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-12 col-lg-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h3>Development Platforms</h3>
+                            <ul>
+                                <li>Visual Studio 2022</li>
+                                <li>Visual Studio 2019</li>
+                                <li>Visual Studio 2017</li>
+                                <li>Visual Studio for Mac not supported</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End compatibility -->
+
+    <!--FOOTER-->
+    <footer id="footer" class="bg-dark">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 col-sm-12 footColumns">
+                <h3>Contact Us</h3>
+                <p class="m-0 text-white">Phone: <script>writePhone();</script><a href="tel:+17075785882">707-578-5882</a>
+                    <br>Toll Free: <script>writeTollFree();</script><a href="tel:+18004104632">800-410-4632</a>
+                    <br>Fax: <script>writeFax();</script><a href="tel:+17075795756">707-579-5756</a></p>
+                <br>
+            </div>
+            <div class="col-md-4 col-sm-12 footColumns">
+                <h3>News</h3>
+                <p class="m-0 text-white">January 21, 2022
+                <br>ASComm IoT for .NET 6.0 and 5.0 Released.
+                <br>
+                    <a href="/products/iot/ascommiot">Click here for details.</a>
+                </p>
+                <br>
+            </div>
+            <div class="col-md-4 col-sm-12 footColumns">
+                <h3>Quick Links</h3>
+                <p class="m-0 text-white">
+                    <a href="/demos">Download Trial Software</a>
+                    <br>
+                    <a href="/technotes/componentmatrix">Help Me Choose a Component</a>
+                    <br>
+                    <a href="/quotations">Customer Feedback</a>
+                    <br>
+                    <a href="/customers">Our Customers</a>
+                    <br>
+                    <a target="_blank" href="https://secure.softwarekey.com/solo/customers">Customer Login</a>
+                    <br>
+                    <a href="/partners"> Our Partners</a>
+                </p>
+            </div>
+        </div>
+        <br>
+    </div>
+
+    <div class="copyright">
+        <div class="container">
+            <div class="col-md-12 col-sm-12 footColumns">
+                <p class="m-0 text-white">Copyright © 2015-2019 Automated Solutions, Inc. All Rights Reserved.<br>
+                     Information in this document is subject to change without notice.<br>
+                     Other products and companies referred to herein are trademarks or registered trademarks
+                    of their respective companies or mark holders.<br>
+                     <!--GLYPHICONS courtesy of <a target="_blank" href="http://glyphicons.com/">GLYPHICONS</a></p>-->
+            </p></div>
+        </div>
+        </div>
+</footer>
+
+
+<!-- /.container -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="/vendor/jquery/jquery.min.js"></script>
+    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!--SEARCH BAR FUNCTIONALITY-->
+      <!-- Start of Site Search 360 script (put right before the closing -->
+  <script type="text/javascript">
+    window.ss360Config = {
+        style: {
+            themeColor: "#E17900",
+            accentColor: "#002531",
+            suggestions: {
+                text: {
+                    color: "#333333"
+                },
+                background: {
+                    color: "#ffffff"
+                },
+                padding: "5px",
+                distanceFromTop: "0px",
+                border: {
+                    color: "#dddddd",
+                    radius: "0px"
+                }
+            },
+            searchBox: {
+                text: {
+                    color: "#333333",
+                    size: "14px"
+                },
+                background: {
+                    color: "#ffffff"
+                },
+                border: {
+                    color: "#dddddd",
+                    radius: "0px"
+                },
+                padding: "8px",
+                icon: {
+                    image: "magnifier",
+                    color: "#666666"
+                }
+            }
+        },
+        tracking: {
+            providers: [
+                "GA"
+            ]
+        },
+        siteId: "www.automatedsolutions.com",
+        showErrors: false
+    };
+    
+    var e=document.createElement("script");
+    e.async=!0;
+    e.src="https://cdn.sitesearch360.com/v13/sitesearch360-v13.min.js";
+    document.getElementsByTagName("body")[0].appendChild(e);
+    </script><script async="" src="https://cdn.sitesearch360.com/v13/sitesearch360-v13.min.js"></script>
+    <!-- End of Site Search 360 script -->
+
+
+
+<div class="ss360-loader"><div class="ss360-loader ss360-loader__bounce ss360-tc-bg" style="animation-duration: 2.25s;"></div>
+			   <div class="ss360-loader ss360-loader__bounce ss360-tc-bg ss360-loader__bounce--delayed" style="animation-duration: 2.25s;"></div></div><section id="ss360-layer" style="display:none" aria-label="Search Results" class="ss360-layer ss360-n-section"></section><style id="ss360-theme-color">.ss360-tc-c,.ss360-tc-c--hover:hover,.ss360-tc-c--hover:focus{color:#E17900}.ss360-tc-b,.ss360-tc-b--hover:hover,.ss360-tc-b--hover:focus,.ss360-tc-b--focus:focus{border-color:#E17900}.ss360-tc-bg,.ss360-tc-bg--hover:hover,.ss360-tc-bg--hover:focus,.ss360-tc-bg--focus:focus{background-color:#E17900}.ss360-ac-c,.ss360-ac-c--hover:hover,.ss360-ac-c--hover:focus{color:#002531}.ss360-ac-b,.ss360-ac-b--hover:hover,.ss360-ac-b--hover:focus,.ss360-ac-b--focus:focus{border-color:#002531}.ss360-ac-bg,.ss360-ac-bg--hover:hover,.ss360-ac-bg--hover:focus,.ss360-ac-bg--focus:focus{background-color:#002531}.ss360-acd-bg--hover:hover,.ss360-acd-bg--hover:focus{background-color:#001f29}.ss360-acd-b--hover:hover,.ss360-acd-b--hover:focus{border-color:#001f29}#ss360-layer .ss360-tc-c,#ss360-layer .ss360-tc-c--hover:hover,#ss360-layer .ss360-tc-c--hover:focus{color:#E17900}#ss360-layer .ss360-tc-b,#ss360-layer .ss360-tc-b--hover:hover,#ss360-layer .ss360-tc-b--hover:focus,#ss360-layer .ss360-tc-b--focus:focus{border-color:#E17900}#ss360-layer .ss360-tc-bg,#ss360-layer .ss360-tc-bg--hover:hover,#ss360-layer .ss360-tc-bg--hover:focus,#ss360-layer .ss360-tc-bg--focus:focus{background-color:#E17900}#ss360-layer .ss360-ac-c,#ss360-layer .ss360-ac-c--hover:hover,#ss360-layer .ss360-ac-c--hover:focus{color:#002531}#ss360-layer .ss360-ac-b,#ss360-layer .ss360-ac-b--hover:hover,#ss360-layer .ss360-ac-b--hover:focus,#ss360-layer .ss360-ac-b--focus:focus{border-color:#002531}#ss360-layer .ss360-ac-bg,#ss360-layer .ss360-ac-bg--hover:hover,#ss360-layer .ss360-ac-bg--hover:focus,#ss360-layer .ss360-ac-bg--focus:focus{background-color:#002531}#ss360-layer .ss360-acd-bg--hover:hover,#ss360-layer .ss360-acd-bg--hover:focus{background-color:#001f29}#ss360-layer .ss360-acd-b--hover:hover,#ss360-layer .ss360-acd-b--hover:focus{border-color:#001f29}</style><style id="unibox-theme-color">.unibox-tc-c,.unibox-tc-c--hover:hover,.unibox-tc-c--hover:focus{color:#E17900}.unibox-tc-b,.unibox-tc-b--hover:hover,.unibox-tc-b--hover:focus,.unibox-tc-b--focus:focus{border-color:#E17900}.unibox-tc-bg,.unibox-tc-bg--hover:hover,.unibox-tc-bg--hover:focus,.unibox-tc-bg--focus:focus{background-color:#E17900}#unibox-suggest-box .unibox-tc-c,#unibox-suggest-box .unibox-tc-c--hover:hover,#unibox-suggest-box .unibox-tc-c--hover:focus{color:#E17900}#unibox-suggest-box .unibox-tc-b,#unibox-suggest-box .unibox-tc-b--hover:hover,#unibox-suggest-box .unibox-tc-b--hover:focus,#unibox-suggest-box .unibox-tc-b--focus:focus{border-color:#E17900}#unibox-suggest-box .unibox-tc-bg,#unibox-suggest-box .unibox-tc-bg--hover:hover,#unibox-suggest-box .unibox-tc-bg--hover:focus,#unibox-suggest-box .unibox-tc-bg--focus:focus{background-color:#E17900}</style></body></html>

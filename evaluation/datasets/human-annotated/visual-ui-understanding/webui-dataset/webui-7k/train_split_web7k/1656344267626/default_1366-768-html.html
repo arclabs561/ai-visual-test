@@ -1,0 +1,1541 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<title>Embulk: Configuration</title>
+<link rel="stylesheet" href="/assets/css/page.css" type="text/css">
+</head>
+<body id="page">
+  <header>
+<div id="logo-title">
+<a href="/"><img id="embulk-logo" width="112" height="64" src="/assets/images/embulk-logo.svg" alt="Jumping orance orca, which is a logo of Embulk"></a><h1 id="embulk-title"><a href="/">embulk</a></h1>
+</div>
+<div id="top-menu">
+<nav id="top-navigation" aria-label="Top navigation">
+<ul>
+<li><a href="/docs/">Docs</a></li>
+<li><a href="/articles/">Articles</a></li>
+<li><a href="/recipes/">Recipes</a></li>
+<li><a href="https://plugins.embulk.org/">Plugins</a></li>
+<li><a href="https://dev.embulk.org/">Developers</a></li>
+<li><a href="https://github.com/embulk/">GitHub</a></li>
+</ul>
+</nav>
+</div>
+</header>
+
+  <main>
+    <section id="content">
+      <h2 id="embulk-configuration-file-format">Embulk configuration file format</h2>
+
+<p>Embulk uses a YAML file to define a bulk data loading. Here is an example of the file:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>in:
+  type: file
+  path_prefix: ./mydata/csv/
+  decoders:
+  - {type: gzip}
+  parser:
+    charset: UTF-8
+    newline: CRLF
+    type: csv
+    delimiter: ','
+    quote: '"'
+    escape: '"'
+    null_string: 'NULL'
+    skip_header_lines: 1
+    columns:
+    - {name: id, type: long}
+    - {name: account, type: long}
+    - {name: time, type: timestamp, format: '%Y-%m-%d %H:%M:%S'}
+    - {name: purchase, type: timestamp, format: '%Y%m%d'}
+    - {name: comment, type: string}
+filters:
+  - type: speedometer
+    speed_limit: 250000
+out:
+  type: stdout
+</code></pre></div></div>
+
+<p>A configuration file consists of following sections:</p>
+
+<ul>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">in:</code> Input plugin options. An input plugin is either record-based (<a href="https://github.com/embulk/embulk-input-jdbc">MySQL</a>, <a href="https://github.com/lulichn/embulk-input-dynamodb">DynamoDB</a>, etc) or file-based (<a href="https://github.com/embulk/embulk-input-s3">S3</a>, <a href="https://github.com/takumakanari/embulk-input-http">HTTP</a>, etc).</p>
+
+    <ul>
+      <li>
+        <p><code class="language-plaintext highlighter-rouge">parser:</code> If the input is file-based, parser plugin parses a file format (built-in csv, <a href="https://github.com/takumakanari/embulk-parser-json">json</a>, etc).</p>
+      </li>
+      <li>
+        <p><code class="language-plaintext highlighter-rouge">decoder:</code> If the input is file-based, decoder plugin decodes compression or encryption (built-in gzip, bzip2, <a href="https://github.com/hata/embulk-decoder-commons-compress">zip</a>, <a href="https://github.com/hata/embulk-decoder-commons-compress">tar.gz</a>, etc).</p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">out:</code> Output plugin options. An output plugin is either record-based (<a href="https://github.com/embulk/embulk-output-jdbc">Oracle</a>, <a href="https://github.com/muga/embulk-output-elasticsearch">Elasticsearch</a>, etc) or file-based (<a href="https://github.com/hakobera/embulk-output-gcs">Google Cloud Storage</a>, <a href="https://github.com/embulk/embulk-output-command">Command</a>, etc)</p>
+
+    <ul>
+      <li>
+        <p><code class="language-plaintext highlighter-rouge">formatter:</code> If the output is file-based, formatter plugin formats a file format (such as built-in csv, <a href="https://github.com/takei-yuya/embulk-formatter-jsonl">jsonl</a>)</p>
+      </li>
+      <li>
+        <p><code class="language-plaintext highlighter-rouge">encoder:</code> If the output is file-based, encoder plugin encodes compression or encryption (such as built-in gzip or bzip2)</p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">filters:</code> Filter plugins options (optional).</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">exec:</code> Executor plugin options. An executor plugin control parallel processing (such as built-in thread executor)</p>
+  </li>
+</ul>
+
+<p>In many cases, what you need to write is <code class="language-plaintext highlighter-rouge">in:</code>, <code class="language-plaintext highlighter-rouge">out</code>: and <code class="language-plaintext highlighter-rouge">formatter:</code> sections only because <code class="language-plaintext highlighter-rouge">guess</code> command guesses <code class="language-plaintext highlighter-rouge">parser:</code> and <code class="language-plaintext highlighter-rouge">decoder:</code> options for you. See also the <a href="https://www.embulk.org/">Quick Start</a>.</p>
+
+<h3 id="using-variables">Using variables</h3>
+
+<p>You can embed environment variables in configuration file using <a href="http://liquidmarkup.org/">Liquid template engine</a> (This is experimental feature. Behavior might change or be removed in future releases).</p>
+
+<p>To use template engine, configuration file name must end with <code class="language-plaintext highlighter-rouge">.yml.liquid</code>.</p>
+
+<p>Environment variables are set to <code class="language-plaintext highlighter-rouge">env</code> variable.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>in:
+  type: file
+  path_prefix: 
+  decoders:
+  - {type: gzip}
+  parser:
+    ...
+out:
+  type: postgresql
+  host: 
+  port: 
+  user: 
+  password: ""
+  database: embulk_load
+  mode: insert
+  table: 
+</code></pre></div></div>
+
+<h3 id="including-files">Including files</h3>
+
+<p>Configuration file can include another configuration file. To use it, configuration file name must end with <code class="language-plaintext highlighter-rouge">.yml.liquid</code>.</p>
+
+<p>File will be searched from the relative path of the input configuration file. And file name will be <code class="language-plaintext highlighter-rouge">_&lt;name&gt;.yml.liquid</code>. For example, if you add <code class="language-plaintext highlighter-rouge">{% include 'subdir/inc' %}</code> tag to <code class="language-plaintext highlighter-rouge">myconfig/config.yml.liquid</code> file, it includes <code class="language-plaintext highlighter-rouge">myconfig/subdir/_inc.yml.liquid</code> file.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># config.yml.liquid
+{% include 'in_mysql' %}
+out:
+  type: stdout
+</code></pre></div></div>
+
+<!-- -->
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># _in_mysql.yml.liquid
+in:
+  type: mysql
+</code></pre></div></div>
+
+<p>With above 2 files, actual configuration file will be:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># $ embulk run config.yml.liquid
+in:
+  type: mysql
+out:
+  type: stdout
+</code></pre></div></div>
+
+<h2 id="local-file-input-plugin">Local file input plugin</h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">file</code> input plugin reads files from local file system.</p>
+
+<h3 id="options">Options</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>name</th>
+      <th>type</th>
+      <th>description</th>
+      <th>required?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>path_prefix</td>
+      <td>string</td>
+      <td>Path prefix of input files</td>
+      <td>required</td>
+    </tr>
+    <tr>
+      <td>parser</td>
+      <td>hash</td>
+      <td>Parser configuration (see below)</td>
+      <td>required</td>
+    </tr>
+    <tr>
+      <td>decoders</td>
+      <td>array</td>
+      <td>Decoder configuration (see below)</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td>last_path</td>
+      <td>string</td>
+      <td>Name of last read file in previous operation</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td>follow_symlinks</td>
+      <td>boolean</td>
+      <td>If <code class="language-plaintext highlighter-rouge">true</code>, follow symbolic link directories</td>
+      <td><code class="language-plaintext highlighter-rouge">false</code> by default</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The <code class="language-plaintext highlighter-rouge">path_prefix</code> option is required. If you have files as following, you may set <code class="language-plaintext highlighter-rouge">path_prefix: /path/to/files/sample_</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.
+`-- path
+    `-- to
+        `-- files
+            |-- sample_01.csv   -&gt; read
+            |-- sample_02.csv   -&gt; read
+            |-- sample_03.csv   -&gt; read
+            |-- sample_04.csv   -&gt; read
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">last_path</code> option is used to skip files older than or same with the file in dictionary order.
+For example, if you set <code class="language-plaintext highlighter-rouge">last_path: /path/to/files/sample_02.csv</code>, Embulk reads following files:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.
+`-- path
+    `-- to
+        `-- files
+            |-- sample_01.csv   -&gt; skip
+            |-- sample_02.csv   -&gt; skip
+            |-- sample_03.csv   -&gt; read
+            |-- sample_04.csv   -&gt; read
+</code></pre></div></div>
+
+<h3 id="example">Example</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>in:
+  type: file
+  path_prefix: /path/to/files/sample_
+  last_path: /path/to/files/sample_02.csv
+  parser:
+    ...
+</code></pre></div></div>
+
+<p>In most of cases, you’ll use guess to configure the parser and decoders. See also <a href="https://github.com/embulk/embulk#quick-start">Quick Start</a>.</p>
+
+<h2 id="csv-parser-plugin">CSV parser plugin</h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">csv</code> parser plugin parses CSV and TSV files.</p>
+
+<h3 id="options-1">Options</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>name</th>
+      <th>type</th>
+      <th>description</th>
+      <th>required?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>delimiter</td>
+      <td>string</td>
+      <td>Delimiter character such as <code class="language-plaintext highlighter-rouge">,</code> for CSV, <code class="language-plaintext highlighter-rouge">"\t"</code> for TSV, <code class="language-plaintext highlighter-rouge">"|"</code></td>
+      <td><code class="language-plaintext highlighter-rouge">,</code> by default</td>
+    </tr>
+    <tr>
+      <td>quote</td>
+      <td>string</td>
+      <td>The character surrounding a quoted value. Setting <code class="language-plaintext highlighter-rouge">null</code> disables quoting.</td>
+      <td><code class="language-plaintext highlighter-rouge">"</code> by default</td>
+    </tr>
+    <tr>
+      <td>escape</td>
+      <td>string</td>
+      <td>Escape character to escape a special character. Setting <code class="language-plaintext highlighter-rouge">null</code> disables escaping.</td>
+      <td><code class="language-plaintext highlighter-rouge">\\</code> by default</td>
+    </tr>
+    <tr>
+      <td>skip_header_lines</td>
+      <td>integer</td>
+      <td>Skip this number of lines first. Set 1 if the file has header line.</td>
+      <td><code class="language-plaintext highlighter-rouge">0</code> by default</td>
+    </tr>
+    <tr>
+      <td>null_string</td>
+      <td>string</td>
+      <td>If a value is this string, converts it to NULL. For example, set <code class="language-plaintext highlighter-rouge">\N</code> for CSV files created by mysqldump</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td>trim_if_not_quoted</td>
+      <td>boolean</td>
+      <td>If true, remove spaces of a value if the value is not surrounded by the quote character</td>
+      <td><code class="language-plaintext highlighter-rouge">false</code> by default</td>
+    </tr>
+    <tr>
+      <td>quotes_in_quoted_fields</td>
+      <td>enum</td>
+      <td>Specify how to deal with irregular unescaped quote characters in quoted fields</td>
+      <td><code class="language-plaintext highlighter-rouge">ACCEPT_ONLY_RFC4180_ESCAPED</code> by default</td>
+    </tr>
+    <tr>
+      <td>comment_line_marker</td>
+      <td>string</td>
+      <td>Skip a line if the line begins with this string</td>
+      <td>null by default</td>
+    </tr>
+    <tr>
+      <td>allow_optional_columns</td>
+      <td>boolean</td>
+      <td>If true, set null to insufficient columns. Otherwise, skip the row in case of insufficient number of columns</td>
+      <td><code class="language-plaintext highlighter-rouge">false</code> by default</td>
+    </tr>
+    <tr>
+      <td>allow_extra_columns</td>
+      <td>boolean</td>
+      <td>If true, ignore too many columns. Otherwise, skip the row in case of too many columns</td>
+      <td><code class="language-plaintext highlighter-rouge">false</code> by default</td>
+    </tr>
+    <tr>
+      <td>max_quoted_size_limit</td>
+      <td>integer</td>
+      <td>Maximum number of bytes of a quoted value. If a value exceeds the limit, the row will be skipped</td>
+      <td><code class="language-plaintext highlighter-rouge">131072</code> by default</td>
+    </tr>
+    <tr>
+      <td>stop_on_invalid_record</td>
+      <td>boolean</td>
+      <td>Stop bulk load transaction if a file includes invalid record (such as invalid timestamp)</td>
+      <td><code class="language-plaintext highlighter-rouge">false</code> by default</td>
+    </tr>
+    <tr>
+      <td>default_timezone</td>
+      <td>string</td>
+      <td>Time zone of timestamp columns if the value itself doesn’t include time zone description (eg. Asia/Tokyo)</td>
+      <td><code class="language-plaintext highlighter-rouge">UTC</code> by default</td>
+    </tr>
+    <tr>
+      <td>default_date</td>
+      <td>string</td>
+      <td>Set date part if the format doesn’t include date part.</td>
+      <td><code class="language-plaintext highlighter-rouge">1970-01-01</code> by default</td>
+    </tr>
+    <tr>
+      <td>newline</td>
+      <td>enum</td>
+      <td>CRLF, LF or CR. This value is inserted into multi-line quoted value as newline character</td>
+      <td><code class="language-plaintext highlighter-rouge">CRLF</code> by default</td>
+    </tr>
+    <tr>
+      <td>line_delimiter_recognized</td>
+      <td>enum</td>
+      <td>CRLF, LF or CR. If specified, only the character is recognized as line delimiter. Otherwise, all of them are recognized</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td>charset</td>
+      <td>enum</td>
+      <td>Character encoding (eg. ISO-8859-1, UTF-8)</td>
+      <td><code class="language-plaintext highlighter-rouge">UTF-8</code> by default</td>
+    </tr>
+    <tr>
+      <td>columns</td>
+      <td>hash</td>
+      <td>Columns (see below)</td>
+      <td>required</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The <code class="language-plaintext highlighter-rouge">quotes_in_quoted_fields</code> option specifies how to deal with irregular non-escaped stray quote characters.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>name</th>
+      <th>description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>ACCEPT_ONLY_RFC4180_ESCAPED</td>
+      <td>Default. Accept only specified and RFC 4180-style escaped quote characters.</td>
+    </tr>
+    <tr>
+      <td>ACCEPT_STRAY_QUOTES_ASSUMING_NO_DELIMITERS_IN_FIELDS</td>
+      <td>Accept stray quotes as-is in the field. Instead, it behaves undefined if delimiters are in fields. <code class="language-plaintext highlighter-rouge">"a"b"</code> goes <code class="language-plaintext highlighter-rouge">a"b</code>. <code class="language-plaintext highlighter-rouge">"a""b"</code> goes <code class="language-plaintext highlighter-rouge">a"b</code>.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The <code class="language-plaintext highlighter-rouge">columns</code> option declares the list of columns. This CSV parser plugin ignores the header line.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>name</th>
+      <th>description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>name</td>
+      <td>Name of the column</td>
+    </tr>
+    <tr>
+      <td>type</td>
+      <td>Type of the column (see below)</td>
+    </tr>
+    <tr>
+      <td>format</td>
+      <td>Format of the timestamp if type is timestamp</td>
+    </tr>
+    <tr>
+      <td>date</td>
+      <td>Set date part if the format doesn’t include date part</td>
+    </tr>
+  </tbody>
+</table>
+
+<aside class="note">
+<h4>Note</h4>
+<p>The Timestamp format refers to <a href="https://docs.ruby-lang.org/en/2.4.0/Date.html#method-i-strftime">Ruby strftime format</a>.</p>
+</aside>
+
+<p>List of types:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>name</th>
+      <th>description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>boolean</td>
+      <td>true or false</td>
+    </tr>
+    <tr>
+      <td>long</td>
+      <td>64-bit signed integers</td>
+    </tr>
+    <tr>
+      <td>timestamp</td>
+      <td>Date and time with nano-seconds precision</td>
+    </tr>
+    <tr>
+      <td>double</td>
+      <td>64-bit floating point numbers</td>
+    </tr>
+    <tr>
+      <td>string</td>
+      <td>Strings</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The <code class="language-plaintext highlighter-rouge">null_string</code> option converts certain values to NULL. Values will be converted as following:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>&nbsp;</th>
+      <th>non-quoted empty string</th>
+      <th>quoted empty string (“”)</th>
+      <th>non-quoted \N</th>
+      <th>quoted \N (“\N”)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">null_string: ""</code></td>
+      <td>NULL</td>
+      <td>NULL</td>
+      <td><code class="language-plaintext highlighter-rouge">\N</code></td>
+      <td><code class="language-plaintext highlighter-rouge">\N</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">null_string: \N</code></td>
+      <td>(empty string)</td>
+      <td>(empty string)</td>
+      <td>NULL</td>
+      <td>NULL</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">null_string: null</code> (default)</td>
+      <td>NULL</td>
+      <td>(empty string)</td>
+      <td><code class="language-plaintext highlighter-rouge">\N</code></td>
+      <td><code class="language-plaintext highlighter-rouge">\N</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>You can use <code class="language-plaintext highlighter-rouge">guess</code> to automatically generate the column settings. See also <a href="https://www.embulk.org/">Quick Start</a>.</p>
+
+<h3 id="example-1">Example</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>in:
+  ...
+  parser:
+    type: csv
+    charset: UTF-8
+    newline: CRLF
+    delimiter: "\t"
+    quote: '"'
+    escape: '"'
+    null_string: 'NULL'
+    skip_header_lines: 1
+    comment_line_marker: '#'
+    columns:
+    - {name: id, type: long}
+    - {name: account, type: long}
+    - {name: time, type: timestamp, format: '%Y-%m-%d %H:%M:%S'}
+    - {name: purchase, type: timestamp, format: '%Y%m%d'}
+    - {name: comment, type: string}
+</code></pre></div></div>
+
+<aside class="note">
+<h4>Note</h4>
+<p>CSV parser supports <code>format: '%s'</code> to parse UNIX timestamp in seconds (e.g. 1470148959) as timestamp.</p>
+<p>However, CSV parser itself can't parse UNIX timestamp in millisecond (e.g. 1470148959542) as timestamp. You can still parse the column as <code>long</code> type first, then apply <a href="https://github.com/sonots/embulk-filter-timestamp_format">timestamp_format</a> filter plugin to convert long to timestamp. Here is an example:</p>
+<pre><code>in:
+  type: file
+  path_prefix: /my_csv_files
+  parser:
+    ...
+    columns:
+    - {name: timestamp_in_seconds, type: timestamp, format: '%s'}
+    - {name: timestamp_in_millis, type: long}
+filters:
+  - type: timestamp_format
+    columns:
+      - {name: timestamp_in_millis, from_unit: ms}</code></pre>
+</aside>
+
+<h2 id="json-parser-plugin">JSON parser plugin</h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">json</code> parser plugin parses a JSON file that contains a sequence of JSON objects. Example:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{"time":1455829282,"ip":"93.184.216.34","name":"frsyuki"}
+{"time":1455829282,"ip":"172.36.8.109", "name":"sadayuki"}
+{"time":1455829284,"ip":"example.com","name":"Treasure Data"}
+{"time":1455829282,"ip":"10.98.43.1","name":"MessagePack"}
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">json</code> parser plugin outputs a single record named “record” (type is json).</p>
+
+<h3 id="options-2">Options</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>name</th>
+      <th>type</th>
+      <th>description</th>
+      <th>required?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>stop_on_invalid_record</td>
+      <td>boolean</td>
+      <td>Stop bulk load transaction if a file includes invalid record (such as invalid json)</td>
+      <td><code class="language-plaintext highlighter-rouge">false</code> by default</td>
+    </tr>
+    <tr>
+      <td>invalid_string_escapes</td>
+      <td>enum</td>
+      <td>Escape strategy of invalid json string such as using invalid <code class="language-plaintext highlighter-rouge">\</code> like <code class="language-plaintext highlighter-rouge">\a</code>. (PASSTHROUGH, SKIP, UNESCAPE)</td>
+      <td><code class="language-plaintext highlighter-rouge">PASSTHROUGH</code> by default</td>
+    </tr>
+    <tr>
+      <td>root</td>
+      <td>string</td>
+      <td>Specify when pointing a JSON object value as a record via JSON pointer expression</td>
+      <td>optional</td>
+    </tr>
+    <tr>
+      <td>flatten_json_array</td>
+      <td>boolean</td>
+      <td>Set true when regard elements in a JSON array as multiple Embulk records.</td>
+      <td><code class="language-plaintext highlighter-rouge">false</code> by default</td>
+    </tr>
+    <tr>
+      <td>columns</td>
+      <td>hash</td>
+      <td>Columns (see below)</td>
+      <td>optional</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>if you set invalid_string_escapes and appear invalid JSON string (such as <code class="language-plaintext highlighter-rouge">\a</code>), it makes following the action.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>invalid_string_escapes</th>
+      <th>convert to</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>PASSTHROUGH *1</td>
+      <td><code class="language-plaintext highlighter-rouge">\a</code></td>
+    </tr>
+    <tr>
+      <td>SKIP</td>
+      <td>empty string</td>
+    </tr>
+    <tr>
+      <td>UNESCAPE</td>
+      <td><code class="language-plaintext highlighter-rouge">a</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>(*1): Throwing an exception.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">columns</code> option declares the list of columns, and the way how to extract JSON values into Embulk columns.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>name</th>
+      <th>description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>name</td>
+      <td>Name of the column. The JSON value with this name is extracted if <code class="language-plaintext highlighter-rouge">element_at</code> is not specified.</td>
+    </tr>
+    <tr>
+      <td>type</td>
+      <td>Type of the column (same as CSV parser’s one)</td>
+    </tr>
+    <tr>
+      <td>element_at</td>
+      <td>Descendant element to be extracted as the column, expressed as a relative JSON Pointer (optional).</td>
+    </tr>
+    <tr>
+      <td>format</td>
+      <td>Format of the timestamp if type is timestamp</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="example-2">Example</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>in:
+  parser:
+    type: json
+    columns:
+    - {name: time, type: timestamp, format: "%s"}
+    - {name: ip, type: string}
+    - {name: name, type: string}
+</code></pre></div></div>
+
+<h2 id="gzip-decoder-plugin">Gzip decoder plugin</h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">gzip</code> decoder plugin decompresses gzip files before input plugins read them.</p>
+
+<h3 id="options-3">Options</h3>
+
+<p>This plugin doesn’t have any options.</p>
+
+<h3 id="example-3">Example</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>in:
+  ...
+  decoders:
+  - {type: gzip}
+</code></pre></div></div>
+
+<h2 id="bzip2-decoder-plugin">BZip2 decoder plugin</h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">bzip2</code> decoder plugin decompresses bzip2 files before input plugins read them.</p>
+
+<h3 id="options-4">Options</h3>
+
+<p>This plugin doesn’t have any options.</p>
+
+<h3 id="example-4">Example</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>in:
+  ...
+  decoders:
+  - {type: bzip2}
+</code></pre></div></div>
+
+<h2 id="file-output-plugin">File output plugin</h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">file</code> output plugin writes records to local file system.</p>
+
+<h3 id="options-5">Options</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>name</th>
+      <th>type</th>
+      <th>description</th>
+      <th>required?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>path_prefix</td>
+      <td>string</td>
+      <td>Path prefix of the output files</td>
+      <td>required</td>
+    </tr>
+    <tr>
+      <td>sequence_format</td>
+      <td>string</td>
+      <td>Format of the sequence number of the output files</td>
+      <td><code class="language-plaintext highlighter-rouge">%03d.%02d.</code> by default</td>
+    </tr>
+    <tr>
+      <td>file_ext</td>
+      <td>string</td>
+      <td>Path suffix of the output files (e.g. <code class="language-plaintext highlighter-rouge">"csv"</code>)</td>
+      <td>required</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>For example, if you set <code class="language-plaintext highlighter-rouge">path_prefix: /path/to/output/sample_</code>, <code class="language-plaintext highlighter-rouge">sequence_format: "%03d.%02d."</code>, and <code class="language-plaintext highlighter-rouge">file_ext: csv</code>, name of the output files will be as following:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.
+`-- path
+    `-- to
+        `-- output
+            |-- sample_01.000.csv
+            |-- sample_02.000.csv
+            |-- sample_03.000.csv
+            |-- sample_04.000.csv
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">sequence_format</code> formats task index and sequence number in a task.</p>
+
+<h3 id="example-5">Example</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>out:
+  type: file
+  path_prefix: /path/to/output/sample_
+  file_ext: csv
+  formatter:
+    ...
+</code></pre></div></div>
+
+<h2 id="csv-formatter-plugin">CSV formatter plugin</h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">csv</code> formatter plugin formats records using CSV or TSV format.</p>
+
+<h3 id="options-6">Options</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>name</th>
+      <th>type</th>
+      <th>description</th>
+      <th>required?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>delimiter</td>
+      <td>string</td>
+      <td>Delimiter character such as <code class="language-plaintext highlighter-rouge">,</code> for CSV, <code class="language-plaintext highlighter-rouge">"\t"</code> for TSV, <code class="language-plaintext highlighter-rouge">"|"</code> or any single-byte character</td>
+      <td><code class="language-plaintext highlighter-rouge">,</code> by default</td>
+    </tr>
+    <tr>
+      <td>quote</td>
+      <td>string</td>
+      <td>The character surrounding a quoted value</td>
+      <td><code class="language-plaintext highlighter-rouge">"</code> by default</td>
+    </tr>
+    <tr>
+      <td>quote_policy</td>
+      <td>enum</td>
+      <td>Policy for quote (ALL, MINIMAL, NONE) (see below)</td>
+      <td><code class="language-plaintext highlighter-rouge">MINIMAL</code> by default</td>
+    </tr>
+    <tr>
+      <td>escape</td>
+      <td>string</td>
+      <td>Escape character to escape quote character</td>
+      <td>same with quote default (*1)</td>
+    </tr>
+    <tr>
+      <td>header_line</td>
+      <td>boolean</td>
+      <td>If true, write the header line with column name at the first line</td>
+      <td><code class="language-plaintext highlighter-rouge">true</code> by default</td>
+    </tr>
+    <tr>
+      <td>null_string</td>
+      <td>string</td>
+      <td>Expression of NULL values</td>
+      <td>empty by default</td>
+    </tr>
+    <tr>
+      <td>newline</td>
+      <td>enum</td>
+      <td>Newline character (CRLF, LF or CR)</td>
+      <td><code class="language-plaintext highlighter-rouge">CRLF</code> by default</td>
+    </tr>
+    <tr>
+      <td>newline_in_field</td>
+      <td>enum</td>
+      <td>Newline character in each field (CRLF, LF, CR)</td>
+      <td><code class="language-plaintext highlighter-rouge">LF</code> by default</td>
+    </tr>
+    <tr>
+      <td>charset</td>
+      <td>enum</td>
+      <td>Character encoding (eg. ISO-8859-1, UTF-8)</td>
+      <td><code class="language-plaintext highlighter-rouge">UTF-8</code> by default</td>
+    </tr>
+    <tr>
+      <td>default_timezone</td>
+      <td>string</td>
+      <td>Time zone of timestamp columns. This can be overwritten for each column using <code class="language-plaintext highlighter-rouge">column_options</code></td>
+      <td><code class="language-plaintext highlighter-rouge">UTC</code> by default</td>
+    </tr>
+    <tr>
+      <td>column_options</td>
+      <td>hash</td>
+      <td>See bellow</td>
+      <td>optional</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>(*1): if quote_policy is NONE, <code class="language-plaintext highlighter-rouge">quote</code> option is ignored, and default <code class="language-plaintext highlighter-rouge">escape</code> is <code class="language-plaintext highlighter-rouge">\</code>.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">quote_policy</code> option is used to determine field type to quote.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>name</th>
+      <th>description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>ALL</td>
+      <td>Quote all fields</td>
+    </tr>
+    <tr>
+      <td>MINIMAL</td>
+      <td>Only quote those fields which contain delimiter, quote or any of the characters in lineterminator</td>
+    </tr>
+    <tr>
+      <td>NONE</td>
+      <td>Never quote fields. When the delimiter occurs in field, escape with escape char</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The <code class="language-plaintext highlighter-rouge">column_options</code> option is a map whose keys are name of columns, and values are configuration with following parameters:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>name</th>
+      <th>type</th>
+      <th>description</th>
+      <th>required?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>timezone</td>
+      <td>string</td>
+      <td>Time zone if type of this column is timestamp. If not set, <code class="language-plaintext highlighter-rouge">default\_timezone</code> is used.</td>
+      <td>optional</td>
+    </tr>
+    <tr>
+      <td>format</td>
+      <td>string</td>
+      <td>Timestamp format if type of this column is timestamp.</td>
+      <td><code class="language-plaintext highlighter-rouge">%Y-%m-%d %H:%M:%S.%6N %z</code> by default</td>
+    </tr>
+  </tbody>
+</table>
+
+<aside class="note">
+<h4>Note</h4>
+<p>The Timestamp format refers to <a href="https://docs.ruby-lang.org/en/2.4.0/Date.html#method-i-strftime">Ruby strftime format</a>.</p>
+</aside>
+
+<h3 id="example-6">Example</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>out:
+  ...
+  formatter:
+    type: csv
+    delimiter: "\t"
+    newline: CRLF
+    newline_in_field: LF
+    charset: UTF-8
+    quote_policy: MINIMAL
+    quote: '"'
+    escape: "\\"
+    null_string: "\\N"
+    default_timezone: 'UTC'
+    column_options:
+      mycol1: {format: '%Y-%m-%d %H:%M:%S'}
+      mycol2: {format: '%Y-%m-%d %H:%M:%S', timezone: 'America/Los_Angeles'}
+</code></pre></div></div>
+
+<h2 id="gzip-encoder-plugin">Gzip encoder plugin</h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">gzip</code> encoder plugin compresses output files using gzip.</p>
+
+<h3 id="options-7">Options</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>name</th>
+      <th>type</th>
+      <th>description</th>
+      <th>required?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>level</td>
+      <td>integer</td>
+      <td>Compression level. From 0 (no compression) to 9 (best compression).</td>
+      <td><code class="language-plaintext highlighter-rouge">6</code> by default</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="example-7">Example</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>out:
+  ...
+  encoders:
+  - type: gzip
+    level: 1
+</code></pre></div></div>
+
+<h2 id="bzip2-encoder-plugin">BZip2 encoder plugin</h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">bzip2</code> encoder plugin compresses output files using bzip2.</p>
+
+<h3 id="options-8">Options</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>name</th>
+      <th>type</th>
+      <th>description</th>
+      <th>required?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>level</td>
+      <td>integer</td>
+      <td>Compression level. From 1 to 9 (best compression).</td>
+      <td><code class="language-plaintext highlighter-rouge">9</code> by default</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="example-8">Example</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>out:
+  ...
+  encoders:
+  - type: bzip2
+    level: 6
+</code></pre></div></div>
+
+<h2 id="rename-filter-plugin">Rename filter plugin</h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">rename</code> filter plugin changes column names. This plugin has no impact on performance.</p>
+
+<h3 id="options-9">Options</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>name</th>
+      <th>type</th>
+      <th>description</th>
+      <th>required?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>rules</td>
+      <td>array</td>
+      <td>An array of rule-based renaming operations. (See below for rules.)</td>
+      <td><code class="language-plaintext highlighter-rouge">[]</code> by default</td>
+    </tr>
+    <tr>
+      <td>columns</td>
+      <td>hash</td>
+      <td>A map whose keys are existing column names. values are new names.</td>
+      <td><code class="language-plaintext highlighter-rouge">{}</code> by default</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="renaming-rules">Renaming rules</h3>
+
+<p>The <code class="language-plaintext highlighter-rouge">rules</code> is an array of rules as below applied top-down for all the columns.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>rule</th>
+      <th>description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>character_types</td>
+      <td>Restrict characters by types. Replace restricted characteres.</td>
+    </tr>
+    <tr>
+      <td>first_character_types</td>
+      <td>Restrict the first character by types. Prefix or replace first restricted characters.</td>
+    </tr>
+    <tr>
+      <td>lower_to_upper</td>
+      <td>Convert lower-case alphabets to upper-case.</td>
+    </tr>
+    <tr>
+      <td>regex_replace</td>
+      <td>Replace with a regular expressions.</td>
+    </tr>
+    <tr>
+      <td>truncate</td>
+      <td>Truncate.</td>
+    </tr>
+    <tr>
+      <td>upper_to_lower</td>
+      <td>Convert upper-case alphabets to lower-case</td>
+    </tr>
+    <tr>
+      <td>unique_number_suffix</td>
+      <td>Make column names unique in the schema.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="renaming-rule-character_types">Renaming rule: character_types</h4>
+
+<p>The rule <code class="language-plaintext highlighter-rouge">character_types</code> replaces restricted characters.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>option</th>
+      <th>description</th>
+      <th>required?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>pass_characteres</td>
+      <td>Characters to be allowed.</td>
+      <td><code class="language-plaintext highlighter-rouge">""</code> by default</td>
+    </tr>
+    <tr>
+      <td>pass_types</td>
+      <td>Sets of characters to be allowed. The array must consist of “a-z” (lower-case alphabets), “A-Z” (upper-case alphabets), or “0-9” (digits).</td>
+      <td><code class="language-plaintext highlighter-rouge">[]</code> by default</td>
+    </tr>
+    <tr>
+      <td>replace</td>
+      <td>A character that disallowed characters are replaced with. It must consist of just 1 character.</td>
+      <td><code class="language-plaintext highlighter-rouge">"_"</code> by default</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="example-9">Example</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># This configuration replaces characters into "_" except for "_", lower-case alphabets, and digits.
+filters:
+  ...
+  - type: rename
+    rules:
+    - rule: character_types
+      pass_characters: "_"
+      pass_types: [ "a-z", "0-9" ]
+</code></pre></div></div>
+
+<h4 id="renaming-rule-first_character_types">Renaming rule: first_character_types</h4>
+
+<p>The rule <code class="language-plaintext highlighter-rouge">first_character_types</code> prefixes or replaces a restricted character at the beginning.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>option</th>
+      <th>description</th>
+      <th>required?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>pass_characteres</td>
+      <td>Characters to be allowed.</td>
+      <td><code class="language-plaintext highlighter-rouge">""</code> by default</td>
+    </tr>
+    <tr>
+      <td>pass_types</td>
+      <td>Sets of characters to be allowed. The array must consist of “a-z” (lower-case alphabets), “A-Z” (upper-case alphabets), or “0-9” (digits).</td>
+      <td><code class="language-plaintext highlighter-rouge">[]</code> by default</td>
+    </tr>
+    <tr>
+      <td>prefix</td>
+      <td>A character that a disallowed first character is replaced with.</td>
+      <td>one of <code class="language-plaintext highlighter-rouge">prefix</code> or <code class="language-plaintext highlighter-rouge">replace</code> is required</td>
+    </tr>
+    <tr>
+      <td>replace</td>
+      <td>A character that a disallowed first character is prefixed with.</td>
+      <td>one of <code class="language-plaintext highlighter-rouge">prefix</code> or <code class="language-plaintext highlighter-rouge">replace</code> is required</td>
+    </tr>
+  </tbody>
+</table>
+
+<h5 id="example-10">Example</h5>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># This configuration prefixes a column name with "_" unless the name starts from "_" or a lower-case alphabet.
+filters:
+  ...
+  - type: rename
+    rules:
+    - rule: first_character_types
+      pass_characters: "_"
+      pass_types: [ "a-z" ]
+      prefix: "_"
+</code></pre></div></div>
+
+<h4 id="renaming-rule-lower_to_upper">Renaming rule: lower_to_upper</h4>
+
+<p>The rule <code class="language-plaintext highlighter-rouge">lower_to_upper</code> converts lower-case alphabets to upper-case.</p>
+
+<h5 id="example-11">Example</h5>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># This configuration converts all lower-case alphabets to upper-case.
+filters:
+  ...
+  - type: rename
+    rules:
+    - rule: lower_to_upper
+</code></pre></div></div>
+
+<h4 id="renaming-rule-regex_replace">Renaming rule: regex_replace</h4>
+
+<p>The rule <code class="language-plaintext highlighter-rouge">regex_replace</code> replaces column names based on a regular expression.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>option</th>
+      <th>description</th>
+      <th>required?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>match</td>
+      <td>A <a href="https://docs.oracle.com/javase/tutorial/essential/regex/">Java-style regular expression</a> to which this string is to be matched.</td>
+      <td>required</td>
+    </tr>
+    <tr>
+      <td>replace</td>
+      <td>A string to be substibuted for each match in Java-style.</td>
+      <td>required</td>
+    </tr>
+  </tbody>
+</table>
+
+<h5 id="example-12">Example</h5>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># This configuration replaces all patterns
+filters:
+  ...
+  - type: rename
+    rules:
+    - rule: regex_replace
+      match: "([0-9]+)_dollars"
+      replace: "USD$1"
+</code></pre></div></div>
+
+<h4 id="renaming-rule-truncate">Renaming rule: truncate</h4>
+
+<p>The rule <code class="language-plaintext highlighter-rouge">truncate</code> truncates column names.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>option</th>
+      <th>description</th>
+      <th>required?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>max_length</td>
+      <td>The length to which the column names are truncated.</td>
+      <td><code class="language-plaintext highlighter-rouge">128</code> by default</td>
+    </tr>
+  </tbody>
+</table>
+
+<h5 id="example-13">Example</h5>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># This configuration drops all characters after the 20th character.
+filters:
+  ...
+  - type: rename
+    rules:
+    - rule: truncate
+      max_length: 20
+</code></pre></div></div>
+
+<h4 id="renaming-rule-upper_to_lower">Renaming rule: upper_to_lower</h4>
+
+<p>The rule <code class="language-plaintext highlighter-rouge">upper_to_lower</code> converts upper-case alphabets to lower-case.</p>
+
+<h5 id="example-14">Example</h5>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># This configuration converts all upper-case alphabets to lower-case.
+filters:
+  ...
+  - type: rename
+    rules:
+    - rule: upper_to_lower
+</code></pre></div></div>
+
+<h4 id="renaming-rule-unique_number_suffix">Renaming rule: unique_number_suffix</h4>
+
+<p>The rule <code class="language-plaintext highlighter-rouge">unique_number_suffix</code> makes column names unique in the schema by suffixing numbers.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>option</th>
+      <th>description</th>
+      <th>required?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>delimiter</td>
+      <td>A delimiter character inserted before a suffix number. It must be just 1 non-digit character.</td>
+      <td><code class="language-plaintext highlighter-rouge">"_"</code> by default</td>
+    </tr>
+    <tr>
+      <td>digits</td>
+      <td>An integer that specifies the number of zero-filled digits of a suffix number. The suffix number zero-filled to the digits.</td>
+      <td>optional</td>
+    </tr>
+    <tr>
+      <td>max_length</td>
+      <td>The length to which the column names are truncated. The column name is truncated before the suffix number.</td>
+      <td>optional</td>
+    </tr>
+    <tr>
+      <td>offset</td>
+      <td>An integer where the suffix number starts. The first duplicative column name is suffixed by (<code class="language-plaintext highlighter-rouge">offset</code> + 1).</td>
+      <td><code class="language-plaintext highlighter-rouge">1</code> by default</td>
+    </tr>
+  </tbody>
+</table>
+
+<aside class="hint">
+<h4>Hint</h4>
+<p>The procedure to make column names unique is not very trivial. There are many feasible ways. This renaming rule works as follows:</p>
+<p>Basic policies:</p>
+<ul>
+<li>Suffix numbers are counted per original column name.</li>
+<li>Column names are fixed from the first column to the last column.</li>
+</ul>
+<p>Actual procedure applied from the first (leftmost) column to the last (rightmost) column:</p>
+<ol>
+<li>Fix the column name as-is with truncating if the truncated name is not duplicated with left columns.</li>
+<li>Suffix the column name otherwise.</li>
+<ol style="list-style-type: lower-latin">
+<li>Try to append the suffix number for the original column name with truncating.</li>
+<li>Fix it if the suffixed name is not duplicated with left columns nor original columns.</li>
+<li>Retry (a) with the suffix number increased otherwise.</li>
+</ol>
+</ol>
+</aside>
+
+<h5 id="example-15">Example</h5>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># This configuration suffixes numbers to duplicative column names. (Ex. ["column", "column", "column"] goes to ["column", "column_2", "column_3"].)
+filters:
+  ...
+  - type: rename
+    rules:
+    - rule: unique_number_suffix
+</code></pre></div></div>
+
+<h3 id="example-of-renaming-rules">Example of renaming rules</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>filters:
+  ...
+  - type: rename
+    rules:
+    - rule: upper_to_lower        # All upper-case are converted to lower-case.
+    - rule: character_types       # Only lower-case, digits and "_" are allowed. (No upper-case by the rule ahove.)
+      pass_types: [ "a-z", "0-9" ]
+      pass_characters: "_"
+    - rule: unique_number_suffix  # Ensure all column names are unique.
+</code></pre></div></div>
+
+<h3 id="columns-not-recommended">Columns: not recommended</h3>
+
+<p><code class="language-plaintext highlighter-rouge">columns</code> is not recommended to use anymore. Consider using <code class="language-plaintext highlighter-rouge">rules</code> instead.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>filters:
+  ...
+  - type: rename
+    columns:
+      my_existing_column1: new_column1
+      my_existing_column2: new_column2
+</code></pre></div></div>
+
+<aside class="hint">
+<h4>Hint</h4>
+<p><code>columns</code> are applied before <code>rules</code> if <code>columns</code> and <code>rules</code> are specified together. (It is discouraged to specify them together, though.)</p>
+</aside>
+
+<h2 id="remove-columns-filter-plugin">Remove columns filter plugin</h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">remove_columns</code> filter plugin removes columns from schema.</p>
+
+<h3 id="options-10">Options</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>name</th>
+      <th>type</th>
+      <th>description</th>
+      <th>required?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>remove</td>
+      <td>array</td>
+      <td>An array of names of columns that it removes from schema.</td>
+      <td><code class="language-plaintext highlighter-rouge">[]</code> by default</td>
+    </tr>
+    <tr>
+      <td>keep</td>
+      <td>array</td>
+      <td>An array of names of columns that it keeps in schema.</td>
+      <td><code class="language-plaintext highlighter-rouge">[]</code> by default</td>
+    </tr>
+    <tr>
+      <td>accept_unmatched_columns</td>
+      <td>boolean</td>
+      <td>If true, skip columns that aren’t included in schemas.</td>
+      <td><code class="language-plaintext highlighter-rouge">false</code> by default</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>remove: and keep: options are not multi-select.</p>
+
+<h3 id="example-16">Example</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># This configuration removes "_c0" and "_c1" named columns from schema.
+filters:
+  ...
+  - type: remove_columns
+    remove: ["_c0", "_c1"]
+</code></pre></div></div>
+
+<h2 id="local-executor-plugin">Local executor plugin</h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">local</code> executor plugin runs tasks using local threads. This is the only built-in executor plugin.</p>
+
+<h3 id="options-11">Options</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>name</th>
+      <th>type</th>
+      <th>description</th>
+      <th>required?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>max_threads</td>
+      <td>integer</td>
+      <td>Maximum number of threads to run concurrently.</td>
+      <td>2x of available CPU cores by default</td>
+    </tr>
+    <tr>
+      <td>min_output_tasks</td>
+      <td>integer</td>
+      <td>Mimimum number of output tasks to enable page scattering.</td>
+      <td>1x of available CPU cores by default</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The <code class="language-plaintext highlighter-rouge">max_threads</code> option controls maximum concurrency. Setting smaller number here is useful if too many threads make the destination or source storage overloaded. Setting larger number here is useful if CPU utilization is too low due to high latency.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">min_output_tasks</code> option enables “page scattering”. The feature is enabled if number of input tasks is less than <code class="language-plaintext highlighter-rouge">min_output_tasks</code>. It uses multiple filter &amp; output threads for each input task so that one input task can use multiple threads. Setting larger number here is useful if embulk doesn’t use multi-threading with enough concurrency due to too few number of input tasks. Setting 1 here disables page scattering completely.</p>
+
+<h3 id="example-17">Example</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>exec:
+  max_threads: 8         # run at most 8 tasks concurrently
+  min_output_tasks: 1    # disable page scattering
+in:
+  type: ...
+  ...
+out:
+  type: ...
+  ...
+</code></pre></div></div>
+
+<h2 id="guess-executor">Guess executor</h2>
+
+<p>The guess executor is called by <code class="language-plaintext highlighter-rouge">guess</code> command. It executes default guess plugins in a sequential order and suggests Embulk config by appropriate guess plugin. The default guess plugins and the order are <code class="language-plaintext highlighter-rouge">gzip</code>, <code class="language-plaintext highlighter-rouge">'bzip2</code>, <code class="language-plaintext highlighter-rouge">json</code> and <code class="language-plaintext highlighter-rouge">csv</code>.</p>
+
+<h3 id="options-12">Options</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>name</th>
+      <th>type</th>
+      <th>description</th>
+      <th>required?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>guess_plugins</td>
+      <td>array</td>
+      <td><code class="language-plaintext highlighter-rouge">guess</code> command uses specified guess plugins.</td>
+      <td><code class="language-plaintext highlighter-rouge">[]</code> by default</td>
+    </tr>
+    <tr>
+      <td>exclude_guess_plugins</td>
+      <td>array</td>
+      <td><code class="language-plaintext highlighter-rouge">guess</code> command doesn’t use specified plugins.</td>
+      <td><code class="language-plaintext highlighter-rouge">[]</code> by default</td>
+    </tr>
+    <tr>
+      <td>guess_sample_buffer_bytes</td>
+      <td>int</td>
+      <td>Bytes of sample buffer that it tries to read from input source.</td>
+      <td>32768 (32KB) by default</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The <code class="language-plaintext highlighter-rouge">guess_plugins</code> option includes specified guess plugin in the bottom of the list of default guess plugins.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">exclude_guess_plugins</code> option exclude specified guess plugins from the list of default guess plugins that the guess executor uses.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">guess_sample_buffer_bytes</code> option controls the bytes of sample buffer that GuessExecutor tries to read from specified input source.</p>
+
+<p>This example shows how to use <code class="language-plaintext highlighter-rouge">csv_all_strings</code> guess plugin, which suggests column types within CSV files as string types. It needs to be explicitly specified by users when it’s used instead of <code class="language-plaintext highlighter-rouge">csv</code> guess plugin because the plugin is not included in default guess plugins. We also can exclude default <code class="language-plaintext highlighter-rouge">csv</code> guess plugin.</p>
+
+<h3 id="example-18">Example</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>exec:
+  guess_plugins: ['csv_all_strings']
+  exclude_guess_plugins: ['csv']
+in:
+  type: ...
+  ...
+out:
+  type: ...
+  ...
+</code></pre></div></div>
+
+<h2 id="preview-executor">Preview executor</h2>
+
+<p>The preview executor is called by <code class="language-plaintext highlighter-rouge">preview</code> command. It tries to read sample buffer from a specified input source and writes them to Page objects. <code class="language-plaintext highlighter-rouge">preview</code> outputs the Page objects to console.</p>
+
+<h3 id="options-13">Options</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>name</th>
+      <th>type</th>
+      <th>description</th>
+      <th>required?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>preview_sample_buffer_bytes</td>
+      <td>int</td>
+      <td>Bytes of sample buffer that it tries to read from input source.</td>
+      <td>32768 (32KB) by default</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The <code class="language-plaintext highlighter-rouge">preview_sample_buffer_bytes</code> option controls the bytes of sample buffer that PreviewExecutor tries to read from specified input source.</p>
+
+<p>This example shows how to change the bytes of sample buffer.</p>
+
+<h3 id="example-19">Example</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>exec:
+  preview_sample_buffer_bytes: 65536 # 64KB
+in:
+  type: ...
+  ...
+out:
+  type: ...
+  ...
+</code></pre></div></div>
+
+    </section>
+  </main>
+  <footer>
+<p class="copyright">Copyright 2015-2022, The Embulk project.</p>
+</footer>
+
+
+
+</body></html>

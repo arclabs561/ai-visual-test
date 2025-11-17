@@ -1,0 +1,2578 @@
+<!DOCTYPE html><html lang="en" class="js-focus-visible js" data-js-focus-visible=""><head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Operating system and network requirements">
+      
+      
+      
+        <link rel="canonical" href="https://docs.pi-hole.net/main/prerequisites/">
+      
+      <link rel="icon" href="https://docs.pi-hole.net/images/favicon.ico">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.6">
+    
+    
+      
+        <title>Prerequisites - Pi-hole documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.4a0965b7.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+      
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Source Sans Pro";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#hardware" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Pi-hole documentation" class="md-header__button md-logo" aria-label="Pi-hole documentation" data-md-component="logo">
+      
+  <img src="../../images/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"></path></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Pi-hole documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Prerequisites
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <form class="md-header__option" data-md-component="palette">
+        
+          
+          
+          <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo" aria-label="Switch to dark mode" type="radio" name="__palette" id="__palette_1">
+          
+            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7M9 21v-1h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1m3-17a5 5 0 0 0-5 5c0 2.05 1.23 3.81 3 4.58V16h4v-2.42c1.77-.77 3-2.53 3-4.58a5 5 0 0 0-5-5Z"></path></svg>
+            </label>
+          
+        
+          
+          
+          <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo" aria-label="Switch to light mode" type="radio" name="__palette" id="__palette_2">
+          
+            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden="">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9v1Z"></path></svg>
+            </label>
+          
+        
+      </form>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"></path></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required="">
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"></path></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"></path></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" aria-label="Share" data-clipboard="" data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7 0-.24-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91 1.61 0 2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08Z"></path></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"></path></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap">
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">Type to start searching</div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/pi-hole/pi-hole" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"></path></svg>
+  </div>
+  <div class="md-source__repository md-source__repository--active">
+    GitHub
+  <ul class="md-source__facts"><li class="md-source__fact md-source__fact--version">v5.10</li><li class="md-source__fact md-source__fact--stars">36.6k</li><li class="md-source__fact md-source__fact--forks">2.3k</li></ul></div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" style="top: 48px;">
+                <div class="md-sidebar__scrollwrap" style="height: 642px;">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Pi-hole documentation" class="md-nav__button md-logo" aria-label="Pi-hole documentation" data-md-component="logo">
+      
+  <img src="../../images/logo.svg" alt="logo">
+
+    </a>
+    Pi-hole documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/pi-hole/pi-hole" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"></path></svg>
+  </div>
+  <div class="md-source__repository md-source__repository--active">
+    GitHub
+  <ul class="md-source__facts"><li class="md-source__fact md-source__fact--version">v5.10</li><li class="md-source__fact md-source__fact--stars">36.6k</li><li class="md-source__fact md-source__fact--forks">2.3k</li></ul></div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list">
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2">
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          About Pi-hole
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="About Pi-hole" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          About Pi-hole
+        </label>
+        <ul class="md-nav__list">
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contact/" class="md-nav__link">
+        Contact Us
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../origins/" class="md-nav__link">
+        Pi-hole Origins
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../coverage/" class="md-nav__link">
+        On the Web
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked="">
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Getting Started
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Getting Started" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Getting Started
+        </label>
+        <ul class="md-nav__list">
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Prerequisites
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Prerequisites
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc">
+      
+        <li class="md-nav__item">
+  <a href="#hardware" class="md-nav__link">
+    Hardware
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#software" class="md-nav__link">
+    Software
+  </a>
+  
+    <nav class="md-nav" aria-label="Software">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#supported-operating-systems" class="md-nav__link">
+    Supported Operating Systems
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ip-addressing" class="md-nav__link">
+    IP Addressing
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ports" class="md-nav__link">
+    Ports
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#firewalls" class="md-nav__link">
+    Firewalls
+  </a>
+  
+    <nav class="md-nav" aria-label="Firewalls">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#iptables" class="md-nav__link">
+    IPTables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#firewalld" class="md-nav__link">
+    FirewallD
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ufw" class="md-nav__link">
+    ufw
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basic-install/" class="md-nav__link">
+        Installation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../post-install/" class="md-nav__link">
+        Post-Install
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../update/" class="md-nav__link">
+        Updating
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../uninstall/" class="md-nav__link">
+        Uninstalling
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4">
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Pi-hole Core
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Pi-hole Core" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Pi-hole Core
+        </label>
+        <ul class="md-nav__list">
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core/pihole-command/" class="md-nav__link">
+        The &nbsp;<samp>pihole</samp>&nbsp; command
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5">
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          Databases
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Databases" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          Databases
+        </label>
+        <ul class="md-nav__list">
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../database/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../database/ftl/" class="md-nav__link">
+        Query database
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_3" type="checkbox" id="__nav_5_3">
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_3">
+          Domain database
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Domain database" data-md-level="2">
+        <label class="md-nav__title" for="__nav_5_3">
+          <span class="md-nav__icon md-icon"></span>
+          Domain database
+        </label>
+        <ul class="md-nav__list">
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../database/gravity/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../database/gravity/groups/" class="md-nav__link">
+        Group management
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../database/gravity/example/" class="md-nav__link">
+        Examples
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../database/gravity/recovery/" class="md-nav__link">
+        Database recovery
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6">
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          FTLDNS
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="FTLDNS" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          FTLDNS
+        </label>
+        <ul class="md-nav__list">
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ftldns/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ftldns/configfile/" class="md-nav__link">
+        Configuration
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ftldns/interfaces/" class="md-nav__link">
+        Interfaces
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ftldns/dns-resolver/" class="md-nav__link">
+        DNS resolver
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ftldns/dns-cache/" class="md-nav__link">
+        DNS cache
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ftldns/blockingmode/" class="md-nav__link">
+        Blocking mode
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ftldns/privacylevels/" class="md-nav__link">
+        Privacy levels
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ftldns/compatibility/" class="md-nav__link">
+        Compatibility
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ftldns/dnsmasq_warn/" class="md-nav__link">
+        dnsmasq warnings
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6_10" type="checkbox" id="__nav_6_10">
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6_10">
+          Advanced
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Advanced" data-md-level="2">
+        <label class="md-nav__title" for="__nav_6_10">
+          <span class="md-nav__icon md-icon"></span>
+          Advanced
+        </label>
+        <ul class="md-nav__list">
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ftldns/compile/" class="md-nav__link">
+        Install from source
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ftldns/telnet-api/" class="md-nav__link">
+        Telnet API
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ftldns/signals/" class="md-nav__link">
+        Signals
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ftldns/cache_dump/" class="md-nav__link">
+        Cache dump
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ftldns/package_dump/" class="md-nav__link">
+        Packet dump
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6_10_6" type="checkbox" id="__nav_6_10_6">
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6_10_6">
+          Debugging
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Debugging" data-md-level="3">
+        <label class="md-nav__title" for="__nav_6_10_6">
+          <span class="md-nav__icon md-icon"></span>
+          Debugging
+        </label>
+        <ul class="md-nav__list">
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ftldns/debugging/" class="md-nav__link">
+        gdb
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ftldns/valgrind/" class="md-nav__link">
+        valgrind
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ftldns/in-depth/" class="md-nav__link">
+        In-depth manual
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7">
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          RegEx blocking
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="RegEx blocking" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          RegEx blocking
+        </label>
+        <ul class="md-nav__list">
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../regex/overview/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../regex/testmode/" class="md-nav__link">
+        Testing
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../regex/tutorial/" class="md-nav__link">
+        Tutorial
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../regex/pi-hole/" class="md-nav__link">
+        Pi-hole extensions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../regex/approximate/" class="md-nav__link">
+        Approximate matching
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8" type="checkbox" id="__nav_8">
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_8">
+          Docker
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Docker" data-md-level="1">
+        <label class="md-nav__title" for="__nav_8">
+          <span class="md-nav__icon md-icon"></span>
+          Docker
+        </label>
+        <ul class="md-nav__list">
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docker/DHCP/" class="md-nav__link">
+        DHCP
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_9" type="checkbox" id="__nav_9">
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_9">
+          Contributing
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Contributing" data-md-level="1">
+        <label class="md-nav__title" for="__nav_9">
+          <span class="md-nav__icon md-icon"></span>
+          Contributing
+        </label>
+        <ul class="md-nav__list">
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/github/contributing/" class="md-nav__link">
+        Contributing on GitHub
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/github/dco/" class="md-nav__link">
+        Developer Certificate of Origin (DCO)
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/github/how-to-signoff/" class="md-nav__link">
+        How to sign-off commits
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/github/how-to-fork-rebase/" class="md-nav__link">
+        How to fork and rebase
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_10" type="checkbox" id="__nav_10">
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_10">
+          Guides
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Guides" data-md-level="1">
+        <label class="md-nav__title" for="__nav_10">
+          <span class="md-nav__icon md-icon"></span>
+          Guides
+        </label>
+        <ul class="md-nav__list">
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_10_1" type="checkbox" id="__nav_10_1">
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_10_1">
+          DNS
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="DNS" data-md-level="2">
+        <label class="md-nav__title" for="__nav_10_1">
+          <span class="md-nav__icon md-icon"></span>
+          DNS
+        </label>
+        <ul class="md-nav__list">
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/dns/unbound/" class="md-nav__link">
+        unbound
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/dns/cloudflared/" class="md-nav__link">
+        cloudflared (DoH)
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/dns/upstream-dns-providers/" class="md-nav__link">
+        Upstream DNS Providers
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_10_2" type="checkbox" id="__nav_10_2">
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_10_2">
+          VPN
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="VPN" data-md-level="2">
+        <label class="md-nav__title" for="__nav_10_2">
+          <span class="md-nav__icon md-icon"></span>
+          VPN
+        </label>
+        <ul class="md-nav__list">
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_10_2_1" type="checkbox" id="__nav_10_2_1">
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_10_2_1">
+          WireGuard
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="WireGuard" data-md-level="3">
+        <label class="md-nav__title" for="__nav_10_2_1">
+          <span class="md-nav__icon md-icon"></span>
+          WireGuard
+        </label>
+        <ul class="md-nav__list">
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/vpn/wireguard/overview/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/vpn/wireguard/concept/" class="md-nav__link">
+        Concept
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/vpn/wireguard/server/" class="md-nav__link">
+        Install server
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/vpn/wireguard/client/" class="md-nav__link">
+        Add client(s)
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_10_2_1_5" type="checkbox" id="__nav_10_2_1_5">
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_10_2_1_5">
+          Optional extra features
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Optional extra features" data-md-level="4">
+        <label class="md-nav__title" for="__nav_10_2_1_5">
+          <span class="md-nav__icon md-icon"></span>
+          Optional extra features
+        </label>
+        <ul class="md-nav__list">
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/vpn/wireguard/internal/" class="md-nav__link">
+        Make local devices accessible
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/vpn/wireguard/route-everything/" class="md-nav__link">
+        Tunnel all Internet traffic
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/vpn/wireguard/faq/" class="md-nav__link">
+        Troubleshooting
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_10_2_2" type="checkbox" id="__nav_10_2_2">
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_10_2_2">
+          OpenVPN
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="OpenVPN" data-md-level="3">
+        <label class="md-nav__title" for="__nav_10_2_2">
+          <span class="md-nav__icon md-icon"></span>
+          OpenVPN
+        </label>
+        <ul class="md-nav__list">
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/vpn/openvpn/overview/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/vpn/openvpn/installation/" class="md-nav__link">
+        Installation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/vpn/openvpn/setup-openvpn-server/" class="md-nav__link">
+        Setup OpenVPN Server
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/vpn/openvpn/firewall/" class="md-nav__link">
+        Firewall Configuration
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_10_2_2_5" type="checkbox" id="__nav_10_2_2_5">
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_10_2_2_5">
+          Connecting clients
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Connecting clients" data-md-level="4">
+        <label class="md-nav__title" for="__nav_10_2_2_5">
+          <span class="md-nav__icon md-icon"></span>
+          Connecting clients
+        </label>
+        <ul class="md-nav__list">
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/vpn/openvpn/clients/" class="md-nav__link">
+        General
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/vpn/openvpn/android-client/" class="md-nav__link">
+        Android
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/vpn/openvpn/only-dns-via-vpn/" class="md-nav__link">
+        Optional: Only route DNS via VPN
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/vpn/openvpn/dual-operation/" class="md-nav__link">
+        Optional: Dual operation: LAN &amp; VPN at the same time
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/vpn/openvpn/dual-VPN/" class="md-nav__link">
+        Optional: Full and DNS-only
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/vpn/openvpn/dynDNS/" class="md-nav__link">
+        Optional: Dynamic DNS
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/vpn/openvpn/troubleshooting/" class="md-nav__link">
+        Troubleshooting
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_10_3" type="checkbox" id="__nav_10_3">
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_10_3">
+          Misc
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Misc" data-md-level="2">
+        <label class="md-nav__title" for="__nav_10_3">
+          <span class="md-nav__icon md-icon"></span>
+          Misc
+        </label>
+        <ul class="md-nav__list">
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/misc/benchmark/" class="md-nav__link">
+        Benchmarking
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_10_3_2" type="checkbox" id="__nav_10_3_2">
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_10_3_2">
+          Tor &amp; Pi-hole
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Tor &amp; Pi-hole" data-md-level="3">
+        <label class="md-nav__title" for="__nav_10_3_2">
+          <span class="md-nav__icon md-icon"></span>
+          Tor &amp; Pi-hole
+        </label>
+        <ul class="md-nav__list">
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/misc/tor/overview/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/misc/tor/setup/" class="md-nav__link">
+        Basic Setup
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/misc/tor/using-tor/" class="md-nav__link">
+        Using Tor
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/misc/tor/performance-issues/" class="md-nav__link">
+        Performance and other issues
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/misc/tor/dnssec/" class="md-nav__link">
+        Using DNSSEC
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/misc/whitelist-blacklist/" class="md-nav__link">
+        Whitelist and Blacklist editing
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_10_4" type="checkbox" id="__nav_10_4">
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_10_4">
+          Web server
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Web server" data-md-level="2">
+        <label class="md-nav__title" for="__nav_10_4">
+          <span class="md-nav__icon md-icon"></span>
+          Web server
+        </label>
+        <ul class="md-nav__list">
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/webserver/nginx/" class="md-nav__link">
+        NGINX
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/webserver/caddy/" class="md-nav__link">
+        Caddy
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/webserver/traefik-nodocker/" class="md-nav__link">
+        Traefik (not in Docker)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11" type="checkbox" id="__nav_11">
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11">
+          Router setup
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Router setup" data-md-level="1">
+        <label class="md-nav__title" for="__nav_11">
+          <span class="md-nav__icon md-icon"></span>
+          Router setup
+        </label>
+        <ul class="md-nav__list">
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../routers/fritzbox/" class="md-nav__link">
+        Fritz!Box (EN)
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../routers/fritzbox-de/" class="md-nav__link">
+        Fritz!Box (DE)
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../routers/asus/" class="md-nav__link">
+        ASUS router
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../faq/" class="md-nav__link">
+        FAQ
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../projects/" class="md-nav__link">
+        Community Projects
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" style="top: 48px;">
+                <div class="md-sidebar__scrollwrap" style="height: 642px;">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc">
+      
+        <li class="md-nav__item">
+  <a href="#hardware" class="md-nav__link">
+    Hardware
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#software" class="md-nav__link">
+    Software
+  </a>
+  
+    <nav class="md-nav" aria-label="Software">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#supported-operating-systems" class="md-nav__link">
+    Supported Operating Systems
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ip-addressing" class="md-nav__link">
+    IP Addressing
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ports" class="md-nav__link">
+    Ports
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#firewalls" class="md-nav__link">
+    Firewalls
+  </a>
+  
+    <nav class="md-nav" aria-label="Firewalls">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#iptables" class="md-nav__link">
+    IPTables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#firewalld" class="md-nav__link">
+    FirewallD
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ufw" class="md-nav__link">
+    ufw
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+  <a href="https://github.com/pi-hole/docs/blob/master/docs/main/prerequisites.md" title="Edit this page" class="md-content__button md-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"></path></svg>
+  </a>
+
+
+
+  <h1>Prerequisites</h1>
+
+<h3 id="hardware">Hardware<a class="headerlink" href="#hardware" title="Permanent link">¶</a></h3>
+<p>Pi-hole is very lightweight and does not require much processing power</p>
+<ul>
+<li>Min. 2GB free space, 4GB recommended</li>
+<li>512MB RAM</li>
+</ul>
+<p>Despite the name, you are not limited to running Pi-hole on a Raspberry Pi.
+Any hardware that runs one of the supported operating systems will do!</p>
+<h3 id="software">Software<a class="headerlink" href="#software" title="Permanent link">¶</a></h3>
+<p>Pi-hole is supported on distributions utilizing <a href="https://systemd.io/">systemd</a> or <a href="https://www.nongnu.org/sysvinit/">sysvinit</a>!</p>
+<h4 id="supported-operating-systems">Supported Operating Systems<a class="headerlink" href="#supported-operating-systems" title="Permanent link">¶</a></h4>
+<p>The following operating systems are <strong>officially</strong> supported:</p>
+<div class="md-typeset__scrollwrap"><div class="md-typeset__table"><table>
+<thead>
+<tr>
+<th>Distribution</th>
+<th>Release</th>
+<th>Architecture</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Raspberry Pi <abbr title="Operating system">OS</abbr> <br>(formerly Raspbian)</td>
+<td>Stretch / Buster / Bullseye</td>
+<td>ARM</td>
+</tr>
+<tr>
+<td>Ubuntu</td>
+<td>16.x / 18.x / 20.x /21.x</td>
+<td>ARM / x86_64</td>
+</tr>
+<tr>
+<td>Debian</td>
+<td>9 / 10 /11</td>
+<td>ARM / x86_64 / i386</td>
+</tr>
+<tr>
+<td>Fedora</td>
+<td>33 / 34</td>
+<td>ARM / x86_64</td>
+</tr>
+<tr>
+<td>CentOS</td>
+<td>7</td>
+<td>x86_64</td>
+</tr>
+<tr>
+<td>CentOS Stream</td>
+<td>8</td>
+<td>x86_64</td>
+</tr>
+</tbody>
+</table></div></div>
+<!-- markdownlint-disable code-block-style -->
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>One of the first tasks the install script has is to determine your Operating System's compatibility with Pi-hole</p>
+<p>It is possible that Pi-hole will install and run on variants of the above, but we cannot test them all. If you are using an operating system not on this list you may see the following message:</p>
+<div class="highlight"><pre><span></span><code><span class="o">[</span>✗<span class="o">]</span> Unsupported OS detected: Debian <span class="m">16</span>
+  If you are seeing this message and you <span class="k">do</span> have a supported OS, please contact support.
+
+  https://docs.pi-hole.net/main/prerequisites/#supported-operating-systems
+
+  If you wish to attempt to <span class="k">continue</span> anyway, you can try one of the following commands to skip this check:
+
+  e.g: If you are seeing this message on a fresh install, you can run:
+         curl -sSL https://install.pi-hole.net <span class="p">|</span> sudo <span class="nv">PIHOLE_SKIP_OS_CHECK</span><span class="o">=</span><span class="nb">true</span> bash
+
+       If you are seeing this message after having run pihole -up:
+         sudo <span class="nv">PIHOLE_SKIP_OS_CHECK</span><span class="o">=</span><span class="nb">true</span> pihole -r
+       <span class="o">(</span>In this <span class="k">case</span>, your previous run of pihole -up will have already updated the <span class="nb">local</span> repository<span class="o">)</span>
+
+  It is possible that the installation will still fail at this stage due to an unsupported configuration.
+  If that is the <span class="k">case</span>, you can feel free to ask the community on Discourse with the Community Help category:
+  https://discourse.pi-hole.net/c/bugs-problems-issues/community-help/
+</code></pre></div>
+<p>You can disable this check by setting an environment variable named <code>PIHOLE_SKIP_OS_CHECK</code> to <code>true</code>, however Pi-hole may have issues installing.
+If you choose to use this environment variable, please use the <a href="https://discourse.pi-hole.net/c/bugs-problems-issues/community-help/36">Community Help</a> topic on Discourse to troubleshoot any installation issues you may (or may not!) have.</p>
+</div>
+<!-- markdownlint-enable code-block-style -->
+
+<h3 id="ip-addressing"><abbr title="Internet protocol address">IP</abbr> Addressing<a class="headerlink" href="#ip-addressing" title="Permanent link">¶</a></h3>
+<p>Pi-hole needs a static <abbr title="Internet protocol address">IP</abbr> address to properly function (a <abbr title="Dynamic Host Configuration Protocol (network management protocol for configuring Internet Protocol version 4 (IPv4) hosts with IP addresses)">DHCP</abbr> reservation is just fine). Users may run into issues because <strong>we currently install <code>dhcpcd5</code>, which may conflict with other running network managers</strong> such as <code>dhclient</code>, <code>dhcpcd</code>, <code>networkmanager</code>, and <code>systemd-networkd</code>.</p>
+<p>As part of our install process, <strong>we append some lines to <code>/etc/dhcpcd.conf</code> in order to statically assign an <abbr title="Internet protocol address">IP</abbr> address</strong>, so take note of this before installing.</p>
+<p>Please be aware of this fact because it <a href="https://github.com/pi-hole/pi-hole/issues/1713#issue-260746084">may cause confusion</a>. This is not the ideal situation for us to be in but, since a significant portion of our users are running Pi-hole on Raspbian - and because Pi-hole's roots began with the Raspberry Pi - it's a problem that is <a href="https://github.com/pi-hole/pi-hole/issues/1713#issuecomment-332317532">difficult to get away from</a>.</p>
+<p>Due to the complexity of different ways of setting an <abbr title="Internet protocol address">IP</abbr> address across different systems, it's a slow process and <a href="https://github.com/pi-hole/pi-hole/issues/629">we need help</a>. If you're willing to contribute, please let us know.</p>
+<h3 id="ports">Ports<a class="headerlink" href="#ports" title="Permanent link">¶</a></h3>
+<div class="md-typeset__scrollwrap"><div class="md-typeset__table"><table>
+<thead>
+<tr>
+<th>Service</th>
+<th align="left">Port</th>
+<th align="left">Protocol</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pihole-<abbr title="Pi-hole's Faster Than Light daemon">FTL</abbr></td>
+<td align="left">53  (<abbr title="Domain Name Service (decentralized naming system for computers, services, or other resources connected to the Internet)">DNS</abbr>)</td>
+<td align="left"><abbr title="Transmission Control Protocol (protocol providing reliable, ordered, and error-checked delivery of data between applications running on hosts communicating via an IP network)">TCP</abbr>/<abbr title="User Datagram Protocol (a network communications method for sending messages as datagrams)">UDP</abbr></td>
+<td>If you happen to have another <abbr title="Domain Name Service (decentralized naming system for computers, services, or other resources connected to the Internet)">DNS</abbr> server running, such as BIND, you will need to turn it off in order for Pi-hole to respond to <abbr title="Domain Name Service (decentralized naming system for computers, services, or other resources connected to the Internet)">DNS</abbr> queries.</td>
+</tr>
+<tr>
+<td>pihole-<abbr title="Pi-hole's Faster Than Light daemon">FTL</abbr></td>
+<td align="left">67  (<abbr title="Dynamic Host Configuration Protocol (network management protocol for configuring Internet Protocol version 4 (IPv4) hosts with IP addresses)">DHCP</abbr>)</td>
+<td align="left"><abbr title="Internet Protocol version 4 (addresses like 192.168.0.1)">IPv4</abbr> <abbr title="User Datagram Protocol (a network communications method for sending messages as datagrams)">UDP</abbr></td>
+<td>The <abbr title="Dynamic Host Configuration Protocol (network management protocol for configuring Internet Protocol version 4 (IPv4) hosts with IP addresses)">DHCP</abbr> server is an optional feature that requires additional ports.</td>
+</tr>
+<tr>
+<td>pihole-<abbr title="Pi-hole's Faster Than Light daemon">FTL</abbr></td>
+<td align="left">547 (<abbr title="Dynamic Host Configuration Protocol version 6 (a network protocol for configuring Internet Protocol version 6 (IPv6) hosts with IP addresses)">DHCPv6</abbr>)</td>
+<td align="left"><abbr title="Internet Protocol version 6 (addresses like 2001:db8::ff00:42:8329)">IPv6</abbr> <abbr title="User Datagram Protocol (a network communications method for sending messages as datagrams)">UDP</abbr></td>
+<td>The <abbr title="Dynamic Host Configuration Protocol (network management protocol for configuring Internet Protocol version 4 (IPv4) hosts with IP addresses)">DHCP</abbr> server is an optional feature that requires additional ports.</td>
+</tr>
+<tr>
+<td>lighttpd</td>
+<td align="left">80  (<abbr title="Hypertext Transfer Protocol (HTTP), an application protocol for distributed, collaborative, and hypermedia information systems">HTTP</abbr>)</td>
+<td align="left"><abbr title="Transmission Control Protocol (protocol providing reliable, ordered, and error-checked delivery of data between applications running on hosts communicating via an IP network)">TCP</abbr></td>
+<td>If you have another Web server already running, such as Apache, Pi-hole's Web server will not work. You can either disable the other Web server or change the port on which <code>lighttpd</code> listens, which allows you keep both Web servers running.</td>
+</tr>
+<tr>
+<td>pihole-<abbr title="Pi-hole's Faster Than Light daemon">FTL</abbr></td>
+<td align="left">4711</td>
+<td align="left"><abbr title="Transmission Control Protocol (protocol providing reliable, ordered, and error-checked delivery of data between applications running on hosts communicating via an IP network)">TCP</abbr></td>
+<td><abbr title="Pi-hole's Faster Than Light daemon">FTL</abbr> is our <abbr title="Application Programming Interface (a set of subroutine definitions, protocols, and tools for building application software)">API</abbr> engine and uses port 4711 on the localhost interface. This port should not be accessible from any other interface.</td>
+</tr>
+</tbody>
+</table></div></div>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>The use of lighttpd on port <em>80</em> is optional if you decide not to install the Web dashboard during installation.
+The use of pihole-<abbr title="Pi-hole's Faster Than Light daemon">FTL</abbr> on ports <em>67</em> or <em>547</em> is optional, but required if you use the <abbr title="Dynamic Host Configuration Protocol (network management protocol for configuring Internet Protocol version 4 (IPv4) hosts with IP addresses)">DHCP</abbr> functions of Pi-hole.</p>
+</div>
+<h3 id="firewalls">Firewalls<a class="headerlink" href="#firewalls" title="Permanent link">¶</a></h3>
+<p>Below are some examples of firewall rules that will need to be set on your Pi-hole server in order to use the functions available. These are only shown as guides, the actual commands used will be found with your distribution's documentation.
+Because Pi-hole was designed to work inside a local network, the following rules will block the traffic from the Internet for security reasons. <code>192.168.0.0/16</code> is the most common local network <abbr title="Internet protocol address">IP</abbr> range for home users but it can be different in your case, for example other common local network <abbr title="Internet protocol addresses">IPs</abbr> are <code>10.0.0.0/8</code> and <code>172.16.0.0/12</code>.</p>
+<p><strong>Check your local network settings before applying these rules.</strong></p>
+<h4 id="iptables">IPTables<a class="headerlink" href="#iptables" title="Permanent link">¶</a></h4>
+<p>IPTables uses two sets of tables. One set is for <abbr title="Internet Protocol version 4 (addresses like 192.168.0.1)">IPv4</abbr> chains, and the second is for <abbr title="Internet Protocol version 6 (addresses like 2001:db8::ff00:42:8329)">IPv6</abbr> chains. If only <abbr title="Internet Protocol version 4 (addresses like 192.168.0.1)">IPv4</abbr> blocking is used for the Pi-hole installation, only apply the rules for IP4Tables. Full Stack (<abbr title="Internet Protocol version 4 (addresses like 192.168.0.1)">IPv4</abbr> and <abbr title="Internet Protocol version 6 (addresses like 2001:db8::ff00:42:8329)">IPv6</abbr>) require both sets of rules to be applied. <em>Note: These examples insert the rules at the front of the chain. Please see your distribution's documentation for the exact proper command to use.</em></p>
+<p>IPTables (<abbr title="Internet Protocol version 4 (addresses like 192.168.0.1)">IPv4</abbr>)</p>
+<div class="highlight"><pre><span></span><code>iptables -I INPUT <span class="m">1</span> -s <span class="m">192</span>.168.0.0/16 -p tcp -m tcp --dport <span class="m">80</span> -j ACCEPT
+iptables -I INPUT <span class="m">1</span> -s <span class="m">127</span>.0.0.0/8 -p tcp -m tcp --dport <span class="m">53</span> -j ACCEPT
+iptables -I INPUT <span class="m">1</span> -s <span class="m">127</span>.0.0.0/8 -p udp -m udp --dport <span class="m">53</span> -j ACCEPT
+iptables -I INPUT <span class="m">1</span> -s <span class="m">192</span>.168.0.0/16 -p tcp -m tcp --dport <span class="m">53</span> -j ACCEPT
+iptables -I INPUT <span class="m">1</span> -s <span class="m">192</span>.168.0.0/16 -p udp -m udp --dport <span class="m">53</span> -j ACCEPT
+iptables -I INPUT <span class="m">1</span> -p udp --dport <span class="m">67</span>:68 --sport <span class="m">67</span>:68 -j ACCEPT
+iptables -I INPUT <span class="m">1</span> -p tcp -m tcp --dport <span class="m">4711</span> -i lo -j ACCEPT
+iptables -I INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+</code></pre></div>
+<p>IP6Tables (<abbr title="Internet Protocol version 6 (addresses like 2001:db8::ff00:42:8329)">IPv6</abbr>)</p>
+<div class="highlight"><pre><span></span><code>ip6tables -I INPUT -p udp -m udp --sport <span class="m">546</span>:547 --dport <span class="m">546</span>:547 -j ACCEPT
+ip6tables -I INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+</code></pre></div>
+<h4 id="firewalld">FirewallD<a class="headerlink" href="#firewalld" title="Permanent link">¶</a></h4>
+<p>Using the <code>--permanent</code> argument will ensure the firewall rules persist reboots. If only <abbr title="Internet Protocol version 4 (addresses like 192.168.0.1)">IPv4</abbr> blocking is used for the Pi-hole installation, the <code>dhcpv6</code> service can be removed from the commands below. Create a new zone for the local interface (<code>lo</code>) for the pihole-<abbr title="Pi-hole's Faster Than Light daemon">FTL</abbr> ports to ensure the <abbr title="Application Programming Interface (a set of subroutine definitions, protocols, and tools for building application software)">API</abbr> is only accessible locally. Finally <code>--reload</code> to have the new firewall configuration take effect immediately.</p>
+<div class="highlight"><pre><span></span><code>firewall-cmd --permanent --add-service<span class="o">=</span>http --add-service<span class="o">=</span>dns --add-service<span class="o">=</span>dhcp --add-service<span class="o">=</span>dhcpv6
+firewall-cmd --permanent --new-zone<span class="o">=</span>ftl
+firewall-cmd --permanent --zone<span class="o">=</span>ftl --add-interface<span class="o">=</span>lo
+firewall-cmd --permanent --zone<span class="o">=</span>ftl --add-port<span class="o">=</span><span class="m">4711</span>/tcp
+firewall-cmd --reload
+</code></pre></div>
+<h4 id="ufw">ufw<a class="headerlink" href="#ufw" title="Permanent link">¶</a></h4>
+<p>ufw stores all rules persistent, so you just need to execute the commands below.</p>
+<p><abbr title="Internet Protocol version 4 (addresses like 192.168.0.1)">IPv4</abbr>:</p>
+<div class="highlight"><pre><span></span><code>ufw allow <span class="m">80</span>/tcp
+ufw allow <span class="m">53</span>/tcp
+ufw allow <span class="m">53</span>/udp
+ufw allow <span class="m">67</span>/tcp
+ufw allow <span class="m">67</span>/udp
+</code></pre></div>
+<p><abbr title="Internet Protocol version 6 (addresses like 2001:db8::ff00:42:8329)">IPv6</abbr> (include above <abbr title="Internet Protocol version 4 (addresses like 192.168.0.1)">IPv4</abbr> rules):</p>
+<div class="highlight"><pre><span></span><code>ufw allow <span class="m">546</span>:547/udp
+</code></pre></div>
+
+  <hr>
+<div class="md-source-file">
+  <small>
+    
+      Last update:
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 4, 2022</span>
+      
+    
+  </small>
+</div>
+
+              
+            </article>
+            
+          </div>
+        </div>
+        
+          <a href="#" class="md-top md-icon" data-md-component="top" hidden="" tabindex="-1" style="top: 64px;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"></path></svg>
+            Back to top
+          </a>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../coverage/" class="md-footer__link md-footer__link--prev" aria-label="Previous: On the Web" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"></path></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              On the Web
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../basic-install/" class="md-footer__link md-footer__link--next" aria-label="Next: Installation" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Installation
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"></path></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div style="display:block">
+Copyright Pi-hole. Licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>
+<br>
+<a href="https://www.netlify.com/" target="_blank" rel="noopener noreferrer">
+  This site is powered by Netlify
+</a>
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    <a href="https://pi-hole.net/" target="_blank" rel="noopener" title="Website" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M512 256c0 141.4-114.6 256-256 256S0 397.4 0 256 114.6 0 256 0s256 114.6 256 256zM57.71 192.1l9.36 17.3a64.042 64.042 0 0 0 38.03 29.8l57 16.5c18.1 4.9 29.9 20.6 29.9 38.5v39.9c0 11 6.2 21 16 25 9.8 5.8 16 15.8 16 26.8v39c0 15.6 14.9 26.8 29.9 22.5 16.2-4.6 28.6-18.3 32.7-33.7l2.8-11.2c4.2-16.9 15.2-31.4 30.3-40.1l8.1-4.6c15-8.5 24.2-24.4 24.2-41.7v-8.2c0-12.8-5.1-25-14.1-34l-3.8-3.8c-9-9-21.3-15-34-15h-44c-10.2 0-21.2-2-30.9-7.5l-34.5-19.8c-4.3-2.4-7.6-6.4-9.1-11.1-3.2-9.6 1.1-20 10.1-24.6l6-2.9c6.6-3.3 14.2-3.9 20.4-1.5l24.1 7.7c8.1 2.7 17.1-.4 21.9-7.5 4.7-7.1 4.2-16.4-1.2-22.9l-13.6-16.2c-10-12-9.9-29.5.3-41.3l15.7-18.38c8.8-10.27 10.2-24.96 3.5-36.7l-2.4-4.16c-4.3-.17-6.9-.26-10.4-.26-92.9 0-171.6 60.9-198.29 144.1zm379.89-37.6L412 164.8c-15.7 6.3-23.8 23.7-18.5 39.8l16.9 50.7c3.5 10.4 12 18.3 22.6 21l29.2 7.2c1.2-9 1.8-18.2 1.8-27.5 0-36.8-9.6-71.4-26.4-101.5z"></path></svg>
+    </a>
+  
+    
+    
+    <a href="https://github.com/pi-hole" target="_blank" rel="noopener" title="GitHub" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"></path></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.top", "navigation.instant", "search.suggest", "search.highlight", "search.share"], "search": "../../assets/javascripts/workers/search.85cb4492.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.a877e258.min.js"></script>
+      
+    
+  
+</body></html>

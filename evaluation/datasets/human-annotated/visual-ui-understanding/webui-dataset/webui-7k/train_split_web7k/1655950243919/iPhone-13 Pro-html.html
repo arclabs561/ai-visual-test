@@ -1,0 +1,132 @@
+<!DOCTYPE html><html lang="en"><head>
+    <title>Redirect Notice</title>
+    <link type="text/css" id="stylesheet-link" rel="stylesheet" href="https://mcasproxy.azureedge.net/proxyweb/1.16.25/css/proxyweb-all.min.css?cb=1.16.64" media="all">
+    <script src="https://mcasproxy.azureedge.net/proxyweb/1.16.25/js/Handlebars/handlebars-v4.0.11.min.js"></script>
+    <script src="https://mcasproxy.azureedge.net/proxyweb/1.16.25/js/lodash/lodash.core.min.js"></script>
+    <script src="https://mcasproxy.azureedge.net/proxyweb/1.16.25/js/translate.js"></script>
+    <script src="https://mcasproxy.azureedge.net/proxyweb/1.16.25/js/simple-promise.js"></script>
+    
+    <link rel="icon" type="image/x-icon" href="https://mcasproxy.azureedge.net/proxyweb/1.16.25/images/favicon.ico?cb=1.16.64">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <script>
+        var i18nResourcesUrl = "https://cdn.cloudappsecurity.com/i18n/0.228.22";
+        var context = {"REDIRECT_URL":"https://www.worldbank.org/en/news/series/the-development-podcast","REDIRECT_DOMAIN":"www.worldbank.org","REDIRECT_SIMPLIFIED_URL":"https://www.worldbank.org/en/news/series/the-development-podcast","CONTEXTPATH":"https://mcasproxy.azureedge.net/proxyweb/1.16.25","TENANT_LOGO_PATH":""};
+        var locale = "";
+        var templateName = "cert-checker-redirect";
+        var partials = [ "page-footer" ];
+        var templatePath = "https://mcasproxy.azureedge.net/proxyweb/1.16.25/js/templates/" + templateName + ".hbs";
+
+        Handlebars.registerHelper('json', function (content) {
+            return JSON.stringify(content);
+        });
+
+        Handlebars.registerHelper('valOrDefault', function (value, defaultValue) {
+            return value || defaultValue;
+        });
+
+        loadPartials();
+
+        function onLoad(content){
+            document.body.innerHTML += content;
+            var evalOnLoad = document.getElementById("on-template-load");
+            if (evalOnLoad) {
+                eval(evalOnLoad.textContent);
+            }
+        }
+        //polyfill intl
+        if (!window.Intl) {
+            //polyfill
+            Translate.loadScript("https://mcasproxy.azureedge.net/proxyweb/1.16.25" + "/js/poly-intl/Intl.min.js", function() {
+                // Load Handlebar-intl
+                Translate.loadScript("https://mcasproxy.azureedge.net/proxyweb/1.16.25" + "/js/Handlebars/handlebars-intl-v1.1.2.min.js", function() {
+                    Translate.initLocale("https://mcasproxy.azureedge.net/proxyweb/1.16.25", i18nResourcesUrl, locale, function () {
+                        loadPartials().then(function(resolve, reject) {
+                                Translate.loadContent(context,templatePath,onLoad)
+                            }
+                        );
+                    });
+                });
+            });
+        }
+        else {
+            Translate.loadScript("https://mcasproxy.azureedge.net/proxyweb/1.16.25" + "/js/Handlebars/handlebars-intl-v1.1.2.min.js", function() {
+                Translate.initLocale("https://mcasproxy.azureedge.net/proxyweb/1.16.25", i18nResourcesUrl, locale, function () {
+                    loadPartials().then(function(resolve, reject) {
+                            Translate.loadContent(context,templatePath,onLoad)
+                        }
+                    );
+                });
+            });
+        }
+
+        function loadPartials() {
+            var promises = [];
+            if (typeof partials === "undefined" || partials.length === 0) {
+                return SimplePromise.resolvedPromise();
+            }
+            partials.forEach(
+                function (partial) {
+                    promises.push(
+                        new SimplePromise(function (resolve, reject) {
+                                var templatePath = "https://mcasproxy.azureedge.net/proxyweb/1.16.25/js/templates/partials/" + partial + ".hbs";
+                                var request = new XMLHttpRequest();
+                                request.onload = function () {
+                                    resolve(request);
+                                };
+                                request.open('GET', templatePath);
+                                request.send();
+                            }
+                        ).then(function(partialRequest) {
+                                Handlebars.registerPartial(partial, partialRequest.responseText)
+                            }
+                        )
+                    );
+                }
+            );
+            return SimplePromise.all(promises);
+        }
+    </script><script type="text/javascript" src="https://mcasproxy.azureedge.net/proxyweb/1.16.25/js/Handlebars/handlebars-intl-v1.1.2.min.js"></script>
+
+
+<script type="text/javascript" src="https://mcasproxy.azureedge.net/proxyweb/1.16.25/js/Handlebars/locale-data/en.js"></script><main class="proxyweb-container">
+    <div class="proxyweb-header"></div>
+    <div class="proxyweb-page-content">
+        <img class="proxyweb-title-image" src="https://mcasproxy.azureedge.net/proxyweb/1.16.25/images/warning.png" role="presentation">
+        <div>
+            <h1 class="proxyweb-title">
+                Redirect Notice
+            </h1>
+        </div>
+        <div class="proxyweb-description">
+            The link you have followed has requested to redirect you to https://www.worldbank.org/en/news/series/the-development-podcast
+        </div>
+        <div class="proxyweb-details">
+            If you do not want to continue, please close this tab.
+        </div>
+        <div class="proxyweb-footer-right-section">
+            <a id="proxyweb-dismiss-btn-main" class="proxyweb-continue-to-app" href="https://www.worldbank.org/en/news/series/the-development-podcast">
+                Proceed to www.worldbank.org
+            </a>
+        </div>
+    </div>
+</main>
+<div class="proxyweb-footer">
+    <div class="proxyweb-footer-content">
+        <div class="proxyweb-footer-item">
+            <div class="proxyweb-footer-text proxyweb-footer-mcas">
+                Microsoft Defender for Cloud Apps
+            </div>
+            <div class="proxyweb-vertical-line"></div>
+            <div class="proxyweb-footer-text proxyweb-footer-links">
+                <a target="_blank" href="http://go.microsoft.com/fwlink/?LinkID=733268">Terms</a>
+                |
+                <a target="_blank" href="http://go.microsoft.com/fwlink/?LinkId=512132">Privacy</a>
+            </div>
+        </div>
+    </div>
+</div><script id="on-template-load">
+    document.title = "Redirect Notice";
+</script></body></html>

@@ -1,0 +1,256 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Personal site of Brenton Cleeland">
+    <title>Brenton Cleeland - Six things I do every time I start a Django project</title>
+
+    <link rel="stylesheet" href="/static/css/style.cf6796956127.css">
+    <link rel="authorization_endpoint" href="https://indieauth.com/auth">
+    <link rel="token_endpoint" href="https://tokens.indieauth.com/token">
+    <link rel="micropub" href="https://brntn.me/micropub/">
+    <link rel="webmention" href="https://brntn.me/webmentions/">
+</head>
+<body>
+    
+<header>
+    <p>
+        <a href="/" rel="author">← Brenton Cleeland</a>
+    </p>
+</header>
+<article class="h-entry">
+    <h1 class="p-name">Six things I do every time I start a Django project</h1>
+    <p class="details">
+        
+        Published on
+        
+        <time class="dt-published" datetime="2022-06-20T02:30:00+00:00">June 20, 2022</time>
+        
+    </p>
+
+    <div class="e-content">
+    <p>I start a lot of projects. A lot!
+Django is my go-to framework for spinning up a quick personal project, and while it's a fantastic framework, a big part of the reason I love Django is that it feels familiar.</p>
+<p>I have a lot of muscle memory for starting a new project.
+Here are six things that I do after I run <code>django-admin startproject</code>.</p>
+<h2>Move the SECRET_KEY into an environment variable</h2>
+<p>While it's one that you can get away with if you're keeping your source private, I reconfigure the <code>SECRET_KEY</code> as an environment variable on every new project.
+This helps you get started along the path of building a <a href="https://12factor.net/">Twelve Factor App</a> and means that making the repository public won't expose you to problems down the line.</p>
+<p>Having the <code>SECRET_KEY</code> in a <code>.gitignore</code>'d <code>.env</code> file means that you can change it in each environment and specify your server's secret during your deployment.
+We're not going to talk about deploying applications today (I use <a href="https://github.com/sesh/django-up">django-up</a>) but this strategy will allow you to specify the <code>SECRET_KEY</code> as an environment variable both locally and on your server.</p>
+<p>If you're using <a href="https://github.com/pypa/pipenv"><code>pipenv</code></a> the <code>.env</code> file will be automatically loaded when you run commands in your terminal.
+You can also use tools like <a href="https://direnv.net/"><code>direnv</code></a> to load the <code>.env</code> file when you move into the directory.</p>
+<p>Update your <code>settings.py</code> to use the secret key:</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="c1"># ...</span>
+
+<span class="n">SECRET_KEY</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"DJANGO_SECRET_KEY"</span><span class="p">)</span>
+</pre></div>
+<p>Update the <code>.env</code> file to load the secret locally:</p>
+<div class="highlight"><pre><span></span><span class="n">DJANGO_SECRET_KEY</span><span class="o">=&lt;</span><span class="n">generated</span><span class="o">-</span><span class="n">secret</span><span class="o">&gt;</span>
+</pre></div>
+<p>(Speaking of projects, you can use <a href="https://utils.brntn.me/django-secret/">my utilities project</a> to generate a secret key the same way Django does)</p>
+<h2>Change the database configuration to DATABASE_URL</h2>
+<p>Django uses SQLite out of the box for new projects.
+Since most of the personal projects I work on are database-agnostic, I'm happy to keep running SQLite locally and switch to Postgres on the server.
+To achieve this, and continue down the Twelve Factor App path, I use <a href="https://github.com/jazzband/dj-database-url"><code>dj-database-url</code></a> to specify the database with an environment variable.</p>
+<p>If you're deploying to Heroku, Fly.io or most other PaaS providers, they will handle specifying the <code>DATABASE_URL</code> in your hosted environment.
+If you're managing the deployment yourself you will need to make sure the variable is properly configured in each of your environments.</p>
+<p>Using an environment variable like this helps avoid having environment specific configuration files for your database.</p>
+<p>First, install the package:</p>
+<div class="highlight"><pre><span></span>pipenv install dj_database_url
+</pre></div>
+<p>Then, update your <code>settings.py</code> to use <code>dj-database-url</code> with SQLite as the default if <code>DATABASE_URL</code> isn't specified.</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dj_database_url</span>
+<span class="n">DATABASES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'default'</span><span class="p">:</span> <span class="n">dj_database_url</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="sa">f</span><span class="s1">'sqlite:///</span><span class="si">{</span><span class="n">BASE_DIR</span> <span class="o">/</span> <span class="s2">"db.sqlite3"</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+<p>Unless you add something to your <code>.env</code> file this will continue to use SQLite locally.
+Check out the <a href="https://github.com/jazzband/dj-database-url">documentation</a> for how to specify Postgres or another database server for local use.</p>
+<h2>Set up a custom user model</h2>
+<p>Over the years, there's been a lot of discussion about changing Django's default user model.
+The current incarnation (that's been effectively the same since the pre-1.0 days) uses [username, password, email, first_name, last_name].
+A lot of developers have started following the more modern practise of replacing the first and last name fields with a single name field.</p>
+<p>In addition to fixing up the name, it's not unusual to replace the username with an email address.
+While a username has some privacy advantages (I don't want your email address!), there are problems with users forgetting usernames, and using usernames without an email address makes account recovery difficult.</p>
+<p>If you're supporting a forgotten password flow via email or making email required for any other reason, then you might as well switch to the much simpler [email, password, name].</p>
+<p>This is such a common requirement that the Django documentation actually has a <a href="https://docs.djangoproject.com/en/4.0/topics/auth/customizing/#specifying-a-custom-user-model">whole section for replacing the default user model</a>.
+You should do it.
+Even if you want to stick to the default setup, it will make any changes you want to make in the future much simpler.</p>
+<p>The model that I use is shared in the <a href="https://github.com/sesh/django-authuser">django-authuser</a> project. That project includes some extras like a sign up view and customised admin configuration. To implement only the custom user model and model manager you can:</p>
+<div class="highlight"><pre>&gt; python manage.py startapp authuser
+</pre></div><p>Then add the following model to <code>authuser/models.py</code>:</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">AbstractBaseUser</span><span class="p">,</span> <span class="n">PermissionsMixin</span><span class="p">,</span> <span class="n">UserManager</span>
+<span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
+
+
+<span class="k">class</span> <span class="nc">CustomUserManager</span><span class="p">(</span><span class="n">UserManager</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_fields</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Create and save a User with the provided email and password.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">email</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"The given email address must be set"</span><span class="p">)</span>
+
+        <span class="n">email</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalize_email</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_fields</span><span class="p">)</span>
+        <span class="n">user</span><span class="o">.</span><span class="n">set_password</span><span class="p">(</span><span class="n">password</span><span class="p">)</span>
+        <span class="n">user</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">using</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">user</span>
+
+    <span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_fields</span><span class="p">):</span>
+        <span class="n">extra_fields</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"is_staff"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">extra_fields</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"is_superuser"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_user</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_fields</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">create_superuser</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_fields</span><span class="p">):</span>
+        <span class="n">extra_fields</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"is_staff"</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">extra_fields</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"is_superuser"</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">extra_fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"is_staff"</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Superuser must have is_staff=True."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">extra_fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"is_superuser"</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Superuser must have is_superuser=True."</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_user</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_fields</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AbstractBaseUser</span><span class="p">,</span> <span class="n">PermissionsMixin</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    User model that uses email addresses instead of usernames, and</span>
+<span class="sd">    name instead of first / last name fields.</span>
+
+<span class="sd">    All other fields from the Django auth.User model are kept to</span>
+<span class="sd">    ensure compatibility with the built in management commands.</span>
+<span class="sd">    """</span>
+
+    <span class="n">email</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">EmailField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span>
+
+    <span class="n">is_active</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">is_staff</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">is_superuser</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">last_login</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">date_joined</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">)</span>
+
+    <span class="n">objects</span> <span class="o">=</span> <span class="n">CustomUserManager</span><span class="p">()</span>
+
+    <span class="n">USERNAME_FIELD</span> <span class="o">=</span> <span class="s2">"email"</span>
+    <span class="n">EMAIL_FIELD</span> <span class="o">=</span> <span class="s2">"email"</span>
+    <span class="n">REQUIRED_FIELDS</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">"User"</span>
+        <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="s2">"Users"</span>
+
+    <span class="k">def</span> <span class="nf">get_full_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="k">def</span> <span class="nf">get_short_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">email</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"@"</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+<p>Once that's added, add our new app to our <code>INSTALLED_APPS</code> in <code>settings.py</code> and configure the <code>AUTH_USER_MODEL</code> setting:</p>
+<div class="highlight"><pre><span></span><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="o">...</span>
+    <span class="s2">"authuser"</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">AUTH_USER_MODEL</span> <span class="o">=</span> <span class="s2">"authuser.User"</span>
+</pre></div>
+<p>Then make / run your migrations to set up the new user model:</p>
+<div class="highlight"><pre>&gt; python manage.py makemigrations
+&gt; python manage.py migrate
+</pre></div><p>This model overwrites some of the fields from the <code>AbstractBaseUser</code> and <code>PermissionsMixin</code> classes.
+I prefer being explicit with my setup of those fields rather than relying on the base class.
+That said, it's unlikely that Django will change the base class, so if you want an even simpler version you can remove the <code>is_active</code>, <code>is_staff</code>, <code>is_superuser</code> and <code>last_login</code> fields from the model.
+If you do that, make sure you keep a close eye on the major version release notes for any changes.</p>
+<h2>Create your Django app</h2>
+<p>We've already made a bunch of changes to our application's structure and we're only just creating our Django app!</p>
+<p>I always try to name my first app after the primary model that the project is about.
+If it's a blog, then it would be <code>posts</code>.
+If it's a bookmark site, then it might be <code>links</code>.
+If it's a CRM, then it might be <code>clients</code> or <code>leads</code>.</p>
+<p>Some folks advocate a <code>core</code> Django app to house your initial models.
+I'm not against this idea, but I do tend to prefer a more <a href="https://martinfowler.com/bliki/DomainDrivenDesign.html">Domain Driven Design</a> approach to naming that promotes naming each app after its primary model.
+I find that it's easy to follow this pattern early in a project, so you might as well.
+After all, you're starting a project with an idea, and if you're using Django that idea probably revolves around a particular model.</p>
+<p>Getting this name right is actually one of the trickiest parts of starting a new project.
+But don't worry – you'll find it easy to change with modern refactoring tools (though, best to get the name correct before you have live data).</p>
+<p>Use the <code>startapp</code> management command to create your app:</p>
+<div class="highlight"><pre><span></span>pipenv run python manage.py startapp links
+</pre></div>
+<p>This creates the directory structure for the application. Next, update <code>settings.py</code> to include your app in the <code>INSTALLED_APPS</code>:</p>
+<div class="highlight"><pre><span></span><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="o">...</span>
+    <span class="s2">"links"</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+<p>You don't have any models or views yet, so there's no need to do anything else at this point.
+Once you add models you'll run <code>makemigrations</code> and once you start adding views you might create an app-specific <code>urls.py</code> to house those routes.</p>
+<h2>Make a <code>base.html</code></h2>
+<p>Once we have our first application it's time to get our base template sorted.
+I create a <code>base.html</code> file with a simple structure, then use <code>{% extends 'base.html' %}</code> in each of my templates.</p>
+<p>Start by creating a templates directory in the app you just created.
+By default, Django will look for templates inside each of your <code>INSTALLED_APPS</code>.
+As the project grows you <em>might</em> move this into a more central location.</p>
+<div class="highlight"><pre><span></span>mkdir links/templates
+</pre></div>
+<p>The content of the template can be fairly straight forward.
+You'll likely have your own preferences that you can start to include here around Javascript / CSS frameworks.
+I like to leave it as much of a blank canvas as possible.</p>
+<p>Add the following to <code>links/templates/base.html</code>:</p>
+<div class="highlight"><pre>{% load static %}&lt;!doctype html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="utf-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;{% block title %}Page Title{% endblock %}&lt;/title&gt;
+    &lt;link rel="stylesheet" href="{% static 'css/style.css' %}" /&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    {% block content %}{% endblock %}
+&lt;/body&gt;
+&lt;/html&gt;
+</pre></div><p>You'll note that I have a stylesheet linked here.
+Create the directory and an empty file so that our page loads properly.
+Use this file to add your styles as the project grows.</p>
+<div class="highlight"><pre><span></span>&gt; mkdir -p links/static/css
+&gt; touch links/static/css/style.css
+</pre></div>
+<p>I'll add a <code>&lt;header&gt;</code> and <code>&lt;footer&gt;</code> to this <code>base.html</code> file as they are needed.
+If I need to include Javascript for specific templates I'll sometimes add a <code>{% block extra_js %}{% endblock %}</code> at the bottom so that I can include those from my sub templates.
+Until you outgrow the single content block there's no need to add that though.</p>
+<h2>Gibo and Git Init</h2>
+<p>We have everything set up and it's time to initialise the Git repository so that we can track our work.
+You could use <a href="https://github.com/simonwhitaker/gibo"><code>gibo</code></a> to load up the latest version of the Github <code>.gitignore</code> file but I tend to just use this <code>curl</code> snippet to grab it:</p>
+<div class="highlight"><pre><span></span>&gt; curl https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore &gt; .gitignore
+</pre></div>
+<p>That Python gitignore file includes excludes for the SQLite database and our <code>.env</code> file.
+There's a bunch of editor specific excludes that you might want to remove.
+I tend to keep them though, as they don't cause any harm.</p>
+<p>Run <code>git init</code> in our main directory, with the <code>main</code> branch as our default.
+Then add our files and create an initial commit.</p>
+<div class="highlight"><pre>&gt; git init -b main
+&gt; git add .
+&gt; git commit -m "init: Initial commit for our new project"
+</pre></div><p>You can now push this project to a public repository without leaking your SECRET_KEY or database credentials.
+How great is that?!</p>
+
+    </div>
+</article>
+
+    <footer>
+        <p>
+            <a href="https://github.com/sesh" rel="me">Github ↗</a>.
+            <a href="https://www.linkedin.com/in/brentonc/">LinkedIn ↗</a>.
+
+            <a href="/rss/">RSS</a> / <a href="/feed.json">JSON Feed</a>.
+            Powered by postie.
+        </p>
+    </footer>
+
+
+</body></html>

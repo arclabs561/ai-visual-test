@@ -1,0 +1,372 @@
+<!DOCTYPE html><html lang="en-US"><head>
+    <!-- # block head (placeholder in theme.html) -->
+        <!-- # block head (content inherited from layout.html) -->
+    <title>
+      RenderingOsmDataUbuntu     – MapServer
+
+    </title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!--[if IE]><script>
+        if (/^#__msie303:/.test(window.location.hash))
+        window.location.replace(window.location.hash.replace(/^#__msie303:/, '#'));
+        </script><![endif]-->
+
+    <link rel="search" href="/mapserver/search">
+    <link rel="help" href="/mapserver/wiki/TracGuide">
+    <link rel="alternate" href="/mapserver/wiki/RenderingOsmDataUbuntu?format=txt" title="Plain Text" type="text/x-trac-wiki">
+    <link rel="start" href="/mapserver/wiki">
+    <link rel="stylesheet" href="/mapserver/chrome/common/css/trac.css" type="text/css">
+    <link rel="stylesheet" href="/mapserver/chrome/common/css/wiki.css" type="text/css">
+    <link rel="icon" href="/mapserver/chrome/common/trac.ico" type="image/x-icon">
+    <noscript>
+      <style>
+        .trac-noscript { display: none !important }
+      </style>     </noscript>
+    <link type="application/opensearchdescription+xml" rel="search" href="/mapserver/search/opensearch" title="Search MapServer">
+    <script src="/mapserver/chrome/common/js/jquery.js"></script>
+    <script src="/mapserver/chrome/common/js/babel.js"></script>
+    <script src="/mapserver/chrome/common/js/trac.js"></script>
+    <script src="/mapserver/chrome/common/js/search.js"></script>
+    <script src="/mapserver/chrome/common/js/folding.js"></script>
+    <script src="/mapserver/chrome/common/js/wiki.js"></script>
+    <script>
+      jQuery(function($) {
+        $(".trac-autofocus").focus();
+        $(".trac-target-new").attr("target", "_blank");
+        if ($.ui) { /* is jquery-ui added? */
+          $(".trac-datepicker:not([readonly])")
+            .prop("autocomplete", "off").datepicker();
+          // Input current date when today is pressed.
+          var _goToToday = $.datepicker._gotoToday;
+          $.datepicker._gotoToday = function(id) {
+            _goToToday.call(this, id);
+            this._selectDate(id)
+          };
+          $(".trac-datetimepicker:not([readonly])")
+            .prop("autocomplete", "off").datetimepicker();
+          $("#main").addClass("trac-nodatetimehint");
+        }
+        $(".trac-disable").disableSubmit(".trac-disable-determinant");
+        setTimeout(function() { $(".trac-scroll").scrollToTop() }, 1);
+        $(".trac-disable-on-submit").disableOnSubmit();
+      });
+    </script>
+    <!--   # include 'site_head.html' (layout.html) -->
+    <!--   end of site_head.html -->
+    <!-- # endblock head (content inherited from layout.html) -->
+
+
+    <script>
+      jQuery(function($) {
+        wikiColumn($("#wikipage"));
+      });
+    </script>
+    <!-- # endblock head (placeholder in theme.html) -->
+  </head> 
+  <body>
+    <!-- # block body (content inherited from theme.html) -->
+    <!--   # include 'site_header.html' (theme.html) -->
+    <!--   end of site_header.html -->
+
+    <div id="banner">
+      <div id="header">
+        <a id="logo" href="http://www.mapserver.org/">
+          <img alt="MapServer" height="100" src="/mapserver/chrome/site/banner.png" width="377"></a>
+
+
+      </div>
+      <form id="search" action="/mapserver/search" method="get">
+        <div>
+          <label for="proj-search">Search:</label>
+          <input type="text" id="proj-search" name="q" size="18" value="">
+          <input type="submit" value="Search">
+        </div>
+      </form>
+          <div id="metanav" class="nav">
+      <ul><li class="first"><a href="/mapserver/login">Login</a></li><li><a href="/mapserver/wiki/TracGuide">Help/Guide</a></li><li><a href="/mapserver/about">About Trac</a></li><li class="last"><a href="/mapserver/prefs">Preferences</a></li></ul>
+    </div>
+
+    </div>
+        <div id="mainnav" class="nav">
+      <ul><li class="active first"><a href="/mapserver/wiki">Wiki</a></li><li><a href="/mapserver/timeline">Timeline</a></li><li><a href="/mapserver/roadmap">Roadmap</a></li><li><a href="/mapserver/browser">Browse Source</a></li><li><a href="/mapserver/report">View Tickets</a></li><li class="last"><a href="/mapserver/search">Search</a></li></ul>
+    </div>
+
+
+    <div id="main">
+
+<div id="pagepath" class="noprint">
+<a class="pathentry first" title="View WikiStart" href="/mapserver/wiki">wiki:</a><a href="/mapserver/wiki/RenderingOsmDataUbuntu" title="View RenderingOsmDataUbuntu" class="pathentry">RenderingOsmDataUbuntu</a></div>      <div id="ctxtnav" class="nav">
+        <h2>Context Navigation</h2>
+        <ul>
+          <li class="first"><a href="/mapserver/wiki/WikiStart">Start Page</a></li>
+          <li><a href="/mapserver/wiki/TitleIndex">Index</a></li>
+          <li class="last"><a href="/mapserver/wiki/RenderingOsmDataUbuntu?action=history">History</a></li>
+        </ul>
+        <hr>
+      </div>
+
+      
+
+      
+
+      <!-- # block content (placeholder in theme.html) -->
+    <div id="content" class="wiki narrow">
+
+      <div class="wikipage searchable">
+        <div id="wikipage" class="trac-content borderless"><span id="trac-wiki-expander"></span><h1 class="section" id="RenderingOSMdatawithMapServeronUbuntu10.10">Rendering OSM data with <a class="wiki" href="/mapserver/wiki/MapServer">MapServer</a> on Ubuntu 10.10<a class="anchor" href="#RenderingOSMdatawithMapServeronUbuntu10.10" title="Link to this section"> ¶</a></h1>
+<p>
+This page provides step by step instructions to setup a Ubuntu 10.10 LTS server from scratch to render OSM data with <a class="wiki" href="/mapserver/wiki/MapServer">MapServer</a> 6.x.
+</p>
+<p>
+The following instructions assume that we start with a brand new Ubuntu 10.10 server with Apache installed but none of the <a class="wiki" href="/mapserver/wiki/MapServer">MapServer</a> related packages installed.
+</p>
+<p>
+The setup will include:
+</p>
+<ul><li><a class="wiki" href="/mapserver/wiki/MapServer">MapServer</a> 6.x (from the UbuntuGIS repository)
+</li><li>PostgreSQL/PostGIS (from the UbuntuGIS repository)
+</li><li>OSM data to be downloaded from <a class="ext-link" href="http://download.geofabrik.de/osm/"><span class="icon">​</span>http://download.geofabrik.de/osm/</a>
+</li><li>Use of "imposm" to load the data in PostGIS: <a class="ext-link" href="http://imposm.org/"><span class="icon">​</span>http://imposm.org/</a>
+</li><li>Map configured in EPSG:900913 projection, with data loaded for the state of Alabama only, and using a Google-like style
+</li><li><a class="missing wiki">MapFile</a> generated using "mapserver-utils": <a class="ext-link" href="http://code.google.com/p/mapserver-utils/"><span class="icon">​</span>http://code.google.com/p/mapserver-utils/</a>
+</li><li>Tile caching using <a class="missing wiki">MapCache</a>:  <a class="ext-link" href="http://mod-geocache.googlecode.com/"><span class="icon">​</span>http://mod-geocache.googlecode.com/</a> (change doc url)
+</li></ul><h2 class="section" id="Createworkdirectory">Create work directory<a class="anchor" href="#Createworkdirectory" title="Link to this section"> ¶</a></h2>
+<ul><li>All the steps that follow assume that the data and mapfiles will be installed in a directory called "osm-demo" in your home directory
+</li><li>Commands:
+<pre class="wiki">  mkdir ~/osm-demo
+  cd ~/osm-demo/
+</pre></li></ul><h2 class="section" id="InstallUbuntuGISMapServerandPostGISpackages">Install UbuntuGIS <a class="wiki" href="/mapserver/wiki/MapServer">MapServer</a> and PostGIS packages<a class="anchor" href="#InstallUbuntuGISMapServerandPostGISpackages" title="Link to this section"> ¶</a></h2>
+<ul><li>Relevant docs:  <a class="ext-link" href="http://trac.osgeo.org/ubuntugis/wiki/UbuntuGISRepository"><span class="icon">​</span>http://trac.osgeo.org/ubuntugis/wiki/UbuntuGISRepository</a>
+</li><li>At the time of this writing, the current version of <a class="wiki" href="/mapserver/wiki/MapServer">MapServer</a> is 6.0.1
+</li><li>Commands:
+<pre class="wiki">  sudo apt-get install python-software-properties
+  sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
+  sudo apt-get update
+  sudo apt-get install cgi-mapserver mapserver-bin
+
+  sudo apt-get install postgresql
+  sudo apt-get install postgis postgresql-8.4-postgis
+</pre></li><li>Install other non-GIS packages that will be required later on:
+<pre class="wiki">  sudo apt-get install mercurial subversion
+  sudo apt-get install zip unzip
+</pre></li></ul><h2 class="section" id="DownloadOSMdata">Download OSM data<a class="anchor" href="#DownloadOSMdata" title="Link to this section"> ¶</a></h2>
+<ul><li>You can download data for your region of interest from <a class="ext-link" href="http://download.geofabrik.de/osm/"><span class="icon">​</span>http://download.geofabrik.de/osm/</a>. The rest of these instructions assume that we work with the data for the state of Alabama.
+</li><li>Commands:
+<pre class="wiki">  cd ~/osm-demo/
+  wget http://download.geofabrik.de/osm/north-america/us/alabama.osm.pbf
+</pre></li></ul><h2 class="section" id="Installimposmusingvirtualenv">Install imposm, using virtualenv<a class="anchor" href="#Installimposmusingvirtualenv" title="Link to this section"> ¶</a></h2>
+<ul><li>Relevant docs: <a class="ext-link" href="http://imposm.org/docs/imposm/latest/install.html"><span class="icon">​</span>http://imposm.org/docs/imposm/latest/install.html</a>
+</li><li>Install dependencies and create python virtual env:
+<pre class="wiki">  cd ~/osm-demo/
+  sudo apt-get install build-essential python-dev protobuf-compiler \
+                      libprotobuf-dev libtokyocabinet-dev python-psycopg2 \
+                      libgeos-c1
+
+  sudo apt-get install python-virtualenv
+  virtualenv venv
+  source venv/bin/activate
+</pre></li><li>Install shapely speedups: (shapely 1.2.11 has bugs, do not use it)
+<pre class="wiki">  sudo apt-get install libgeos-dev
+  pip install Shapely
+  pip install https://github.com/olt/shapely_speedups/tarball/master
+</pre></li><li>Install imposm:
+</li></ul><p>
+Note that up until recently imposm did not create the generalized tables used by the mapserver-utils mapfile. Since version 2.3.0 this is not the case anymore, so there is no need
+to install a forked version of imposm as was the case in the first versions of this document
+</p>
+<pre class="wiki">  pip install imposm
+</pre><h2 class="section" id="Createdatabase">Create database<a class="anchor" href="#Createdatabase" title="Link to this section"> ¶</a></h2>
+<ul><li>Relevant docs: <a class="ext-link" href="http://imposm.org/docs/imposm/latest/tutorial.html"><span class="icon">​</span>http://imposm.org/docs/imposm/latest/tutorial.html</a>
+</li><li>Commands:
+<pre class="wiki">  imposm-psqldb &gt; create-db.sh
+  vi ./create-db.sh # cross check if all path are set properly
+... edit the following lines:
+-------------------8&lt;--------------
+psql -d osm -f /usr/share/postgresql/8.4/contrib/postgis-1.5/postgis.sql             # &lt;- CHECK THIS PATH
+psql -d osm -f /usr/share/postgresql/8.4/contrib/postgis-1.5/spatial_ref_sys.sql     # &lt;- CHECK THIS PATH
+-------------------&gt;8--------------
+
+  sudo su postgres
+  sh ./create-db.sh
+  /etc/init.d/postgresql-8.4 restart
+  exit
+</pre></li></ul><h2 class="section" id="Loaddatausingimposm">Load data using imposm<a class="anchor" href="#Loaddatausingimposm" title="Link to this section"> ¶</a></h2>
+<ul><li>Relevant docs: <a class="ext-link" href="http://imposm.org/docs/imposm/latest/tutorial.html"><span class="icon">​</span>http://imposm.org/docs/imposm/latest/tutorial.html</a>
+</li><li>Commands:
+<pre class="wiki">  cd ~/osm-demo/
+  imposm --read alabama.osm.pbf
+  imposm --write --database osm --host localhost --user osm
+  (... if prompted for db password, the default is osm)
+  imposm  --optimize -d osm
+</pre></li><li>Note: multiple .osm.pbf files can be loaded in separate commands using the --merge-cache argument.
+</li></ul><h2 class="section" id="Installmapserver-utilsmapfilegenerator">Install mapserver-utils mapfile generator<a class="anchor" href="#Installmapserver-utilsmapfilegenerator" title="Link to this section"> ¶</a></h2>
+<ul><li>Website: <a class="ext-link" href="http://code.google.com/p/mapserver-utils/"><span class="icon">​</span>http://code.google.com/p/mapserver-utils/</a>
+</li><li>There are two branches of the mapserver-utils project that can be used, depending on your needs:
+<ul><li>The trunk contains the latest and greatest developments
+</li><li>The 'imposm-dm-branch' is focused on Canada/US data, and contains supports for things such as US highway shields.
+</li></ul></li><li>To use the 'imposm-dm-branch' from SVN:
+<pre class="wiki">  cd ~/osm-demo/
+  svn checkout http://mapserver-utils.googlecode.com/svn/branches/imposm-dm-branch/ mapserver-utils-svn-imposm
+  cd mapserver-utils-svn-imposm
+... no files to edit, the changes listed for trunk below are already included in the imposm-dm-branch
+</pre></li><li>To use the trunk from SVN:
+<pre class="wiki">  cd ~/osm-demo/
+  svn checkout http://mapserver-utils.googlecode.com/svn/trunk/ mapserver-utils-svn
+  cd mapserver-utils-svn
+
+... Update mapserver-utils's osmbase.map and Makefile as follows:
+  vi osm-base.map
+-------------------8&lt;------------------------
+  WEB
+...
+    IMAGEPATH "/tmp/ms_tmp/"
+    IMAGEURL "/ms_tmp/"
+ END
+...
+--------------------&gt;8-----------------------
+
+  vi Makefile
+-------------------8&lt;------------------------
+OSM_SRID=900913
+OSM_UNITS=meters
+OSM_EXTENT=-20000000 -20000000 20000000 20000000
+...
+STYLE=google
+--------------------&gt;8-----------------------
+</pre></li><li>With trunk, the <strong>STYLE</strong> parameter possible values are the keys of the style_aliases hash, which can be found in the generate_style.py file.  For example: google
+</li><li>Create <a class="wiki" href="/mapserver/wiki/MapServer">MapServer</a> temp dirs (required by mapserv CGI for testing with openlayers template)
+<pre class="wiki">  mkdir /tmp/ms_tmp
+  chmod 777 /tmp/ms_tmp
+</pre></li></ul><ul><li>Execute the mapserver-utils makefile to generate the mapfile. Note that the first time you run 'make' several large files will be downloaded (country boundaries, etc.). This will happen only the first time.
+<pre class="wiki">  cd mapserver-utils-svn
+  make
+</pre></li><li>The 'make' command will have generated the mapfile based on the parameters in the generate_style.py script (either osm-outlined,google,usshields.map or osm-outlined,google.map depending on the branch that you chose above). 
+</li><li>More information about tweaking the map styles is available at <a class="ext-link" href="http://code.google.com/p/mapserver-utils/wiki/TweakingMapStylesImposm"><span class="icon">​</span>http://code.google.com/p/mapserver-utils/wiki/TweakingMapStylesImposm</a>
+</li></ul><ul><li>Access your map online using <a class="wiki" href="/mapserver/wiki/MapServer">MapServer</a>'s built-in template=openlayers mode:
+<pre class="wiki">http://yourserver.tld/cgi-bin/mapserv?map=/path/to/osm-demo/mapserver-utils-svn/osm-outlined,google,usshields.map&amp;mode=browse&amp;template=openlayers&amp;layers=all
+or
+http://yourserver.tld/cgi-bin/mapserv?map=/path/to/osm-demo/mapserver-utils-svn/osm-outlined,google.map&amp;mode=browse&amp;template=openlayers&amp;layers=all
+</pre></li></ul><h2 class="section" id="SetupMapCache">Setup <a class="missing wiki">MapCache</a><a class="anchor" href="#SetupMapCache" title="Link to this section"> ¶</a></h2>
+<ul><li>Relevant docs: <a class="ext-link" href="http://trac.osgeo.org/mapserver/browser/trunk/mapserver/mapcache/INSTALL"><span class="icon">​</span>http://trac.osgeo.org/mapserver/browser/trunk/mapserver/mapcache/INSTALL</a>
+</li><li>Required packages:
+<pre class="wiki">  sudo apt-get install autoconf apache2-dev libpixman-1-dev libcurl4-openssl-dev libpng-dev libjpeg-dev libgdal-dev libgeos-dev
+</pre></li><li>Checkout and build source:
+<pre class="wiki">  svn checkout https://svn.osgeo.org/mapserver/trunk/mapserver/mapcache mapcache-svn
+  cd mapcache-svn
+  autoconf
+  ./configure
+  make
+
+  sudo make install-module
+  sudo apache2ctl restart  
+</pre></li><li>Create our own mapcache-osm.xml based on docs in sample mapcache.xml (<a class="ext-link" href="http://trac.osgeo.org/mapserver/browser/trunk/mapserver/mapcache/mapcache.xml"><span class="icon">​</span>http://trac.osgeo.org/mapserver/browser/trunk/mapserver/mapcache/mapcache.xml</a>)
+<pre class="wiki">  mkdir ~/osm-demo/mapcache
+  cp ~/osm-demo/mapcache-svn/mapcache.xml ~/osm-demo/mapcache/mapcache-osm.xml
+  vi ~/osm-demo/mapcache/mapcache-osm.xml
+... make required changes to template to make it work with our installation:
+
+  &lt;cache name="disk" type="disk"&gt;
+...
+       &lt;base&gt;/opt/osm-demo/mapcache/cache&lt;/base&gt;
+
+...
+   &lt;source name="osm" type="wms"&gt;
+      &lt;http&gt;
+         &lt;url&gt;http://localhost/cgi-bin/mapserv?&lt;/url&gt;
+      &lt;/http&gt;
+
+... 
+            &lt;MAP&gt;/path/to/osm-demo/mapserver-utils-svn-imposm/osm-outlined,google,usshields.map&lt;/MAP&gt;
+... or ...
+            &lt;MAP&gt;/path/to/osm-demo/mapserver-utils-svn/osm-google.map&lt;/MAP&gt;
+...
+
+   &lt;tileset name="osm"&gt;
+      &lt;metadata&gt;
+         &lt;title&gt;OSM MapServer served map&lt;/title&gt;
+         &lt;abstract&gt;see http://trac.osgeo.org/mapserver/wiki/RenderingOsmDataUbuntu&lt;/abstract&gt;
+      &lt;/metadata&gt;
+      &lt;source&gt;osm&lt;/source&gt;
+      &lt;cache&gt;disk&lt;/cache&gt;
+      &lt;format&gt;PNG&lt;/format&gt;
+      &lt;grid&gt;g&lt;/grid&gt;
+      &lt;grid&gt;WGS84&lt;/grid&gt;
+      &lt;metatile&gt;5 5&lt;/metatile&gt;
+      &lt;expires&gt;10000&lt;/expires&gt;
+      &lt;auto_expire&gt;86400&lt;/auto_expire&gt;
+      &lt;metabuffer&gt;10&lt;/metabuffer&gt;
+   &lt;/tileset&gt;
+</pre></li><li>Create 'cache' directory writable by Apache (www-data) user
+<pre class="wiki">  mkdir ~/osm-demo/mapcache/cache
+  sudo chown www-data ~/osm-demo/mapcache/cache/
+</pre></li><li>Add directives to Apache config:
+<pre class="wiki">  sudo vi /etc/apache2/sites-available/default
+... add the following lines to the end of the default VirtualHost (update the '/path/to/' directory name):
+
+  &lt;IfModule mapcache_module&gt;
+    MapCacheAlias /mapcache "/path/to/osm-demo/mapcache/mapcache-osm.xml"
+  &lt;/IfModule&gt;
+
+</pre></li><li>And restart apache for the changes to take effect:
+<pre class="wiki">  sudo apache2ctl restart
+</pre></li></ul><ul><li>Ready to test server, see URL docs at <a class="ext-link" href="http://code.google.com/p/mod-geocache/wiki/RequestingTilesFromService#TMS_service"><span class="icon">​</span>http://code.google.com/p/mod-geocache/wiki/RequestingTilesFromService#TMS_service</a>
+</li><li>Demo site at <a class="ext-link" href="http://yourserver.tld/mapcache/demo/"><span class="icon">​</span>http://yourserver.tld/mapcache/demo/</a>
+</li><li>TMS service available at <a class="ext-link" href="http://yourserver.tld/mapcache/tms/1.0.0/"><span class="icon">​</span>http://yourserver.tld/mapcache/tms/1.0.0/</a>
+<ul><li>Sample tile:  <a class="ext-link" href="http://yourserver.tld/mapcache/tms/1.0.0/osm@g/3/2/5.png"><span class="icon">​</span>http://yourserver.tld/mapcache/tms/1.0.0/osm@g/3/2/5.png</a>
+</li></ul></li><li>Test using the sample <a class="missing wiki">OpenLayers</a> app to test TMS: <a class="ext-link" href="http://openlayers.org/dev/examples/tms.html"><span class="icon">​</span>http://openlayers.org/dev/examples/tms.html</a>
+<ul><li>URL of TMS (Should end in /): <a class="ext-link" href="http://yourserver.tld/mapcache/tms/"><span class="icon">​</span>http://yourserver.tld/mapcache/tms/</a>
+</li><li>layer_name: osm@g
+</li><li>Format: PNG
+</li><li>... and hit submit. You should see a browsable map of the world. If not then check your Apache error logs for errors.
+</li></ul></li></ul><ul><li>You can optionally run the cache seeder, see: <a class="ext-link" href="http://code.google.com/p/mod-geocache/wiki/UsingTheSeeder"><span class="icon">​</span>http://code.google.com/p/mod-geocache/wiki/UsingTheSeeder</a>
+</li></ul></div>
+        <div class="trac-modifiedby">
+          <span>
+            <a href="/mapserver/wiki/RenderingOsmDataUbuntu?action=diff&amp;version=24" title="Version 24 by adube">Last modified</a>
+ <a class="timeline" href="/mapserver/timeline?from=2012-03-23T07%3A54%3A54-07%3A00&amp;precision=second" title="See timeline at Mar 23, 2012, 7:54:54 AM">10 years ago</a>          </span>
+          <span class="trac-print">
+            Last modified on Mar 23, 2012, 7:54:54 AM
+          </span>
+        </div>
+      </div>
+
+
+
+
+
+<div class="trac-help">
+  <strong>Note:</strong>
+ See   <a href="/mapserver/wiki/TracWiki">TracWiki</a>
+ for help on using the wiki.
+</div>
+    </div>
+        <!-- # block content (content inherited from layout.html) -->
+    <div id="altlinks">
+      <h3>Download in other formats:</h3>
+      <ul>
+        <li class="last first">
+          <a rel="nofollow" href="/mapserver/wiki/RenderingOsmDataUbuntu?format=txt" class="">
+            Plain Text</a>
+        </li>
+      </ul>
+    </div>
+    <!-- # endblock content (content inherited from layout.html) -->
+
+      <!-- # endblock content (placeholder in theme.html) -->
+    </div>
+
+    <div id="footer"><hr>
+      <a id="tracpowered" href="https://trac.edgewall.org/"><img src="/mapserver/chrome/common/trac_logo_mini.png" height="30" width="107" alt="Trac Powered"></a>
+      <p class="left">
+Powered by         <a href="/mapserver/about"><strong>Trac 1.4.3</strong></a>
+        <br>
+ By         <a href="http://www.edgewall.org/">Edgewall Software</a>
+.      </p>
+      <p class="right">Visit the Trac open source project at<br><a href="http://trac.edgewall.org/">http://trac.edgewall.org/</a></p>
+    </div>
+    <!--   # include 'site_footer.html' (theme.html) -->
+    <!--   end of site_footer.html -->
+    <!-- # endblock body (content inherited from theme.html) -->
+   </body></html>

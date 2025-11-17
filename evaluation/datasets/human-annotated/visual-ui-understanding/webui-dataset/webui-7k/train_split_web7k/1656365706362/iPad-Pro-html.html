@@ -1,0 +1,211 @@
+<!DOCTYPE html><html lang="zh-cn"><head>
+<title>用户注册_天空广告联盟系统_国内最大最好的站长广告联盟网站之一</title>
+
+<meta name="keywords" content="用户注册,天空广告联盟系统">
+<meta name="description" content="天空广告联盟系统用户注册">
+<meta charset="gbk">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="icon" href="images/favicon.ico" type="image/ico">
+<!-- Bootstrap -->
+<link rel="stylesheet" type="text/css" href="template/201112/css/animate.css">
+<link href="template/201112/css/bootstrap.min.css" rel="stylesheet">    
+<!--导航-->
+<link rel="stylesheet" href="template/201112/css/head.css">
+<link href="template/201112/css/mystyle.css" rel="stylesheet">    
+
+<link rel="stylesheet" href="css/BeAlert.css">
+
+<script src="template/201112/js/jquery-1.8.3.min.js"></script>
+<script src="template/201112/js/bootstrap.min.js"></script>
+<script src="js/BeAlert.js"></script>
+</head>
+<body>
+<header class="header"> 
+    <div class="container"> 
+    	<div class="headerBox">
+            <div class="logo">
+                <a href="/"><img src="template/201112/images/logo.png" alt=""></a>
+            </div>
+            <div class="nav"> 
+                <ul class="navbar_nav" data-in="fadeInDown" data-out="fadeOutUp">
+                    <li><a href="/">首页</a></li>                
+                    <li><a href="?f=style">广告形式</a></li>
+                    <li><a href="?f=infoall">最新动态</a></li>
+                    <li><a href="?f=help">常见问题</a></li>
+                    <li><a href="?f=contact">联系我们</a></li>
+                </ul>
+            </div>
+
+            <div class="head_login clearfix" style="display:block;">
+            	<a href="?f=login" class="login_one">登录</a>
+                <a href="?f=reg" class="login_tow">注册</a>
+            </div>
+
+            <a href="javascript:void(0)" id="navToggle">
+                <span></span>
+            </a>
+        </div>
+    </div>
+</header>
+
+<!--移动端的导航-->
+<div class="m_nav">
+    <div class="top clearfix">
+        <img src="template/201112/images/closed.png" alt="" class="closed">
+    </div>
+    <div class="logo">
+        <img src="template/201112/images/logo.png" alt="">
+    </div>
+    <ul class="ul" data-in="fadeInDown" data-out="fadeOutUp">
+        <li><a href="/">首页</a></li>                
+        <li><a href="?f=style">广告形式</a></li>
+        <li><a href="新闻动态.html">最新动态</a></li>
+        <li><a href="常见问题.html">常见问题</a></li>
+        <li><a href="联系我们.html">联系我们</a></li>
+    </ul>
+</div>
+
+
+<script>
+$(function(){
+	$("#userreg").click(function(){
+		if($('#username').val()==""){
+			alert('请输入用户名', '', function () {$("#username").focus();});
+			return false;
+		}
+
+		var username = $("#username").val();
+		var uservalid = 1;
+		$.ajax({url: "cf.aspx",type: "get",async: false,data:"action=usernamechecksave&username="+username,success: function(response){
+		if(response.indexOf("error")>=0){
+			uservalid=0;
+		}
+		}});
+		if(uservalid==0){ 
+			alert('此用户名已经被其它人注册', '', function () {$("#username").focus();});
+			return false;
+		}
+		
+		if($('#pwd').val()==""){
+			alert('请输入密码', '', function () {$("#pwd").focus();});
+		return false;
+		}else{
+			$("#pwd2").val($('#pwd').val());//给必填项重复密码一个默认值
+		}
+
+		if($('#regcheckcode').val()==""){
+			alert('请输入验证码', '', function () {$("#regcheckcode").focus();});
+			return false;
+		}
+
+		var checkcode = $("#checkcode").val();
+		var checkvalid = 1;
+		$.ajax({url: "cf.aspx",type: "get",async: false,data:"action=checkcodechecksave&checkcode="+checkcode,success: function(response){
+		if(response.indexOf("error")>=0){
+			checkvalid=0;
+		}
+		}});
+		if(checkvalid==0){ 
+			alert('验证码输入错误', '', function () {$("#checkcode").focus();});
+			return false;
+		}
+
+		if(!$("#agreeprotocol").is(":checked")){ 
+			alert('同意协议才能注册用户', '', function () {$("#agreeprotocol").focus();});
+			$('#agreeprotocol').focus();
+			return false;
+		}
+		
+		$("#email").val($('#username').val()+'@a.com');//给必填项email一个默认值
+
+		$('#form_userreg').submit();
+
+		return true;
+	});
+
+
+	$("#usertype_1").click(function(){
+		$("#usertype").val(1);
+		$(usertype_1).addClass('on');
+		$(usertype_2).removeClass('on');
+	});
+	
+	$("#usertype_2").click(function(){
+		$("#usertype").val(2);
+		$(usertype_2).addClass('on');
+		$(usertype_1).removeClass('on');
+	});
+	
+	$("#ccimg").click(function(){
+		$("#ccimg").attr('src','CF.aspx?Action=checkcodeget&RanStr=' + Math.random());
+	});
+});
+</script>
+
+
+<div class="dlbg">
+	<div class="img-box"><img src="template/201112/images/dlbg.jpg"></div>
+    <div class="dlfr">
+    	<div class="dlbox zcbox">
+    		<h4>审核QQ：179444019 </h4>
+<h4>    TG：@tiankonglm</h4>
+            <div class="zcSwitch" style="display:block">
+<form method="post" action="CF.aspx?Action=userregsave" name="form_userreg" id="form_userreg">
+<input name="usertype" id="usertype" type="hidden" value="1">
+<input name="pwd2" id="pwd2" type="hidden" value="">
+<input name="email" id="email" type="hidden" value="">
+
+                    <ul class="zcTab clearfix">
+                        <li class="on" id="usertype_1">站长注册</li>
+                        <li id="usertype_2">广告商注册</li>
+                    </ul>
+            
+                	<ul>
+                    	<li>
+                            <div class="txt-box">
+                            	<input name="username" id="username" type="text" class="text" placeholder="用户名">
+                            </div>
+                        </li>
+                        <li>
+                            <div class="txt-box">
+                            	<input name="pwd" id="pwd" type="password" class="text" placeholder="密码">
+                            </div>
+                        </li>
+                        <li>
+                            <div class="txt-box">
+                            	<input name="checkcode" id="checkcode" type="text" class="text textyzm" placeholder="验证码">
+                                <div class="yzm"><a href="javascript:;"><img id="ccimg" src="CF.aspx?Action=checkcodeget&amp;RanStr=1656394543" title="看不清楚，换一个！"></a></div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="txt-box">
+                            	<label><input name="agreeprotocol" id="agreeprotocol" type="checkbox" value="1" checked="">已阅读并同意<a href="index.asp?f=agreement">《天空广告联盟系统用户协议》</a></label>
+                            </div>
+                        </li>
+                    </ul>
+
+
+
+                    <button class="zhucebtn" id="userreg">注册</button>
+                </form>
+            </div>
+
+            
+        </div>    	
+    </div>
+	
+    <div class="dlcopyright">@天空广告联盟系统 版权所有</div>
+</div>
+
+
+ 
+
+
+
+
+
+
+		
+        </body></html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html><html><head>
+<meta charset="utf-8">
+<meta property="og:url" content="http://thekinsie.com/words/jediknight/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Let's Make Jedi Knight Not Suck On Modern PCs">
+<meta property="og:description" content="How to get the classic Star Wars FPS to work properly with a minimum of fuss">
+<meta property="og:image" content="http://thekinsie.com/words/jediknight/imgs/meta.jpg">
+<meta property="og:image:width" content="800">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+<title>Let's Make Jedi Knight Not Suck On Modern PCs!</title>
+<link href="../../skin_noeffort.css" rel="stylesheet" type="text/css">
+<style>body { background: url("imgs/back.jpg") no-repeat center center fixed; background-size:cover; }</style>
+</head>
+
+<body>
+<div class="content">
+<p style="text-align:center"><img src="imgs/logo.png" alt="I put a lot of effort into this title image so you'd better appreciate it." title="I put a lot of effort into this title image so you'd better appreciate it."></p>
+<p><a href="http://www.mobygames.com/game/windows/star-wars-jedi-knight-dark-forces-ii">Jedi Knight</a> is a fascinating game with a lot of cool mods out there for it. It also runs like a one-legged dog on modern PCs, lacking 3D acceleration support and having a host of other issues getting in the way. Recently I found myself scrabbling to get these games working on my new Windows 10 box, and looking at the discussion forums on the online stores selling the game, I found a lot of people in the same boat, so I thought I'd put together what worked for me and explain it all nicely like. The <a href="https://www.gog.com/game/star_wars_jedi_knight_dark_forces_ii">GOG</a> and <a href="http://store.steampowered.com/app/32380/STAR_WARS_Jedi_Knight_Dark_Forces_II/">Steam</a> versions have their own well-meaning but ultimately unfinished fixes, meaning that these versions will also benefit from this as well (I tested this personally on the Steam versions.)</p>
+<table width="100%" border="0">
+  <tbody>
+    <tr>
+      <td><h1>THE 2022 UPDATE</h1>
+        <p>Howdy pardner! It's me again. The landscape has been changing ever since this page was assembled in the halcyon days of 2018. Sometimes even for the better! There have been a couple of efforts recently to reverse-engineer the Jedi Knight engine to allow for deeper structural changes. </p>
+        <p><a href="https://github.com/shinyquagsire23/OpenJKDF2/">OpenJKDF2</a> is the one I've tried, and it's very promising indeed, albeit it doesn't support Mysteries of the Sith and probably won't for quite some time, if ever. You can even try it <a href="https://maxthomas.dev/openjkdf2/">in your browser</a>, if you want! The miracle of technology.</p>
+        <p>Granted, these methods are still in beta and may have issues (and again, don't support the expansion) so you may still want to take the long, bloody path listed below to beat the original binaries into compliance.</p></td>
+    </tr>
+  </tbody>
+</table>
+<h1>THE THINGS YOU'LL WANT</h1>
+<ul>
+  <li><a href="http://www.jkhub.net/project/show.php?projid=547&amp;section=downloads">The Alternate Installer</a>, if you're installing from a physical copy of the game. The original discs installers are 16-bit, meaning that they won't function with 64-bit Operating Systems.</li>
+  <li><a href="https://community.pcgamingwiki.com/files/file/986-jedi-knight-df2-mots-pre-patched-unofficial-patches/">The Unofficial Patches</a>, pre-setup and with the CD checks removed in order to support the digital re-releases.</li>
+  <li><a href="http://dege.freeweb.hu/">dgVoodoo</a>, a wrapper/general purpose toolkit for un-fucking a wide variety of problems with old video stuff via DX10. Your browser <em>might</em> complain that it's a virus (I assure you <em>it ain't</em>) so you might need to fart about to get it downloaded.</li>
+  <li>A general willingness to fart around in Explorer and unzip files into folders.</li>
+</ul>
+<table width="100%" border="0">
+  <tbody>
+    <tr>
+      <td><p><strong>A BRIEF NOTE BEFORE WE START: </strong>I used the Steam version of the game for this guide, as that's what I had installed at the time. I can't vouch for the GOG version, but it's probably pretty similar. The physical release will likely require a little leg-work to rip the CD Audio and get it working without a CD.</p></td>
+    </tr>
+  </tbody>
+</table>
+<h1 id="tr1">LET'S DO THIS</h1>
+<p>Right, let's get into it. Grab the Unofficial Patches we picked up earlier, and unzip them into the appropriate folder. Overwrite any files it asks for. If you're using the Steam version, the original EXE file has been renamed by Disney for unknown, nebulous reasons (ie. from jk.exe to JediKnight.exe). Just rename the patched EXE to match that. (You'll want to rename the original EXE in case you need it later. You probably won't, but it can't hurt, right?)</p>
+<table width="100%" border="0">
+  <tbody>
+    <tr>
+      <td align="center"><p><img src="imgs/jedi-exes.png" width="374" height="152" alt=""></p>
+        <p><em>The new patched EXE, sitting next to the renamed original EXE (which has a newer timestamp. shh.)</em></p></td>
+    </tr>
+  </tbody>
+</table>
+<p>Next up! Fixing 3D Acceleration. We'll be using dgVoodoo for this. Open the dgVoodoo zip, and extract the exe file to your Jedi Knight install folder. Next, open the "MS" subdirectory and dump the contents of that into the install folder too. Now, run dgVoodooCpl.exe.</p>
+<table width="100%" border="0">
+  <tbody>
+    <tr>
+      <td align="center"><p><img src="imgs/dgv_general.png" width="375" height="447" alt=""><img src="imgs/dgv_dx.png" width="375" height="447" alt=""></p>
+      <p><em>(Figure 4.2: "Portrait of the dgVoodoo Interface as a Young Man")</em></p></td>
+    </tr>
+  </tbody>
+</table>
+<p>First thing's first, hit the ".\" button to set the config location properly. This is important! Next up...</p>
+<ol>
+  <li>In the "General" tab, check the "Windowed" radio button, and uncheck "Capture Mouse".</li>
+  <li>Ignore the "Glide" tab. It's not relevant to Jedi Knight.</li>
+  <li>In the "DirectX" tab, uncheck "Application Controlled Fullscreen/Windowed State", set "Resolution" to whatever you please, and uncheck "dgVoodoo Watermark" because why the hell would you want that? You'll probably also want to set your ingame resolution to what you set in dgVoodoo, to avoid wobbly polygons in-game.</li>
+</ol>
+<p>Finally, hit Apply, and you're one step away from finishing things off.</p>
+<p>The last thing left to do is simple - create a shortcut to your JediKnight.exe (or jk.exe or whatever) and give it the command line argument "-windowgui". This will handle the 2D menus differently from the rest of the game, as a low-res window, fixing some annoying issues that would have otherwise made navigating the menus an exercise in frustration.</p>
+<table width="100%" border="0">
+  <tbody>
+    <tr>
+      <td align="center"><p><img src="imgs/jedi-shortcut.png" width="363" height="221" alt=""></p>
+        <p><em>The command line parameter, entered in all nicely like.</em></p></td>
+    </tr>
+  </tbody>
+</table>
+<p>&nbsp;</p>
+<h2>AND THAT'S A WRAP!</h2>
+<p>Now you can play Jedi Knight in a nice window on a modern PC without the horrifying issues of the current digital releases.</p>
+<table width="100%" border="0">
+  <tbody>
+    <tr>
+      <td align="center"><p><a href="imgs/JSHOT000.jpg"><img src="imgs/JSHOT000_thumb.jpg" width="320" height="240" alt=""></a><a href="imgs/JSHOT001.jpg"><img src="imgs/JSHOT001_thumb.jpg" width="320" height="240" alt=""></a><br>
+      </p>
+      <p><em>(Click for larger images. 1024x768 large, in fact, so probably 56k unfriendly)</em></p></td>
+    </tr>
+  </tbody>
+</table>
+<h1>ADDITIONAL CREDIT</h1>
+<p>Just because we've gotten the game running doesn't mean we have to stop there. I mean, why are we doing this, to actually have something to <em>play</em> or just to while away endless hours fiddling with stuff?</p>
+<h2>DIRECTPLAGUE</h2>
+<p>Depending on where and how you got and installed your copy of the game (I believe the Steam version handles this the first time you try and run it through the Steam client), you may receive an error message upon trying to start the game complaining about the lack of DirectPlay, the long-depreciated API used to handle online multiplayer in Jedi Knight. Here's how to fix that.</p>
+<p>Click your Start icon, and type "features". The first result should be "Turn Windows Features On and Off". Click that. When the window pops up, click the "+" icon next to "Legacy Features", then tick the "DirectPlay" box. You'll probably have to restart after doing this. Maybe.</p>
+<table width="100%" border="0">
+  <tbody>
+    <tr>
+      <td align="center"><p><img src="imgs/directplay.png" width="415" height="368" alt=""><br>
+      </p>
+        <p><em>The box you have to tick.</em></p></td>
+    </tr>
+  </tbody>
+</table>
+<p>This should hopefully solve this particular problem.</p>
+<h2>MYSTERIOUSER AND MYSTERIOUSER</h2>
+<p>The Unofficial Patch zip we downloaded early also included a patch for the Mysteries of the Sith expansion pack. Much the same process applies to that game, so more or less repeat the instructions to get that game working as well.</p>
+<table width="100%" border="0">
+  <tbody>
+    <tr>
+      <td align="center"><p><a href="imgs/MSHOT0000.jpg"><img src="imgs/MSHOT0000_thumb.jpg" width="320" height="240" alt=""></a> <a href="imgs/MSHOT0001.jpg"><img src="imgs/MSHOT0001_thumb.jpg" width="320" height="240" alt=""></a></p>
+        <p><em>(Click for larger images as evidence that I actually did this and aren't just messing with you)</em></p></td>
+    </tr>
+  </tbody>
+</table>
+<h2>CAUTION: HEAVY LOD</h2>
+<p>"High Definition" mod packs are almost always a bad bet with old games like this. A better alternative is the <a href="https://community.pcgamingwiki.com/files/file/918-high-detail-mod-for-jedi-knight-df2-mots/">High Detail Mod for JK and MOTS</a>, which simply tweaks the maps to disable the overly aggressive LOD system where everything that's further than six feet from your face becomes a blurry, seven-polygon mess. Highly recommended!</p>
+<table width="100%" border="0">
+  <tbody>
+    <tr>
+      <td align="center"><p><img src="imgs/lodmod.gif" width="780" height="469" alt=""></p>
+        <p><em>(Image Credit: Osprey)</em></p></td>
+    </tr>
+  </tbody>
+</table>
+<h1>THANKS TO</h1>
+<ul>
+  <li>The GOG and Steam forums for giving me lots of leads to endlessly chase.</li>
+  <li>Osprey for compiling the appropriate Unofficial Patch files conveniently together, as well as creating the LOD mod</li>
+  <li>dege for creating the awesome dgVoodoo, as ever</li>
+</ul>
+<table width="100%" border="0">
+  <tbody>
+      <tr>
+        <td><a href="http://thekinsie.com/"><i class="fa fa-backward" aria-hidden="true"></i> Go Back, Foul Demon!</a></td>
+		  <td align="center"><a href="#"><i class="fa fa-caret-up" aria-hidden="true"></i><i class="fa fa-caret-up" aria-hidden="true"></i><i class="fa fa-caret-up" aria-hidden="true"></i> To the Top <i class="fa fa-caret-up" aria-hidden="true"></i><i class="fa fa-caret-up" aria-hidden="true"></i><i class="fa fa-caret-up" aria-hidden="true"></i></a></td>
+        <td align="right"><a href="mailto:thekins@gmail.com">Get in Touch <i class="fa fa-envelope" aria-hidden="true"></i></a></td>
+      </tr>
+  </tbody>
+</table>
+	</div>
+
+
+</body></html>

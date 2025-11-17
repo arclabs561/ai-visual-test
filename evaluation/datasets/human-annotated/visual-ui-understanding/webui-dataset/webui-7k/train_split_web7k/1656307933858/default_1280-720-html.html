@@ -1,0 +1,463 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8">
+    <meta name="viewport" content="width=1048">
+	<meta http-equiv="X-UA-Compatible" content="chrome=1">
+	<meta name="description" content="Founded in 1937, Museum of Contemporary Craft (MoCC) in partnership with Pacific Northwest College of Art is a vibrant center for investigation and dialogue that helps expand the definition and exploration of craft.">
+	<meta name="copyright" content="Museum of Contemporary Craft, Portland, OR">
+	<meta name="robots" content="index,follow">
+	
+    <title>museum of contemporary craft : get-involved : c</title>
+    
+    
+  
+    <link rel="stylesheet" media="screen, projection" href="/css/style.css">
+    <link rel="stylesheet" media="screen, projection" href="/css/nivo-slider.css">
+    <link rel="stylesheet" media="screen, projection" href="/css/colorbox.css">
+    <link rel="stylesheet" media="screen, projection" href="/css/jscrollpane.css">
+    
+<!--[if IE 6]>
+	<link rel="stylesheet" type="text/css" href="/css//ie6.css" media="screen,projection" />
+<![endif]-->
+
+<!--[if IE 7]>
+	<link rel="stylesheet" type="text/css" href="/css/ie7.css" media="screen,projection" />
+<![endif]-->
+
+<!--[if IE 8]>
+	<link rel="stylesheet" type="text/css" href="/css/ie8.css" media="screen,projection" />
+<![endif]-->
+
+    <script src="/js/jquery-1.4.2.min.js"></script>
+    <script src="/js/jquery.colorbox-min.js"></script>
+    <script src="/js/jquery.nivo.slider.js"></script>
+    <script src="/js/jquery.placeholder.js"></script>
+    <script src="/js/jquery.ui.181.js"></script>
+    <script src="/js/jquery.ui.tabs.js"></script>
+    <script src="/js/jquery.tools.js"></script>
+    <script src="/js/jquery.mousewheel.js"></script>
+    <script src="/js/jquery.jscrollpane.js"></script>
+    <script src="/js/jflickrfeed.js"></script>
+    <script src="/js/jflickrfeed-setup.js"></script>
+    <script src="/js/MOCCtwitter.js"></script><script type="text/javascript" src="//cdn.syndication.twimg.com/widgets/timelines/483658390783029249?&amp;lang=en&amp;callback=twitterFetcher.callback&amp;suppress_response_codes=true&amp;rnd=0.2527283108030438"></script>
+    
+    <script type="text/javascript">
+
+	var timeout    = 500;
+	var closetimer = 0;
+	var ddmenuitem = 0;
+	
+	function jsddm_open() {  
+		jsddm_canceltimer();
+	   	jsddm_close();
+	   	ddmenuitem = $(this).find('ul').css('visibility', 'visible');
+	}
+	
+	function jsddm_close() {  
+		if(ddmenuitem) ddmenuitem.css('visibility', 'hidden');
+	}
+	
+	function jsddm_timer() {  
+		closetimer = window.setTimeout(jsddm_close, timeout);
+	}
+	
+	function jsddm_canceltimer() {  
+		if(closetimer) {  
+			window.clearTimeout(closetimer);
+	      	closetimer = null;
+	     }
+	 }
+	
+	$(document).ready(function() {
+		
+		//** Flickr integration
+		
+		$('ul.jflickrfeed').jflickrfeed({
+    		limit: 12,
+    		qstrings: {
+            id: '10686261@N03'
+            },
+          itemTemplate: '<li><a rel="colorbox" href="{{image_b}}" class="flick" style="background-image:url({{image_s}})" title="{{title}}"></a></li>'
+          }, function(data) {
+        	$('ul.jflickrfeed a').colorbox();
+        });
+        
+          
+          	
+		//** Tooltips
+		  $("a.tip").tooltip({ 	
+			// place tooltip on the right edge
+			position: "top right",
+			// a little tweaking of the position
+			offset: [40, -40],
+			// use the built-in fadeIn/fadeOut effect
+			effect: "fade",
+			// custom opacity setting
+			opacity: 0.95,
+			predelay: 100
+		  });
+
+		//tabs
+		
+	  	$("body#exhibitions #tabs").tabs({ fx: { opacity: 'toggle' } });
+	  	$("body#shop #tabs").tabs({ fx: { opacity: 'toggle' } });
+	  	$("#join-tabs #tabs").tabs();
+
+		//colorbox
+		$("a.boxit").colorbox({
+			transition:'none', 
+			speed:500,
+			opacity:0.9,
+			rel:'group1',
+			preloading:true,
+			scalePhotos:true,
+			maxWidth:'800px',
+			maxHeight:'600px',
+			title: function(){
+              return $(this).attr('cap');
+            }
+		});
+		
+		$("a.frameit").colorbox({
+			transition:'none', 
+			speed:500,
+			opacity:0.80,
+			iframe:true, 
+			innerWidth:'700px', 
+			innerHeight:'450px'
+		});
+		
+        $("a.frameitlarge").colorbox({
+		transition:'none', 
+		speed:500,
+		opacity:0.80,
+		iframe:true, 
+		innerWidth:800, 
+		innerHeight:650
+	});
+		
+		$('a.readit').click(function(){
+		    if(typeof console === "undefined") {
+              console = { log: function() {}};
+            }
+
+			var readable = this.id.substring(0,this.id.indexOf('-readme'));
+		    
+		    $.fn.colorbox({
+				transition:'none', 
+				speed:500,
+				opacity:0.90,
+				inline:true,
+				href:"#" + readable,
+				innerWidth:'630px', 
+				innerHeight:'650px',
+				scrolling:true,
+				onLoad: function() {
+					$("link[href*='colorbox.css']").remove();
+					$('head > link').last().after('<link rel="stylesheet" type="text/css" href="/css/colorbox-read.css" />');
+				},
+				onComplete: function() {
+				    if (!($('#'+readable+'-hh').val() > 0)) { 
+				      $('#'+readable+'-hh').val(Math.round($('#' + readable).height() * 1.42));
+					}
+					var new_height = parseInt($('#'+readable+'-hh').val());
+					$('#cboxLoadedContent > #' + readable).height(new_height);
+  					$('#cboxLoadedContent').jScrollPane();
+			    },
+				onCleanup: function() {
+				  	$("link[href*='colorbox-read.css']").remove();
+					$('head > link').last().after('<link rel="stylesheet" type="text/css" href="/css/colorbox.css" />');
+			    }
+			});
+		});
+	
+		//placeholder text
+		$('input#search').placeholder();
+	
+		//dropdown menus
+		$('#jsddm > li').bind('mouseover', jsddm_open)
+	   	$('#jsddm > li').bind('mouseout',  jsddm_timer)	
+	
+		setTimeout(function(){
+		$('#slider2').nivoSlider({ 
+		pauseOnHover:true,
+		effect:'fade', //Specify sets like: 'fold,fade,sliceDown'
+		pauseTime:3000,
+		startSlide:2, //Set starting Slide (0 index)
+		directionNav:false, //Next & Prev
+		captionOpacity:1.0 //Universal caption opaci
+		});
+	}, 1000);
+
+	});
+	
+	document.onclick = jsddm_close;
+	
+</script>
+
+
+
+</head>
+
+<body id="get-involved"><div id="cboxOverlay" style="display: none;"></div><div id="colorbox" class="" style="padding-bottom: 32px; padding-right: 0px; display: none;"><div id="cboxWrapper"><div><div id="cboxTopLeft" style="float: left;"></div><div id="cboxTopCenter" style="float: left;"></div><div id="cboxTopRight" style="float: left;"></div></div><div><div id="cboxMiddleLeft" style="float: left;"></div><div id="cboxContent" style="float: left;"><div id="cboxLoadedContent" style="width:0; height:0" class=""></div><div id="cboxLoadingOverlay" class=""></div><div id="cboxLoadingGraphic" class=""></div><div id="cboxTitle" class=""></div><div id="cboxCurrent" class=""></div><div id="cboxNext" class=""></div><div id="cboxPrevious" class=""></div><div id="cboxSlideshow" class=""></div><div id="cboxClose" class=""></div></div><div id="cboxMiddleRight" style="float: left;"></div></div><div><div id="cboxBottomLeft" style="float: left;"></div><div id="cboxBottomCenter" style="float: left;"></div><div id="cboxBottomRight" style="float: left;"></div></div></div><div style="position:absolute; width:9999px; visibility:hidden; display:none"></div></div>
+<!-- He's the DJ, I'm the Wrapper -->
+
+<div id="headerwrapper">
+
+<div id="header">
+<div id="logo">
+	<a href="/"><img src="/images/mocc-logo3.jpg" alt="logo" width="517"></a>
+	
+		<div id="nav">
+		<ul id="jsddm">
+		<li><a href="/visit/c/portland">Visit</a>
+			<ul>
+				
+				<li><a href="/visit/c/portland">Visit Portland</a></li>
+				<li><a href="/visit/c/tour">Group Visits</a></li>
+				<li><a href="http://cal.pnca.edu" target="_blank">Calendar</a></li>
+			</ul>
+		</li>
+		
+		<li><a href="/exhibitions/c/current">Exhibitions + Programs</a>
+			<ul>
+				<li><a href="/exhibitions/c/current">Current</a></li>
+				<li><a href="/exhibitions/c/upcoming">Upcoming</a></li>
+				<li><a href="/exhibitions/c/past">Past</a></li>
+				<li><a href="/exhibitions/programs">Programs</a></li>
+			</ul>
+		</li>
+		
+		
+		<li><a href="/collections">Collections</a></li>
+		
+		
+		<li><a href="/get-involved/c/join">Get Involved</a>
+			<ul>
+				<li><a href="/get-involved/c/join">Become a Member</a></li>
+				<li><a href="/get-involved/c/volunteer">Volunteer</a></li>
+				<li><a href="/get-involved/c/communities">Online Communities</a></li>
+				<li><a href="/get-involved/c/guild">Guild Council</a></li>
+				<li><a href="/get-involved/c/support">Support</a></li>
+			</ul>
+		</li>
+
+
+		<li><a href="/shop">The Gallery Store</a></li>
+		
+		
+		<li><a href="/about/c/mission" style="margin-right:0px;">About</a>
+			<ul>
+				<li><a href="/about/c/mission">About Us</a></li>
+				<li><a href="/about/c/pnca">Pacific Northwest College of Art</a></li>
+				<li><a href="/about/c/history">History</a></li>
+				<li><a href="/about/c/leadership">Leadership</a></li>
+				<li><a href="/about/c/jobs">Jobs + Internships</a></li>
+				<li><a href="/press">Press Room</a></li>
+				<li><a href="/about/c/contact">Contact</a></li>
+			</ul>
+		</li>
+
+		</ul>
+	</div>
+
+</div>
+
+
+<div id="tasknav">
+
+
+<div style="float:right;width:300px;">
+<form action="http://mocc.pnca.edu/search/results" id="searchbox_013737007219556681314:tbo3bd3jwpu">
+  <input type="image" src="/images/search.gif">
+  <input type="hidden" name="cx" value="013737007219556681314:tbo3bd3jwpu">
+  <input type="hidden" name="cof" value="FORID:11">
+  <input type="text" name="q" size="27" onfocus="this.value=''; return true;" value="SEARCH">
+</form>
+
+<div class="links">
+<a href="/get-involved/c/join">Membership</a>&nbsp;&nbsp;
+<a href="/get-involved/c/support">Support</a>&nbsp;&nbsp;
+<a href="/press">Press Room</a>&nbsp;&nbsp;
+<a href="http://cal.pnca.edu" target="_blank">Calendar</a>&nbsp;&nbsp;
+<a href="http://pnca.edu">PNCA</a>
+</div>
+
+</div>
+
+
+<div class="clearfix">
+	</div>
+
+</div>
+
+<div class="clearfix">
+	</div>
+
+</div><!-- end header -->
+	
+</div><!-- end headerwrapper -->
+
+
+<div id="masterwrapper">
+
+
+
+<div id="content">
+
+	<div id="content-a" class="sub">
+	
+		<h2>Volunteer Opportunities</h2>
+			<p>The Museum of Contemporary Craft welcomes the support of volunteers who want to give back to the community by sharing their time and energy to enhance one of Portland’s premiere art institutions. Volunteers are actively engaged in the life of MoCC and work closely with staff, visitors and artists in a variety of ways.</p>
+
+	<p>Prospective volunteers should enjoy discussing craft, be excited about working with a diverse range of individuals, and have the ability to make a four month commitment with a two shift minimum per month.  </p>
+
+	<h3>Gallery Sales Support </h3>
+
+	<p>The Gallery Sales Support volunteer will help to greet customers and engage them through conversation about each artist’s unique story and process.  The Gallery Sales Support volunteer will be responsible for maintaining the Gallery Store’s appearance by tagging, labeling, dusting, and displaying new and existing work.</p>
+
+	<p>This is a unique opportunity to learn and connect to how a Gallery Store functions within a museum setting to local artists, staff, and visitors.  The Gallery Sales Support volunteer will play an integral role in the day-to-day operations of the Gallery Store. In addition the Gallery Sales Support volunteer will assist the Museum Front Desk as needed.</p>
+
+	<p>Gallery Sales Support volunteers do not handle actual sales transactions within the Gallery Store, but provide invaluable customer support leading up to a transaction. Individuals signing up for this role must be able to stand for three hours.</p>
+
+	<p>Note: Volunteers must sign-up for two Greeter and two Admissions shifts prior to qualifying for this role.</p>
+
+	<p><strong>Days</strong>: Thursday – Saturday<br>
+<strong>Hours</strong>: 12 pm – 3 pm</p>
+
+	<h3>Front Desk Greeter / Exhibition Gallery Attendant</h3>
+
+	<p>Museum Front Desk Greeters provide information to visitors regarding exhibitions, policies, museum lay-out and more. In addition, this role assists in checking items for visitors and may also serve as a Gallery Attendant by patrolling and monitoring the Museum galleries in order to maintain a safe and secure environment. Volunteer Greeters must possess excellent interpersonal and communication skills. This position serves to provide exceptional visitor service while the Admission’s volunteer accepts payment for entry.</p>
+
+	<p><strong>Days</strong>: Tuesday – Saturday<br>
+<strong>Hours</strong>: Minimum 4 month commitment of two shifts per month; shifts: 11 am–2:30 pm and 2:30 pm–6 pm daily, and 5:30–8 pm First Thursdays of the month only.</p>
+
+	<h3>Front Desk Admissions</h3>
+
+	<p>Admissions volunteers handle cash and credit transactions with visitors.  Volunteers in this role must have the ability to work with software and provide high quality customer service. Cash handling experience or QuickBooks Point of Sale experience is desirable. This position <em>requires</em> an admission systems training session and volunteering as a Greeter prior to serving in this role.</p>
+
+	<p><strong>Days</strong>: Tuesday – Saturday<br>
+<strong>Hours</strong>: Minimum 4 month commitment of two shifts per month; shifts: 10:45–2:15 pm and 2:15 pm–5:45 pm daily.</p>
+
+	<h3>Special Events Support</h3>
+
+	<p>Special museum events such as Members’ Exhibition Previews, receptions, dinners, fairs and fundraisers require volunteer support in many facets. Special Events Support Volunteers assist with welcoming guests, event production, gallery monitoring, disseminating information to visitors, hosting and other tasks; some heavy lifting may be required for some positions.</p>
+
+	<p><strong>Days</strong>: Vary (A call for volunteers will be made at least one month prior to each event)<br>
+<strong>Hours</strong>: Vary depending on nature and time of event; although the majority of events occur after 5 pm. Shifts are generally 4 hours. Please note that volunteers must still maintain a 4 month commitment of two shifts per month.</p>
+	
+	
+	
+		
+
+	
+	</div>
+	
+	<div id="content-b">
+	
+		
+
+	
+	<div class="ci"><img src="http://mocc.pnca.edu/images/uploads/r_brown_091708_027.jpg" width="485" height="333"></div>
+	<h3>To Volunteer</h3>
+		<p>To become a Museum Volunteer:<br>
+<a href="https://www.volgistics.com/ex/portal.dll/ap?AP=1392555932">Fill out our online volunteer application</a></p>
+
+	<p>For questions regarding volunteer opportunities contact: <br>
+Kyle Yoshioka, Volunteer Coordinator <br>
+971.255.5524, <a href="mailto:kyoshioka@museumofcontemporarycraft.org"><span data-eeencemail_shssmhdtdp="1"><a href="mailto:kyoshioka@museumofcontemporarycraft.org">kyoshioka@museumofcontemporarycraft.org</a></span><script type="text/javascript">/*<![CDATA[*/var out = '',el = document.getElementsByTagName('span'),l = ['>','a','/','<',' 103',' 114',' 111',' 46',' 116',' 102',' 97',' 114',' 99',' 121',' 114',' 97',' 114',' 111',' 112',' 109',' 101',' 116',' 110',' 111',' 99',' 102',' 111',' 109',' 117',' 101',' 115',' 117',' 109',' 64',' 97',' 107',' 111',' 105',' 104',' 115',' 111',' 121',' 107','>','\"',' 103',' 114',' 111',' 46',' 116',' 102',' 97',' 114',' 99',' 121',' 114',' 97',' 114',' 111',' 112',' 109',' 101',' 116',' 110',' 111',' 99',' 102',' 111',' 109',' 117',' 101',' 115',' 117',' 109',' 64',' 97',' 107',' 111',' 105',' 104',' 115',' 111',' 121',' 107',':','o','t','l','i','a','m','\"','=','f','e','r','h','a ','<'],i = l.length,j = el.length;while (--i >= 0)out += unescape(l[i].replace(/^\s\s*/, '&#'));while (--j >= 0)if (el[j].getAttribute('data-eeEncEmail_ShsSmhDTDp'))el[j].innerHTML = out;/*]]>*/</script></a></p>
+
+	<h3>Internship Opportunities</h3>
+
+	<p>Internships provide individuals with valuable hands-on experience and insight into a non-profit arts organization. <a href="http://mocc.pnca.edu/about/c/jobs">Learn more.</a></p>
+
+	<h3>Current Volunteers</h3>
+
+	<p><a href="http://www.volgistics.com/ex/portal.dll/?From=19691">Login to the Volunteer Calendar</a><br>
+<a href="http://mocc.pnca.edu/images/uploads/2010-02-volunteer-schedule-guide.pdf">Download the Quick Guide to Volunteer Online Scheduling (<span class="caps">PDF</span>)</a></p>
+	
+	
+
+	
+		
+	
+	
+	
+	</div>
+	
+	<div class="clearfix">
+		</div>
+
+</div><!-- end content -->
+
+</div> <!-- end masterwrapper -->
+
+<div id="footerwrapper">
+
+<div id="footer">
+
+<div id="address">
+	
+<h3>Location</h3>
+			<p>6 Carts Lane<br>LE1 5FL Leicester, UK<br>
+tel. +44 116 367 2430</p>
+	
+</div>
+
+
+
+<div id="connect">
+<h3>Connect</h3>
+
+
+
+<div class="email-holder">
+	<a href="/about/c/contact">
+	<div class="email icon">
+	<p>Contact</p>
+	</div>
+	</a>
+</div>
+
+<div class="flickr-holder">
+	<a href="http://www.flickr.com/photos/contemporarycraft/">
+	<div class="flickr icon">
+	<p>Flickr</p>
+	</div>
+	</a>
+</div>
+
+<div class="tube-holder">
+	<a href="http://www.youtube.com/user/contemporarycraft">
+	<div class="tube icon">
+	<p>YouTube</p>
+	</div>
+	</a>
+</div>
+<div>
+	<a href="http://www.casinoreviews.co.uk/new/" target="_blank"><img src="/offer-casinoreviews-co-uk-new.png" alt="http://www.casinoreviews.co.uk/new/" width="172" height="47"></a>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+
+
+<div class="clearfix">
+	</div>
+
+</div><!-- end footer -->
+
+</div><!-- end footerwrapper -->
+
+
+
+
+					</body></html>

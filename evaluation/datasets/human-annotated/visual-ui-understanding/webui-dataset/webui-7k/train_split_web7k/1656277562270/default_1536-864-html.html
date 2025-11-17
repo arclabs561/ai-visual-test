@@ -1,0 +1,367 @@
+<!DOCTYPE html><html lang="en"><head>
+<title>traceroute(8) - Linux man page</title>
+<base href="https://linux.die.net/man/8/traceroute">
+<link rel="canonical" href="https://linux.die.net/man/8/traceroute">
+<link rel="stylesheet" type="text/css" href="/style/white.css">
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+<link href="/style/search.xml" rel="search" title="Search the die.net site" type="application/opensearchdescription+xml">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="traceroute tracks the route packets taken from an IP network on their way to a given host. It utilizes the IP protocol's time to live (TTL) field and ...">
+<script src="https://partner.googleadservices.com/gampad/cookie.js?domain=linux.die.net&amp;callback=_gfp_s_&amp;client=ca-pub-5823754184406795&amp;gpid_exp=1"></script><script src="https://pagead2.googlesyndication.com/pagead/managed/js/adsense/m202206220101/show_ads_impl_fy2019.js?bust=31068199" id="google_shimpl"></script><script type="text/javascript" async="" src="https://ssl.google-analytics.com/ga.js"></script><script type="text/javascript">
+<!--
+var _gaq = _gaq || [];_gaq.push(['_setAccount', 'UA-50820-6']);_gaq.push(['_trackPageview']);
+window.google_analytics_uacct = 'UA-50820-6';
+// -->
+</script>
+<script async="" src="/cdn-cgi/challenge-platform/h/g/scripts/invisible.js?ts=1656273600"></script><meta http-equiv="origin-trial" content="AzoawhTRDevLR66Y6MROu167EDncFPBvcKOaQispTo9ouEt5LvcBjnRFqiAByRT+2cDHG1Yj4dXwpLeIhc98/gIAAACFeyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjYxMjk5MTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A6+nc62kbJgC46ypOwRsNW6RkDn2x7tgRh0wp7jb3DtFF7oEhu1hhm4rdZHZ6zXvnKZLlYcBlQUImC4d3kKihAcAAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjYxMjk5MTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A/9La288e7MDEU2ifusFnMg1C2Ij6uoa/Z/ylwJIXSsWfK37oESIPbxbt4IU86OGqDEPnNVruUiMjfKo65H/CQwAAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXRhZ3NlcnZpY2VzLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjYxMjk5MTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="AzoawhTRDevLR66Y6MROu167EDncFPBvcKOaQispTo9ouEt5LvcBjnRFqiAByRT+2cDHG1Yj4dXwpLeIhc98/gIAAACFeyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjYxMjk5MTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A6+nc62kbJgC46ypOwRsNW6RkDn2x7tgRh0wp7jb3DtFF7oEhu1hhm4rdZHZ6zXvnKZLlYcBlQUImC4d3kKihAcAAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjYxMjk5MTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A/9La288e7MDEU2ifusFnMg1C2Ij6uoa/Z/ylwJIXSsWfK37oESIPbxbt4IU86OGqDEPnNVruUiMjfKo65H/CQwAAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXRhZ3NlcnZpY2VzLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjYxMjk5MTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><link rel="preload" href="https://adservice.google.com/adsid/integrator.js?domain=linux.die.net" as="script"><script type="text/javascript" src="https://adservice.google.com/adsid/integrator.js?domain=linux.die.net"></script></head>
+
+<body>
+<div id="bg">
+<div id="logo">
+<a href="https://www.die.net/"><img src="/style/logo.svg" alt="die.net" width="120" height="120" onerror="this.onerror=null; this.src='/style/logo.png'"></a>
+</div>
+<div id="content">
+
+<!-- google_ad_section_start -->
+<h1>traceroute(8) - Linux man page</h1>
+
+<h2>Name</h2>
+
+<p>traceroute - print the route packets trace to network host
+</p><h2>Synopsis</h2>
+<div id="adright">
+<script async="" src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle" style="display:inline-block;width:336px;height:280px" data-ad-client="ca-pub-5823754184406795" data-ad-slot="7130739364" data-adsbygoogle-status="done" data-ad-status="filled"><ins id="aswift_0_expand" tabindex="0" title="Advertisement" aria-label="Advertisement" style="border: none; height: 280px; width: 336px; margin: 0px; padding: 0px; position: relative; visibility: visible; background-color: transparent; display: inline-table;"><ins id="aswift_0_anchor" style="border: none; height: 280px; width: 336px; margin: 0px; padding: 0px; position: relative; visibility: visible; background-color: transparent; display: block;"><iframe id="aswift_0" name="aswift_0" style="left:0;position:absolute;top:0;border:0;width:336px;height:280px;" sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation" width="336" height="280" frameborder="0" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" src="https://googleads.g.doubleclick.net/pagead/ads?client=ca-pub-5823754184406795&amp;output=html&amp;h=280&amp;slotname=7130739364&amp;adk=1862536188&amp;adf=3894714692&amp;pi=t.ma~as.7130739364&amp;w=336&amp;lmt=1656277565&amp;psa=0&amp;format=336x280&amp;url=https%3A%2F%2Flinux.die.net%2Fman%2F8%2Ftraceroute&amp;wgl=1&amp;uach=WyIiLCIiLCIiLCIiLCIiLFtdLG51bGwsbnVsbCwiIixbXSxmYWxzZV0.&amp;dt=1656277563891&amp;bpp=103&amp;bdt=1064&amp;idt=1007&amp;shv=r20220622&amp;mjsv=m202206220101&amp;ptt=9&amp;saldr=aa&amp;abxe=1&amp;correlator=4272599051111&amp;frm=20&amp;pv=2&amp;ga_vid=1810228881.1656277564&amp;ga_sid=1656277564&amp;ga_hid=2126118373&amp;ga_fc=1&amp;ga_wpids=UA-50820-6&amp;u_tz=0&amp;u_his=2&amp;u_h=600&amp;u_w=800&amp;u_ah=600&amp;u_aw=800&amp;u_cd=24&amp;u_sd=1&amp;dmc=1&amp;adx=356&amp;ady=185&amp;biw=800&amp;bih=600&amp;scr_x=0&amp;scr_y=0&amp;eid=44759875%2C44759926%2C44759837%2C31068030%2C31068199%2C42531606%2C42531607&amp;oid=2&amp;pvsid=239682549231315&amp;tmod=1080383674&amp;uas=0&amp;nvt=1&amp;eae=0&amp;fc=896&amp;brdim=0%2C0%2C0%2C0%2C800%2C0%2C800%2C600%2C800%2C600&amp;vis=1&amp;rsz=%7C%7CleE%7C&amp;abl=CS&amp;pfx=0&amp;fu=0&amp;bc=31&amp;ifi=1&amp;uci=a!1&amp;fsb=1&amp;xpc=hoLB6X7umQ&amp;p=https%3A//linux.die.net&amp;dtd=1410" data-google-container-id="a!1" data-google-query-id="CO2U19-CzPgCFV42rQYdqP8D5A" data-load-complete="true"></iframe></ins></ins></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+</div>
+
+
+<p><b>traceroute</b> [<b>-46dFITUnreAV</b>] [<b>-f first_ttl</b>] [<b>-g gate,...</b>]
+</p><dl compact="">
+<dd>[<b>-i device</b>] [<b>-m max_ttl</b>] [<b>-p port</b>] [<b>-s src_addr</b>]
+</dd><dd>[<b>-q nqueries</b>] [<b>-N squeries</b>] [<b>-t tos</b>]
+</dd><dd>[<b>-l flow_label</b>] [<b>-w waittime</b>] [<b>-z sendwait</b>]
+</dd><dd>[<b>-UL</b>] [<b>-P proto</b>] [<b>--sport=port</b>] [<b>-M method</b>] [<b>-O mod_options</b>]
+</dd><dd>[<b>--mtu</b>] [<b>--back</b>]
+</dd><dd><b>host</b> [<b>packet_len</b>]
+</dd><dt><b>traceroute6</b> [<i>options</i>]
+</dt></dl>
+<h2>Description</h2>
+
+<p><i>traceroute</i> tracks the route packets taken from an IP network on their way to a given host. It utilizes the IP protocol's time to live (TTL) field and
+attempts to elicit an ICMP TIME_EXCEEDED response from each gateway along the path to the host.
+</p><p><i>traceroute6</i> is equivalent to <i>traceroute</i> <b>-6</b>
+</p><p>The only required parameter is the name or IP address of the destination <b>host</b> . The optional <b>packet_len</b>'gth is the total size of the probing
+packet (default 60 bytes for IPv4 and 80 for IPv6). The specified size can be ignored in some situations or increased up to a minimal value.
+
+</p><p>This program attempts to trace the route an IP packet would follow to some internet host by launching probe packets with a small ttl (time to live) then
+listening for an ICMP "time exceeded" reply from a gateway. We start our probes with a ttl of one and increase by one until we get an ICMP "port unreachable"
+(or TCP reset), which means we got to the "host", or hit a max (which defaults to 30 hops). Three probes (by default) are sent at each ttl setting and a line
+is printed showing the ttl, address of the gateway and round trip time of each probe. The address can be followed by additional information when requested. If
+the probe answers come from different gateways, the address of each responding system will be printed. If there is no response within a 5.0 seconds (default),
+an "*" (asterisk) is printed for that probe.
+</p><p>After the trip time, some additional annotation can be printed: <b>!H</b>, <b>!N</b>, or <b>!P</b> (host, network or protocol unreachable), <b>!S</b>
+(source route failed), <b>!F</b> (fragmentation needed), <b>!X</b> (communication administratively prohibited), <b>!V</b> (host precedence violation),
+<b>!C</b> (precedence cutoff in effect), or <b>!&lt;num&gt;</b> (ICMP unreachable code &lt;num&gt;). If almost all the probes result in some kind of
+unreachable, traceroute will give up and exit.
+</p><p>We don't want the destination host to process the UDP probe packets, so the destination port is set to an unlikely value (you can change it with the
+<b>-p</b> flag). There is no such a problem for ICMP or TCP tracerouting (for TCP we use half-open technique, which prevents our probes to be seen by
+applications on the destination host).
+</p><p>In the modern network environment the traditional traceroute methods can not be always applicable, because of widespread use of firewalls. Such firewalls
+filter the "unlikely" UDP ports, or even ICMP echoes. To solve this, some additional tracerouting methods are implemented (including tcp), see <b>LIST OF
+AVAILABLE METHODS</b> below. Such methods try to use particular protocol and source/destination port, in order to bypass firewalls (to be seen by firewalls
+just as a start of allowed type of a network session).
+</p><h2>Options</h2>
+<dl compact="">
+<dt><b>--help</b>
+
+<p>Print help info and exit.
+
+</p><p><b>-4</b>, <b>-6</b>
+
+</p><p>Explicitly force IPv4 or IPv6 traceouting. By default, the program will try to resolve the name given, and choose the appropriate protocol automatically. If
+resolving a host name returns both IPv4 and IPv6 addresses, <i>traceroute</i> will use IPv4.
+
+</p><p><b>-I</b>
+
+</p><p>Use ICMP ECHO for probes
+
+</p><p><b>-T</b>
+
+</p><p>Use TCP SYN for probes
+
+</p><p><b>-d</b>
+
+</p><p>Enable socket level debugging (when the Linux kernel supports it)
+
+</p><p><b>-F</b>
+
+</p><p>Do not fragment probe packets. (For IPv4 it also sets DF bit, which tells intermediate routers not to fragment remotely as well).
+</p></dt><dd>Varying the size of the probing packet by the <b>packet_len</b> command line parameter, you can manually obtain information about the MTU of individual
+network hops. The <b>--mtu</b> option (see below) tries to do this automatically.
+<p>Note, that non-fragmented features (like <b>-F</b> or <b>--mtu</b>) work properly since the Linux kernel 2.6.22 only. Before that version, IPv6 was always
+fragmented, IPv4 could use the once the discovered final mtu only (from the route cache), which can be less than the actual mtu of a device.
+</p></dd><dt><b>-f</b> <i>first_ttl</i>
+</dt><dd>Specifies with what TTL to start. Defaults to 1.
+</dd><dt><b>-g</b> <i>gateway</i>
+</dt><dd>Tells traceroute to add an IP source routing option to the outgoing packet that tells the network to route the packet through the specified <i>gateway</i>
+(most routers have disabled source routing for security reasons). In general, several <i>gateway</i>'s is allowed (comma separated). For IPv6, the form of
+<i>num</i><b>,</b><i>addr</i><b>,</b><i>addr...</i> is allowed, where <i>num</i> is a route header type (default is type 2). Note the type 0 route header is
+now deprecated (rfc5095).
+</dd><dt><b>-i</b> <i>interface</i>
+</dt><dd>Specifies the interface through which <i>traceroute</i> should send packets. By default, the interface is selected according to the routing table.
+</dd><dt><b>-m</b> <i>max_ttl</i>
+</dt><dd>Specifies the maximum number of hops (max time-to-live value) <i>traceroute</i> will probe. The default is 30.
+</dd><dt><b>-N</b> <i>squeries</i>
+</dt><dd>Specifies the number of probe packets sent out simultaneously. Sending several probes concurrently can speed up <i>traceroute</i> considerably. The default
+value is 16.<br>
+Note that some routers and hosts can use ICMP rate throttling. In such a situation specifying too large number can lead to loss of some responses.
+</dd><dt><b>-n</b>
+
+<p>Do not try to map IP addresses to host names when displaying them.
+</p></dt><dt><b>-p</b> <i>port</i>
+</dt><dd>For UDP tracing, specifies the destination port base <i>traceroute</i> will use (the destination port number will be incremented by each probe).<br>
+For ICMP tracing, specifies the initial icmp sequence value (incremented by each probe too).<br>
+For TCP specifies just the (constant) destination port to connect.
+</dd><dt><b>-t</b> <i>tos</i>
+
+<p>For IPv4, set the Type of Service (TOS) and Precedence value. Useful values are 16 (low delay) and 8 (high throughput). Note that in order to use some TOS
+precendence values, you have to be super user.
+</p></dt><dd>For IPv6, set the Traffic Control value.
+</dd><dt><b>-w</b> <i>waittime</i>
+</dt><dd>Set the time (in seconds) to wait for a response to a probe (default 5.0 sec).
+</dd><dt><b>-q</b> <i>nqueries</i>
+</dt><dd>Sets the number of probe packets per hop. The default is 3.
+</dd><dt><b>-r</b>
+
+<p>Bypass the normal routing tables and send directly to a host on an attached network. If the host is not on a directly-attached network, an error is
+returned. This option can be used to ping a local host through an interface that has no route through it.
+</p></dt><dt><b>-s</b> <i>source_addr</i>
+</dt><dd>Chooses an alternative source address. Note that you must select the address of one of the interfaces. By default, the address of the outgoing interface is
+used.
+</dd><dt><b>-z</b> <i>sendwait</i>
+</dt><dd>Minimal time interval between probes (default 0). If the value is more than 10, then it specifies a number in milliseconds, else it is a number of seconds
+(float point values allowed too). Useful when some routers use rate-limit for icmp messages.
+</dd><dt><b>-e</b>
+
+<p>Show ICMP extensions (rfc4884). The general form is <i>CLASS</i><b>/</b><i>TYPE</i><b>:</b> followed by a hexadecimal dump. The MPLS (rfc4950) is shown
+parsed, in a form: <b>MPLS:L=</b><i>label</i><b>,E=</b><i>exp_use</i><b>,S=</b><i>stack_bottom</i><b>,T=</b><i>TTL</i> (more objects separated by <b>/</b> ).
+
+</p><p><b>-A</b>
+
+</p><p>Perform AS path lookups in routing registries and print results directly after the corresponding addresses.
+
+</p><p><b>-V</b>
+
+</p><p>Print the version and exit.
+</p></dt><dt>There is a couple of additional options, intended for an advanced usage (another trace methods etc.):
+</dt><dt><b>--sport</b>=<i>port</i>
+</dt><dd>Chooses the source port to use. Implies <b>-N 1</b>. Normally source ports (if applicable) are chosen by the system.
+</dd><dt><b>-M</b> <i>method</i>
+</dt><dd>Use specified method for traceroute operations. Default traditional udp method has name <i>default</i>, icmp (<b>-I</b>) and tcp (<b>-T</b>) have names
+<i>icmp</i> and <i>tcp</i> respectively.<br>
+Method-specific options can be passed by <b>-O</b> . Most methods have their simple shortcuts, (<b>-I</b> means <b>-M icmp</b>, etc).
+</dd><dt><b>-O</b> <i>option</i>
+</dt><dd>Specifies some method-specific option. Several options are separated by comma (or use several <b>-O</b> on cmdline). Each method may have its own specific
+options, or many not have them at all. To print information about available options, use <b>-O help</b>.
+</dd><dt><b>-U</b>
+
+<p>Use UDP to particular destination port for tracerouting (instead of increasing the port per each probe). Default port is 53 (dns).
+
+</p><p><b>-UL</b>
+
+</p><p>Use UDPLITE for tracerouting (default port is 53).
+</p></dt><dt><b>-P</b> <i>protocol</i>
+</dt><dd>Use raw packet of specified protocol for tracerouting. Default protocol is 253 (rfc3692).
+</dd><dt><b>--mtu</b>
+
+<p>Discover MTU along the path being traced. Implies <b>-F -N 1</b>. New <i>mtu</i> is printed once in a form of <b>F=</b><i>NUM</i> at the first probe of a
+hop which requires such <i>mtu</i> to be reached. (Actually, the correspond "frag needed" icmp message normally is sent by the previous hop).
+</p></dt><dd>Note, that some routers might cache once the seen information on a fragmentation. Thus you can receive the final mtu from a closer hop. Try to specify an
+unusual <i>tos</i> by <b>-t</b> , this can help for one attempt (then it can be cached there as well).<br>
+See <b>-F</b> option for more info.
+</dd><dt><b>--back</b>
+
+<p>Print the number of backward hops when it seems different with the forward direction. This number is guessed in assumption that remote hops send reply
+packets with initial ttl set to either 64, or 128 or 255 (which seems a common practice). It is printed as a negate value in a form of '-NUM' .
+</p></dt></dl>
+<h2>List Of Available Methods</h2>
+
+<p>In general, a particular traceroute method may have to be chosen by <b>-M name</b>, but most of the methods have their simple cmdline switches (you can see
+them after the method name, if present).
+
+</p><p><b>default</b>
+</p><dl compact="">
+<dt>The traditional, ancient method of tracerouting. Used by default.
+<p>Probe packets are udp datagrams with so-called "unlikely" destination ports. The "unlikely" port of the first probe is 33434, then for each next probe it is
+incremented by one. Since the ports are expected to be unused, the destination host normally returns "icmp unreach port" as a final response. (Nobody knows
+what happens when some application listens for such ports, though).
+</p><p>This method is allowed for unprivileged users.
+</p></dt></dl>
+
+<p><b>icmp -I</b>
+</p><dl compact="">
+<dt>Most usual method for now, which uses icmp echo packets for probes.<br>
+If you can <b><a href="ping">ping</a></b>(8) the destination host, icmp tracerouting is applicable as well.
+</dt></dl>
+
+<p><b>tcp -T</b>
+</p><dl compact="">
+<dt>Well-known modern method, intended to bypass firewalls.<br>
+Uses the constant destination port (default is 80, http).
+<p>If some filters are present in the network path, then most probably any "unlikely" udp ports (as for <i>default</i> method) or even icmp echoes (as for
+<i>icmp</i>) are filtered, and whole tracerouting will just stop at such a firewall. To bypass a network filter, we have to use only allowed protocol/port
+combinations. If we trace for some, say, mailserver, then more likely <b>-T -p 25</b> can reach it, even when <b>-I</b> can not.
+</p><p>This method uses well-known "half-open technique", which prevents applications on the destination host from seeing our probes at all. Normally, a tcp syn is
+sent. For non-listened ports we receive tcp reset, and all is done. For active listening ports we receive tcp syn+ack, but answer by tcp reset (instead of
+expected tcp ack), this way the remote tcp session is dropped even without the application ever taking notice.
+</p><p>There is a couple of options for <i>tcp</i> method:
+</p></dt><dt><b>syn,ack,fin,rst,psh,urg,ece,cwr</b>
+</dt><dd>Sets specified tcp flags for probe packet, in any combination.
+</dd><dt><b>flags</b>=<i>num</i>
+</dt><dd>Sets the flags field in the tcp header exactly to <i>num</i>.
+</dd><dt><b>ecn</b>
+
+<p>Send syn packet with tcp flags ECE and CWR (for Explicit Congestion Notification, rfc3168)
+</p></dt><dt><b>sack,timestamps,window_scaling</b>
+</dt><dd>Use the corresponding tcp header option in the outgoing probe packet.
+</dd><dt><b>sysctl</b>
+
+<p>Use current sysctl (<i>/proc/sys/net/*</i>) setting for the tcp header options above and <b>ecn</b>. Always set by default, if nothing else
+specified.
+</p></dt><dt><b>mss</b>=<i>num</i>
+</dt><dd>Use value of <i>num</i> for maxseg tcp header option (when <b>syn</b>).
+</dd><dt>Default options is <b>syn,sysctl</b>.
+</dt></dl>
+
+<p><b>tcpconn</b>
+</p><dl compact="">
+<dt>An initial implementation of tcp method, simple using <b><a href="/man/2/connect">connect</a></b>(2) call, which does full tcp session opening. Not recommended for normal use, because a
+destination application is always affected (and can be confused).
+</dt></dl>
+
+<p><b>udp -U</b>
+</p><dl compact="">
+<dt>Use udp datagram with constant destination port (default 53, dns).<br>
+Intended to bypass firewall as well.
+<p>Note, that unlike in <i>tcp</i> method, the correspond application on the destination host <b>always</b> receive our probes (with random data), and most can
+easily be confused by them. Most cases it will not respond to our packets though, so we will never see the final hop in the trace. (Fortunately, it seems that
+at least dns servers replies with something angry).
+</p><p>This method is allowed for unprivileged users.
+</p></dt></dl>
+
+<p><b>udplite -UL</b>
+</p><dl compact="">
+<dt>Use udplite datagram for probes (with constant destination port, default 53).
+<p>This method is allowed for unprivileged users.<br>
+Options:
+</p></dt><dt><b>coverage</b>=<i>num</i>
+</dt><dd>Set udplite send coverage to <i>num</i>.
+</dd></dl>
+
+<p><b>raw -P proto</b>
+</p><dl compact="">
+<dt>Send raw packet of protocol <i>proto</i>.<br>
+No protocol-specific headers are used, just IP header only.<br>
+Implies <b>-N 1</b>.<br>
+Options:
+</dt><dt><b>protocol</b>=<i>proto</i>
+</dt><dd>Use IP protocol <i>proto</i> (default 253).
+</dd></dl>
+<h2>Notes</h2>
+
+<p>To speed up work, normally several probes are sent simultaneously. On the other hand, it creates a "storm of packages", especially in the reply direction.
+Routers can throttle the rate of icmp responses, and some of replies can be lost. To avoid this, decrease the number of simultaneous probes, or even set it to
+1 (like in initial traceroute implementation), i.e. <b>-N 1</b>
+</p><p>The final (target) host can drop some of the simultaneous probes, and might even answer only the latest ones. It can lead to extra "looks like expired" hops
+near the final hop. We use a smart algorithm to auto-detect such a situation, but if it cannot help in your case, just use <b>-N 1</b> too.
+</p><p>For even greater stability you can slow down the program's work by <b>-z</b> option, for example use <b>-z 0.5</b> for half-second pause between probes.
+
+</p><p>If some hops report nothing for every method, the last chance to obtain something is to use <b>ping -R</b> command (IPv4, and for nearest 8 hops
+only).
+</p><h2>See Also</h2>
+
+<p><b><a href="ping" rel="nofollow">ping</a></b>(8), <b><a href="ping6">ping6</a></b>(8), <b><b><a href="tcpdump">tcpdump</a></b>(8), netstat</b>(8)
+
+<!-- google_ad_section_end -->
+</p><h2>Referenced By</h2>
+<b><a href="bing" rel="nofollow">bing</a></b>(8),
+<b><a href="brctl" rel="nofollow">brctl</a></b>(8),
+<b><a href="dnstracer" rel="nofollow">dnstracer</a></b>(8),
+<b><a href="firewalk" rel="nofollow">firewalk</a></b>(8),
+<b><a href="hping2" rel="nofollow">hping2</a></b>(8),
+<b><a href="hping3" rel="nofollow">hping3</a></b>(8),
+<b><a href="lft" rel="nofollow">lft</a></b>(8),
+<b><a href="mtr" rel="nofollow">mtr</a></b>(8),
+<b><a href="/man/1/nttlscan" rel="nofollow">nttlscan</a></b>(1),
+<b><a href="/man/1/sipsak" rel="nofollow">sipsak</a></b>(1),
+<b><a href="/man/1/tcptraceroute" rel="nofollow">tcptraceroute</a></b>(1),
+<b><a href="tcptraceroute6" rel="nofollow">tcptraceroute6</a></b>(8),
+<b><a href="tracepath" rel="nofollow">tracepath</a></b>(8),
+<b><a href="traceproto" rel="nofollow">traceproto</a></b>(8),
+<b><a href="traceroute_selinux" rel="nofollow">traceroute_selinux</a></b>(8)
+<div id="adbottom">
+<script async="" src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle" style="display:inline-block;width:336px;height:280px" data-ad-client="ca-pub-5823754184406795" data-ad-slot="8789940313" data-adsbygoogle-status="done"><ins id="aswift_1_expand" style="border: none; height: 280px; width: 336px; margin: 0px; padding: 0px; position: relative; visibility: visible; background-color: transparent; display: inline-table;"><ins id="aswift_1_anchor" style="border: none; height: 280px; width: 336px; margin: 0px; padding: 0px; position: relative; visibility: visible; background-color: transparent; display: block;"></ins></ins></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+</div>
+
+</div>
+<div id="menu">
+<dl>
+<dt>Site Search</dt>
+<dd>
+<form id="cse-search-box-menu" action="https://www.die.net/search/">
+<input name="q" type="text" size="10">
+<input type="hidden" name="sa" value="Search">
+<input type="hidden" name="ie" value="ISO-8859-1">
+<input type="hidden" name="cx" value="partner-pub-5823754184406795:54htp1rtx5u">
+<input type="hidden" name="cof" value="FORID:9">
+</form>
+<script type="text/javascript">
+<!--
+document.forms["cse-search-box-menu"].action = "https://www.die.net/search/";
+// -->
+</script>
+</dd></dl>
+
+
+
+<dl>
+<dt>Library</dt>
+<dd><a href="https://linux.die.net/">linux docs</a></dd>
+<dd><a href="https://linux.die.net/man/">linux man pages</a></dd>
+<dd><a href="https://www.die.net/musings/page_load_time/">page load time</a></dd>
+</dl>
+<dl>
+<dt>Toys</dt>
+<dd><a href="https://www.die.net/earth/">world sunlight</a></dd>
+<dd><a href="https://www.die.net/moon/">moon phase</a></dd>
+<dd><a href="http://trace.die.net/">trace explorer</a></dd>
+</dl>
+
+
+<dl>
+<dt><a href="/man/8/"><img src="/style/back.gif" alt="Back" width="20" height="22"></a></dt><dd></dd>
+</dl>
+</div></div>
+<script type="text/javascript">
+<!--
+if (top.location != self.location) top.location = self.location;
+if (/[?&][pq]=/.test(document.referrer)) document.write(unescape("%3Cscript src='/style/highlight.js' type='text/javascript'%3E%3C/script%3E"));
+function googleTranslateElementInit() {new google.translate.TranslateElement({pageLanguage: 'en', floatPosition: google.translate.TranslateElement.FloatPosition.TOP_RIGHT, gaTrack: true, gaId: 'UA-50820-6'});}
+if (!/^en/i.test(window.navigator.userLanguage||window.navigator.language)) document.write(unescape("%3Cscript src='//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit' type='text/javascript'%3E%3C/script%3E"));
+(function() {
+var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+// -->
+</script>
+<script type="text/javascript">(function(){window['__CF$cv$params']={r:'7218e78f78969e53',m:'fIi47n4HAHbShPqgkTTULnvCAdBkCxp_yShokHSWk5o-1656277562-0-ARftSxKwMP/XB9fUB2EbuVj1LJTAl6gwXyGF6qJMi7OEGmFyV3kgBKe1KPw3uBmotSzyTIQ/sEoH66xbwJkS/xiJJGe265m8Bq5TU+JlouK3M7lGBg72IXZZ1JkuztwhEhokHXaYxvIda0/jGYrTqb8=',s:[0x80fff7a331,0xc2c3389f6c],u:'/cdn-cgi/challenge-platform/h/g'}})();</script>
+
+<ins class="adsbygoogle adsbygoogle-noablate" data-adsbygoogle-status="done" style="display: none !important;" data-ad-status="unfilled"><ins id="aswift_2_expand" tabindex="0" title="Advertisement" aria-label="Advertisement" style="border: none; height: 0px; width: 0px; margin: 0px; padding: 0px; position: relative; visibility: visible; background-color: transparent; display: inline-table;"><ins id="aswift_2_anchor" style="border: none; height: 0px; width: 0px; margin: 0px; padding: 0px; position: relative; visibility: visible; background-color: transparent; display: block;"><iframe id="aswift_2" name="aswift_2" style="left:0;position:absolute;top:0;border:0;width:undefinedpx;height:undefinedpx;" sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation" frameborder="0" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" src="https://googleads.g.doubleclick.net/pagead/ads?client=ca-pub-5823754184406795&amp;output=html&amp;adk=1812271804&amp;adf=3025194257&amp;lmt=1656277565&amp;plat=1%3A8%2C2%3A8%2C9%3A32776%2C16%3A8388608%2C17%3A32%2C24%3A32%2C25%3A32%2C30%3A1048576%2C32%3A32&amp;format=0x0&amp;url=https%3A%2F%2Flinux.die.net%2Fman%2F8%2Ftraceroute&amp;ea=0&amp;pra=7&amp;wgl=1&amp;uach=WyIiLCIiLCIiLCIiLCIiLFtdLG51bGwsbnVsbCwiIixbXSxmYWxzZV0.&amp;dt=1656277564007&amp;bpp=83&amp;bdt=1180&amp;idt=1785&amp;shv=r20220622&amp;mjsv=m202206220101&amp;ptt=9&amp;saldr=aa&amp;abxe=1&amp;prev_fmts=336x280&amp;nras=1&amp;correlator=4272599051111&amp;frm=20&amp;pv=1&amp;ga_vid=1810228881.1656277564&amp;ga_sid=1656277564&amp;ga_hid=2126118373&amp;ga_fc=1&amp;ga_wpids=UA-50820-6&amp;u_tz=0&amp;u_his=2&amp;u_h=600&amp;u_w=800&amp;u_ah=600&amp;u_aw=800&amp;u_cd=24&amp;u_sd=1&amp;dmc=1&amp;adx=-12245933&amp;ady=-12245933&amp;biw=800&amp;bih=600&amp;scr_x=0&amp;scr_y=0&amp;eid=44759875%2C44759926%2C44759837%2C31068030%2C31068199%2C42531606%2C42531607&amp;oid=2&amp;pvsid=239682549231315&amp;tmod=1080383674&amp;uas=0&amp;nvt=1&amp;eae=2&amp;fc=896&amp;brdim=0%2C0%2C0%2C0%2C800%2C0%2C800%2C600%2C800%2C600&amp;vis=1&amp;rsz=%7C%7Cs%7C&amp;abl=NS&amp;fu=32768&amp;bc=31&amp;ifi=3&amp;uci=a!3&amp;fsb=1&amp;dtd=1890" data-google-container-id="a!3" data-load-complete="true"></iframe></ins></ins></ins><iframe src="https://www.google.com/recaptcha/api2/aframe" width="0" height="0" style="display: none;"></iframe></body><iframe id="google_esf" name="google_esf" src="https://googleads.g.doubleclick.net/pagead/html/r20220622/r20190131/zrt_lookup.html" style="display: none;"></iframe></html>

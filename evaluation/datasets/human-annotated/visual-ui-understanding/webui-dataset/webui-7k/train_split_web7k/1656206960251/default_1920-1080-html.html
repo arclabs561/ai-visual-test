@@ -1,0 +1,254 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html><head>
+<title>bcrypt password hashing ("password encryption") for your software and your servers</title>
+<link href="/style.css" type="text/css" rel="stylesheet">
+<meta name="keywords" content="crypt_blowfish, password hashing, password hash, password, hash, hashing, password encryption, encryption, crypt, Blowfish, bcrypt, eksblowfish, $2a$, $2x$, $2y$, crypt(3), portable, reentrant, thread-safe, MT-safe, thread, threads, C, x86, assembly, source, source code, public domain, crypt_r, crypt_rn, crypt_ra, crypt_gensalt, crypt_gensalt_rn, crypt_gensalt_ra, OpenBSD, Linux, libc, libcrypt, glibc">
+</head>
+
+<body bgcolor="#E0E0E0" text="black" link="blue" alink="red" vlink="navy">
+
+
+<table bgcolor="#ffffff" width="100%" border="0" cellspacing="0" cellpadding="0">
+<tbody><tr>
+
+<td>
+<a href="/"><img class="logo" src="/logo.png" border="0" width="182" height="80" alt="Openwall"></a>
+</td><td width="100%">
+<div class="nav">
+<ul>
+<li><a href="/">Products</a>
+<ul>
+<li><a href="/Owl/">Openwall GNU/*/Linux &nbsp; <i>server OS</i></a>
+</li><li><a href="/lkrg/">Linux Kernel Runtime Guard</a>
+</li><li><a href="/john/">John the Ripper &nbsp; <i>password cracker</i></a>
+<ul>
+<li><a href="/john/">Free &amp; Open Source for any platform</a>
+</li><li><a href="/john/cloud/">in the cloud</a>
+</li><li><a href="/john/pro/linux/">Pro for Linux</a>
+</li><li><a href="/john/pro/macosx/">Pro for macOS</a>
+</li></ul>
+</li><li><a href="/wordlists/">Wordlists &nbsp; <i>for password cracking</i></a>
+</li><li><a href="/passwdqc/">passwdqc &nbsp; <i>policy enforcement</i></a>
+<ul>
+<li><a href="/passwdqc/">Free &amp; Open Source for Unix</a>
+</li><li><a href="/passwdqc/windows/">Pro for Windows (Active Directory)</a>
+</li></ul>
+</li><li><a href="/yescrypt/">yescrypt &nbsp; <i>KDF &amp; password hashing</i></a>
+</li><li><a href="/yespower/">yespower &nbsp; <i>Proof-of-Work (PoW)</i></a>
+</li><li><a href="/crypt/">crypt_blowfish &nbsp; <i>password hashing</i></a>
+</li><li><a href="/phpass/">phpass &nbsp; <i>ditto in PHP</i></a>
+</li><li><a href="/tcb/">tcb &nbsp; <i>better password shadowing</i></a>
+</li><li><a href="/pam/">Pluggable Authentication Modules</a>
+</li><li><a href="/scanlogd/">scanlogd &nbsp; <i>port scan detector</i></a>
+</li><li><a href="/popa3d/">popa3d &nbsp; <i>tiny POP3 daemon</i></a>
+</li><li><a href="/blists/">blists &nbsp; <i>web interface to mailing lists</i></a>
+</li><li><a href="/msulogin/">msulogin &nbsp; <i>single user mode login</i></a>
+</li><li><a href="/php_mt_seed/">php_mt_seed &nbsp; <i>mt_rand() cracker</i></a>
+</li></ul>
+</li><li><a href="/services/">Services</a>
+</li><li id="narrow-li-1"><a>Publications</a>
+<ul>
+<li><a href="/articles/">Articles</a>
+</li><li><a href="/presentations/">Presentations</a>
+</li></ul>
+</li><li><a>Resources</a>
+<ul>
+<li><a href="/lists/">Mailing lists</a>
+</li><li><a href="https://openwall.info/wiki/">Community wiki</a>
+</li><li><a href="https://github.com/openwall">Source code repositories (GitHub)</a>
+</li><li><a href="https://cvsweb.openwall.com">Source code repositories (CVSweb)</a>
+</li><li><a href="/mirrors/">File archive &amp; mirrors</a>
+</li><li><a href="/signatures/">How to verify digital signatures</a>
+</li><li><a href="/ove/">OVE IDs</a>
+</li></ul>
+</li><li id="last-li"><a href="/news">What's new</a>
+</li></ul>
+</div>
+
+
+</td></tr></tbody></table>
+
+<table bgcolor="#B4D0DC" width="100%" border="0" cellspacing="0" cellpadding="1">
+<tbody><tr><td>
+<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<tbody><tr><td bgcolor="#ECF8FF">
+<a href="https://dchest.com/authbook/">Password authentication for web and mobile apps (e-book)</a>
+</td></tr></tbody></table>
+</td></tr></tbody></table>
+
+<h1 align="center">bcrypt password hashing for your software and your servers</h1>
+<p>
+<small><i>
+Please note that password hashing is often wrongly referred to as
+"password encryption".
+Hashing is a more appropriate term since encryption is something that is
+supposed to be easily reversible.
+</i></small>
+</p><p>
+This is an implementation of bcrypt, a password hashing method based on the
+<a href="https://www.schneier.com/academic/blowfish/">Blowfish</a>
+block cipher, provided via the crypt(3) and a reentrant interface.
+It is fully compatible with OpenBSD <i>bcrypt</i> for prefix $2b$.
+<i>bcrypt</i> was originally designed and implemented by
+<a href="http://www.citi.umich.edu/u/provos/">Niels Provos</a> and
+<a href="http://www.scs.stanford.edu/~dm/">David Mazieres</a>.
+A paper on the algorithm that explains the design decisions is available
+<a href="https://static.usenix.org/events/usenix99/provos.html">here</a>.
+</p><p>
+The most important property of <i>bcrypt</i> (and thus crypt_blowfish)
+is that it is adaptable to future processor performance improvements,
+allowing you to arbitrarily increase the processing cost of checking a
+password while still maintaining compatibility with your older
+password hashes.
+Already now <i>bcrypt</i> hashes you would use are several orders of
+magnitude stronger than traditional Unix DES-based or FreeBSD-style
+MD5-based hashes.
+</p><p>
+Today, a number of other operating systems, besides OpenBSD, support
+<i>bcrypt</i> password hashes, with Niels' original implementation,
+with this implementation (crypt_blowfish), or otherwise.
+These systems include recent versions of FreeBSD and NetBSD, Solaris 10,
+and indeed the Linux distributions that have integrated crypt_blowfish
+(see below for a list).
+Only some of these systems use <i>bcrypt</i> for newly set passwords
+by default, though.
+</p><p>
+This code comes from <a href="/john/">John the Ripper</a> password
+cracker, and is placed in the public domain to let you use this on
+your system, as part of a software package, or anywhere else to improve
+security, ensure compatibility, or for any other purpose. There's no
+license to worry about, not even a BSD-style copyright.
+</p><p>
+You can use the provided routines in your own packages or link them
+into a C library. Hooks for linking into GNU libc are provided.
+Note that simply adding this code into your libc is probably not enough
+to make your system use the new password hashing algorithm. Changes to
+passwd(1), PAM modules, or whatever else your system uses will likely
+be needed as well. These are not part of this package, but there's
+<i>pam_tcb</i> in the
+<a href="/Owl/">Openwall GNU/*/Linux</a> (Owl) <a href="/tcb/">tcb</a> package
+which uses the password hashing framework provided by crypt_blowfish,
+and there are the Owl
+<a href="https://cvsweb.openwall.com/cgi/cvsweb.cgi/Owl/packages/shadow-utils/">
+shadow suite patches</a> (in particular, the <i>crypt_gensalt</i> patch)
+available from our <a href="https://cvsweb.openwall.com">CVSweb server</a>.
+</p><p>
+You might also want to check out our
+<a href="/phpass/">portable PHP password hashing framework</a>
+for use in your PHP applications, as well as our
+<a href="/presentations/Passwords12-The-Future-Of-Hashing/">
+presentation on the history of password security</a>.
+</p><p>
+<a href="/lists/announce/2011/06/21/1">
+Version 1.1 of crypt_blowfish fixes the
+8-bit character handling vulnerability</a> (CVE-2011-2483) and it
+<a href="/lists/oss-security/2011/06/21/2">
+adds 8-bit test vectors and a quick self-test on every hash computation</a>.
+Any copies of older crypt_blowfish code must be upgraded to at least 1.1
+(and preferably to the latest).
+</p><p>
+<a href="/lists/announce/2011/07/17/1">
+Version 1.2</a> adds support for the $2y$ prefix (denoting correctly computed
+hashes) and a countermeasure to avoid one-correct to many-buggy hash collisions
+with the $2a$ prefix (desirable when upgrading systems with existing $2a$
+hashes computed using pre-1.1 versions of crypt_blowfish).
+</p><p>
+Version 1.3 adds support for the $2b$ prefix introduced in OpenBSD 5.5+,
+which behaves exactly the same as crypt_blowfish's $2y$.
+This way, full compatibility with OpenBSD's <i>bcrypt</i> is achieved at this
+new prefix.
+</p><p>
+Download:
+</p><ul>
+<li><a href="crypt_blowfish-1.3.tar.gz">crypt_blowfish 1.3</a> and
+its <a href="crypt_blowfish-1.3.tar.gz.sign">signature</a>
+</li><li><a href="crypt_blowfish-1.2.tar.gz">crypt_blowfish 1.2</a> and
+its <a href="crypt_blowfish-1.2.tar.gz.sign">signature</a>
+</li><li><a href="crypt_blowfish-1.1.tar.gz">crypt_blowfish 1.1</a> and
+its <a href="crypt_blowfish-1.1.tar.gz.sign">signature</a>
+</li><li><a href="openwall-crypt.3.pdf">
+Openwall GNU/*/Linux crypt(3) manual page in PDF</a>
+(<a href="openwall-crypt.3.pdf.sign">signature</a>) and
+in <a href="openwall-crypt.3.ps.gz">gzipped PostScript</a>
+(<a href="openwall-crypt.3.ps.gz.sign">signature</a>)
+</li></ul>
+<p>
+These and other related files are also
+<a href="https://download.openwall.net/pub/projects/crypt/">
+available from the Openwall file archive</a>.
+The source code of crypt_blowfish can be browsed on
+<a href="https://github.com/openwall/crypt_blowfish">GitHub</a> or via
+<a href="https://cvsweb.openwall.com/crypt">CVSweb</a>.
+</p><p>
+Follow <a href="/signatures/">this link</a> for information on verifying the signatures.
+</p><p>
+We can help you integrate crypt_blowfish into your software or OS installs,
+please check out our <a href="/services/">services</a>.
+</p><p id="contrib">
+Contributed crypt_blowfish resources:
+</p><ul>
+<li><a href="https://pypi.python.org/pypi/cryptacular/">
+cryptacular - a Python interface to crypt_blowfish</a> by Daniel Holth
+</li><li><a href="contrib/shadow-19990827-crypt_blowfish.diff.gz">
+shadow-19990827 patch for Slackware 7</a> by Matthew Dainty
+</li><li><a href="contrib/shadow-4.0.3-crypt_blowfish.diff.gz">
+shadow-4.0.3 patch for Slackware 10</a>, updated by Grzegorz Blach
+</li><li>shadow-4.0.9 patches updated by neeo,
+<a href="contrib/shadow-4.0.9-crypt_blowfish+tcb-1.tar.gz">
+based on Matthew Dainty's crypt_blowfish support patch</a> or
+<a href="contrib/shadow-4.0.9-crypt_blowfish+tcb-2.tar.gz">
+based on the Owl "crypt_gensalt" patch</a> (recommended).<br>
+Both archives also include the Owl tcb patch updated to apply after the
+corresponding crypt_blowfish support patch.
+Unfortunately, the documentation updates
+<a href="https://cvsweb.openwall.com/cgi/cvsweb.cgi/Owl/packages/shadow-utils/">
+found in Owl</a>
+have been dropped from this quick and dirty update of the patches.
+</li><li><a href="http://svnweb.mageia.org/packages/cauldron/shadow-utils/current/SOURCES/?pathrev=319884">Forward ports of the patches from Owl to shadow-4.1.4.2 and 4.1.5.1</a>
+(<a href="https://download.openwall.net/pub/projects/crypt/contrib/">local copy</a>)
+in Annvix, Mandriva, and Mageia
+</li></ul>
+<p>
+crypt_blowfish was fully integrated into
+<a href="/Owl/">Owl</a> and
+distributions by
+<a href="http://www.altlinux.com">ALT Linux</a>
+team as the default password hashing scheme,
+although ALT Linux has since changed the default to <a href="/yescrypt/">yescrypt</a>.
+crypt_blowfish is part of the glibc package on
+<a href="https://www.suse.com">SUSE Linux</a>.
+</p><p>
+Additionally, crypt_blowfish is used
+in PHP 5.3.0+,
+in <a href="http://www.hardened-php.net">the Suhosin security hardening patch for older versions of PHP</a>,
+in <a href="https://metacpan.org/release/Crypt-Eksblowfish">Crypt::Eksblowfish Perl module</a>,
+in PostgreSQL's contrib/pgcrypto providing <i>bcrypt</i> support for crypt() and gen_salt() SQL functions, and
+in CommuniGate Pro messaging server starting with version 4.1
+(but you need to explicitly configure CGP to use "UB-crpt" "password encryption" in order to have it produce <i>bcrypt</i>
+hashes for new passwords).
+</p><p>
+crypt_blowfish is a registered project with
+<a href="https://www.openhub.net/p/crypt_blowfish">Open Hub</a>.
+</p><p>
+</p><form action="/cgi/qc-201501.cgi" method="POST">
+<input type="hidden" name="page" value="/crypt/">
+Quick Comment:
+<input type="text" name="qc" size="64">
+<input type="submit" value="Send">
+</form>
+
+<p>
+</p><table width="100%" border="0" cellspacing="0" cellpadding="0">
+<tbody><tr><td>
+
+<p>
+<a href="/Owl/" title="Powered by Openwall GNU/*/Linux - security-enhanced &quot;Linux distribution&quot;"><img src="/Owl/artwork/buttons/80x15/Owl-80x15-4.png" width="80" height="15" border="0" alt="Powered by Openwall GNU/*/Linux"></a>
+<a href="https://openvz.org" title="Powered by OpenVZ - OS virtualization solution for Linux"><img src="/images/OpenVZ-80x15-cd.png" width="80" height="15" border="0" alt="Powered by OpenVZ"></a>
+
+</p></td><td>
+<p align="RIGHT">
+<font size="-2">606113</font>
+</p></td></tr></tbody></table>
+
+
+
+</body></html>

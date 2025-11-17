@@ -1,0 +1,117 @@
+<!DOCTYPE html><html><head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="keywords" content="ワンフェス,ワンダーフェスティバル,フィギュア">
+		<title>WfMapはワンフェス情報の提供をeventmeshに移行しますeventmesh</title>
+		<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/ui-lightness/jquery.ui.all.css" type="text/css">
+		<link rel="stylesheet" href="/css/twitcomike.css" type="text/css">
+		<link rel="stylesheet" href="/css/maptwit.css" type="text/css">
+		<link rel="stylesheet" href="/css/wfmap.css" type="text/css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/jquery-ui.min.js"></script>
+		<link rel="shortcut icon" href="/img/favicon.gif">
+		<link rel="icon" type="image/gif" href="/img/favicon.gif">
+		<style type="text/css">
+			p { margin: 1em 1.5em; }			
+			p.more { margin-right:1em; }
+			
+			div#soon {
+				width:100%;text-align:center;font-size:16px;line-height:180%;font-family:'Courier New', Courier, monospace;
+			}
+			div#soon a.curled {
+				text-decoration:none;
+				display:block;
+				margin: 30px auto;
+				background-color:#40b2e1;
+				height: 240px;
+				width: 510px;
+            }
+			div#soon a.curled:hover {
+				text-decoration:none;
+			}
+			.curled div {
+                padding-top:40px;
+            }
+
+			div.eventmesh h2 {margin-bottom:0.5em;}
+			div.eventmesh ul{padding:5px;}
+			div.eventmesh ul li{padding: 6px 0px 3px 0;border-bottom:1px #ddd dotted;margin:0;}
+			div.eventmesh ul li:first-child{border-top:1px #ddd dotted;}
+			div.eventmesh span{padding:0 5px;}
+			div.eventmesh em{color:mediumseagreen;font-style: normal;padding:0 5px;}
+
+            /* for SP */
+            @media screen and (max-width: 959px) {
+                div#container { width:100%; }
+                div#base_top { width:100%; height:15px; }
+                div.text { margin:0; }
+                div#base_bottom { width:100%; }
+                div#soon a.curled {
+    				width: 100%;
+                }
+                .curled div {
+                    padding-top:55px;
+                }
+                div#soon img.top_message {
+    				width: 320px;
+                }
+            }
+		</style>
+	</head>
+    <body>
+        <div id="container">
+            <div id="header" class="clearfix">
+               <a href="/"><img src="/img/wf_logo.png" style="float:left;"></a>
+                <a href="http://www.tinami.com/" target="_blank"><img src="/img/tinami.png" style="float:left;"></a>
+
+                <div id="login"></div>
+            </div> <!-- header -->
+            <div id="base_top"></div>
+
+            <div id="content" class="clearfix">
+            	<h2>重要なお知らせ</h2>
+            	<p>
+            	これまで「WFMap」で提供していたワンダーフェスティバルの情報共有は、ワンダーフェスティバル2017[冬]より、<br>
+            	『みんなで共有する ソーシャルイベントマップ』<strong>eventmesh</strong> で行うことになりました！
+            	</p>
+
+           		<div id="soon">
+   	        		<a class="curled" href="http://eventmesh.net/" target="_blank">
+   	            		<div>
+    	            		<img src="/img/top_message.png" class="top_message">
+    	    	        </div>
+            		</a>
+    	    	</div>
+        		<p>
+    	    	「WFMap」の今までのご利用、ありがとうございました。&nbsp;(2017/02/09) 
+    		    </p>
+        		<div class="eventmesh">
+                    <h2>eventmesh イベント情報</h2>
+                    <div id="schedule"><ul>
+		<li>現在準備中</li>
+	<!-- 2022-06-24 -->
+</ul></div>
+        		</div>
+            </div> <!-- content -->
+
+            <div id="base_bottom"></div>
+
+            <div id="footer">
+                <p>1996-2019 <a href="http://www.tinami.com/" target="_blank">TINAMI</a>. All rights reserved.</p>
+            </div> <!-- footwer -->
+        </div> <!-- container -->
+    
+    <script type="text/javascript">
+        $(function() {
+			$.ajax({
+				url:'https://eventmesh.net/api/event/schedule',
+				type:'GET',
+				dataType:'html',
+				timeout:5000
+			} )
+			.done(function(data) {
+                $('#schedule').html(data);
+			} );
+        } );
+
+    </script>
+</body></html>

@@ -1,0 +1,644 @@
+<!DOCTYPE html><html class="no-js" lang="en-US" itemscope="itemscope" itemtype="https://schema.org/WebPage"><!-- head --><head><meta charset="UTF-8"><script>if(navigator.userAgent.match(/MSIE|Internet Explorer/i)||navigator.userAgent.match(/Trident\/7\..*?rv:11/i)){var href=document.location.href;if(!href.match(/[?&]nowprocket/)){if(href.indexOf("?")==-1){if(href.indexOf("#")==-1){document.location.href=href+"?nowprocket=1"}else{document.location.href=href.replace("#","?nowprocket=1#")}}else{if(href.indexOf("#")==-1){document.location.href=href+"&nowprocket=1"}else{document.location.href=href.replace("#","&nowprocket=1#")}}}}</script><script>class RocketLazyLoadScripts{constructor(e){this.triggerEvents=e,this.eventOptions={passive:!0},this.userEventListener=this.triggerListener.bind(this),this.delayedScripts={normal:[],async:[],defer:[]},this.allJQueries=[]}_addUserInteractionListener(e){this.triggerEvents.forEach((t=>window.addEventListener(t,e.userEventListener,e.eventOptions)))}_removeUserInteractionListener(e){this.triggerEvents.forEach((t=>window.removeEventListener(t,e.userEventListener,e.eventOptions)))}triggerListener(){this._removeUserInteractionListener(this),"loading"===document.readyState?document.addEventListener("DOMContentLoaded",this._loadEverythingNow.bind(this)):this._loadEverythingNow()}async _loadEverythingNow(){this._delayEventListeners(),this._delayJQueryReady(this),this._handleDocumentWrite(),this._registerAllDelayedScripts(),this._preloadAllScripts(),await this._loadScriptsFromList(this.delayedScripts.normal),await this._loadScriptsFromList(this.delayedScripts.defer),await this._loadScriptsFromList(this.delayedScripts.async),await this._triggerDOMContentLoaded(),await this._triggerWindowLoad(),window.dispatchEvent(new Event("rocket-allScriptsLoaded"))}_registerAllDelayedScripts(){document.querySelectorAll("script[type=rocketlazyloadscript]").forEach((e=>{e.hasAttribute("src")?e.hasAttribute("async")&&!1!==e.async?this.delayedScripts.async.push(e):e.hasAttribute("defer")&&!1!==e.defer||"module"===e.getAttribute("data-rocket-type")?this.delayedScripts.defer.push(e):this.delayedScripts.normal.push(e):this.delayedScripts.normal.push(e)}))}async _transformScript(e){return await this._requestAnimFrame(),new Promise((t=>{const n=document.createElement("script");let r;[...e.attributes].forEach((e=>{let t=e.nodeName;"type"!==t&&("data-rocket-type"===t&&(t="type",r=e.nodeValue),n.setAttribute(t,e.nodeValue))})),e.hasAttribute("src")?(n.addEventListener("load",t),n.addEventListener("error",t)):(n.text=e.text,t()),e.parentNode.replaceChild(n,e)}))}async _loadScriptsFromList(e){const t=e.shift();return t?(await this._transformScript(t),this._loadScriptsFromList(e)):Promise.resolve()}_preloadAllScripts(){var e=document.createDocumentFragment();[...this.delayedScripts.normal,...this.delayedScripts.defer,...this.delayedScripts.async].forEach((t=>{const n=t.getAttribute("src");if(n){const t=document.createElement("link");t.href=n,t.rel="preload",t.as="script",e.appendChild(t)}})),document.head.appendChild(e)}_delayEventListeners(){let e={};function t(t,n){!function(t){function n(n){return e[t].eventsToRewrite.indexOf(n)>=0?"rocket-"+n:n}e[t]||(e[t]={originalFunctions:{add:t.addEventListener,remove:t.removeEventListener},eventsToRewrite:[]},t.addEventListener=function(){arguments[0]=n(arguments[0]),e[t].originalFunctions.add.apply(t,arguments)},t.removeEventListener=function(){arguments[0]=n(arguments[0]),e[t].originalFunctions.remove.apply(t,arguments)})}(t),e[t].eventsToRewrite.push(n)}function n(e,t){let n=e[t];Object.defineProperty(e,t,{get:()=>n||function(){},set(r){e["rocket"+t]=n=r}})}t(document,"DOMContentLoaded"),t(window,"DOMContentLoaded"),t(window,"load"),t(window,"pageshow"),t(document,"readystatechange"),n(document,"onreadystatechange"),n(window,"onload"),n(window,"onpageshow")}_delayJQueryReady(e){let t=window.jQuery;Object.defineProperty(window,"jQuery",{get:()=>t,set(n){if(n&&n.fn&&!e.allJQueries.includes(n)){n.fn.ready=n.fn.init.prototype.ready=function(t){e.domReadyFired?t.bind(document)(n):document.addEventListener("rocket-DOMContentLoaded",(()=>t.bind(document)(n)))};const t=n.fn.on;n.fn.on=n.fn.init.prototype.on=function(){if(this[0]===window){function e(e){return e.split(" ").map((e=>"load"===e||0===e.indexOf("load.")?"rocket-jquery-load":e)).join(" ")}"string"==typeof arguments[0]||arguments[0]instanceof String?arguments[0]=e(arguments[0]):"object"==typeof arguments[0]&&Object.keys(arguments[0]).forEach((t=>{delete Object.assign(arguments[0],{[e(t)]:arguments[0][t]})[t]}))}return t.apply(this,arguments),this},e.allJQueries.push(n)}t=n}})}async _triggerDOMContentLoaded(){this.domReadyFired=!0,await this._requestAnimFrame(),document.dispatchEvent(new Event("rocket-DOMContentLoaded")),await this._requestAnimFrame(),window.dispatchEvent(new Event("rocket-DOMContentLoaded")),await this._requestAnimFrame(),document.dispatchEvent(new Event("rocket-readystatechange")),await this._requestAnimFrame(),document.rocketonreadystatechange&&document.rocketonreadystatechange()}async _triggerWindowLoad(){await this._requestAnimFrame(),window.dispatchEvent(new Event("rocket-load")),await this._requestAnimFrame(),window.rocketonload&&window.rocketonload(),await this._requestAnimFrame(),this.allJQueries.forEach((e=>e(window).trigger("rocket-jquery-load"))),window.dispatchEvent(new Event("rocket-pageshow")),await this._requestAnimFrame(),window.rocketonpageshow&&window.rocketonpageshow()}_handleDocumentWrite(){const e=new Map;document.write=document.writeln=function(t){const n=document.currentScript,r=document.createRange(),i=n.parentElement;let o=e.get(n);void 0===o&&(o=n.nextSibling,e.set(n,o));const a=document.createDocumentFragment();r.setStart(a,0),a.appendChild(r.createContextualFragment(t)),i.insertBefore(a,o)}}async _requestAnimFrame(){return new Promise((e=>requestAnimationFrame(e)))}static run(){const e=new RocketLazyLoadScripts(["keydown","mousemove","touchmove","touchstart","touchend","wheel"]);e._addUserInteractionListener(e)}}RocketLazyLoadScripts.run();</script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="//cdn.callrail.com/companies/884481450/2f4c4ecc18e567eed720/12/swap.js"></script>
+<!-- meta -->
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title itemprop="name">Truck Towing Service In Detroit</title><style id="rocket-critical-css">html,body,div,span,h1,a,img,i,ul,li,form,footer,header,nav{margin:0;padding:0;border:0;font-size:100%;font:inherit;vertical-align:baseline}footer,header,nav{display:block}body{line-height:1}ul{list-style:none}html{height:100%}body{-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}h1{margin-bottom:15px}i{font-style:italic}a,a:visited{text-decoration:none;outline:0}img.scale-with-grid{max-width:100%;height:auto}a.button,input[type="submit"]{display:inline-block;padding:11px 20px;margin-bottom:15px;margin-right:7px;border:0;-webkit-border-radius:5px;border-radius:5px;position:relative;overflow:hidden;-webkit-box-shadow:inset 0 0 0 1px rgba(0,0,0,.03);box-shadow:inset 0 0 0 1px rgba(0,0,0,.03);background-image:url(https://detroit-roadside-assistance.com/wp-content/themes/betheme/images/box_shadow_button.png);background-repeat:repeat-x}a.button_js{padding:0}a.button .button_icon{display:block;float:left;background:rgba(0,0,0,.05)}a.button .button_icon i{color:rgba(0,0,0,.5)}a.button.button_left .button_icon{float:left}a.button .button_icon{padding:11px 13px}@media only screen and (min-width:768px){a.button:after,input[type="submit"]:after{content:"";position:absolute;left:0;top:0;height:100%;width:0;z-index:1;background:rgba(0,0,0,.05)}}input::-moz-focus-inner{border:0;padding:0}@font-face{font-display:swap;font-family:'mfn-icons';src:url(https://detroit-roadside-assistance.com/wp-content/themes/betheme/fonts/mfn-icons.eot?3416171);src:url(https://detroit-roadside-assistance.com/wp-content/themes/betheme/fonts/mfn-icons.eot?3416171#iefix) format('embedded-opentype'),url(https://detroit-roadside-assistance.com/wp-content/themes/betheme/fonts/mfn-icons.woff?3416171) format('woff'),url(https://detroit-roadside-assistance.com/wp-content/themes/betheme/fonts/mfn-icons.ttf?3416171) format('truetype'),url(https://detroit-roadside-assistance.com/wp-content/themes/betheme/fonts/mfn-icons.svg?3416171#mfn-icons) format('svg');font-weight:normal;font-style:normal}[class^="icon-"]:before,[class*=" icon-"]:before{font-family:"mfn-icons";font-style:normal;font-weight:normal;speak:none;display:inline-block;text-decoration:none!important;width:1em;margin-right:.2em;text-align:center;font-variant:normal;text-transform:none;line-height:1em;margin-left:.2em}.icon-search:before{content:'\e807'}.icon-menu:before{content:'\e813'}.icon-cancel:before{content:'\e815'}.icon-phone:before{content:'\e855'}.icon-up-open-big:before{content:'\e87f'}.icon-mail-line:before{content:'\e91f'}body{min-width:960px}#Wrapper{max-width:1240px;margin:0px auto;overflow:hidden}.layout-full-width{padding:0}.layout-full-width #Wrapper{max-width:100%!important;width:100%!important;margin:0!important}#Content{width:100%;padding-top:30px}.section{position:relative}.section_wrapper,.container{max-width:1200px;margin:0 auto;position:relative}.section_wrapper:after,.container:after{clear:both;content:" ";display:block;height:0;visibility:hidden}.column{float:left;margin:0 1% 40px}.the_content_wrapper{margin:0 1%}.one.column{width:98%}.extra_content .the_content_wrapper{margin:0 1%}.container:after{content:"\0020";display:block;height:0;clear:both;visibility:hidden}.clearfix:before,.clearfix:after{content:'\0020';display:block;overflow:hidden;visibility:hidden;width:0;height:0}.clearfix:after{clear:both}.clearfix{zoom:1}#Wrapper{-webkit-box-shadow:0px 0px 15px rgba(0,0,0,.06);box-shadow:0px 0px 15px rgba(0,0,0,.06)}body.nice-scroll{position:relative}body.nice-scroll:not(.layout-boxed){padding-right:10px!important}.nice-scroll .nicescroll-rails{background:#666;z-index:9002!important}body:not(.template-slider) #Header_wrapper{background-repeat:no-repeat;background-position:top center}#Header_wrapper{position:relative}#Header{position:relative}body:not(.template-slider) #Header{min-height:250px}#Action_bar{position:absolute;left:0;top:0;width:100%;z-index:30}#Action_bar .column{margin-bottom:0;overflow:hidden}#Action_bar .contact_details{float:left}#Action_bar .contact_details li{display:inline-block;margin-right:10px;padding:20px 0;color:rgba(255,255,255,0.5)}#Action_bar .contact_details li>i{margin-right:2px}#Action_bar .contact_details li:last-child{margin-right:0px}#Action_bar .social{float:right;padding:20px 0}#Top_bar{position:absolute;left:0;top:61px;width:100%;z-index:30}#Top_bar .column{margin-bottom:0}#Top_bar .top_bar_left{position:relative;float:left}#Top_bar .top_bar_left{width:990px}#Top_bar .logo{float:left;margin:0 30px 0 20px}#Top_bar #logo{display:block;height:60px;line-height:60px;padding:15px 0px}#Top_bar #logo img{vertical-align:middle;max-height:100%}#Top_bar #logo img.logo-sticky,#Top_bar #logo img.logo-mobile{display:none}#Top_bar .menu_wrapper{float:left;z-index:201}#Top_bar .secondary_menu_wrapper{display:none}#Top_bar a.responsive-menu-toggle{display:none;z-index:202}#Top_bar .banner_wrapper{display:none}#Top_bar .search_wrapper{position:absolute;left:0;top:100%;display:none;z-index:201;width:100%;padding:15px;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box}#Top_bar .search_wrapper input[type="text"]{width:100%;margin:0;box-sizing:border-box;-webkit-box-shadow:0 0 0;box-shadow:0 0 0;padding-left:35px;background:none;border-width:0 0 1px 0;border-style:solid;border-color:rgba(255,255,255,.08)!important;font-size:15px}#Top_bar .search_wrapper .icon_search,#Top_bar .search_wrapper .icon_close{position:absolute;top:25px;font-size:20px;line-height:20px;display:block}#Top_bar .search_wrapper .icon_search{left:18px;color:rgba(0,0,0,.5)}#Top_bar .search_wrapper .icon_close{right:18px;color:#fff;opacity:0.3;filter:alpha(opacity=30)}#Top_bar #menu{z-index:201}#Top_bar .menu{z-index:202}#Top_bar .menu>li{margin:0;z-index:203;display:block;float:left}#Top_bar .menu>li:not(.mfn-megamenu-parent){position:relative}#Top_bar .menu>li>a{display:block;line-height:60px;padding:15px 0;position:relative}#Top_bar .menu>li>a:after{content:"";height:4px;width:100%;position:absolute;left:0;top:-4px;z-index:203;opacity:0;filter:alpha(opacity=0)}#Top_bar .menu>li>a span:not(.description){display:block;line-height:60px;padding:0 20px;white-space:nowrap;border-right-width:1px;border-style:solid}#Top_bar .menu>li:last-child>a span{border:0}#Top_bar .menu>li.current-menu-parent>a:after,#Top_bar .menu>li.current-menu-ancestor>a:after,#Top_bar .menu>li.current_page_ancestor>a:after{opacity:1;filter:alpha(opacity=100)}#Top_bar .menu li ul{position:absolute;left:0px;top:100%;z-index:205;margin:0;display:none;background-image:url(https://detroit-roadside-assistance.com/wp-content/themes/betheme/images/box_shadow.png);background-repeat:repeat-x;background-position:left top}#Top_bar .menu li>ul{box-shadow:2px 2px 2px 0 rgba(0,0,0,0.03);-webkit-box-shadow:2px 2px 2px 0 rgba(0,0,0,0.03)}#Top_bar .menu li ul li{padding:0;width:190px;position:relative;font-weight:normal}#Top_bar .menu li ul li a{padding:10px 10px 10px 20px;display:block;border-bottom:1px solid rgba(0,0,0,0.05)}#Top_bar .menu li ul li a span{display:inline-block;position:relative}.header-classic #Header .top_bar_left{background-color:transparent}.header-classic #Top_bar{position:static}.header-classic #Action_bar{position:static}.header-classic #Action_bar .contact_details li,.header-classic #Action_bar .social{padding:12px 0}.header-classic #Action_bar{background-color:#2C2C2C}.header-classic #Top_bar{background-color:#fff}#Subheader{background-color:rgba(0,0,0,.02);background-position:center top;background-repeat:no-repeat;padding:30px 0;position:relative}#Subheader .column{margin-bottom:0}#Subheader .title{margin-bottom:0;width:70%;float:left}#Subheader ul.breadcrumbs{display:block;width:30%;margin:1px 0 0;font-size:1em!important;float:right;text-align:right}#Subheader ul.breadcrumbs li{display:inline-block}#Subheader ul.breadcrumbs li{color:rgba(0,0,0,.3)}#Subheader:after{content:"";height:3px;width:100%;display:block;position:absolute;left:0;bottom:-3px;z-index:1;background:url(https://detroit-roadside-assistance.com/wp-content/themes/betheme/images/box_shadow.png) repeat-x left top}#Footer{background-position:center top;background-repeat:no-repeat}#Footer .footer_copy{border-top:1px solid rgba(255,255,255,.1)}#Footer .footer_copy .one{margin-bottom:20px;padding-top:30px;min-height:33px}#Footer .footer_copy .copyright{float:left}#Footer .footer_copy .social{float:right;margin-right:20px}#Footer #back_to_top{float:right;margin:-10px 0 0 0}form{margin-bottom:0}input[type="text"]{padding:10px 10px;outline:none;margin:0;width:230px;max-width:100%;display:block;margin-bottom:20px;font-size:13px;border-width:1px;border-style:solid;border-radius:0;box-sizing:border-box;-webkit-appearance:none}ul{list-style:none outside}input[type="text"]{border-color:rgba(0,0,0,.08)}input[type="text"]{background-color:#fff;color:#626262;-webkit-box-shadow:inset 0 0 2px 2px rgba(0,0,0,0.02);box-shadow:inset 0 0 2px 2px rgba(0,0,0,0.02)}#Top_bar .menu>li>a span{border-color:rgba(0,0,0,.05)}#Top_bar .search_wrapper input[type="text"]{border-color:#fff;color:#fff}@media only screen and (max-width:959px){#Header #menu>ul>li.current-menu-parent>a,#Header #menu>ul>li.current-menu-ancestor>a,#Header #menu>ul>li.current_page_ancestor>a{background:rgba(0,0,0,.02)}}html,body{overflow-x:hidden}@media only screen and (min-width:1240px){.menuo-right #Top_bar .menu_wrapper{float:right}}@media only screen and (min-width:960px) and (max-width:1239px){body{min-width:0}#Wrapper{max-width:960px}.section_wrapper,.container{max-width:940px}#Top_bar .top_bar_left{width:729px}}@media only screen and (min-width:768px) and (max-width:959px){body{min-width:0}#Wrapper{max-width:728px}.section_wrapper,.container{max-width:708px}#Top_bar .top_bar_left{width:501px}#Subheader .title{width:100%}#Subheader ul.breadcrumbs{display:none}}@media only screen and (max-width:767px){body{min-width:0}#Wrapper{max-width:300px}.mobile-wide #Wrapper{max-width:92%}.section_wrapper .column,.container .column,.sections_group{margin:0;width:100%!important;clear:both}.section_wrapper,.container{max-width:260px!important}.mobile-wide .section_wrapper,.mobile-wide .container{max-width:90%!important;-webkit-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box}.section_wrapper .column{margin:0 0 20px;height:auto!important}.section{background-attachment:scroll!important;height:auto!important}#Top_bar,#Action_bar{background:#fff!important;position:static}#Top_bar .top_bar_left{float:none;width:100%!important;margin-top:10px;background:none!important}#Header a.responsive-menu-toggle{position:absolute!important;top:20px!important;right:5px!important;z-index:10;margin:0}#Top_bar .menu_wrapper{float:left!important;width:100%;margin:0!important}#Top_bar #menu{float:left;position:static!important;width:100%!important}#Top_bar .logo{position:static;float:none;width:100%;text-align:center;margin:0}#Top_bar .logo #logo{padding:0;margin:5px 42px 15px}#Top_bar .logo #logo img{height:auto!important}#Top_bar #logo img.logo-main{display:none}#Top_bar #logo img.logo-mobile{display:inline-block}#Top_bar .search_wrapper{top:auto;bottom:-132px}#Action_bar .contact_details li,#Action_bar .social{padding:0!important}#Action_bar .contact_details{float:none;text-align:center;padding:5px 0}#Action_bar .contact_details li{color:#000;padding:0}#Action_bar .contact_details li.slogan{display:none}#Action_bar .social{float:none;text-align:center;padding:5px 0 0}body:not(.template-slider):not(.header-simple) #Header{min-height:350px;background-position:center 202px}#Subheader .title{width:100%}#Subheader ul.breadcrumbs{display:none}#Footer .footer_copy{text-align:center}#Footer .footer_copy .copyright{float:none;margin:0 0 10px 0}#Footer .footer_copy .social{float:none;margin:0}#Footer #back_to_top{float:none;margin:-10px 0 10px}}@media only screen and (min-width:480px) and (max-width:767px){#Wrapper{max-width:420px}.section_wrapper,.container{max-width:380px!important}}</style><link rel="preload" as="style" href="https://fonts.googleapis.com/css?family=Roboto%7CPatua%20One&amp;display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto%7CPatua%20One&amp;display=swap" media="all" onload="this.media='all'"><noscript><link rel="preload" href="https://fonts.googleapis.com/css?family=Roboto%7CPatua%20One&#038;display=swap" data-rocket-async="style" as="style" onload="this.onload=null;this.rel='stylesheet'" /></noscript><link rel="preload" href="https://detroit-roadside-assistance.com/wp-content/cache/min/1/11891bae3f36b7c3bbbb6b59f24b0674.css" data-rocket-async="style" as="style" onload="this.onload=null;this.rel='stylesheet'" media="all" data-minify="1">
+
+
+<link rel="shortcut icon" href="https://detroit-roadside-assistance.com/wp-content/uploads/2015/11/favicon.png">	
+<link rel="apple-touch-icon" href="https://detroit-roadside-assistance.com/wp-content/uploads/2015/11/apple-touch-icon.png">
+	
+
+<!-- wp_head() -->
+<!-- script | dynamic -->
+<script type="rocketlazyloadscript">
+//<![CDATA[
+window.mfn_ajax = "https://detroit-roadside-assistance.com/wp-admin/admin-ajax.php";
+window.mfn_nicescroll = 40;
+window.mfn_parallax = "enllax";
+window.mfn_prettyphoto = {style:"pp_default", width:0, height:0};
+window.mfn_sliders = {blog:0, clients:0, offer:0, portfolio:0, shop:0, slider:0, testimonials:0};
+window.mfn_retina_disable = 0;
+//]]>
+</script>
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+
+	<!-- This site is optimized with the Yoast SEO plugin v17.8 - https://yoast.com/wordpress/plugins/seo/ -->
+	<meta name="description" content="Our truck towing service brings together the leading processes, state-of-the-art technological know-how and an experienced team!">
+	<link rel="canonical" href="https://detroit-roadside-assistance.com/truck-towing-service-in-detroit/">
+	<meta property="og:locale" content="en_US">
+	<meta property="og:type" content="article">
+	<meta property="og:title" content="Truck Towing Service In Detroit">
+	<meta property="og:description" content="Our truck towing service brings together the leading processes, state-of-the-art technological know-how and an experienced team!">
+	<meta property="og:url" content="https://detroit-roadside-assistance.com/truck-towing-service-in-detroit/">
+	<meta property="article:modified_time" content="2021-02-16T18:08:59+00:00">
+	<meta property="og:image" content="https://detroit-roadside-assistance.com/wp-content/uploads/2015/11/detroit-towing-2.jpg">
+	<meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:label1" content="Est. reading time">
+	<meta name="twitter:data1" content="3 minutes">
+	<!-- / Yoast SEO plugin. -->
+
+
+<link rel="dns-prefetch" href="//www.googletagmanager.com">
+<link rel="dns-prefetch" href="//fonts.googleapis.com">
+<link href="https://fonts.gstatic.com" crossorigin="" rel="preconnect">
+<link rel="alternate" type="application/rss+xml" title=" » Feed" href="https://detroit-roadside-assistance.com/feed/">
+<link rel="alternate" type="application/rss+xml" title=" » Comments Feed" href="https://detroit-roadside-assistance.com/comments/feed/">
+<link rel="alternate" type="application/rss+xml" title=" » Truck Towing Service In Detroit Comments Feed" href="https://detroit-roadside-assistance.com/truck-towing-service-in-detroit/feed/">
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	
+
+
+<style id="rs-plugin-settings-inline-css" type="text/css">
+#rs-demo-id {}
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://detroit-roadside-assistance.com/wp-includes/js/jquery/jquery.min.js?ver=3.6.0" id="jquery-core-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://detroit-roadside-assistance.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.3.2" id="jquery-migrate-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://detroit-roadside-assistance.com/wp-content/plugins/revslider/public/assets/js/rbtools.min.js?ver=6.3.6" id="tp-tools-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://detroit-roadside-assistance.com/wp-content/plugins/revslider/public/assets/js/rs6.min.js?ver=6.3.6" id="revmin-js"></script>
+
+<!-- Google Analytics snippet added by Site Kit -->
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://www.googletagmanager.com/gtag/js?id=UA-30648733-39" id="google_gtagjs-js" async=""></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" id="google_gtagjs-js-after">
+window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}
+gtag('set', 'linker', {"domains":["detroit-roadside-assistance.com"]} );
+gtag("js", new Date());
+gtag("set", "developer_id.dZTNiMT", true);
+gtag("config", "UA-30648733-39", {"anonymize_ip":true});
+</script>
+
+<!-- End Google Analytics snippet added by Site Kit -->
+<link rel="https://api.w.org/" href="https://detroit-roadside-assistance.com/wp-json/"><link rel="alternate" type="application/json" href="https://detroit-roadside-assistance.com/wp-json/wp/v2/pages/218"><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://detroit-roadside-assistance.com/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://detroit-roadside-assistance.com/wp-includes/wlwmanifest.xml"> 
+<meta name="generator" content="WordPress 5.8.1">
+<link rel="shortlink" href="https://detroit-roadside-assistance.com/?p=218">
+<link rel="alternate" type="application/json+oembed" href="https://detroit-roadside-assistance.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fdetroit-roadside-assistance.com%2Ftruck-towing-service-in-detroit%2F">
+<link rel="alternate" type="text/xml+oembed" href="https://detroit-roadside-assistance.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fdetroit-roadside-assistance.com%2Ftruck-towing-service-in-detroit%2F&amp;format=xml">
+<meta name="generator" content="Site Kit by Google 1.47.0">
+
+<!-- This site is optimized with the Schema plugin v1.7.9.4 - https://schema.press -->
+<script type="application/ld+json">{"@context":"https:\/\/schema.org\/","@type":"Article","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/detroit-roadside-assistance.com\/truck-towing-service-in-detroit\/"},"url":"https:\/\/detroit-roadside-assistance.com\/truck-towing-service-in-detroit\/","headline":"Truck Towing Service In Detroit","datePublished":"2015-11-27T18:39:50+00:00","dateModified":"2021-02-16T18:08:59+00:00","publisher":{"@type":"Organization","@id":"https:\/\/detroit-roadside-assistance.com\/#organization","name":"J&amp;J Truck &amp; Trailer Repair","logo":{"@type":"ImageObject","url":"","width":600,"height":60}},"image":{"@type":"ImageObject","url":"https:\/\/detroit-roadside-assistance.com\/wp-content\/uploads\/2015\/11\/detroit-towing-2.jpg","width":696,"height":"220"},"description":"Our team brings together the leading breed processes, state-of-the-art technological know-how and experienced people committed to providing first-class customer service whilst at the same time trying to lower the associated costs. When we integrate our unlimited desire to deliver top-notch service to you with our knowledgeable, highly trained and","author":{"@type":"Person","name":"mikemasterwp","url":"https:\/\/detroit-roadside-assistance.com\/author\/mikemasterwp\/","image":{"@type":"ImageObject","url":"https:\/\/secure.gravatar.com\/avatar\/ed54f081880cdbfe8432fdfb599b1283?s=96&d=blank&r=g","height":96,"width":96}}}</script>
+
+<!-- style | dynamic -->
+<style>
+#Header_wrapper {background-color: #51565a;}#Subheader {background-color: rgba(247, 247, 247, 0.2);}.header-classic #Action_bar, .header-plain #Action_bar, .header-stack #Action_bar {background-color: #000000;}#Sliding-top {background-color: #545454;}#Sliding-top a.sliding-top-control {border-right-color: #545454;}#Sliding-top.st-center a.sliding-top-control,#Sliding-top.st-left a.sliding-top-control {border-top-color: #545454;}#Footer {background-color: #111111;}body, ul.timeline_items, .icon_box a .desc, .icon_box a:hover .desc, .feature_list ul li a, .list_item a, .list_item a:hover,.widget_recent_entries ul li a, .flat_box a, .flat_box a:hover, .story_box .desc, .content_slider.carouselul li a .title,.content_slider.flat.description ul li .desc, .content_slider.flat.description ul li a .desc {color: #626262;}.themecolor, .opening_hours .opening_hours_wrapper li span, .fancy_heading_icon .icon_top,.fancy_heading_arrows .icon-right-dir, .fancy_heading_arrows .icon-left-dir, .fancy_heading_line .title,.button-love a.mfn-love, .format-link .post-title .icon-link, .pager-single > span, .pager-single a:hover,.widget_meta ul, .widget_pages ul, .widget_rss ul, .widget_mfn_recent_comments ul li:after, .widget_archive ul, .widget_recent_comments ul li:after, .widget_nav_menu ul, .woocommerce ul.products li.product .price, .shop_slider .shop_slider_ul li .item_wrapper .price, .woocommerce-page ul.products li.product .price, .widget_price_filter .price_label .from, .widget_price_filter .price_label .to,.woocommerce ul.product_list_widget li .quantity .amount, .woocommerce .product div.entry-summary .price, .woocommerce .star-rating span,#Error_404 .error_pic i, .style-simple #Filters .filters_wrapper ul li a:hover, .style-simple #Filters .filters_wrapper ul li.current-cat a,.style-simple .quick_fact .title {color: #9f0101;}.themebg, .pager .pages a:hover, .pager .pages a.active, .pager .pages span.page-numbers.current, .pager-single span:after, #comments .commentlist > li .reply a.comment-reply-link,.fixed-nav .arrow, #Filters .filters_wrapper ul li a:hover, #Filters .filters_wrapper ul li.current-cat a, .widget_categories ul, .Recent_posts ul li .desc:after, .Recent_posts ul li .photo .c,.widget_recent_entries ul li:after, .widget_mfn_menu ul li a:hover, .widget_mfn_menu ul li.current_page_item > a, .widget_product_categories ul, div.jp-interface, #Top_bar a#header_cart span, .testimonials_slider .slider_images, .testimonials_slider .slider_images a:after, .testimonials_slider .slider_images:before,.slider_pagination a.selected, .slider_pagination a.selected:after, .tp-bullets.simplebullets.round .bullet.selected, .tp-bullets.simplebullets.round .bullet.selected:after,.tparrows.default, .tp-bullets.tp-thumbs .bullet.selected:after, .offer_thumb .slider_pagination a:before, .offer_thumb .slider_pagination a.selected:after,.style-simple .accordion .question:after, .style-simple .faq .question:after, .style-simple .icon_box .desc_wrapper h4:before,.style-simple #Filters .filters_wrapper ul li a:after, .style-simple .article_box .desc_wrapper p:after, .style-simple .sliding_box .desc_wrapper:after,.style-simple .trailer_box:hover .desc, .woocommerce-account table.my_account_orders .order-number a, .portfolio_group.exposure .portfolio-item .desc-inner .line,.style-simple .zoom_box .desc .desc_txt {background-color: #9f0101;}.Latest_news ul li .photo, .style-simple .opening_hours .opening_hours_wrapper li label,.style-simple .timeline_items li:hover h3, .style-simple .timeline_items li:nth-child(even):hover h3, .style-simple .timeline_items li:hover .desc, .style-simple .timeline_items li:nth-child(even):hover,.style-simple .offer_thumb .slider_pagination a.selected {border-color: #9f0101;}a {color: #3cb5d0;}a:hover {color: #199cb9;}*::-moz-selection {background-color: #3cb5d0;}*::selection {background-color: #3cb5d0;}.blockquote p.author span, .counter .desc_wrapper .title, .article_box .desc_wrapper p, .team .desc_wrapper p.subtitle, .pricing-box .plan-header p.subtitle, .pricing-box .plan-header .price sup.period, .chart_box p, .fancy_heading .inside,.fancy_heading_line .slogan, .post-meta, .post-meta a, .post-footer, .post-footer a span.label, .pager .pages a, .button-love a .label,.pager-single a, #comments .commentlist > li .comment-author .says, .fixed-nav .desc .date, .filters_buttons li.label, .Recent_posts ul li a .desc .date,.widget_recent_entries ul li .post-date, .tp_recent_tweets .twitter_time, .widget_price_filter .price_label, .shop-filters .woocommerce-result-count,.woocommerce ul.product_list_widget li .quantity, .widget_shopping_cart ul.product_list_widget li dl, .product_meta .posted_in,.woocommerce .shop_table .product-name .variation > dd, .shipping-calculator-button:after,.shop_slider .shop_slider_ul li .item_wrapper .price del,.testimonials_slider .testimonials_slider_ul li .author span, .testimonials_slider .testimonials_slider_ul li .author span a, .Latest_news ul li .desc_footer {color: #a8a8a8;}h1, h1 a, h1 a:hover, .text-logo #logo { color: #444444; }h2, h2 a, h2 a:hover { color: #444444; }h3, h3 a, h3 a:hover { color: #444444; }h4, h4 a, h4 a:hover, .style-simple .sliding_box .desc_wrapper h4 { color: #444444; }h5, h5 a, h5 a:hover { color: #444444; }h6, h6 a, h6 a:hover, a.content_link .title { color: #444444; }.dropcap, .highlight:not(.highlight_image) {background-color: #3cb5d0;}a.button, a.tp-button {background-color: #f7f7f7;color: #747474;}.button-stroke a.button, .button-stroke a.button .button_icon i, .button-stroke a.tp-button {border-color: #f7f7f7;color: #747474;}.button-stroke a:hover.button, .button-stroke a:hover.tp-button {background-color: #f7f7f7 !important;color: #fff;}a.button_theme, a.tp-button.button_theme,button, input[type="submit"], input[type="reset"], input[type="button"] {background-color: #9f0101;color: #fff;}.button-stroke a.button.button_theme:not(.action_button), .button-stroke a.button.button_theme:not(.action_button),.button-stroke a.button.button_theme .button_icon i, .button-stroke a.tp-button.button_theme,.button-stroke button, .button-stroke input[type="submit"], .button-stroke input[type="reset"], .button-stroke input[type="button"] {border-color: #9f0101;color: #9f0101 !important;}.button-stroke a.button.button_theme:hover, .button-stroke a.tp-button.button_theme:hover,.button-stroke button:hover, .button-stroke input[type="submit"]:hover, .button-stroke input[type="reset"]:hover, .button-stroke input[type="button"]:hover {background-color: #9f0101 !important;color: #fff !important;}a.mfn-link { color: #656B6F; }a.mfn-link-2 span, a:hover.mfn-link-2 span:before, a.hover.mfn-link-2 span:before, a.mfn-link-5 span, a.mfn-link-8:after, a.mfn-link-8:before { background: #3cb5d0; }a:hover.mfn-link { color: #3cb5d0;}a.mfn-link-2 span:before, a:hover.mfn-link-4:before, a:hover.mfn-link-4:after, a.hover.mfn-link-4:before, a.hover.mfn-link-4:after, a.mfn-link-5:before, a.mfn-link-7:after, a.mfn-link-7:before { background: #199cb9; }a.mfn-link-6:before {border-bottom-color: #199cb9;}.woocommerce a.button, .woocommerce .quantity input.plus, .woocommerce .quantity input.minus {background-color: #f7f7f7 !important;color: #747474 !important;}.woocommerce a.button_theme, .woocommerce a.checkout-button, .woocommerce button.button,.woocommerce .button.add_to_cart_button, .woocommerce .button.product_type_external,.woocommerce input[type="submit"], .woocommerce input[type="reset"], .woocommerce input[type="button"],.button-stroke .woocommerce a.checkout-button {background-color: #9f0101 !important;color: #fff !important;}.column_column ul, .column_column ol, .the_content_wrapper ul, .the_content_wrapper ol {color: #737E86;}.hr_color, .hr_color hr, .hr_dots span {color: #3cb5d0;background: #3cb5d0;}.hr_zigzag i {color: #3cb5d0;} .highlight-left:after,.highlight-right:after {background: #3cb5d0;}@media only screen and (max-width: 767px) {.highlight-left .wrap:first-child,.highlight-right .wrap:last-child {background: #3cb5d0;}}#Header .top_bar_left, .header-classic #Top_bar, .header-plain #Top_bar, .header-stack #Top_bar, .header-split #Top_bar,.header-fixed #Top_bar, .header-below #Top_bar, #Header_creative, #Top_bar #menu {background-color: #ffffff;}#Top_bar .top_bar_right:before {background-color: #e3e3e3;}#Header .top_bar_right {background-color: #f5f5f5;}#Top_bar .top_bar_right a { color: #444444;}#Top_bar .menu > li > a { color: #000000;}#Top_bar .menu > li.current-menu-item > a,#Top_bar .menu > li.current_page_item > a,#Top_bar .menu > li.current-menu-parent > a,#Top_bar .menu > li.current-page-parent > a,#Top_bar .menu > li.current-menu-ancestor > a,#Top_bar .menu > li.current-page-ancestor > a,#Top_bar .menu > li.current_page_ancestor > a,#Top_bar .menu > li.hover > a { color: #000000; }#Top_bar .menu > li a:after { background: #000000; }.menu-highlight #Top_bar #menu > ul > li.current-menu-item > a,.menu-highlight #Top_bar #menu > ul > li.current_page_item > a,.menu-highlight #Top_bar #menu > ul > li.current-menu-parent > a,.menu-highlight #Top_bar #menu > ul > li.current-page-parent > a,.menu-highlight #Top_bar #menu > ul > li.current-menu-ancestor > a,.menu-highlight #Top_bar #menu > ul > li.current-page-ancestor > a,.menu-highlight #Top_bar #menu > ul > li.current_page_ancestor > a,.menu-highlight #Top_bar #menu > ul > li.hover > a { background: #9f0101; }.menu-arrow-bottom #Top_bar .menu > li > a:after { border-bottom-color: #000000;}.menu-arrow-top #Top_bar .menu > li > a:after {border-top-color: #000000;}.header-plain #Top_bar .menu > li.current-menu-item > a,.header-plain #Top_bar .menu > li.current_page_item > a,.header-plain #Top_bar .menu > li.current-menu-parent > a,.header-plain #Top_bar .menu > li.current-page-parent > a,.header-plain #Top_bar .menu > li.current-menu-ancestor > a,.header-plain #Top_bar .menu > li.current-page-ancestor > a,.header-plain #Top_bar .menu > li.current_page_ancestor > a,.header-plain #Top_bar .menu > li.hover > a,.header-plain #Top_bar a:hover#header_cart,.header-plain #Top_bar a:hover#search_button,.header-plain #Top_bar .wpml-languages:hover,.header-plain #Top_bar .wpml-languages ul.wpml-lang-dropdown {background: #9f0101; color: #000000;}.header-plain #Top_bar,.header-plain #Top_bar .menu > li > a span:not(.description),.header-plain #Top_bar a#header_cart,.header-plain #Top_bar a#search_button,.header-plain #Top_bar .wpml-languages,.header-plain #Top_bar a.button.action_button {border-color: #F2F2F2;}#Top_bar .menu > li ul {background-color: #F2F2F2;}#Top_bar .menu > li ul li a {color: #5f5f5f;}#Top_bar .menu > li ul li a:hover,#Top_bar .menu > li ul li.hover > a {color: #2e2e2e;}#Top_bar .search_wrapper { background: #3cb5d0; }#Subheader .title{color: #ffffff;}#Subheader ul.breadcrumbs li, #Subheader ul.breadcrumbs li a{color: rgba(255, 255, 255, 0.6);}#Overlay {background: rgba(41, 145, 214, 0.95);}#overlay-menu ul li a, .header-overlay .overlay-menu-toggle.focus {color: #ffffff;}#overlay-menu ul li.current-menu-item > a,#overlay-menu ul li.current_page_item > a,#overlay-menu ul li.current-menu-parent > a,#overlay-menu ul li.current-page-parent > a,#overlay-menu ul li.current-menu-ancestor > a,#overlay-menu ul li.current-page-ancestor > a,#overlay-menu ul li.current_page_ancestor > a { color: #B1DCFB; }#Footer, #Footer .widget_recent_entries ul li a {color: #cccccc;}#Footer a {color: #3cb5d0;}#Footer a:hover {color: #199cb9;}#Footer h1, #Footer h1 a, #Footer h1 a:hover,#Footer h2, #Footer h2 a, #Footer h2 a:hover,#Footer h3, #Footer h3 a, #Footer h3 a:hover,#Footer h4, #Footer h4 a, #Footer h4 a:hover,#Footer h5, #Footer h5 a, #Footer h5 a:hover,#Footer h6, #Footer h6 a, #Footer h6 a:hover {color: #ffffff;}#Footer .themecolor, #Footer .widget_meta ul, #Footer .widget_pages ul, #Footer .widget_rss ul, #Footer .widget_mfn_recent_comments ul li:after, #Footer .widget_archive ul, #Footer .widget_recent_comments ul li:after, #Footer .widget_nav_menu ul, #Footer .widget_price_filter .price_label .from, #Footer .widget_price_filter .price_label .to,#Footer .star-rating span {color: #3cb5d0;}#Footer .themebg, #Footer .widget_categories ul, #Footer .Recent_posts ul li .desc:after, #Footer .Recent_posts ul li .photo .c,#Footer .widget_recent_entries ul li:after, #Footer .widget_mfn_menu ul li a:hover, #Footer .widget_product_categories ul {background-color: #3cb5d0;}#Footer .Recent_posts ul li a .desc .date, #Footer .widget_recent_entries ul li .post-date, #Footer .tp_recent_tweets .twitter_time, #Footer .widget_price_filter .price_label, #Footer .shop-filters .woocommerce-result-count, #Footer ul.product_list_widget li .quantity, #Footer .widget_shopping_cart ul.product_list_widget li dl {color: #a8a8a8;}#Sliding-top, #Sliding-top .widget_recent_entries ul li a {color: #cccccc;}#Sliding-top a {color: #3cb5d0;}#Sliding-top a:hover {color: #199cb9;}#Sliding-top h1, #Sliding-top h1 a, #Sliding-top h1 a:hover,#Sliding-top h2, #Sliding-top h2 a, #Sliding-top h2 a:hover,#Sliding-top h3, #Sliding-top h3 a, #Sliding-top h3 a:hover,#Sliding-top h4, #Sliding-top h4 a, #Sliding-top h4 a:hover,#Sliding-top h5, #Sliding-top h5 a, #Sliding-top h5 a:hover,#Sliding-top h6, #Sliding-top h6 a, #Sliding-top h6 a:hover {color: #ffffff;}#Sliding-top .themecolor, #Sliding-top .widget_meta ul, #Sliding-top .widget_pages ul, #Sliding-top .widget_rss ul, #Sliding-top .widget_mfn_recent_comments ul li:after, #Sliding-top .widget_archive ul, #Sliding-top .widget_recent_comments ul li:after, #Sliding-top .widget_nav_menu ul, #Sliding-top .widget_price_filter .price_label .from, #Sliding-top .widget_price_filter .price_label .to,#Sliding-top .star-rating span {color: #3cb5d0;}#Sliding-top .themebg, #Sliding-top .widget_categories ul, #Sliding-top .Recent_posts ul li .desc:after, #Sliding-top .Recent_posts ul li .photo .c,#Sliding-top .widget_recent_entries ul li:after, #Sliding-top .widget_mfn_menu ul li a:hover, #Sliding-top .widget_product_categories ul {background-color: #3cb5d0;}#Sliding-top .Recent_posts ul li a .desc .date, #Sliding-top .widget_recent_entries ul li .post-date, #Sliding-top .tp_recent_tweets .twitter_time, #Sliding-top .widget_price_filter .price_label, #Sliding-top .shop-filters .woocommerce-result-count, #Sliding-top ul.product_list_widget li .quantity, #Sliding-top .widget_shopping_cart ul.product_list_widget li dl {color: #a8a8a8;}blockquote, blockquote a, blockquote a:hover {color: #444444;}.image_frame .image_wrapper .image_links,.portfolio_group.masonry-hover .portfolio-item .masonry-hover-wrapper .hover-desc { background: rgba(60, 181, 208, 0.8);}.masonry.tiles .post-item .post-desc-wrapper .post-desc .post-title:after, .masonry.tiles .post-item.no-img, .masonry.tiles .post-item.format-quote {background: #3cb5d0;} .image_frame .image_wrapper .image_links a {color: #ffffff;}.image_frame .image_wrapper .image_links a:hover {background: #ffffff;color: #3cb5d0;}.sliding_box .desc_wrapper {background: #3cb5d0;}.sliding_box .desc_wrapper:after {border-bottom-color: #3cb5d0;}.counter .icon_wrapper i {color: #3cb5d0;}.quick_fact .number-wrapper {color: #3cb5d0;}.progress_bars .bars_list li .bar .progress { background-color: #3cb5d0;}a:hover.icon_bar {color: #3cb5d0 !important;}a.content_link, a:hover.content_link {color: #3cb5d0;}a.content_link:before {border-bottom-color: #3cb5d0;}a.content_link:after {border-color: #3cb5d0;}.get_in_touch, .infobox {background-color: #3cb5d0;}.column_map .google-map-contact-wrapper .get_in_touch:after {border-top-color: #3cb5d0;}.timeline_items li h3:before,.timeline_items:after,.timeline .post-item:before { border-color: #9f0101;}.how_it_works .image .number { background: #9f0101;}.trailer_box .desc .subtitle {background-color: #3cb5d0;}.icon_box .icon_wrapper, .icon_box a .icon_wrapper,.style-simple .icon_box:hover .icon_wrapper {color: #3cb5d0;}.icon_box:hover .icon_wrapper:before, .icon_box a:hover .icon_wrapper:before { background-color: #3cb5d0;}ul.clients.clients_tiles li .client_wrapper:hover:before { background: #9f0101;}ul.clients.clients_tiles li .client_wrapper:after { border-bottom-color: #9f0101;}.list_item.lists_1 .list_left {background-color: #3cb5d0;}.list_item .list_left {color: #3cb5d0;}.feature_list ul li .icon i { color: #3cb5d0;}.feature_list ul li:hover,.feature_list ul li:hover a {background: #3cb5d0;}.ui-tabs .ui-tabs-nav li.ui-state-active a,.accordion .question.active .title > .acc-icon-plus,.accordion .question.active .title > .acc-icon-minus,.faq .question.active .title > .acc-icon-plus,.faq .question.active .title,.accordion .question.active .title {color: #3cb5d0;}.ui-tabs .ui-tabs-nav li.ui-state-active a:after {background: #3cb5d0;}table tr:hover td {background: #9f0101;}.pricing-box .plan-header .price sup.currency,.pricing-box .plan-header .price > span {color: #3cb5d0;}.pricing-box .plan-inside ul li .yes { background: #3cb5d0;}.pricing-box-box.pricing-box-featured {background: #3cb5d0;}.woocommerce span.onsale, .shop_slider .shop_slider_ul li .item_wrapper span.onsale {border-top-color: #9f0101 !important;}.woocommerce .widget_price_filter .ui-slider .ui-slider-handle {border-color: #9f0101 !important;}@media only screen and (min-width: 768px){.header-semi #Top_bar:not(.is-sticky) {background-color: rgba(255, 255, 255, 0.8);}}@media only screen and (max-width: 767px){#Top_bar, #Action_bar { background: #ffffff !important;}}html { background-color: #FCFCFC;}#Wrapper, #Content { background-color: #FCFCFC;}body:not(.template-slider) #Header_wrapper { background-image: url("https://detroit-roadside-assistance.com/wp-content/uploads/2015/11/header-1.jpg"); }body, button, span.date_label, .timeline_items li h3 span, input[type="submit"], input[type="reset"], input[type="button"],input[type="text"], input[type="password"], input[type="tel"], input[type="email"], textarea, select, .offer_li .title h3 {font-family: "Roboto", Arial, Tahoma, sans-serif;font-weight: 400;}#menu > ul > li > a, .action_button, #overlay-menu ul li a {font-family: "Roboto", Arial, Tahoma, sans-serif;font-weight: 400;}#Subheader .title {font-family: "Patua One", Arial, Tahoma, sans-serif;font-weight: 400;}h1, .text-logo #logo {font-family: "Patua One", Arial, Tahoma, sans-serif;font-weight: 300;}h2 {font-family: "Patua One", Arial, Tahoma, sans-serif;font-weight: 300;}h3 {font-family: "Patua One", Arial, Tahoma, sans-serif;font-weight: 300;}h4 {font-family: "Patua One", Arial, Tahoma, sans-serif;font-weight: 300;}h5 {font-family: "Roboto", Arial, Tahoma, sans-serif;font-weight: 700;}h6 {font-family: "Roboto", Arial, Tahoma, sans-serif;font-weight: 400;}blockquote {font-family: "Patua One", Arial, Tahoma, sans-serif;}.chart_box .chart .num, .counter .desc_wrapper .number-wrapper, .how_it_works .image .number,.pricing-box .plan-header .price, .quick_fact .number-wrapper, .woocommerce .product div.entry-summary .price {font-family: "Arial", Arial, Tahoma, sans-serif;}body {font-size: 13px;line-height: 21px;}#menu > ul > li > a, .action_button {font-size: 18px;}#Subheader .title {font-size: 25px;line-height: 25px;}h1, .text-logo #logo { font-size: 34px;line-height: 34px;}h2 { font-size: 30px;line-height: 30px;}h3 {font-size: 25px;line-height: 27px;}h4 {font-size: 21px;line-height: 25px;}h5 {font-size: 15px;line-height: 20px;}h6 {font-size: 13px;line-height: 20px;}.with_aside .sidebar.columns {width: 23%;}.with_aside .sections_group {width: 75%;}.aside_both .sidebar.columns {width: 18%;}.aside_both .sidebar-1{ margin-left: -79%;}.aside_both .sections_group {width: 60%;margin-left: 20%;}@media only screen and (min-width:1240px){#Wrapper {max-width: 1255px;}.section_wrapper, .container, .with_aside .content_wrapper {max-width: 1235px;}.layout-boxed.header-boxed #Top_bar.is-sticky{max-width: 1255px;}}@media only screen and (min-width: 1240px) {body:not(.header-simple) #Top_bar #menu { display:block !important; }#Top_bar .menu > li > ul.mfn-megamenu { width:984px; }#Top_bar .menu > li > ul.mfn-megamenu > li { float:left;}#Top_bar .menu > li > ul.mfn-megamenu > li.mfn-megamenu-cols-1 { width:100%;}#Top_bar .menu > li > ul.mfn-megamenu > li.mfn-megamenu-cols-2 { width:50%;}#Top_bar .menu > li > ul.mfn-megamenu > li.mfn-megamenu-cols-3 { width:33.33%;}#Top_bar .menu > li > ul.mfn-megamenu > li.mfn-megamenu-cols-4 { width:25%;}#Top_bar .menu > li > ul.mfn-megamenu > li.mfn-megamenu-cols-5 { width:20%;}#Top_bar .menu > li > ul.mfn-megamenu > li.mfn-megamenu-cols-6 { width:16.66%;}#Top_bar .menu > li > ul.mfn-megamenu > li > ul { display:block !important; position:inherit; left:auto; top:auto; border-width: 0 1px 0 0; }#Top_bar .menu > li > ul.mfn-megamenu > li:last-child > ul{ border: 0; }#Top_bar .menu > li > ul.mfn-megamenu > li > ul li { width: auto; }#Top_bar .menu > li > ul.mfn-megamenu a.mfn-megamenu-title { text-transform: uppercase; font-weight:400;}#Top_bar .menu > li > ul.mfn-megamenu a.mfn-megamenu-title:hover { background:none;}#Top_bar .menu > li > ul.mfn-megamenu a .menu-arrow { display: none; }#Top_bar .menu > li > ul.mfn-megamenu-bg { padding:20px 166px 20px 20px; background-repeat:no-repeat; background-position: bottom right; }#Top_bar .menu > li > ul.mfn-megamenu-bg > li { background:none;}#Top_bar .menu > li > ul.mfn-megamenu-bg > li a { border:none;}#Top_bar .menu > li > ul.mfn-megamenu-bg > li > ul { background:none !important;-webkit-box-shadow: 0 0 0 0;-moz-box-shadow: 0 0 0 0;box-shadow: 0 0 0 0;}#Top_bar.is-sticky { position:fixed; width:100%; left:0; top:-60px; height:60px; z-index:701; background:#fff; opacity:.97; filter: alpha(opacity = 97);-webkit-box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.1); -moz-box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.1);box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.1);}.layout-boxed.header-boxed #Top_bar.is-sticky { max-width:1240px; left:50%; -webkit-transform: translateX(-50%); transform: translateX(-50%);}.layout-boxed.header-boxed.nice-scroll #Top_bar.is-sticky { margin-left:-5px;}#Top_bar.is-sticky .top_bar_left,#Top_bar.is-sticky .top_bar_right,#Top_bar.is-sticky .top_bar_right:before { background:none;}#Top_bar.is-sticky .top_bar_right { top:-4px;}#Top_bar.is-sticky .logo { width:auto; margin: 0 30px 0 20px; padding:0;}#Top_bar.is-sticky #logo { padding:5px 0; height:50px; line-height:50px;}#Top_bar.is-sticky #logo img { max-height:35px; width: auto !important;}#Top_bar.is-sticky #logo img.logo-main { display:none;}#Top_bar.is-sticky #logo img.logo-sticky { display:inline;}#Top_bar.is-sticky .menu_wrapper { clear:none;}#Top_bar.is-sticky .menu_wrapper .menu > li > a{ padding:15px 0;}#Top_bar.is-sticky .menu > li > a,#Top_bar.is-sticky .menu > li > a span { line-height:30px;}#Top_bar.is-sticky .menu > li > a:after { top:auto; bottom:-4px;}#Top_bar.is-sticky .menu > li > a span.description { display:none;}#Top_bar.is-sticky #header_cart { top:27px;}#Top_bar.is-sticky #search_button { top:25px;}#Top_bar.is-sticky a.button.action_button { top:13px;}#Top_bar.is-sticky .wpml-languages { top:15px;}#Top_bar.is-sticky .secondary_menu_wrapper,#Top_bar.is-sticky .banner_wrapper { display:none;}.header-simple #Top_bar.is-sticky .responsive-menu-toggle { top:12px;}.header-stack.header-center #Top_bar #menu { display: inline-block !important;}.sticky-dark #Top_bar.is-sticky { background: rgba(0,0,0,.8); }.sticky-dark #Top_bar.is-sticky .menu > li > a { color: #fff; }.sticky-dark #Top_bar.is-sticky .top_bar_right a { color: rgba(255,255,255,.5); }.sticky-dark #Top_bar.is-sticky .wpml-languages a.active,.sticky-dark #Top_bar.is-sticky .wpml-languages ul.wpml-lang-dropdown { background: rgba(0,0,0,0.3); border-color: rgba(0, 0, 0, 0.1); }.header-plain:not(.menuo-right) #Header .top_bar_left { width:auto !important;}.header-simple #Top_bar #menu { display:none; height: auto; width: 300px; bottom: auto; top: 60px; right: 1px; position: absolute; margin: 0px; background:#fff;}.header-simple #Header a.responsive-menu-toggle { display:block; width: 35px; height: 35px; line-height: 35px; font-size: 25px; text-align: center; position:absolute; top: 28px; right: 10px; -webkit-border-radius: 3px; border-radius: 3px; }.header-simple #Header a:hover.responsive-menu-toggle { text-decoration: none; }.header-simple #Top_bar #menu > ul { width:100%; float: left; }.header-simple #Top_bar #menu ul li { width: 100%; padding-bottom: 0; border-right: 0; position: relative; }.header-simple #Top_bar #menu ul li a { padding:0 20px; margin:0; display: block; height: auto; line-height: normal; border:none; }.header-simple #Top_bar #menu ul li a:after { display:none;}.header-simple #Top_bar #menu ul li a span { border:none; line-height:48px; display:inline; padding:0;}.header-simple #Top_bar #menu ul li.submenu .menu-toggle { width:48px; height:48px; display:block; position:absolute; right:0; top:0; border-left:1px solid rgba(0,0,0,0.03); background:url(https://detroit-roadside-assistance.com/wp-content/themes/betheme/images/menu-plus.png) center no-repeat;}.header-simple #Top_bar #menu ul li.hover > .menu-toggle { background: none !important;}.header-simple #Top_bar #menu ul li.hover a { border-bottom: 0; }.header-simple #Top_bar #menu ul.mfn-megamenu li .menu-toggle { display:none;}.header-simple #Top_bar #menu ul li ul { position:relative !important; left:0 !important; top:0; padding: 0; margin-left: 0 !important; width:auto !important; background-image:none;}.header-simple #Top_bar #menu ul li ul li { width:100% !important;}.header-simple #Top_bar #menu ul li ul li a { padding: 0 20px 0 30px;}.header-simple #Top_bar #menu ul li ul li a .menu-arrow { display: none;}.header-simple #Top_bar #menu ul li ul li a span { padding:0;}.header-simple #Top_bar #menu ul li ul li a span:after { display:none !important;}.header-simple #Top_bar .menu > li > ul.mfn-megamenu a.mfn-megamenu-title { text-transform: uppercase; font-weight:400;}.header-simple #Top_bar .menu > li > ul.mfn-megamenu > li > ul { display:block !important; position:inherit; left:auto; top:auto;}.header-simple #Top_bar #menu ul li ul li ul { border-left: 0 !important; padding: 0; top: 0; }.header-simple #Top_bar #menu ul li ul li ul li a { padding: 0 20px 0 40px;}.rtl.header-simple#Top_bar #menu { left: 1px; right: auto;}.rtl.header-simple #Top_bar a.responsive-menu-toggle { left:10px; right:auto; }.rtl.header-simple #Top_bar #menu ul li.submenu .menu-toggle { left:0; right:auto; border-left:none; border-right:1px solid rgba(0,0,0,0.03);}.rtl.header-simple #Top_bar #menu ul li ul { left:auto !important; right:0 !important;}.rtl.header-simple #Top_bar #menu ul li ul li a { padding: 0 30px 0 20px;}.rtl.header-simple #Top_bar #menu ul li ul li ul li a { padding: 0 40px 0 20px;}.menu-highlight #Top_bar .menu > li { margin: 0 2px; }.menu-highlight:not(.header-creative) #Top_bar .menu > li > a { margin: 20px 0; padding: 0; -webkit-border-radius: 5px; border-radius: 5px; }.menu-highlight #Top_bar .menu > li > a:after { display: none; }.menu-highlight #Top_bar .menu > li > a span:not(.description) { line-height: 50px; }.menu-highlight #Top_bar .menu > li > a span.description { display: none; }.menu-highlight.header-stack #Top_bar .menu > li > a { margin: 10px 0; }.menu-highlight.header-stack #Top_bar .menu > li > a span:not(.description) { line-height: 40px; }.menu-highlight.header-fixed #Top_bar .menu > li > a { margin: 10px 0; padding: 5px 0; }.menu-highlight.header-fixed #Top_bar .menu > li > a span { line-height:30px;}.menu-highlight.header-transparent #Top_bar .menu > li > a { margin: 5px 0; }.menu-highlight.header-simple #Top_bar #menu ul li,.menu-highlight.header-creative #Top_bar #menu ul li { margin: 0; }.menu-highlight.header-simple #Top_bar #menu ul li > a,.menu-highlight.header-creative #Top_bar #menu ul li > a { -webkit-border-radius: 0; border-radius: 0; }.menu-highlight:not(.header-simple) #Top_bar.is-sticky .menu > li > a { margin: 10px 0 !important; padding: 5px 0 !important; }.menu-highlight:not(.header-simple) #Top_bar.is-sticky .menu > li > a span { line-height:30px !important;}.menu-line-below #Top_bar .menu > li > a:after { top: auto; bottom: -4px; }.menu-line-below #Top_bar.is-sticky .menu > li > a:after { top: auto; bottom: -4px; }.menu-line-below-80 #Top_bar:not(.is-sticky) .menu > li > a:after { height: 4px; left: 10%; top: 50%; margin-top: 20px; width: 80%; } .menu-line-below-80-1 #Top_bar:not(.is-sticky) .menu > li > a:after { height: 1px; left: 10%; top: 50%; margin-top: 20px; width: 80%; }.menu-arrow-top #Top_bar .menu > li > a:after { background: none repeat scroll 0 0 rgba(0, 0, 0, 0) !important; border-color: #cccccc transparent transparent transparent; border-style: solid; border-width: 7px 7px 0 7px; display: block; height: 0; left: 50%; margin-left: -7px; top: 0 !important; width: 0; }.menu-arrow-top.header-transparent #Top_bar .menu > li > a:after,.menu-arrow-top.header-plain #Top_bar .menu > li > a:after { display: none; }.menu-arrow-top #Top_bar.is-sticky .menu > li > a:after { top: 0px !important; }.menu-arrow-bottom #Top_bar .menu > li > a:after { background: none !important; border-color: transparent transparent #cccccc transparent; border-style: solid; border-width: 0 7px 7px; display: block; height: 0; left: 50%; margin-left: -7px; top: auto; bottom: 0; width: 0; }.menu-arrow-bottom.header-transparent #Top_bar .menu > li > a:after,.menu-arrow-bottom.header-plain #Top_bar .menu > li > a:after { display: none; }.menu-arrow-bottom #Top_bar.is-sticky .menu > li > a:after { top: auto; bottom: 0; }.menuo-no-borders #Top_bar .menu > li > a span:not(.description) { border-right-width: 0; }.menuo-no-borders #Header_creative #Top_bar .menu > li > a span { border-bottom-width: 0; }}@media only screen and (max-width: 1239px){.header_placeholder { height: 0 !important;}#Top_bar #menu { display:none; height: auto; width: 300px; bottom: auto; top: 100%; right: 1px; position: absolute; margin: 0px; background:#fff;}#Top_bar a.responsive-menu-toggle { display:block; width: 35px; height: 35px; text-align: center; position:absolute; top: 28px; right: 10px; -webkit-border-radius: 3px; border-radius: 3px; }#Top_bar a:hover.responsive-menu-toggle { text-decoration: none; }#Top_bar a.responsive-menu-toggle i { font-size: 25px; line-height: 35px;}#Top_bar a.responsive-menu-toggle span { float:right; padding:10px 5px; line-height:14px;}#Top_bar #menu > ul { width:100%; float: left; }#Top_bar #menu ul li { width: 100%; padding-bottom: 0; border-right: 0; position: relative; }#Top_bar #menu ul li a { padding:0 20px; margin:0; display: block; height: auto; line-height: normal; border:none; }#Top_bar #menu ul li a:after { display:none;}#Top_bar #menu ul li a span { border:none; line-height:48px; display:inline; padding:0;}#Top_bar #menu ul li a span.description { margin:0 0 0 5px;}#Top_bar #menu ul li.submenu .menu-toggle { width:48px; height:48px; display:block; position:absolute; right:0; top:0; border-left:1px solid rgba(0,0,0,0.03); background:url(https://detroit-roadside-assistance.com/wp-content/themes/betheme/images/menu-plus.png) center no-repeat;}#Top_bar #menu ul li.hover > .menu-toggle { background: none !important;}#Top_bar #menu ul li.hover a { border-bottom: 0; }#Top_bar #menu ul li a span:after { display:none !important;} #Top_bar #menu ul.mfn-megamenu li .menu-toggle { display:none;}#Top_bar #menu ul li ul { position:relative !important; left:0 !important; top:0; padding: 0; margin-left: 0 !important; width:auto !important; background-image:none !important;box-shadow: 0 0 0 0 transparent !important; -webkit-box-shadow: 0 0 0 0 transparent !important;}#Top_bar #menu ul li ul li { width:100% !important;}#Top_bar #menu ul li ul li a { padding: 0 20px 0 30px;}#Top_bar #menu ul li ul li a .menu-arrow { display: none;}#Top_bar #menu ul li ul li a span { padding:0;}#Top_bar #menu ul li ul li a span:after { display:none !important;}#Top_bar .menu > li > ul.mfn-megamenu a.mfn-megamenu-title { text-transform: uppercase; font-weight:400;}#Top_bar .menu > li > ul.mfn-megamenu > li > ul { display:block !important; position:inherit; left:auto; top:auto;}#Top_bar #menu ul li ul li ul { border-left: 0 !important; padding: 0; top: 0; }#Top_bar #menu ul li ul li ul li a { padding: 0 20px 0 40px;}.rtl #Top_bar #menu { left: 1px; right: auto;}.rtl #Top_bar a.responsive-menu-toggle { left:10px; right:auto; }.rtl #Top_bar #menu ul li.submenu .menu-toggle { left:0; right:auto; border-left:none; border-right:1px solid rgba(0,0,0,0.03);}.rtl #Top_bar #menu ul li ul { left:auto !important; right:0 !important;}.rtl #Top_bar #menu ul li ul li a { padding: 0 30px 0 20px;}.rtl #Top_bar #menu ul li ul li ul li a { padding: 0 40px 0 20px;}.header-stack #Top_bar {}.header-stack .menu_wrapper a.responsive-menu-toggle { position: static !important; margin: 11px 0; }.header-stack .menu_wrapper #menu { left: 0; right: auto; }.rtl.header-stack #Top_bar #menu { left: auto; right: 0; }}
+</style>
+<!-- style | custom css | theme options -->
+<style>
+body:not(.template-slider) #Header {min-height: 350px;}
+#Subheader .title {font-size: 32px;}
+#Action_bar .contact_details li {color: #fff; font-size: 18px;}
+#Action_bar .contact_details li a {color: #fff;}
+#Action_bar .social li a {color: rgba(255,255,255,.8); font-size: 22px;}
+
+.created, .created a {font-size: 11px;}
+
+#hog-content {
+	font-size: 1.1em;
+	padding-bottom: 50px;
+}
+
+.as-href {
+	text-align: center;
+}
+</style>
+
+<!--[if lt IE 9]>
+<script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<!-- script | retina -->
+<script type="rocketlazyloadscript">
+//<![CDATA[
+jQuery(window).load(function(){
+var retina = window.devicePixelRatio > 1 ? true : false;if( retina ){var retinaEl = jQuery("#logo img.logo-main");var retinaLogoW = retinaEl.width();var retinaLogoH = retinaEl.height();retinaEl.attr( "src", "https://detroit-roadside-assistance.com/wp-content/uploads/2015/12/logo-white-lg.png" ).width( retinaLogoW ).height( retinaLogoH );var stickyEl = jQuery("#logo img.logo-sticky");var stickyLogoW = stickyEl.width();var stickyLogoH = stickyEl.height();stickyEl.attr( "src", "https://detroit-roadside-assistance.com/wp-content/uploads/2015/12/logo-white-lg.png" ).width( stickyLogoW ).height( stickyLogoH );var mobileEl = jQuery("#logo img.logo-mobile");var mobileLogoW = mobileEl.width();var mobileLogoH = mobileEl.height();mobileEl.attr( "src", "https://detroit-roadside-assistance.com/wp-content/uploads/2015/12/logo-white-lg.png" ).width( mobileLogoW ).height( mobileLogoH );}});
+//]]>
+</script>
+<meta name="generator" content="Powered by Slider Revolution 6.3.6 - responsive, Mobile-Friendly Slider Plugin for WordPress with comfortable drag and drop interface.">
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript">function setREVStartSize(e){
+			//window.requestAnimationFrame(function() {				 
+				window.RSIW = window.RSIW===undefined ? window.innerWidth : window.RSIW;	
+				window.RSIH = window.RSIH===undefined ? window.innerHeight : window.RSIH;	
+				try {								
+					var pw = document.getElementById(e.c).parentNode.offsetWidth,
+						newh;
+					pw = pw===0 || isNaN(pw) ? window.RSIW : pw;
+					e.tabw = e.tabw===undefined ? 0 : parseInt(e.tabw);
+					e.thumbw = e.thumbw===undefined ? 0 : parseInt(e.thumbw);
+					e.tabh = e.tabh===undefined ? 0 : parseInt(e.tabh);
+					e.thumbh = e.thumbh===undefined ? 0 : parseInt(e.thumbh);
+					e.tabhide = e.tabhide===undefined ? 0 : parseInt(e.tabhide);
+					e.thumbhide = e.thumbhide===undefined ? 0 : parseInt(e.thumbhide);
+					e.mh = e.mh===undefined || e.mh=="" || e.mh==="auto" ? 0 : parseInt(e.mh,0);		
+					if(e.layout==="fullscreen" || e.l==="fullscreen") 						
+						newh = Math.max(e.mh,window.RSIH);					
+					else{					
+						e.gw = Array.isArray(e.gw) ? e.gw : [e.gw];
+						for (var i in e.rl) if (e.gw[i]===undefined || e.gw[i]===0) e.gw[i] = e.gw[i-1];					
+						e.gh = e.el===undefined || e.el==="" || (Array.isArray(e.el) && e.el.length==0)? e.gh : e.el;
+						e.gh = Array.isArray(e.gh) ? e.gh : [e.gh];
+						for (var i in e.rl) if (e.gh[i]===undefined || e.gh[i]===0) e.gh[i] = e.gh[i-1];
+											
+						var nl = new Array(e.rl.length),
+							ix = 0,						
+							sl;					
+						e.tabw = e.tabhide>=pw ? 0 : e.tabw;
+						e.thumbw = e.thumbhide>=pw ? 0 : e.thumbw;
+						e.tabh = e.tabhide>=pw ? 0 : e.tabh;
+						e.thumbh = e.thumbhide>=pw ? 0 : e.thumbh;					
+						for (var i in e.rl) nl[i] = e.rl[i]<window.RSIW ? 0 : e.rl[i];
+						sl = nl[0];									
+						for (var i in nl) if (sl>nl[i] && nl[i]>0) { sl = nl[i]; ix=i;}															
+						var m = pw>(e.gw[ix]+e.tabw+e.thumbw) ? 1 : (pw-(e.tabw+e.thumbw)) / (e.gw[ix]);					
+						newh =  (e.gh[ix] * m) + (e.tabh + e.thumbh);
+					}				
+					if(window.rs_init_css===undefined) window.rs_init_css = document.head.appendChild(document.createElement("style"));					
+					document.getElementById(e.c).height = newh+"px";
+					window.rs_init_css.innerHTML += "#"+e.c+"_wrapper { height: "+newh+"px }";				
+				} catch(e){
+					console.log("Failure at Presize of Slider:" + e)
+				}					   
+			//});
+		  };</script>
+<script type="rocketlazyloadscript">
+/*! loadCSS rel=preload polyfill. [c]2017 Filament Group, Inc. MIT License */
+(function(w){"use strict";if(!w.loadCSS){w.loadCSS=function(){}}
+var rp=loadCSS.relpreload={};rp.support=(function(){var ret;try{ret=w.document.createElement("link").relList.supports("preload")}catch(e){ret=!1}
+return function(){return ret}})();rp.bindMediaToggle=function(link){var finalMedia=link.media||"all";function enableStylesheet(){link.media=finalMedia}
+if(link.addEventListener){link.addEventListener("load",enableStylesheet)}else if(link.attachEvent){link.attachEvent("onload",enableStylesheet)}
+setTimeout(function(){link.rel="stylesheet";link.media="only x"});setTimeout(enableStylesheet,3000)};rp.poly=function(){if(rp.support()){return}
+var links=w.document.getElementsByTagName("link");for(var i=0;i<links.length;i++){var link=links[i];if(link.rel==="preload"&&link.getAttribute("as")==="style"&&!link.getAttribute("data-loadcss")){link.setAttribute("data-loadcss",!0);rp.bindMediaToggle(link)}}};if(!rp.support()){rp.poly();var run=w.setInterval(rp.poly,500);if(w.addEventListener){w.addEventListener("load",function(){rp.poly();w.clearInterval(run)})}else if(w.attachEvent){w.attachEvent("onload",function(){rp.poly();w.clearInterval(run)})}}
+if(typeof exports!=="undefined"){exports.loadCSS=loadCSS}
+else{w.loadCSS=loadCSS}}(typeof global!=="undefined"?global:this))
+</script></head>
+
+<!-- body -->
+<body data-rsssl="1" class="page-template-default page page-id-218  with_aside aside_right color-custom style-default layout-full-width nice-scroll-on mobile-tb-left mobile-wide hide-love header-classic sticky-header sticky-white ab-show subheader-title-left menuo-right">
+	
+	<!-- mfn_hook_top --><!-- mfn_hook_top -->	
+		
+		
+	<!-- #Wrapper -->
+	<div id="Wrapper">
+	
+				
+			
+		<!-- #Header_bg -->
+		<div id="Header_wrapper" class="bg-parallax" data-enllax-ratio="0.3">
+	
+			<!-- #Header -->
+			<header id="Header">
+				
+	<div id="Action_bar">
+		<div class="container">
+			<div class="column one">
+			
+				<ul class="contact_details">
+					<li class="slogan">Have any questions?</li><li class="phone"><i class="icon-phone"></i><a href="tel:313-999-3088">313-999-3088</a></li><li class="mail"><i class="icon-mail-line"></i><a href="mailto:info@detroit-roadside-assistance.com">info@detroit-roadside-assistance.com</a></li>				</ul>
+				
+				<ul class="social"></ul>
+			</div>
+		</div>
+	</div>
+
+
+<!-- .header_placeholder 4sticky  -->
+<div class="header_placeholder"></div>
+
+<div id="Top_bar" class="loading">
+
+	<div class="container">
+		<div class="column one">
+		
+			<div class="top_bar_left clearfix">
+			
+				<!-- .logo -->
+				<div class="logo">
+					<a id="logo" href="https://detroit-roadside-assistance.com" title=""><img class="logo-main   scale-with-grid" src="https://detroit-roadside-assistance.com/wp-content/uploads/2015/12/logo-white.png" alt=""><img class="logo-sticky scale-with-grid" src="https://detroit-roadside-assistance.com/wp-content/uploads/2015/12/logo-white.png" alt=""><img class="logo-mobile scale-with-grid" src="https://detroit-roadside-assistance.com/wp-content/uploads/2015/12/logo-white.png" alt=""></a>				</div>
+			
+				<div class="menu_wrapper">
+					<nav id="menu" class="menu-main-menu-container"><ul id="menu-main-menu" class="menu"><li id="menu-item-76" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-home"><a href="https://detroit-roadside-assistance.com/"><span>Home</span></a></li>
+<li id="menu-item-139" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children"><a href="https://detroit-roadside-assistance.com/about-jj-truck-trailer-repair/"><span>About Us</span></a>
+<ul class="sub-menu">
+	<li id="menu-item-5472" class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://detroit-roadside-assistance.com/blog/"><span>Blog</span></a></li>
+</ul>
+</li>
+<li id="menu-item-114" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children"><a href="#"><span>Services</span></a>
+<ul class="sub-menu">
+	<li id="menu-item-115" class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://detroit-roadside-assistance.com/detroit-towing/"><span>Towing</span></a></li>
+	<li id="menu-item-126" class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://detroit-roadside-assistance.com/detroit-truck-towing/"><span>Truck Towing</span></a></li>
+	<li id="menu-item-134" class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://detroit-roadside-assistance.com/detroit-roadside-assistance/"><span>Roadside Assistance</span></a></li>
+	<li id="menu-item-135" class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://detroit-roadside-assistance.com/detroit-emergency-truck-roadside-service/"><span>Truck Roadside Assistance</span></a></li>
+</ul>
+</li>
+<li id="menu-item-77" class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://detroit-roadside-assistance.com/contact-j-j-truck-trailer-repair/"><span>Contact Us</span></a></li>
+</ul></nav><a class="responsive-menu-toggle " href="#"><i class="icon-menu"></i></a>					
+				</div>			
+				
+				<div class="secondary_menu_wrapper">
+					<!-- #secondary-menu -->
+									</div>
+				
+				<div class="banner_wrapper">
+									</div>
+				
+				<div class="search_wrapper">
+					<!-- #searchform -->
+					
+					
+<form method="get" id="searchform" action="https://detroit-roadside-assistance.com/">
+						
+		
+	<i class="icon_search icon-search"></i>
+	<a href="#" class="icon_close"><i class="icon-cancel"></i></a>
+	
+	<input type="text" class="field" name="s" id="s" placeholder="Enter your search">			
+	<input type="submit" class="submit" value="" style="display:none;">
+	
+</form>					
+				</div>				
+				
+			</div>
+			
+						
+		</div>
+	</div>
+</div>	
+							</header>
+				
+			<div id="Subheader" style=""><div class="container"><div class="column one"><h1 class="title">Truck Towing Service In Detroit</h1><ul class="breadcrumbs no-link"><li><a href="https://detroit-roadside-assistance.com">Home</a> <span><i class="icon-right-open"></i></span></li><li><a href="https://detroit-roadside-assistance.com:443/truck-towing-service-in-detroit/">Truck Towing Service In Detroit</a></li></ul></div></div></div>		
+		</div>
+		
+		<!-- mfn_hook_content_before --><!-- mfn_hook_content_before -->	
+<!-- #Content -->
+<div id="Content">
+	<div class="content_wrapper clearfix">
+
+		<!-- .sections_group -->
+		<div class="sections_group">
+		
+			<div class="entry-content" itemprop="mainContentOfPage">
+				<div class="section the_content has_content"><div class="section_wrapper"><div class="the_content_wrapper"><style>#wprev-slider-1 .wprevpro_star_imgs{color: #FDD314;}#wprev-slider-1 .wprev_preview_bradius_T7 {border-radius: 2px;}#wprev-slider-1 .wprev_preview_bg1_T7 {background:#fdfdfd;}#wprev-slider-1 .wprev_preview_bg2_T7 {background:#eeeeee;}#wprev-slider-1 .wprev_preview_tcolor1_T7 {color:#555555;}#wprev-slider-1 .wprev_preview_tcolor2_T7 {color:#555555;}#wprev-slider-1 .wpproslider_t7_DIV_2 {border:1px solid #eeeeee}#wprev-slider-1 .wprs_rd_more,.wprs_rd_less{color:#0000ee;}</style><div class="wprevpro wprev-slider " id="wprev-slider-1"><ul><li><div class="wprevpro_t7_outer_div w3_wprs-row wprevprodiv">
+<div class=" wprevpro_t7_DIV_1 w3_wprs-col l6 outerrevdiv">
+<div class="wpproslider_t7_DIV_1a">
+	<div class="wpproslider_t7_DIV_2 wprev_preview_bg1_T7 wprev_preview_bradius_T7">
+	<div class="wpproslider_t7_DIV_2_top">
+		<div class="wpproslider_t7_DIV_3L">
+			<div class="wpproslider_t7_DIV_3_logo"><a href="" target="_blank" rel="nofollow noreferrer" class="wprevpro_t7_site_logo_a"><img src="https://detroit-roadside-assistance.com/wp-content/plugins/wp-review-slider/public/partials/imgs/google_small_icon.png" alt="google logo" class="wprevpro_t7_site_logo"></a></div>
+			<div class="wpproslider_t7_star_DIV"><span class="wprevpro_star_imgs_T7"><span class="starloc1 wprevpro_star_imgs wprevpro_star_imgsloc1"><span class="wprsp-star"></span><span class="wprsp-star"></span><span class="wprsp-star"></span><span class="wprsp-star"></span><span class="wprsp-star"></span></span></span></div>
+		</div>
+	</div>
+	<div class="wpproslider_t7_DIV_4">
+		<div class="indrevdiv wpproslider_t7_DIV_3">
+			<p class="wpproslider_t7_P_4 wprev_preview_tcolor1_T7">
+				<span class="wprevpro_t7_DIV_title">Positive: Professionalism, Punctuality, Quality, Value </span>Came out on time and got my truck fixed. And fixed it right the first time.			</p>
+		</div>
+		<div class="t7displayname wpproslider_t7_STRONG_5 wprev_preview_tcolor2_T7">F C</div>
+		<div class="wpproslider_t7_SPAN_6 wprev_preview_tcolor2_T7"><span class="wprev_showdate_T7"></span></div>
+	</div>
+			</div>
+	
+</div>
+</div>
+<div class=" wprevpro_t7_DIV_1 w3_wprs-col l6 outerrevdiv">
+<div class="wpproslider_t7_DIV_1a">
+	<div class="wpproslider_t7_DIV_2 wprev_preview_bg1_T7 wprev_preview_bradius_T7">
+	<div class="wpproslider_t7_DIV_2_top">
+		<div class="wpproslider_t7_DIV_3L">
+			<div class="wpproslider_t7_DIV_3_logo"><a href="" target="_blank" rel="nofollow noreferrer" class="wprevpro_t7_site_logo_a"><img src="https://detroit-roadside-assistance.com/wp-content/plugins/wp-review-slider/public/partials/imgs/google_small_icon.png" alt="google logo" class="wprevpro_t7_site_logo"></a></div>
+			<div class="wpproslider_t7_star_DIV"><span class="wprevpro_star_imgs_T7"><span class="starloc1 wprevpro_star_imgs wprevpro_star_imgsloc1"><span class="wprsp-star"></span><span class="wprsp-star"></span><span class="wprsp-star"></span><span class="wprsp-star"></span><span class="wprsp-star"></span></span></span></div>
+		</div>
+	</div>
+	<div class="wpproslider_t7_DIV_4">
+		<div class="indrevdiv wpproslider_t7_DIV_3">
+			<p class="wpproslider_t7_P_4 wprev_preview_tcolor1_T7">
+				<span class="wprevpro_t7_DIV_title">Positive: Professionalism, Punctuality, Quality, Value </span><span class="wprs_rd_more_1">Outstanding performance of service. I was taken care of very well and im glad they were the only ones who...</span> <span class="wprs_rd_more">read more</span><span class="wprs_rd_more_text" style="display:none;">Outstanding performance of service. I was taken care of very well and im glad they were the only ones who agreed to come out and help me.</span> <span class="wprs_rd_less" style="display:none;">read less</span>			</p>
+		</div>
+		<div class="t7displayname wpproslider_t7_STRONG_5 wprev_preview_tcolor2_T7">Shasha Moore</div>
+		<div class="wpproslider_t7_SPAN_6 wprev_preview_tcolor2_T7"><span class="wprev_showdate_T7"></span></div>
+	</div>
+			</div>
+	
+</div>
+</div>
+</div>
+</li><li><div class="wprevpro_t7_outer_div w3_wprs-row wprevprodiv">
+<div class=" wprevpro_t7_DIV_1 w3_wprs-col l6 outerrevdiv">
+<div class="wpproslider_t7_DIV_1a">
+	<div class="wpproslider_t7_DIV_2 wprev_preview_bg1_T7 wprev_preview_bradius_T7">
+	<div class="wpproslider_t7_DIV_2_top">
+		<div class="wpproslider_t7_DIV_3L">
+			<div class="wpproslider_t7_DIV_3_logo"><a href="" target="_blank" rel="nofollow noreferrer" class="wprevpro_t7_site_logo_a"><img src="https://detroit-roadside-assistance.com/wp-content/plugins/wp-review-slider/public/partials/imgs/google_small_icon.png" alt="google logo" class="wprevpro_t7_site_logo"></a></div>
+			<div class="wpproslider_t7_star_DIV"><span class="wprevpro_star_imgs_T7"><span class="starloc1 wprevpro_star_imgs wprevpro_star_imgsloc1"><span class="wprsp-star"></span><span class="wprsp-star"></span><span class="wprsp-star"></span><span class="wprsp-star"></span><span class="wprsp-star"></span></span></span></div>
+		</div>
+	</div>
+	<div class="wpproslider_t7_DIV_4">
+		<div class="indrevdiv wpproslider_t7_DIV_3">
+			<p class="wpproslider_t7_P_4 wprev_preview_tcolor1_T7">
+				<span class="wprevpro_t7_DIV_title">Positive: Professionalism, Punctuality, Quality, Value </span><span class="wprs_rd_more_1">We were stranded and couldn't seem to get any of the so called emergency roadsite services thex these places offer....</span> <span class="wprs_rd_more">read more</span><span class="wprs_rd_more_text" style="display:none;">We were stranded and couldn't seem to get any of the so called emergency roadsite services thex these places offer. we were at our wits end until we called Dr. Phil (actual P. H.D) and his son Jason. They were in and out in less time than it took to actually find them online. He gave us an estimate and pretty much that i's What it was! pricing was fair, work was Superb and the company was outstanding. It didnt take long to get us up and back on the road.</span> <span class="wprs_rd_less" style="display:none;">read less</span>			</p>
+		</div>
+		<div class="t7displayname wpproslider_t7_STRONG_5 wprev_preview_tcolor2_T7">Jasmine Moore</div>
+		<div class="wpproslider_t7_SPAN_6 wprev_preview_tcolor2_T7"><span class="wprev_showdate_T7"></span></div>
+	</div>
+			</div>
+	
+</div>
+</div>
+<div class=" wprevpro_t7_DIV_1 w3_wprs-col l6 outerrevdiv">
+<div class="wpproslider_t7_DIV_1a">
+	<div class="wpproslider_t7_DIV_2 wprev_preview_bg1_T7 wprev_preview_bradius_T7">
+	<div class="wpproslider_t7_DIV_2_top">
+		<div class="wpproslider_t7_DIV_3L">
+			<div class="wpproslider_t7_DIV_3_logo"><a href="" target="_blank" rel="nofollow noreferrer" class="wprevpro_t7_site_logo_a"><img src="https://detroit-roadside-assistance.com/wp-content/plugins/wp-review-slider/public/partials/imgs/google_small_icon.png" alt="google logo" class="wprevpro_t7_site_logo"></a></div>
+			<div class="wpproslider_t7_star_DIV"><span class="wprevpro_star_imgs_T7"><span class="starloc1 wprevpro_star_imgs wprevpro_star_imgsloc1"><span class="wprsp-star"></span><span class="wprsp-star"></span><span class="wprsp-star"></span><span class="wprsp-star"></span><span class="wprsp-star"></span></span></span></div>
+		</div>
+	</div>
+	<div class="wpproslider_t7_DIV_4">
+		<div class="indrevdiv wpproslider_t7_DIV_3">
+			<p class="wpproslider_t7_P_4 wprev_preview_tcolor1_T7">
+				The Best. great guy fantastic job			</p>
+		</div>
+		<div class="t7displayname wpproslider_t7_STRONG_5 wprev_preview_tcolor2_T7">Ash Lil gang</div>
+		<div class="wpproslider_t7_SPAN_6 wprev_preview_tcolor2_T7"><span class="wprev_showdate_T7"></span></div>
+	</div>
+			</div>
+	
+</div>
+</div>
+</div>
+</li><li><div class="wprevpro_t7_outer_div w3_wprs-row wprevprodiv">
+<div class=" wprevpro_t7_DIV_1 w3_wprs-col l6 outerrevdiv">
+<div class="wpproslider_t7_DIV_1a">
+	<div class="wpproslider_t7_DIV_2 wprev_preview_bg1_T7 wprev_preview_bradius_T7">
+	<div class="wpproslider_t7_DIV_2_top">
+		<div class="wpproslider_t7_DIV_3L">
+			<div class="wpproslider_t7_DIV_3_logo"><a href="" target="_blank" rel="nofollow noreferrer" class="wprevpro_t7_site_logo_a"><img src="https://detroit-roadside-assistance.com/wp-content/plugins/wp-review-slider/public/partials/imgs/google_small_icon.png" alt="google logo" class="wprevpro_t7_site_logo"></a></div>
+			<div class="wpproslider_t7_star_DIV"><span class="wprevpro_star_imgs_T7"><span class="starloc1 wprevpro_star_imgs wprevpro_star_imgsloc1"><span class="wprsp-star"></span><span class="wprsp-star"></span><span class="wprsp-star"></span><span class="wprsp-star"></span><span class="wprsp-star"></span></span></span></div>
+		</div>
+	</div>
+	<div class="wpproslider_t7_DIV_4">
+		<div class="indrevdiv wpproslider_t7_DIV_3">
+			<p class="wpproslider_t7_P_4 wprev_preview_tcolor1_T7">
+				<span class="wprevpro_t7_DIV_title">Positive: Professionalism, Punctuality </span>Phil is awesome to work with.			</p>
+		</div>
+		<div class="t7displayname wpproslider_t7_STRONG_5 wprev_preview_tcolor2_T7">MJSL</div>
+		<div class="wpproslider_t7_SPAN_6 wprev_preview_tcolor2_T7"><span class="wprev_showdate_T7"></span></div>
+	</div>
+			</div>
+	
+</div>
+</div>
+<div class=" wprevpro_t7_DIV_1 w3_wprs-col l6 outerrevdiv">
+<div class="wpproslider_t7_DIV_1a">
+	<div class="wpproslider_t7_DIV_2 wprev_preview_bg1_T7 wprev_preview_bradius_T7">
+	<div class="wpproslider_t7_DIV_2_top">
+		<div class="wpproslider_t7_DIV_3L">
+			<div class="wpproslider_t7_DIV_3_logo"><a href="" target="_blank" rel="nofollow noreferrer" class="wprevpro_t7_site_logo_a"><img src="https://detroit-roadside-assistance.com/wp-content/plugins/wp-review-slider/public/partials/imgs/google_small_icon.png" alt="google logo" class="wprevpro_t7_site_logo"></a></div>
+			<div class="wpproslider_t7_star_DIV"><span class="wprevpro_star_imgs_T7"><span class="starloc1 wprevpro_star_imgs wprevpro_star_imgsloc1"><span class="wprsp-star"></span><span class="wprsp-star"></span><span class="wprsp-star"></span><span class="wprsp-star"></span><span class="wprsp-star"></span></span></span></div>
+		</div>
+	</div>
+	<div class="wpproslider_t7_DIV_4">
+		<div class="indrevdiv wpproslider_t7_DIV_3">
+			<p class="wpproslider_t7_P_4 wprev_preview_tcolor1_T7">
+				<span class="wprevpro_t7_DIV_title">Positive: Professionalism, Punctuality, Quality, Value </span>These guys were very professional. on time very efficient finished the job within 30 min and the quality was excellent			</p>
+		</div>
+		<div class="t7displayname wpproslider_t7_STRONG_5 wprev_preview_tcolor2_T7">James Bailey</div>
+		<div class="wpproslider_t7_SPAN_6 wprev_preview_tcolor2_T7"><span class="wprev_showdate_T7"></span></div>
+	</div>
+			</div>
+	
+</div>
+</div>
+</div>
+</li><li><div class="wprevpro_t7_outer_div w3_wprs-row wprevprodiv">
+<div class=" wprevpro_t7_DIV_1 w3_wprs-col l6 outerrevdiv">
+<div class="wpproslider_t7_DIV_1a">
+	<div class="wpproslider_t7_DIV_2 wprev_preview_bg1_T7 wprev_preview_bradius_T7">
+	<div class="wpproslider_t7_DIV_2_top">
+		<div class="wpproslider_t7_DIV_3L">
+			<div class="wpproslider_t7_DIV_3_logo"><a href="" target="_blank" rel="nofollow noreferrer" class="wprevpro_t7_site_logo_a"><img src="https://detroit-roadside-assistance.com/wp-content/plugins/wp-review-slider/public/partials/imgs/google_small_icon.png" alt="google logo" class="wprevpro_t7_site_logo"></a></div>
+			<div class="wpproslider_t7_star_DIV"><span class="wprevpro_star_imgs_T7"><span class="starloc1 wprevpro_star_imgs wprevpro_star_imgsloc1"><span class="wprsp-star"></span><span class="wprsp-star"></span><span class="wprsp-star"></span><span class="wprsp-star"></span><span class="wprsp-star"></span></span></span></div>
+		</div>
+	</div>
+	<div class="wpproslider_t7_DIV_4">
+		<div class="indrevdiv wpproslider_t7_DIV_3">
+			<p class="wpproslider_t7_P_4 wprev_preview_tcolor1_T7">
+				<span class="wprevpro_t7_DIV_title">Positive: Professionalism, Punctuality, Quality, Value </span><span class="wprs_rd_more_1">I read both the good amd bad reviews. Regardless of what was said by anyone i HIGHLY recommend this company....</span> <span class="wprs_rd_more">read more</span><span class="wprs_rd_more_text" style="display:none;">I read both the good amd bad reviews. Regardless of what was said by anyone i HIGHLY recommend this company. It was 3am my truck completely stopped working This man came within 20 minutes fixed my truck and i was up and running. If you speak badly to someone of course they will retaliate, but was so very sweet to me as i was to him. The amount of pride he took on his work shows, I couldn't see anyone working harder than he does. This line of work takes someone who knows what they are doing and strength and they have it. Prices are exactly on point and I don't see anyone with better when it comes to service call, fees for labor and parts and their milage and time. THIS IS THE BEST COMPANY OUT THERE! CALL THEM NOW IF YOUR IN NEED HE WILL TAKE GREAT CARE OF YOU I PROMISE.</span> <span class="wprs_rd_less" style="display:none;">read less</span>			</p>
+		</div>
+		<div class="t7displayname wpproslider_t7_STRONG_5 wprev_preview_tcolor2_T7">Chelsea Grietsell</div>
+		<div class="wpproslider_t7_SPAN_6 wprev_preview_tcolor2_T7"><span class="wprev_showdate_T7"></span></div>
+	</div>
+			</div>
+	
+</div>
+</div>
+<div class=" wprevpro_t7_DIV_1 w3_wprs-col l6 outerrevdiv">
+<div class="wpproslider_t7_DIV_1a">
+	<div class="wpproslider_t7_DIV_2 wprev_preview_bg1_T7 wprev_preview_bradius_T7">
+	<div class="wpproslider_t7_DIV_2_top">
+		<div class="wpproslider_t7_DIV_3L">
+			<div class="wpproslider_t7_DIV_3_logo"><a href="" target="_blank" rel="nofollow noreferrer" class="wprevpro_t7_site_logo_a"><img src="https://detroit-roadside-assistance.com/wp-content/plugins/wp-review-slider/public/partials/imgs/google_small_icon.png" alt="google logo" class="wprevpro_t7_site_logo"></a></div>
+			<div class="wpproslider_t7_star_DIV"><span class="wprevpro_star_imgs_T7"><span class="starloc1 wprevpro_star_imgs wprevpro_star_imgsloc1"><span class="wprsp-star"></span><span class="wprsp-star"></span><span class="wprsp-star"></span><span class="wprsp-star"></span><span class="wprsp-star"></span></span></span></div>
+		</div>
+	</div>
+	<div class="wpproslider_t7_DIV_4">
+		<div class="indrevdiv wpproslider_t7_DIV_3">
+			<p class="wpproslider_t7_P_4 wprev_preview_tcolor1_T7">
+				<span class="wprevpro_t7_DIV_title">Positive: Quality </span>Got there pretty quick. Enjoyed talking to them as well.			</p>
+		</div>
+		<div class="t7displayname wpproslider_t7_STRONG_5 wprev_preview_tcolor2_T7">Bill brafford</div>
+		<div class="wpproslider_t7_SPAN_6 wprev_preview_tcolor2_T7"><span class="wprev_showdate_T7"></span></div>
+	</div>
+			</div>
+	
+</div>
+</div>
+</div>
+</li></ul></div><script type="rocketlazyloadscript" data-rocket-type="text/javascript">
+						document.getElementById('wprev-slider-1').style.display='none';
+							function wprs_defer(method) {
+								if (window.jQuery) {
+									if(jQuery.fn.wprs_unslider){
+										method();
+									} else {
+										setTimeout(function() { wprs_defer(method) }, 500);
+										console.log('waiting for wppro_rev_slider js...');									
+									}
+								} else {
+									setTimeout(function() { wprs_defer(method) }, 100);
+									console.log('waiting for jquery..');
+								}
+							}
+							wprs_defer(function () {
+								jQuery(document).ready(function($) {
+									document.getElementById('wprev-slider-1').style.display='block';
+									var slider = $('#wprev-slider-1').wprs_unslider(
+										{
+										autoplay:false,
+										delay: '3000',
+										animation: 'horizontal',
+										speed: 750,
+										arrows: false,
+										animateHeight: false,
+										activeClass: 'wprs_unslider-active',
+										infinite: false,
+										}
+									);
+									slider.on('wprs_unslider.change', function(event, index, slide) {
+										$('#wprev-slider-1').find('.wprs_rd_less:visible').trigger('click');
+									});
+									$('#wprev-slider-1').siblings('.wprs_unslider-nav').attr( 'id','wprs_nav_1');
+									$('#wprev-slider-1').siblings('.wprs_unslider-arrow').addClass('wprs_nav_arrow_1');
+									$("#wprev-slider-1").siblings(".wprs_unslider-nav").show();
+
+								});
+							});
+						</script>
+
+
+
+<p>Our team brings together the leading breed processes, state-of-the-art technological know-how and experienced people committed to providing first-class customer service whilst at the same time trying to lower the associated costs.</p>
+<p>When we integrate our unlimited desire to deliver top-notch service to you with our knowledgeable, highly trained and certified operators; you can be guaranteed of unsurpassed heavy duty <a title="Detroit Truck Towing" href="https://detroit-roadside-assistance.com/detroit-truck-towing/">Detroit truck towing</a> services in all emergency situations.</p>
+<p>Our service is diversified to complement suit a wide range of government, individual and commercial industry clients. These services includes up righting capsized heavy duty vehicles, load shifts, rollovers and even cars entrapped in trees or submerged under water. We will retrieve it for you and also get it taken at the most appropriate location.</p>
+<p>Our staff is available 24/7 and serves both emergency and planned service. Our vast and flexible fleet of medium &amp; heavy duty towing cars delivers on time service at any place within our operation jurisdiction. We have compiled vast experience in the period that we have been operating hence we are able to deliver top-notch service. Majority of the trucking companies in our operation areas depend on our reliable service to help them out in case of unprecedented emergencies.</p>
+<p><a href="https://detroit-roadside-assistance.com/wp-content/uploads/2015/11/detroit-towing-2.jpg"><img loading="lazy" class="size-full wp-image-124 aligncenter" src="https://detroit-roadside-assistance.com/wp-content/uploads/2015/11/detroit-towing-2.jpg" alt="detroit-towing-2" width="600" height="220" srcset="https://detroit-roadside-assistance.com/wp-content/uploads/2015/11/detroit-towing-2.jpg 600w, https://detroit-roadside-assistance.com/wp-content/uploads/2015/11/detroit-towing-2-300x110.jpg 300w, https://detroit-roadside-assistance.com/wp-content/uploads/2015/11/detroit-towing-2-260x95.jpg 260w, https://detroit-roadside-assistance.com/wp-content/uploads/2015/11/detroit-towing-2-50x18.jpg 50w, https://detroit-roadside-assistance.com/wp-content/uploads/2015/11/detroit-towing-2-150x55.jpg 150w" sizes="(max-width: 600px) 100vw, 600px"></a></p>
+<p>Our reputation has spread fur and wide than that of other companies that boasts of decades of experience in the industry due to our innovative management methods. As the official premier company in our operation area, you definitely expect our prices to be set such that it would burn a huge hole in your market. Luckily, we ensure to deliver first class service at the lowest price in the market.</p>
+<p>We understand how stressful it can be to have your commercial truck or any other vehicle breaks down at when you are in the middle of a journey. That’s the reason why we strive to deliver fast services when you need them. When it is something we can fix, we ensure to accomplish it fast and on time.</p>
+<p>Our tools are equipment is adequate to handle all kinds of most of the commercial vehicles ranging from straight trucks, emergency or fire vehicles, dump trucks, motor home vehicles, buses, cranes and armored cars. During the period that we have been serving in the towing and recovery industry, we have encountered virtually everything in terms of situations and equipment.</p>
+<p>Our service benchmarks the service offered in this industry. Any time you are stranded with a broken sown car, help is at your fingertips since it only takes just a single call for our experts to be at the accident scene within a short time. We are devoted incident management experts with ability to resolve risky situations that involves disabled or overturned vehicles as a result of road accident or just off-road disablement.</p>
+<p>Our towing service is among the largest and most reputable nationally. We strive to deliver to our esteemed client our promise of high quality service at the lowest price in the market. Our drivers are also highly trained in offering safety-oriented service.</p></div></div></div>			</div>
+			
+				
+		</div>
+		
+		<!-- .four-columns - sidebar -->
+		<div class="sidebar sidebar-1 four columns"><div class="widget-area clearfix "><aside id="text-3" class="widget widget_text"><h3>Contact Us</h3>			<div class="textwidget"><h4>J&amp;J Truck &amp; Trailer Repair</h4>
+
+8332 Kirkwood St <br>
+Detriot, MI 48210<br>
+United States<br>
+
+<h5>Email Us: </h5>
+info@detroit-roadside-assistance.com<br>
+
+<h5>Call 24/7</h5>
+313-999-3088</div>
+		</aside></div></div>
+	</div>
+</div>
+
+
+<!-- mfn_hook_content_after --><!-- mfn_hook_content_after -->
+<!-- #Footer -->		
+<footer id="Footer" class="clearfix">
+	
+		
+		
+	
+		
+		
+		<div class="footer_copy">
+			<div class="container">
+				<div class="column one">
+
+					<a id="back_to_top" class="button button_left button_js " href=""><span class="button_icon"><i class="icon-up-open-big"></i></span></a>
+					
+					<!-- Copyrights -->
+					<div class="copyright">
+						© 2021 Detroit Roadside Assistance &amp; Detroit Towing. All Rights Reserved.<br><span class="created">Powered by Hozio Inc, a <a href="http://hozio.com" target="_blank">Long Island SEO</a> company</span>
+						
+					</div>
+					<div class="as-href">
+					<span><a href="https://detroit-roadside-assistance.com/semi-truck-roadside-assistance-wayne-county-areas-served/">Semi Truck Roadside Assistance Wayne County Areas Served</a></span>
+					</div>
+					
+					<ul class="social"></ul>							
+				</div>
+			</div>
+		</div>
+	
+		
+	
+</footer>
+
+</div><!-- #Wrapper -->
+
+
+<!-- mfn_hook_bottom --><!-- mfn_hook_bottom -->	
+<!-- wp_footer() -->
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://detroit-roadside-assistance.com/wp-includes/js/dist/vendor/regenerator-runtime.min.js?ver=0.13.7" id="regenerator-runtime-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://detroit-roadside-assistance.com/wp-includes/js/dist/vendor/wp-polyfill.min.js?ver=3.15.0" id="wp-polyfill-js"></script>
+<script type="text/javascript" id="contact-form-7-js-extra">
+/* <![CDATA[ */
+var wpcf7 = {"api":{"root":"https:\/\/detroit-roadside-assistance.com\/wp-json\/","namespace":"contact-form-7\/v1"},"cached":"1"};
+/* ]]> */
+</script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://detroit-roadside-assistance.com/wp-content/cache/min/1/wp-content/plugins/contact-form-7/includes/js/index.js?ver=1632236406" id="contact-form-7-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" id="rocket-browser-checker-js-after">
+"use strict";var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||!1,descriptor.configurable=!0,"value"in descriptor&&(descriptor.writable=!0),Object.defineProperty(target,descriptor.key,descriptor)}}return function(Constructor,protoProps,staticProps){return protoProps&&defineProperties(Constructor.prototype,protoProps),staticProps&&defineProperties(Constructor,staticProps),Constructor}}();function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor))throw new TypeError("Cannot call a class as a function")}var RocketBrowserCompatibilityChecker=function(){function RocketBrowserCompatibilityChecker(options){_classCallCheck(this,RocketBrowserCompatibilityChecker),this.passiveSupported=!1,this._checkPassiveOption(this),this.options=!!this.passiveSupported&&options}return _createClass(RocketBrowserCompatibilityChecker,[{key:"_checkPassiveOption",value:function(self){try{var options={get passive(){return!(self.passiveSupported=!0)}};window.addEventListener("test",null,options),window.removeEventListener("test",null,options)}catch(err){self.passiveSupported=!1}}},{key:"initRequestIdleCallback",value:function(){!1 in window&&(window.requestIdleCallback=function(cb){var start=Date.now();return setTimeout(function(){cb({didTimeout:!1,timeRemaining:function(){return Math.max(0,50-(Date.now()-start))}})},1)}),!1 in window&&(window.cancelIdleCallback=function(id){return clearTimeout(id)})}},{key:"isDataSaverModeOn",value:function(){return"connection"in navigator&&!0===navigator.connection.saveData}},{key:"supportsLinkPrefetch",value:function(){var elem=document.createElement("link");return elem.relList&&elem.relList.supports&&elem.relList.supports("prefetch")&&window.IntersectionObserver&&"isIntersecting"in IntersectionObserverEntry.prototype}},{key:"isSlowConnection",value:function(){return"connection"in navigator&&"effectiveType"in navigator.connection&&("2g"===navigator.connection.effectiveType||"slow-2g"===navigator.connection.effectiveType)}}]),RocketBrowserCompatibilityChecker}();
+</script>
+<script type="text/javascript" id="rocket-preload-links-js-extra">
+/* <![CDATA[ */
+var RocketPreloadLinksConfig = {"excludeUris":"\/(.+\/)?feed\/?.+\/?|\/(?:.+\/)?embed\/|\/(index\\.php\/)?wp\\-json(\/.*|$)|\/wp-admin\/|\/logout\/|\/wp-login.php","usesTrailingSlash":"1","imageExt":"jpg|jpeg|gif|png|tiff|bmp|webp|avif","fileExt":"jpg|jpeg|gif|png|tiff|bmp|webp|avif|php|pdf|html|htm","siteUrl":"https:\/\/detroit-roadside-assistance.com","onHoverDelay":"100","rateThrottle":"3"};
+/* ]]> */
+</script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" id="rocket-preload-links-js-after">
+(function() {
+"use strict";var r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},e=function(){function i(e,t){for(var n=0;n<t.length;n++){var i=t[n];i.enumerable=i.enumerable||!1,i.configurable=!0,"value"in i&&(i.writable=!0),Object.defineProperty(e,i.key,i)}}return function(e,t,n){return t&&i(e.prototype,t),n&&i(e,n),e}}();function i(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}var t=function(){function n(e,t){i(this,n),this.browser=e,this.config=t,this.options=this.browser.options,this.prefetched=new Set,this.eventTime=null,this.threshold=1111,this.numOnHover=0}return e(n,[{key:"init",value:function(){!this.browser.supportsLinkPrefetch()||this.browser.isDataSaverModeOn()||this.browser.isSlowConnection()||(this.regex={excludeUris:RegExp(this.config.excludeUris,"i"),images:RegExp(".("+this.config.imageExt+")$","i"),fileExt:RegExp(".("+this.config.fileExt+")$","i")},this._initListeners(this))}},{key:"_initListeners",value:function(e){-1<this.config.onHoverDelay&&document.addEventListener("mouseover",e.listener.bind(e),e.listenerOptions),document.addEventListener("mousedown",e.listener.bind(e),e.listenerOptions),document.addEventListener("touchstart",e.listener.bind(e),e.listenerOptions)}},{key:"listener",value:function(e){var t=e.target.closest("a"),n=this._prepareUrl(t);if(null!==n)switch(e.type){case"mousedown":case"touchstart":this._addPrefetchLink(n);break;case"mouseover":this._earlyPrefetch(t,n,"mouseout")}}},{key:"_earlyPrefetch",value:function(t,e,n){var i=this,r=setTimeout(function(){if(r=null,0===i.numOnHover)setTimeout(function(){return i.numOnHover=0},1e3);else if(i.numOnHover>i.config.rateThrottle)return;i.numOnHover++,i._addPrefetchLink(e)},this.config.onHoverDelay);t.addEventListener(n,function e(){t.removeEventListener(n,e,{passive:!0}),null!==r&&(clearTimeout(r),r=null)},{passive:!0})}},{key:"_addPrefetchLink",value:function(i){return this.prefetched.add(i.href),new Promise(function(e,t){var n=document.createElement("link");n.rel="prefetch",n.href=i.href,n.onload=e,n.onerror=t,document.head.appendChild(n)}).catch(function(){})}},{key:"_prepareUrl",value:function(e){if(null===e||"object"!==(void 0===e?"undefined":r(e))||!1 in e||-1===["http:","https:"].indexOf(e.protocol))return null;var t=e.href.substring(0,this.config.siteUrl.length),n=this._getPathname(e.href,t),i={original:e.href,protocol:e.protocol,origin:t,pathname:n,href:t+n};return this._isLinkOk(i)?i:null}},{key:"_getPathname",value:function(e,t){var n=t?e.substring(this.config.siteUrl.length):e;return n.startsWith("/")||(n="/"+n),this._shouldAddTrailingSlash(n)?n+"/":n}},{key:"_shouldAddTrailingSlash",value:function(e){return this.config.usesTrailingSlash&&!e.endsWith("/")&&!this.regex.fileExt.test(e)}},{key:"_isLinkOk",value:function(e){return null!==e&&"object"===(void 0===e?"undefined":r(e))&&(!this.prefetched.has(e.href)&&e.origin===this.config.siteUrl&&-1===e.href.indexOf("?")&&-1===e.href.indexOf("#")&&!this.regex.excludeUris.test(e.href)&&!this.regex.images.test(e.href))}}],[{key:"run",value:function(){"undefined"!=typeof RocketPreloadLinksConfig&&new n(new RocketBrowserCompatibilityChecker({capture:!0,passive:!0}),RocketPreloadLinksConfig).init()}}]),n}();t.run();
+}());
+</script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://detroit-roadside-assistance.com/wp-includes/js/jquery/ui/core.min.js?ver=1.12.1" id="jquery-ui-core-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://detroit-roadside-assistance.com/wp-includes/js/jquery/ui/mouse.min.js?ver=1.12.1" id="jquery-ui-mouse-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://detroit-roadside-assistance.com/wp-includes/js/jquery/ui/sortable.min.js?ver=1.12.1" id="jquery-ui-sortable-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://detroit-roadside-assistance.com/wp-includes/js/jquery/ui/tabs.min.js?ver=1.12.1" id="jquery-ui-tabs-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://detroit-roadside-assistance.com/wp-includes/js/jquery/ui/accordion.min.js?ver=1.12.1" id="jquery-ui-accordion-js"></script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://detroit-roadside-assistance.com/wp-content/cache/min/1/wp-content/themes/betheme/js/plugins.js?ver=1632236406" id="jquery-plugins-js"></script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://detroit-roadside-assistance.com/wp-content/cache/min/1/wp-content/themes/betheme/js/menu.js?ver=1632236406" id="jquery-mfn-menu-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://detroit-roadside-assistance.com/wp-content/themes/betheme/assets/animations/animations.min.js?ver=10.5" id="jquery-animations-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://detroit-roadside-assistance.com/wp-content/themes/betheme/assets/jplayer/jplayer.min.js?ver=10.5" id="jquery-jplayer-js"></script>
+<script type="rocketlazyloadscript" data-minify="1" data-rocket-type="text/javascript" src="https://detroit-roadside-assistance.com/wp-content/cache/min/1/wp-content/themes/betheme/js/scripts.js?ver=1632236406" id="jquery-scripts-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://detroit-roadside-assistance.com/wp-includes/js/comment-reply.min.js?ver=5.8.1" id="comment-reply-js"></script>
+<script type="text/javascript" id="wp-review-slider-pro_plublic-min-js-extra">
+/* <![CDATA[ */
+var wprevpublicjs_script_vars = {"wpfb_nonce":"f5dbd09760","wpfb_ajaxurl":"https:\/\/detroit-roadside-assistance.com\/wp-admin\/admin-ajax.php","wprevpluginsurl":"https:\/\/detroit-roadside-assistance.com\/wp-content\/plugins\/wp-review-slider"};
+/* ]]> */
+</script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://detroit-roadside-assistance.com/wp-content/plugins/wp-review-slider/public/js/wprev-public.min.js?ver=11.0.9.5" id="wp-review-slider-pro_plublic-min-js"></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript" src="https://detroit-roadside-assistance.com/wp-content/plugins/wp-review-slider/public/js/wprs-combined.min.js?ver=11.0.9.5" id="wp-review-slider-pro_unslider_comb-min-js"></script>
+<script type="text/javascript" src="https://detroit-roadside-assistance.com/wp-includes/js/wp-embed.min.js?ver=5.8.1" id="wp-embed-js"></script>
+
+<script type="rocketlazyloadscript">"use strict";var wprRemoveCPCSS=function wprRemoveCPCSS(){var elem;document.querySelector('link[data-rocket-async="style"][rel="preload"]')?setTimeout(wprRemoveCPCSS,200):(elem=document.getElementById("rocket-critical-css"))&&"remove"in elem&&elem.remove()};window.addEventListener?window.addEventListener("load",wprRemoveCPCSS):window.attachEvent&&window.attachEvent("onload",wprRemoveCPCSS);</script><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto%7CPatua%20One&#038;display=swap" /><link rel="stylesheet" href="https://detroit-roadside-assistance.com/wp-content/cache/min/1/11891bae3f36b7c3bbbb6b59f24b0674.css" media="all" data-minify="1" /></noscript>
+
+<!-- This website is like a Rocket, isn't it? Performance optimized by WP Rocket. Learn more: https://wp-rocket.me - Debug: cached@1641167765 --></body></html>

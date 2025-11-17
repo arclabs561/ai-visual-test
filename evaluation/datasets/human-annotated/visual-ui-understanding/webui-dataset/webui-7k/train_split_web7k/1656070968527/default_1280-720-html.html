@@ -1,0 +1,223 @@
+<!DOCTYPE html><html class="wf-opensans-n4-inactive wf-lora-n4-active wf-active"><head prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article#">
+		<meta charset="utf-8">
+
+		<title>pixelfed — pixelfed</title>
+		
+		<link rel="stylesheet" type="text/css" href="https://cdn.writeas.net/css/write.49a22a3d26a35160e79b7.css">
+		<link rel="shortcut icon" href="https://cdn.writeas.net/favicon.ico">
+		<link rel="alternate" type="application/rss+xml" title="pixelfed posts on pixelfed" href="https://pixelfed.writeas.com/tag:pixelfed/feed/">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="canonical" href="https://pixelfed.writeas.com/tag:pixelfed">
+		
+		
+		<meta name="generator" content="Write.as">
+		<meta name="title" content="pixelfed — pixelfed">
+		<meta name="description" content="pixelfed posts on pixelfed">
+		
+		<meta name="application-name" content="Write.as">
+		<meta name="application-url" content="https://write.as">
+		<meta name="twitter:label1" value="Views">
+		<meta name="twitter:data1" value="101,527">
+		<meta itemprop="name" content="pixelfed">
+		<meta itemprop="description" content="pixelfed posts on pixelfed">
+		<meta name="twitter:card" content="summary">
+		<meta name="twitter:site" content="@writeas__">
+		<meta name="twitter:description" content="pixelfed posts on pixelfed">
+		<meta name="twitter:title" content="pixelfed — pixelfed">
+		<meta property="og:title" content="pixelfed — pixelfed">
+		<meta property="og:site_name" content="pixelfed">
+		<meta property="og:type" content="article">
+		<meta property="og:url" content="https://pixelfed.writeas.com/tag:pixelfed">
+        
+		<style type="text/css">body {
+    background-color: #f5f8fa;
+}</style><link rel="stylesheet" href="https://cdn.writeas.net/css/fonts.4ce1882.css" media="all">
+		
+
+	</head>
+	<body id="subpage">
+		
+		<div id="overlay"></div>
+
+		<header>
+		<h1 dir="auto" id="blog-title"><a href="/" class="h-card p-author">pixelfed</a></h1>
+			<nav>
+				
+				
+				
+			</nav>
+		</header>
+		
+		<section id="wrapper" itemscope="" itemtype="http://schema.org/Blog">
+			<h1>pixelfed</h1>
+			
+<article id="post-mlw5tf5e4p9x7voo" class="norm h-entry" itemscope="" itemtype="http://schema.org/BlogPosting">
+	
+	<h2 class="post-title" itemprop="name"><a href="https://pixelfed.writeas.com/urgent-security-issue-in-nginx-php-fpm-mcywf7xu" itemprop="url" class="u-url">Urgent security issue in NGINX/php-fpm</a>
+		
+	</h2>
+	
+	<time class="dt-published" datetime="2019-10-26T01:00:12Z" pubdate="" itemprop="datePublished" content="2019-10-26 01:00:12 +0000 UTC">October 26, 2019</time>
+
+
+<div lang="en" dir="ltr" class="book e-content"><blockquote><p><em>TL;DR Update PHP to 7.3.11+ ASAP, a recent CVE has demonstrated RCE in certain nginx/php-fpm configurations</em></p></blockquote>
+
+<p><br></p>
+
+<p>We have become aware of a new security risk that has emerged within the past few days. This exploit is bad, allowing remote code execution on certain nginx/php-fpm configurations. If you don’t run NGINX, this does not affect you.</p>
+
+<p>We recommend updating to PHP v 7.3.11 or later as soon as possible. If you used our <a href="https://docs.pixelfed.org/installing-pixelfed/postinstall.html#nginx">example nginx configuration</a>, please update the following code from:</p>
+
+<pre><code>    location ~ \.php$ {
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass unix:/run/php-fpm/php-fpm.sock;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    }
+</code></pre>
+
+<p>to:</p>
+
+<pre><code>    location ~ \.php$ {
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        try_files $fastcgi_script_name =404;
+        fastcgi_pass unix:/run/php-fpm/php-fpm.sock;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    }
+</code></pre>
+
+<p>If you have any questions, join our <a href="https://pixelfed.writeas.com/tag:pixelfed" class="hashtag"><span>#</span><span class="p-category">pixelfed</span></a> channel on Freenode!</p>
+
+<p>— Pixelfed Team</p>
+</div></article>
+
+
+		
+		</section>
+
+		
+		<footer dir="ltr"><hr><nav><p style="font-size: 0.9em">published with <a class="home pubd" href="https://write.as/?f=footer-blog-post">write.as</a></p></nav></footer>
+		
+
+        <noscript><p><img src="https://analytics.write.as/piwik.php?idsite=16" style="border:0;" alt="" /></p></noscript>
+	
+	
+	
+		
+		
+	
+	
+	<script src="https://cdn.writeas.net/js/webfont.js" type="text/javascript" async=""></script><script type="text/javascript" async="" defer="" src="https://analytics.write.as/piwik.js"></script><script src="https://cdn.writeas.net/js/localdate.js"></script>
+	
+<script>
+  
+  addEventListener('DOMContentLoaded', function () {
+    var hlbaseUri = "https:\/\/cdn.writeas.net/js/";
+    var lb = document.querySelectorAll("code[class^='language-']");
+
+    
+    var aliasmap = {
+      "elisp"      : "lisp",
+      "emacs-lisp" : "lisp",
+      "c"          : "cpp",
+      "cc"         : "cpp",
+      "h"          : "cpp",
+      "c++"        : "cpp",
+      "h++"        : "cpp",
+      "hpp"        : "cpp",
+      "hh"         : "cpp",
+      "hxx"        : "cpp",
+      "cxx"        : "cpp",
+      "sh"         : "bash",
+      "js"         : "javascript",
+      "jsx"        : "javascript",
+      "html"       : "xml"
+    };
+
+    
+    function highlight(nodes) {
+      for (i=0; i < nodes.length; i++) {
+        hljs.highlightBlock(nodes[i]);
+      }
+    }
+
+    
+    function loadLanguages(uris, callback) {
+      uris.forEach(function(uri) {
+        var sc = document.createElement('script');
+        sc.src = uri;
+        sc.async = false; 
+        
+        if (uris.indexOf(uri) == uris.length-1) {
+          
+          
+          
+          sc.onload = callback;
+          sc.onerror = callback;
+        }
+        document.head.appendChild(sc);
+      });
+    }
+
+    
+    if (lb.length > 0) {
+      
+      var st = document.createElement('link');
+      st.rel = "stylesheet";
+      st.href = "https:\/\/cdn.writeas.net/css/lib/atom-one-light.min.css";
+      document.head.appendChild(st);
+
+      
+      var jss = [hlbaseUri + "highlight.min.js"];
+      
+      for (i=0; i < lb.length; i++) {
+        lang = lb[i].className.replace('language-','').toLowerCase();
+        
+        if (aliasmap[lang]) lang = aliasmap[lang];
+        lurl = hlbaseUri + "highlightjs/" + lang + ".min.js";
+        if (!jss.includes(lurl)) {
+          jss.push(lurl);
+        }
+      }
+      
+      loadLanguages(jss, () => {highlight(lb)});
+    }
+  });
+</script>
+
+	<script type="text/javascript">
+
+
+	
+	try { 
+	  var _paq = _paq || [];
+	  _paq.push(['trackPageView']);
+	  _paq.push(['enableLinkTracking']);
+	  _paq.push(['enableHeartBeatTimer']);
+	  (function() {
+		var u="https://analytics.write.as/";
+		_paq.push(['setTrackerUrl', u+'piwik.php']);
+		_paq.push(['setSiteId', 16]);
+		var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+		g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+	  })();
+	} catch (e) {   }
+	
+	try { 
+	  WebFontConfig = {
+		custom: { families: [ 'Lora:400,700:latin', 'Open+Sans:400,700:latin' ], urls: [ 'https:\/\/cdn.writeas.net/css/fonts.4ce1882.css' ] }
+	  };
+	  (function() {
+		var wf = document.createElement('script');
+		wf.src = 'https:\/\/cdn.writeas.net/js/webfont.js';
+		wf.type = 'text/javascript';
+		wf.async = 'true';
+		var s = document.getElementsByTagName('script')[0];
+		s.parentNode.insertBefore(wf, s);
+	  })();
+	} catch (e) {   }
+	</script>
+</body></html>

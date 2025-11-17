@@ -1,0 +1,1150 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Heroku Dev Center Articles - powered by FeedBurner</title>
+<link href="//feedburner.google.com/fb/lib/stylesheets/undohtml.css" rel="stylesheet" type="text/css" media="all">
+<link href="//feedburner.google.com/fb/feed-styles/bf30.css" rel="stylesheet" type="text/css" media="all">
+<link rel="alternate" type="application/atom+xml" title="Heroku Dev Center Articles" href="http://feeds.feedburner.com/herokudevcenterarticles">
+<script type="text/javascript" src="//feedburner.google.com/fb/feed-styles/bf30.js"></script>
+</head>
+<body id="browserfriendly" onload="jsFeedUrl='http://feeds.feedburner.com/herokudevcenterarticles';loadSubscribeAreaUltra('standard');go_decoding()">
+<div id="cometestme" style="display:none;">&amp;</div>
+<div id="bodycontainer">
+<div id="bannerblock">
+<h1><a href="https://devcenter.heroku.com">Heroku Dev Center Articles</a></h1>
+<h2>syndicated content powered by FeedBurner</h2>
+<p style="clear:both"></p>
+</div>
+<div id="bodyblock">
+<div id="subscribenow" class="subscribeblock action">
+<div id="subscribe-userchoice" style="display:none">
+<p id="subscribeLink"><a href="#">...</a></p>
+<p id="resetLink">Reset this favorite; <a href="#" onclick="return clearUserchoice('standard')">show all Subscribe options</a></p>
+</div>
+<div id="subscribe-options">
+<h3>Subscribe Now!</h3>
+<h4>...with web-based news readers. Click your choice below:</h4>
+<div id="webbased">
+<a href="https://add.my.yahoo.com/rss?url=http://feeds.feedburner.com/herokudevcenterarticles" onclick="this.href = subscribeNow(this.href,'My Yahoo!');return true"><img src="https://sp.yimg.com/j/assets/ipt/addtomyyahoo.gif" width="91" height="17" alt="addtomyyahoo4"></a><br><a class="img" href="https://feedly.com/#subscription/feed/http://feeds.feedburner.com/herokudevcenterarticles" onclick="this.href = subscribeNow(this.href,'Feedly');return true"><img src="https://s3.feedly.com/feedburner/feedly.png" alt="Subscribe with Feedly"></a><a href="https://www.netvibes.com/subscribe.php?url=http://feeds.feedburner.com/herokudevcenterarticles" onclick="this.href=subscribeNow(this.href,'Netvibes');return true"><img src="https://www.netvibes.com/img/add2netvibes.gif" alt="Add to netvibes"></a><br><a class="img" href="https://www.subtome.com/#/subscribe?feeds=http://feeds.feedburner.com/herokudevcenterarticles" onclick="this.href = subscribeNow(this.href,'SubToMe');return true"><img src="https://www.subtome.com/subtome-feedburner.png" alt="Subscribe with SubToMe"></a>
+</div>
+<h4>...with other readers:</h4>
+<form action="https://feedburner.google.com" method="get"><select onchange="location.href=subscribeNowUltra('feed:http://feeds.feedburner.com/herokudevcenterarticles',this.options[this.selectedIndex].value)"><option value="--" disabled="" selected="" style="padding-left:0">(Choose Your Reader)</option>
+<option value="FeedDemon">FeedDemon</option>
+<option value="NetNewsWire">NetNewsWire</option>
+<option value="NewsFire">NewsFire</option>
+<option value="NewsGator Outlook Edition">NewsGator Outlook Edition</option>
+<option value="RSSOwl">RSSOwl</option>
+<option value="shrook">Shrook</option>
+<option value="USM">Universal Subscription Mechanism (USM)</option></select></form>
+<p> </p>
+</div>
+<input id="savechoice" type="hidden" value="standard">
+</div>
+<p class="about">FeedBurner makes it easy to receive content updates in My Yahoo!, Newsgator, Bloglines, and other news readers.</p>
+<p class="about"><a href="https://support.google.com/feedburner/answer/79408">Learn more about syndication and FeedBurner...</a></p>
+<p class="about"><span style="color:#000">A message from this feed's publisher:</span></p>
+<h3 id="currentFeedContent">Current Feed Content</h3>
+<ul><li class="regularitem">
+<h4 class="itemtitle"><a href="https://devcenter.heroku.com/articles/heroku-22-stack">Heroku-22 Stack</a></h4>
+<h5 class="itemposttime">
+<span>Posted:</span>2022-06-15 09:42:20 UTC</h5>
+<div class="itemcontent" name="decodeable"><p>This article describes the Heroku-22 stack, based on Ubuntu 22.04. <a href="https://devcenter.heroku.com/articles/stack">What is a stack?</a></p>
+
+<h2 id="what-s-new">What’s new</h2>
+
+<p>This stack is now based on Ubuntu 22.04, compared to Ubuntu 20.04 used in the <a href="https://devcenter.heroku.com/articles/heroku-20-stack">Heroku-20 stack</a>.</p>
+
+<p>The most important changes compared to Heroku-20 are:</p>
+
+<ul>
+<li>The stack no longer includes a <em>system</em> Ruby installation. This will not affect the vast majority of users, since Ruby apps will use the Ruby installation provided by the Ruby buildpack.</li>
+<li>The stack no longer includes a <em>system</em> Python 2 installation (accessed on Heroku-20 via the <code>python2</code> command). Python 3 continues to be available via the <code>python</code> and <code>python3</code> commands, as it was for Heroku-20.</li>
+</ul>
+
+<h2 id="available-software">Available software</h2>
+
+<p>Every stack on Heroku supports different operating system packages and language runtime versions. This support is typically confined to software that was still actively developed by the respective maintainers at the time the stack was first released.</p>
+
+<h3 id="language-runtimes">Language runtimes</h3>
+
+<p>For the most accurate information on supported language runtime versions, please check the individual language pages:</p>
+
+<table>
+<thead>
+  <tr>
+    <th>Buildpack</th>
+        <th>Shorthand</th>
+        <th>Runtime versions</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td><a href="https://elements.heroku.com/buildpacks/heroku/heroku-buildpack-ruby">Ruby</a></td>
+    <td><code>heroku/ruby</code></td>
+        <td><a href="https://devcenter.heroku.com/articles/ruby-support#ruby-versions">Runtime versions</a></td>
+  </tr>
+  <tr>
+    <td><a href="https://elements.heroku.com/buildpacks/heroku/heroku-buildpack-nodejs">Node.js</a></td>
+    <td><code>heroku/nodejs</code></td>
+        <td><a href="https://devcenter.heroku.com/articles/nodejs-support#supported-runtimes">Runtime versions</a></td>
+  </tr>
+  <tr>
+    <td><a href="https://elements.heroku.com/buildpacks/heroku/heroku-buildpack-python">Python</a></td>
+    <td><code>heroku/python</code></td>
+    <td><a href="https://devcenter.heroku.com/articles/python-support#supported-runtimes">Runtime versions</a></td>
+  </tr>
+  <tr>
+    <td><a href="https://elements.heroku.com/buildpacks/heroku/heroku-buildpack-java">Java</a></td>
+    <td><code>heroku/java</code></td>
+        <td><a href="https://devcenter.heroku.com/articles/java-support#supported-java-versions">Runtime versions</a></td>
+  </tr>
+  <tr>
+    <td><a href="https://elements.heroku.com/buildpacks/heroku/heroku-buildpack-php">PHP</a></td>
+    <td><code>heroku/php</code></td>
+    <td><a href="https://devcenter.heroku.com/articles/php-support#supported-versions">Runtime versions</a></td>
+  </tr>
+  <tr>
+    <td><a href="https://elements.heroku.com/buildpacks/heroku/heroku-buildpack-go">Go</a></td>
+    <td><code>heroku/go</code></td>
+    <td><a href="https://devcenter.heroku.com/articles/go-support#go-versions">Runtime versions</a></td>
+  </tr>
+</tbody>
+</table>
+
+<h3 id="operating-system-packages">Operating system packages</h3>
+
+<p>For a full list of operating system packages available on Heroku-22, please refer to article <a href="https://devcenter.heroku.com/articles/stack-packages">Ubuntu Packages on Heroku Stacks</a>.</p>
+
+<h2 id="support-period">Support period</h2>
+
+<p>Heroku-22 is based on Ubuntu 22.04. It will be supported through April 2027. Learn more about Heroku’s <a href="https://devcenter.heroku.com/articles/stack-update-policy">stack update policy</a>.</p>
+
+<h2 id="using-heroku-22">Using Heroku-22</h2>
+
+<p><a href="https://devcenter.heroku.com/articles/heroku-20-stack">Heroku-20</a> is currently the <a href="https://devcenter.heroku.com/articles/stack#default-stack">default stack</a> for newly created apps.</p>
+
+<p>To use Heroku-22 instead, it must be specified explicitly when creating an app:</p>
+<pre class="language-term"><code class="language-term">$ heroku create --stack heroku-22
+</code></pre>
+<p>You may change the stack on an existing app; the next build performed will then use the new stack:</p>
+<pre class="language-term"><code class="language-term">$ heroku stack:set heroku-22
+</code></pre>
+<p>If you are using <a href="https://devcenter.heroku.com/articles/app-json-schema#stack"><code>app.json</code></a>, you should also specify the stack there to ensure that your Review Apps and Heroku CI runs use the same stack:</p>
+<pre class="language-json"><code class="language-json">{
+   "stack": "heroku-22"
+}
+</code></pre>
+<div class="note">
+<p>An existing app’s stack cannot be changed using <code>app.json</code>. The stack specified is only applied to newly created apps that are a <a href="https://devcenter.heroku.com/articles/github-integration-review-apps">Review App</a>, a <a href="https://devcenter.heroku.com/articles/heroku-ci">Heroku CI</a> test run app, or an app created using a <a href="https://devcenter.heroku.com/articles/heroku-button">Heroku Button</a>.</p>
+</div>
+
+<h2 id="upgrading-to-heroku-22">Upgrading to Heroku-22</h2>
+
+<p>Please refer to the <a href="https://devcenter.heroku.com/articles/upgrading-to-the-latest-stack">stack upgrading guide</a> to understand the procedures to follow when upgrading to a new stack.</p>
+
+<div class="callout">
+<p>We recommend that you monitor your application closely after migrating an app to the new stack to ensure it’s performing correctly.</p>
+</div>
+
+<h3 id="upgrade-notes">Upgrade notes</h3>
+
+<h4 id="system-ruby-is-no-longer-installed">System Ruby is no longer installed</h4>
+
+<p>The stack no longer includes a <em>system</em> Ruby installation. This will not affect the vast majority of users, since by default Ruby apps will use the Ruby installation provided by the Ruby buildpack instead.</p>
+
+<div class="callout">
+<p>If your app is implemented in a language other than Ruby, but relies on Ruby for scripting purposes e.g. during startup or for controlling workers, you may have to <a href="https://devcenter.heroku.com/articles/using-multiple-buildpacks-for-an-app">add</a> the <code>heroku/ruby</code> buildpack to your app.</p>
+</div>
+
+<p>If your application uses Ruby and you see <code>ruby: command not found</code> errors, check that you haven’t accidentally been using the system-level Ruby installation; you may do so by verifying the Ruby buildpack is present in your application’s list of buildpacks using <code>heroku buildpacks</code>. If the <code>heroku/ruby</code> buildpack (or a GitHub URL equivalent) is missing, see our <a href="https://devcenter.heroku.com/articles/buildpacks">buildpacks</a> documentation for how to add it. You will need to check the buildpack order carefully - the newly added Ruby buildpack may need to go prior to any other buildpacks, depending on exactly where Ruby is being used.</p>
+
+<p>If after adding the Ruby buildpack, you are still seeing <code>ruby: command not found</code> errors from <code>profile.d/</code> scripts at application boot, this is due to the fact that <code>profile.d/</code> scripts are sourced in alphabetical order, and buildpack Ruby is only added to <code>PATH</code> once the <code>profile.d/ruby.sh</code> script runs. Any other <code>profile.d/</code> scripts will need to have a name that sorts alphabetically after <code>ruby.sh</code>. Alternatively, you can move the contents of any affected <code>profile.d/</code> scripts to the <a href="https://devcenter.heroku.com/articles/buildpack-api#profile-d-scripts">.profile</a> file instead, which is guaranteed to always run after all other <code>profile.d/*</code> scripts.</p>
+
+<h4 id="system-python-2-is-no-longer-installed">System Python 2 is no longer installed</h4>
+
+<p>The stack no longer includes a <em>system</em> Python 2 installation (accessed on Heroku-20 via the <code>python2</code> command), since Python 2 has been <a href="https://www.python.org/doc/sunset-python-2/">sunset upstream</a> for some time.</p>
+
+<div class="note">
+<p>The system Python installation is not the same as the one provided by the Python buildpack (which had <a href="https://devcenter.heroku.com/articles/python-2-7-eol-faq">previously dropped support for Python 2</a>, starting in Heroku-20).</p>
+</div>
+
+<p>Python 3 continues to be available via the <code>python</code> and <code>python3</code> commands (either via system Python, or the buildpack provided Python installation), as it was for Heroku-20.</p>
+
+<h4 id="openssl-3">OpenSSL 3</h4>
+
+<p>Ubuntu 22.04 ships with OpenSSL 3.0. OpenSSL 1.1 is not available as a runtime library.</p>
+
+<p>If you see OpenSSL/libssl related errors (for example <code>libssl.so.1.1: cannot open shared object file</code>, but there will be many other variations), you will need to update your dependencies and/or third-party buildpacks to a version that is compatible with OpenSSL 3, and ensure that dependencies or binaries you use are compiled against OpenSSL 3.</p>
+
+<p>In addition, OpenSSL 3 drops default support for a number of legacy/insecure cryptographic algorithms. If you see TLS/SSL related failures connecting from your application to external services, it is likely that those servers are running outdated/insecure software or configurations, that will need to be fixed by the maintainers of those services.</p>
+
+<h4 id="the-static-buildpack-is-no-longer-supported">The static buildpack is no longer supported</h4>
+
+<p>The experimental <a href="https://github.com/heroku/heroku-buildpack-static">heroku-buildpack-static</a> buildpack is not supported on Heroku-22. If your application is using that buildpack (check the output of the <code>heroku buildpacks</code> command for either <code>heroku-community/static</code> or <code>heroku-buildpack-static</code>), you will need to switch to the more modern and regularly maintained <a href="https://github.com/heroku/heroku-buildpack-nginx">Nginx buildpack</a> instead (available via <code>heroku-community/nginx</code>).</p>
+
+<p>For more information, see this <a href="https://github.com/heroku/heroku-buildpack-static#warning-heroku-buildpack-static-is-deprecated">migration guide</a>.</p>
+
+<h2 id="heroku-22-docker-image">Heroku-22 Docker image</h2>
+
+<p>Heroku-22 is available as two <a href="https://hub.docker.com/r/heroku/heroku">Docker images</a>:</p>
+
+<ol>
+<li>The runtime image (<code>heroku/heroku:22</code>), which is recommended over the build image for most workloads.</li>
+<li>The build image (<code>heroku/heroku:22-build</code>), which is larger as it includes development headers and toolchains. It is only recommended for customers that need to compile source code or dependencies.</li>
+</ol>
+
+<p>Use the following command in your <code>Dockerfile</code> to use Heroku-22 as your base image:</p>
+<pre class="language-term"><code class="language-term">FROM heroku/heroku:22
+</code></pre>
+<p>To learn more about deploying Docker images, please refer to the <a href="https://devcenter.heroku.com/articles/container-registry-and-runtime">Heroku Container Registry and Runtime</a> documentation.</p></div>
+</li></ul>
+<ul><li class="regularitem">
+<h4 class="itemtitle"><a href="https://devcenter.heroku.com/articles/migrating-apps-from-the-common-runtime-to-a-private-space">Migrating Apps From the Common Runtime to a Private Space</a></h4>
+<h5 class="itemposttime">
+<span>Posted:</span>2022-06-10 15:06:13 UTC</h5>
+<div class="itemcontent" name="decodeable"><p>This guide helps you migrate your apps from the Common Runtime to Private Spaces with minimal downtime. You can’t directly transfer an app from the <a href="https://devcenter.heroku.com/articles/dyno-runtime#common-runtime">Common Runtime</a> to a <a href="https://devcenter.heroku.com/articles/dyno-runtime#private-spaces-runtime">Private Space</a>. Due to the architectural differences in the runtime infrastructure, you must manually migrate your apps. The steps in this guide apply to both <a href="https://devcenter.heroku.com/articles/private-spaces">Private Spaces</a> and <a href="https://devcenter.heroku.com/articles/shield-private-space">Shield Private Spaces</a>.</p>
+
+<div class="note">
+<p><a href="https://www.heroku.com/enterprise">Heroku Enterprise</a> customers with Premier or Signature Success Plans can <a href="https://help.heroku.com/enterprise">request in-depth guidance</a> on migration from the Customer Solutions Architecture (CSA) team. Learn more about <a href="https://www.heroku.com/support">Expert Coaching Sessions here</a> or contact your Salesforce account executive.</p>
+</div>
+
+<h2 id="before-the-migration">Before the Migration</h2>
+
+<h3 id="configure-a-custom-maintenance-page">Configure a Custom Maintenance Page</h3>
+
+<p><a href="https://devcenter.heroku.com/articles/error-pages#customize-pages">Configure a custom page</a> on your Common Runtime app to show to users during maintenance mode while your app migrates.</p>
+
+<h3 id="plan-for-downtime">Plan For Downtime</h3>
+
+<p>Reduce the TTL values for your DNS entries to 1 minute a few days before the migration to minimize downtime. The migration process includes updating your DNS entries to point to the new app running in the Private Space. Plan for some downtime to allow for DNS updates to propagate.</p>
+
+<p>Migrating data to private tier data services also require a period of downtime.</p>
+
+<h3 id="review-add-ons-availability-and-requirements">Review Add-ons Availability and Requirements</h3>
+
+<p>You must reprovision your add-ons on your migrated apps. Add-ons offer varying levels of availability for Private Spaces. Consult the <a href="https://elements.heroku.com/addons/region-availability">Add-ons Runtime Availability</a> table to check for potential issues.</p>
+
+<p><strong>Available</strong>: These add-ons are compatible with Private Space regions, but get provisioned and operate outside of the space. Network traffic between your private dynos and the add-on resource sends across the public Internet.</p>
+
+<p><strong>Available and installable in space</strong>: These add-ons are provisioned within the Private Space itself. All network traffic between dynos and the add-on resource stays within the private network environment.</p>
+
+<p><strong>Unavailable</strong>: These add-ons can neither be provisioned within the Space, nor are they compatible with the Private Space region(s).</p>
+
+<p>Consider also that Private Spaces comes with features that replaces the functionality of some add-ons. For example, if you used an add-on to provide static IPs in the Common Runtime, you no longer need it as that’s a <a href="https://devcenter.heroku.com/articles/private-spaces#stable-outbound-ip-addresses">built-in functionality of spaces</a>.</p>
+
+<p>Consult the documentation for each add-on, as the provider may have specific instructions for the best method of migrating to a Private Space.</p>
+
+<p>You can read more about using add-ons in Private Spaces <a href="https://devcenter.heroku.com/articles/private-spaces#add-ons-and-private-spaces">here</a>.</p>
+
+<h2 id="the-migration-process">The Migration Process</h2>
+
+<p>The following steps describes the typical migration process. You can also follow these steps, with some minor modifications, to migrate apps from Private Space to Private Space, or from a Private Space to a Shield Space.</p>
+
+<div class="note">
+<p><a href="https://www.heroku.com/enterprise">Heroku Enterprise</a> customers with Premier or Signature Success Plans can <a href="https://help.heroku.com/enterprise">request in-depth guidance</a> on migration from the Customer Solutions Architecture (CSA) team.</p>
+</div>
+
+<ol>
+<li><a href="https://devcenter.heroku.com/articles/private-spaces#create-an-app-in-a-private-space">Create a new application in the Private Space</a>.</li>
+<li>Deploy your code to your new Private Spaces app using the same methods you used for the Common Runtime.</li>
+<li><a href="https://devcenter.heroku.com/articles/add-ons#basic-usage">Provision your add-ons</a> and <a href="https://devcenter.heroku.com/articles/scaling">scale your dynos</a>. If you used a <a href="https://devcenter.heroku.com/articles/heroku-button">Heroku button</a> or <a href="https://devcenter.heroku.com/articles/setting-up-apps-using-the-heroku-platform-api#creating-an-app-setup">the Platform API with an app.json manifest file</a> to deploy your code, your add-ons and dynos were already automatically configured.</li>
+<li>If you use Heroku data services, it’s recommended that you migrate your data. While it’s possible for an app in a Private Space to continue using Heroku data services in the Common Runtime, migrating them to a space provides additional security.
+
+<ul>
+<li><strong>Heroku Postgres</strong>: To minimize downtime, use the <a href="https://devcenter.heroku.com/articles/migrating-heroku-postgres-databases-to-private-spaces#migrate-with-follower-changeovers">follower changeover method</a>. This method allows your existing database to continue operating while the new private database provisions. Dataclips that associated with the old database must be reassigned to the new database. To recover these dataclips, open a support ticket via <a href="https://help.heroku.com/">help.heroku.com</a>.</li>
+<li><strong>Heroku Redis</strong>: Use the <a href="https://devcenter.heroku.com/articles/heroku-redis-and-private-spaces#migrating-from-a-premium-redis-plan-to-a-private-redis-plan">fork method</a> to migrate while your app is in maintenance mode.</li>
+<li><strong>Heroku Kafka</strong>: Follow these <a href="https://devcenter.heroku.com/articles/kafka-addon-migration#how-do-i-handle-the-migration">instructions</a> to migrate while in maintenance mode.</li>
+</ul></li>
+<li>Configure custom domains and SSL. Certain apps can have the same domain temporarily assigned to both your existing Common Runtime and new Private Spaces apps to reduce migration downtime. Contact <a href="https://help.heroku.com/">Heroku Support</a> to request that your custom domains be “forced” onto your new Private Spaces app. If they confirm that it isn’t possible, <a href="https://devcenter.heroku.com/articles/custom-domains#remove-a-custom-domain">remove the custom domains</a> from your Common Runtime app and <a href="https://devcenter.heroku.com/articles/custom-domains">add them</a> to the new Private Spaces app.</li>
+<li>Update your DNS entries to point to the new Private Space app. If you reduced the TTL value before migration, you can restore it to normal.</li>
+<li><a href="https://devcenter.heroku.com/articles/monitoring-apps">Monitor your new Private Spaces app</a>. Monitor your app logs for any errors, and check your metrics for any signs of performance issues.</li>
+</ol>
+
+<p>When you’re satisfied that the migration completed successfully, destroy the old Common Runtime app.</p>
+
+<div class="warning">
+<p>If you didn’t migrate your data services and they’re still attached to your Common Runtime app, you can’t delete the old app. If you do, the attached databases get deleted along with the old app.</p>
+</div></div>
+</li></ul>
+<ul><li class="regularitem">
+<h4 class="itemtitle"><a href="https://devcenter.heroku.com/articles/getting-started-with-lightning-web-components-open-source-on-heroku">Getting Started with Lightning Web Components Open Source on Heroku</a></h4>
+<h5 class="itemposttime">
+<span>Posted:</span>2022-06-02 16:52:07 UTC</h5>
+<div class="itemcontent" name="decodeable"><h2 data-next-message="I'm ready to start" id="introduction">Introduction</h2>
+
+<p>Create and deploy a <a href="https://developer.salesforce.com/docs/component-library/documentation/en/lwc/get_started_oss">Lightning Web Components Open Source</a> (LWC OSS) project on Heroku with this tutorial.</p>
+
+<h3 id="pre-requisites">Pre-requisites</h3>
+
+<ul>
+<li>A <a href="https://signup.heroku.com/signup/dc">free</a> Heroku account</li>
+<li><a href="https://devcenter.heroku.com/articles/%E2%80%8B%E2%80%8Bhttps:/nodejs.org/en/download/">Node.js</a> and <a href="https://www.npmjs.com/">npm</a> installed locally</li>
+<li><a href="https://git-scm.com/downloads">Git</a> installed locally.</li>
+</ul>
+
+<p>If you don’t already have Git installed, complete the following before proceeding:</p>
+
+<ul>
+<li><a href="https://git-scm.com/book/en/v2/Getting-Started-Installing-Git">Git installation</a></li>
+<li><a href="https://git-scm.com/book/en/v2/Getting-Started-First-Time-Git-Setup">First-time Git setup</a></li>
+</ul>
+
+<h2 data-next-message="I installed the Heroku CLI" id="install-the-heroku-cli">Install the Heroku CLI</h2>
+
+<div class="callout">
+<p>The Heroku CLI requires <strong>Git</strong>, the popular version control system.</p>
+</div>
+
+<p>Install the Heroku Command Line Interface (CLI). You use the CLI to manage and scale your applications, provision add-ons, view your recent application logs, and run your application locally.</p>
+
+<p>Download and run the installer for your platform:</p>
+
+<div class="cli-download">
+  <div class="text-center">
+    <div class="download-wrap">
+      <div class="download-column panel">
+        <div class="download-title"><img src="/images/cli-apple-logo.svg" class="logo" alt="apple logo">macOS</div>
+        <p>
+        <a href="https://cli-assets.heroku.com/heroku.pkg" class="btn btn-primary">Download the installer</a></p>
+        <p><sub>Also available via Homebrew:</sub></p>
+        <pre class=" language-term"><code class=" language-term"><span class="token input"><span class="token prompt">$ </span>brew install heroku/brew/heroku</span></code></pre>
+      </div>
+      <div class="download-column panel">
+        <div class="download-title"><img src="/images/cli-windows-logo.svg" class="logo" alt="windows logo">Windows</div>
+        <p>Download the appropriate installer for your Windows installation:</p>
+        <p>
+        <a href="https://cli-assets.heroku.com/heroku-x64.exe" class="btn btn-primary">64-bit installer</a></p>
+        <p><a href="https://cli-assets.heroku.com/heroku-x86.exe" class="btn btn-primary">32-bit installer</a></p>
+      </div>
+    </div>
+    <div class="download-wrap">
+      <div class="download-column panel">
+        <div class="download-title"><img src="/images/cli-ubuntu-logo.svg" class="logo" alt="ubuntu logo">Ubuntu 16+</div>
+        <p>Run the following from your terminal:</p>
+        <pre class=" language-term"><code class=" language-term"><span class="token input"><span class="token prompt">$ </span>sudo snap install heroku --classic</span></code></pre>
+        <p><sub><a href="https://snapcraft.io">Snap is available on other Linux OS’s as well</a>.
+</sub></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p>After installation completes, you can use the <code>heroku</code> command from your terminal.</p>
+
+<div class="only-windows">On Windows, start the Command Prompt (cmd.exe) or Powershell to access the command shell.</div>
+
+<h3 id="log-in">Log In</h3>
+
+<p>Use the <code>heroku login</code> command to log in to the Heroku CLI:</p>
+<pre class="language-term"><code class="language-term">$ heroku login
+heroku: Press any key to open up the browser to login or q to exit
+ ›   Warning: If browser does not open, visit
+ ›   https://cli-auth.heroku.com/auth/browser/***
+heroku: Waiting for login...
+Logging in... done
+Logged in as me@example.com
+</code></pre>
+<p>This command opens your web browser to the Heroku login page to complete authentication. If your browser is already logged in to Heroku, click the <strong><code>Log in</code></strong> button displayed on the page.</p>
+
+<p>Both the <code>heroku</code> and <code>git</code> commands require this authentication to work correctly.</p>
+
+<p>If you’re behind a firewall that requires a proxy to connect with external HTTP/HTTPS services, <a href="https://devcenter.heroku.com/articles/using-the-cli#using-an-http-proxy">set the <code>HTTP_PROXY</code> or <code>HTTPS_PROXY</code> environment variables</a> in your local development environment before running the <code>heroku</code> command.</p>
+
+<h2 data-next-message="I created an LWC project" id="create-an-lwc-project">Create an LWC Project</h2>
+
+<p>To create a Lightning Web Components project, use <a href="https://developer.salesforce.com/docs/platform/lwr/guide/lwr-get-started.html">Lightning Web Runtime (LWR)</a>.</p>
+
+<p>The tool guides you through a short setup and scaffolds a Lightning Web Components project.</p>
+<pre class="language-term"><code class="language-term">$ npm init lwr        # Follow the on-screen instructions
+                          # Select the "Single Page App" project
+                          # Select the "LWC" option
+$ cd ExampleLWCProjectName
+</code></pre>
+<h2 data-next-message="I added files to a repo" id="track-code-in-git">Track Code in Git</h2>
+
+<p>While there are other deployment methods, the most common method for deploying code to Heroku is via <code>git</code>. Create a Git repository for your project and commit your files.</p>
+
+<div class="callout">
+<p>Where possible, we changed noninclusive terms to align with our company value of Equality. We retained noninclusive terms to document a third-party system, but we encourage the developer community to embrace more inclusive language. We’ll update the term when it’s no longer required for technical accuracy.</p>
+</div>
+
+<h3 id="create-a-repo">Create a Repo</h3>
+
+<p>Run this command to initialize a repository:</p>
+<pre class="language-term"><code class="language-term">$ git init
+</code></pre>
+<p>Git still defaults to using <code>master</code> as the default branch name. To switch the default branch from <code>master</code> to <code>main</code>, create a new branch locally and delete the old branch:</p>
+<pre class="language-term"><code class="language-term">$ git checkout -b main
+$ git branch -D master
+</code></pre>
+<p>From there, the local environment only knows about the <code>main</code> branch. Commit your files to this branch.</p>
+
+<h3 id="commit-files-to-git">Commit Files to Git</h3>
+<pre class="language-term"><code class="language-term">$ git add .
+$ git commit -m “Initial commit”
+</code></pre>
+<p>You now have a local Git repo tracking your files.</p>
+
+<h2 data-next-message="I installed the app dependencies" id="declare-app-dependencies">Declare App Dependencies</h2>
+
+<p>Heroku recognizes your LWC project as a Node.js app by the existence of a <code>package.json</code> file in the root directory. When a Node.js app is detected, Heroku adds the official Node.js buildpack to your app, which installs the dependencies for your application.</p>
+
+<p>Your project created by <code>npm init lwr</code> includes a <code>package.json</code> file similar to the following:</p>
+<pre class="language-json"><code class="language-json">{
+ "name": "example-lwc-project",
+…
+ },
+ "dependencies": {
+   "lwc": "2.5.8",
+   "lwr": "0.6.5"
+ },
+ "engines": {
+   "node": "&gt;=14.15.4 &lt;17"
+ }
+}
+</code></pre>
+<h3 id="install-local-dependencies">Install Local Dependencies</h3>
+
+<p>Run <code>npm install</code> in your local directory to install the dependencies, preparing your system for running the app locally:</p>
+<pre class="language-term"><code class="language-term">$ npm install
+</code></pre>
+<p>A <code>package-lock.json</code> file auto-generates when you run <code>npm install</code>. When you deploy an app, Heroku reads the <code>package.json</code> to install the appropriate Node version and the <code>package-lock.json</code> to install the dependencies.</p>
+
+<p>When you add new dependencies, <code>npm install</code> also makes the appropriate changes to this file. Ensure that you commit this file after the initial install or any subsequent changes to dependencies.</p>
+<pre class="language-term"><code class="language-term">$ git add .
+$ git commit -m "Added package-lock.json"
+</code></pre>
+<h2 data-next-message="I added a Procfile" id="add-a-procfile">Add a Procfile</h2>
+
+<p>A <a href="https://devcenter.heroku.com/articles/procfile">Procfile</a> is a special plaintext file used by Heroku apps to explicitly declare the processes and commands used to start your app.</p>
+
+<p>Add a file named <code>Procfile</code>, with no file extension, to your project’s root directory. Add this line to the file:</p>
+<pre class="language-yaml"><code class="language-yaml">web: npm run start
+</code></pre>
+<p>This line declares a single process type, <code>web</code>, and the command to run it. The name <code>web</code> is important. It declares that this process type attaches to Heroku’s <a href="https://devcenter.heroku.com/articles/http-routing">HTTP routing</a> stack, and can receive web traffic.</p>
+
+<p>Procfiles can contain additional process types. For example, you can declare a background worker that processes items off a queue. This tutorial doesn’t cover other processes but you can refer to <a href="https://devcenter.heroku.com/articles/procfile">The Procfile</a> and <a href="https://devcenter.heroku.com/articles/process-model">The Process Model</a> for more info.</p>
+
+<p>Remember to commit your file:</p>
+<pre class="language-term"><code class="language-term">$ git add .
+$ git commit -m “Added Procfile”
+</code></pre>
+<h2 data-next-message="I can run my app locally" id="run-the-app-locally">Run the App Locally</h2>
+
+<p>Ensure you’ve already run <code>npm install</code> before running your app locally.</p>
+
+<p>Start your application locally with the <a href="https://devcenter.heroku.com/articles/heroku-local"><code>heroku local</code> CLI command</a>:</p>
+<pre class="language-term"><code class="language-term">$ heroku local
+...
+3:31:05 p.m. web.1 |  &gt; lwr-project@0.0.1 start
+3:31:05 p.m. web.1 |  &gt; lwr serve --mode prod
+3:31:07 p.m. web.1 |  (node:4454) [DEP0111] DeprecationWarning: Access to process.binding('http_parser') is deprecated.
+3:31:07 p.m. web.1 |  (Use `node --trace-deprecation ...` to show where the warning was created)
+3:31:09 p.m. web.1 |   server running at: port: 5000 | mode: prod
+</code></pre>
+<p>Just like the Heroku platform, <code>heroku local</code> examines your <code>Procfile</code> to determine what command to run.</p>
+
+<p>Open <a href="http://localhost:5000">http://localhost:5000</a> with your web browser to see your app running locally.</p>
+
+<p>To stop the app from running locally, go back to your terminal window and press <code>CTRL+C</code> to exit.</p>
+
+<h2 data-next-message="I deployed my app on Heroku" id="deploy-the-app">Deploy the App</h2>
+
+<p>Git remotes are versions of your repository that live on other servers. You deploy your app by pushing its code to a special Heroku-hosted remote that’s associated with your app.</p>
+
+<h3 id="create-a-heroku-app-and-git-remote">Create a Heroku App and Git Remote</h3>
+
+<p>Create an app on Heroku to prepare it to receive your source code for deployment. This command both creates an app and a Git remote (named <code>heroku</code>) associated with your local Git repo:</p>
+<pre class="language-term"><code class="language-term">$ heroku create --app example-lwc-project
+Creating app... done, example-lwc-project
+https://example-lwc-project.herokuapp.com/ | https://git.heroku.com/example-lwc-project.git
+</code></pre>
+<p>By default, Heroku generates a random name for your app. You can pass the <code>--app</code> parameter to specify your own app name.</p>
+
+<div class="callout">
+<p>If you create your app via the Heroku Dashboard instead of using the CLI command, add a remote to your local repo with <code>heroku git:remote --app example-app</code>.</p>
+</div>
+
+<h3 id="deploy-your-code">Deploy Your Code</h3>
+
+<p>Now deploy your code:</p>
+<pre class="language-term"><code class="language-term">$ git push heroku main
+Enumerating objects: 12971, done.
+Counting objects: 100% (12971/12971), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (9805/9805), done.
+Writing objects: 100% (12971/12971), 21.68 MiB | 9.62 MiB/s, done.
+Total 12971 (delta 2486), reused 12971 (delta 2486)
+remote: Compressing source files... done.
+remote: Building source:
+remote:
+remote: -----&gt; Building on the Heroku-20 stack
+remote: -----&gt; Determining which buildpack to use for this app
+remote: -----&gt; Node.js app detected
+…
+remote: Verifying deploy... done.
+To https://git.heroku.com/example-lwc-project.git
+</code></pre>
+<p>You can now visit your app at your-app-name.herokuapp.com.</p>
+
+<h2 data-next-message="I reviewed my app dynos" id="dyno-usage">Dyno Usage</h2>
+
+<p>By default, your app deploys on a free <a href="https://devcenter.heroku.com/articles/dynos">dyno</a>. A dyno is a lightweight Linux container that runs the command specified in your <code>Procfile</code>. After deployment, ensure that you have one <code>web</code> <a href="https://devcenter.heroku.com/articles/dynos">dyno</a> running the app. You can check how many dynos are running using the <code>heroku ps</code> command:</p>
+<pre class="language-term"><code class="language-term">$ heroku ps
+Free dyno hours quota remaining this month: 997h 48m (99%)
+Free dyno usage for this app: 0h 0m (0%)
+For more information on dyno sleeping and how to upgrade, see:
+https://devcenter.heroku.com/articles/dyno-sleeping
+
+=== web (Free): npm run start (1)
+web.1: up 2022/05/02 15:48:33 -0400 (~ 6m ago)
+</code></pre>
+<p>The running <code>web</code> dynos serve requests. Visit the app at the URL generated by its app name. As a handy shortcut, you can open the website with:</p>
+<pre class="language-term"><code class="language-term">$ heroku open
+</code></pre>
+<p>Free dynos sleep after thirty minutes of inactivity, for example, if they don’t receive traffic. This behavior causes a delay of a few seconds for the first request upon waking. Subsequent requests perform normally. Free dynos consume from a monthly, account-level quota of <a href="https://devcenter.heroku.com/articles/free-dyno-hours">free dyno hours</a>. As long as you haven’t exhausted the quota, your free apps can continue to run.</p>
+
+<p>To avoid dyno sleeping, upgrade to a hobby or professional dyno type as described in <a href="https://devcenter.heroku.com/articles/dyno-types">Dyno Types</a>.</p>
+
+<h2 data-next-message="I know how to scale my app" id="scale-the-app">Scale the App</h2>
+
+<p>Horizontal scaling an application on Heroku is equivalent to changing the number of running dynos.</p>
+
+<p>Scale the number of web dynos to zero:</p>
+<pre class="language-term"><code class="language-term">$ heroku ps:scale web=0
+</code></pre>
+<p>Access the app again by refreshing your browser or running <code>heroku open</code>. You get an error message because your app no longer has any web dynos available to serve requests.</p>
+
+<p>Scale it up again:</p>
+<pre class="language-term"><code class="language-term">$ heroku ps:scale web=1
+</code></pre>
+<p>To prevent abuse, scaling a non-free application to more than one dyno requires <a href="https://devcenter.heroku.com/articles/account-verification">account verification</a>.</p>
+
+<div class="callout">
+<p>You can also vertically scale your app by upgrading to larger dynos. See <a href="https://devcenter.heroku.com/articles/dyno-types">Dyno Types</a> and <a href="https://devcenter.heroku.com/articles/scaling">Scaling Your Dyno Formation</a> for more info.</p>
+</div>
+
+<h2 data-next-message="I looked at my logs" id="view-logs">View Logs</h2>
+
+<p>Heroku aggregates all output streams from both your app and the platform’s components into a single channel of time-ordered logs.</p>
+
+<p>View information about your running app using the <code>heroku logs --tail</code> command:</p>
+<pre class="language-term"><code class="language-term">$ heroku logs --tail
+2022-05-02T19:57:28.471748+00:00 heroku[router]: at=info method=GET path="/" host=example-lwc-project.herokuapp.com request_id=67e164cc-fe43-40cb-869d-8843437d8aab fwd="204.14.236.210" dyno=web.1 connect=0ms service=348ms status=200 bytes=916 protocol=https
+2022-05-02T19:57:28.618296+00:00 heroku[router]: at=info method=GET path="/1/bundle/esm/l/en-US/bi/0/module/mi/example%2Fapp%2Fv%2F0_0_1/s/dd906b596d93b171095575adf165247650854928/bundle_example_app.js" host=example-lwc-project.herokuapp.com request_id=fb4212cc-654e-4e10-8512-148999abc9a9 fwd="204.14.236.210" dyno=web.1 connect=0ms service=2ms status=200 bytes=1066 protocol=https
+</code></pre>
+<p>Visit your application in the browser again to generate another log message.</p>
+
+<p>Press <code>CTRL+C</code> to stop streaming logs.</p>
+
+<p>By default, Heroku stores your app’s 1500 most recent log lines. You can provision a <a href="https://elements.heroku.com/addons/#logging">logging add-on</a> or implement your own log drain for long-term storage. In the next step, you add a logging add-on to your app.</p>
+
+<h2 data-next-message="I used an add-on" id="provision-add-ons">Provision Add-ons</h2>
+
+<p>Add-ons are cloud services that provide additional services for your application, such as databases, logging, and monitoring.</p>
+
+<p>Several logging add-ons are available that provide features such as log persistence, search, and alerting. <a href="https://devcenter.heroku.com/articles/papertrail">Papertrail</a> is one such add-on with a free plan.</p>
+
+<h3 id="provision-the-add-on">Provision the Add-on</h3>
+<pre class="language-term"><code class="language-term">$ heroku addons:create papertrail
+Creating papertrail on example-lwc-project... free
+Welcome to Papertrail. Questions and ideas are welcome (technicalsupport@solarwinds.com). Happy logging!
+Created papertrail-asymmetrical-88691 as PAPERTRAIL_API_TOKEN
+Use heroku addons:docs papertrail to view documentation
+</code></pre>
+<div class="callout">
+<p>To help prevent abuse, provisioning an add-on requires <a href="https://devcenter.heroku.com/articles/account-verification">account verification</a>. If your account hasn’t been verified, <code>heroku addons:create</code> directs to visit the <a href="https://heroku.com/verify">verification site</a>.</p>
+</div>
+
+<p>This command provisions the add-on and configures it for your application. To see this particular add-on in action, visit your application’s Heroku URL a few times. Each visit generates more log messages, which route to the Papertrail add-on.</p>
+
+<p>You can list all of your app’s active add-ons with this command:</p>
+<pre class="language-term"><code class="language-term">$ heroku addons
+</code></pre>
+<h3 id="view-logs-in-papertrail">View Logs in Papertrail</h3>
+
+<p>Visit the Papertrail console to see the log messages:</p>
+<pre class="language-term"><code class="language-term">$ heroku addons:open papertrail
+</code></pre>
+<p>Your browser opens up a Papertrail web console that shows the latest log events. The interface lets you search and set up alerts:</p>
+
+<p><img src="https://devcenter3.assets.heroku.com/article-images/2205-imported-1634129729-2205-imported-1443570572-2205-imported-1443555048-360-original.jpg" alt="Image" title="add-on sample output"></p>
+
+<h2 data-next-message="I deployed my changes" id="push-local-changes">Push Local Changes</h2>
+
+<p>In this step, you learn how to propagate a local change to the application through to Heroku.</p>
+
+<p>Open <code>src/modules/example/app/app.html</code>. Change the <code>Hello, World!</code> greeting to say your name instead.</p>
+
+<p>Run <code>heroku local</code> to see your changes locally.</p>
+
+<p>Commit and deploy your local changes to Heroku. Visit the app to see your changes in action:</p>
+<pre class="language-term"><code class="language-term">$ git add .
+$ git commit -m "Changed greeting"
+$ git push heroku main
+$ heroku open
+</code></pre>
+<h2 data-next-message="I ran and shut down a one-off dyno" id="start-a-one-off-dyno">Start a One-off Dyno</h2>
+
+<p>The <code>heroku run</code> command lets you run maintenance and administrative tasks on your app in a <a href="https://devcenter.heroku.com/articles/one-off-dynos">one-off dyno</a>. It also lets you launch a REPL process attached to your local terminal for experimenting in your app’s environment or your deployed application code:</p>
+<pre class="language-term"><code class="language-term">$ heroku run node --version
+v16.15.0
+</code></pre>
+<p>If you receive an error, <code>Error connecting to process</code>, <a href="https://devcenter.heroku.com/articles/one-off-dynos#timeout-awaiting-process">configure your firewall</a>.</p>
+
+<p>Remember to type <code>exit</code> to exit the shell and terminate the dyno.</p>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<p>Congratulations! You now know how to deploy an LWC project, run it locally, scale it, view logs, attach add-ons, and push changes.</p>
+
+<p>Here’s some recommended reading to continue your LWC and Heroku journey:</p>
+
+<ul>
+<li><a href="https://devcenter.heroku.com/articles/how-heroku-works">How Heroku Works</a> provides a technical overview of the concepts encountered while writing, configuring, deploying, and running apps.</li>
+<li>Learn more about the Heroku developer experience and CI/CD features in the <a href="https://heroku-journeys.herokuapp.com/">Heroku Enterprise Developer Learning Journey</a>.</li>
+<li><a href="https://lwc.dev/">LWC Developer Guide</a></li>
+<li><a href="https://recipes.lwc.dev/">LWC Recipes</a></li>
+<li><a href="https://developer.salesforce.com/blogs/2020/04/how-to-securely-access-salesforce-with-lightning-web-components-open-source">How to Securely Access Salesforce with LWC OSS</a></li>
+<li><a href="https://developer.salesforce.com/blogs/2020/12/how-i-built-a-christmas-app-with-node-js-lwc-oss-and-heroku">How I Built a Christmas App with Node.js, LWC OSS and Heroku</a></li>
+</ul></div>
+</li></ul>
+<ul><li class="regularitem">
+<h4 class="itemtitle"><a href="https://devcenter.heroku.com/articles/upstash-redis">Upstash Redis</a></h4>
+<h5 class="itemposttime">
+<span>Posted:</span>2022-06-10 00:40:44 UTC</h5>
+<div class="itemcontent" name="decodeable"><p>Upstash is a serverless database with Redis API and durable storage. It provides:</p>
+
+<ul>
+<li>Low latency data</li>
+<li>Durable storage</li>
+<li>Ease of use</li>
+<li>REST API (SDK)</li>
+</ul>
+
+<div class="note">
+<p>Upstash supports the Redis client protocol up to version 6.2.</p>
+</div>
+
+<h2 id="installing-the-add-on">Installing the Add-on</h2>
+
+<p>Install Upstash Redis with the command:</p>
+<pre class="language-term"><code class="language-term">heroku addons:create upstash-redis
+</code></pre>
+<p>After installation, your application has the following environment variables configured:</p>
+
+<p><code>UPSTASH_REDIS_URL</code>: The full Redis URL that includes the password and endpoint. You can use this URL in Redis libraries in your application code.</p>
+
+<p><code>UPSTASH_REDIS_REST_URL</code>: The endpoint to connect to the REST API for your redis database. Upstash has an official <a href="https://github.com/upstash/upstash-redis">REST API SDK</a>.</p>
+
+<p><code>UPSTASH_REDIS_REST_TOKEN</code>: The credential to connect to the REST API.</p>
+
+<p>You can find more information about the REST API in <a href="https://docs.upstash.com/redis/features/restapi">Upstash’s documentation</a></p>
+
+<div class="note">
+<p>Use the <code>UPSTASH_REDIS_URL</code> with Redis clients. <code>UPSTASH_REDIS_REST_URL</code> is for the Upstash SDK and API.</p>
+</div>
+
+<h2 id="connecting-to-the-database">Connecting to the Database</h2>
+
+<p>After provisioning the database, you can see Upstash Redis in the <strong><code>Resources</code></strong> tab of the Heroku Dashboard.</p>
+
+<p>Clicking on Upstash redirects you to the Upstash Console for your database. There are code samples for connecting to your database on this page.</p>
+
+<p><img src="https://devcenter0.assets.heroku.com/article-images/1650303347-Screenshot-2022-04-18-at-20.34.58.png" alt="Upstash Console to Connect Your database"></p>
+
+<h2 id="data-browser-cli">Data Browser &amp; CLI</h2>
+
+<p>For ease of use, Upstash provides a Data Explorer and CLI in the Console. You can browse your data using this functionality.</p>
+
+<p><img src="https://devcenter2.assets.heroku.com/article-images/1650303775-Screenshot-2022-04-18-at-20.42.42.png" alt="Data Browser"></p>
+
+<p>Console CLI to execute Redis commands:</p>
+
+<p><img src="https://devcenter1.assets.heroku.com/article-images/1650304154-Screenshot-2022-04-18-at-20.49.01.png" alt="CLI"></p>
+
+<h2 id="migrating-between-plans">Migrating Between Plans</h2>
+
+<p>It’s possible to change from your current plan to another. For example:</p>
+<pre class="language-term"><code class="language-term">heroku addons:upgrade upstash-redis:3g
+</code></pre>
+<p>You can see all available plans <a href="https://elements.heroku.com/addons/upstash-redis#200m">here.</a></p>
+
+<h2 id="removing-the-add-on">Removing the Add-on</h2>
+
+<p>You can remove Upstash Redis with the following command:</p>
+
+<div class="warning">
+<p>This action destroys all associated data and can’t be undone!</p>
+</div>
+<pre class="language-term"><code class="language-term">heroku addons:destroy upstash-redis
+</code></pre>
+<h2 id="support">Support</h2>
+
+<p>If you have any questions, please send Upstash an email at <code>support@upstash.com</code>.</p>
+
+<p>You can join the Upstash <a href="https://discord.gg/w9SenAtbme">discord channel</a>.</p>
+
+<p>Check <a href="https://docs.upstash.com/">Upstash’s documentation</a> for more about its features and example projects.</p></div>
+</li></ul>
+<ul><li class="regularitem">
+<h4 class="itemtitle"><a href="https://devcenter.heroku.com/articles/getting-started-monitoring-postgres-database">Getting Started: Monitoring a Heroku Postgres Database</a></h4>
+<h5 class="itemposttime">
+<span>Posted:</span>2022-05-16 15:21:57 UTC</h5>
+<div class="itemcontent" name="decodeable"><p><a href="https://elements.heroku.com/addons/heroku-postgresql">Heroku Postgres</a> is a managed SQL database service provided directly by Heroku. You can access a Heroku Postgres database from any language with a PostgreSQL driver, including all languages <a href="https://www.heroku.com/languages">officially supported by Heroku</a>.</p>
+
+<p>Heroku Postgres provides database and server metrics that give information on the status of your instance. Understanding and monitoring these metrics will ensure the health of your database as your applications run and scale. Monitoring can also help you tune, debug, and troubleshoot your application.  If you have a production database, you should be monitoring it.</p>
+
+<p>In this getting started, you learn how to:</p>
+
+<ul>
+<li>View the Postgres log</li>
+<li>Review monitoring add-on options</li>
+<li>Identify which database metrics to track</li>
+</ul>
+
+<h2 id="before-you-begin">Before You Begin</h2>
+
+<p>You must have a Heroku Postgres database provisioned before you can proceed. Use the <code>heroku addons</code> command to determine whether your app already has Heroku Postgres provisioned:</p>
+<pre class="language-term"><code class="language-term">$ heroku addons
+Add-on                                                      Plan       Price  State
+──────────────────────────────────────────────────────────  ─────────  ─────  ───────
+heroku-postgresql (postgresql-concave-52656)                hobby-dev  free   created
+</code></pre>
+<p>To learn how to create a Heroku Postgres database, see <a href="https://devcenter.heroku.com/articles/heroku-postgresql#provisioning-heroku-postgres">Provisioning Heroku Postgres</a>.</p>
+
+<h2 id="explore-the-postgres-log">Explore the Postgres Log</h2>
+
+<p>You can view logs with the <a href="https://devcenter.heroku.com/articles/logging#view-logs-with-the-heroku-cli">Heroku CLI</a>, the <a href="https://devcenter.heroku.com/articles/logging#view-logs-with-the-heroku-dashboard">dashboard</a>, your <a href="https://devcenter.heroku.com/articles/logging#view-logs-with-a-logging-add-on">logging add-on</a>, or in your <a href="https://devcenter.heroku.com/articles/log-drains">log drain</a>.</p>
+
+<p><a href="https://devcenter.heroku.com/articles/heroku-postgresql">Heroku Postgres</a> logs to the <a href="https://devcenter.heroku.com/articles/logplex">logplex</a> which collates and publishes your application’s log-stream. You can isolate Heroku Postgres events <a href="https://devcenter.heroku.com/articles/logging">with the <code>heroku logs</code> command</a> by filtering for the <code>postgres</code> process.</p>
+<pre class="language-term"><code class="language-term">$ heroku logs -p heroku-postgres -a heroku-101-demo-app
+2022-04-21T07:46:55.000000+00:00 app[heroku-postgres]: source=HEROKU_POSTGRESQL_COBALT addon=postgresql-demo sample#current_transaction=509 sample#db_size=8426031bytes sample#tables=0 sample#active-connections=11 sample#waiting-connections=0 sample#index-cache-hit-rate=0 sample#table-cache-hit-rate=0 sample#load-avg-1m=0.02 sample#load-avg-5m=0.005 sample#load-avg-15m=0 sample#read-iops=0 sample#write-iops=0.10204 sample#tmp-disk-used=543600640 sample#tmp-disk-available=72435191808 sample#memory-total=3958708kB sample#memory-free=69612kB sample#memory-cached=3405616kB sample#memory-postgres=22080kB sample#wal-percentage-used=0.06428126026622091
+...
+</code></pre>
+<p>Use the <code>--tail</code> option to access real-time log entries:</p>
+<pre class="language-term"><code class="language-term">$ heroku logs -p heroku-postgres -a heroku-101-demo-app  --tail
+</code></pre>
+<p>When you’re done, press Ctrl+C to return to the prompt. A real-time tail session automatically terminates after one hour of inactivity. Use the <code>--source</code> (or <code>-s</code>) and <code>--dyno</code> (or <code>-d</code>) filtering argument to fetch logs with a certain source, a certain dyno, or both:</p>
+<pre class="language-term"><code class="language-term">$ heroku logs --source my-application --dyno worker
+</code></pre>
+<p>If you do not want to manually sift through logs, you can install a monitoring add-on.</p>
+
+<h2 id="install-a-monitoring-add-on">Install a Monitoring Add-on</h2>
+
+<p>The most effective way to keep track of database metrics is to install a platform monitoring add-on.</p>
+
+<p>A full list of monitoring add-ons can be found on the <a href="https://elements.heroku.com/addons#monitoring">Heroku Elements Marketplace</a>. Many of these add-ons offer a free plan to get started. See your add-on’s documentation for instructions on retrieving logs.</p>
+
+<h2 id="review-database-metrics">Review Database Metrics</h2>
+
+<p>Heroku Postgres provides database and server metrics that give information on the status of your instance. Understanding and monitoring these metrics will ensure the health of your database as your applications run and scale. Monitoring can also help you identify bottlenecks, bugs, and performance issues. You can look for these metrics in the log or in the dashboard for your monitoring add-on.</p>
+
+<p>You can track metrics for the following:</p>
+
+<ul>
+<li><strong>Database</strong> attributes apply to a particular database.</li>
+<li><strong>Server</strong> come directly from the server operating system.</li>
+<li><strong><code>pg_bouncer</code></strong>  metrics are included for any Heroku Postgres server that has a <a href="https://devcenter.heroku.com/articles/postgres-connection-pooling">PgBouncer pooler attachment</a>.  These metrics are a subset of those viewable by running the <code>SHOW POOLS;</code> command when connected to <a href="https://devcenter.heroku.com/articles/postgres-connection-pooling#viewing-connection-pool-stats">PgBouncer’s special internal database</a>.</li>
+</ul>
+
+<p>For more information about the different available metrics, see <a href="https://devcenter.heroku.com/articles/heroku-postgres-metrics-logs">Heroku Postgres Metrics Logs</a>. For a list of suggested metrics, see <a href="https://devcenter.heroku.com/articles/monitoring-heroku-postgres">Monitoring Heroku Postgres</a>.</p>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<p>Learn more about monitoring Heroku Postgres databases with the following content:</p>
+
+<ul>
+<li><a href="https://devcenter.heroku.com/articles/monitoring-heroku-postgres">Monitoring Heroku Postgres</a></li>
+<li><a href="https://devcenter.heroku.com/articles/managing-heroku-postgres-using-cli">Managing Heroku Postgres using the CLI</a></li>
+<li><a href="https://devcenter.heroku.com/articles/postgres-logs-errors">Understanding Heroku Postgres Log Statements and Common Errors</a></li>
+<li><a href="https://heroku-journeys.herokuapp.com/postgres-and-connect">Heroku Postgres and Connect Learning Journey</a></li>
+</ul></div>
+</li></ul>
+<ul><li class="regularitem">
+<h4 class="itemtitle"><a href="https://devcenter.heroku.com/articles/usecsv">UseCSV</a></h4>
+<h5 class="itemposttime">
+<span>Posted:</span>2022-04-20 18:28:12 UTC</h5>
+<div class="itemcontent" name="decodeable"><p><a href="https://elements.heroku.com/addons/usecsv">UseCSV</a> makes it easy to add simple and secure CSV &amp; Excel import functionality to your app. Integrate UseCSV Javascript into your application and then import data via a modal window. Import functionality is provided by UseCSV javascript. Imported data is sent as JSON to your backend by secure webhook. Alternatively, use a JS callback if you want to keep data local.</p>
+
+<h2 id="provision-the-add-on">Provision the Add-on</h2>
+
+<p>Attach UseCSV to a Heroku application via the CLI:</p>
+
+<div class="callout">
+<p>See a list of all plans available <a href="https://elements.heroku.com/addons/usecsv">here</a>.</p>
+</div>
+<pre class="language-term"><code class="language-term">$ heroku addons:create usecsv
+-----&gt; Adding usecsv to my-app-1234... done, v1 (free)
+</code></pre>
+<p>You can also attach your UseCSV add-on to another Heroku app using the following command:</p>
+<pre class="language-term"><code class="language-term">$ heroku addons:attach usecsv-convex-12345 -a my-app-1234
+-----&gt; Attaching usecsv-convex-12345 to my-app-1234... done, v1 (free)
+</code></pre>
+<p>After provisioning UseCSV, the <code>USECSV_WEBHOOK_SECRET</code> config variable will be available in your app’s configuration. Use it to <a href="#verify-webhook-requests">verify webhook requests</a> that come from UseCSV when data is uploaded.</p>
+
+<p>Visit the <a href="#dashboard">UseCSV Dashboard</a> to configure an Importer. An Importer sets the columns and validation rules for imports.</p>
+
+<h2 id="local-setup">Local Setup</h2>
+
+<h3 id="environment-setup">Environment Setup</h3>
+
+<p>After provisioning the add-on, it’s necessary to locally replicate the config vars so your development environment can operate against the service.</p>
+
+<p>Use the Heroku Local command-line tool to configure, run, and manage process types specified in your app’s <a href="https://devcenter.heroku.com/articles/procfile">Procfile</a>. Heroku Local reads configuration variables from a <code>.env</code> file. To view all of your app’s config variables, type <code>heroku config</code>. Use the following command for each value that you want to add to your <code>.env</code> file:</p>
+<pre class="language-term"><code class="language-term">$ heroku config:get USECSV_WEBHOOK_SECRET -s  &gt;&gt; .env
+</code></pre>
+<div class="warning">
+<p>Don’t commit credentials and other sensitive configuration values to source-control. In Git exclude the .env file with: <code>echo .env &gt;&gt; .gitignore.</code></p>
+</div>
+
+<p>For more information, see the <a href="https://devcenter.heroku.com/articles/heroku-local">Heroku Local</a> article.</p>
+
+<h2 id="dashboard">Dashboard</h2>
+
+<p>Use the UseCSV dashboard to:</p>
+
+<ul>
+<li><a href="#configure-importers">Configure Importers</a>, their columns and validation rules.</li>
+<li>Get the Key for an Importer, which is required when using the frontend library.</li>
+<li>Get usage metrics and monitor your add-on usage.</li>
+<li>Rotate your webhook secret. This action generates a secret and changes the value of the <code>USECSV_WEBHOOK_SECRET</code> config var.</li>
+</ul>
+
+<div class="note">
+<p>You should rotate passwords every 90 days.</p>
+</div>
+
+<p>You can access the dashboard via the CLI:</p>
+<pre class="language-term"><code class="language-term">$ heroku addons:open usecsv
+Opening usecsv for my-app-1234
+</code></pre>
+<p>or by visiting the Heroku Dashboard and selecting the application in question. Select UseCSV from the Add-ons menu.</p>
+
+<h2 id="configure-importers">Configure Importers</h2>
+
+<p>Importers define the columns and validations rules for your users when importing data with UseCSV. Before integrating UseCSV with your frontend and backend, you must configure at least one Importer.</p>
+
+<div class="note">
+<p>You must create an Importer for each data schema your users must import.</p>
+</div>
+
+<p>Manage Imports from the UseCSV dashboard.</p>
+
+<p>To create an Importer:</p>
+
+<ol>
+<li>Click <strong><code>Add Importer</code></strong>.</li>
+<li>Enter a name for the Importer.</li>
+<li>Click <strong><code>Save</code></strong>.</li>
+</ol>
+
+<p>You’ll now see the details for this new Importer. The next step is to configure it.</p>
+
+<h3 id="create-columns">Create Columns</h3>
+
+<p>Click <strong><code>Add Column</code></strong> and enter a Name, Description, and Example and then choose a Validation Format. Add as many columns as required.</p>
+
+<div class="note">
+<p>When importing data, your users match their uploaded CSV or Excel file to the destination columns you’ve configured.</p>
+</div>
+
+<h3 id="configure-a-webhook-url">Configure a Webhook URL</h3>
+
+<p>To receive imported data as a webhook, you must enter a Webhook URL. The Webhook URL endpoint must accept a JSON POST request. See the <a href="https://docs.usecsv.com/docs/webhook">Webhook docs</a> for more information.</p>
+
+<p>If you don’t want to send imported user data to UseCSV, use the frontend <a href="https://docs.usecsv.com/docs/importer/client-libraries/js/options#ondata-function">onData callback method</a> to disable the webhook. If you disable the webhook, only metadata is sent to UseCSV.</p>
+
+<h2 id="include-the-importer-in-your-frontend">Include the Importer in Your Frontend</h2>
+
+<p>Next add the UseCSV Importer modal to your frontend so your users can import their data using the step-by-step UseCSV import process. Visit documentation your relevant framework below:</p>
+
+<ul>
+<li><a href="https://docs.usecsv.com/docs/importer/client-libraries/js/getting-started">Javascript</a></li>
+<li><a href="https://docs.usecsv.com/docs/importer/client-libraries/react/getting-started">React</a></li>
+<li><a href="https://docs.usecsv.com/docs/importer/client-libraries/vuejs/getting-started">Vue.js</a></li>
+<li><a href="https://docs.usecsv.com/docs/importer/client-libraries/angular/getting-started">Angular</a></li>
+</ul>
+
+<h2 id="receive-imported-data">Receive Imported Data</h2>
+
+<p>You’re now ready to receive imported data. Use the Webhook or onData callback options below.</p>
+
+<h2 id="using-webhooks-to-your-backend">Using Webhooks to Your Backend</h2>
+
+<p>When a client uploads a csv file using your Importer in the frontend, UseCSV sends the csv rows to the <code>Webhook URL</code> in 1,000 row batches. Each batch request waits for a response from your backend before sending the next batch request. This makes it easy for you to process the import in your backend as part of the webhook request, without the need to manage your own processing queuing system.</p>
+
+<h3 id="webhook-request-format">Webhook Request Format</h3>
+<pre><code>POST &lt;Webhook URL (set in Importer)&gt;
+HEADERS
+  WEBHOOK_SECRET: &lt;Webhook Secret (find it in API Keys section of UseCSV admin)&gt;
+body:
+{
+  "uploadId": 231 // ID of the uploaded file
+  "importerId": "35a01b40-31f5-4d35-9f79-b844d5b1a423" // ID of the Importer
+  "batch": {
+    "index": 1 // which batch number this request is (starts at 1)
+    "count": 2 // total number of batches to be sent
+    "totalRows": 2000 // total rows in all batches in this import
+  }
+  "user": {
+    "userId":1 // JSON data provided by you through the plugin
+  },
+  "metadata": {...}, // JSON data provided by you through the plugin
+  "rows": [
+    {
+        "firstname": "john",
+        "lastname : "adams"
+     },
+    ......
+  ]
+}
+</code></pre>
+<p>Your webhook server must respond to receive the next batch. There’s a 10-minute request timeout.</p>
+
+<p>Respond with a <code>200</code> status to continue and receive the next batch. Responding with any other status code halts further webhook requests for the batch.</p>
+
+<p>If specific rows can’t be imported, and you want to let the user know, you can include an errors JSON array in the body of your 200 response:</p>
+<pre><code>status: 200
+body: {
+  errors: [
+    {
+      row: 1, // row number
+      msg: "this row is invalid"
+    }
+  ]
+}
+</code></pre>
+<p>The user is able to download a csv file of failed rows with these errors included in an error column.</p>
+
+<h3 id="verify-webhook-requests">Verify Webhook Requests</h3>
+
+<p>Webhook requests include a <code>WEBHOOK_SECRET</code> header, which can be used to verify that the request has come from UseCSV. Find the <code>WEBHOOK_SECRET</code> value in the <a href="https://app.usecsv.com/admin/api-keys">API Keys</a> admin section, and when you receive a webhook request, check the <code>WEBHOOK_SECRET</code> header matches this value. Reject requests that don’t match the value or don’t include the <code>WEBHOOK_SECRET</code> header.</p>
+
+<p>The Webhook Secret config var is automatically set in your Heroku app as <code>USECSV_WEBHOOK_SECRET</code>.</p>
+
+<h3 id="validate-uploads">Validate Uploads</h3>
+
+<p>When a user uploads a file using the Importer plugin in your app, you can validate who made the upload by including one or more attributes in the frontend Importer <code>user</code> and/or <code>metadata</code> props. For example, you can include a <code>userId</code> attribute in the <code>user</code> prop, which you can then verify in your backend when a webhook is received.</p>
+
+<h2 id="using-the-ondata-callback-in-your-frontend">Using the onData Callback in Your Frontend</h2>
+
+<p>If you prefer to handle your data locally, you can use the onData callback option. When a user completes the import process, this function is called with the imported data. Using this automatically disables the webhook and only metadata is sent to UseCSV. Refer to the options section in the <a href="https://docs.usecsv.com/docs/importer/client-libraries/supported-libraries">relevant frontend client library</a> for more information about using the onData callback.</p>
+
+<h2 id="removing-the-add-on">Removing the Add-on</h2>
+
+<p>You can remove UseCSV via the CLI:</p>
+
+<div class="warning">
+<p>This destroys all associated data and can’t be undone!</p>
+</div>
+<pre class="language-term"><code class="language-term">$ heroku addons:destroy UseCSV
+-----&gt; Removing UseCSV from sharp-mountain-4005... done
+</code></pre>
+<h2 id="support">Support</h2>
+
+<p>UseCSV support and runtime issues should be submitted via one of the <a href="https://devcenter.heroku.com/articles/support-channels">Heroku Support channels</a>. We recommend adding support@stackhero.io in copy for urgent issues.</p></div>
+</li></ul>
+<ul><li class="regularitem">
+<h4 class="itemtitle"><a href="https://devcenter.heroku.com/articles/using-the-salesforce-rest-api-with-heroku">Using the Salesforce REST API with Heroku</a></h4>
+<h5 class="itemposttime">
+<span>Posted:</span>2022-04-20 17:35:37 UTC</h5>
+<div class="itemcontent" name="decodeable"><p>The Salesforce platform provides a comprehensive <a href="https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_what_is_rest_api.htm">REST API</a> that can be called from a Heroku application. The API provides OAuth 2.0 or session ID authentication, and allows you to query Object Metadata, create or modify records, execute SOQL/SOSL queries, and interact with approval processes.</p>
+
+<h2 id="when-to-use">When to Use</h2>
+
+<p>Use the REST API in scenarios where you need more than just a data integration. You must be prepared to build a reasonably low-level integration using the REST API, but after you do, the API does let you perform a considerable number of actions on Salesforce.</p>
+
+<h2 id="calling-the-api">Calling the API</h2>
+
+<p>Community libraries, such as <a href="https://github.com/kevinohara80/nforce">nforce</a> or <a href="https://github.com/jsforce/jsforce">JSForce</a> for Node.js, can provide convenience wrappers for invoking the API.  Such libraries are available for most languages.  After authenticating the client, you can perform a SOQL query and update an object like this:</p>
+<pre class="language-javascript"><code class="language-javascript">var q = 'SELECT Id, Name, CreatedDate, BillingCity FROM Account WHERE Name = "Spiffy Cleaners" LIMIT 1';
+
+org.query({ query: q }, function(err, resp){
+
+  if(!err &amp;&amp; resp.records) {
+
+    var acc = resp.records[0];
+    acc.set('Name', 'Really Spiffy Cleaners');
+    acc.set('Industry', 'Cleaners');
+
+    org.update({ sobject: acc, oauth: oauth }, function(err, resp){
+      if(!err) console.log('It worked!');
+    });
+
+  }
+});
+</code></pre>
+<h2 id="limits-considerations">Limits &amp; Considerations</h2>
+
+<p>See the <a href="https://developer.salesforce.com/docs/atlas.en-us.214.0.api.meta/api/implementation_considerations.htm?SearchType=Stem">Implementation Considerations</a> of the API documentation, which outline  concurrent API request limits, API calls per license type, API calls per day, and so on.</p>
+
+<p><a href="https://devcenter.heroku.com/articles/security-and-heroku-salesforce-integrations">Security and Heroku/Salesforce integrations</a> shows how to secure this integration.</p>
+
+<h2 id="learn-more">Learn More</h2>
+
+<ul>
+<li>The <a href="https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_what_is_rest_api.htm">REST API</a> documentation.</li>
+<li>A <a href="https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_list.htm">Reference Guide</a> to the various end points.</li>
+<li>Integration libraries for <a href="https://github.com/kevinohara80/nforce">Node.js</a>, <a href="https://github.com/restforce/restforce">Ruby</a></li>
+</ul></div>
+</li></ul>
+<ul><li class="regularitem">
+<h4 class="itemtitle"><a href="https://devcenter.heroku.com/articles/make-apex-and-workflow-callouts-to-your-api">Make Apex and Workflow Callouts to Your API</a></h4>
+<h5 class="itemposttime">
+<span>Posted:</span>2022-04-20 15:09:45 UTC</h5>
+<div class="itemcontent" name="decodeable"><p>There are two primary methods for calling into a Heroku app with an API, based on an activity in Salesforce:</p>
+
+<ul>
+<li><em>Apex HTTP callouts</em> for programmatically making REST calls.</li>
+<li><em>Workflow outbound messages</em> for declaratively making SOAP calls.</li>
+</ul>
+
+<p>Either way, the Heroku app receives a request with the event details payload, and then performs the action.</p>
+
+<h2 id="when-to-use">When to use</h2>
+
+<p>You want a REST API integration based on object updates in the Salesforce org.</p>
+
+<h2 id="apex-http-callouts">Apex HTTP Callouts</h2>
+
+<p>With <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts.htm">Apex callouts</a>, you can tightly integrate your Apex with an external service, in this case, an app running on Heroku. Apex provides facilities for serialising objects into JSON and asynchronously calling HTTP endpoints. For example, here’s a helper class that can serialise an object and asynchronously POST the data to a Heroku endpoint:</p>
+<pre class="language-java"><code class="language-java">public class Helper {
+  public static String jsonContent(List&lt;Object&gt; triggerNew) {
+    String newObjects = '[]';
+    if (triggerNew != null) {
+      newObjects = JSON.serialize(triggerNew);
+    }
+    String content = '{"new": ' + newObjects}';
+    return content;
+  }
+  @future(callout=true) public static void callout(String url, String content) {
+    Http h = new Http();
+    HttpRequest req = new HttpRequest();
+    req.setEndpoint(url);
+    req.setMethod('POST');
+    req.setHeader('Content-Type', 'application/json');
+    req.setBody(content);
+    h.send(req);
+  }
+}
+</code></pre>
+<p>You can then invoke that method as needed, perhaps attached to a trigger:</p>
+<pre class="language-java"><code class="language-java"> trigger NewContactHerokuTrigger on Contact (after insert) {
+  String endpoint = 'https://foo.herokuapp.com/api/action';
+  String content = Helper.jsonContent(Trigger.new);
+  Helper.callout(url, content);
+}
+</code></pre>
+<p>Ensure that your Heroku application listens on the same API endpoint, and that it implements the appropriate action on receiving an HTTP POST.  You can additionally send a session ID to allow the Heroku app to make calls back into Salesforce using the Salesforce REST API.</p>
+
+<h2 id="outbound-messaging">Outbound Messaging</h2>
+
+<p>With <a href="https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_om_outboundmessaging.htm">outbound messaging</a>, you can configure Salesforce to automatically send messages (together with field values) to a designated external application endpoint, such as a Heroku app, whenever a specified set of fields change. Outbound messaging is part of the workflow rule functionality in Salesforce. Workflow rules watch for specific kinds of field changes, and trigger automatic Salesforce actions, such as sending email alerts, creating task records, or sending an outbound message.</p>
+
+<p>With workflow, you declaratively define a rule and a callout to an external system. The rule can be connected to any Salesforce object.</p>
+
+<h2 id="limits-considerations">Limits &amp; Considerations</h2>
+
+<p>Calling into Heroku from Salesforce tightly couples an endpoint on Heroku with Apex code in production. This method can make debugging more difficult. For more scalable and resilient integrations, we recommend using <a href="https://devcenter.heroku.com/articles/publish-and-subscribe-to-salesforce-platform-events">Salesforce Platform Events</a>.</p>
+
+<p>Pay attention to API limits, as many of the scenarios described here will impact a Salesforce limit (for example, Apex Triggers have CPU time limits, which will affect how often an integration can fire).</p>
+
+<p><a href="https://devcenter.heroku.com/articles/security-and-heroku-salesforce-integrations">Security and Heroku/Salesforce integrations</a> shows how to secure this integration.</p>
+
+<h2 id="learn-more">Learn More</h2>
+
+<ul>
+<li>See <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts.htm">Invoking Callouts using Apex</a> in the Apex Developer Guide.</li>
+<li>See <a href="https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_om_outboundmessaging_setting_up.htm">Setting Up Outbound Messaging</a> in the the SOAP API Developer Guide</li>
+</ul></div>
+</li></ul>
+<ul><li class="regularitem">
+<h4 class="itemtitle"><a href="https://devcenter.heroku.com/articles/security-and-heroku-salesforce-integrations">Security and Heroku/Salesforce Integrations</a></h4>
+<h5 class="itemposttime">
+<span>Posted:</span>2022-04-20 15:23:10 UTC</h5>
+<div class="itemcontent" name="decodeable"><p>When using Heroku and Salesforce together, particularly in the <a href="https://devcenter.heroku.com/articles/using-the-salesforce-rest-api-with-heroku">calling the Salesforce REST API</a>, <a href="https://devcenter.heroku.com/articles/publish-and-subscribe-to-salesforce-platform-events">Salesforce Platform Events</a> and <a href="https://devcenter.heroku.com/articles/make-apex-and-workflow-callouts-to-your-api">Apex HTTP callouts</a>  scenarios, security posture may be improved with an exclusive trust relationship, preventing undesired traffic from the public internet.</p>
+
+<p>In particular, if your Heroku application runs in a Private Space, you can:</p>
+
+<ul>
+<li>Ensure that the app is not available on the public internet, and only available from your Salesforce org  (Salesforce → Heroku)</li>
+<li>Ensure that your Salesforce org has appropriate IP restrictions to prevent public access, and prevent public OAuth endpoint access (Heroku → Salesforce)</li>
+</ul>
+
+<p>See <a href="https://devcenter.heroku.com/articles/establish-trust-private-space-and-salesforce">Establishing a Trusted Connection Between Private Spaces and Salesforce</a> for more details.</p></div>
+</li></ul>
+<ul><li class="regularitem">
+<h4 class="itemtitle"><a href="https://devcenter.heroku.com/articles/publish-and-subscribe-to-salesforce-platform-events">Publish and Subscribe to Salesforce Platform Events</a></h4>
+<h5 class="itemposttime">
+<span>Posted:</span>2022-04-25 14:25:16 UTC</h5>
+<div class="itemcontent" name="decodeable"><p>You can architect apps using an event-driven approach with the Salesforce enterprise messaging platform. <a href="https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_intro.htm">Platform Events</a> provides a powerful technique for integrating internal components within a Salesforce app, or for integrating such components with external systems, such as Heroku apps. The architecture is suitable for large distributed systems because it decouples event producers from event consumers, simplifying the communication model in connected systems.</p>
+
+<p>Heroku applications can behave as event producers, event consumers, or some combination of the two.</p>
+
+<h2 id="when-to-use">When to Use</h2>
+
+<p>You want to build a modern integration with the Salesforce enterprise messaging platform. The messaging platform lets you build modular integrations with clean integration boundaries using a messaging bus, instead of point-to-point integrations.</p>
+
+<h2 id="publishing-platform-events-from-heroku">Publishing Platform Events From Heroku</h2>
+
+<p>Event publication is carried out by <a href="https://devcenter.heroku.com/articles/using-the-salesforce-rest-api-with-heroku">Calling the Salesforce REST API</a>—it’s a matter of having a Heroku application create an sObject representing the event and POSTing to the appropriate endpoint, with something like:
+<code>/services/data/v43.0/sobjects/Event_Name__e/</code>.</p>
+
+<p>Using a Salesforce API client library, like <a href="https://github.com/jsforce/jsforce">JSforce</a> for Node.js, write something like this to publish an event (in this case, a <code>Flight_Approved</code> event):</p>
+<pre class="language-javascript"><code class="language-javascript">// Establish an authenticated Salesforce connection. (Details elided)
+const conn = new jsforce.Connection({ … });
+
+const eventData = {
+  Flight_Id__c: id,
+  Confirmation_Number__c: confirmationNumber
+};
+
+conn.sobject('Flight_Approved__e').create(eventData, (err, res) =&gt; {
+  if (err) {
+      console.error(err);
+  } else {
+      console.log("Event published");
+  }
+});
+</code></pre>
+<h2 id="subscribing-to-platform-events">Subscribing to Platform Events</h2>
+
+<p>Heroku apps can subscribe to events with the <a href="https://cometd.org/">CometD</a> protocol.  Salesforce sends platform events to CometD clients sequentially in the order that they’re received. The order of event notifications is based on the replay IDs of events.</p>
+
+<p>In Node.js apps, for example, you can use the <a href="https://github.com/jsforce/jsforce">JSforce</a> module to configure a subscription with replay:</p>
+<pre class="language-javascript"><code class="language-javascript">// Establish an authenticated Salesforce connection. (Details elided)
+const conn = new jsforce.Connection({ … });
+
+const channel = "/event/Flight_Approved__e";
+const replayId = -2; // -2 is all retained events
+
+const replayExt = new jsforce.StreamingExtension.Replay(channel, replayId);
+
+const fayeClient = conn.streaming.createClient([ replayExt ]);
+
+const subscription = fayeClient.subscribe(channel, data =&gt; {
+  console.log('Received Flight Approved Event', data);
+});
+</code></pre>
+<h2 id="limits-considerations">Limits &amp; Considerations</h2>
+
+<p>Read the <a href="https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_api_considerations.htm">Salesforce docs</a> that describe what to consider when building with Platform Events, including avoiding infinite trigger loops, API limits, and more.</p>
+
+<p><a href="https://devcenter.heroku.com/articles/security-and-heroku-salesforce-integrations">Security and Heroku/Salesforce integrations</a> shows how to secure this integration.</p>
+
+<h2 id="learn-more">Learn More</h2>
+
+<ul>
+<li><a href="https://developer.salesforce.com/docs/atlas.en-us.214.0.platform_events.meta/platform_events/platform_events_intro.htm">Platform Events Developer Guide</a></li>
+<li><a href="https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_publish_api.htm">Publish Event Messages with Salesforce APIs</a></li>
+<li><a href="https://developer.salesforce.com/docs/atlas.en-us.214.0.platform_events.meta/platform_events/platform_events_subscribe_cometd.htm">Subscribe to Platform Event Notifications with CometD</a></li>
+<li>The <a href="https://faye.jcoglan.com/download.html">Faye</a> modules for Node.js and Ruby</li>
+</ul></div>
+</li></ul>
+</div>
+<div id="footer">
+<a href="https://feedburner.google.com"><img src="//feedburner.google.com/fb/feed-styles/images/footer_logo.gif"></a><p>FeedBurner delivers the world's subscriptions wherever they need to go. Publish a feed for text or podcasting? <a href="https://feedburner.google.com" target="_blank"><br>You should try FeedBurner today</a>.</p>
+</div>
+</div>
+
+</body></html>

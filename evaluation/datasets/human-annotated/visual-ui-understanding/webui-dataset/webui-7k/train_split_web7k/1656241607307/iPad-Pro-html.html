@@ -1,0 +1,1055 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="profile" href="http://gmpg.org/xfn/11">
+<link rel="pingback" href="https://ontechnologyandmedia.com/xmlrpc.php">
+
+<title>On Technology and Media – Commentary by Kendall Whitehouse</title>
+<meta name="robots" content="max-image-preview:large">
+<meta name="google-site-verification" content="2hw_C9a4wCa_UmrX7pwKxdhumH6mTpl4RVmW2_BZ0_A">
+
+<!-- Async WordPress.com Remote Login -->
+<script id="wpcom_remote_login_js">
+var wpcom_remote_login_extra_auth = '';
+function wpcom_remote_login_remove_dom_node_id( element_id ) {
+	var dom_node = document.getElementById( element_id );
+	if ( dom_node ) { dom_node.parentNode.removeChild( dom_node ); }
+}
+function wpcom_remote_login_remove_dom_node_classes( class_name ) {
+	var dom_nodes = document.querySelectorAll( '.' + class_name );
+	for ( var i = 0; i < dom_nodes.length; i++ ) {
+		dom_nodes[ i ].parentNode.removeChild( dom_nodes[ i ] );
+	}
+}
+function wpcom_remote_login_final_cleanup() {
+	wpcom_remote_login_remove_dom_node_classes( "wpcom_remote_login_msg" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_key" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_validate" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_js" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_request_access_iframe" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_request_access_styles" );
+}
+
+// Watch for messages back from the remote login
+window.addEventListener( "message", function( e ) {
+	if ( e.origin === "https://r-login.wordpress.com" ) {
+		var data = {};
+		try {
+			data = JSON.parse( e.data );
+		} catch( e ) {
+			wpcom_remote_login_final_cleanup();
+			return;
+		}
+
+		if ( data.msg === 'LOGIN' ) {
+			// Clean up the login check iframe
+			wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_key" );
+
+			var id_regex = new RegExp( /^[0-9]+$/ );
+			var token_regex = new RegExp( /^.*|.*|.*$/ );
+			if (
+				token_regex.test( data.token )
+				&& id_regex.test( data.wpcomid )
+			) {
+				// We have everything we need to ask for a login
+				var script = document.createElement( "script" );
+				script.setAttribute( "id", "wpcom_remote_login_validate" );
+				script.src = '/remote-login.php?wpcom_remote_login=validate'
+					+ '&wpcomid=' + data.wpcomid
+					+ '&token=' + encodeURIComponent( data.token )
+					+ '&host=' + window.location.protocol
+					+ '//' + window.location.hostname
+					+ '&postid=8989'
+					+ '&is_singular=';
+				document.body.appendChild( script );
+			}
+
+			return;
+		}
+
+		// Safari ITP, not logged in, so redirect
+		if ( data.msg === 'LOGIN-REDIRECT' ) {
+			window.location = 'https://wordpress.com/log-in?redirect_to=' + window.location.href;
+			return;
+		}
+
+		// Safari ITP, storage access failed, remove the request
+		if ( data.msg === 'LOGIN-REMOVE' ) {
+			var css_zap = 'html { -webkit-transition: margin-top 1s; transition: margin-top 1s; } /* 9001 */ html { margin-top: 0 !important; } * html body { margin-top: 0 !important; } @media screen and ( max-width: 782px ) { html { margin-top: 0 !important; } * html body { margin-top: 0 !important; } }';
+			var style_zap = document.createElement( 'style' );
+			style_zap.type = 'text/css';
+			style_zap.appendChild( document.createTextNode( css_zap ) );
+			document.body.appendChild( style_zap );
+
+			var e = document.getElementById( 'wpcom_request_access_iframe' );
+			e.parentNode.removeChild( e );
+
+			document.cookie = 'wordpress_com_login_access=denied; path=/; max-age=31536000';
+
+			return;
+		}
+
+		// Safari ITP
+		if ( data.msg === 'REQUEST_ACCESS' ) {
+			console.log( 'request access: safari' );
+
+			// Check ITP iframe enable/disable knob
+			if ( wpcom_remote_login_extra_auth !== 'safari_itp_iframe' ) {
+				return;
+			}
+
+			// If we are in a "private window" there is no ITP.
+			var private_window = false;
+			try {
+				var opendb = window.openDatabase( null, null, null, null );
+			} catch( e ) {
+				private_window = true;
+			}
+
+			if ( private_window ) {
+				console.log( 'private window' );
+				return;
+			}
+
+			var iframe = document.createElement( 'iframe' );
+			iframe.id = 'wpcom_request_access_iframe';
+			iframe.setAttribute( 'scrolling', 'no' );
+			iframe.setAttribute( 'sandbox', 'allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-top-navigation-by-user-activation' );
+			iframe.src = 'https://r-login.wordpress.com/remote-login.php?wpcom_remote_login=request_access&origin=' + encodeURIComponent( data.origin ) + '&wpcomid=' + encodeURIComponent( data.wpcomid );
+
+			var css = 'html { -webkit-transition: margin-top 1s; transition: margin-top 1s; } /* 9001 */ html { margin-top: 46px !important; } * html body { margin-top: 46px !important; } @media screen and ( max-width: 660px ) { html { margin-top: 71px !important; } * html body { margin-top: 71px !important; } #wpcom_request_access_iframe { display: block; height: 71px !important; } } #wpcom_request_access_iframe { border: 0px; height: 46px; position: fixed; top: 0; left: 0; width: 100%; min-width: 100%; z-index: 99999; background: #23282d; } ';
+
+			var style = document.createElement( 'style' );
+			style.type = 'text/css';
+			style.id = 'wpcom_request_access_styles';
+			style.appendChild( document.createTextNode( css ) );
+			document.body.appendChild( style );
+
+			document.body.appendChild( iframe );
+		}
+
+		if ( data.msg === 'DONE' ) {
+			wpcom_remote_login_final_cleanup();
+		}
+	}
+}, false );
+
+// Inject the remote login iframe after the page has had a chance to load
+// more critical resources
+window.addEventListener( "DOMContentLoaded", function( e ) {
+	var iframe = document.createElement( "iframe" );
+	iframe.style.display = "none";
+	iframe.setAttribute( "scrolling", "no" );
+	iframe.setAttribute( "id", "wpcom_remote_login_key" );
+	iframe.src = "https://r-login.wordpress.com/remote-login.php"
+		+ "?wpcom_remote_login=key"
+		+ "&origin=aHR0cHM6Ly9vbnRlY2hub2xvZ3lhbmRtZWRpYS5jb20%3D"
+		+ "&wpcomid=115418116"
+		+ "&time=1656241607";
+	document.body.appendChild( iframe );
+}, false );
+</script>
+<link rel="dns-prefetch" href="//s0.wp.com">
+<link rel="dns-prefetch" href="//ontechnologyandmedia.wordpress.com">
+<link rel="dns-prefetch" href="//fonts.googleapis.com">
+<link href="https://fonts.gstatic.com" crossorigin="" rel="preconnect">
+<link rel="alternate" type="application/rss+xml" title="On Technology and Media » Feed" href="https://ontechnologyandmedia.com/feed/">
+<link rel="alternate" type="application/rss+xml" title="On Technology and Media » Comments Feed" href="https://ontechnologyandmedia.com/comments/feed/">
+	<script type="text/javascript">
+		/* <![CDATA[ */
+		function addLoadEvent(func) {
+			var oldonload = window.onload;
+			if (typeof window.onload != 'function') {
+				window.onload = func;
+			} else {
+				window.onload = function () {
+					oldonload();
+					func();
+				}
+			}
+		}
+		/* ]]> */
+	</script>
+	<script type="text/javascript">
+window._wpemojiSettings = {"baseUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/72x72\/","ext":".png","svgUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/s0.wp.com\/wp-includes\/js\/wp-emoji-release.min.js?m=1652185836h&ver=6.0-RC4-53438"}};
+/*! This file is auto-generated */
+!function(e,a,t){var n,r,o,i=a.createElement("canvas"),p=i.getContext&&i.getContext("2d");function s(e,t){var a=String.fromCharCode,e=(p.clearRect(0,0,i.width,i.height),p.fillText(a.apply(this,e),0,0),i.toDataURL());return p.clearRect(0,0,i.width,i.height),p.fillText(a.apply(this,t),0,0),e===i.toDataURL()}function c(e){var t=a.createElement("script");t.src=e,t.defer=t.type="text/javascript",a.getElementsByTagName("head")[0].appendChild(t)}for(o=Array("flag","emoji"),t.supports={everything:!0,everythingExceptFlag:!0},r=0;r<o.length;r++)t.supports[o[r]]=function(e){if(!p||!p.fillText)return!1;switch(p.textBaseline="top",p.font="600 32px Arial",e){case"flag":return s([127987,65039,8205,9895,65039],[127987,65039,8203,9895,65039])?!1:!s([55356,56826,55356,56819],[55356,56826,8203,55356,56819])&&!s([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]);case"emoji":return!s([129777,127995,8205,129778,127999],[129777,127995,8203,129778,127999])}return!1}(o[r]),t.supports.everything=t.supports.everything&&t.supports[o[r]],"flag"!==o[r]&&(t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&t.supports[o[r]]);t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&!t.supports.flag,t.DOMReady=!1,t.readyCallback=function(){t.DOMReady=!0},t.supports.everything||(n=function(){t.readyCallback()},a.addEventListener?(a.addEventListener("DOMContentLoaded",n,!1),e.addEventListener("load",n,!1)):(e.attachEvent("onload",n),a.attachEvent("onreadystatechange",function(){"complete"===a.readyState&&t.readyCallback()})),(e=t.source||{}).concatemoji?c(e.concatemoji):e.wpemoji&&e.twemoji&&(c(e.twemoji),c(e.wpemoji)))}(window,document,window._wpemojiSettings);
+</script><script src="https://s0.wp.com/wp-includes/js/wp-emoji-release.min.js?m=1652185836h&amp;ver=6.0-RC4-53438" type="text/javascript" defer=""></script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 0.07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	<link crossorigin="anonymous" rel="stylesheet" id="all-css-0-1" href="https://s0.wp.com/_static/??-eJyNktFuwyAMRX9o4KVRuu5h2rcAcZk7IAhDK/5+NNuirO3WvSAu9rm6woZTFGYKGUMGX0R0xVJgOEUzecGeHNYLJQ3zA9zGKOwpUK7L5ar5u9OWJjUm2yoJ4dj1cpCPoAu5EbSbzLtwpJNKFThXh4sRBePKiAwHBo8jKXTo5xgrEZ2qmIRDq0yVnsJ9vNXW+gf0e/g5aTPDHNU5sqpTycImGi9i/9siqUzB8h3cTF/YRnY72QkmHx2KhEe5gZE4Lx3ittFqaOcBtHcf1fUv/IF9LoXWMSGzaKen4kV+a+C8I6/+pdsOw3O/G576wwf2CucC?cssminify=yes" type="text/css" media="all">
+<style id="wp-block-library-inline-css">
+.has-text-align-justify {
+	text-align:justify;
+}
+</style>
+<style id="global-styles-inline-css">
+body{--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--duotone--dark-grayscale: url('#wp-duotone-dark-grayscale');--wp--preset--duotone--grayscale: url('#wp-duotone-grayscale');--wp--preset--duotone--purple-yellow: url('#wp-duotone-purple-yellow');--wp--preset--duotone--blue-red: url('#wp-duotone-blue-red');--wp--preset--duotone--midnight: url('#wp-duotone-midnight');--wp--preset--duotone--magenta-yellow: url('#wp-duotone-magenta-yellow');--wp--preset--duotone--purple-green: url('#wp-duotone-purple-green');--wp--preset--duotone--blue-orange: url('#wp-duotone-blue-orange');--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+</style>
+<link crossorigin="anonymous" rel="stylesheet" id="franklin-fonts-css" href="https://fonts.googleapis.com/css?family=Open+Sans%3A400%2C600%7CSource+Sans+Pro%3A400%2C700%2C900&amp;subset=latin%2Clatin-ext" media="all">
+<link crossorigin="anonymous" rel="stylesheet" id="all-css-4-1" href="https://s0.wp.com/_static/??-eJyNj90KwjAMRl/IGgpT9EJ8llmzGm2T0mQM396KNxv+4N35yHdIAlNxQdiQDfLoShojsUJExkpt8AXXQXUFM9cumFGhjCcYas+3RAxq94R/NYnDq+2mEiS/ObPLJjpHNAWT4opoo89rFs+ISxJ6I+FFcEPqqf5SK56SxIYRWmsWn9IxH3y33/rdxnf++gB73nwD?cssminify=yes" type="text/css" media="all">
+<style id="franklin-style-inline-css">
+.post-meta li.author { clip: rect(1px, 1px, 1px, 1px); height: 1px; position: absolute; overflow: hidden; width: 1px; }
+</style>
+<link crossorigin="anonymous" rel="stylesheet" id="print-css-5-1" href="https://s0.wp.com/wp-content/mu-plugins/global-print/global-print.css?m=1465851035h&amp;cssminify=yes" type="text/css" media="print">
+<style id="jetpack-global-styles-frontend-style-inline-css">
+:root { --font-headings: unset; --font-base: unset; --font-headings-default: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif; --font-base-default: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;}
+</style>
+<link crossorigin="anonymous" rel="stylesheet" id="all-css-8-1" href="https://s0.wp.com/wp-content/themes/h4/global.css?m=1420737423h&amp;cssminify=yes" type="text/css" media="all">
+<script id="media-video-jwt-bridge-js-extra">
+var videopressAjax = {"ajaxUrl":"https:\/\/ontechnologyandmedia.wordpress.com\/wp-admin\/admin-ajax.php","bridgeUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/videopress\/js\/videopress-token-bridge.js","post_id":"8989"};
+</script>
+<script id="wpcom-actionbar-placeholder-js-extra">
+var actionbardata = {"siteID":"115418116","siteURL":"https:\/\/ontechnologyandmedia.com","xhrURL":"https:\/\/ontechnologyandmedia.com\/wp-admin\/admin-ajax.php","nonce":"716e2cda88","isLoggedIn":"","statusMessage":"","subsEmailDefault":"instantly","proxyScriptUrl":"https:\/\/s0.wp.com\/wp-content\/js\/wpcom-proxy-request.js?ver=20211021","i18n":{"followedText":"New posts from this site will now appear in your <a href=\"https:\/\/wordpress.com\/read\">Reader<\/a>","foldBar":"Collapse this bar","unfoldBar":"Expand this bar"}};
+</script>
+<script crossorigin="anonymous" type="text/javascript" src="https://s0.wp.com/_static/??-eJyFjUsOwjAMBS+EGxWJUhaIs/RjIofEDk5S6O0piApYsbKeZ+xnbhEG4YycjUsmSE8eoSTUzi47ID5L5dLG/HrqM0SV+7wy4sGXEdMTumtBnd+jCsR/JQhktcv4La9toUD0xRInM9GIEhXT68MnQZYLMvRKo8Xl/hSOdbPb7g912zbuAQmmVCk="></script>
+<script type="text/javascript">
+	window.addEventListener( 'DOMContentLoaded', function() {
+		rltInitialize( {"token":null,"iframeOrigins":["https:\/\/widgets.wp.com"]} );
+	} );
+</script>
+<link crossorigin="anonymous" rel="stylesheet" id="all-css-0-2" href="https://s0.wp.com/wp-content/mu-plugins/highlander-comments/style.css?m=1650315457h&amp;cssminify=yes" type="text/css" media="all">
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://ontechnologyandmedia.wordpress.com/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://s0.wp.com/wp-includes/wlwmanifest.xml"> 
+<meta name="generator" content="WordPress.com">
+<link rel="shortlink" href="https://wp.me/7Ohww">
+
+<!-- Jetpack Open Graph Tags -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="On Technology and Media">
+<meta property="og:description" content="Commentary by Kendall Whitehouse">
+<meta property="og:url" content="https://ontechnologyandmedia.com/">
+<meta property="og:site_name" content="On Technology and Media">
+<meta property="og:image" content="https://secure.gravatar.com/blavatar/aa20894bab5b029834ab8bb56a088935?s=200&amp;ts=1656241607">
+<meta property="og:image:width" content="200">
+<meta property="og:image:height" content="200">
+<meta property="og:image:alt" content="">
+<meta property="og:locale" content="en_US">
+
+<!-- End Jetpack Open Graph Tags -->
+<link rel="shortcut icon" type="image/x-icon" href="https://secure.gravatar.com/blavatar/aa20894bab5b029834ab8bb56a088935?s=32" sizes="16x16">
+<link rel="icon" type="image/x-icon" href="https://secure.gravatar.com/blavatar/aa20894bab5b029834ab8bb56a088935?s=32" sizes="16x16">
+<link rel="apple-touch-icon" href="https://secure.gravatar.com/blavatar/aa20894bab5b029834ab8bb56a088935?s=114">
+<link rel="search" type="application/opensearchdescription+xml" href="https://ontechnologyandmedia.com/osd.xml" title="On Technology and Media">
+<link rel="search" type="application/opensearchdescription+xml" href="https://s1.wp.com/opensearch.xml" title="WordPress.com">
+<meta name="theme-color" content="#f9f9f9">
+<meta name="application-name" content="On Technology and Media"><meta name="msapplication-window" content="width=device-width;height=device-height"><meta name="msapplication-tooltip" content="Commentary by Kendall Whitehouse"><meta name="msapplication-task" content="name=Subscribe;action-uri=https://ontechnologyandmedia.com/feed/;icon-uri=https://secure.gravatar.com/blavatar/aa20894bab5b029834ab8bb56a088935?s=16"><meta name="msapplication-task" content="name=Sign up for a free blog;action-uri=http://wordpress.com/signup/;icon-uri=https://s0.wp.com/i/favicon.ico"><meta name="msapplication-task" content="name=WordPress.com Support;action-uri=http://support.wordpress.com/;icon-uri=https://s0.wp.com/i/favicon.ico"><meta name="msapplication-task" content="name=WordPress.com Forums;action-uri=http://forums.wordpress.com/;icon-uri=https://s0.wp.com/i/favicon.ico"><meta name="description" content="Commentary by Kendall Whitehouse">
+<!-- There is no amphtml version available for this URL. --><style type="text/css" id="custom-colors-css">	.site-info,
+	.site-title a,
+	.desktop #primary-menu > li > a,
+	.site-description,
+	.site-header-top a,
+	.site-footer-bottom a,
+	.sticky-post-label.on-image,
+	#page #header-search button:before {
+		text-shadow: none;
+	}
+	.desktop #primary-menu > li > a {
+		box-shadow: none;
+	}
+	.desktop #page #primary-menu > li:hover > a,
+	.desktop #page #primary-menu > li.current-menu-item > a {
+		background-color: #fff;
+	}
+	#content {
+		border-color: transparent;
+	}
+	.comment-metadata a {
+		opacity: 0.55;
+	}
+	.comment-metadata a:hover {
+		opacity: 0.85;
+	}
+	.widget_calendar tbody td a { color: #ffffff;}
+#page input[type="submit"],
+					#page input[type="reset"],
+					#page form button:not(.search-button):not(.menu-toggle):not(.dropdown-toggle) { color: #FFFFFF;}
+#page .site-title a { color: #FFFFFF;}
+.desktop #primary-menu > li > a { border-color: #FFFFFF;}
+.sticky-post-label.on-image { color: #FFFFFF;}
+.widget_tag_cloud a:hover,
+					.widget_tag_cloud a:active,
+					.widget_tag_cloud a:focus,
+					.wp_widget_tag_cloud a:active,
+					.wp_widget_tag_cloud a:hover,
+					.wp_widget_tag_cloud a:focus { color: #FFFFFF;}
+.widget_calendar tbody td a { color: #FFFFFF;}
+body { background-color: #f9f9f9;}
+a,
+					body,
+					input,
+					select,
+					textarea,
+					.menu-toggle,
+					input[type="text"],
+					input[type="email"],
+					input[type="url"],
+					input[type="search"],
+					input[type="button"],
+					input[type="reset"],
+					input[type="submit"],
+					.archives-label,
+					.posts-navigation a,
+					.widget_calendar tfoot td a,
+					#infinite-handle span { color: #555555;}
+strong,
+						.wp-caption-text strong,
+						.wp-caption-text a { color: #555555;}
+.page-content a,
+						.entry-content a,
+						.comment-content a,
+						.entry-summary a { color: #555555;}
+.widget_recent_entries .post-date,
+						.entry-breadcrumbs,
+						.more-link span.meta-nav,
+						.comment-reply-link,
+						.pingback a.comment-edit-link,
+						.trackback a.comment-edit-link,
+						.comment-metadata,
+						.comment-author-name a,
+						.comment-awaiting-moderation { color: #555555;}
+input[type="submit"],
+						input[type="reset"],
+						form button:not(.search-button):not(.menu-toggle):not(.dropdown-toggle) { background-color: #555555;}
+#page input[type="submit"]:hover,
+						#page input[type="reset"]:hover,
+						#page form button:not(.search-button):not(.menu-toggle):not(.dropdown-toggle):hover { background-color: #555555;}
+h1, h2, h3, h4, h5, h6,
+						.archives-label,
+						.comments-title,
+						.widget-title,
+						.widgettitle,
+						.edit-post-link,
+						.entry-header .entry-title { color: #555555;}
+.widget_wpcom_social_media_icons_widget li a { color: #555555;}
+pre,
+						.entry-footer,
+						.pingback a,
+						.trackback a,
+						.nav-links a,
+						.widget .children li,
+						.widget .sub-menu li,
+						.attachment .entry-caption,
+						.wp-caption-text,
+						.entry-content blockquote,
+						.comment-content blockquote,
+						.comment-author b.fn,
+						.comment-author b.fn a,
+						#cancel-comment-reply-link { color: #555555;}
+#page .comment-author b.fn a:hover { color: #555555;}
+.widget_tag_cloud a,
+						.wp_widget_tag_cloud a { color: #555555;}
+.site-header-main,
+					.sticky-post-label.on-image,
+					.page-links a:hover,
+					.page-links a:focus,
+					.page-links a:active { background-color: #163c87;}
+a:hover,
+					a:focus,
+					a:active,
+					.widget_calendar tfoot td a:hover,
+					.entry-breadcrumbs a:hover,
+					.sticky-post-label,
+					.page-content a:hover,
+					.entry-content a:hover,
+					.comment-content a:hover,
+					.entry-summary a:hover,
+					.entry-header .entry-title a:hover,
+					.attachment .entry-caption a:hover,
+					.wp-caption-text a:hover,
+					.entry-footer a:hover,
+					.entry-footer a:active,
+					.entry-footer a:focus,
+					.posts-navigation a:hover,
+					.posts-navigation a:focus,
+					.posts-navigation a:active,
+					.pingback a:hover,
+					.trackback a:hover,
+					.comment-metadata a:hover,
+					.comment-navigation a:hover,
+					.comment-navigation a:focus,
+					.comment-navigation a:active,
+					.main-navigation .menu-toggle:before,
+					#cancel-comment-reply-link:hover,
+					#infinite-handle span:active,
+					#infinite-handle span:hover,
+					#infinite-handle span:focus,
+					#mobile-menu li a:hover,
+					#mobile-menu li a:focus,
+					#mobile-menu li a:active,
+					#mobile-menu li .dropdown-toggle:hover + a,
+					#mobile-menu li .dropdown-toggle:focus + a,
+					#mobile-menu li .dropdown-toggle:active + a { color: #163C87;}
+.widget_wpcom_social_media_icons_widget li a:hover,
+						.widget_wpcom_social_media_icons_widget li a:focus,
+						.widget_wpcom_social_media_icons_widget li a:active { color: #163C87;}
+.desktop #page #primary-menu > li > a { color: #FFFFFF;}
+.desktop #primary-menu ul li.current-menu-item > a,
+						.desktop #primary-menu ul li:hover > a,
+						.desktop #primary-menu ul li a:hover,
+						.desktop #primary-menu ul li a:focus,
+						.desktop #primary-menu ul li a:active { color: #163C87;}
+.desktop #page #primary-menu > li:hover > a,
+						.desktop #page #primary-menu > li > a:focus,
+						.desktop #page #primary-menu > li > a:active,
+						.desktop #page #primary-menu > li.current-menu-item > a { color: #163C87;}
+.widget_tag_cloud a:hover,
+						.widget_tag_cloud a:active,
+						.widget_tag_cloud a:focus,
+						.wp_widget_tag_cloud a:hover,
+						.wp_widget_tag_cloud a:active,
+						.wp_widget_tag_cloud a:focus { background-color: #163C87;}
+.widget_calendar tbody td a { background-color: #163C87;}
+#page .comment-author b.fn a:hover,
+						#page .comment-author b.fn a:focus,
+						#page .comment-author b.fn a:active,
+						#page .entry-footer a:hover,
+						#page .entry-footer a:focus,
+						#page .entry-footer a:active { color: #163C87;}
+.site-header-top,
+					.site-footer-bottom { background-color: #2d3642;}
+#header-search input.search-field { color: #2D3642;}
+.site-description,
+					.site-header-top a,
+					.site-footer-bottom a { color: #8197AB;}
+.site-header-top a,
+					.site-footer-bottom a { border-bottom-color: #51667A;}
+.site-header-top a:hover,
+					.site-footer-bottom a:hover { color: #D7DFE3;}
+.site-info { color: #668299;}
+</style>
+		<link rel="stylesheet" id="custom-css-css" type="text/css" href="https://s0.wp.com/?custom-css=1&amp;csblog=7Ohww&amp;cscache=6&amp;csrev=229">
+		<!-- Your Google Analytics Plugin is missing the tracking ID -->
+<link rel="stylesheet" type="text/css" id="gravatar-card-css" href="https://0.gravatar.com/dist/css/hovercard.min.css?ver=202225z"><link rel="stylesheet" type="text/css" id="gravatar-card-services-css" href="https://0.gravatar.com/dist/css/services.min.css?ver=202225z"><link href="https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.css?v=20210915" type="text/css" rel="stylesheet"></head>
+
+<body class="home blog customizer-styles-applied author-hidden highlander-enabled highlander-light custom-colors infinite-scroll desktop">
+<div id="page" class="hfeed site">
+	<a class="skip-link screen-reader-text" href="#content">Skip to content</a>
+	<header id="masthead" class="site-header" role="banner">
+
+		<div class="site-header-top">
+			<div class="inner">
+				<p class="site-description">Commentary by Kendall Whitehouse</p>
+
+				<form id="header-search" action="https://ontechnologyandmedia.com/">
+					<input type="search" class="search-field" name="s" value="">
+					<button type="submit" class="search-button">Search</button>
+				</form><!-- #header-search -->
+
+				
+			</div><!-- .inner -->
+		</div><!-- .site-header-top -->
+
+		<div class="site-header-main">
+			<div class="inner">
+				<div class="site-branding">
+					<a href="https://ontechnologyandmedia.com/" class="site-logo-link" rel="home" itemprop="url"></a>					<h1 class="site-title"><a href="https://ontechnologyandmedia.com/" rel="home">On Technology and Media</a></h1>
+				</div><!-- .site-branding -->
+
+								<nav id="site-navigation" class="main-navigation" role="navigation">
+					<button class="menu-toggle" aria-controls="primary-menu" aria-expanded="false" data-close-label="Close">Menu</button>
+					<ul id="primary-menu" class="menu nav-menu" aria-expanded="false"><li id="menu-item-8" class="menu-item menu-item-type-custom menu-item-object-custom current-menu-item current_page_item menu-item-8"><a href="/" aria-current="page">Home</a></li>
+<li id="menu-item-4832" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-4832"><a href="https://ontechnologyandmedia.com/interviews/">Interviews</a></li>
+<li id="menu-item-8791" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-8791"><a href="https://ontechnologyandmedia.com/reports-from-comic-con/">Reports from Comic Con</a></li>
+<li id="menu-item-4833" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-4833"><a href="https://ontechnologyandmedia.com/about/">About / Search</a></li>
+</ul>				</nav><!-- #site-navigation -->
+							</div><!-- .inner -->
+		<nav id="mobile-navigation" class="main-navigation inner" role="navigation"><ul id="mobile-menu" class="menu"><li id="menu-item-8" class="menu-item menu-item-type-custom menu-item-object-custom current-menu-item current_page_item menu-item-8"><a href="/" aria-current="page">Home</a></li>
+<li id="menu-item-4832" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-4832"><a href="https://ontechnologyandmedia.com/interviews/">Interviews</a></li>
+<li id="menu-item-8791" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-8791"><a href="https://ontechnologyandmedia.com/reports-from-comic-con/">Reports from Comic Con</a></li>
+<li id="menu-item-4833" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-4833"><a href="https://ontechnologyandmedia.com/about/">About / Search</a></li>
+</ul></nav></div><!-- .site-header-main -->
+	</header><!-- #masthead -->
+
+	<div id="content" class="site-content">
+	<div id="primary" class="content-area">
+		<main id="main" class="site-main" role="main">
+
+		
+			
+						
+				
+<article id="post-8989" class="post-8989 post type-post status-publish format-standard has-post-thumbnail hentry category-comic-con-reports tag-comic-con tag-fanexpo">
+	<div class="post-image-link"><a rel="bookmark" href="https://ontechnologyandmedia.com/2022/04/12/fan-expo-philadelphia-2022/"><img width="1020" height="492" src="https://ontechnologyandmedia.files.wordpress.com/2022/04/fan-expo-philadelphia-2022-photo-by-kendall-whitehouse-1020x492-1.jpg?w=1020&amp;h=492&amp;crop=1" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="Fan Expo Philadelphia&nbsp;2022" loading="lazy" srcset="https://ontechnologyandmedia.files.wordpress.com/2022/04/fan-expo-philadelphia-2022-photo-by-kendall-whitehouse-1020x492-1.jpg 1020w, https://ontechnologyandmedia.files.wordpress.com/2022/04/fan-expo-philadelphia-2022-photo-by-kendall-whitehouse-1020x492-1.jpg?w=150&amp;h=72&amp;crop=1 150w, https://ontechnologyandmedia.files.wordpress.com/2022/04/fan-expo-philadelphia-2022-photo-by-kendall-whitehouse-1020x492-1.jpg?w=300&amp;h=145&amp;crop=1 300w, https://ontechnologyandmedia.files.wordpress.com/2022/04/fan-expo-philadelphia-2022-photo-by-kendall-whitehouse-1020x492-1.jpg?w=768&amp;h=370&amp;crop=1 768w" sizes="(max-width: 1020px) 100vw, 1020px" data-attachment-id="8991" data-permalink="https://ontechnologyandmedia.com/2022/04/12/fan-expo-philadelphia-2022/fan-expo-philadelphia-2022-photo-by-kendall-whitehouse-1020x492/" data-orig-file="https://ontechnologyandmedia.files.wordpress.com/2022/04/fan-expo-philadelphia-2022-photo-by-kendall-whitehouse-1020x492-1.jpg" data-orig-size="1020,492" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;2.8&quot;,&quot;credit&quot;:&quot;KENDALL WHITEHOUSE&quot;,&quot;camera&quot;:&quot;NIKON D700&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;1649503515&quot;,&quot;copyright&quot;:&quot;COPYRIGHT (C) KENDALL WHITEHOUSE&quot;,&quot;focal_length&quot;:&quot;70&quot;,&quot;iso&quot;:&quot;500&quot;,&quot;shutter_speed&quot;:&quot;0.008&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;1&quot;}" data-image-title="Fan-Expo-Philadelphia-2022-photo-by-Kendall-Whitehouse-1020×492" data-image-description="" data-image-caption="" data-medium-file="https://ontechnologyandmedia.files.wordpress.com/2022/04/fan-expo-philadelphia-2022-photo-by-kendall-whitehouse-1020x492-1.jpg?w=300" data-large-file="https://ontechnologyandmedia.files.wordpress.com/2022/04/fan-expo-philadelphia-2022-photo-by-kendall-whitehouse-1020x492-1.jpg?w=1020"></a></div><!-- .post-image-link -->	
+	<header class="entry-header">
+		<h1 class="entry-title"><a href="https://ontechnologyandmedia.com/2022/04/12/fan-expo-philadelphia-2022/" rel="bookmark">Fan Expo Philadelphia&nbsp;2022</a></h1>	</header><!-- .entry-header -->
+
+	<div class="entry-content">
+		<p>After two years, the former Wizard World returns After an absence of two years, the former Wizard World Comic Con returned to Philadelphia this weekend, rebranded as Fan Expo Philadelphia by its new owners, &nbsp;Fan Expo HQ. The pop culture fest at the Philadelphia Convention Center had much of the structure and content as past … <a href="https://ontechnologyandmedia.com/2022/04/12/fan-expo-philadelphia-2022/" class="more-link">Continue reading <span class="screen-reader-text">Fan Expo Philadelphia&nbsp;2022</span> <span class="meta-nav">→</span></a></p>
+			</div><!-- .entry-content -->
+
+	<footer class="entry-footer">
+		<ul class="post-meta"><li class="author vcard"><a class="url fn n" href="https://ontechnologyandmedia.com/author/kmwhitehouse/">Kendall Whitehouse</a></li><li class="posted-on"><a href="https://ontechnologyandmedia.com/2022/04/12/fan-expo-philadelphia-2022/" rel="bookmark"><time class="entry-date published" datetime="2022-04-12T07:13:25-04:00">April 12, 2022</time><time class="updated" datetime="2022-04-14T06:14:11-04:00">April 14, 2022</time></a></li></ul><!-- .post-metadata -->			<div class="meta-wrapper">
+		<ul class="post-tags"><li><a href="https://ontechnologyandmedia.com/tag/comic-con/" rel="tag">comic-con</a></li><li><a href="https://ontechnologyandmedia.com/tag/fanexpo/" rel="tag">fanexpo</a></li></ul><!-- .post-tags -->			</div><!-- .meta-wrapper -->
+		</footer><!-- .entry-footer -->
+</article><!-- #post-## -->
+			
+				
+<article id="post-8961" class="post-8961 post type-post status-publish format-standard has-post-thumbnail hentry category-book-reviews category-popular-culture tag-comic-books tag-marvel-comics">
+	<div class="post-image-link"><a rel="bookmark" href="https://ontechnologyandmedia.com/2022/01/15/taschens-spider-man-vol-1-1962-1964/"><img width="1020" height="492" src="https://ontechnologyandmedia.files.wordpress.com/2022/01/taschen-amazing-spider-man-001-photo-by-kendall-whitehouse-1020x492-1.jpg?w=1020&amp;h=492&amp;crop=1" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="Taschen’s Spider-Man Vol 1:&nbsp;1962–1964" loading="lazy" srcset="https://ontechnologyandmedia.files.wordpress.com/2022/01/taschen-amazing-spider-man-001-photo-by-kendall-whitehouse-1020x492-1.jpg 1020w, https://ontechnologyandmedia.files.wordpress.com/2022/01/taschen-amazing-spider-man-001-photo-by-kendall-whitehouse-1020x492-1.jpg?w=150&amp;h=72&amp;crop=1 150w, https://ontechnologyandmedia.files.wordpress.com/2022/01/taschen-amazing-spider-man-001-photo-by-kendall-whitehouse-1020x492-1.jpg?w=300&amp;h=145&amp;crop=1 300w, https://ontechnologyandmedia.files.wordpress.com/2022/01/taschen-amazing-spider-man-001-photo-by-kendall-whitehouse-1020x492-1.jpg?w=768&amp;h=370&amp;crop=1 768w" sizes="(max-width: 1020px) 100vw, 1020px" data-attachment-id="8966" data-permalink="https://ontechnologyandmedia.com/2022/01/15/taschens-spider-man-vol-1-1962-1964/taschen-amazing-spider-man-001-photo-by-kendall-whitehouse-1020x492/" data-orig-file="https://ontechnologyandmedia.files.wordpress.com/2022/01/taschen-amazing-spider-man-001-photo-by-kendall-whitehouse-1020x492-1.jpg" data-orig-size="1020,492" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;4.5&quot;,&quot;credit&quot;:&quot;KENDALL WHITEHOUSE&quot;,&quot;camera&quot;:&quot;NIKON D700&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;1642077429&quot;,&quot;copyright&quot;:&quot;COPYRIGHT (C) KENDALL WHITEHOUSE&quot;,&quot;focal_length&quot;:&quot;31&quot;,&quot;iso&quot;:&quot;200&quot;,&quot;shutter_speed&quot;:&quot;0.0125&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;1&quot;}" data-image-title="Taschen-Amazing-Spider-Man-001-photo-by-Kendall-Whitehouse-1020×492" data-image-description="" data-image-caption="" data-medium-file="https://ontechnologyandmedia.files.wordpress.com/2022/01/taschen-amazing-spider-man-001-photo-by-kendall-whitehouse-1020x492-1.jpg?w=300" data-large-file="https://ontechnologyandmedia.files.wordpress.com/2022/01/taschen-amazing-spider-man-001-photo-by-kendall-whitehouse-1020x492-1.jpg?w=1020"></a></div><!-- .post-image-link -->	
+	<header class="entry-header">
+		<h1 class="entry-title"><a href="https://ontechnologyandmedia.com/2022/01/15/taschens-spider-man-vol-1-1962-1964/" rel="bookmark">Taschen’s Spider-Man Vol 1:&nbsp;1962–1964</a></h1>	</header><!-- .entry-header -->
+
+	<div class="entry-content">
+		<p>Big, beautiful, and nearly (but not quite) perfect book of the dawn of Spider-Man The initial volume in Taschen's Marvel Comics Library, Spider-Man. Vol. 1: 1962–1964, brings the first stories of Marvel's web-slinging superhero to a sumptuous, large, high-quality format. The book is massive. The pages measure 11 by 15.6 inches. Its 698 pages make … <a href="https://ontechnologyandmedia.com/2022/01/15/taschens-spider-man-vol-1-1962-1964/" class="more-link">Continue reading <span class="screen-reader-text">Taschen’s Spider-Man Vol 1:&nbsp;1962–1964</span> <span class="meta-nav">→</span></a></p>
+			</div><!-- .entry-content -->
+
+	<footer class="entry-footer">
+		<ul class="post-meta"><li class="author vcard"><a class="url fn n" href="https://ontechnologyandmedia.com/author/kmwhitehouse/">Kendall Whitehouse</a></li><li class="posted-on"><a href="https://ontechnologyandmedia.com/2022/01/15/taschens-spider-man-vol-1-1962-1964/" rel="bookmark"><time class="entry-date published" datetime="2022-01-15T07:36:30-05:00">January 15, 2022</time><time class="updated" datetime="2022-01-17T05:51:49-05:00">January 17, 2022</time></a></li></ul><!-- .post-metadata -->			<div class="meta-wrapper">
+		<ul class="post-tags"><li><a href="https://ontechnologyandmedia.com/tag/comic-books/" rel="tag">comic books</a></li><li><a href="https://ontechnologyandmedia.com/tag/marvel-comics/" rel="tag">marvel comics</a></li></ul><!-- .post-tags -->			</div><!-- .meta-wrapper -->
+		</footer><!-- .entry-footer -->
+</article><!-- #post-## -->
+			
+				
+<article id="post-8924" class="post-8924 post type-post status-publish format-standard has-post-thumbnail hentry category-comic-con-reports tag-comic-con tag-nycc">
+	<div class="post-image-link"><a rel="bookmark" href="https://ontechnologyandmedia.com/2021/10/11/new-york-comic-con-2021-the-return/"><img width="1020" height="492" src="https://ontechnologyandmedia.files.wordpress.com/2021/10/new-york-comic-con-returns-2021-1020x492-1.jpg?w=1020&amp;h=492&amp;crop=1" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="New York Comic Con 2021: The&nbsp;Return" loading="lazy" srcset="https://ontechnologyandmedia.files.wordpress.com/2021/10/new-york-comic-con-returns-2021-1020x492-1.jpg 1020w, https://ontechnologyandmedia.files.wordpress.com/2021/10/new-york-comic-con-returns-2021-1020x492-1.jpg?w=150&amp;h=72&amp;crop=1 150w, https://ontechnologyandmedia.files.wordpress.com/2021/10/new-york-comic-con-returns-2021-1020x492-1.jpg?w=300&amp;h=145&amp;crop=1 300w, https://ontechnologyandmedia.files.wordpress.com/2021/10/new-york-comic-con-returns-2021-1020x492-1.jpg?w=768&amp;h=370&amp;crop=1 768w" sizes="(max-width: 1020px) 100vw, 1020px" data-attachment-id="8927" data-permalink="https://ontechnologyandmedia.com/2021/10/11/new-york-comic-con-2021-the-return/new-york-comic-con-returns-2021-1020x492/" data-orig-file="https://ontechnologyandmedia.files.wordpress.com/2021/10/new-york-comic-con-returns-2021-1020x492-1.jpg" data-orig-size="1020,492" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;1&quot;}" data-image-title="New-York-Comic-Con-Returns-2021-1020×492" data-image-description="" data-image-caption="" data-medium-file="https://ontechnologyandmedia.files.wordpress.com/2021/10/new-york-comic-con-returns-2021-1020x492-1.jpg?w=300" data-large-file="https://ontechnologyandmedia.files.wordpress.com/2021/10/new-york-comic-con-returns-2021-1020x492-1.jpg?w=1020"></a></div><!-- .post-image-link -->	
+	<header class="entry-header">
+		<h1 class="entry-title"><a href="https://ontechnologyandmedia.com/2021/10/11/new-york-comic-con-2021-the-return/" rel="bookmark">New York Comic Con 2021: The&nbsp;Return</a></h1>	</header><!-- .entry-header -->
+
+	<div class="entry-content">
+		<p>Fan Fests Emerging from the Pandemic Bring Changes After an absence of nearly a year and a half, in-person pop culture conventions began to return in the latter half of 2021. While a number of small cons appeared earlier in the year, the resurgence of major cons was marked by the return to the Javits … <a href="https://ontechnologyandmedia.com/2021/10/11/new-york-comic-con-2021-the-return/" class="more-link">Continue reading <span class="screen-reader-text">New York Comic Con 2021: The&nbsp;Return</span> <span class="meta-nav">→</span></a></p>
+			</div><!-- .entry-content -->
+
+	<footer class="entry-footer">
+		<ul class="post-meta"><li class="author vcard"><a class="url fn n" href="https://ontechnologyandmedia.com/author/kmwhitehouse/">Kendall Whitehouse</a></li><li class="posted-on"><a href="https://ontechnologyandmedia.com/2021/10/11/new-york-comic-con-2021-the-return/" rel="bookmark"><time class="entry-date published" datetime="2021-10-11T12:21:04-04:00">October 11, 2021</time><time class="updated" datetime="2021-10-15T06:07:29-04:00">October 15, 2021</time></a></li></ul><!-- .post-metadata -->			<div class="meta-wrapper">
+		<ul class="post-tags"><li><a href="https://ontechnologyandmedia.com/tag/comic-con/" rel="tag">comic-con</a></li><li><a href="https://ontechnologyandmedia.com/tag/nycc/" rel="tag">nycc</a></li></ul><!-- .post-tags -->			</div><!-- .meta-wrapper -->
+		</footer><!-- .entry-footer -->
+</article><!-- #post-## -->
+			
+				
+<article id="post-8796" class="post-8796 post type-post status-publish format-standard has-post-thumbnail hentry category-art-commentary tag-stikman tag-street-art">
+	<div class="post-image-link"><a rel="bookmark" href="https://ontechnologyandmedia.com/2020/08/14/stikman-theme-and-variation/"><img width="1020" height="492" src="https://ontechnologyandmedia.files.wordpress.com/2020/08/stikman-shapes-photos-by-kendall-whitehouse-1020x492-1.jpg?w=1020&amp;h=492&amp;crop=1" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="Stikman: Theme and&nbsp;Variations" loading="lazy" srcset="https://ontechnologyandmedia.files.wordpress.com/2020/08/stikman-shapes-photos-by-kendall-whitehouse-1020x492-1.jpg 1020w, https://ontechnologyandmedia.files.wordpress.com/2020/08/stikman-shapes-photos-by-kendall-whitehouse-1020x492-1.jpg?w=150&amp;h=72&amp;crop=1 150w, https://ontechnologyandmedia.files.wordpress.com/2020/08/stikman-shapes-photos-by-kendall-whitehouse-1020x492-1.jpg?w=300&amp;h=145&amp;crop=1 300w, https://ontechnologyandmedia.files.wordpress.com/2020/08/stikman-shapes-photos-by-kendall-whitehouse-1020x492-1.jpg?w=768&amp;h=370&amp;crop=1 768w" sizes="(max-width: 1020px) 100vw, 1020px" data-attachment-id="8800" data-permalink="https://ontechnologyandmedia.com/2020/08/14/stikman-theme-and-variation/stikman-shapes-photos-by-kendall-whitehouse-1020x492/" data-orig-file="https://ontechnologyandmedia.files.wordpress.com/2020/08/stikman-shapes-photos-by-kendall-whitehouse-1020x492-1.jpg" data-orig-size="1020,492" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;KENDALL WHITEHOUSE&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;COPYRIGHT (C) KENDALL WHITEHOUSE&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;1&quot;}" data-image-title="stikman-shapes-photos-by-Kendall-Whitehouse-1020×492" data-image-description="" data-image-caption="" data-medium-file="https://ontechnologyandmedia.files.wordpress.com/2020/08/stikman-shapes-photos-by-kendall-whitehouse-1020x492-1.jpg?w=300" data-large-file="https://ontechnologyandmedia.files.wordpress.com/2020/08/stikman-shapes-photos-by-kendall-whitehouse-1020x492-1.jpg?w=1020"></a></div><!-- .post-image-link -->	
+	<header class="entry-header">
+		<h1 class="entry-title"><a href="https://ontechnologyandmedia.com/2020/08/14/stikman-theme-and-variation/" rel="bookmark">Stikman: Theme and&nbsp;Variations</a></h1>	</header><!-- .entry-header -->
+
+	<div class="entry-content">
+		<p>Why the anonymous street artist continues to fascinate For nearly three decades, the anonymous artist known as stikman has placed images of a schematic humanoid figure (also known as "stikman") in city streets around the United States, Canada, and Europe. The figure appears over and over again in varying forms, in many hundreds---perhaps thousands---of pieces … <a href="https://ontechnologyandmedia.com/2020/08/14/stikman-theme-and-variation/" class="more-link">Continue reading <span class="screen-reader-text">Stikman: Theme and&nbsp;Variations</span> <span class="meta-nav">→</span></a></p>
+			</div><!-- .entry-content -->
+
+	<footer class="entry-footer">
+		<ul class="post-meta"><li class="author vcard"><a class="url fn n" href="https://ontechnologyandmedia.com/author/kmwhitehouse/">Kendall Whitehouse</a></li><li class="posted-on"><a href="https://ontechnologyandmedia.com/2020/08/14/stikman-theme-and-variation/" rel="bookmark"><time class="entry-date published" datetime="2020-08-14T13:22:25-04:00">August 14, 2020</time><time class="updated" datetime="2021-05-15T05:58:48-04:00">May 15, 2021</time></a></li></ul><!-- .post-metadata -->			<div class="meta-wrapper">
+		<ul class="post-tags"><li><a href="https://ontechnologyandmedia.com/tag/stikman/" rel="tag">stikman</a></li><li><a href="https://ontechnologyandmedia.com/tag/street-art/" rel="tag">street art</a></li></ul><!-- .post-tags -->			</div><!-- .meta-wrapper -->
+		</footer><!-- .entry-footer -->
+</article><!-- #post-## -->
+			
+			
+	<nav class="navigation posts-navigation" aria-label="Posts">
+		<h2 class="screen-reader-text">Posts navigation</h2>
+		<div class="nav-links"><div class="nav-previous"><a href="https://ontechnologyandmedia.com/page/2/">Older posts</a></div></div>
+	</nav>
+		
+		<div id="infinite-handle"><span><button>Older posts</button></span></div></main><!-- #main -->
+	</div><!-- #primary -->
+
+
+<div id="secondary" class="widget-area" role="complementary">
+	<aside id="search-1" class="widget widget_search"><h2 class="widget-title">Search</h2><form role="search" method="get" class="search-form" action="https://ontechnologyandmedia.com/">
+				<label>
+					<span class="screen-reader-text">Search for:</span>
+					<input type="search" class="search-field" placeholder="Search …" value="" name="s">
+				</label>
+				<input type="submit" class="search-submit" value="Search">
+			</form></aside><aside id="top-posts-4" class="widget widget_top-posts"><h2 class="widget-title">Trending:</h2><ul class="widgets-list-layout no-grav">
+<li><a href="https://ontechnologyandmedia.com/2020/03/21/philadelphia-warehousing-and-cold-storage/" title="Philadelphia Warehousing and Cold Storage" class="bump-view" data-bump-view="tp">
+								<img width="40" height="40" src="https://ontechnologyandmedia.files.wordpress.com/2020/03/phillycold-from-spring-garden-splash-photo-by-kendall-whitehouse-1020x492-1.jpg?resize=40%2C40" alt="Philadelphia Warehousing and Cold Storage" data-pin-nopin="true" class="widgets-list-layout-blavatar" scale="0">
+							</a>
+							<div class="widgets-list-layout-links">
+								<a href="https://ontechnologyandmedia.com/2020/03/21/philadelphia-warehousing-and-cold-storage/" title="Philadelphia Warehousing and Cold Storage" class="bump-view" data-bump-view="tp">Philadelphia Warehousing and Cold Storage</a>
+							</div>
+							</li><li><a href="https://ontechnologyandmedia.com/2013/11/01/movie-title-misdirection-and-meaning-gravity-and-cast-away/" title="Movie Title Misdirection and Meaning: 'Gravity' and 'Cast Away'" class="bump-view" data-bump-view="tp">
+								<img width="40" height="40" src="https://ontechnologyandmedia.files.wordpress.com/2013/10/gravity-poster-1020x574.jpg?resize=40%2C40" alt="Movie Title Misdirection and Meaning: 'Gravity' and 'Cast Away'" data-pin-nopin="true" class="widgets-list-layout-blavatar" scale="0">
+							</a>
+							<div class="widgets-list-layout-links">
+								<a href="https://ontechnologyandmedia.com/2013/11/01/movie-title-misdirection-and-meaning-gravity-and-cast-away/" title="Movie Title Misdirection and Meaning: 'Gravity' and 'Cast Away'" class="bump-view" data-bump-view="tp">Movie Title Misdirection and Meaning: 'Gravity' and 'Cast Away'</a>
+							</div>
+							</li><li><a href="https://ontechnologyandmedia.com/2015/06/22/contrarian-at-comic-con/" title="Be a Con-trarian: Go Against the Flow at Comic-Con" class="bump-view" data-bump-view="tp">
+								<img width="40" height="40" src="https://ontechnologyandmedia.files.wordpress.com/2015/06/sdcc-2012-esculator-photo-by-kendall-whitehouse-1020x562.jpg?resize=40%2C40" alt="Be a Con-trarian: Go Against the Flow at Comic-Con" data-pin-nopin="true" class="widgets-list-layout-blavatar" scale="0">
+							</a>
+							<div class="widgets-list-layout-links">
+								<a href="https://ontechnologyandmedia.com/2015/06/22/contrarian-at-comic-con/" title="Be a Con-trarian: Go Against the Flow at Comic-Con" class="bump-view" data-bump-view="tp">Be a Con-trarian: Go Against the Flow at Comic-Con</a>
+							</div>
+							</li><li><a href="https://ontechnologyandmedia.com/reports-from-comic-con/" title="Reports from Comic Con" class="bump-view" data-bump-view="tp">
+								<img width="40" height="40" src="https://ontechnologyandmedia.files.wordpress.com/2012/03/comic-con-splash-1020x492.jpg?resize=40%2C40" alt="Reports from Comic Con" data-pin-nopin="true" class="widgets-list-layout-blavatar" scale="0">
+							</a>
+							<div class="widgets-list-layout-links">
+								<a href="https://ontechnologyandmedia.com/reports-from-comic-con/" title="Reports from Comic Con" class="bump-view" data-bump-view="tp">Reports from Comic Con</a>
+							</div>
+							</li><li><a href="https://ontechnologyandmedia.com/2012/05/07/media-marketing-and-the-evolution-of-narrative-structure/" title="Media Marketing and the Evolution of Narrative Structure" class="bump-view" data-bump-view="tp">
+								<img width="40" height="40" src="https://ontechnologyandmedia.files.wordpress.com/2012/05/avengers-masthead-1020x492.jpg?resize=40%2C40" alt="Media Marketing and the Evolution of Narrative Structure" data-pin-nopin="true" class="widgets-list-layout-blavatar" scale="0">
+							</a>
+							<div class="widgets-list-layout-links">
+								<a href="https://ontechnologyandmedia.com/2012/05/07/media-marketing-and-the-evolution-of-narrative-structure/" title="Media Marketing and the Evolution of Narrative Structure" class="bump-view" data-bump-view="tp">Media Marketing and the Evolution of Narrative Structure</a>
+							</div>
+							</li><li><a href="https://ontechnologyandmedia.com/2022/01/15/taschens-spider-man-vol-1-1962-1964/" title="Taschen's Spider-Man Vol 1: 1962–1964" class="bump-view" data-bump-view="tp">
+								<img width="40" height="40" src="https://ontechnologyandmedia.files.wordpress.com/2022/01/taschen-amazing-spider-man-001-photo-by-kendall-whitehouse-1020x492-1.jpg?resize=40%2C40" alt="Taschen's Spider-Man Vol 1: 1962–1964" data-pin-nopin="true" class="widgets-list-layout-blavatar" scale="0">
+							</a>
+							<div class="widgets-list-layout-links">
+								<a href="https://ontechnologyandmedia.com/2022/01/15/taschens-spider-man-vol-1-1962-1964/" title="Taschen's Spider-Man Vol 1: 1962–1964" class="bump-view" data-bump-view="tp">Taschen's Spider-Man Vol 1: 1962–1964</a>
+							</div>
+							</li></ul>
+</aside><aside id="categories-3" class="widget widget_categories"><h2 class="widget-title">Categories</h2>
+			<ul>
+					<li class="cat-item cat-item-1054759"><a href="https://ontechnologyandmedia.com/category/art-commentary/">Art Commentary</a> (5)
+</li>
+	<li class="cat-item cat-item-3328"><a href="https://ontechnologyandmedia.com/category/book-reviews/">Book Reviews</a> (8)
+</li>
+	<li class="cat-item cat-item-642392713"><a href="https://ontechnologyandmedia.com/category/comic-con-reports/">Comic-Con Reports</a> (64)
+</li>
+	<li class="cat-item cat-item-91010"><a href="https://ontechnologyandmedia.com/category/conferences-events/">Conferences &amp; Events</a> (11)
+</li>
+	<li class="cat-item cat-item-1747"><a href="https://ontechnologyandmedia.com/category/fiction/">Fiction</a> (1)
+</li>
+	<li class="cat-item cat-item-678"><a href="https://ontechnologyandmedia.com/category/history/">History</a> (1)
+</li>
+	<li class="cat-item cat-item-186"><a href="https://ontechnologyandmedia.com/category/innovation/">Innovation</a> (4)
+</li>
+	<li class="cat-item cat-item-175"><a href="https://ontechnologyandmedia.com/category/marketing/">Marketing</a> (18)
+</li>
+	<li class="cat-item cat-item-1130571"><a href="https://ontechnologyandmedia.com/category/media-trends/">Media Trends</a> (42)
+</li>
+	<li class="cat-item cat-item-962"><a href="https://ontechnologyandmedia.com/category/miscellany/">Miscellany</a> (4)
+</li>
+	<li class="cat-item cat-item-5485704"><a href="https://ontechnologyandmedia.com/category/movie-commentary/">Movie Commentary</a> (14)
+</li>
+	<li class="cat-item cat-item-226922"><a href="https://ontechnologyandmedia.com/category/music-performance/">Music Performance</a> (7)
+</li>
+	<li class="cat-item cat-item-34537"><a href="https://ontechnologyandmedia.com/category/personal-stories/">Personal Stories</a> (18)
+</li>
+	<li class="cat-item cat-item-2437"><a href="https://ontechnologyandmedia.com/category/popular-culture/">Popular Culture</a> (9)
+</li>
+	<li class="cat-item cat-item-116346"><a href="https://ontechnologyandmedia.com/category/tech-trends/">Tech Trends</a> (63)
+</li>
+	<li class="cat-item cat-item-6317843"><a href="https://ontechnologyandmedia.com/category/theatrical-performance/">Theatrical Performance</a> (1)
+</li>
+	<li class="cat-item cat-item-28158"><a href="https://ontechnologyandmedia.com/category/travel-tales/">Travel Tales</a> (8)
+</li>
+			</ul>
+
+			</aside></div><!-- #secondary -->
+	</div><!-- #content -->
+
+	<footer id="colophon" class="site-footer" role="contentinfo">
+				<div id="footer-widgets">
+			<div class="inner">
+
+									<div class="widget-area split-1" role="complementary">
+
+						
+					</div><!-- .widget-area -->
+				
+			</div><!-- .inner -->
+		</div><!-- #footer-widgets -->
+		
+		<div class="site-footer-bottom">
+			<div class="inner">
+
+				
+				<div class="site-info">
+					<a href="https://wordpress.com/?ref=footer_blog" rel="nofollow">Blog at WordPress.com.</a>
+					
+									</div><!-- .site-info -->
+
+			</div><!-- .inner -->
+		</div><!-- .site-footer-bottom -->
+	</footer><!-- #colophon -->
+</div><!-- #page -->
+
+		<script type="text/javascript">
+		var infiniteScroll = {"settings":{"id":"main","ajaxurl":"https:\/\/ontechnologyandmedia.com\/?infinity=scrolling","type":"click","wrapper":true,"wrapper_class":"infinite-wrap","footer":"page","click_handle":"1","text":"Older posts","totop":"Scroll back to top","currentday":"14.08.20","order":"DESC","scripts":[],"styles":[],"google_analytics":false,"offset":1,"history":{"host":"ontechnologyandmedia.com","path":"\/page\/%d\/","use_trailing_slashes":true,"parameters":""},"query_args":{"error":"","m":"","p":0,"post_parent":"","subpost":"","subpost_id":"","attachment":"","attachment_id":0,"name":"","pagename":"","page_id":0,"second":"","minute":"","hour":"","day":0,"monthnum":0,"year":0,"w":0,"category_name":"","tag":"","cat":"","tag_id":"","author":"","author_name":"","feed":"","tb":"","paged":0,"meta_key":"","meta_value":"","preview":"","s":"","sentence":"","title":"","fields":"","menu_order":"","embed":"","category__in":[],"category__not_in":[],"category__and":[],"post__in":[],"post__not_in":[],"post_name__in":[],"tag__in":[],"tag__not_in":[],"tag__and":[],"tag_slug__in":[],"tag_slug__and":[],"post_parent__in":[],"post_parent__not_in":[],"author__in":[],"author__not_in":[],"lazy_load_term_meta":false,"posts_per_page":4,"ignore_sticky_posts":false,"suppress_filters":false,"cache_results":false,"update_post_term_cache":true,"update_post_meta_cache":true,"post_type":"","nopaging":false,"comments_per_page":"50","no_found_rows":false,"order":"DESC"},"query_before":"2022-06-26 07:06:48","last_post_date":"2020-08-14 13:22:25","body_class":"infinite-scroll","loading_text":"Loading new page","stats":"blog=115418116&v=wpcom&tz=-4&user_id=0&subd=ontechnologyandmedia&x_pagetype=infinite-click"}};
+		</script>
+		<!--  -->
+<script src="//0.gravatar.com/js/gprofiles.js?ver=202225z" id="grofiles-cards-js"></script>
+<script id="wpgroho-js-extra">
+var WPGroHo = {"my_hash":""};
+</script>
+<script crossorigin="anonymous" type="text/javascript" src="https://s0.wp.com/wp-content/mu-plugins/gravatar-hovercards/wpgroho.js?m=1610363240h"></script>
+
+	<script>
+		// Initialize and attach hovercards to all gravatars
+		( function() {
+			function init() {
+				if ( typeof Gravatar === 'undefined' ) {
+					return;
+				}
+
+				if ( typeof Gravatar.init !== 'function' ) {
+					return;
+				}
+
+				Gravatar.profile_cb = function ( hash, id ) {
+					WPGroHo.syncProfileData( hash, id );
+				};
+
+				Gravatar.my_hash = WPGroHo.my_hash;
+				Gravatar.init( 'body', '#wp-admin-bar-my-account' );
+			}
+
+			if ( document.readyState !== 'loading' ) {
+				init();
+			} else {
+				document.addEventListener( 'DOMContentLoaded', init );
+			}
+		} )();
+	</script>
+
+		<div style="display:none">
+	</div>
+<script id="highlander-comments-js-extra">
+var HighlanderComments = {"loggingInText":"Logging In\u2026","submittingText":"Posting Comment\u2026","postCommentText":"Post Comment","connectingToText":"Connecting to %s","commentingAsText":"%1$s: You are commenting using your %2$s account.","logoutText":"Log Out","loginText":"Log In","connectURL":"https:\/\/ontechnologyandmedia.wordpress.com\/public.api\/connect\/?action=request&domain=ontechnologyandmedia.com","logoutURL":"https:\/\/ontechnologyandmedia.wordpress.com\/wp-login.php?action=logout&_wpnonce=81319b484a","homeURL":"https:\/\/ontechnologyandmedia.com\/","postID":"8989","gravDefault":"mystery","enterACommentError":"Please enter a comment","enterEmailError":"Please enter your email address here","invalidEmailError":"Invalid email address","enterAuthorError":"Please enter your name here","gravatarFromEmail":"This picture will show whenever you leave a comment. Click to customize it.","logInToExternalAccount":"Log in to use details from one of these accounts.","change":"Change","changeAccount":"Change Account","comment_registration":"","userIsLoggedIn":"","isJetpack":"","text_direction":"ltr"};
+</script>
+<script crossorigin="anonymous" type="text/javascript" src="https://s0.wp.com/_static/??/wp-content/js/textarea-autosize.min.js,/wp-content/mu-plugins/highlander-comments/script.js?m=1649873911j"></script>
+	<div id="actionbar" class="actnbr-pub-franklin actnbr-has-follow">
+		<ul>
+								<li class="actnbr-btn actnbr-hidden">
+								<a class="actnbr-action actnbr-actn-follow " href="">
+			<svg class="gridicon gridicons-reader-follow" height="24" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M23 16v2h-3v3h-2v-3h-3v-2h3v-3h2v3h3zM20 2v9h-4v3h-3v4H4c-1.1 0-2-.9-2-2V2h18zM8 13v-1H4v1h4zm3-3H4v1h7v-1zm0-2H4v1h7V8zm7-4H4v2h14V4z"></path></g></svg><span>Follow</span>
+		</a>
+		<a class="actnbr-action actnbr-actn-following  no-display" href="">
+			<svg class="gridicon gridicons-reader-following" height="24" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M23 13.482L15.508 21 12 17.4l1.412-1.388 2.106 2.188 6.094-6.094L23 13.482zm-7.455 1.862L20 10.89V2H2v14c0 1.1.9 2 2 2h4.538l4.913-4.832 2.095 2.176zM8 13H4v-1h4v1zm3-2H4v-1h7v1zm0-2H4V8h7v1zm7-3H4V4h14v2z"></path></g></svg><span>Following</span>
+		</a>
+							<div class="actnbr-popover tip tip-top-left actnbr-notice" id="follow-bubble">
+							<div class="tip-arrow"></div>
+							<div class="tip-inner actnbr-follow-bubble">
+															<ul>
+											<li class="actnbr-sitename">
+			<a href="https://ontechnologyandmedia.com">
+				<img alt="" src="https://secure.gravatar.com/blavatar/aa20894bab5b029834ab8bb56a088935?s=50&amp;d=https%3A%2F%2Fs0.wp.com%2Fi%2Flogo%2Fwpcom-gray-white.png" class="avatar avatar-50" height="50" width="50" originals="50" scale="2">				On Technology and Media			</a>
+		</li>
+										<form method="post" action="https://subscribe.wordpress.com" accept-charset="utf-8" style="display: none;">
+																				<div>
+										<input type="email" name="email" placeholder="Enter your email address" class="actnbr-email-field" aria-label="Enter your email address">
+										</div>
+										<input type="hidden" name="action" value="subscribe">
+										<input type="hidden" name="blog_id" value="115418116">
+										<input type="hidden" name="source" value="https://ontechnologyandmedia.com/">
+										<input type="hidden" name="sub-type" value="actionbar-follow">
+										<input type="hidden" id="_wpnonce" name="_wpnonce" value="04f48b0379">										<div class="actnbr-button-wrap">
+											<button type="submit" value="Sign me up">
+												Sign me up											</button>
+										</div>
+									</form>
+									<li class="actnbr-login-nudge">
+										<div>
+											Already have a WordPress.com account? <a href="https://wordpress.com/log-in?redirect_to=https%3A%2F%2Fr-login.wordpress.com%2Fremote-login.php%3Faction%3Dlink%26back%3Dhttps%253A%252F%252Fontechnologyandmedia.com%252F2022%252F04%252F12%252Ffan-expo-philadelphia-2022%252F">Log in now.</a>										</div>
+									</li>
+								</ul>
+															</div>
+						</div>
+					</li>
+							<li class="actnbr-ellipsis actnbr-hidden">
+				<svg class="gridicon gridicons-ellipsis" height="24" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M7 12c0 1.104-.896 2-2 2s-2-.896-2-2 .896-2 2-2 2 .896 2 2zm12-2c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2zm-7 0c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2z"></path></g></svg>				<div class="actnbr-popover tip tip-top-left actnbr-more">
+					<div class="tip-arrow"></div>
+					<div class="tip-inner">
+						<ul>
+									<li class="actnbr-sitename">
+			<a href="https://ontechnologyandmedia.com">
+				<img alt="" src="https://secure.gravatar.com/blavatar/aa20894bab5b029834ab8bb56a088935?s=50&amp;d=https%3A%2F%2Fs0.wp.com%2Fi%2Flogo%2Fwpcom-gray-white.png" class="avatar avatar-50" height="50" width="50" originals="50" scale="2">				On Technology and Media			</a>
+		</li>
+								<li class="actnbr-folded-customize">
+								<a href="https://ontechnologyandmedia.wordpress.com/wp-admin/customize.php?url=https%3A%2F%2Fontechnologyandmedia.wordpress.com%2F">
+									<svg class="gridicon gridicons-customize" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M2 6c0-1.505.78-3.08 2-4 0 .845.69 2 2 2 1.657 0 3 1.343 3 3 0 .386-.08.752-.212 1.09.74.594 1.476 1.19 2.19 1.81L8.9 11.98c-.62-.716-1.214-1.454-1.807-2.192C6.753 9.92 6.387 10 6 10c-2.21 0-4-1.79-4-4zm12.152 6.848l1.34-1.34c.607.304 1.283.492 2.008.492 2.485 0 4.5-2.015 4.5-4.5 0-.725-.188-1.4-.493-2.007L18 9l-2-2 3.507-3.507C18.9 3.188 18.225 3 17.5 3 15.015 3 13 5.015 13 7.5c0 .725.188 1.4.493 2.007L3 20l2 2 6.848-6.848c1.885 1.928 3.874 3.753 5.977 5.45l1.425 1.148 1.5-1.5-1.15-1.425c-1.695-2.103-3.52-4.092-5.448-5.977z"></path></g></svg>									<span>Customize</span>
+								</a>
+							</li>
+																<li class="actnbr-folded-follow">
+												<a class="actnbr-action actnbr-actn-follow " href="">
+			<svg class="gridicon gridicons-reader-follow" height="24" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M23 16v2h-3v3h-2v-3h-3v-2h3v-3h2v3h3zM20 2v9h-4v3h-3v4H4c-1.1 0-2-.9-2-2V2h18zM8 13v-1H4v1h4zm3-3H4v1h7v-1zm0-2H4v1h7V8zm7-4H4v2h14V4z"></path></g></svg><span>Follow</span>
+		</a>
+		<a class="actnbr-action actnbr-actn-following  no-display" href="">
+			<svg class="gridicon gridicons-reader-following" height="24" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M23 13.482L15.508 21 12 17.4l1.412-1.388 2.106 2.188 6.094-6.094L23 13.482zm-7.455 1.862L20 10.89V2H2v14c0 1.1.9 2 2 2h4.538l4.913-4.832 2.095 2.176zM8 13H4v-1h4v1zm3-2H4v-1h7v1zm0-2H4V8h7v1zm7-3H4V4h14v2z"></path></g></svg><span>Following</span>
+		</a>
+										</li>
+																	<li class="actnbr-signup"><a href="https://wordpress.com/start/">Sign up</a></li>
+									<li class="actnbr-login"><a href="https://wordpress.com/log-in?redirect_to=https%3A%2F%2Fr-login.wordpress.com%2Fremote-login.php%3Faction%3Dlink%26back%3Dhttps%253A%252F%252Fontechnologyandmedia.com%252F2022%252F04%252F12%252Ffan-expo-philadelphia-2022%252F">Log in</a></li>
+																	<li class="flb-report"><a href="http://en.wordpress.com/abuse/">Report this content</a></li>
+																	<li class="actnbr-reader">
+										<a href="https://wordpress.com/read/feeds/52216822">
+											View site in Reader										</a>
+									</li>
+																	<li class="actnbr-subs">
+										<a href="https://subscribe.wordpress.com/">Manage subscriptions</a>
+									</li>
+																		<li class="actnbr-fold"><a href="">Collapse this bar</a></li>
+															</ul>
+					</div>
+				</div>
+			</li>
+		</ul>
+	</div>
+	
+<script>
+window.addEventListener( "load", function( event ) {
+	var link = document.createElement( "link" );
+	link.href = "https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.css?v=20210915";
+	link.type = "text/css";
+	link.rel = "stylesheet";
+	document.head.appendChild( link );
+
+	var script = document.createElement( "script" );
+	script.src = "https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.js?v=20220329";
+	script.defer = true;
+	document.body.appendChild( script );
+} );
+</script>
+
+			<div id="jp-carousel-loading-overlay">
+			<div id="jp-carousel-loading-wrapper">
+				<span id="jp-carousel-library-loading">&nbsp;</span>
+			</div>
+		</div>
+		<div class="jp-carousel-overlay" style="display: none;">
+
+		<div class="jp-carousel-container">
+			<!-- The Carousel Swiper -->
+			<div class="jp-carousel-wrap swiper-container jp-carousel-swiper-container jp-carousel-transitions" itemscope="" itemtype="https://schema.org/ImageGallery">
+				<div class="jp-carousel swiper-wrapper"></div>
+				<div class="jp-swiper-button-prev swiper-button-prev">
+					<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<mask id="maskPrev" mask-type="alpha" maskUnits="userSpaceOnUse" x="8" y="6" width="9" height="12">
+							<path d="M16.2072 16.59L11.6496 12L16.2072 7.41L14.8041 6L8.8335 12L14.8041 18L16.2072 16.59Z" fill="white"></path>
+						</mask>
+						<g mask="url(#maskPrev)">
+							<rect x="0.579102" width="23.8823" height="24" fill="#FFFFFF"></rect>
+						</g>
+					</svg>
+				</div>
+				<div class="jp-swiper-button-next swiper-button-next">
+					<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<mask id="maskNext" mask-type="alpha" maskUnits="userSpaceOnUse" x="8" y="6" width="8" height="12">
+							<path d="M8.59814 16.59L13.1557 12L8.59814 7.41L10.0012 6L15.9718 12L10.0012 18L8.59814 16.59Z" fill="white"></path>
+						</mask>
+						<g mask="url(#maskNext)">
+							<rect x="0.34375" width="23.8822" height="24" fill="#FFFFFF"></rect>
+						</g>
+					</svg>
+				</div>
+			</div>
+			<!-- The main close buton -->
+			<div class="jp-carousel-close-hint">
+				<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<mask id="maskClose" mask-type="alpha" maskUnits="userSpaceOnUse" x="5" y="5" width="15" height="14">
+						<path d="M19.3166 6.41L17.9135 5L12.3509 10.59L6.78834 5L5.38525 6.41L10.9478 12L5.38525 17.59L6.78834 19L12.3509 13.41L17.9135 19L19.3166 17.59L13.754 12L19.3166 6.41Z" fill="white"></path>
+					</mask>
+					<g mask="url(#maskClose)">
+						<rect x="0.409668" width="23.8823" height="24" fill="#FFFFFF"></rect>
+					</g>
+				</svg>
+			</div>
+			<!-- Image info, comments and meta -->
+			<div class="jp-carousel-info">
+				<div class="jp-carousel-info-footer">
+					<div class="jp-carousel-pagination-container">
+						<div class="jp-swiper-pagination swiper-pagination"></div>
+						<div class="jp-carousel-pagination"></div>
+					</div>
+					<div class="jp-carousel-photo-title-container">
+						<h2 class="jp-carousel-photo-caption"></h2>
+					</div>
+					<div class="jp-carousel-photo-icons-container">
+						<a href="#" class="jp-carousel-icon-btn jp-carousel-icon-info" aria-label="Toggle photo metadata visibility">
+							<span class="jp-carousel-icon">
+								<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<mask id="maskInfo" mask-type="alpha" maskUnits="userSpaceOnUse" x="2" y="2" width="21" height="20">
+										<path fill-rule="evenodd" clip-rule="evenodd" d="M12.7537 2C7.26076 2 2.80273 6.48 2.80273 12C2.80273 17.52 7.26076 22 12.7537 22C18.2466 22 22.7046 17.52 22.7046 12C22.7046 6.48 18.2466 2 12.7537 2ZM11.7586 7V9H13.7488V7H11.7586ZM11.7586 11V17H13.7488V11H11.7586ZM4.79292 12C4.79292 16.41 8.36531 20 12.7537 20C17.142 20 20.7144 16.41 20.7144 12C20.7144 7.59 17.142 4 12.7537 4C8.36531 4 4.79292 7.59 4.79292 12Z" fill="white"></path>
+									</mask>
+									<g mask="url(#maskInfo)">
+										<rect x="0.8125" width="23.8823" height="24" fill="#FFFFFF"></rect>
+									</g>
+								</svg>
+							</span>
+						</a>
+												<a href="#" class="jp-carousel-icon-btn jp-carousel-icon-comments" aria-label="Toggle photo comments visibility">
+							<span class="jp-carousel-icon">
+								<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<mask id="maskComments" mask-type="alpha" maskUnits="userSpaceOnUse" x="2" y="2" width="21" height="20">
+										<path fill-rule="evenodd" clip-rule="evenodd" d="M4.3271 2H20.2486C21.3432 2 22.2388 2.9 22.2388 4V16C22.2388 17.1 21.3432 18 20.2486 18H6.31729L2.33691 22V4C2.33691 2.9 3.2325 2 4.3271 2ZM6.31729 16H20.2486V4H4.3271V18L6.31729 16Z" fill="white"></path>
+									</mask>
+									<g mask="url(#maskComments)">
+										<rect x="0.34668" width="23.8823" height="24" fill="#FFFFFF"></rect>
+									</g>
+								</svg>
+
+								<span class="jp-carousel-has-comments-indicator" aria-label="This image has comments."></span>
+							</span>
+						</a>
+											</div>
+				</div>
+				<div class="jp-carousel-info-extra">
+					<div class="jp-carousel-info-content-wrapper">
+						<div class="jp-carousel-photo-title-container">
+							<h2 class="jp-carousel-photo-title"></h2>
+						</div>
+						<div class="jp-carousel-comments-wrapper">
+															<div id="jp-carousel-comments-loading">
+									<span>Loading Comments...</span>
+								</div>
+								<div class="jp-carousel-comments"></div>
+								<div id="jp-carousel-comment-form-container">
+									<span id="jp-carousel-comment-form-spinner">&nbsp;</span>
+									<div id="jp-carousel-comment-post-results"></div>
+																														<form id="jp-carousel-comment-form">
+												<label for="jp-carousel-comment-form-comment-field" class="screen-reader-text">Write a Comment...</label>
+												<textarea name="comment" class="jp-carousel-comment-form-field jp-carousel-comment-form-textarea" id="jp-carousel-comment-form-comment-field" placeholder="Write a Comment..."></textarea>
+												<div id="jp-carousel-comment-form-submit-and-info-wrapper">
+													<div id="jp-carousel-comment-form-commenting-as">
+																													<fieldset>
+																<label for="jp-carousel-comment-form-email-field">Email (Required)</label>
+																<input type="text" name="email" class="jp-carousel-comment-form-field jp-carousel-comment-form-text-field" id="jp-carousel-comment-form-email-field">
+															</fieldset>
+															<fieldset>
+																<label for="jp-carousel-comment-form-author-field">Name (Required)</label>
+																<input type="text" name="author" class="jp-carousel-comment-form-field jp-carousel-comment-form-text-field" id="jp-carousel-comment-form-author-field">
+															</fieldset>
+															<fieldset>
+																<label for="jp-carousel-comment-form-url-field">Website</label>
+																<input type="text" name="url" class="jp-carousel-comment-form-field jp-carousel-comment-form-text-field" id="jp-carousel-comment-form-url-field">
+															</fieldset>
+																											</div>
+													<input type="submit" name="submit" class="jp-carousel-comment-form-button" id="jp-carousel-comment-form-button-submit" value="Post Comment">
+												</div>
+											</form>
+																											</div>
+													</div>
+						<div class="jp-carousel-image-meta">
+							<div class="jp-carousel-title-and-caption">
+								<div class="jp-carousel-photo-info">
+									<h3 class="jp-carousel-caption" itemprop="caption description"></h3>
+								</div>
+
+								<div class="jp-carousel-photo-description"></div>
+							</div>
+							<ul class="jp-carousel-image-exif" style="display: none;"></ul>
+							<a class="jp-carousel-image-download" target="_blank" style="display: none;">
+								<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<mask id="mask0" mask-type="alpha" maskUnits="userSpaceOnUse" x="3" y="3" width="19" height="18">
+										<path fill-rule="evenodd" clip-rule="evenodd" d="M5.84615 5V19H19.7775V12H21.7677V19C21.7677 20.1 20.8721 21 19.7775 21H5.84615C4.74159 21 3.85596 20.1 3.85596 19V5C3.85596 3.9 4.74159 3 5.84615 3H12.8118V5H5.84615ZM14.802 5V3H21.7677V10H19.7775V6.41L9.99569 16.24L8.59261 14.83L18.3744 5H14.802Z" fill="white"></path>
+									</mask>
+									<g mask="url(#mask0)">
+										<rect x="0.870605" width="23.8823" height="24" fill="#FFFFFF"></rect>
+									</g>
+								</svg>
+								<span class="jp-carousel-download-text"></span>
+							</a>
+							<div class="jp-carousel-image-map" style="display: none;"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		</div>
+		<link crossorigin="anonymous" rel="stylesheet" id="all-css-0-3" href="https://s0.wp.com/_static/??-eJyFzTsOwjAQBNALYdZAlA5xFmOPLCfrj7JrWbk9UFDQhHJm9DQ0mvG1KIpS7qZxj6kIebfVLmCSkRo28+wlMM5e5ER/xAJtzq/mWxyhkUKECqG/17omGHaDFLmxUwiJ7sevmhjBRMeMbf9NH/bI98s8Xaf5Zq1dXrF0WC0=?cssminify=yes" type="text/css" media="all">
+<script id="coblocks-lightbox-js-extra">
+var coblocksLigthboxData = {"closeLabel":"Close Gallery","leftLabel":"Previous","rightLabel":"Next"};
+</script>
+<script id="jetpack-carousel-js-extra">
+var jetpackSwiperLibraryPath = {"url":"\/wp-content\/mu-plugins\/carousel\/swiper-bundle.js"};
+var jetpackCarouselStrings = {"widths":[370,700,1000,1200,1400,2000],"is_logged_in":"","lang":"en","ajaxurl":"https:\/\/ontechnologyandmedia.com\/wp-admin\/admin-ajax.php","nonce":"3273e70a79","display_exif":"1","display_comments":"1","single_image_gallery":"1","single_image_gallery_media_file":"","background_color":"black","comment":"Comment","post_comment":"Post Comment","write_comment":"Write a Comment...","loading_comments":"Loading Comments...","download_original":"View full size <span class=\"photo-size\">{0}<span class=\"photo-size-times\">\u00d7<\/span>{1}<\/span>","no_comment_text":"Please be sure to submit some text with your comment.","no_comment_email":"Please provide an email address to comment.","no_comment_author":"Please provide your name to comment.","comment_post_error":"Sorry, but there was an error posting your comment. Please try again later.","comment_approved":"Your comment was approved.","comment_unapproved":"Your comment is in moderation.","camera":"Camera","aperture":"Aperture","shutter_speed":"Shutter Speed","focal_length":"Focal Length","copyright":"Copyright","comment_registration":"0","require_name_email":"1","login_url":"https:\/\/ontechnologyandmedia.wordpress.com\/wp-login.php?redirect_to=https%3A%2F%2Fontechnologyandmedia.com%2F2022%2F04%2F12%2Ffan-expo-philadelphia-2022%2F","blog_id":"115418116","meta_data":["camera","aperture","shutter_speed","focal_length","copyright"],"stats_query_args":"blog=115418116&v=wpcom&tz=-4&user_id=0&subd=ontechnologyandmedia","is_public":"1"};
+</script>
+<script crossorigin="anonymous" type="text/javascript" src="https://s0.wp.com/_static/??-eJyNkVtuhDAMRTfUYEEf6nxUXUsIhjEkThQ70Nl9M62maqcS4s+Pe+KrG9iScZEVWWEWGHAlh+mjmeUBfq1CMcmXiViAeCQmvfwU99qb0MXeR7cIdE372rRGKCSPJuPadDCQfB28iYyn6ax9/HdZzxhQIJUexmx58cRXbizslCLLQT3blSZ7JQ4CslCqpngxY3RFzEiHrBE7EJcpqdmSi2EnSDsEYtPbDMGKYq6V0WxrGDuQszkWQQ8zaqpacxvsMBsNE6oAlrqNC6HxdgPF+h1W8W6+846Sx8FM1nvMl7/dAcffedy1lXsPb+3Lc3dqu8fT0/wJWI/1Gg=="></script><aside id="eu_cookie_law_widget-3" class="widget widget_eu_cookie_law_widget" style="display: block;">
+<div class="hide-on-button" data-hide-timeout="30" data-consent-expiration="180" id="eu-cookie-law" style="display: block;">
+	<form method="post">
+		<input type="submit" value="Close and accept" class="accept">
+
+		Privacy &amp; Cookies: This site uses cookies. By continuing to use this website, you agree to their use. <br>
+To find out more, including how to control cookies, see here:
+				<a href="https://automattic.com/cookies/" rel="nofollow">
+			Cookie Policy		</a>
+ </form>
+</div>
+</aside>
+<script type="text/javascript">
+// <![CDATA[
+(function() {
+try{
+  if ( window.external &&'msIsSiteMode' in window.external) {
+    if (window.external.msIsSiteMode()) {
+      var jl = document.createElement('script');
+      jl.type='text/javascript';
+      jl.async=true;
+      jl.src='/wp-content/plugins/ie-sitemode/custom-jumplist.php';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(jl, s);
+    }
+  }
+}catch(e){}
+})();
+// ]]>
+</script>		<script type="text/javascript">
+			(function() {
+				var extend = function(out) {
+					out = out || {};
+
+					for (var i = 1; i < arguments.length; i++) {
+						if (!arguments[i])
+						continue;
+
+						for (var key in arguments[i]) {
+						if (arguments[i].hasOwnProperty(key))
+							out[key] = arguments[i][key];
+						}
+					}
+
+					return out;
+				};
+				extend( window.infiniteScroll.settings.scripts, ["mobile-useragent-info","rlt-proxy","jquery-core","jquery-migrate","jquery","media-video-jwt-bridge","wpcom-actionbar-placeholder","grofiles-cards","wpgroho","textarea-autosize","highlander-comments","devicepx","the-neverending-homepage","coblocks-lightbox","franklin-script","franklin-navigation","franklin-skip-link-focus-fix","franklin-wpcom-script","wpcom-masterbar-tracks-js","jetpack-carousel","eu-cookie-law-script","tiled-gallery","carousel-wpcom"] );
+				extend( window.infiniteScroll.settings.styles, ["wpcom-smileys","the-neverending-homepage","wp-block-library","mediaelement","wp-mediaelement","jetpack-layout-grid","jetpack-ratings","coblocks-frontend","wpcom-core-compat-playlist-styles","wpcom-bbpress2-staff-css","genericons","franklin-style","franklin-wpcom-style","jetpack-top-posts-widget","geo-location-flair","reblogging","a8c-global-print","h4-global","global-styles","franklin-fonts","jetpack-global-styles-frontend-style","highlander-comments","jetpack-carousel-swiper-css","jetpack-carousel","eu-cookie-law-style","tiled-gallery"] );
+			})();
+		</script>
+				<span id="infinite-aria" aria-live="assertive"></span>
+		<script src="//stats.wp.com/w.js?63" defer=""></script> <script type="text/javascript">
+_tkq = window._tkq || [];
+_stq = window._stq || [];
+_tkq.push(['storeContext', {'blog_id':'115418116','blog_tz':'-4','user_lang':'en','blog_lang':'en','user_id':'0'}]);
+_stq.push(['view', {'blog':'115418116','v':'wpcom','tz':'-4','user_id':'0','subd':'ontechnologyandmedia'}]);
+_stq.push(['extra', {'crypt':'UE40eW5QN0p8M2Y/RE1TaVhzUzFMbjdWNHpwZGhTayxPSUFCMGNrd29+Smw0TDhnZmRTK0hlRi9QSGh6bi9GXVhBJWIlZlR5U1JMLU8/MkNtblkvY1c9dHo0L2tlamE9UixUMFQrbTVjOUtTclVQeHN1UW1sM2JPWmM5REdmK2M/KzBRQ3lLcjU/NDBvQTY5eEZXUWpvSi1IZG4teUtJXyxbc3FJRk1qVnV0dCV6dktYM0RHcit6fmc3Vm43a2IuSl1UTUVZcXFubi91Y2lrNiswZkRZTEptRlNuLy14R1txaVIrcU5kMmdGYXQ5VUxIdERpQkdfVTlCciYlZHlOdj1td3RKSE1QZzMzcURUQTVsR1d+RF1NLWlnUHdvZ1BCbDYlcTdVV0J+ZytRREllTEpiMzV5MENHRQ=='}]);
+_stq.push([ 'clickTrackerInit', '115418116', '0' ]);
+	</script>
+<noscript><img src="https://pixel.wp.com/b.gif?v=noscript" style="height:1px;width:1px;overflow:hidden;position:absolute;bottom:1px;" alt="" /></noscript>
+<script>
+if ( 'object' === typeof wpcom_mobile_user_agent_info ) {
+
+	wpcom_mobile_user_agent_info.init();
+	var mobileStatsQueryString = "";
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedPlatformName )
+		mobileStatsQueryString += "&x_" + 'mobile_platforms' + '=' + wpcom_mobile_user_agent_info.matchedPlatformName;
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedUserAgentName )
+		mobileStatsQueryString += "&x_" + 'mobile_devices' + '=' + wpcom_mobile_user_agent_info.matchedUserAgentName;
+	
+	if( wpcom_mobile_user_agent_info.isIPad() )
+		mobileStatsQueryString += "&x_" + 'ipad_views' + '=' + 'views';
+
+	if( "" != mobileStatsQueryString ) {
+		new Image().src = document.location.protocol + '//pixel.wp.com/g.gif?v=wpcom-no-pv' + mobileStatsQueryString + '&baba=' + Math.random();
+	}
+	
+}
+</script>
+
+
+<!--
+	generated in 0.220 seconds
+	86256 bytes batcached for 300 seconds
+-->
+<style>img#wpstats {
+			position: absolute !important;
+			clip: rect(0, 0, 0, 0);
+			padding: 0 !important;
+			border: 0 !important;
+			height: 0 !important;
+			width: 0 !important;
+			overflow: hidden;
+		}</style><img src="https://pixel.wp.com/g.gif?blog=115418116&amp;v=wpcom&amp;tz=-4&amp;user_id=0&amp;subd=ontechnologyandmedia&amp;host=ontechnologyandmedia.com&amp;ref=&amp;rand=0.5184362015739685" alt=":)" id="wpstats" scale="0"><iframe scrolling="no" id="wpcom_remote_login_key" src="https://r-login.wordpress.com/remote-login.php?wpcom_remote_login=key&amp;origin=aHR0cHM6Ly9vbnRlY2hub2xvZ3lhbmRtZWRpYS5jb20%3D&amp;wpcomid=115418116&amp;time=1656241607" style="display: none;"></iframe><script src="https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.js?v=20220329" defer=""></script></body></html>

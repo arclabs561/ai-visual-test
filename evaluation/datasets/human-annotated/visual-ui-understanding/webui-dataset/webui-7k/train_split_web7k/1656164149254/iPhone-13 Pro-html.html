@@ -1,0 +1,1782 @@
+<!DOCTYPE html><html lang="en"><head>
+		<meta name="viewport" content="width=device-width">
+		<meta name="theme-color" content="#142334">
+		<!--[if IE]><script type="text/javascript" src="./jslib/excanvas.js"></script><![endif]-->
+		<title>d-portal</title>
+		
+		<link rel="stylesheet" type="text/css" href="ctrack/art/original/ctrack.css">
+
+		<script async="" src="//www.google-analytics.com/analytics.js"></script><script src="./ctrack/jslib/ctrack_loader.js"></script>
+		<script type="text/javascript" src="./ctrack/jslib/ctrack.js"></script><script>
+			ctrack_loader({
+
+// where to load js/css/etc files from, defaults to http://d-portal.org/ 
+// set to / if you are running a ctrack server
+				root:"./ctrack/",
+				q:"/q",
+				
+//				art:"/art/high/",
+
+// if set then use google analytics with this code
+				ga:"UA-6109435-15", 
+
+// replace "this" with content from the portal
+				master:"#ctrack_div",
+
+// displayed data will be limited to this country code
+//				country:"bd",
+
+// displayed data will be limited to this publisher code
+//				publisher:"US",
+
+// these are replaced into the generated html and you can overide *any* display chunk here
+				chunks:{
+//					"country_name":"Bangladesh",
+//					"country_flag":"bdflag.png",
+//					"background_image":"backgroundimage.jpg"
+				}
+
+			});		
+		</script><link type="text/css" rel="stylesheet" href="./ctrack/art/original/ctrack.css"><link type="text/css" rel="stylesheet" href="./ctrack/art/chosen.min.css"><link type="text/css" rel="stylesheet" href="./ctrack/art/chartist.min.css"><link type="text/css" rel="stylesheet" href="./ctrack/art/typeahead.css">
+	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDPrMTYfR7XcA3PencDS4dhovlILuumB_w&amp;libraries=visualization&amp;callback=display_ctrack_map"></script><script type="text/javascript" src="./ctrack/jslib/markerclusterer.js"></script><style>
+.activity *, .org *			{box-sizing:border-box; font-family:Arial,Helvetica,sans-serif; word-wrap:break-word;}
+.activity, .org				{background-color:rgba(0,14,32,0.7); border-radius:8px; box-sizing:border-box; color:#fff; margin:0 auto; margin-bottom:40px; padding:40px 40px 1px 40px; position:relative; width:960px;}
+.activity > *, .org > *		{box-sizing:border-box;}
+.activity a					{color:#FFC28A; text-decoration:none;}
+.activity a:link			{color:#FFC28A; text-decoration:none;}
+.activity a:visited			{color:#FFC28A; text-decoration:none;}
+.activity a:hover			{color:#FFDBBB; text-decoration:none;}
+.activity a:active			{color:#FFC28A; text-decoration:none;}
+.org						{margin-top:40px;}
+.org a						{color:#FFC28A; text-decoration:none;}
+.org a:link					{color:#FFC28A; text-decoration:none;}
+.org a:visited				{color:#FFC28A; text-decoration:none;}
+.org a:hover				{color:#FFDBBB; text-decoration:none;}
+.org a:active				{color:#FFC28A; text-decoration:none;}
+
+/*	FLAGS	*/
+.humanitarian	{background-color:#ff890c; color:#000e20; font-size:14px; left:0; padding:10px 40px 7px 40px; position:absolute; text-align:right; text-transform:uppercase; top:-10px;}
+.hum_transaction{background-color:rgba(48,71,103,1); border-radius:4px; color:#CCC; display:inline-block; font-size:12px; margin-left:-5px; margin-top:10px; padding:2px 5px;}
+span.withdrawn	{background-color:#ccc; border-radius:3px; color:#444; font-size:12px; font-style:italic; font-weight:normal; margin-left:5px; padding:2px 5px; text-transform:initial; width:initial;}
+
+/*	THEME BUTTON	*/
+.theme_button		{position:fixed; top:0px; right:0px; background-color:#000; color:#FFF; cursor:pointer; padding:5px 10px; font-size:14px;}
+.theme_button:hover	{background-color:#666;}
+
+/*	VERSION 1 BANNER	 */
+a.banner_v1:link	{background-color:#c40000; border-radius:2px 2px 0 0; color:#fff; display:block; font-size:16px; margin-bottom:20px; padding:20px; text-align:center; text-decoration:none;}
+a.banner_v1:visited	{color:#fff;}
+a.banner_v1:hover	{background-color:#f00;}
+a.banner_v1:active	{color:#fff;}
+
+/*	HEADERS	*/
+.header,
+.header_doc		{border-bottom:1px solid #aaa; color:#ccc; display:block; font-size:13px; margin-bottom:20px; padding-bottom:10px; position:relative; text-transform:uppercase;}
+.header_doc		{border:0; margin:0;}
+.header_section	{background-color:rgba(17,46,105,1); box-sizing:border-box; color:#FFF; font-size:12px; margin:0 0 20px -50px; padding:10px 40px; text-transform:uppercase; width:980px;}
+.bright			{background-color:rgba(38,67,128,1);}
+.brighter		{background-color:transparent; border-bottom:2px solid #47506b; font-size:11px; line-height:20px; margin:auto; margin:5px 0 20px 0; padding:0; width:880px;}
+.brighter span	{background-color:#47506b; display:inline; padding:5px 10px;}
+.sticky			{position:sticky; top:-1px; z-index:2;}
+.nostick		{position:initial;}
+span.block		{display:block;}
+.version		{display:block; font-size:12px; position:absolute; right:0; top:0;}
+.version span	{color:#fff;}
+
+/*	WRAPPERS	*/
+.wrap_title						{padding-bottom:40px;}
+.wrap_reporting_org				{color:#ccc; font-size:18px; line-height:1.35em;}
+.wrap_title	.narrative						{font-size:42px; line-height:1em;}
+.wrap_title	.narrative:nth-of-type(n+2)		{font-size:30px; margin-top:15px; font-style:italic;}
+.wrap_reporting_org div			{display:inline-block; padding-right:10px; vertical-align:top;}
+.wrap_iati_identifier			{background-color:rgba(0,14,32,0.7); color:#FFAB5E; font-size:18px; line-height:1.5em; margin:0 auto; margin:25px 0 0 -40px; padding:20px 40px; width:960px;}
+.wrap_iati_identifier.org_id	{margin-top:10px;}
+.wrap_reporting_org .text,
+.wrap_iati_identifier .text		{color:#ccc; font-size:13px; text-transform:uppercase;}
+.wrap_iati_identifier .text a	{font-size:18px; padding-left:5px;}
+.wrap_name_org					{color:#fff; font-size:18px; padding-bottom:10px;}
+.wrap_name_org .narrative:nth-of-type(n+2)	{padding-top:5px; color:#ccc; font-size:16px; font-style:italic;}
+.wrap_description				{margin:40px auto;}
+.wrap_description .text			{margin-bottom:30px;}
+.wrap_description .text .narrative					{font-size:1.0em; line-height:1.25em; unicode-bidi:embed; white-space:pre-line; word-spacing:0.05em;}
+.wrap_description .text .narrative:nth-of-type(n+2)	{display:block; margin-top:15px; color:#ccc;}
+.wrap_description .text .narrative:first-letter		{text-transform:capitalize;}
+.wrap_default					{margin:0 auto; padding:20px 0 0 0;}
+.wrap_default .text				{color:#ccc; display:inline-block; font-size:14px; vertical-align:top; width:50%;}
+.wrap_default .text:first-of-type	{padding-right:20px;}
+.wrap_default .text	span		{color:#fff; font-size:16px; padding-left:10px;}
+.wrap_location .header_section,
+.wrap_budget .header_section	{margin-top:0;}
+.wrap_document					{margin:30px 0;}
+.wrap_budget_not_provided		{font-size:16px; padding-bottom:20px;}
+.wrap_budget_not_provided span	{font-weight:bold; text-transform:lowercase;}
+.reporting_org span				{font-size:12px; margin-left:5px; vertical-align:middle;}
+.reporting_org .narrative:nth-of-type(2)	{font-style:italic;}
+
+/*	GRAPHS	*/
+.wrap_recipient_country,
+.wrap_sector				{background-color:#fff; color:#444; margin:-20px 0 0 -40px; padding:0 0 40px 0; width:960px;}
+.wrap_recipient_country		{padding:40px 0;}
+.sector,
+.sector_list_wrap					{color:#444; font-size:14px; line-height:18px; padding:0 40px;}
+.sector_list_wrap span				{display:inline-block; padding-right:40px; vertical-align:top; width:30%;}
+.sector_list_wrap span.withdrawn	{padding-right:5px; width:initial;}
+.sector_list_wrap span.sector_list_description	{font-size:13px; line-height:15px; padding:0; width:70%;}
+.sector_list		{border-bottom:1px solid #ddd; margin-bottom:10px; padding-bottom:10px;}
+.sector_vocab		{border-bottom:1px solid #aaa; padding-bottom:20px;}
+.sector_list:last-of-type,
+.sector_vocab:last-of-type	{border:0; padding-bottom:0;}
+.sector_vocab .type {margin-left:5px; background-color:rgba(223,222,217,0.6); vertical-align:baseline; color:#444; font-weight:normal;}
+.wrap_code,
+.wrap_bar			{display:inline-block; vertical-align:middle; width:400px;}
+.wrap_code			{border-right:1px solid #999; padding:10px 20px 10px 0; text-align:right; width:480px;}
+.wrap_bar			{height:24px;}
+.wrap_code span		{display:inline-block; vertical-align:middle;}
+.sector_code_text	{max-width:360px;}
+.sector_code		{background-color:rgba(192,213,242,0.7); border-radius:4px; color:#222; font-size:11px; margin-left:10px; padding:2px 5px; white-space:nowrap;}
+.sector_code:nth-of-type(3)	{margin-left:5px;}
+.sector_bar,
+.sector_value		{display:inline-block; vertical-align:middle;}
+.sector_bar			{background-color:#05569d; height:24px; max-width:335px; position:relative;}
+.sector_bar:before	{background-color:rgba(17,46,105,0.1); content:""; height:24px; left:0; position:absolute; top:0; width:335px;}
+.sector_overlay		{height:24px; left:0; position:absolute; top:0;}
+.sector_value		{color:#444; font-size:14px; margin-left:20px; max-width:36px; text-align:right; white-space:nowrap;}
+.sector_value:after	{content:"%";}
+.wrap_sector .header			{border:0; color:#444; font-weight:bold; margin:0 auto; padding:30px 0 5px 0; text-align:center; width:880px;}
+.wrap_sector .header.glossary	{border-bottom:1px solid #aaa; margin-bottom:10px; text-align:left;}
+.wrap_sector .subheader			{color:#555; font-size:12px; line-height:16px; margin:0 auto; padding-bottom:20px; text-align:center; word-break:keep-all;}
+.wrap_sector .subheader a			{color:#093E6F; display:block;}
+.wrap_sector .subheader a:link		{color:#093E6F;}
+.wrap_sector .subheader a:visited	{color:#093E6F;}
+.wrap_sector .subheader a:hover		{color:#0373C9;}
+.wrap_sector .subheader a:active	{color:#093E6F;}
+.wrap_capital_spend	{padding:20px 0;}
+.wrap_capital_spend .sector_code_text	{max-width:initial;}
+
+/*	DATA SOURCES	*/
+.data_source a			{background-color:#24405d99; border-radius:4px; color:#fff; display:inline-block; font-size:16px; font-variant:all-small-caps; margin:10px 2% 5px 0; padding:5px 0; text-align:center; vertical-align:baseline; width:12%;}
+.data_source a:link		{color:#fff;}
+.data_source a:visited	{color:#fff;}
+.data_source a:hover	{color:#FFC28A;}
+.data_source a:active	{color:#fff;}
+.data_source a span		{color:#ccc;}
+.data_source a.dlogs	{width:12%;}
+.data_source a.slug		{width:17%;}
+.data_source a.csv		{margin-right:0; width:20%;}
+
+/*	COUNT	*/
+span.count				{color:#ccc; font-size:12px; padding-left:10px;}
+.wrap_sector span.count	{color:#444; font-weight:normal; padding-left:5px; vertical-align:baseline;}
+.wrap_transaction,
+.wrap_result			{position:relative;}
+.wrap_length			{color:#ddd; font-size:10px; max-width:700px; position:absolute; right:-20px; text-align:right; top:10px;}
+.wrap_length span.count	{font-size:10px; padding:0 0 0 5px;}
+.length					{display:inline-block; padding-left:20px;}
+.wrap_result .wrap_length	{right:20px;}
+.wrap_result .length	{min-width:100px;}
+
+
+/*	DOCUMENTS	*/
+a.doc_link:before		{border:1px solid #CCC; color:#CCC; content:"☰"; display:inline-block; margin-right:-24px; padding:2px; vertical-align:top;}
+a.doc_link				{background-color:rgba(50,58,64,0.6); border:1px solid #656a6f; border-bottom:0; color:#FFF; display:block; font-size:10px; line-height:1.25em; padding:10px 15px; position:relative;}
+.wrap_document a		{color:#fff;}
+.wrap_document a:link	{color:#fff;}
+.wrap_document a:visited{color:#fff;}
+.wrap_document a:hover	{background-color:rgba(77,88,97,0.6);}
+.wrap_document a:active	{color:#fff;}
+a.doc_link:last-of-type	{border-bottom:1px solid #656a6f;}
+
+.wrap_doc_link	{display:inline-block; padding-left:34px; vertical-align:top;}
+span.doc_title,
+span.doc_format	{display:inline-block; vertical-align:top;}
+span.doc_title	{font-size:14px; line-height:1.25em; max-width:600px;}
+span.doc_title:nth-of-type(n+2)	{font-style:italic;}
+span.doc_desc	{color:#ccc; display:block; font-size:12px; line-height:14px; padding:5px 0;}
+span.doc_format	{background-color:rgba(22,24,37,0.6); border-radius:4px; color:#aaa; font-size:10px; font-weight:bold; margin-left:10px; padding:2px 5px;}
+span.doc_lang,
+span.doc_country{color:#CCC; display:inline-block; font-size:13px; line-height:1.5em; margin:5px 3px 0 0; text-transform:uppercase; vertical-align:top;}
+span.doc_country{font-style:italic; text-transform:initial; line-height:1em; vertical-align:bottom;}
+span.rep_type	{color:#CCC; display:inline-block; font-size:12px; margin-left:5px; vertical-align:middle;}
+span.doc_cat,
+span.doc_rec,
+span.doc_date	{background-color:rgba(72,79,86,0.6); border-radius:4px; color:#CCC; display:inline-block; font-size:13px; line-height:1.5em; margin:5px 5px 0 0; padding:0 4px; vertical-align:top;}
+span.doc_date	{background-color:rgba(48,71,103,1);}
+span.doc_rec	{background-color:rgba(22,24,37,0.6);}
+
+/*	CONTACT INFO	*/
+.wrap_contact_info					{background-color:rgba(17,46,105,0.9); font-size:16px; line-height:1.5em; margin:0 0 20px -50px; padding:20px 40px 0 40px; width:980px;}
+.wrap_contact_info:last-of-type 	{padding-bottom:0;}
+.wrap_contact_info:nth-of-type(1) 	{margin-left:-10px; padding-top:30px; width:900px;}
+.wrap_contact_info .contact_info	{border-bottom:1px dotted #7481aa; margin-bottom:15px; padding-bottom:15px;}
+.wrap_contact_info .contact_info:last-of-type	{border:0; margin-bottom:0; padding-bottom:20px;}
+.wrap_contact_org					{font-weight:bold;}
+.wrap_contact_name					{font-size:20px; padding-top:10px;}
+.wrap_contact_title					{font-size:16px;}
+.wrap_contact_tel					{font-size:18px; padding:5px 0;}
+.wrap_contact_type					{color:#ccc; font-size:12px; padding-bottom:5px; text-transform:uppercase;}
+.wrap_contact_add					{padding-top:5px;}
+.wrap_contact_info .narrative:nth-of-type(n+2)	{font-size:16px; font-style:italic; font-weight:normal;}
+
+/*	DATES	*/
+.wrap_activity_date					{height:82px; margin-left:-50px; position:relative; width:980px;}
+.wrap_activity_date .planned_start,
+.wrap_activity_date .actual_start,
+.wrap_activity_date .planned_end,
+.wrap_activity_date .actual_end		{color:#151515; display:inline-block; font-size:20px; height:40px; line-height:18px; min-height:40px; padding:10px 40px;}
+.wrap_activity_date div span		{color:#552d03; display:inline-block; font-size:13px; font-weight:bold; line-height:18px; min-width:165px; padding-right:10px; text-transform:uppercase; vertical-align:bottom;}
+.wrap_activity_date .planned_start	{background-color:#f48a1a; left:0; margin:1px 1px 0 0; position:absolute; top:0; width:489px;}
+.wrap_activity_date .planned_end	{background-color:#f48a1a; margin:1px 0 0 0; position:absolute; right:0; text-align:right; top:0; width:490px;}
+.wrap_activity_date .actual_start	{background-color:#ffa443; bottom:0; left:0; margin:1px 1px 0 0; position:absolute; width:489px;}
+.wrap_activity_date .actual_end		{background-color:#ffa443; bottom:0; margin:1px 0 0 0; position:absolute; right:0; text-align:right; width:490px;}
+.activity_date_bar					{background-color:#ccc; height:10px; margin-left:-40px; max-height:10px; position:relative; width:960px;}
+.activity_date_overlay				{background-color:#3d72dd; height:10px; max-height:10px; position:relative;}
+.activity_date_overlay:after		{background-color:#fff; border:3px solid #3d72dd; border-radius:15px; content:""; height:10px; position:absolute; right:-5px; top:-4px; width:10px;}
+
+/*	ACTIVITY STATUS	*/
+.wrap_activity_status		{background-color:#fff; color:#444; font-size:16px; margin-left:-40px; padding:20px 0; text-align:center; width:960px;}
+.wrap_activity_status span	{font-size:13px; font-weight:bold; text-transform:uppercase;}
+.status_desc				{font-size:12px; margin:0 auto; padding-top:5px;}
+
+/*	TABLES	*/
+td .currency	{color:#ccc; font-size:10px; line-height:12px;}
+.value			{text-align:right;}
+.wrap_tab		{border-bottom:1px solid #666; margin-bottom:5px; padding-bottom:5px;}
+.wrap_tab:last-of-type	{border:0;}
+.tab_text,
+.tab_currency	{box-sizing:border-box; display:inline-block; vertical-align:top; width:60%;}
+.tab_currency	{color:#ccc; font-size:12px; padding-left:30px; text-align:right; width:40%;}
+.tab_currency div {font-size:10px;}
+.tab_text		{word-break:keep-all;}
+
+/*	PROVIDER, RECEIVER ORG	*/
+.type			{background-color:rgba(72,79,86,0.6); border-radius:4px; color:#CCC; font-size:11px; margin:0 auto; margin-left:-5px; padding:2px 4px;}
+.type.secondary	{background-color:#304767; color:#ddd;}
+.ref			{color:#CCC; font-family:monospace; font-size:10px; line-height:initial; margin:0 auto;}
+.ref span		{color:#fff;}
+.ref span.withdrawn					{background-color:#545e73; color:#ddd; font-size:10px;}
+.org-type		{margin-top:5px;}
+td.receiver div,
+td.provider div,
+td.part_org_ref div,
+td.loc_name div						{line-height:10px; padding-bottom:2px;}
+td.part_org_ref .part_org_id span a	{padding-left:5px;}		/*	Left padding so ID lines up	*/
+td.description .description_text .narrative,
+td.receiver .receiver_text .narrative,
+td.provider .provider_text .narrative	{font-size:14px; line-height:18px;}
+td.receiver .receiver_text,
+td.provider .provider_text			{padding-bottom:5px;}
+td.part_org_ref .part_org_text,
+td.loc_name .loc_text				{font-size:13px; line-height:15px; padding-bottom:5px;}
+td.loc_name .loc_text				{font-size:14px;}
+td.description div 					{line-height:10px; margin-bottom:3px; max-width:200px; padding-bottom:2px;}
+td.description div:last-of-type		{border:0; margin:0; padding:0;}
+td.description .description_text	{border:0; max-width:100%; padding-bottom:5px;}
+td .narrative:nth-of-type(n+2)		{padding-top:5px; color:#ccc; font-style:italic;}
+
+table.budget			{border-collapse:collapse; table-layout:fixed; text-align:left; width:880px;}
+table.budget th			{background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPBAMAAADJ+Ih5AAAAIVBMVEUAAAD////////////////////////////////////////PIev5AAAAC3RSTlMArxdHEAqfnTkpJkV64fYAAAAtSURBVAjXY8AKOGAMQwMIzSUoCWG4C4o5gBlBSkoBcPVwEbgauC6EOQiTMQEAKKIEY4aIsg8AAAAASUVORK5CYII=) no-repeat right 5px center; color:#CCC; font-size:13px; font-weight:normal; line-height:1.35em; margin-bottom:15px; padding-bottom:10px;}
+.org table.budget th.status,
+table.budget th.value	{background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPBAMAAADJ+Ih5AAAAIVBMVEUAAAD////////////////////////////////////////PIev5AAAAC3RSTlMArxdHEAqfnTkpJkV64fYAAAAtSURBVAjXY8AKOGAMQwMIzSUoCWG4C4o5gBlBSkoBcPVwEbgauC6EOQiTMQEAKKIEY4aIsg8AAAAASUVORK5CYII=) no-repeat right -5px center, #1b232de8;}
+
+table.budget th:hover	{cursor:pointer;}
+table.budget td			{border-top:1px solid #4d5264; color:#FFF; font-size:14px; line-height:initial; padding:10px 0; vertical-align:top;}
+table.budget td.value	{font-size:15px; padding-right:20px; text-align:right;}
+table.budget td.date	{line-height:18px;}
+.org table.budget td.value			{font-size:14px;}
+
+table.budget tr:nth-of-type(1) td	{padding-top:15px;}
+table.budget th			{background-color:#1b232de8; padding:10px 0; position:sticky; top:30px; z-index:1;}
+table.budget th:after	{border-bottom:1px solid #aaa; bottom:-1px; content:''; left:0; position:absolute; width:100%;}
+
+/*	IATI ACTIVITY BUDGET AND PLANNED DISBURSEMENT TABLE	*/
+table.budget th.date,
+table.budget td.date				{padding-right:20px; width:100px;}
+table.budget th.end_date,
+table.budget td.end_date			{width:250px;}
+table.budget th.tab_type,
+table.budget td.tab_type			{padding-right:30px; width:200px;}
+table.budget th.status,
+table.budget td.status				{width:170px;}
+table.budget th.value,
+table.budget td.value				{padding-right:20px; width:140px;}
+table.budget tr:last-of-type td		{padding-bottom:30px;}	/*	Remove border-bottom from last row of tables	*/
+
+.wrap_planned_disbursement table.budget th.provider,
+.wrap_planned_disbursement table.budget td.provider	{padding-right:30px; width:200px;}
+.wrap_planned_disbursement table.budget th.receiver,
+.wrap_planned_disbursement table.budget td.receiver	{width:170px;}
+.wrap_planned_disbursement table.budget th.tab_type,
+.wrap_planned_disbursement table.budget td.tab_type	{width:150px;}
+
+/*	IATI ORG DATE AND STATUS COLUMN	*/
+.wrap_total_budget table.budget th.date,
+.wrap_total_budget table.budget td.date,
+.wrap_total_expenditure table.budget th.date,
+.wrap_total_expenditure table.budget td.date,
+.wrap_recipient_budget table.budget th.date,
+.wrap_recipient_budget table.budget td.date,
+.wrap_total_budget table.budget th.status,
+.wrap_total_budget table.budget td.status,
+.wrap_total_expenditure table.budget th.status,
+.wrap_total_expenditure table.budget td.status,
+.wrap_recipient_budget table.budget th.status,
+.wrap_recipient_budget table.budget td.status		{padding-right:0; width:100px;}
+
+.wrap_total_budget table.budget th.status,
+.wrap_total_budget table.budget td.status,
+.wrap_total_expenditure table.budget th.status,
+.wrap_total_expenditure table.budget td.status,
+.wrap_recipient_budget table.budget th.status,
+.wrap_recipient_budget table.budget td.status		{text-align:center;}
+
+/*	IATI ORG RECIPIENT COLUMN	*/
+.wrap_recipient_budget table.budget th.recipient,
+.wrap_recipient_budget table.budget td.recipient	{padding-right:20px; width:180px;}
+
+/*	IATI ORG BUDGET-LINE COLUMN	*/
+.wrap_total_budget table.budget th.line,
+.wrap_total_budget table.budget td.line				{padding-right:0; width:460px;}
+
+/*	IATI ORG RECIPIENT-BUDGET-LINE COLUMN	*/
+.wrap_recipient_budget table.budget th.line,
+.wrap_recipient_budget table.budget td.line			{padding-right:0; width:260px;}
+
+/*	IATI ORG EXPENSE-LINE COLUMN	*/
+.wrap_total_expenditure table.budget th.line,
+.wrap_total_expenditure table.budget td.line		{padding-right:0; width:460px;}
+
+/*	IATI ORG VALUE HEADER COLUMN	*/
+.wrap_total_expenditure table.budget th.value		{padding-right:20px; width:200px;}
+.wrap_total_budget table.budget th.value,
+.wrap_recipient_budget table.budget th.value		{padding-right:20px; width:100px;}
+
+/*	IATI ORG VALUE COLUMN	*/
+.wrap_total_expenditure table.budget td.value		{padding-left:20px; padding-right:0; width:200px;}
+.wrap_total_budget table.budget td.value,
+.wrap_recipient_budget table.budget td.value		{padding-left:20px; padding-right:0; width:120px;}
+
+/*	IATI ACTIVITY PARTICIPATING ORG TABLE	*/
+table.budget.part_org th.part_org_name,
+table.budget.part_org td.part_org_name		{padding-right:40px;}
+table.budget.part_org th.part_org_ref,
+table.budget.part_org td.part_org_ref		{padding-right:20px; width:260px;}
+table.budget.part_org th.part_org_role,
+table.budget.part_org td.part_org_role		{padding-right:20px; width:120px;}
+table.budget.part_org th.part_org_type,
+table.budget.part_org td.part_org_type		{width:140px;}
+table.budget.part_org td.part_org_type		{font-size:12px;}
+
+/*	IATI ACTIVITY HUMANITARIAN SCOPE TABLE	*/
+.wrap_humanitarian_scope th.hum_title,
+.wrap_humanitarian_scope td.hum_title		{padding-right:40px;}
+.wrap_humanitarian_scope th.hum_code,
+.wrap_humanitarian_scope td.hum_code		{padding-right:20px; width:160px;}
+.wrap_humanitarian_scope th.hum_vocab,
+.wrap_humanitarian_scope td.hum_vocab		{padding-right:20px; width:130px;}
+.wrap_humanitarian_scope th.hum_type,
+.wrap_humanitarian_scope td.hum_type		{width:130px;}
+.wrap_humanitarian_scope td.hum_code,
+.wrap_humanitarian_scope td.hum_vocab,
+.wrap_humanitarian_scope td.hum_type		{font-size:12px;}
+
+/*	IATI ACTIVITY LOCATION TABLE	*/
+table.budget.location th.loc_name,
+table.budget.location td.loc_name			{width:220px;}
+table.budget.location th.loc_des,
+table.budget.location td.loc_des			{padding-right:20px; width:230px;}
+table.budget.location td.loc_des			{font-size:12px;}
+table.budget.location th.loc_pos,
+table.budget.location td.loc_pos			{padding-right:40px; width:110px;}
+table.budget.location td.loc_pos			{font-family:monospace; font-size:12px;}
+table.budget.location td.loc_pos a span		{display:block;}
+table.budget.location th.loc_class,
+table.budget.location td.loc_class,
+table.budget.location th.loc_reach,
+table.budget.location td.loc_reach,
+table.budget.location th.loc_exact,
+table.budget.location td.loc_exact			{padding-right:0; width:100px;}
+table.budget.location td.loc_class,
+table.budget.location td.loc_reach,
+table.budget.location td.loc_exact			{font-size:12px; line-height:14px;}
+table.budget.location td.loc_des div		{padding-top:5px;}
+table.budget.location td.loc_des .loc_desc:first-letter	{text-transform:capitalize;}
+table.budget.location td.loc_des .loc_desc	{padding-top:0;}
+table.budget.location td.loc_des .loc_act	{color:#ccc;}
+table.budget.location td.loc_des .type		{margin-left:0;}
+table.budget.location td.loc_des .ref span	{text-transform:capitalize;}
+
+/*	IATI ACTIVITY TRANSACTION TABLES	*/
+table.budget.act_trans th.description,
+table.budget.act_trans td.description		{padding-right:30px; width:260px;}
+table.budget.act_trans td.description .type	{color:#ccc; font-family:monospace; font-size:9px; margin:0;}
+table.budget.act_trans th.provider,
+table.budget.act_trans td.provider			{padding-right:30px; width:200px;}
+table.budget.act_trans th.receiver,
+table.budget.act_trans td.receiver			{padding-right:0; width:170px;}
+table.budget.act_trans th.value,
+table.budget.act_trans td.value				{padding-right:20px; width:140px;}
+table.budget.act_trans th.date,
+table.budget.act_trans td.date				{padding-right:0; width:110px;}
+
+/*	IATI ACTIVITY RESULT TABLE	*/
+.wrap_result_table							{padding-bottom:20px;}
+.wrap_result table.budget tr:last-of-type td{padding-bottom:0;}		/*	For Baseline year translateY to work	*/
+.wrap_result table.budget th.result_indi,
+.wrap_result table.budget td.result_indi	{padding-right:40px; width:320px;}
+.wrap_result th.result_percent,
+.wrap_result td.result_percent				{width:85px;}
+.wrap_result td.result_base					{position:relative;}
+.wrap_result td.result_base,
+.wrap_result td.result_target,
+.wrap_result td.result_actual,
+.wrap_result td.result_percent				{font-size:14px;}
+.wrap_result table.budget td.result_base,
+.wrap_result table.budget td.result_target,
+.wrap_result table.budget td.result_actual	{padding-right:10px;}
+.wrap_result th.result_period,
+.wrap_result td.result_period				{width:130px;}
+.wrap_result td.result_period				{font-size:10px; line-height:20px; text-align:center;}
+.wrap_result .header_doc					{display:none;}
+.wrap_result_text							{padding:5px 0 20px 0;}
+.result_main_title							{font-size:16px; line-height:20px;}
+.result_main_title .narrative:nth-of-type(n+2){color:#ccc; font-style:italic;}
+.result_title								{font-size:15px; line-height:18px;}
+.result_title .narrative:nth-of-type(n+2)	{color:#ccc; font-style:italic;}
+.result_main_title .narrative:first-letter,
+.result_indi_desc .narrative:first-letter,
+.result_title .narrative:first-letter		{text-transform:capitalize;}
+.wrap_result_text .wrap_document,
+.wrap_result_indicator .wrap_document		{margin:15px 0 0 0;}
+.wrap_result a.doc_link						{font-size:7px; line-height:1em; padding:5px;}
+.wrap_result span.wrap_doc_link				{padding-left:28px;}
+.wrap_result span.doc_title					{font-size:12px;}
+.wrap_result span.doc_format				{padding:5px;}
+.wrap_result span.doc_cat,
+.wrap_result span.doc_lang,
+.wrap_result span.doc_rec,
+.wrap_result span.doc_date					{font-size:11px; margin:2px 2px 0 0;}
+.wrap_result_text .wrap_result_indi_ref		{padding:0;}
+.result_indicator							{display:inline-block; vertical-align:top; width:25%;}
+.result_indicator.left_indi					{padding-right:25px; width:75%;}
+.wrap_result_indicator						{margin-bottom:10px;}
+.result_indicator_title						{border-bottom:1px solid #aaa; color:#CCC; font-size:14px; font-weight:normal; line-height:1.35em; margin-bottom:10px; padding-bottom:10px;}
+.wrap_result_indi_ref						{margin-top:-10px; padding-bottom:15px;}
+.wrap_result_indi_ref:last-of-type			{padding:0;}
+.result_indi_head							{border-bottom:1px solid #4d5264; color:#ccc; font-size:10px; padding-bottom:3px;}
+.result_indi_desc							{font-size:14px; line-height:18px; padding-top:5px;}
+.result_indi_desc .narrative:nth-of-type(n+2){color:#ccc; font-style:italic;}
+.result_indi_ref							{border-bottom:1px dotted #666; font-size:11px; line-height:11px; padding:5px 0 0 0;}
+.result_indi_ref div						{padding-bottom:3px;}
+.result_indi_ref:last-of-type				{border:0; padding-bottom:0;}
+.result_indi_ref .ref						{display:inline-block; font-size:9px; min-width:35px; vertical-align:top;}
+.result_indi_ref .type						{font-family:monospace; font-size:9px; margin:0;}
+.result_period_time							{background-color:#253860; line-height:17px; margin-bottom:4px; max-width:155px; min-height:17px; text-align:center;}
+.result_indicator .wrap_document			{margin:0 0 10px 0;}
+.wrap_result .sector_list_wrap				{color:#ccc; padding:0 0 10px 0;}
+.wrap_result .header.glossary				{margin-bottom:10px;}
+.wrap_result table.budget td				{line-height:14px; padding:5px 0; vertical-align:middle;}
+.wrap_result table.budget tr.row_measure td	{color:#ccc; font-size:11px; padding:6px 10px 4px 0;}
+.wrap_result table.budget tr.row_comment td	{border:0; padding:0;}
+.result_facet								{color:#ccc; font-size:11px; line-height:16px;}
+.result_facet_name							{color:#fff; font-size:13px;}
+.result_facet_value							{color:#fff; font-size:13px;}
+.wrap_result table.budget tr.baseline_comment td .result_comment_type,
+.wrap_result table.budget tr.target_comment td .result_comment_type,
+.wrap_result table.budget tr.actual_comment td .result_comment_type		{color:#ccc; font-size:11px; display:inline-block; border-top:1px solid #4d5264; border-right:1px solid #4d5264; padding:4px 10px 2px 10px; text-align:center; min-width:110px;}
+.wrap_result table.budget tr.baseline_comment td .result_comment_type	{background-color:#262f3c;}
+.wrap_result table.budget tr.target_comment td .result_comment_type		{margin-left:110px; background-color:#1C304D;}
+.wrap_result table.budget tr.actual_comment td .result_comment_type		{margin-left:225px; background-color:#2B3646;}
+.result_comment								{color:#fff; font-size:11px; white-space:pre-line; padding:5px 10px 8px 10px;}
+.wrap_result table.budget tr.baseline_comment td .result_comment,
+.wrap_result table.budget tr.target_comment td .result_comment,
+.wrap_result table.budget tr.actual_comment td .result_comment			{background:linear-gradient(0deg,rgba(38,47,60,0)0%,rgba(38,47,60,0.65)30%,rgba(38,47,60,1)70%,rgba(38,47,60,1)100%); border-top:1px solid #4d5264; margin-top:-1px;}
+.wrap_result table.budget tr.target_comment td .result_comment			{background:linear-gradient(0deg,rgba(28,48,77,0)0%,rgba(28,48,77,0.65)30%,rgba(28,48,77,1)70%,rgba(28,48,77,1)100%);}
+.wrap_result table.budget tr.actual_comment td .result_comment			{background: linear-gradient(0deg,rgba(43,54,70,0)0%,rgba(43,54,70,0.65)30%,rgba(43,54,70,1)70%,rgba(43,54,70,1)100%);}
+.result_empty								{color:#ccc; font-size:11px;}
+.result_percent_wrap,
+.result_percent_wrap .result_empty			{display:inline;}
+.result_percent_wrap span					{display:inline-block; vertical-align:middle;}
+.result_percent_dot							{background-color:rgba(21,33,54,100); border-radius:20px; height:10px; margin-left:10px; width:10px;}
+.result_percent_value						{min-width:40px;}
+.result_date_bar							{background-color:#000; border-bottom:1px solid #666; border-right:1px solid #666; height:5px; max-height:5px; position:relative;}
+.result_date_overlay						{background-color:#9d8c55; height:5px; max-height:5px;}
+.result_date								{left:0; position:absolute; top:0; width:150px;}
+.result_base_year							{color:#ddd; font-size:11px; font-style:italic; left:-30px; max-height:25px; position:absolute; top:50%; -webkit-transform:translateY(-50%) rotate(-90deg); transform:translateY(-50%) rotate(-90deg);}
+
+/*	RESULT TABLES ARE NOT SORTABLE	*/
+table.budget.result th,
+table.budget.result th.status,
+table.budget.result th.value	{background:#1b232de8;}
+table.budget.result th:hover	{cursor:initial;}
+
+/*	IATI ACTIVITY POLICY MARKER TABLE	*/
+.wrap_policy_marker table.budget th.policy_code,
+.wrap_policy_marker table.budget td.policy_code		{padding-right:40px; width:300px;}
+.wrap_policy_marker table.budget td.policy_code	.policy_num	{font-size:11px;}
+.wrap_policy_marker table.budget td.policy_code a	{display:block; font-size:12px; line-height:14px; overflow-wrap:initial; padding-top:5px;}
+.wrap_policy_marker table.budget th.policy_sig,
+.wrap_policy_marker table.budget td.policy_sig		{padding-right:20px; text-transform:capitalize; width:160px;}
+.wrap_policy_marker table.budget th.policy_vocab,
+.wrap_policy_marker table.budget td.policy_vocab	{padding-right:20px; width:160px;}
+.wrap_policy_marker table.budget th.policy_desc,
+.wrap_policy_marker table.budget td.policy_desc		{width:260px;}
+.wrap_policy_marker table.budget td.policy_desc		{font-size:12px; line-height:14px;}
+
+/*	IATI ACTIVITY LEGACY DATA TABLE	*/
+.wrap_legacy_data th.legacy_name,
+.wrap_legacy_data td.legacy_name		{padding-right:40px; width:340px;}
+.wrap_legacy_data th.legacy_iati,
+.wrap_legacy_data td.legacy_iati		{width:280px;}
+
+/*	IATI ACTIVITY CONDITIONS TABLE	*/
+.wrap_conditions th.condition_narr,
+.wrap_conditions td.condition_narr		{padding-right:40px;}
+.wrap_conditions th.condition_type,
+.wrap_conditions td.condition_type		{padding-right:20px; width:160px;}
+.wrap_conditions th.condition_desc,
+.wrap_conditions td.condition_desc		{width:280px;}
+.wrap_conditions table.budget td.condition_desc	{font-size:12px; line-height:16px;}
+
+/*	IATI ACTIVITY TAG TABLE	*/
+.wrap_tag table.budget th.tag_desc,
+.wrap_tag table.budget td.tag_desc		{padding-right:40px;}
+.wrap_tag table.budget th.tag_code,
+.wrap_tag table.budget td.tag_code		{padding-right:20px; width:160px;}
+.wrap_tag table.budget th.tag_vocab,
+.wrap_tag table.budget td.tag_vocab		{width:260px;}
+
+/*	IATI ACTIVITY RELATED ACTIVITY TABLE	*/
+.wrap_related_activity th.related_ref,
+.wrap_related_activity td.related_ref	{padding:5px 40px 5px 0;}
+.wrap_related_activity th.related_type,
+.wrap_related_activity td.related_type	{padding:5px 0; width:160px;}
+.wrap_related_activity th.related_desc,
+.wrap_related_activity td.related_desc	{padding:5px 0; width:280px;}
+.wrap_related_activity table.budget td.related_desc	{font-size:12px; line-height:14px;}
+
+/*	IATI ACTIVITY OTHER IDENTIFIER TABLE	*/
+.wrap_other_identifier td.other_desc,
+.wrap_other_identifier td.other_type	{font-size:12px; line-height:14px;}
+.wrap_other_identifier th.other_type,
+.wrap_other_identifier td.other_type	{padding-right:20px; width:160px;}
+.wrap_other_identifier th.other_desc,
+.wrap_other_identifier td.other_desc	{width:280px;}
+.wrap_other_identifier td.other_type div{font-size:10px; padding-top:5px; line-height:initial;}
+.wrap_other_identifier th.other_ref,
+.wrap_other_identifier td.other_ref,
+.wrap_other_identifier th.owner_ref,
+.wrap_other_identifier td.owner_ref		{padding-right:20px;}
+.wrap_other_identifier td.owner_ref	div	{font-size:12px; line-height:14px; padding-top:5px;}
+
+/*	IATI ACTIVITY CRS ADD TABLE	*/
+.wrap_crs_add th.crs_code,
+.wrap_crs_add td.crs_code		{padding-right:20px;}
+.wrap_crs_add td.crs_code div	{font-size:10px; padding-top:5px; line-height:initial;}
+.wrap_crs_add th.crs_sig,
+.wrap_crs_add td.crs_sig		{padding-right:20px; width:160px;}
+.wrap_crs_add th.crs_desc,
+.wrap_crs_add td.crs_desc		{width:280px;}
+.wrap_crs_add td.crs_desc		{font-size:12px; line-height:14px;}
+.wrap_crs_add th.crs_loan_year,
+.wrap_crs_add td.crs_loan_year	{width:80px;}
+.wrap_crs_add td.crs_loan span	{color:#ccc; font-size:11px;}
+
+
+/*	Thinner tables rows for better legibility	*/
+.wrap_participating_org table.budget td,
+.wrap_location table.budget td	{padding:5px 0;}
+
+
+/*	DEFAULTS MODALITIES	*/
+table.modals					{border-collapse:collapse; table-layout:fixed; width:100%;}
+table.modals td,
+table.modals th 				{font-size:12px; line-height:14px; padding:5px 10px 5px 5px; text-align:left; vertical-align:top; width:100px;}
+table.modals th					{border-bottom:1px solid #4d5264; color:#ccc; font-size:10px; font-weight:normal; text-transform:uppercase;}
+table.modals td.mod_1,
+table.modals th.mod_1			{width:120px;}
+table.modals td.mod_2,
+table.modals th.mod_2,
+table.modals td.mod_3,
+table.modals th.mod_3,
+table.modals td.mod_4,
+table.modals th.mod_4			{width:160px;}
+table.modals th.mod_7,
+table.modals td.mod_7			{padding-right:0; width:80px;}
+table.modals td div				{padding-bottom:5px;}
+table.modals td span			{font-family:monospace; font-size:10px; margin:0;}
+table.modals td span.withdrawn	{background-color:#545e73; color:#ddd; display:inline-block; font-size:10px; margin-left:0; margin-top:5px;}
+
+/*	Chartist SVG	 */
+.showchart,
+.showcharts		{height:240px; margin:auto; margin:0 0 30px -35px; padding:10px 0 0 0; width:920px;}
+.ct-chart-line	{overflow:visible;}
+
+/*	Chart Legends	*/
+.wrap_legend	{margin:0 auto; text-align:center;}
+.legend			{color:#eee; font-size:10px; padding-top:10px; text-align:center; text-transform:uppercase;}
+.legend span	{border-radius:4px; display:inline-block; height:8px; margin-right:5px; vertical-align:baseline; width:8px;}
+.wrap_legend .legend	{display:inline-block; margin-left:10px; margin-right:10px; padding-top:5px; vertical-align:top;}
+
+.legend.chart_1	span	{background-color:#0099ff;}		/*	Incoming Funds	*/
+.legend.chart_2	span	{background-color:#ff8176;}		/*	Outgoing Commitment	*/
+.legend.chart_3	span	{background-color:#aeffae;}		/*	Disbursement	*/
+.legend.chart_4	span	{background-color:#fed00f;}		/*	Expenditure	*/
+.legend.chart_5	span	{background-color:#dea3ff;}		/*	Interest Payment	*/
+.legend.chart_6	span	{background-color:#c446e1;}		/*	Loan Repayment	*/
+.legend.chart_7	span	{background-color:#65e17a;}		/*	Reimbursement	*/
+.legend.chart_8	span	{background-color:#c59e8c;}		/*	Purchase of Equity	*/
+.legend.chart_9	span	{background-color:#8f496a;}		/*	Sale of Equity	*/
+.legend.chart_10 span	{background-color:#ff6cec;}		/*	Credit Guarantee	*/
+.legend.chart_11 span	{background-color:#cf291c;}		/*	Incoming Commitment	*/
+.legend.chart_12 span	{background-color:#82e1ff;}		/*	Outgoing Pledge	*/
+.legend.chart_13 span	{background-color:#0062a3;}		/*	Incoming Pledge	*/
+.legend.chart_14 span	{background-color:#00a301;}		/*	Planned Disbursement	*/
+.legend.chart_15 span	{background-color:#666;}		/*	Budget	*/
+
+/*	CHART OPTIONS	*/
+.ct-label	{color:#fff; fill:#fff; font-size:11px; line-height:12px;}
+.ct-grid 	{stroke:rgba(255,255,255,0.5); stroke-dasharray:2px; stroke-width:1px;}
+.ct-grid-background	{fill:none;}
+.ct-point	{stroke-linecap:round; stroke-width:8px;}
+.ct-line	{fill:none; stroke-width:2px;}
+.ct-area	{fill-opacity:0.5; stroke:none;}
+.ct-bar		{fill:none; stroke-width:10px;}
+.ct-slice-donut {fill:none; stroke-width:60px;}
+
+.ct-series-a .ct-point, .ct-series-a .ct-line, .ct-series-a .ct-bar, .ct-series-a .ct-slice-donut {stroke:#d70206;}
+.ct-series-a .ct-slice-pie, .ct-series-a .ct-slice-donut-solid, .ct-series-a .ct-area {fill:#d70206;}
+.ct-series-b .ct-point, .ct-series-b .ct-line, .ct-series-b .ct-bar, .ct-series-b .ct-slice-donut {stroke:#f05b4f;}
+.ct-series-b .ct-slice-pie, .ct-series-b .ct-slice-donut-solid, .ct-series-b .ct-area {fill:#f05b4f;}
+.ct-series-c .ct-point, .ct-series-c .ct-line, .ct-series-c .ct-bar, .ct-series-c .ct-slice-donut {stroke:#f4c63d;}
+.ct-series-c .ct-slice-pie, .ct-series-c .ct-slice-donut-solid, .ct-series-c .ct-area {fill:#f4c63d;}
+.ct-series-d .ct-point, .ct-series-d .ct-line, .ct-series-d .ct-bar, .ct-series-d .ct-slice-donut {stroke:#d17905;}
+.ct-series-d .ct-slice-pie, .ct-series-d .ct-slice-donut-solid, .ct-series-d .ct-area {fill:#d17905;}
+.ct-series-e .ct-point, .ct-series-e .ct-line, .ct-series-e .ct-bar, .ct-series-e .ct-slice-donut {stroke:#453d3f;}
+.ct-series-e .ct-slice-pie, .ct-series-e .ct-slice-donut-solid, .ct-series-e .ct-area {fill:#453d3f;}
+.ct-series-f .ct-point, .ct-series-f .ct-line, .ct-series-f .ct-bar, .ct-series-f .ct-slice-donut {stroke:#59922b;}
+.ct-series-f .ct-slice-pie, .ct-series-f .ct-slice-donut-solid, .ct-series-f .ct-area {fill:#59922b;}
+.ct-series-g .ct-point, .ct-series-g .ct-line, .ct-series-g .ct-bar, .ct-series-g .ct-slice-donut {stroke:#0544d3;}
+.ct-series-g .ct-slice-pie, .ct-series-g .ct-slice-donut-solid, .ct-series-g .ct-area {fill:#0544d3;}
+.ct-series-h .ct-point, .ct-series-h .ct-line, .ct-series-h .ct-bar, .ct-series-h .ct-slice-donut {stroke:#6b0392;}
+.ct-series-h .ct-slice-pie, .ct-series-h .ct-slice-donut-solid, .ct-series-h .ct-area {fill:#6b0392;}
+.ct-series-i .ct-point, .ct-series-i .ct-line, .ct-series-i .ct-bar, .ct-series-i .ct-slice-donut {stroke:#f05b4f;}
+.ct-series-i .ct-slice-pie, .ct-series-i .ct-slice-donut-solid, .ct-series-i .ct-area {fill:#f05b4f;}
+.ct-series-j .ct-point, .ct-series-j .ct-line, .ct-series-j .ct-bar, .ct-series-j .ct-slice-donut {stroke:#dda458;}
+.ct-series-j .ct-slice-pie, .ct-series-j .ct-slice-donut-solid, .ct-series-j .ct-area {fill:#dda458;}
+.ct-series-k .ct-point, .ct-series-k .ct-line, .ct-series-k .ct-bar, .ct-series-k .ct-slice-donut {stroke:#eacf7d;}
+.ct-series-k .ct-slice-pie, .ct-series-k .ct-slice-donut-solid, .ct-series-k .ct-area {fill:#eacf7d;}
+.ct-series-l .ct-point, .ct-series-l .ct-line, .ct-series-l .ct-bar, .ct-series-l .ct-slice-donut {stroke:#86797d;}
+.ct-series-l .ct-slice-pie, .ct-series-l .ct-slice-donut-solid, .ct-series-l .ct-area {fill:#86797d;}
+.ct-series-m .ct-point, .ct-series-m .ct-line, .ct-series-m .ct-bar, .ct-series-m .ct-slice-donut {stroke:#b2c326;}
+.ct-series-m .ct-slice-pie, .ct-series-m .ct-slice-donut-solid, .ct-series-m .ct-area {fill:#b2c326;}
+.ct-series-n .ct-point, .ct-series-n .ct-line, .ct-series-n .ct-bar, .ct-series-n .ct-slice-donut {stroke:#6188e2;}
+.ct-series-n .ct-slice-pie, .ct-series-n .ct-slice-donut-solid, .ct-series-n .ct-area {fill:#6188e2;}
+.ct-series-o .ct-point, .ct-series-o .ct-line, .ct-series-o .ct-bar, .ct-series-o .ct-slice-donut {stroke:#a748ca;}
+.ct-series-o .ct-slice-pie, .ct-series-o .ct-slice-donut-solid, .ct-series-o .ct-area {fill: #a748ca;}
+
+/*	Chart stroke and fill colours for transaction, budget and planned disbursement tables	*/
+.chart-line-transaction-1 .ct-point,
+.chart-line-transaction-1 .ct-line	{stroke:#0099ff;}		/*	Incoming Funds	*/
+.chart-line-transaction-1 .ct-area	{fill:transparent;}
+.chart-line-transaction-2 .ct-point,
+.chart-line-transaction-2 .ct-line	{stroke:#ff8176;}		/*	Outgoing Commitment	*/
+.chart-line-transaction-2 .ct-area	{fill:transparent;}
+.chart-line-transaction-3 .ct-point,
+.chart-line-transaction-3 .ct-line	{stroke:#aeffae;}		/*	Disbursement	*/
+.chart-line-transaction-3 .ct-area	{fill:transparent;}
+.chart-line-transaction-4 .ct-point,
+.chart-line-transaction-4 .ct-line	{stroke:#fed00f;}		/*	Expenditure	*/
+.chart-line-transaction-4 .ct-area	{fill:transparent;}
+.chart-line-transaction-5 .ct-point,
+.chart-line-transaction-5 .ct-line	{stroke:#dea3ff;}		/*	Interest Payment	*/
+.chart-line-transaction-5 .ct-area	{fill:transparent;}
+.chart-line-transaction-6 .ct-point,
+.chart-line-transaction-6 .ct-line	{stroke:#c446e1;}		/*	Loan Repayment	*/
+.chart-line-transaction-6 .ct-area	{fill:transparent;}
+.chart-line-transaction-7 .ct-point,
+.chart-line-transaction-7 .ct-line	{stroke:#65e17a;}		/*	Reimbursement	*/
+.chart-line-transaction-7 .ct-area	{fill:transparent;}
+.chart-line-transaction-8 .ct-point,
+.chart-line-transaction-8 .ct-line	{stroke:#c59e8c;}		/*	Purchase of Equity	*/
+.chart-line-transaction-8 .ct-area	{fill:transparent;}
+.chart-line-transaction-9 .ct-point,
+.chart-line-transaction-9 .ct-line	{stroke:#8f496a;}		/*	Sale of Equity	*/
+.chart-line-transaction-9 .ct-area	{fill:transparent;}
+.chart-line-transaction-10.ct-point,
+.chart-line-transaction-10.ct-line	{stroke:#ff6cec;}		/*	Credit Guarantee	*/
+.chart-line-transaction-10 .ct-area	{fill:transparent;}
+.chart-line-transaction-11 .ct-point,
+.chart-line-transaction-11 .ct-line	{stroke:#cf291c;}		/*	Incoming Commitment	*/
+.chart-line-transaction-11 .ct-area	{fill:transparent;}
+.chart-line-transaction-12 .ct-point,
+.chart-line-transaction-12 .ct-line	{stroke:#82e1ff;}		/*	Outgoing Pledge	*/
+.chart-line-transaction-12 .ct-area	{fill:transparent;}
+.chart-line-transaction-13 .ct-point,
+.chart-line-transaction-13 .ct-line	{stroke:#0062a3;}		/*	Incoming Pledge	*/
+.chart-line-transaction-13 .ct-area	{fill:transparent;}
+.chart-line-planned-disbursement .ct-point,
+.chart-line-planned-disbursement .ct-line	{stroke:#00a301;}		/*	Planned Disbursement	*/
+.chart-line-planned-disbursement .ct-area	{fill:#207721; fill-opacity:0.3}
+.chart-line-budget .ct-point,
+.chart-line-budget .ct-line			{stroke:#888;}			/*	Budget	*/
+.chart-line-budget .ct-area			{fill:#666;}
+
+/*	Default Chartist stylings	*/
+.ct-chart-line .ct-label,
+.ct-chart-bar .ct-label {
+  display: block;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex; }
+
+.ct-chart-pie .ct-label,
+.ct-chart-donut .ct-label {
+  dominant-baseline: central; }
+
+.ct-label.ct-horizontal.ct-start {
+  -webkit-box-align: flex-end;
+  -webkit-align-items: flex-end;
+  -ms-flex-align: flex-end;
+  align-items: flex-end;
+  -webkit-box-pack: flex-start;
+  -webkit-justify-content: flex-start;
+  -ms-flex-pack: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  text-anchor: start; }
+
+.ct-label.ct-horizontal.ct-end {
+  -webkit-box-align: flex-start;
+  -webkit-align-items: flex-start;
+  -ms-flex-align: flex-start;
+  align-items: flex-start;
+  -webkit-box-pack: flex-start;
+  -webkit-justify-content: flex-start;
+  -ms-flex-pack: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  text-anchor: start; }
+
+.ct-label.ct-vertical.ct-start {
+  -webkit-box-align: flex-end;
+  -webkit-align-items: flex-end;
+  -ms-flex-align: flex-end;
+  align-items: flex-end;
+  -webkit-box-pack: flex-end;
+  -webkit-justify-content: flex-end;
+  -ms-flex-pack: flex-end;
+  justify-content: flex-end;
+  text-align: right;
+  text-anchor: end; }
+
+.ct-label.ct-vertical.ct-end {
+  -webkit-box-align: flex-end;
+  -webkit-align-items: flex-end;
+  -ms-flex-align: flex-end;
+  align-items: flex-end;
+  -webkit-box-pack: flex-start;
+  -webkit-justify-content: flex-start;
+  -ms-flex-pack: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  text-anchor: start; }
+
+.ct-chart-bar .ct-label.ct-horizontal.ct-start {
+  -webkit-box-align: flex-end;
+  -webkit-align-items: flex-end;
+  -ms-flex-align: flex-end;
+  align-items: flex-end;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  text-align: center;
+  text-anchor: start; }
+
+.ct-chart-bar .ct-label.ct-horizontal.ct-end {
+  -webkit-box-align: flex-start;
+  -webkit-align-items: flex-start;
+  -ms-flex-align: flex-start;
+  align-items: flex-start;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  text-align: center;
+  text-anchor: start; }
+
+.ct-chart-bar.ct-horizontal-bars .ct-label.ct-horizontal.ct-start {
+  -webkit-box-align: flex-end;
+  -webkit-align-items: flex-end;
+  -ms-flex-align: flex-end;
+  align-items: flex-end;
+  -webkit-box-pack: flex-start;
+  -webkit-justify-content: flex-start;
+  -ms-flex-pack: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  text-anchor: start; }
+
+.ct-chart-bar.ct-horizontal-bars .ct-label.ct-horizontal.ct-end {
+  -webkit-box-align: flex-start;
+  -webkit-align-items: flex-start;
+  -ms-flex-align: flex-start;
+  align-items: flex-start;
+  -webkit-box-pack: flex-start;
+  -webkit-justify-content: flex-start;
+  -ms-flex-pack: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  text-anchor: start; }
+
+.ct-chart-bar.ct-horizontal-bars .ct-label.ct-vertical.ct-start {
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: flex-end;
+  -webkit-justify-content: flex-end;
+  -ms-flex-pack: flex-end;
+  justify-content: flex-end;
+  text-align: right;
+  text-anchor: end; }
+
+.ct-chart-bar.ct-horizontal-bars .ct-label.ct-vertical.ct-end {
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: flex-start;
+  -webkit-justify-content: flex-start;
+  -ms-flex-pack: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  text-anchor: end; }
+
+
+/*	PRINT FRIENDLY CSS	*/
+
+body.print		{background-color:#fff;}
+.print *		{color:#444;}
+
+.print .activity a,
+.print .activity a:link,
+.print .activity a:visited,
+.print .activity a:hover,
+.print .activity a:active,
+.print .org a,
+.print .org a:link,
+.print .org a:visited,
+.print .org a:hover,
+.print .org a:active,
+.print .wrap_sector .subheader a,
+.print .wrap_sector .subheader a:link,
+.print .wrap_sector .subheader a:visited,
+.print .wrap_sector .subheader a:hover,
+.print .wrap_sector .subheader a:active	{color:#444;}
+
+/*  Data source links  */
+.print .data_source a 		{background-color:#fff; border:1px solid #444; color:#444;}
+.print .data_source a span	{color:#444;}
+
+/*  Documents  */
+.print .wrap_document a,
+.print .wrap_document a:link,
+.print .wrap_document a:visited,
+.print .wrap_document a:hover,
+.print .wrap_document a:active  {background-color:#fff;}
+.print a.doc_link:before		{border:1px solid #444; color:#444;}
+
+/*  Wrappers  */
+.print .activity,
+.print .org,
+.print .wrap_iati_identifier,
+.print .wrap_contact_info		{background-color:#fff; color:#444;}
+
+/*  Element Types  */
+.print .humanitarian		{background-color:#fff; border:1px solid #444; color:#444; font-weight:normal;}
+.print .header_section,
+.print .type,
+.print .type.secondary,
+.print span.doc_date,
+.print span.doc_cat,
+.print span.doc_rec,
+.print span.doc_format,
+.print .wrap_activity_date .planned_start,
+.print .wrap_activity_date .actual_start,
+.print .wrap_activity_date .planned_end,
+.print .wrap_activity_date .actual_end,
+.print .sector_code,
+.print span.withdrawn,
+.print .ref span.withdrawn,
+.print .hum_transaction		{background-color:#fff; color:#444; font-weight:normal;}
+.print .header_section 		{background-color:#eee; border:0}
+
+/*  Progress Bar Dates  */
+.print .activity_date_overlay,
+.print .result_date_overlay  		{background-color:#666;}
+.print .activity_date_overlay:after	{border:3px solid #666;}
+
+/*  Container text  */
+.print .header,
+.print .header_doc,
+.print .version span,
+.print .wrap_reporting_org .text,
+.print .wrap_iati_identifier .text,
+.print .wrap_name_org,
+.print .wrap_name_org .narrative,
+.print .wrap_activity_date div span,
+.print .ref,
+.print .ref span,
+.print span.count,
+.print span.doc_lang,
+.print .block span,
+.print .wrap_length,
+.print .legend,
+.print .wrap_result .sector_list_wrap,
+.print .wrap_description .text .narrative,
+.print .wrap_result_type .wrap_result_text .result_indi_desc,
+.print .result_main_title .narrative,
+.print .result_indi_desc .narrative,
+.print .result_title .narrative,
+.print .result_indi_head,
+.print .result_facet,
+.print .result_facet_name,
+.print .result_facet_value,
+.print .result_empty,
+.print .result_base_year,
+.print .tab_currency,
+.print .wrap_contact_type  {color:#444;}
+
+/*	Theme button	*/
+.print .theme_button	{color:#fff;}
+
+/*  Results  */
+.print .brighter  		{background-color:#fff; border:0; border-bottom:1px solid #444; line-height:21px;} 
+.print .brighter span	{background-color:#fff; border:1px solid #444; padding:4px 10px;}
+.print .result_date_bar	{background-color:#ccc; border-bottom:1px solid #666; border-right:1px solid #666;}
+
+/* Tables */
+.print table th, .print table td,
+.print table.modals th, .print table.modals td,
+.print table.budget th, .print table.budget td,
+.print .org table.budget th.status,
+.print table.budget th.value 			{background-color:#fff; color:#444;}
+.print table.budget.act_trans td.description .type,
+.print td .narrative:nth-of-type(n+2),
+.print table.budget.location td.loc_des .loc_act {color:#444;}
+.print table.modals td span.withdrawn 	{background-color:#fff; border:1px solid #444; color:#444;}
+.print td .currency,
+.print .wrap_result table.budget tr.row_measure td {color:#444;}
+.print .wrap_result table.budget td.result_base,
+.print .wrap_result table.budget td.result_target,
+.print .wrap_result table.budget td.result_actual  {background-color:transparent;}
+
+/*	Result comments	*/
+.print .wrap_result table.budget tr.baseline_comment td .result_comment_type,
+.print .wrap_result table.budget tr.target_comment td .result_comment_type,
+.print .wrap_result table.budget tr.actual_comment td .result_comment_type,
+.print .wrap_result table.budget tr.baseline_comment td .result_comment,
+.print .wrap_result table.budget tr.target_comment td .result_comment,
+.print .wrap_result table.budget tr.actual_comment td .result_comment			{background:#fff; color:#444;}
+
+.print .wrap_result table.budget tr.baseline_comment td .result_comment_type,
+.print .wrap_result table.budget tr.target_comment td .result_comment_type,
+.print .wrap_result table.budget tr.actual_comment td .result_comment_type		{border-left:1px solid #444;}
+
+/* Table sort icons */
+.print table.budget th,
+.print .org table.budget th.status,
+.print table.budget th.value	{background:#fff;}
+
+/* Table Charts */
+.print .ct-label {color:#444; fill:#444;}
+.print .ct-grid  {stroke:#444;}
+</style><script type="text/javascript" charset="UTF-8" src="https://maps.googleapis.com/maps-api-v3/api/js/49/6/common.js"></script><script type="text/javascript" charset="UTF-8" src="https://maps.googleapis.com/maps-api-v3/api/js/49/6/util.js"></script></head> 
+	<body>
+		<div id="ctrack_div"><div class="portal">
+	<div class="main_wrap">
+		<div id="background_image"></div>
+		<div class="overlay">
+	
+<style>.crumb_wrap{display:none;} #background_image	{background-image:url('./ctrack/art/back/mw.jpg');} /* Needed for displaying background images per different country */
+</style>
+
+<div class="default head">
+	<div id="settings" style="display:none;">
+<table class="head">
+	<tbody><tr>
+		<td class="options">
+			<form class="settings_currency" action="">
+				<span class="settings_info">Choose currency
+ </span>
+				<select aria-label="Select a currency from this dropdown" id="usd_select" name="usd" class=""><option value="USD" selected="selected">US Dollar</option>,<option value="EUR">Euro</option>,<option value="GBP">UK Pound Sterling</option>,<option value="AFN">Afghan Afghani</option>,<option value="DZD">Algerian Dinar</option>,<option value="AUD">Australian Dollar</option>,<option value="BHD">Bahrain Dinar</option>,<option value="BDT">Bangladeshi Taka</option>,<option value="BRL">Brazilian Real</option>,<option value="CAD">Canadian Dollar</option>,<option value="CLP">Chilean Peso</option>,<option value="CNY">Chinese Yuan</option>,<option value="COP">Colombian Peso</option>,<option value="XOF">CFA Franc</option>,<option value="DKK">Danish Krone</option>,<option value="EGP">Egyptian Pound</option>,<option value="ETB">Ethiopian Birr</option>,<option value="GHS">Ghanaian Cedi</option>,<option value="GYD">Guyanese Dollar</option>,<option value="ISK">Icelandic Krona</option>,<option value="INR">Indian Rupee</option>,<option value="IDR">Indonesian Rupiah</option>,<option value="IRR">Iranian Rial</option>,<option value="IEP">Irish Pound</option>,<option value="JPY">Japanese Yen</option>,<option value="KES">Kenyan Shilling</option>,<option value="KRW">Korean Won</option>,<option value="KWD">Kuwaiti Dinar</option>,<option value="LYD">Libyan Dinar</option>,<option value="MYR">Malaysian Ringgit</option>,<option value="MXN">Mexican Peso</option>,<option value="NPR">Nepalese Rupee</option>,<option value="NZD">New Zealand Dollar</option>,<option value="NOK">Norwegian Krone</option>,<option value="OMR">Rial Omani</option>,<option value="PKR">Pakistani Rupee</option>,<option value="PEN">Peru Nuevo Sol</option>,<option value="PHP">Philippine Peso</option>,<option value="PLN">Polish Zloty</option>,<option value="QAR">Qatar Riyal</option>,<option value="SAR">Saudi Arabian Riyal</option>,<option value="SBD">Solomon Islander Dollar</option>,<option value="ZAR">South African Rand</option>,<option value="LKR">Sri Lanka Rupee</option>,<option value="SEK">Swedish Krona</option>,<option value="CHF">Swiss Franc</option>,<option value="SGD">Singapore Dollar</option>,<option value="THB">Thai Baht</option>,<option value="TTD">Trinidad And Tobago Dollar</option>,<option value="TND">Tunisian Dinar</option>,<option value="TRY">Turkish Lira</option>,<option value="AED">UAE Dirham</option>,<option value="UGX">Ugandan Shilling</option>,<option value="UYU">Uruguayan Peso</option>,<option value="VEF">Venezuelan Bolivar</option>,<option value="XDR">IMF special drawing rights</option></select>
+			</form>
+		</td>
+		<td class="options">
+			<form action="">
+			<span class="settings_info">Choose language
+ </span>
+			<select aria-label="Select a language from this dropdown" id="tongue_select" name="tongue" class="">
+				<option value="eng" title="View this in English(UK)
+" selected="selected">English (UK)
+</option>
+				<option value="fra" title="View this in French
+">Français
+</option>
+				<option value="spa" title="View this in Spanish
+">Español 
+</option>
+				<option value="jpn" title="View this in Japanese
+">日本の
+</option>
+				<option value="cmn" title="View this in Chinese (Simplified)
+">中国的
+</option>
+				<option value="hin" title="View this in Hindi
+">हिंदी 
+</option>
+			</select>
+			</form>
+		</td>
+	</tr>
+	<tr>
+		<td class="options">
+			<form class="newyear" action="">
+				<span class="settings_info">Year starts on
+ </span>
+				<select aria-label="Select a starting year from this dropdown" id="newyear_select" name="newyear" class=""><option value="01-01" selected="selected">01-01</option>,<option value="01-02">01-02</option>,<option value="01-03">01-03</option>,<option value="01-04">01-04</option>,<option value="01-05">01-05</option>,<option value="01-06">01-06</option>,<option value="01-07">01-07</option>,<option value="01-08">01-08</option>,<option value="01-09">01-09</option>,<option value="01-10">01-10</option>,<option value="01-11">01-11</option>,<option value="01-12">01-12</option>,<option value="01-13">01-13</option>,<option value="01-14">01-14</option>,<option value="01-15">01-15</option>,<option value="01-16">01-16</option>,<option value="01-17">01-17</option>,<option value="01-18">01-18</option>,<option value="01-19">01-19</option>,<option value="01-20">01-20</option>,<option value="01-21">01-21</option>,<option value="01-22">01-22</option>,<option value="01-23">01-23</option>,<option value="01-24">01-24</option>,<option value="01-25">01-25</option>,<option value="01-26">01-26</option>,<option value="01-27">01-27</option>,<option value="01-28">01-28</option>,<option value="01-29">01-29</option>,<option value="01-30">01-30</option>,<option value="01-31">01-31</option>,<option value="02-01">02-01</option>,<option value="02-02">02-02</option>,<option value="02-03">02-03</option>,<option value="02-04">02-04</option>,<option value="02-05">02-05</option>,<option value="02-06">02-06</option>,<option value="02-07">02-07</option>,<option value="02-08">02-08</option>,<option value="02-09">02-09</option>,<option value="02-10">02-10</option>,<option value="02-11">02-11</option>,<option value="02-12">02-12</option>,<option value="02-13">02-13</option>,<option value="02-14">02-14</option>,<option value="02-15">02-15</option>,<option value="02-16">02-16</option>,<option value="02-17">02-17</option>,<option value="02-18">02-18</option>,<option value="02-19">02-19</option>,<option value="02-20">02-20</option>,<option value="02-21">02-21</option>,<option value="02-22">02-22</option>,<option value="02-23">02-23</option>,<option value="02-24">02-24</option>,<option value="02-25">02-25</option>,<option value="02-26">02-26</option>,<option value="02-27">02-27</option>,<option value="02-28">02-28</option>,<option value="03-01">03-01</option>,<option value="03-02">03-02</option>,<option value="03-03">03-03</option>,<option value="03-04">03-04</option>,<option value="03-05">03-05</option>,<option value="03-06">03-06</option>,<option value="03-07">03-07</option>,<option value="03-08">03-08</option>,<option value="03-09">03-09</option>,<option value="03-10">03-10</option>,<option value="03-11">03-11</option>,<option value="03-12">03-12</option>,<option value="03-13">03-13</option>,<option value="03-14">03-14</option>,<option value="03-15">03-15</option>,<option value="03-16">03-16</option>,<option value="03-17">03-17</option>,<option value="03-18">03-18</option>,<option value="03-19">03-19</option>,<option value="03-20">03-20</option>,<option value="03-21">03-21</option>,<option value="03-22">03-22</option>,<option value="03-23">03-23</option>,<option value="03-24">03-24</option>,<option value="03-25">03-25</option>,<option value="03-26">03-26</option>,<option value="03-27">03-27</option>,<option value="03-28">03-28</option>,<option value="03-29">03-29</option>,<option value="03-30">03-30</option>,<option value="03-31">03-31</option>,<option value="04-01">04-01</option>,<option value="04-02">04-02</option>,<option value="04-03">04-03</option>,<option value="04-04">04-04</option>,<option value="04-05">04-05</option>,<option value="04-06">04-06</option>,<option value="04-07">04-07</option>,<option value="04-08">04-08</option>,<option value="04-09">04-09</option>,<option value="04-10">04-10</option>,<option value="04-11">04-11</option>,<option value="04-12">04-12</option>,<option value="04-13">04-13</option>,<option value="04-14">04-14</option>,<option value="04-15">04-15</option>,<option value="04-16">04-16</option>,<option value="04-17">04-17</option>,<option value="04-18">04-18</option>,<option value="04-19">04-19</option>,<option value="04-20">04-20</option>,<option value="04-21">04-21</option>,<option value="04-22">04-22</option>,<option value="04-23">04-23</option>,<option value="04-24">04-24</option>,<option value="04-25">04-25</option>,<option value="04-26">04-26</option>,<option value="04-27">04-27</option>,<option value="04-28">04-28</option>,<option value="04-29">04-29</option>,<option value="04-30">04-30</option>,<option value="05-01">05-01</option>,<option value="05-02">05-02</option>,<option value="05-03">05-03</option>,<option value="05-04">05-04</option>,<option value="05-05">05-05</option>,<option value="05-06">05-06</option>,<option value="05-07">05-07</option>,<option value="05-08">05-08</option>,<option value="05-09">05-09</option>,<option value="05-10">05-10</option>,<option value="05-11">05-11</option>,<option value="05-12">05-12</option>,<option value="05-13">05-13</option>,<option value="05-14">05-14</option>,<option value="05-15">05-15</option>,<option value="05-16">05-16</option>,<option value="05-17">05-17</option>,<option value="05-18">05-18</option>,<option value="05-19">05-19</option>,<option value="05-20">05-20</option>,<option value="05-21">05-21</option>,<option value="05-22">05-22</option>,<option value="05-23">05-23</option>,<option value="05-24">05-24</option>,<option value="05-25">05-25</option>,<option value="05-26">05-26</option>,<option value="05-27">05-27</option>,<option value="05-28">05-28</option>,<option value="05-29">05-29</option>,<option value="05-30">05-30</option>,<option value="05-31">05-31</option>,<option value="06-01">06-01</option>,<option value="06-02">06-02</option>,<option value="06-03">06-03</option>,<option value="06-04">06-04</option>,<option value="06-05">06-05</option>,<option value="06-06">06-06</option>,<option value="06-07">06-07</option>,<option value="06-08">06-08</option>,<option value="06-09">06-09</option>,<option value="06-10">06-10</option>,<option value="06-11">06-11</option>,<option value="06-12">06-12</option>,<option value="06-13">06-13</option>,<option value="06-14">06-14</option>,<option value="06-15">06-15</option>,<option value="06-16">06-16</option>,<option value="06-17">06-17</option>,<option value="06-18">06-18</option>,<option value="06-19">06-19</option>,<option value="06-20">06-20</option>,<option value="06-21">06-21</option>,<option value="06-22">06-22</option>,<option value="06-23">06-23</option>,<option value="06-24">06-24</option>,<option value="06-25">06-25</option>,<option value="06-26">06-26</option>,<option value="06-27">06-27</option>,<option value="06-28">06-28</option>,<option value="06-29">06-29</option>,<option value="06-30">06-30</option>,<option value="07-01">07-01</option>,<option value="07-02">07-02</option>,<option value="07-03">07-03</option>,<option value="07-04">07-04</option>,<option value="07-05">07-05</option>,<option value="07-06">07-06</option>,<option value="07-07">07-07</option>,<option value="07-08">07-08</option>,<option value="07-09">07-09</option>,<option value="07-10">07-10</option>,<option value="07-11">07-11</option>,<option value="07-12">07-12</option>,<option value="07-13">07-13</option>,<option value="07-14">07-14</option>,<option value="07-15">07-15</option>,<option value="07-16">07-16</option>,<option value="07-17">07-17</option>,<option value="07-18">07-18</option>,<option value="07-19">07-19</option>,<option value="07-20">07-20</option>,<option value="07-21">07-21</option>,<option value="07-22">07-22</option>,<option value="07-23">07-23</option>,<option value="07-24">07-24</option>,<option value="07-25">07-25</option>,<option value="07-26">07-26</option>,<option value="07-27">07-27</option>,<option value="07-28">07-28</option>,<option value="07-29">07-29</option>,<option value="07-30">07-30</option>,<option value="07-31">07-31</option>,<option value="08-01">08-01</option>,<option value="08-02">08-02</option>,<option value="08-03">08-03</option>,<option value="08-04">08-04</option>,<option value="08-05">08-05</option>,<option value="08-06">08-06</option>,<option value="08-07">08-07</option>,<option value="08-08">08-08</option>,<option value="08-09">08-09</option>,<option value="08-10">08-10</option>,<option value="08-11">08-11</option>,<option value="08-12">08-12</option>,<option value="08-13">08-13</option>,<option value="08-14">08-14</option>,<option value="08-15">08-15</option>,<option value="08-16">08-16</option>,<option value="08-17">08-17</option>,<option value="08-18">08-18</option>,<option value="08-19">08-19</option>,<option value="08-20">08-20</option>,<option value="08-21">08-21</option>,<option value="08-22">08-22</option>,<option value="08-23">08-23</option>,<option value="08-24">08-24</option>,<option value="08-25">08-25</option>,<option value="08-26">08-26</option>,<option value="08-27">08-27</option>,<option value="08-28">08-28</option>,<option value="08-29">08-29</option>,<option value="08-30">08-30</option>,<option value="08-31">08-31</option>,<option value="09-01">09-01</option>,<option value="09-02">09-02</option>,<option value="09-03">09-03</option>,<option value="09-04">09-04</option>,<option value="09-05">09-05</option>,<option value="09-06">09-06</option>,<option value="09-07">09-07</option>,<option value="09-08">09-08</option>,<option value="09-09">09-09</option>,<option value="09-10">09-10</option>,<option value="09-11">09-11</option>,<option value="09-12">09-12</option>,<option value="09-13">09-13</option>,<option value="09-14">09-14</option>,<option value="09-15">09-15</option>,<option value="09-16">09-16</option>,<option value="09-17">09-17</option>,<option value="09-18">09-18</option>,<option value="09-19">09-19</option>,<option value="09-20">09-20</option>,<option value="09-21">09-21</option>,<option value="09-22">09-22</option>,<option value="09-23">09-23</option>,<option value="09-24">09-24</option>,<option value="09-25">09-25</option>,<option value="09-26">09-26</option>,<option value="09-27">09-27</option>,<option value="09-28">09-28</option>,<option value="09-29">09-29</option>,<option value="09-30">09-30</option>,<option value="10-01">10-01</option>,<option value="10-02">10-02</option>,<option value="10-03">10-03</option>,<option value="10-04">10-04</option>,<option value="10-05">10-05</option>,<option value="10-06">10-06</option>,<option value="10-07">10-07</option>,<option value="10-08">10-08</option>,<option value="10-09">10-09</option>,<option value="10-10">10-10</option>,<option value="10-11">10-11</option>,<option value="10-12">10-12</option>,<option value="10-13">10-13</option>,<option value="10-14">10-14</option>,<option value="10-15">10-15</option>,<option value="10-16">10-16</option>,<option value="10-17">10-17</option>,<option value="10-18">10-18</option>,<option value="10-19">10-19</option>,<option value="10-20">10-20</option>,<option value="10-21">10-21</option>,<option value="10-22">10-22</option>,<option value="10-23">10-23</option>,<option value="10-24">10-24</option>,<option value="10-25">10-25</option>,<option value="10-26">10-26</option>,<option value="10-27">10-27</option>,<option value="10-28">10-28</option>,<option value="10-29">10-29</option>,<option value="10-30">10-30</option>,<option value="10-31">10-31</option>,<option value="11-01">11-01</option>,<option value="11-02">11-02</option>,<option value="11-03">11-03</option>,<option value="11-04">11-04</option>,<option value="11-05">11-05</option>,<option value="11-06">11-06</option>,<option value="11-07">11-07</option>,<option value="11-08">11-08</option>,<option value="11-09">11-09</option>,<option value="11-10">11-10</option>,<option value="11-11">11-11</option>,<option value="11-12">11-12</option>,<option value="11-13">11-13</option>,<option value="11-14">11-14</option>,<option value="11-15">11-15</option>,<option value="11-16">11-16</option>,<option value="11-17">11-17</option>,<option value="11-18">11-18</option>,<option value="11-19">11-19</option>,<option value="11-20">11-20</option>,<option value="11-21">11-21</option>,<option value="11-22">11-22</option>,<option value="11-23">11-23</option>,<option value="11-24">11-24</option>,<option value="11-25">11-25</option>,<option value="11-26">11-26</option>,<option value="11-27">11-27</option>,<option value="11-28">11-28</option>,<option value="11-29">11-29</option>,<option value="11-30">11-30</option>,<option value="12-01">12-01</option>,<option value="12-02">12-02</option>,<option value="12-03">12-03</option>,<option value="12-04">12-04</option>,<option value="12-05">12-05</option>,<option value="12-06">12-06</option>,<option value="12-07">12-07</option>,<option value="12-08">12-08</option>,<option value="12-09">12-09</option>,<option value="12-10">12-10</option>,<option value="12-11">12-11</option>,<option value="12-12">12-12</option>,<option value="12-13">12-13</option>,<option value="12-14">12-14</option>,<option value="12-15">12-15</option>,<option value="12-16">12-16</option>,<option value="12-17">12-17</option>,<option value="12-18">12-18</option>,<option value="12-19">12-19</option>,<option value="12-20">12-20</option>,<option value="12-21">12-21</option>,<option value="12-22">12-22</option>,<option value="12-23">12-23</option>,<option value="12-24">12-24</option>,<option value="12-25">12-25</option>,<option value="12-26">12-26</option>,<option value="12-27">12-27</option>,<option value="12-28">12-28</option>,<option value="12-29">12-29</option>,<option value="12-30">12-30</option></select>
+			</form>
+		</td>
+		<td class="options">
+			<form action="">
+			<span class="settings_info">Themes
+ </span>
+			<select aria-label="Select a colour theme from this dropdown" id="flava_select" name="flava" class="">
+				<option value="flava=original">Please choose a theme
+</option> 
+				<option value="flava=original">Original
+</option> 
+				<option value="flava=high">Print-Friendly
+</option>
+			</select>
+			</form>
+		</td>
+	</tr>
+</tbody></table>
+</div>
+	
+
+	<table class="head">
+		<tbody><tr>
+			<td rowspan="3">
+				<a href="/" title="Back to D-Portal
+"><img src="./ctrack/art/original/dp_logo.60.png" alt="D-Portal logo
+" width="150" height="60"><span class="badge beta">BETA</span>
+</a>
+			</td>
+						<td class="settings_toggle">
+				<a href="/faq.html" class="settings_faq">FAQ</a><a href="#" onclick="event.preventDefault();$('#settings').toggle();" class="settings_link">
+					<span>Settings
+</span><img src="./ctrack/art/original/settings.png" alt="A cog wheel icon indicate settings and options for the website" width="35" height="35">
+				</a>
+			</td>
+		</tr>
+	</tbody></table>
+	<div class="crumb_wrap">Home
+
+
+</div>
+</div>
+
+<script>
+	$(function(){
+		$('#tongue_select').children().each(function(i,it){
+			if("eng"==$(it).val())
+			{
+				$(it).attr("selected",1);
+			}
+		});
+		$('#tongue_select').bind('change', function ()
+		{
+			var url = "?publisher=US-EIN-941655673&reporting_ref=US-EIN-941655673&tongue="+$(this).val()+"#view=main";
+			window.location = url; // redirect
+			return false;
+		});
+	});
+	$(function(){
+		$('#flava_select').children().each(function(i,it){
+			if("original"==$(it).val())
+			{
+				$(it).attr("selected",1);
+			}
+		});
+		$('#flava_select').bind('change', function ()
+		{
+			var url = "?publisher=US-EIN-941655673&reporting_ref=US-EIN-941655673&"+$(this).val()+"#view=main";
+			window.location = url; // redirect
+			return false;
+		});
+	});
+	$(function(){
+		$('#usd_select').children().each(function(i,it){
+			if("USD"==$(it).val())
+			{
+				$(it).attr("selected",1);
+			}
+		});
+		$('#usd_select').bind('change', function ()
+		{
+			var url = "?publisher=US-EIN-941655673&reporting_ref=US-EIN-941655673&usd="+$(this).val()+"#view=main";
+			window.location = url; // redirect
+			return false;
+		});
+	});
+	$(function(){
+		$('#newyear_select').children().each(function(i,it){
+			if("01-01"==$(it).val())
+			{
+				$(it).attr("selected",1);
+			}
+		});
+		$('#newyear_select').bind('change', function ()
+		{
+			var url = "?publisher=US-EIN-941655673&reporting_ref=US-EIN-941655673&newyear="+$(this).val()+"#view=main";
+			window.location = url; // redirect
+			return false;
+		});
+	});
+</script>
+
+
+			
+
+
+<div class="default">
+	<table class="country">
+		<tbody><tr>
+			<td class="name publisher">
+The William and Flora Hewlett Foundation
+</td>
+		</tr>
+	</tbody></table>
+</div>
+
+
+
+<div class="default about">
+	<a href="https://www.iatiregistry.org/publisher/hewlett-foundation" title="Opens new tab
+" target="_blank" rel="noopener noreferrer" class="about_data registry_link">
+	About IATI Publisher
+ ↗
+</a>
+<a onclick="$('html, body').animate({scrollTop: $('.description_wrap').offset().top}, 300);return false;" class="about_data">
+		<img src="./ctrack/art/original/info_icon.png" alt="Information icon
+" width="15" height="15"> About this data
+
+	</a><a href="#view=data_quality" class="about_data quality">
+		<img src="./ctrack/art/original/alert_icon.png" alt="Alert icon
+" width="15" height="15"> About data quality
+
+	</a>
+</div>
+
+<div class="stats_wrap">
+	<table class="title key">
+		<tbody><tr>
+			<td class="icon"><img src="./ctrack/art/original/publisher_icon.png" alt="Active projects icon
+" width="40" height="40"></td>
+			<td>Current figures
+</td>
+		</tr>
+	</tbody></table>
+	<table class="stats">
+		<tbody><tr>
+			<td rowspan="2" colspan="2" title="Total number of projects that are still active now
+">
+				<a onclick="switch($(this).children('.stats_num').first().html()){ case '0': return false; };" href="#view=active" class="stats_link active">
+					<span class="stats_title">Active Projects
+</span>
+					<span class="stats_num">155</span>
+				</a>
+				<a onclick="switch($(this).children('span').first().html()){ case '0': return false; };" href="#view=missing" class="stats_link missing" title="Total number of projects that are missing dates
+">Other Projects:
+ <span>0</span></a>
+			</td>
+			<td title="Total number of projects that have ended
+">
+				<a onclick="switch($(this).children('.stats_num').first().html()){ case '0': return false; };" href="#view=ended" class="stats_link">
+					<span class="stats_title">Ended Projects
+</span>
+					<span class="stats_num small">2,651</span>
+				</a>
+			</td>
+			<td title="Total number of projects
+">
+				<a onclick="switch($(this).children('.stats_num').first().html()){ case '0': return false; };" href="#view=list_activities" class="stats_link total">
+					<span class="stats_title">Total Projects
+</span>
+					<span class="stats_num small">2,806</span>
+				</a>
+			</td>
+		</tr>
+		<tr>
+			<td title="Total number of projects being planned in the future
+">
+				<a onclick="switch($(this).children('.stats_num').first().html()){ case '0': return false; };" href="#view=planned" class="stats_link planned">
+					<span class="stats_title">Planned Projects
+</span>
+					<span class="stats_num small">0</span>
+				</a>
+			</td>
+			<td title="Total number of organisations that are reporting this data
+">
+				<a onclick="switch($(this).children('.stats_num').first().html()){ case '0': return false; };" href="#view=list_publishers" class="stats_link publishers">
+					<span class="stats_title">IATI Publishers
+</span>
+					<span class="stats_num small">1</span>
+				</a>
+			</td>
+		</tr>
+	</tbody></table>
+	<div class="declare stats">Data from IATI Registry on 2022-06-25
+</div>
+
+</div>
+
+
+<div class="default graph" id="countries_graph_all">
+<a href="#view=countries" class="graph_wrap">
+	<span class="ask donor">
+		<span class="ask_title">Funding went to 1 countries (in all years)
+</span>
+		<span class="main_peak_wrap">
+			<span class="peak donor"></span>
+		</span>
+	</span>
+<div id="countries_graph" style="width: 958px; height: 300px; position: relative;"><canvas width="958" height="300" style="width: 958px; height: 300px; position: absolute; top: 0px; left: 0px;"></canvas><div class="char_captions" style="width: 958px; height: 300px; position: absolute; top: 0px; left: 0px;"><div class="chart_caption" style="border-color: rgba(0, 12, 64, 0.25); position: absolute; left: 516px; top: 111.203px;"><b>154,407,870 USD</b> (100%)<br>United States of America</div></div></div>
+<span class="graph_view_all pub_donor">View all
+</span>
+</a>
+
+<script>
+	var ctrack=require("ctrack");
+	var data=ctrack.get_chart_data("data_chart_countries");
+	var opts={
+		layout:"right",
+		width:958,
+		height:300,
+		center_x:250,
+		center_y:140,
+		radius:135,
+		hole:40,
+		caption_css:undefined,
+		color:["#74BAFF","#42A0FB","#0081FF","#49739C","#5B6572"],
+		caption_edge:100,
+		caption_fix:[0,-10],
+		stroke_width:1,
+		line_width:3,
+		tints:{
+			fill:[1,1,1,1],
+			line:[1,1,1,1],
+			stroke:[2,2,2,2],
+			border:[0.5,0.5,0.5,0.5],
+		},
+	}
+	ctrack.draw_chart("#countries_graph",data,opts);
+</script>
+<style>
+ #countries_graph .chart_caption
+	{
+		width:300px;
+		padding:7px 20px;
+		border:solid 1px;
+		border-bottom:0px;
+		color:#666;
+		background-color:#fff;
+	}
+ #countries_graph .chart_caption:last-child
+	{
+		border-bottom:solid 1px;
+	}
+</style>
+</div>
+
+
+
+<div class="main_title_wrap">
+	<table class="title main">
+		<tbody><tr>
+			<td class="icon"><img src="./ctrack/art/original/active_icon.png" alt="Active projects icon
+" width="40" height="40"></td>
+			<td>Projects ending soon
+</td>
+			<td class="sort">Recent first
+</td>
+		</tr>
+	</tbody></table>
+	<div class="table_wrap main">
+		<table class="list">
+			<tbody><tr>
+    <th class="titles"></th>
+    <th class="titles">Project title
+</th>
+    <th class="titles">End Date
+</th>
+    <th class="titles">Total Commitment
+</th>
+</tr>
+
+			<tr onclick="return ctrack.url('#view=act&amp;aid=US-EIN-941655673-41962');">
+	<td>1.</td>
+	<td class="title">
+		<a>
+			"for improving the lives of citizens by ensuring policy is informed by evidence in sub-Saharan Africa"
+			<span>Reported by The William and Flora Hewlett Foundation
+</span>
+		</a>
+	</td>
+	<td class="date" title="End Date
+">2022-07-01</td>
+	<td class="value">
+		<div class="activities_spend_wrap">
+			<div class="activities_spend" title="Total Commitment
+">800,000<span class="currency">USD</span></div>
+			<div class="activities_barchart_wrap" title="Percentage of total commitment spent
+">
+				<div class="activities_percent_max">
+					<div style="width:83px;" class="activities_percent"></div>
+				</div>
+			</div>
+		</div>
+	</td>
+</tr>
+<tr onclick="return ctrack.url('#view=act&amp;aid=US-EIN-941655673-41796');">
+	<td>2.</td>
+	<td class="title">
+		<a>
+			"for general operating support"
+			<span>Reported by The William and Flora Hewlett Foundation
+</span>
+		</a>
+	</td>
+	<td class="date" title="End Date
+">2022-07-01</td>
+	<td class="value">
+		<div class="activities_spend_wrap">
+			<div class="activities_spend" title="Total Commitment
+">750,000<span class="currency">USD</span></div>
+			<div class="activities_barchart_wrap" title="Percentage of total commitment spent
+">
+				<div class="activities_percent_max">
+					<div style="width:100px;" class="activities_percent"></div>
+				</div>
+			</div>
+		</div>
+	</td>
+</tr>
+<tr onclick="return ctrack.url('#view=act&amp;aid=US-EIN-941655673-41169');">
+	<td>3.</td>
+	<td class="title">
+		<a>
+			"for policy research to help shift mindsets toward country ownership of Uganda’s development agenda"
+			<span>Reported by The William and Flora Hewlett Foundation
+</span>
+		</a>
+	</td>
+	<td class="date" title="End Date
+">2022-07-01</td>
+	<td class="value">
+		<div class="activities_spend_wrap">
+			<div class="activities_spend" title="Total Commitment
+">500,000<span class="currency">USD</span></div>
+			<div class="activities_barchart_wrap" title="Percentage of total commitment spent
+">
+				<div class="activities_percent_max">
+					<div style="width:68px;" class="activities_percent"></div>
+				</div>
+			</div>
+		</div>
+	</td>
+</tr>
+<tr onclick="return ctrack.url('#view=act&amp;aid=US-EIN-941655673-41567');">
+	<td>4.</td>
+	<td class="title">
+		<a>
+			"for establishing an initiative to strengthen the supply and demand for evidence in West Africa"
+			<span>Reported by The William and Flora Hewlett Foundation
+</span>
+		</a>
+	</td>
+	<td class="date" title="End Date
+">2022-07-01</td>
+	<td class="value">
+		<div class="activities_spend_wrap">
+			<div class="activities_spend" title="Total Commitment
+">1,000,000<span class="currency">USD</span></div>
+			<div class="activities_barchart_wrap" title="Percentage of total commitment spent
+">
+				<div class="activities_percent_max">
+					<div style="width:100px;" class="activities_percent"></div>
+				</div>
+			</div>
+		</div>
+	</td>
+</tr>
+<tr onclick="return ctrack.url('#view=act&amp;aid=US-EIN-941655673-42380');">
+	<td>5.</td>
+	<td class="title">
+		<a>
+			"for the Platform for Carbon Accounting Financials (PCAF) project"
+			<span>Reported by The William and Flora Hewlett Foundation
+</span>
+		</a>
+	</td>
+	<td class="date" title="End Date
+">2022-07-01</td>
+	<td class="value">
+		<div class="activities_spend_wrap">
+			<div class="activities_spend" title="Total Commitment
+">1,500,000<span class="currency">USD</span></div>
+			<div class="activities_barchart_wrap" title="Percentage of total commitment spent
+">
+				<div class="activities_percent_max">
+					<div style="width:100px;" class="activities_percent"></div>
+				</div>
+			</div>
+		</div>
+	</td>
+</tr>
+
+		</tbody></table>
+	</div>
+	<div class="center_wrap">
+		<a href="#view=active" class="button">View all
+</a>
+	</div>
+</div>
+
+<div class="main_title_wrap">
+	<table class="title main">
+		<tbody><tr>
+			<td class="icon"><img src="./ctrack/art/original/ended_icon.png" alt="Ended projects icon
+" width="40" height="40"></td>
+			<td>Ended projects
+</td>
+			<td class="sort">Recent first
+</td>
+		</tr>
+	</tbody></table>
+	<div class="table_wrap main">
+		<table class="list">
+			<tbody><tr>
+    <th class="titles"></th>
+    <th class="titles">Project title
+</th>
+    <th class="titles">End Date
+</th>
+    <th class="titles">Total Commitment
+</th>
+</tr>
+
+			<tr onclick="return ctrack.url('#view=act&amp;aid=US-EIN-941655673-38780');">
+	<td>1.</td>
+	<td class="title">
+		<a>
+			"for general operating support"
+			<span>Reported by The William and Flora Hewlett Foundation
+</span>
+		</a>
+	</td>
+	<td class="date" title="End Date
+">2022-06-22</td>
+	<td class="value">
+		<div class="activities_spend_wrap">
+			<div class="activities_spend" title="Total Commitment
+">550,000<span class="currency">USD</span></div>
+			<div class="activities_barchart_wrap" title="Percentage of total commitment spent
+">
+				<div class="activities_percent_max">
+					<div style="width:100px;" class="activities_percent"></div>
+				</div>
+			</div>
+		</div>
+	</td>
+</tr>
+<tr onclick="return ctrack.url('#view=act&amp;aid=US-EIN-941655673-43868');">
+	<td>2.</td>
+	<td class="title">
+		<a>
+			"for Global Pulse’s work on data privacy and data protection"
+			<span>Reported by The William and Flora Hewlett Foundation
+</span>
+		</a>
+	</td>
+	<td class="date" title="End Date
+">2022-06-15</td>
+	<td class="value">
+		<div class="activities_spend_wrap">
+			<div class="activities_spend" title="Total Commitment
+">1,000,000<span class="currency">USD</span></div>
+			<div class="activities_barchart_wrap" title="Percentage of total commitment spent
+">
+				<div class="activities_percent_max">
+					<div style="width:50px;" class="activities_percent"></div>
+				</div>
+			</div>
+		</div>
+	</td>
+</tr>
+<tr onclick="return ctrack.url('#view=act&amp;aid=US-EIN-941655673-42182');">
+	<td>3.</td>
+	<td class="title">
+		<a>
+			"for support of applying behavioral insights to improve FPRH services in rural Uganda"
+			<span>Reported by The William and Flora Hewlett Foundation
+</span>
+		</a>
+	</td>
+	<td class="date" title="End Date
+">2022-06-14</td>
+	<td class="value">
+		<div class="activities_spend_wrap">
+			<div class="activities_spend" title="Total Commitment
+">1,000,000<span class="currency">USD</span></div>
+			<div class="activities_barchart_wrap" title="Percentage of total commitment spent
+">
+				<div class="activities_percent_max">
+					<div style="width:100px;" class="activities_percent"></div>
+				</div>
+			</div>
+		</div>
+	</td>
+</tr>
+<tr onclick="return ctrack.url('#view=act&amp;aid=US-EIN-941655673-42068');">
+	<td>4.</td>
+	<td class="title">
+		<a>
+			"for increasing research and teaching capacity for Open Educational Resources"
+			<span>Reported by The William and Flora Hewlett Foundation
+</span>
+		</a>
+	</td>
+	<td class="date" title="End Date
+">2022-06-10</td>
+	<td class="value">
+		<div class="activities_spend_wrap">
+			<div class="activities_spend" title="Total Commitment
+">565,750<span class="currency">USD</span></div>
+			<div class="activities_barchart_wrap" title="Percentage of total commitment spent
+">
+				<div class="activities_percent_max">
+					<div style="width:100px;" class="activities_percent"></div>
+				</div>
+			</div>
+		</div>
+	</td>
+</tr>
+<tr onclick="return ctrack.url('#view=act&amp;aid=US-EIN-941655673-43898');">
+	<td>5.</td>
+	<td class="title">
+		<a>
+			"for support of the Open Textbook Network"
+			<span>Reported by The William and Flora Hewlett Foundation
+</span>
+		</a>
+	</td>
+	<td class="date" title="End Date
+">2022-06-10</td>
+	<td class="value">
+		<div class="activities_spend_wrap">
+			<div class="activities_spend" title="Total Commitment
+">900,000<span class="currency">USD</span></div>
+			<div class="activities_barchart_wrap" title="Percentage of total commitment spent
+">
+				<div class="activities_percent_max">
+					<div style="width:100px;" class="activities_percent"></div>
+				</div>
+			</div>
+		</div>
+	</td>
+</tr>
+
+		</tbody></table>
+	</div>
+	<div class="center_wrap">
+		<a href="#view=ended" class="button">View all
+</a>
+	</div>
+</div>
+
+
+<div><div class="org">
+	<div class="header">ORGANISATION FILE</div>
+	<div class="wrap_name_org"><div class="narrative">The William and Flora Hewlett Foundation</div></div>
+	<div class="wrap_reporting_org">	<!--	REPORTING ORG	-->
+		<div class="text">Reported by</div><div class="reporting_org"><a href="http://d-portal.org/ctrack.html?publisher=US-EIN-941655673" target="blank">The William and Flora Hewlett Foundation</a> <span class="ref">US-EIN-941655673</span> <span class="type">Foundation</span></div>
+	</div>
+	<div class="wrap_iati_identifier org_id">	<!--	ORG IDENTIFIER AND SOURCES	-->
+		<div class="text">Organisation identifier <a href="http://d-portal.org/savi/?pid=US-EIN-941655673" target="_blank">US-EIN-941655673</a></div>
+		<div class="data_source">
+			<a class="xml" href="http://d-portal.org/q.xml?pid=US-EIN-941655673" target="_blank"><span>view</span> xml</a><a class="json" href="http://d-portal.org/q.json?&amp;from=xson&amp;root=/iati-organisations/iati-organisation&amp;pid=US-EIN-941655673" target="_blank"><span>view</span> json</a><a class="dlogs" href="http://d-portal.org/ctrack.html#view=dash_sluglog&amp;slug=hewlett-foundation-org" target="_blank"><span>view</span> logs</a><a class="slug" href="http://iatiregistry.org/dataset/hewlett-foundation-org" target="_blank"><span>iati registry</span></a><a class="slug" href="https://iativalidator.iatistandard.org/view/dqf/files/26496736-392d-489d-a5e1-10a0061cc77b" target="_blank"><span>iati validator</span></a><a class="csv" href="http://d-portal.org/q.csv?&amp;from=xson&amp;root=/iati-organisations/iati-organisation&amp;pid=US-EIN-941655673" target="_blank"><span>download</span> csv</a>
+		</div>
+	</div>
+		<div class="wrap_document">
+		<div class="header_doc collapsable">DOCUMENTS <span class="count">( 3 )</span></div>
+		<a class="doc_link" href="http://www.hewlett.org/annual-reports" target="_blank">
+	<span class="wrap_doc_link">
+		<span class="block"><span class="doc_title">Annual Report</span>
+<span class="doc_format">TEXT/HTML</span>
+</span>
+
+		
+		<span class="block">
+			<span class="doc_cat">Annual report</span>
+
+
+			
+		</span>
+	</span>
+</a>
+<a class="doc_link" href="http://www.hewlett.org/uploads/Hewlett_Foundations_2020_Audited_Financial_Statements.pdf" target="_blank">
+	<span class="wrap_doc_link">
+		<span class="block"><span class="doc_title">Audited Financial Statements</span>
+<span class="doc_format">APPLICATION/PDF</span>
+</span>
+
+		
+		<span class="block">
+			<span class="doc_cat">Institutional Audit Report</span>
+
+
+			
+		</span>
+	</span>
+</a>
+<a class="doc_link" href="http://www.hewlett.org/sites/default/files/Hewlett_2020_Form_990-PF.pdf" target="_blank">
+	<span class="wrap_doc_link">
+		<span class="block"><span class="doc_title">IRS Form 990PF</span>
+<span class="doc_format">APPLICATION/PDF</span>
+</span>
+
+		
+		<span class="block">
+			<span class="doc_cat">Institutional Audit Report</span>
+
+
+			
+		</span>
+	</span>
+</a>
+
+	</div>
+	
+	
+	
+	
+	
+	
+</div>
+</div>
+<div class="description_wrap">
+	<div class="footer_notes">
+		<span class="title">How is the data calculated?
+</span>
+		<p><span class="title sub">Where does the money come from?
+</span>IATI data taken from the <a href="http://iatiregistry.org/">IATI Registry</a> each night.
+</p>
+		<p><span class="title sub">Where does the money go? (Sectors)
+</span>IATI data taken from the <a href="http://iatiregistry.org/">IATI Registry</a> each night. Sectors are CRS 3 digit sector codes.
+</p>
+		<p><span class="title sub">Heatmap
+</span>A count of IATI activities that contain specific coordinates in their location data. NB - only some IATI activities currently contain this data.
+</p>
+		<p><span class="title sub">Project list
+</span>This list shows you total commitments for each activity and the percentage spent so far, sorted by the most recent at the top. Full black bars may signify data quality issues where published data is missing commitment and/or transaction information.
+</p>
+		<p>Typically this data will have been updated from the <a href="http://iatiregistry.org/">IATI Registry</a> everyday at midnight GMT.
+</p>
+		<p><span class="title sub">How are exchange rates calculated?
+</span>We currently convert to USD using the exchange rate of the date specified in the <b>value-date</b> attribute.<br>For other currencies, the USD value is converted using today’s exchange rate.
+</p>
+		<p>Please refer to the FAQ for more information about <a href="http://d-portal.org/faq.html#tech5" target="_blank">currencies</a> and <a href="http://d-portal.org/faq.html#tech13" target="_blank">exchange rates</a>.
+</p>
+		<p class="about_data">
+			<a href="#view=data_quality" class="read">About data quality and why it matters
+</a><a href="about.html#sources" class="read right">Attribution and links to data sources
+</a>
+		</p>
+	</div>
+</div>
+
+<div class="data_wrap">
+	<a href="mailto:support@iatistandard.org?subject=Regarding%20d-portal.org" class="data_invest">
+		Data Investigators, we need you! If you find anything out of place, please contact the development team.
+
+	</a>
+</div>
+
+
+		</div>
+	</div>
+	<div class="footer_wrap">
+		<div class="footer">
+			<div class="footer_link">
+	<div class="footer_motto"><a href="http://d-portal.org/">d-portal.org</a>
+ helps you explore IATI data.
+</div>
+<p>It provides a search function and information by country or by publisher on development activities and budgets published to the International Aid Transparency Initiative (IATI).
+</p>
+<p class="beta">d-portal is currently in BETA. While publicly available, d-portal is not considered finished. Please feedback if you experience any bugs and missing features.
+</p>
+<p>If you have any queries relating to the data itself, which is owned by the publisher,
+ <b><a href="https://www.iatiregistry.org/publisher/hewlett-foundation">please contact them here.
+</a></b></p>
+<p>If you have any queries about how the data is shown in d-portal, or how up to date the data is, please see the <a href="/faq.html">FAQ</a> or contact the IATI support helpdesk
+ <b><a href="mailto:support@iatistandard.org?subject=Regarding%20d-portal.org">support@iatistandard.org
+</a></b></p>
+
+</div><div class="footer_link list">
+	<div class="footer_header">Tools &amp; Updates
+</div>
+<ul>
+	<li><a href="/news/posts.html">Latest news posts
+</a></li>
+	<li><a href="/ctrack.html?#view=dash">Dash - Publisher statistics
+</a></li>
+	<li><a href="/ctrack.html#view=generator">Generator widgets for your website
+</a></li>
+	<li><a href="http://d-portal.org/dquery">Dquery - A read-only SQL interface
+</a></li>
+	<li><a href="https://xriss.github.io/D-Portal-Logs/">Database Logs
+</a></li>
+</ul>
+<div class="footer_header">Information
+</div>
+<ul>
+	<li><a href="/faq.html">FAQ
+</a></li>
+	<li><a href="/about.html">About d-portal.org
+</a></li>
+	<li><a href="/about.html#sources">Attribution &amp; Data Sources
+</a></li>
+	<li><a href="https://github.com/devinit/D-Portal/issues">Github Feedback Forum
+</a></li>
+</ul>
+
+
+<!--	Footer for dpreview	-->
+</div>
+<div class="footer_link top"><a onclick="$('html,body').animate({ scrollTop:0},'slow');return false;">Top of page
+</a></div>
+
+		</div>
+	</div>
+</div>
+
+</div>
+	
+
+<div class="nanobar" style="position: fixed;"><div class="bar"></div></div></body></html>

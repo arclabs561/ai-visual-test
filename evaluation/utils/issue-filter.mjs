@@ -21,6 +21,14 @@ export function normalizeIssue(issue) {
     .toLowerCase()
     .trim();
   
+  // Remove score patterns (e.g., "Overall Score: 7/10", "8/10", "Score: 7")
+  normalized = normalized.replace(/\b(overall\s*)?score\s*:?\s*\d+\s*\/\s*\d+\b/gi, '');
+  normalized = normalized.replace(/\b\d+\s*\/\s*\d+\b/g, '');  // Any X/Y pattern
+  normalized = normalized.replace(/\bscore\s*:?\s*\d+\b/gi, '');
+  
+  // Remove section headers (e.g., "*Visual Design: 8/10**")
+  normalized = normalized.replace(/^\s*\*?\s*[a-z\s]+:\s*\d+\s*\/\s*\d+\s*\*?\s*$/i, '');
+  
   // Remove excessive punctuation
   normalized = normalized.replace(/[!?]{2,}/g, '');
   
@@ -62,6 +70,27 @@ export function extractIssueTerms(issue) {
 export function isLikelyFalsePositive(issue, allIssues = []) {
   const normalized = normalizeIssue(issue);
   
+  // Filter out score-only lines (e.g., "*Overall Score: 7/10**")
+  if (/^\s*\*?\s*(overall\s*)?score\s*:?\s*\d+\s*\/\s*\d+\s*\*?\s*$/i.test(issue.trim())) {
+    return true;
+  }
+  
+  // Filter out section headers with scores (e.g., "*Visual Design: 8/10**", "*Visual Design and Aesthetics: 8/10**")
+  // More aggressive: match any text followed by colon and score pattern
+  if (/^\s*\*{0,2}\s*[a-z\s&()]+:\s*\d+\s*\/\s*\d+\s*\*{0,2}\s*$/i.test(issue.trim())) {
+    return true;
+  }
+  
+  // Filter out markdown-formatted section headers (e.g., "**Color Contrast:**", "*Specific Issues:**")
+  if (/^\s*\*{1,2}[a-z\s&()]+:\*{0,2}\s*$/i.test(issue.trim())) {
+    return true;
+  }
+  
+  // Filter out recommendation headers (e.g., "*Recommendations:**")
+  if (/^\s*\*{0,2}\s*(recommendations?|suggestions?|improvements?|actions?)\s*:\*{0,2}\s*$/i.test(issue.trim())) {
+    return true;
+  }
+  
   // Too short or too long (likely noise or hallucination)
   if (normalized.length < 10 || normalized.length > 500) {
     return true;
@@ -86,6 +115,12 @@ export function isLikelyFalsePositive(issue, allIssues = []) {
   }
   
   // Check for duplicate/similar issues
+  // Use more aggressive similarity threshold based on research: 0.7-0.8 is optimal
+  // Lower threshold (0.7) catches more duplicates but may be too aggressive
+  // Higher threshold (0.85) misses some duplicates
+  // Research suggests 0.75-0.8 is optimal balance
+  const SIMILARITY_THRESHOLD = 0.75;
+  
   for (const other of allIssues) {
     if (other === issue) continue;
     const otherNormalized = normalizeIssue(other);
@@ -96,8 +131,9 @@ export function isLikelyFalsePositive(issue, allIssues = []) {
     }
     
     // High overlap (likely same issue phrased differently)
+    // Research: Jaccard similarity > 0.75 indicates likely duplicate
     const similarity = calculateSimilarity(normalized, otherNormalized);
-    if (similarity > 0.8) {
+    if (similarity > SIMILARITY_THRESHOLD) {
       return true;
     }
   }

@@ -65,6 +65,7 @@ export default {
       'DEPLOYMENT.md',
       'SECURITY.md',
       'LICENSE',
+      'openmemory.md', // Project memory file - should stay in root
     ],
   },
   

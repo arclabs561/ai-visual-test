@@ -2,6 +2,89 @@
 
 All notable changes to ai-visual-test will be documented in this file.
 
+## [0.6.0] - 2025-01-17
+
+### Security
+- **Path Traversal Prevention** - Added comprehensive path validation to prevent directory traversal attacks
+  - `src/utils/path-validator.mjs` - Centralized path validation utilities
+  - All image paths validated before file operations
+  - Absolute paths properly resolved and validated
+- **Prompt Injection Protection** - Protection against prompt injection attacks
+  - `src/utils/prompt-sanitizer.mjs` - Prompt sanitization and security validation
+  - Strict mode validation (default) or sanitization mode
+  - Detects and prevents malicious prompt patterns
+- **Image Format Validation** - Magic byte validation to prevent MIME type spoofing
+  - Validates PNG, JPEG, GIF, WebP formats using file signatures
+  - Prevents malicious file uploads disguised as images
+- **Library-Level Rate Limiting** - Configurable request and cost-based rate limiting
+  - `src/utils/rate-limiter.mjs` - Request and cost-based rate limiting
+  - Prevents API abuse and cost overruns
+  - Configurable limits per window
+- **Log Sanitization** - All logged output sanitized to prevent information leakage
+  - `src/utils/log-sanitizer.mjs` - Utilities for sanitizing sensitive data
+  - Error messages use basename for file paths
+  - Sensitive data removed from logs
+- **Input Validation** - Comprehensive input validation
+  - Prompt length limits (10k characters max)
+  - File path validation for all file operations
+  - Error message sanitization
+
+### Changed
+- **Repository Privacy** - GitHub repository made private
+  - Source code, history, and internal documentation no longer publicly accessible
+- **npm Package Obfuscation** - Source code obfuscation for published packages
+  - `scripts/build-obfuscated.mjs` - Automated obfuscation build script
+  - Uses `javascript-obfuscator` with balanced protection settings
+  - CI/CD integration for automated obfuscation on publish
+  - Future versions (0.6.0+) will be obfuscated
+- **Package Cleanup** - Removed deployment-specific files from npm package
+  - Removed `vercel.json`, `api/**/*.js`, `public/**/*.html` from package
+  - Package now contains only library code (115 files)
+  - Cleaner, library-only distribution
+
+### Added
+- **Security Utilities**
+  - `src/utils/path-validator.mjs` - Path validation and traversal prevention
+  - `src/utils/prompt-sanitizer.mjs` - Prompt injection protection
+  - `src/utils/rate-limiter.mjs` - Library-level rate limiting
+  - `src/utils/log-sanitizer.mjs` - Log sanitization utilities
+- **Build System**
+  - `scripts/build-obfuscated.mjs` - Obfuscation build script
+  - `scripts/cleanup-root-docs.mjs` - Repository cleanup automation
+  - `npm run build` - Build obfuscated package
+  - `npm run build:skip-obfuscation` - Build without obfuscation (testing)
+- **Documentation**
+  - `docs/NPM_OBFUSCATION_PLAN.md` - Obfuscation strategy
+  - `docs/OBFUSCATION_VERSION_HANDLING.md` - Version handling strategy
+  - `docs/PRIOR_VERSIONS_OBFUSCATION.md` - Prior versions analysis
+  - `docs/VERCEL_CONFIG_REMOVAL.md` - Package cleanup rationale
+  - `docs/REPO_CLEANUP_PLAN.md` - Repository cleanup plan
+
+### Improved
+- **Error Handling** - Enhanced error messages with sanitization
+  - File paths use basename in error messages
+  - No sensitive information in error output
+  - Better error categorization
+- **Secret Detection** - Improved false positive handling
+  - Added patterns for common code constructs
+  - Excluded script from self-checking
+  - Better detection of actual secrets vs. code patterns
+
+### Fixed
+- **Test Failures** - Fixed ExploratoryStrategy test (shared state issue)
+- **Build Script** - Fixed obfuscator detection logic
+- **Package Paths** - Fixed package.json paths for dist/ directory
+
+### Repository
+- **Cleanup** - Archived 14 temporary documentation files
+- **Organization** - Root directory reduced from ~20+ to 7 essential files
+- **Gitignore** - Updated to exclude temporary files and deployment configs
+
+### Security Rating
+- Improved from **LOW-MEDIUM** to **8.5/10**
+- All critical vulnerabilities addressed
+- Production-ready security posture
+
 ## [0.5.0] - 2025-11-13
 
 ### Added

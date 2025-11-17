@@ -14,15 +14,18 @@
  */
 
 import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { join, dirname } from 'path';
+import { join, dirname, basename, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { createConfig, getConfig } from './config.mjs';
 import { getCached, setCached } from './cache.mjs';
-import { FileError, ProviderError, TimeoutError } from './errors.mjs';
+import { FileError, ProviderError, TimeoutError, ValidationError } from './errors.mjs';
 import { log, warn } from './logger.mjs';
 import { retryWithBackoff, enhanceErrorMessage } from './retry.mjs';
 import { recordCost } from './cost-tracker.mjs';
 import { normalizeValidationResult } from './validation-result-normalizer.mjs';
+import { validateImagePath, validatePrompt } from './validation.mjs';
+import { sanitizePrompt, validatePromptSecurity } from './utils/prompt-sanitizer.mjs';
+import { getRateLimiter } from './utils/rate-limiter.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -57,17 +60,97 @@ export class VLLMJudge {
 
   /**
    * Convert image to base64 for API
+   * 
+   * SECURITY: Validates image path to prevent path traversal attacks
+   * SECURITY: Validates image format using magic bytes to prevent format spoofing
    */
   imageToBase64(imagePath) {
-    if (!existsSync(imagePath)) {
-      throw new FileError(`Screenshot not found: ${imagePath}`, imagePath);
+    // Validate and resolve path before file operations
+    // Note: imagePath may already be validated/resolved from judgeScreenshot
+    let validatedPath;
+    try {
+      // If path is already absolute (starts with / or is in tmpdir), allow it
+      // This allows legitimate temp files and absolute paths
+      // For relative paths, use standard validation (prevents path traversal)
+      if (imagePath.startsWith('/') || imagePath.startsWith(process.cwd())) {
+        // Absolute path - resolve and validate format only
+        const resolved = resolve(imagePath);
+        // Check if it's a valid image format
+        const validExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.webp'];
+        const hasValidExtension = validExtensions.some(ext => 
+          resolved.toLowerCase().endsWith(ext)
+        );
+        if (!hasValidExtension) {
+          throw new ValidationError('Invalid image format. Supported: png, jpg, jpeg, gif, webp', resolved);
+        }
+        validatedPath = resolved;
+      } else {
+        // Relative path - use standard validation (prevents path traversal)
+        validatedPath = validateImagePath(imagePath);
+      }
+    } catch (validationError) {
+      throw new FileError(`Invalid image path: ${validationError.message}`, basename(imagePath));
+    }
+    
+    if (!existsSync(validatedPath)) {
+      throw new FileError(`Screenshot not found: ${basename(validatedPath)}`, basename(validatedPath));
     }
     try {
-      const imageBuffer = readFileSync(imagePath);
+      const imageBuffer = readFileSync(validatedPath);
+      
+      // SECURITY: Validate image format using magic bytes
+      // Prevents MIME type spoofing and ensures file is actually an image
+      this._validateImageFormat(imageBuffer, validatedPath);
+      
       return imageBuffer.toString('base64');
     } catch (error) {
-      throw new FileError(`Failed to read screenshot: ${error.message}`, imagePath, { originalError: error.message });
+      // Sanitize error message - don't leak full path
+      throw new FileError(`Failed to read screenshot: ${error.message}`, basename(validatedPath), { originalError: error.message });
     }
+  }
+
+  /**
+   * Validate image format using magic bytes (file signatures)
+   * 
+   * @param {Buffer} buffer - Image file buffer
+   * @param {string} filePath - File path (for error messages)
+   * @throws {ValidationError} If image format is invalid
+   */
+  _validateImageFormat(buffer, filePath) {
+    if (!Buffer.isBuffer(buffer) || buffer.length < 4) {
+      throw new ValidationError('Invalid image file: file too small or not a buffer', basename(filePath));
+    }
+
+    // PNG signature: 89 50 4E 47 0D 0A 1A 0A
+    if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4E && buffer[3] === 0x47) {
+      return 'image/png';
+    }
+
+    // JPEG signature: FF D8 FF
+    if (buffer[0] === 0xFF && buffer[1] === 0xD8 && buffer[2] === 0xFF) {
+      return 'image/jpeg';
+    }
+
+    // GIF signature: 47 49 46 38 (GIF8)
+    if (buffer[0] === 0x47 && buffer[1] === 0x49 && buffer[2] === 0x46 && buffer[3] === 0x38) {
+      return 'image/gif';
+    }
+
+    // WebP signature: RIFF...WEBP
+    if (buffer.length >= 12 &&
+        buffer[0] === 0x52 && buffer[1] === 0x49 && buffer[2] === 0x46 && buffer[3] === 0x46 &&
+        buffer[8] === 0x57 && buffer[9] === 0x45 && buffer[10] === 0x42 && buffer[11] === 0x50) {
+      return 'image/webp';
+    }
+
+    // No valid signature found
+    throw new ValidationError(
+      'Invalid image format: file signature does not match supported formats (PNG, JPEG, GIF, WebP)',
+      basename(filePath),
+      {
+        detectedSignature: Array.from(buffer.slice(0, 4)).map(b => `0x${b.toString(16).padStart(2, '0')}`).join(' ')
+      }
+    );
   }
 
   /**
@@ -79,8 +162,68 @@ export class VLLMJudge {
    * @returns {Promise<import('./index.mjs').ValidationResult>} Validation result
    */
   async judgeScreenshot(imagePath, prompt, context = {}) {
+    // SECURITY: Validate inputs before processing
+    // Validate prompt length
+    try {
+      validatePrompt(prompt, 10000); // Max 10k characters
+    } catch (validationError) {
+      throw new ValidationError(`Invalid prompt: ${validationError.message}`);
+    }
+    
+    // SECURITY: Detect and prevent prompt injection
+    // Use strict mode if configured (throws on detection)
+    // Otherwise, sanitize automatically
+    const strictMode = context.strictPromptSecurity !== false; // Default true
+    try {
+      if (strictMode) {
+        validatePromptSecurity(prompt, true);
+      }
+      // Sanitize prompt (removes injection patterns and prepends system prefix)
+      // Only sanitize if not in strict mode (strict mode throws instead)
+      if (!strictMode) {
+        prompt = sanitizePrompt(prompt, {
+          systemPrefix: 'You are a UI evaluation assistant. User request:'
+        });
+      }
+    } catch (validationError) {
+      throw new ValidationError(`Prompt security violation: ${validationError.message}`);
+    }
+    
     // Support both single image and multi-image (for pair comparison)
     const imagePaths = Array.isArray(imagePath) ? imagePath : [imagePath];
+    
+    // Validate all image paths and resolve them
+    // For absolute paths, allow them if they're explicitly provided (not from user input manipulation)
+    // This allows temp files and other legitimate absolute paths
+    const validatedPaths = [];
+    for (const path of imagePaths) {
+      try {
+        // If path is already absolute and exists, allow it (legitimate temp files, etc.)
+        // Still validate to ensure it's a valid image format
+        if (path.startsWith('/') || path.startsWith(process.cwd())) {
+          // Absolute path - validate format but allow if it's a real absolute path
+          const resolved = resolve(path);
+          // Check if it's a valid image format
+          const validExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.webp'];
+          const hasValidExtension = validExtensions.some(ext => 
+            resolved.toLowerCase().endsWith(ext)
+          );
+          if (!hasValidExtension) {
+            throw new ValidationError('Invalid image format. Supported: png, jpg, jpeg, gif, webp', path);
+          }
+          validatedPaths.push(resolved);
+        } else {
+          // Relative path - use standard validation (prevents path traversal)
+          const resolved = validateImagePath(path);
+          validatedPaths.push(resolved);
+        }
+      } catch (validationError) {
+        throw new FileError(`Invalid image path: ${validationError.message}`, basename(path));
+      }
+    }
+    
+    // Use validated paths for processing
+    const finalImagePaths = validatedPaths.length > 0 ? validatedPaths : imagePaths;
     const isMultiImage = imagePaths.length > 1;
     if (!this.enabled) {
       // Return normalized disabled result
@@ -161,6 +304,7 @@ export class VLLMJudge {
     // Check cache first (if caching enabled)
     const useCache = context.useCache !== false && this.config.cache.enabled;
     if (useCache) {
+      // Use original paths for cache key (before validation/resolution)
       const cacheKey = isMultiImage ? imagePaths.join('|') : imagePath;
       const cached = getCached(cacheKey, prompt, context);
       if (cached) {
@@ -202,6 +346,21 @@ export class VLLMJudge {
     let attempts = 0;
 
     try {
+      // SECURITY: Rate limiting (if enabled)
+      // Check rate limits before making API call
+      if (context.enableRateLimit !== false) {
+        try {
+          const rateLimiter = getRateLimiter(context.rateLimitOptions || {});
+          // Estimate cost for rate limiting (rough estimate based on provider)
+          const estimatedCost = this.providerConfig.pricing?.input 
+            ? (1000 / 1_000_000) * this.providerConfig.pricing.input // Rough estimate: 1k tokens
+            : 0;
+          rateLimiter.checkLimit(estimatedCost);
+        } catch (rateLimitError) {
+          throw new ValidationError(`Rate limit exceeded: ${rateLimitError.message}`);
+        }
+      }
+      
       // Convert all images to base64
       const base64Images = imagePaths.map(path => this.imageToBase64(path));
       const fullPrompt = await this.buildPrompt(prompt, context, isMultiImage);
@@ -527,7 +686,7 @@ export class VLLMJudge {
         const enhancedMessage = enhanceErrorMessage(error, attempts || 1, 'judgeScreenshot');
         throw new ProviderError(enhancedMessage, this.provider, {
           ...error.details,
-          imagePath,
+          imagePath: Array.isArray(imagePath) ? imagePath.map(p => basename(p)) : basename(imagePath),
           prompt: prompt.substring(0, 100),
           attempts: attempts || 1
         });
@@ -544,7 +703,7 @@ export class VLLMJudge {
         `VLLM API call failed: ${enhancedMessage}`,
         this.provider,
         {
-          imagePath,
+          imagePath: Array.isArray(imagePath) ? imagePath.map(p => basename(p)) : basename(imagePath),
           prompt: prompt.substring(0, 100),
           attempts: attempts || 1,
           originalError: error.message

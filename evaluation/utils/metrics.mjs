@@ -212,19 +212,33 @@ export function calculateAllMetrics(evaluations) {
   // Extract scores and issues
   evaluations.forEach(evaluation => {
     if (evaluation.result && evaluation.groundTruth) {
-      // Scores
-      if (evaluation.result.score !== null && evaluation.groundTruth.expectedScore) {
-        const expectedScore = (evaluation.groundTruth.expectedScore.min + evaluation.groundTruth.expectedScore.max) / 2;
-        metrics.scores.predictions.push(evaluation.result.score);
-        metrics.scores.groundTruth.push(expectedScore);
+      // Scores - support both new (preciseScore) and legacy (expectedScore) formats
+      if (evaluation.result.score !== null) {
+        let expectedScore = null;
+        
+        // New format: preciseScore
+        if (evaluation.groundTruth.preciseScore !== undefined) {
+          expectedScore = evaluation.groundTruth.preciseScore;
+        }
+        // Legacy format: expectedScore range
+        else if (evaluation.groundTruth.expectedScore) {
+          expectedScore = (evaluation.groundTruth.expectedScore.min + evaluation.groundTruth.expectedScore.max) / 2;
+        }
+        
+        if (expectedScore !== null) {
+          metrics.scores.predictions.push(evaluation.result.score);
+          metrics.scores.groundTruth.push(expectedScore);
+        }
       }
       
-      // Issues
+      // Issues - support both new (structuredIssues) and legacy (expectedIssues) formats
       if (evaluation.result.issues) {
         metrics.issues.allDetected.push(...evaluation.result.issues);
       }
-      if (evaluation.groundTruth.expectedIssues) {
-        metrics.issues.allGroundTruth.push(...evaluation.groundTruth.expectedIssues);
+      
+      const groundTruthIssues = evaluation.groundTruth.structuredIssues || evaluation.groundTruth.expectedIssues || [];
+      if (groundTruthIssues.length > 0) {
+        metrics.issues.allGroundTruth.push(...groundTruthIssues);
       }
     }
   });
@@ -270,7 +284,7 @@ export function calculateAllMetrics(evaluations) {
 /**
  * Calculate Pearson correlation coefficient
  */
-function calculateCorrelation(x, y) {
+export function calculateCorrelation(x, y) {
   if (x.length !== y.length) return 0;
   if (x.length === 0) return 0;
   

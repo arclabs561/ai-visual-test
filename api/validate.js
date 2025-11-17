@@ -24,8 +24,9 @@
  */
 
 import { validateScreenshot, createConfig, normalizeValidationResult } from '../src/index.mjs';
+import { validatePrompt } from '../src/validation.mjs';
 import { writeFileSync, unlinkSync } from 'fs';
-import { join } from 'path';
+import { join, basename } from 'path';
 import { tmpdir } from 'os';
 import { randomBytes } from 'crypto';
 
@@ -169,8 +170,12 @@ export default async function handler(req, res) {
     if (typeof image !== 'string' || image.length > MAX_IMAGE_SIZE) {
       return res.status(400).json({ error: 'Image too large or invalid format' });
     }
-    if (typeof prompt !== 'string' || prompt.length > MAX_PROMPT_LENGTH) {
-      return res.status(400).json({ error: 'Prompt too long' });
+    
+    // SECURITY: Use validation utility for prompt validation
+    try {
+      validatePrompt(prompt, MAX_PROMPT_LENGTH);
+    } catch (validationError) {
+      return res.status(400).json({ error: `Invalid prompt: ${validationError.message}` });
     }
     if (context && typeof context === 'object') {
       const contextSize = JSON.stringify(context).length;

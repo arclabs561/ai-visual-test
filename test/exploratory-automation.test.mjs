@@ -65,10 +65,9 @@ test('ExploratoryStrategy tracks attempt history', () => {
 });
 
 test('ExploratoryStrategy generates alternatives for different action types', () => {
-  const strategy = new ExploratoryStrategy({ maxAttempts: 5 });
-  
-  // Test click failure
-  const clickAction = strategy.getNextAction(
+  // Test click failure with fresh strategy
+  const clickStrategy = new ExploratoryStrategy({ maxAttempts: 5 });
+  const clickAction = clickStrategy.getNextAction(
     { score: 5 },
     [{ type: 'click', selector: '#button' }],
     'Click button'
@@ -78,8 +77,9 @@ test('ExploratoryStrategy generates alternatives for different action types', ()
   assert.ok(['wait', 'keyboard'].includes(clickAction.type), 
     'Should try wait or keyboard for failed click');
   
-  // Test keyboard failure
-  const keyboardAction = strategy.getNextAction(
+  // Test keyboard failure with fresh strategy (separate instance to avoid attempt history interference)
+  const keyboardStrategy = new ExploratoryStrategy({ maxAttempts: 5 });
+  const keyboardAction = keyboardStrategy.getNextAction(
     { score: 5 },
     [{ type: 'keyboard', key: 'Enter' }],
     'Press enter'

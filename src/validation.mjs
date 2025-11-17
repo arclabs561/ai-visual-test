@@ -16,7 +16,9 @@ import { normalize, resolve } from 'path';
  * @returns {true} Always returns true if valid
  * @throws {ValidationError} If path is invalid, empty, or contains path traversal
  */
-export function validateImagePath(imagePath) {
+export function validateImagePath(imagePath, options = {}) {
+  const { baseDir = process.cwd() } = options;
+  
   if (typeof imagePath !== 'string') {
     throw new ValidationError('Image path must be a string', null, {
       received: typeof imagePath
@@ -27,27 +29,33 @@ export function validateImagePath(imagePath) {
     throw new ValidationError('Image path cannot be empty');
   }
   
-  // Check for path traversal attempts
+  // SECURITY: Use resolve-based validation to prevent path traversal
+  const base = resolve(baseDir);
   const normalized = normalize(imagePath);
-  if (normalized.includes('..')) {
-    throw new ValidationError('Invalid image path: path traversal detected', imagePath);
+  const resolved = resolve(base, normalized);
+  
+  // Ensure resolved path is within base directory
+  // Check both with and without trailing slash to handle edge cases
+  const baseWithSlash = base.endsWith('/') ? base : base + '/';
+  if (!resolved.startsWith(baseWithSlash) && resolved !== base) {
+    throw new ValidationError('Invalid image path: path traversal detected', imagePath, {
+      resolved,
+      base
+    });
   }
   
   // Validate file extension
   const validExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.webp'];
   const hasValidExtension = validExtensions.some(ext => 
-    imagePath.toLowerCase().endsWith(ext)
+    resolved.toLowerCase().endsWith(ext)
   );
   
   if (!hasValidExtension) {
     throw new ValidationError('Invalid image format. Supported: png, jpg, jpeg, gif, webp', imagePath);
   }
   
-  // Check if file exists (optional - may not exist in all contexts)
-  // This is a soft check - don't throw if file doesn't exist yet
-  // The actual file operations will handle missing files
-  
-  return true;
+  // Return resolved path for use
+  return resolved;
 }
 
 /**
@@ -191,18 +199,20 @@ export function validateSchema(schema) {
  * 
  * @param {string} filePath - File path to validate
  * @param {{
-   *   mustExist?: boolean;
-   *   allowedExtensions?: string[] | null;
-   *   maxLength?: number;
-   * }} [options={}] - Validation options
- * @returns {true} Always returns true if valid
+ *   mustExist?: boolean;
+ *   allowedExtensions?: string[] | null;
+ *   maxLength?: number;
+ *   baseDir?: string;
+ * }} [options={}] - Validation options
+ * @returns {string} Resolved, validated path
  * @throws {ValidationError} If path is invalid, empty, too long, has path traversal, wrong extension, or doesn't exist (if required)
  */
 export function validateFilePath(filePath, options = {}) {
   const {
     mustExist = false,
     allowedExtensions = null,
-    maxLength = 4096
+    maxLength = 4096,
+    baseDir = process.cwd()
   } = options;
   
   if (typeof filePath !== 'string') {
@@ -219,25 +229,42 @@ export function validateFilePath(filePath, options = {}) {
     throw new ValidationError(`File path too long (max ${maxLength} characters)`, filePath);
   }
   
-  // Check for path traversal
+  // SECURITY: Use resolve to prevent path traversal
+  const base = resolve(baseDir);
   const normalized = normalize(filePath);
-  if (normalized.includes('..')) {
-    throw new ValidationError('Invalid file path: path traversal detected', filePath);
+  
+  // Resolve path - if absolute, use as-is; if relative, resolve against base
+  const resolved = filePath.startsWith('/') 
+    ? resolve(normalized)  // Absolute path
+    : resolve(base, normalized);  // Relative path
+  
+  // Normalize path separators for cross-platform compatibility
+  const baseNormalized = base.replace(/\\/g, '/');
+  const resolvedNormalized = resolved.replace(/\\/g, '/');
+  
+  // Ensure resolved path is within base directory
+  const isWithinBase = resolvedNormalized.startsWith(baseNormalized + '/') || resolvedNormalized === baseNormalized;
+  
+  if (!isWithinBase) {
+    throw new ValidationError('Invalid file path: path traversal detected', filePath, {
+      resolved,
+      base
+    });
   }
   
   // Check extension if specified
   if (allowedExtensions) {
-    const ext = normalized.substring(normalized.lastIndexOf('.'));
+    const ext = resolved.substring(resolved.lastIndexOf('.'));
     if (!allowedExtensions.includes(ext.toLowerCase())) {
       throw new ValidationError(`Invalid file extension. Allowed: ${allowedExtensions.join(', ')}`, filePath);
     }
   }
   
   // Check existence if required
-  if (mustExist && !existsSync(filePath)) {
+  if (mustExist && !existsSync(resolved)) {
     throw new ValidationError('File does not exist', filePath);
   }
   
-  return true;
+  return resolved;
 }
 

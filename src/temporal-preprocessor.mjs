@@ -6,14 +6,29 @@
  * low-Hz periods (idle, reading, stable) and use preprocessed data during high-Hz periods
  * (rapid interactions, fast state changes).
  * 
- * Research context (inspired by, not exact implementations):
+ * **Research Context:**
+ * - Inspired by high-stakes, low-latency domains (driving, aviation) - activity-based preprocessing
+ * - Human perception time scales (NN/g, PMC) - 0.1s threshold for direct manipulation
  * - arXiv:2406.12125 - Temporal dependency concepts (loosely related, not implementing core algorithm)
  * - arXiv:2505.13326 - Adaptive batching concepts (inspired by, not exact method)
- * - Human perception time scales (NN/g, PMC) - 0.1s threshold for direct manipulation
  * 
- * Pattern:
- * - High-Hz (10-60Hz): Fast note capture, use preprocessed aggregations
+ * **How It Works:**
+ * - High-Hz (10-60Hz): Fast note capture, use preprocessed aggregations (cache hit)
  * - Low-Hz (0.1-1Hz): Expensive preprocessing (multi-scale aggregation, coherence, pruning)
+ * 
+ * **Integration with TemporalDecisionManager:**
+ * - TemporalPreprocessingManager: Optimizes aggregation PERFORMANCE (fast vs. slow path)
+ * - TemporalDecisionManager: Optimizes LLM call FREQUENCY (prompt vs. skip)
+ * - They complement each other:
+ *   - PreprocessingManager provides fast coherence calculation for DecisionManager
+ *   - DecisionManager uses preprocessed coherence to decide when to prompt
+ *   - Together: Fast decisions (preprocessed) + reduced calls (decision logic)
+ * 
+ * **Pattern:**
+ * 1. Low activity → Background preprocessing (expensive operations)
+ * 2. High activity → Use cached preprocessed data (fast path)
+ * 3. DecisionManager uses preprocessed coherence → Decides when to prompt
+ * 4. Result: Fast aggregation + reduced LLM calls
  * 
  * CACHE ARCHITECTURE NOTE:
  * - This has its OWN in-memory cache (object), separate from VLLM cache and BatchOptimizer cache

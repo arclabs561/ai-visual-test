@@ -137,6 +137,8 @@ async function evaluateCase(testCase, index) {
     ]
   };
   
+  // Use EnsembleJudge for critical evaluations (accessibility, quality, design)
+  // Research: arXiv:2510.01499 - Optimal ensemble weighting improves accuracy by 10-20%
   const result = await validateScreenshot(
     screenshotPath,
     'Evaluate this webpage', // Base prompt (goal will enhance it)
@@ -144,7 +146,9 @@ async function evaluateCase(testCase, index) {
       testType: 'evaluation',
       viewport: { width: 1280, height: 720 },
       goal: goal, // Cohesive integration - prompt composition uses this
-      enableUncertaintyReduction: true // Use uncertainty reduction for better confidence
+      enableUncertaintyReduction: true, // Use uncertainty reduction for better confidence
+      useEnsemble: true, // Critical evaluation - use ensemble for better accuracy
+      ensembleProviders: ['gemini', 'openai'] // Use multiple providers for consensus
     }
   );
   

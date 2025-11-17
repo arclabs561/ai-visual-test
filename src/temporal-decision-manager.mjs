@@ -1,19 +1,57 @@
 /**
  * Temporal Decision Manager
  * 
- * Implements decision logic for WHEN to prompt based on temporal context.
+ * Decides when to call LLM vs. reuse previous result.
+ * Core insight: Don't prompt on every state change, prompt when decision is needed.
  * 
- * Research: arXiv:2406.12125 - "Efficient Sequential Decision Making"
- * - Paper's core finding: Don't prompt on every state change, prompt when decision is needed
- * - Online model selection achieves 6x gains with 1.5% LLM calls
+ * Research: arXiv:2406.12125 - "Efficient Sequential Decision Making with Large Language Models"
  * 
- * This module implements the decision logic (when to prompt) that was missing from
- * our temporal aggregation system. It complements temporal-decision.mjs which handles
- * HOW to aggregate temporal context, while this handles WHEN to use it.
+ * What the Paper Claims:
+ * - Core algorithm: Online model selection using multiplicative weights update (MWU)
+ * - Key insight: "Don't prompt on every state change, prompt when decision is needed"
+ * - Result: 6x performance gain with only 1.5% LLM calls (vs. calling at every time step)
+ * 
+ * What We Implement:
+ * - ✅ Decision logic for WHEN to prompt (core insight from paper)
+ * - ✅ Temporal coherence-based decision making
+ * - ✅ State change detection
+ * - ❌ NOT: Online model selection (which LLM to use)
+ * - ❌ NOT: Multiplicative weights update (MWU) algorithm
+ * 
+ * Why We Adapted:
+ * - Paper focuses on selecting WHICH LLM agent to use (model selection)
+ * - We focus on WHEN to call (decision timing) - same core insight, different application
+ * - Our use case: Single LLM provider, but need to reduce call frequency
+ * 
+ * Simple logic:
+ * - Decision point? → prompt
+ * - Coherence drop? → prompt (urgent)
+ * - Significant state change with stable context? → prompt
+ * - Otherwise → wait (reuse previous result)
+ * 
+ * See docs/research/IMPLEMENTATION_VS_RESEARCH.md for detailed research context.
  */
 
 import { aggregateTemporalNotes } from './temporal.mjs';
 import { aggregateMultiScale } from './temporal-decision.mjs';
+
+/**
+ * Integration Note:
+ * 
+ * TemporalDecisionManager can optionally use TemporalPreprocessingManager for faster
+ * coherence calculation during high-activity periods. However, for typical use cases
+ * (10-50 notes), full recomputation is fast enough (<1ms) and simpler.
+ * 
+ * If you have 1000+ notes and need maximum performance, you can pass a
+ * TemporalPreprocessingManager instance to use cached aggregations:
+ * 
+ * ```javascript
+ * const preprocessor = new TemporalPreprocessingManager();
+ * const decisionManager = new TemporalDecisionManager({ preprocessor });
+ * ```
+ * 
+ * By default, TemporalDecisionManager uses direct aggregation (simple, fast enough).
+ */
 
 /**
  * Temporal Decision Manager
@@ -49,7 +87,13 @@ export class TemporalDecisionManager {
     }
 
     // 2. Calculate temporal coherence
-    const aggregated = aggregateTemporalNotes(temporalNotes);
+    // Use preprocessor if available (for large note sets), otherwise direct aggregation
+    let aggregated;
+    if (this.preprocessor) {
+      aggregated = this.preprocessor.getFastAggregation(temporalNotes);
+    } else {
+      aggregated = aggregateTemporalNotes(temporalNotes);
+    }
     const coherence = aggregated.coherence || 0;
 
     // 3. Check for significant state change
@@ -64,45 +108,45 @@ export class TemporalDecisionManager {
     // 6. Check for coherence drop (urgency signal)
     const coherenceDrop = this.detectCoherenceDrop(temporalNotes, aggregated);
 
-    // Decision logic (from research: prompt when decision needed, not on every change)
-    if (isDecisionPoint) {
-      return {
-        shouldPrompt: true,
-        reason: 'Decision point reached',
-        urgency: 'high'
-      };
-    }
+      // Decision logic: prompt when decision needed, not on every change
+      if (isDecisionPoint) {
+        return {
+          shouldPrompt: true,
+          reason: 'Decision point reached',
+          urgency: 'high'
+        };
+      }
 
-    if (coherenceDrop) {
-      return {
-        shouldPrompt: true,
-        reason: 'Coherence drop detected (quality issue)',
-        urgency: 'high'
-      };
-    }
+      if (coherenceDrop) {
+        return {
+          shouldPrompt: true,
+          reason: 'Coherence drop detected (quality issue)',
+          urgency: 'high'
+        };
+      }
 
-    if (hasUserAction && stateChange > this.stateChangeThreshold) {
-      return {
-        shouldPrompt: true,
-        reason: 'User action with significant state change',
-        urgency: 'medium'
-      };
-    }
+      if (hasUserAction && stateChange > this.stateChangeThreshold) {
+        return {
+          shouldPrompt: true,
+          reason: 'User action with significant state change',
+          urgency: 'medium'
+        };
+      }
 
-    if (coherence >= this.coherenceThreshold && stateChange > this.stateChangeThreshold) {
-      return {
-        shouldPrompt: true,
-        reason: 'Stable context with significant state change',
-        urgency: 'medium'
-      };
-    }
+      if (coherence >= this.coherenceThreshold && stateChange > this.stateChangeThreshold) {
+        return {
+          shouldPrompt: true,
+          reason: 'Stable context with significant state change',
+          urgency: 'medium'
+        };
+      }
 
-    // Wait for more context
-    return {
-      shouldPrompt: false,
-      reason: `Context not sufficient (coherence: ${coherence.toFixed(2)}, stateChange: ${stateChange.toFixed(2)})`,
-      urgency: 'low'
-    };
+      // Wait for more context
+      return {
+        shouldPrompt: false,
+        reason: `Context not sufficient (coherence: ${coherence.toFixed(2)}, stateChange: ${stateChange.toFixed(2)})`,
+        urgency: 'low'
+      };
   }
 
   /**
@@ -170,13 +214,15 @@ export class TemporalDecisionManager {
 
     // Check last few notes for interactions
     const recentNotes = temporalNotes.slice(-3);
-    return recentNotes.some(note => 
-      note.step?.includes('interaction') ||
-      note.step?.includes('click') ||
-      note.step?.includes('action') ||
-      note.observation?.includes('user') ||
-      note.observation?.includes('clicked')
-    );
+    return recentNotes.some(note => {
+      const stepStr = String(note.step || '');
+      const observationStr = String(note.observation || '');
+      return stepStr.includes('interaction') ||
+        stepStr.includes('click') ||
+        stepStr.includes('action') ||
+        observationStr.includes('user') ||
+        observationStr.includes('clicked');
+    });
   }
 
   /**

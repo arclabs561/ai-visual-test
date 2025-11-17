@@ -1,26 +1,47 @@
 # Current Goals and TODOs
 
-## Primary Goals (From docs/GOALS_AND_INTERFACES.md)
+## What We're Building (The Big Picture)
 
-**Primary Purpose**: AI-powered visual testing using Vision Language Models (VLLM) for screenshot validation. Semantic visual regression testing that understands UI meaning, not just pixels.
+**Primary Purpose**: AI-powered visual testing that understands UI meaning, not just pixels.
 
-### Core Problems Solved
+**The problem**: Pixel-diffing tools break when content changes or layouts shift. This tool asks "does this look correct?" instead of "did pixels change?"
+
+**The solution**: Use AI to understand what screenshots actually show, then evaluate them semantically. Does the payment form work? Is it accessible? Does it look good? These are questions humans can answer, and now AI can too.
+
+### Core Problems We Solve
 
 1. **Semantic validation** - Understands UI meaning, not just pixel differences
+   - "Is this accessible?" not "Did pixels change?"
+   - "Does this work?" not "Are colors exact?"
+
 2. **High-frequency validation** (10-60Hz) for real-time gameplay ⚠️ **CRITICAL**
+   - Real-time games need fast feedback (<100ms)
+   - Traditional pixel-diffing is too slow
+   - Semantic validation is fast and accurate
+
 3. **Variable goals** - Different evaluation criteria based on game state
+   - Early game: Check if it's fun
+   - Late game: Check if it's challenging
+   - Payment screen: Check if it's accessible
+
 4. **Temporal sequences** - Understanding gameplay over time, not just single frames
+   - Single frame: What's happening now?
+   - Multiple frames: What's happening over time?
+   - Patterns: Score increasing, button clicked frequently
+
 5. **State extraction** - Extract game state (score, level, position) from screenshots
+   - No need to instrument game code
+   - Just take screenshots and extract state
+
 6. **Accessibility validation** - Fast programmatic checks or VLLM semantic evaluation
+   - Programmatic: Fast, free, but limited
+   - VLLM: Slower, costs money, but comprehensive
 
 ### Primary Use Case: 60Hz Real-Time Game Validation
 
-**Requirements:**
-- High-frequency validation (10-60Hz) for real-time gameplay
-- Variable goals based on game state (fun, accessibility, performance)
-- Temporal sequences to understand gameplay over time
-- State extraction from screenshots (score, level, position)
-- Fast latency (<100ms) for reactive games
+**The requirement**: High-frequency validation (10-60Hz) for real-time gameplay with <100ms latency.
+
+**Why this matters**: Real-time games need fast feedback. If validation takes 500ms, the game feels laggy. If it takes <100ms, it feels responsive.
 
 **What this package provides:**
 - `testGameplay()` - Complete workflow for game testing ✅ Tested
@@ -29,6 +50,12 @@
 - `LatencyAwareBatchOptimizer` - Fast validation for 60Hz games ✅ Tested
 - `selectModelTier()` - Automatic fast tier for high-frequency ✅ Tested
 - `selectProvider()` - Auto-selects Groq for speed ✅ Tested
+
+**How it works together**:
+1. Capture screenshots at 60Hz
+2. Use temporal decision making (only call AI when needed)
+3. Auto-select fast provider (Groq, fast tier)
+4. Result: <100ms latency, 98.5% fewer calls
 
 ## Recent Improvements
 

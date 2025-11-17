@@ -19,9 +19,9 @@ function runGarden() {
   }
   lastCheck = now;
   
-  console.log('\n🌱 Running Hookwise Garden...\n');
+  console.log('\n🌱 Running Hookwise checks...\n');
   try {
-    execSync('npm run garden', { 
+    execSync('npm run check', { 
       stdio: 'inherit',
       cwd: REPO_ROOT 
     });
@@ -44,7 +44,7 @@ setInterval(runGarden, CHECK_INTERVAL);
 // Run immediately
 runGarden();
 
-console.log('🌱 Hookwise Garden Watch Mode');
+console.log('🌱 Hookwise Watch Mode');
 console.log('   Watching for changes...');
 console.log('   Running checks every 30 seconds');
 console.log('   Press Ctrl+C to stop\n');

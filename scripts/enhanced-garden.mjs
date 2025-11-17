@@ -178,11 +178,11 @@ function findDeprecatedReferences() {
  * Run hookwise garden
  */
 function runHookwiseGarden() {
-  console.log('🌱 Running Hookwise Garden...\n');
+  console.log('🌱 Running Hookwise checks...\n');
   
   try {
     // Try to run hookwise - capture both stdout and stderr
-    const output = execSync('npx hookwise garden 2>&1', { 
+    const output = execSync('npx hookwise check 2>&1', { 
       encoding: 'utf-8',
       stdio: 'pipe',
       cwd: ROOT

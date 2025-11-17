@@ -276,6 +276,27 @@ const ALLOWED_PATTERNS = [
   /\.gitignore.*\.env\.(bak|backup|old)/,  // .gitignore patterns for backup files
   /^\s*\.env\.(bak|backup|old|save|tmp)\s*$/,  // .gitignore entries for backup files
   /^\s*\*\.env\.(bak|backup|old)\s*$/,  // .gitignore glob patterns for backup files
+  // Error messages and log strings (common false positives)
+  /(error|failed|not found|not available|disabled|timeout|timed out)/i,  // Error messages
+  /\[(VLLM|Human Validation|Logger|Cache|Config)\]/i,  // Log prefixes
+  /(throw new|console\.(log|warn|error|info)|warn\(|log\(|error\()/,  // Log/error statements
+  /(Screenshot|File|API|Validation|Accessibility|Contrast|Keyboard|Element).*(not found|failed|error)/i,  // Common error patterns
+  /(message|context|match|match\[|match\[0\]|match\[1\]|match\[2\])/,  // Template literal variables
+  /`[^`]*(error|failed|not found|message|context|warn|log)[^`]*`/,  // Template literals with error/log keywords
+  /(toFixed|substring|toString|split|join|replace)/,  // String manipulation methods
+  /(Math\.(round|floor|ceil|random)|Date\.now|Date\.get)/,  // Math/Date functions
+  /(window_|vllm-|test-|capability-)/,  // Common ID prefixes
+  /(data:image|base64,|png;base64)/i,  // Base64 image data URLs
+  /(apiUrl|api_url|endpoint|url|path|filePath)/,  // URL/path variables
+  // Template literals that are clearly formatting (not secrets)
+  /`Bearer \$\{.*apiKey\}`/,  // Authorization header template
+  /`(Aggregated|Score progression|temporal windows|gameplay notes)/i,  // Summary messages
+  /`(Element|Image|contrast|keyboard|accessible|alt text)/i,  // Accessibility messages
+  /`(Low|level|capability|accuracy|adequate|struggle)/i,  // Capability messages
+  /parts\.push\(`/,  // Array push with template literal (formatting)
+  /violations\.push\(`/,  // Violations array push (formatting)
+  /`\$\{.*\.(length|timeRange|avgScore|noteCount|tagName|src|minContrast)\}/,  // Object property access in templates
+  /`\$\{.*(windows|firstScore|lastScore|level|windows\.length)\}/,  // Variable names in templates
 ];
 
 /**

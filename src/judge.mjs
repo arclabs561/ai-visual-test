@@ -364,6 +364,24 @@ export class VLLMJudge {
                   warn('[VLLM] Human validation collection failed:', err.message);
                 }
               });
+            
+            // Track sequence calibration if in temporal context
+            if (context.temporalNotes || context.sequenceIndex !== undefined) {
+              const degradation = manager.trackSequenceCalibration(
+                context.sequenceIndex || 0,
+                validationResult
+              );
+              
+              if (degradation.degraded) {
+                validationResult.calibrationDegraded = true;
+                validationResult.calibrationDegradation = degradation.degradation;
+                validationResult.calibrationRecommendation = degradation.recommendation;
+                
+                if (this.config.debug.verbose) {
+                  warn(`[VLLM] Calibration degraded at index ${context.sequenceIndex || 0}: ${degradation.degradation.toFixed(3)}`);
+                }
+              }
+            }
           }
         } catch (err) {
           // Silently fail if human validation manager not available

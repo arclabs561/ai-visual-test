@@ -363,6 +363,103 @@ export class HumanValidationManager {
   }
   
   /**
+   * Track calibration degradation over screenshot sequences
+   * 
+   * @param {number} sequenceIndex - Index in sequence
+   * @param {Object} result - Validation result
+   * @returns {Object} Degradation status
+   */
+  trackSequenceCalibration(sequenceIndex, result) {
+    if (!this.sequenceHistory) {
+      this.sequenceHistory = [];
+    }
+
+    const entry = {
+      index: sequenceIndex,
+      timestamp: Date.now(),
+      confidence: result.confidence || 0.5,
+      uncertainty: result.uncertainty || 0.5,
+      score: result.score,
+      logprobs: result.logprobs
+    };
+
+    this.sequenceHistory.push(entry);
+
+    // Detect degradation (compare recent vs early)
+    if (this.sequenceHistory.length >= 5) {
+      const recent = this.sequenceHistory.slice(-5);
+      const early = this.sequenceHistory.slice(0, 5);
+      
+      const recentAvgConfidence = recent.reduce((sum, e) => sum + e.confidence, 0) / recent.length;
+      const earlyAvgConfidence = early.reduce((sum, e) => sum + e.confidence, 0) / early.length;
+      
+      const degradation = earlyAvgConfidence - recentAvgConfidence;
+      const degradationThreshold = 0.15; // 15% drop
+      
+      if (degradation > degradationThreshold) {
+        return {
+          degraded: true,
+          degradation,
+          recommendation: 'recalibrate_or_reduce_sequence',
+          suggestedAction: 'Use temporal graph representation or reduce sequence length'
+        };
+      }
+    }
+
+    return { degraded: false };
+  }
+
+  /**
+   * Get calibration quality metrics for sequence
+   */
+  getSequenceCalibrationMetrics() {
+    if (!this.sequenceHistory || this.sequenceHistory.length < 2) {
+      return { quality: 'unknown', recommendation: 'insufficient_data' };
+    }
+
+    const confidences = this.sequenceHistory.map(e => e.confidence);
+    const variance = this.calculateVariance(confidences);
+    const trend = this.calculateTrend(confidences);
+
+    if (variance > 0.1 && trend < -0.05) {
+      return {
+        quality: 'degrading',
+        variance,
+        trend,
+        recommendation: 'recalibrate_or_reduce_sequence'
+      };
+    }
+
+    return {
+      quality: variance < 0.05 ? 'stable' : 'variable',
+      variance,
+      trend
+    };
+  }
+
+  /**
+   * Calculate variance of values
+   */
+  calculateVariance(values) {
+    if (values.length === 0) return 0;
+    const mean = values.reduce((a, b) => a + b, 0) / values.length;
+    const squaredDiffs = values.map(v => Math.pow(v - mean, 2));
+    return squaredDiffs.reduce((a, b) => a + b, 0) / values.length;
+  }
+
+  /**
+   * Calculate trend of values (positive = increasing, negative = decreasing)
+   */
+  calculateTrend(values) {
+    if (values.length < 2) return 0;
+    const firstHalf = values.slice(0, Math.floor(values.length / 2));
+    const secondHalf = values.slice(Math.floor(values.length / 2));
+    const firstAvg = firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length;
+    const secondAvg = secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length;
+    return (secondAvg - firstAvg) / firstAvg;
+  }
+
+  /**
    * Apply calibration adjustments to VLLM score
    * 
    * @param {number} vllmScore - Original VLLM score

@@ -247,6 +247,7 @@ const EXCLUDE_PATTERNS = [
   /\.git\//,
   /node_modules\//,
   /\.env\.example$/,
+  /detect-secrets\.mjs$/,  // Exclude this script from checking itself
   /\.env\.sample$/,
   /CHANGELOG\.md$/,
   /LICENSE$/,
@@ -299,6 +300,21 @@ const ALLOWED_PATTERNS = [
   /`\$\{.*(windows|firstScore|lastScore|level|windows\.length)\}/,  // Variable names in templates
   // Common code patterns (not secrets)
   /`gameplay_frame_\$\{.*\}`/,  // Gameplay frame identifiers
+  // Rate limiter error messages (not secrets)
+  /Rate limit exceeded.*requests per.*seconds/,  // Rate limit error message
+  /Cost limit exceeded.*per.*minutes/,  // Cost limit error message
+  // Dataset ID patterns (not secrets)
+  /`(screenai|wcag|real|multiui)[_-]?[^`]*\$\{.*\}`/,  // Dataset ID templates
+  // Metrics formatting (not secrets)
+  /`\s*TP:.*FP:.*FN:.*`/,  // Metrics output formatting
+  // Package deprecation messages (not secrets)
+  /`This package has been renamed to.*Please use.*npm install/,
+  /`npm deprecate.*"/,  // npm deprecate command
+  // Git commands (not secrets)
+  /`git show.*--name-only/,
+  /`git show.*:.*`/,  // Git show file content
+  // Prompt sanitization (not secrets)
+  /`\$\{systemPrefix\}/,  // System prefix in prompts
   /`Frame \$\{.*\} of gameplay`/,  // Frame descriptions
   /`Experience \$\{.*\} has aggregated notes`/,  // Experience aggregation messages
   /`Testing \$\{.*\} stage`/,  // Testing stage descriptions

@@ -9,7 +9,7 @@
 import { execSync } from 'child_process';
 
 const OLD_PACKAGE = 'ai-browser-test';
-const NEW_PACKAGE = 'ai-visual-test';
+const NEW_PACKAGE = '@arclabs561/ai-visual-test';
 const DEPRECATION_MESSAGE = `This package has been renamed to ${NEW_PACKAGE}. Please use 'npm install ${NEW_PACKAGE}' instead. See https://www.npmjs.com/package/${NEW_PACKAGE} for the latest version.`;
 
 console.log(`📦 Deprecating ${OLD_PACKAGE}...\n`);

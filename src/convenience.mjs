@@ -173,8 +173,9 @@ export async function testGameplay(page, options = {}) {
       result.temporalScreenshots = temporalScreenshots;
       trackPropagation('temporal', { count: temporalScreenshots.length }, 'Captured temporal screenshots');
       
-      // IMPROVEMENT: Use temporal preprocessing if requested (better performance)
-      if (useTemporalPreprocessing && temporalScreenshots.length > 0) {
+        // Use temporal preprocessing by default
+        // Activity-based: high-Hz uses cache, low-Hz does expensive preprocessing
+      if (temporalScreenshots.length > 0) {
         const { createTemporalPreprocessingManager, createAdaptiveTemporalProcessor } = await import('./temporal-preprocessor.mjs');
         const preprocessingManager = createTemporalPreprocessingManager();
         const adaptiveProcessor = createAdaptiveTemporalProcessor(preprocessingManager);
@@ -281,11 +282,58 @@ export async function testGameplay(page, options = {}) {
         };
       }
       
+      // IMPROVEMENT: Build temporal graph for better coherence understanding
+      try {
+        const { buildTemporalGraph } = await import('./temporal.mjs');
+        const temporalGraph = await buildTemporalGraph(allNotes, {
+          windowSize: 5000,
+          decayFactor: 0.9,
+          useLLM: false, // Use keyword matching for speed in gameplay
+          frequency: fps // Auto-detect extraction method based on frequency
+        });
+        result.temporalGraph = temporalGraph;
+        trackPropagation('temporal-graph', {
+          nodes: temporalGraph.graph?.nodes?.length || 0,
+          edges: temporalGraph.graph?.edges?.length || 0,
+          averageCoherence: temporalGraph.graph?.averageCoherence || 0,
+          entityCount: Object.keys(temporalGraph.graph?.entities || {}).length
+        }, 'Built temporal graph representation');
+      } catch (error) {
+        warn(`[Convenience] Temporal graph building failed: ${error.message}`);
+        result.temporalGraph = null;
+      }
+      
+      // IMPROVEMENT: Select representative screenshots for context window management
+      if (result.temporalScreenshots && result.temporalScreenshots.length > 10) {
+        try {
+          const { selectRepresentativeScreenshots } = await import('./temporal-note-pruner.mjs');
+          const evaluations = allNotes.map(n => ({ score: n.score || 0 }));
+          const selectedScreenshots = selectRepresentativeScreenshots(
+            result.temporalScreenshots,
+            evaluations,
+            {
+              maxScreenshots: 10,
+              strategy: 'keyframes' // Use keyframes for gameplay (captures state changes)
+            }
+          );
+          result.selectedScreenshots = selectedScreenshots;
+          trackPropagation('screenshot-selection', {
+            original: result.temporalScreenshots.length,
+            selected: selectedScreenshots.length,
+            reduction: ((result.temporalScreenshots.length - selectedScreenshots.length) / result.temporalScreenshots.length * 100).toFixed(1) + '%'
+          }, 'Selected representative screenshots for context management');
+        } catch (error) {
+          warn(`[Convenience] Screenshot selection failed: ${error.message}`);
+          result.selectedScreenshots = result.temporalScreenshots; // Fallback to all
+        }
+      }
+      
       trackPropagation('aggregation', { 
         windows: aggregated.windows.length,
         coherence: aggregated.coherence,
-        scales: Object.keys(result.aggregatedMultiScale.scales || {})
-      }, 'Aggregated temporal notes with multi-scale');
+        scales: Object.keys(result.aggregatedMultiScale.scales || {}),
+        graphNodes: result.temporalGraph?.graph?.nodes?.length || 0
+      }, 'Aggregated temporal notes with multi-scale and temporal graph');
     } else {
       // Return empty aggregated structure if no notes (for consistency)
       result.aggregated = {

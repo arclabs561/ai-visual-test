@@ -176,6 +176,17 @@ export {
   recordCost,
   getCostStats
 } from './cost-tracker.mjs';
+// Session-level cost tracking
+export {
+  startSession,
+  endSession,
+  getSessionCosts,
+  recordSessionCost,
+  recordSessionCacheHit,
+  recordSessionCacheMiss,
+  getActiveSessions,
+  getGlobalCostStats
+} from './session-cost-tracker.mjs';
 export {
   DEFAULT_RUBRIC,
   buildRubricPrompt,

@@ -40,8 +40,19 @@ function parseArgs() {
     useCache: true
   };
 
+  // Handle positional arguments (dataset name without --dataset)
+  const positional = [];
+  
   for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
+    let arg = args[i];
+    
+    // Handle --option=value format
+    if (arg.includes('=') && arg.startsWith('--')) {
+      const [key, value] = arg.split('=', 2);
+      arg = key;
+      // Insert value as next argument
+      args.splice(i + 1, 0, value);
+    }
     
     if (arg === '--help' || arg === '-h') {
       console.log(`
@@ -94,11 +105,19 @@ Available Datasets:
       options.prompt = args[++i];
     } else if (arg === '--no-cache') {
       options.useCache = false;
-    } else {
+    } else if (arg.startsWith('--')) {
       console.error(`❌ Unknown option: ${arg}`);
       console.error(`   Use --help for usage information`);
       process.exit(1);
+    } else {
+      // Positional argument (likely dataset name)
+      positional.push(arg);
     }
+  }
+
+  // Use first positional arg as dataset if no --dataset specified
+  if (positional.length > 0 && !args.includes('--dataset') && !args.includes('-d')) {
+    options.dataset = positional[0];
   }
 
   return options;

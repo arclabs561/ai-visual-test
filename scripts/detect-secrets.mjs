@@ -321,6 +321,9 @@ const ALLOWED_PATTERNS = [
   /`Evaluate the \$\{.*\} stage[^`]*`/,  // Evaluation prompts (with additional text)
   /const prompt = `Evaluate the \$\{.*\} stage/,  // Prompt variable assignments
   /`browser-experience-\$\{.*\}`/,  // Browser experience test types
+  // Statistical analysis messages (not secrets)
+  /`Sample size \$\{.*\} is below recommended minimum/,
+  /`Sample size \$\{.*\} is adequate/,
   /step:\s*`gameplay_frame_\$\{.*\}`/,  // Step identifiers
   /observation:\s*`Frame \$\{.*\} of gameplay`/,  // Observation descriptions
   /perspective:\s*`Testing \$\{.*\} stage`/,  // Perspective descriptions

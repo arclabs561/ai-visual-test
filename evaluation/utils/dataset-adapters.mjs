@@ -460,7 +460,7 @@ export class WCAGAdapter {
     
     if (content.trim().startsWith('<!DOCTYPE') || content.trim().startsWith('<html')) {
       // Parse HTML to extract test cases
-      return this.parseHTMLTestCases(content, limit);
+      return this.parseHTMLTestCases(content, limit, offset);
     } else {
       // Try to parse as JSON
       try {
@@ -475,13 +475,34 @@ export class WCAGAdapter {
   /**
    * Parse test cases from HTML
    */
-  parseHTMLTestCases(html, limit = null) {
+  parseHTMLTestCases(html, limit = null, offset = 0) {
     // Extract test case links/IDs from HTML
-    // W3C format: Links to test cases with IDs
-    const testCaseRegex = /testcase[^"']*["']([^"']+)["']/gi;
-    const matches = [...html.matchAll(testCaseRegex)];
-    const uniqueIds = [...new Set(matches.map(m => m[1]))];
-    const limited = limit ? uniqueIds.slice(0, limit) : uniqueIds;
+    // W3C format: Links like testcases/97a4e1/a4cc71b0434f71f4ea0069c409f73e0207dfb403.html
+    // or href="/WAI/standards-guidelines/act/report/testcases/..."
+    const testCasePatterns = [
+      /testcases\/([a-f0-9]+\/[a-f0-9]+\.html)/gi,  // testcases/97a4e1/a4cc71b0434f71f4ea0069c409f73e0207dfb403.html
+      /\/WAI\/standards-guidelines\/act\/report\/testcases\/([^"'\s]+)/gi,  // Full URL path
+      /testcase[_-]?id["']?\s*[:=]\s*["']([^"']+)["']/gi  // testcase-id: "..." or testcase_id="..."
+    ];
+    
+    const allIds = new Set();
+    for (const pattern of testCasePatterns) {
+      const matches = [...html.matchAll(pattern)];
+      for (const match of matches) {
+        const id = match[1] || match[0];
+        if (id && id.length > 5 && !id.includes('testcases.json')) {
+          // Clean up the ID (remove .html, extract just the hash part)
+          const cleanId = id.replace(/\.html$/, '').split('/').pop();
+          if (cleanId && cleanId.length > 10) {
+            allIds.add(cleanId);
+          }
+        }
+      }
+    }
+    
+    const uniqueIds = Array.from(allIds);
+    const withOffset = uniqueIds.slice(offset);
+    const limited = limit ? withOffset.slice(0, limit) : withOffset;
     
     const all = limited.map((id, index) => ({
       id: `wcag-${id}`,
@@ -508,7 +529,7 @@ export class WCAGAdapter {
       }
     }));
     
-    return all.slice(offset, limit ? offset + limit : undefined);
+    return all;
   }
   
   /**

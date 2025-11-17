@@ -25,6 +25,7 @@ import {
   calculateCorrelation,
   formatMetrics
 } from '../utils/metrics.mjs';
+import { filterIssues } from '../utils/issue-filter.mjs';
 
 const RESULTS_DIR = join(process.cwd(), 'evaluation', 'results');
 
@@ -59,7 +60,11 @@ function validateAgainstGroundTruth(result, groundTruth) {
 
   // Issue validation (structured matching with keyword-based semantic matching)
   if (groundTruth.structuredIssues && Array.isArray(groundTruth.structuredIssues)) {
-    const detectedIssues = (result.issues || []).map(i => i.toLowerCase().trim()).filter(i => i.length > 0);
+    // Filter issues to reduce false positives
+    const rawIssues = result.issues || [];
+    const filteredIssues = filterIssues(rawIssues);
+    
+    const detectedIssues = filteredIssues.map(i => i.toLowerCase().trim()).filter(i => i.length > 0);
     const expectedIssues = groundTruth.structuredIssues.map(i => i.toLowerCase().trim()).filter(i => i.length > 0);
     
     // Extract keywords from text (remove markdown, punctuation, common words)
@@ -207,11 +212,27 @@ function validateAgainstGroundTruth(result, groundTruth) {
 async function evaluateSample(sample, options = {}) {
   const { provider = null, prompt = null, useCache = true } = options;
   
+  // Check if we can evaluate via URL (screenshot-less mode)
   if (!sample.screenshot || !existsSync(sample.screenshot)) {
+    if (sample.url) {
+      // Try URL-based evaluation
+      try {
+        const { evaluateUrlSample } = await import('../utils/url-evaluator.mjs');
+        return await evaluateUrlSample(sample, { provider, prompt, useCache });
+      } catch (error) {
+        // Fall through to error if URL evaluation fails
+        return {
+          sampleId: sample.id,
+          success: false,
+          error: `Screenshot not found and URL evaluation failed: ${error.message}`
+        };
+      }
+    }
+    
     return {
       sampleId: sample.id,
       success: false,
-      error: 'Screenshot not found'
+      error: 'Screenshot not found and no URL provided'
     };
   }
 
@@ -244,12 +265,16 @@ Provide a score from 0-10 and list any issues found.`;
       ? validateAgainstGroundTruth(result, sample.groundTruth)
       : null;
 
+    // Filter issues to reduce false positives
+    const filteredIssues = filterIssues(result.issues || []);
+    
     return {
       sampleId: sample.id,
       success: true,
       result: {
         score: result.score,
-        issues: result.issues || [],
+        issues: filteredIssues,
+        rawIssues: result.issues || [], // Keep original for analysis
         assessment: result.assessment,
         reasoning: result.reasoning
       },

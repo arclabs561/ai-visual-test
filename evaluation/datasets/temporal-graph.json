@@ -1,0 +1,48 @@
+{
+  "name": "Temporal Graph Test Cases",
+  "description": "Test cases for temporal graph building and entity/state tracking",
+  "testCases": [
+    {
+      "id": "high-frequency-gameplay",
+      "description": "60Hz gameplay sequence with state changes",
+      "frequency": 60,
+      "duration": 1000,
+      "expectedNodes": ">0",
+      "expectedEdges": ">0",
+      "expectedEntities": [">=0"],
+      "notes": [
+        { "timestamp": 0, "score": 8, "observation": "button visible", "step": 0 },
+        { "timestamp": 16, "score": 8.5, "observation": "button clicked", "step": 1 },
+        { "timestamp": 32, "score": 9, "observation": "page loaded", "step": 2 }
+      ]
+    },
+    {
+      "id": "low-frequency-analysis",
+      "description": "1Hz analysis sequence with detailed observations",
+      "frequency": 1,
+      "duration": 10000,
+      "expectedNodes": ">0",
+      "expectedEdges": ">0",
+      "expectedEntities": [">=0"],
+      "notes": [
+        { "timestamp": 0, "score": 8, "observation": "form visible with input fields", "step": 0 },
+        { "timestamp": 1000, "score": 8.5, "observation": "form filled with score updated", "step": 1 },
+        { "timestamp": 2000, "score": 9, "observation": "form submitted successfully", "step": 2 }
+      ]
+    },
+    {
+      "id": "state-continuity",
+      "description": "Sequence with state transitions",
+      "frequency": 2,
+      "duration": 5000,
+      "expectedStateContinuity": ">0.5",
+      "expectedEntityContinuity": ">0.5",
+      "notes": [
+        { "timestamp": 0, "score": 8, "observation": "state1", "issues": ["issue1"] },
+        { "timestamp": 1000, "score": 8.5, "observation": "state2", "issues": ["issue1", "issue2"] },
+        { "timestamp": 2000, "score": 7, "observation": "state3", "issues": ["issue3"] }
+      ]
+    }
+  ]
+}
+

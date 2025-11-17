@@ -1,0 +1,42 @@
+{
+  "name": "Calibration Degradation Test Cases",
+  "description": "Test cases for detecting calibration degradation in long browser automation sessions",
+  "testCases": [
+    {
+      "id": "gradual-degradation",
+      "description": "Gradual confidence decline over 50 steps",
+      "sequenceLength": 50,
+      "pattern": "gradual",
+      "expectedDegradation": true,
+      "degradationThreshold": 0.15,
+      "steps": [
+        { "confidence": 0.9, "score": 8, "uncertainty": 0.1 },
+        { "confidence": 0.88, "score": 7.8, "uncertainty": 0.12 },
+        { "confidence": 0.86, "score": 7.6, "uncertainty": 0.14 }
+      ]
+    },
+    {
+      "id": "rapid-degradation",
+      "description": "Sudden confidence drop after stable period",
+      "sequenceLength": 20,
+      "pattern": "rapid",
+      "expectedDegradation": true,
+      "degradationThreshold": 0.3,
+      "steps": [
+        { "confidence": 0.9, "score": 8, "uncertainty": 0.1 },
+        { "confidence": 0.5, "score": 4, "uncertainty": 0.5 }
+      ]
+    },
+    {
+      "id": "stable-sequence",
+      "description": "Stable confidence over long sequence",
+      "sequenceLength": 50,
+      "pattern": "stable",
+      "expectedDegradation": false,
+      "steps": [
+        { "confidence": 0.85, "score": 7.5, "uncertainty": 0.15 }
+      ]
+    }
+  ]
+}
+

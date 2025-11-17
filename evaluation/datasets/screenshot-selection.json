@@ -1,0 +1,62 @@
+{
+  "name": "Screenshot Selection Test Cases",
+  "description": "Test cases for selecting representative screenshots from sequences",
+  "testCases": [
+    {
+      "id": "keyframes-strategy",
+      "description": "Select keyframes with significant state changes",
+      "strategy": "keyframes",
+      "screenshotCount": 20,
+      "maxScreenshots": 10,
+      "evaluations": [
+        { "score": 5 },
+        { "score": 5 },
+        { "score": 8 },
+        { "score": 8 },
+        { "score": 3 },
+        { "score": 3 },
+        { "score": 9 }
+      ],
+      "expectedSelection": {
+        "includesFirst": true,
+        "includesLast": true,
+        "includesKeyframes": true,
+        "maxCount": 10
+      }
+    },
+    {
+      "id": "uniform-strategy",
+      "description": "Select uniformly spaced screenshots",
+      "strategy": "uniform",
+      "screenshotCount": 100,
+      "maxScreenshots": 10,
+      "expectedSelection": {
+        "includesFirst": true,
+        "includesLast": true,
+        "evenSpacing": true,
+        "maxCount": 10
+      }
+    },
+    {
+      "id": "diversity-strategy",
+      "description": "Select diverse screenshots based on score variance",
+      "strategy": "diversity",
+      "screenshotCount": 20,
+      "maxScreenshots": 5,
+      "evaluations": [
+        { "score": 9 },
+        { "score": 1 },
+        { "score": 9 },
+        { "score": 1 },
+        { "score": 9 }
+      ],
+      "expectedSelection": {
+        "includesFirst": true,
+        "includesLast": true,
+        "highVariance": true,
+        "maxCount": 5
+      }
+    }
+  ]
+}
+

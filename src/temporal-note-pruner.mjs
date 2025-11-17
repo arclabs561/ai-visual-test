@@ -171,3 +171,122 @@ export function selectTopWeightedNotes(notes, options = {}) {
     .map(w => w.note);
 }
 
+/**
+ * Select representative screenshots from sequence for context window management
+ * 
+ * @param {Array<{path: string, timestamp: number, elapsed?: number}>} screenshots - Screenshot array
+ * @param {Array<Object>} evaluations - Corresponding evaluation results
+ * @param {Object} options - Selection options
+ * @param {number} [options.maxScreenshots=10] - Maximum screenshots to select
+ * @param {string} [options.strategy='diversity'] - 'diversity', 'keyframes', 'uniform'
+ * @returns {Array} Selected screenshots
+ */
+export function selectRepresentativeScreenshots(screenshots, evaluations = [], options = {}) {
+  const {
+    maxScreenshots = 10,
+    strategy = 'diversity'
+  } = options;
+
+  if (screenshots.length <= maxScreenshots) {
+    return screenshots;
+  }
+
+  switch (strategy) {
+    case 'keyframes':
+      return selectKeyframes(screenshots, evaluations, maxScreenshots);
+    case 'uniform':
+      return selectUniform(screenshots, maxScreenshots);
+    case 'diversity':
+    default:
+      return selectByDiversity(screenshots, evaluations, maxScreenshots);
+  }
+}
+
+/**
+ * Select keyframes (significant state changes)
+ */
+function selectKeyframes(screenshots, evaluations, maxScreenshots) {
+  const keyframes = [screenshots[0]]; // Always include first
+
+  // Detect significant state changes
+  for (let i = 1; i < evaluations.length; i++) {
+    const prevScore = evaluations[i-1]?.score || 0;
+    const currScore = evaluations[i]?.score || 0;
+    const scoreChange = Math.abs(currScore - prevScore);
+
+    if (scoreChange > 2.0) { // Significant change threshold
+      keyframes.push(screenshots[i]);
+    }
+  }
+
+  keyframes.push(screenshots[screenshots.length - 1]); // Always include last
+
+  // If still too many, sample uniformly
+  if (keyframes.length > maxScreenshots) {
+    return sampleUniform(keyframes, maxScreenshots);
+  }
+
+  return keyframes;
+}
+
+/**
+ * Select by diversity (maximize visual difference)
+ */
+function selectByDiversity(screenshots, evaluations, maxScreenshots) {
+  const selected = [screenshots[0]]; // Always include first
+  const remaining = screenshots.slice(1, -1);
+  const last = screenshots[screenshots.length - 1];
+
+  // Calculate score variance for diversity
+  const scores = evaluations.map(e => e.score || 0).filter(s => s !== null);
+  if (scores.length === 0) {
+    return selectUniform(screenshots, maxScreenshots);
+  }
+
+  const mean = scores.reduce((a, b) => a + b, 0) / scores.length;
+  const variance = scores.map(s => Math.abs(s - mean));
+
+  // Select indices with highest variance (most different states)
+  const indexed = variance.map((v, i) => ({ index: i, variance: v }));
+  indexed.sort((a, b) => b.variance - a.variance);
+
+  const diverseIndices = indexed.slice(0, maxScreenshots - 2).map(item => item.index);
+  selected.push(...diverseIndices.map(i => remaining[i]).filter(Boolean));
+  selected.push(last);
+
+  return selected.slice(0, maxScreenshots);
+}
+
+/**
+ * Select uniformly spaced screenshots
+ */
+function selectUniform(screenshots, maxScreenshots) {
+  const step = Math.floor(screenshots.length / maxScreenshots);
+  const selected = [];
+
+  for (let i = 0; i < screenshots.length; i += step) {
+    selected.push(screenshots[i]);
+    if (selected.length >= maxScreenshots) break;
+  }
+
+  // Always include last
+  if (selected[selected.length - 1] !== screenshots[screenshots.length - 1]) {
+    selected[selected.length - 1] = screenshots[screenshots.length - 1];
+  }
+
+  return selected;
+}
+
+/**
+ * Sample uniformly from array
+ */
+function sampleUniform(array, count) {
+  const step = Math.floor(array.length / count);
+  const sampled = [];
+  for (let i = 0; i < array.length; i += step) {
+    sampled.push(array[i]);
+    if (sampled.length >= count) break;
+  }
+  return sampled;
+}
+

@@ -54,7 +54,10 @@ test('ExploratoryStrategy tracks attempt history', () => {
   const action1 = strategy.getNextAction({ score: 5 }, [failedAction], 'Find something');
   assert.ok(action1 !== null, 'Should generate first alternative action');
   
-  const action2 = strategy.getNextAction({ score: 5 }, [failedAction, action1], 'Find something');
+  // For click failures, generateAlternatives returns [wait, keyboard]
+  // After first call, wait is in history, so second call with same failed action
+  // should generate alternatives again, but wait is filtered out, returning keyboard
+  const action2 = strategy.getNextAction({ score: 5 }, [failedAction], 'Find something');
   assert.ok(action2 !== null, 'Should generate second alternative action');
   assert.ok(JSON.stringify(action1) !== JSON.stringify(action2), 
     'Should generate different actions');

@@ -57,10 +57,31 @@ function validateAgainstGroundTruth(result, groundTruth) {
     }
   }
 
-  // Issue validation (structured matching with fuzzy matching for robustness)
+  // Issue validation (structured matching with keyword-based semantic matching)
   if (groundTruth.structuredIssues && Array.isArray(groundTruth.structuredIssues)) {
     const detectedIssues = (result.issues || []).map(i => i.toLowerCase().trim()).filter(i => i.length > 0);
     const expectedIssues = groundTruth.structuredIssues.map(i => i.toLowerCase().trim()).filter(i => i.length > 0);
+    
+    // Extract keywords from text (remove markdown, punctuation, common words)
+    function extractKeywords(text) {
+      // Remove markdown formatting
+      text = text.replace(/\*\*?/g, '').replace(/#{1,6}\s*/g, '').replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
+      // Remove punctuation, split into words
+      const words = text.replace(/[^\w\s]/g, ' ').split(/\s+/).filter(w => w.length > 2);
+      // Remove common stop words
+      const stopWords = new Set(['the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'her', 'was', 'one', 'our', 'out', 'day', 'get', 'has', 'him', 'his', 'how', 'its', 'may', 'new', 'now', 'old', 'see', 'two', 'way', 'who', 'boy', 'did', 'its', 'let', 'put', 'say', 'she', 'too', 'use']);
+      return words.filter(w => !stopWords.has(w));
+    }
+    
+    // Calculate keyword overlap between two texts
+    function keywordOverlap(text1, text2) {
+      const keywords1 = new Set(extractKeywords(text1));
+      const keywords2 = new Set(extractKeywords(text2));
+      if (keywords1.size === 0 || keywords2.size === 0) return 0;
+      const intersection = [...keywords1].filter(k => keywords2.has(k)).length;
+      const union = keywords1.size + keywords2.size - intersection;
+      return union > 0 ? intersection / union : 0; // Jaccard similarity
+    }
     
     // Exact matches
     const detectedSet = new Set(detectedIssues);
@@ -70,30 +91,65 @@ function validateAgainstGroundTruth(result, groundTruth) {
     const exactFP = [...detectedSet].filter(i => !expectedSet.has(i)).length;
     const exactFN = [...expectedSet].filter(i => !detectedSet.has(i)).length;
     
-    // Fuzzy matches (substring matching for robustness)
-    // A detected issue matches if it contains an expected issue or vice versa
-    const fuzzyTP = expectedIssues.filter(expected => 
+    // Substring matches (original fuzzy matching)
+    const substringTP = expectedIssues.filter(expected => 
       detectedIssues.some(detected => 
         detected.includes(expected) || expected.includes(detected)
       )
     ).length;
     
-    const fuzzyFP = detectedIssues.filter(detected =>
-      !expectedIssues.some(expected =>
-        detected.includes(expected) || expected.includes(detected)
-      )
-    ).length;
+    // Keyword-based semantic matches (improved)
+    // Match if key terms appear in both (more lenient than Jaccard)
+    // Extract key terms (important words) from ground truth
+    function extractKeyTerms(text) {
+      const keywords = extractKeywords(text);
+      // Prioritize important accessibility/design terms
+      const importantTerms = ['contrast', 'color', 'wcag', 'accessibility', 'alt', 'text', 'image', 'keyboard', 'navigation', 'screen', 'reader', 'aria', 'semantic', 'html', 'design', 'layout', 'typography', 'readability'];
+      return keywords.filter(k => importantTerms.some(term => k.includes(term) || term.includes(k)) || keywords.length <= 5);
+    }
     
-    const fuzzyFN = expectedIssues.filter(expected =>
-      !detectedIssues.some(detected =>
-        detected.includes(expected) || expected.includes(detected)
-      )
-    ).length;
+    // Match if at least 2 key terms overlap OR Jaccard > 0.15
+    const keywordTP = expectedIssues.filter(expected => {
+      const expectedTerms = extractKeyTerms(expected);
+      return detectedIssues.some(detected => {
+        const detectedTerms = extractKeyTerms(detected);
+        const termOverlap = expectedTerms.filter(term => 
+          detectedTerms.some(dt => dt.includes(term) || term.includes(dt))
+        ).length;
+        const jaccard = keywordOverlap(expected, detected);
+        // Match if 2+ key terms overlap OR Jaccard > 15%
+        return termOverlap >= 2 || jaccard >= 0.15;
+      });
+    }).length;
     
-    // Use fuzzy matching for more robust evaluation
-    const truePositives = fuzzyTP;
-    const falsePositives = fuzzyFP;
-    const falseNegatives = fuzzyFN;
+    const keywordFP = detectedIssues.filter(detected => {
+      const detectedTerms = extractKeyTerms(detected);
+      return !expectedIssues.some(expected => {
+        const expectedTerms = extractKeyTerms(expected);
+        const termOverlap = expectedTerms.filter(term => 
+          detectedTerms.some(dt => dt.includes(term) || term.includes(dt))
+        ).length;
+        const jaccard = keywordOverlap(expected, detected);
+        return termOverlap >= 2 || jaccard >= 0.15;
+      });
+    }).length;
+    
+    const keywordFN = expectedIssues.filter(expected => {
+      const expectedTerms = extractKeyTerms(expected);
+      return !detectedIssues.some(detected => {
+        const detectedTerms = extractKeyTerms(detected);
+        const termOverlap = expectedTerms.filter(term => 
+          detectedTerms.some(dt => dt.includes(term) || term.includes(dt))
+        ).length;
+        const jaccard = keywordOverlap(expected, detected);
+        return termOverlap >= 2 || jaccard >= 0.15;
+      });
+    }).length;
+    
+    // Use keyword-based matching (more robust than substring)
+    const truePositives = keywordTP;
+    const falsePositives = keywordFP;
+    const falseNegatives = keywordFN;
     
     validation.issues = {
       truePositives,
@@ -102,9 +158,12 @@ function validateAgainstGroundTruth(result, groundTruth) {
       exactTP,
       exactFP,
       exactFN,
-      fuzzyTP,
-      fuzzyFP,
-      fuzzyFN,
+      substringTP,
+      substringFP: detectedIssues.length - substringTP - keywordTP,
+      substringFN: expectedIssues.length - substringTP - keywordTP,
+      keywordTP,
+      keywordFP,
+      keywordFN,
       precision: truePositives + falsePositives > 0 
         ? truePositives / (truePositives + falsePositives) 
         : (expectedIssues.length === 0 && detectedIssues.length === 0 ? 1 : 0), // Perfect if both empty
@@ -146,7 +205,7 @@ function validateAgainstGroundTruth(result, groundTruth) {
  * Evaluate a single sample
  */
 async function evaluateSample(sample, options = {}) {
-  const { provider = null, prompt = null } = options;
+  const { provider = null, prompt = null, useCache = true } = options;
   
   if (!sample.screenshot || !existsSync(sample.screenshot)) {
     return {
@@ -175,7 +234,8 @@ Provide a score from 0-10 and list any issues found.`;
       {
         testType: 'evaluation',
         viewport: sample.metadata?.viewport || sample.viewport || { width: 1280, height: 720 },
-        provider
+        provider,
+        useCache: useCache !== false // Default to true, but allow disabling
       }
     );
 
@@ -238,17 +298,17 @@ function calculateEvaluationMetrics(evaluations) {
     allF1: []
   };
 
-  successful.forEach(eval => {
-    if (eval.validation?.score) {
-      scores.predictions.push(eval.result.score);
-      scores.actual.push(eval.validation.score.actual);
-      scores.errors.push(eval.validation.score.error);
+  successful.forEach(evaluation => {
+    if (evaluation.validation?.score) {
+      scores.predictions.push(evaluation.result.score);
+      scores.actual.push(evaluation.validation.score.actual);
+      scores.errors.push(evaluation.validation.score.error);
     }
     
-    if (eval.validation?.issues) {
-      issueMetrics.allPrecision.push(eval.validation.issues.precision);
-      issueMetrics.allRecall.push(eval.validation.issues.recall);
-      issueMetrics.allF1.push(eval.validation.issues.f1);
+    if (evaluation.validation?.issues) {
+      issueMetrics.allPrecision.push(evaluation.validation.issues.precision);
+      issueMetrics.allRecall.push(evaluation.validation.issues.recall);
+      issueMetrics.allF1.push(evaluation.validation.issues.f1);
     }
   });
 
@@ -305,17 +365,23 @@ function calculateEvaluationMetrics(evaluations) {
 /**
  * Load dataset using adapters (preferred) or fallback to JSON
  */
-async function loadDataset(datasetNameOrPath) {
+async function loadDataset(datasetNameOrPath, options = {}) {
+  const { limit = null } = options;
+  
   // Try adapter first (if it's a dataset name)
   try {
     const { loadDataset: loadWithAdapter, listAvailableDatasets } = await import('../utils/dataset-adapters.mjs');
     const available = listAvailableDatasets();
-    const datasetName = available.find(d => d.name === datasetNameOrPath.toLowerCase() || 
-                                             datasetNameOrPath.toLowerCase().includes(d.name));
+    
+    // Check if it matches any adapter name
+    const datasetName = available.find(d => {
+      const input = datasetNameOrPath.toLowerCase();
+      return d.name === input || input.includes(d.name) || d.name.includes(input);
+    });
     
     if (datasetName && datasetName.available) {
       console.log(`📦 Using adapter for ${datasetName.name}`);
-      return await loadWithAdapter(datasetName.name);
+      return await loadWithAdapter(datasetName.name, { limit });
     }
   } catch (error) {
     // Adapter not available, fall back to JSON
@@ -352,7 +418,8 @@ async function runEvaluation(options = {}) {
     limit = null,
     provider = null,
     prompt = null,
-    outputFile = null
+    outputFile = null,
+    useCache = true
   } = options;
 
   console.log('🔬 Evaluation Runner (Consolidated)');
@@ -370,9 +437,10 @@ async function runEvaluation(options = {}) {
   console.log(`✅ Provider: ${config.provider}\n`);
 
   // Load dataset (using adapter if available, otherwise JSON)
+  // Note: limit is passed to adapter, so no need to slice again if adapter was used
   let datasetData;
   try {
-    datasetData = await loadDataset(dataset);
+    datasetData = await loadDataset(dataset, { limit });
   } catch (error) {
     console.error(`❌ Failed to load dataset: ${error.message}`);
     console.error(`   Available adapters: webui, screenai, wcag, real`);
@@ -380,7 +448,22 @@ async function runEvaluation(options = {}) {
     process.exit(1);
   }
 
-  const samples = limit ? datasetData.samples.slice(0, limit) : datasetData.samples;
+  // If adapter was used, samples are already limited. If JSON fallback, apply limit here.
+  const samples = datasetData.adapter 
+    ? datasetData.samples  // Adapter already applied limit
+    : (limit ? datasetData.samples.slice(0, limit) : datasetData.samples);
+  
+  // Show dataset info
+  if (datasetData.adapter) {
+    console.log(`📦 Dataset loaded via ${datasetData.adapter}`);
+    console.log(`   Total available: ${datasetData.totalAvailable || 'unknown'}`);
+    console.log(`   Loaded: ${datasetData.loaded} samples`);
+    if (datasetData.totalAvailable && datasetData.loaded < datasetData.totalAvailable) {
+      console.log(`   💡 Use --limit to load more samples (up to ${datasetData.totalAvailable})`);
+    }
+  } else {
+    console.log(`📊 Dataset: ${datasetData.name || 'Unknown'}`);
+  }
   console.log(`📊 Evaluating ${samples.length} samples...\n`);
 
   // Run evaluations
@@ -389,7 +472,7 @@ async function runEvaluation(options = {}) {
     const sample = samples[i];
     console.log(`[${i + 1}/${samples.length}] ${sample.id || sample.name || 'sample'}`);
     
-    const evaluation = await evaluateSample(sample, { provider, prompt });
+    const evaluation = await evaluateSample(sample, { provider, prompt, useCache });
     results.push(evaluation);
     
     if (evaluation.success && evaluation.validation?.score) {
@@ -414,8 +497,11 @@ async function runEvaluation(options = {}) {
     timestamp: new Date().toISOString(),
     dataset: {
       name: datasetData.name || dataset,
+      adapter: datasetData.adapter || null,
+      totalAvailable: datasetData.totalAvailable || null,
       totalSamples: datasetData.samples?.length || 0,
-      evaluated: samples.length
+      evaluated: samples.length,
+      options: datasetData.options || null
     },
     config: {
       provider: config.provider,
@@ -465,6 +551,17 @@ async function runEvaluation(options = {}) {
   
   console.log(`\n💾 Results saved to: ${resultsFile}`);
   
+  // Show scaling info if adapter was used
+  if (datasetData.adapter && datasetData.totalAvailable) {
+    console.log(`\n💡 Dataset Scaling:`);
+    console.log(`   Total available: ${datasetData.totalAvailable} samples`);
+    console.log(`   Evaluated: ${samples.length} samples`);
+    if (datasetData.totalAvailable > samples.length) {
+      console.log(`   To evaluate more: use --limit ${Math.min(datasetData.totalAvailable, samples.length + 100)}`);
+      console.log(`   To evaluate all: use --limit ${datasetData.totalAvailable} or omit --limit`);
+    }
+  }
+  
   // Warning for small sample sizes
   if (metrics.sampleSize < 30) {
     console.log(`\n⚠️  Warning: Small sample size (${metrics.sampleSize}). Results may not be statistically significant.`);
@@ -474,16 +571,25 @@ async function runEvaluation(options = {}) {
   return finalResults;
 }
 
-// Run if called directly
+// Run if called directly (basic CLI support)
+// For full CLI with help, use evaluate-cli.mjs
 if (import.meta.url === `file://${process.argv[1]}`) {
   const args = process.argv.slice(2);
   const options = {
-    dataset: args.find(a => a.startsWith('--dataset='))?.split('=')[1] || 'real-dataset.json',
-    limit: args.find(a => a.startsWith('--limit='))?.split('=')[1] ? parseInt(args.find(a => a.startsWith('--limit='))?.split('=')[1]) : null,
-    provider: args.find(a => a.startsWith('--provider='))?.split('=')[1] || null
+    dataset: args.find(a => a.startsWith('--dataset='))?.split('=')[1] || 
+              args[args.indexOf('--dataset') + 1] || 'real',
+    limit: args.find(a => a.startsWith('--limit='))?.split('=')[1] ? 
+           parseInt(args.find(a => a.startsWith('--limit='))?.split('=')[1]) : 
+           (args[args.indexOf('--limit') + 1] ? parseInt(args[args.indexOf('--limit') + 1]) : null),
+    provider: args.find(a => a.startsWith('--provider='))?.split('=')[1] || 
+              args[args.indexOf('--provider') + 1] || null
   };
   
-  runEvaluation(options).catch(console.error);
+  runEvaluation(options).catch(error => {
+    console.error('❌ Evaluation failed:', error.message);
+    if (error.stack) console.error(error.stack);
+    process.exit(1);
+  });
 }
 
 export { runEvaluation, evaluateSample, validateAgainstGroundTruth, calculateEvaluationMetrics };

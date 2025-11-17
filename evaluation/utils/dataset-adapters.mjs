@@ -55,14 +55,37 @@ export class WebUIAdapter {
 
   /**
    * Check if dataset is available
+   * Returns { available: boolean, needsExtraction: boolean, message?: string }
    */
   isAvailable() {
-    return existsSync(this.basePath) && 
-           (existsSync(join(this.basePath, 'train_split_web7k.json')) ||
-            readdirSync(this.basePath).some(item => {
-              const itemPath = join(this.basePath, item);
-              return statSync(itemPath).isDirectory();
-            }));
+    if (!existsSync(this.basePath)) {
+      return false;
+    }
+    
+    // Check if zip files exist but not extracted
+    const zip1 = existsSync(join(this.basePath, 'train_split_web7k.zip.001'));
+    const zip2 = existsSync(join(this.basePath, 'train_split_web7k.zip.002'));
+    const hasZip = zip1 || zip2;
+    
+    // Check if sample directories exist (check train_split_web7k subdirectory)
+    const scanPath = existsSync(join(this.basePath, 'train_split_web7k'))
+      ? join(this.basePath, 'train_split_web7k')
+      : this.basePath;
+    
+    const hasDirectories = existsSync(scanPath) && readdirSync(scanPath).some(item => {
+      const itemPath = join(scanPath, item);
+      return statSync(itemPath).isDirectory() && !item.startsWith('.');
+    });
+    
+    if (hasZip && !hasDirectories) {
+      return {
+        available: false,
+        needsExtraction: true,
+        message: 'WebUI dataset is downloaded but not extracted. Run: node evaluation/utils/extract-webui-dataset.mjs'
+      };
+    }
+    
+    return hasDirectories || existsSync(join(this.basePath, 'train_split_web7k.json'));
   }
 
   /**
@@ -74,9 +97,15 @@ export class WebUIAdapter {
    * - style_*.json.gz (computed styles)
    * - html.html
    * - url.txt
+   * 
+   * Samples are in train_split_web7k/ subdirectory
    */
   async loadSample(sampleId) {
-    const sampleDir = join(this.basePath, sampleId);
+    // Check both base path and train_split_web7k subdirectory
+    const sampleDir = existsSync(join(this.basePath, 'train_split_web7k'))
+      ? join(this.basePath, 'train_split_web7k', sampleId)
+      : join(this.basePath, sampleId);
+    
     if (!existsSync(sampleDir) || !statSync(sampleDir).isDirectory()) {
       return null;
     }
@@ -124,7 +153,8 @@ export class WebUIAdapter {
    * Reads from train_split_web7k.json if available, otherwise scans directories
    */
   listSamples() {
-    if (!this.isAvailable()) {
+    const availability = this.isAvailable();
+    if (!availability || (typeof availability === 'object' && !availability.available)) {
       return [];
     }
     
@@ -141,10 +171,14 @@ export class WebUIAdapter {
       }
     }
     
-    // Fallback: scan directories
-    return readdirSync(this.basePath)
+    // Fallback: scan directories (check train_split_web7k subdirectory first)
+    const scanPath = existsSync(join(this.basePath, 'train_split_web7k'))
+      ? join(this.basePath, 'train_split_web7k')
+      : this.basePath;
+    
+    return readdirSync(scanPath)
       .filter(item => {
-        const itemPath = join(this.basePath, item);
+        const itemPath = join(scanPath, item);
         return statSync(itemPath).isDirectory();
       });
   }
@@ -231,6 +265,10 @@ export class ScreenAIAdapter {
 
   /**
    * Load from ScreenAI annotation format (CSV)
+   * 
+   * Note: ScreenAI CSV has quoted fields that may contain commas.
+   * Format: screen_id,"screen_annotation" where annotation may contain commas.
+   * Screenshots are referenced by screen_id in Rico dataset.
    */
   loadAnnotationSamples(limit = null) {
     const csvPath = join(this.basePath, 'screen_annotation', 'train.csv');
@@ -245,24 +283,48 @@ export class ScreenAIAdapter {
     // Skip header, apply limit
     const dataLines = limit ? lines.slice(1, limit + 1) : lines.slice(1);
     
+    // Parse CSV with proper handling of quoted fields
     return dataLines.map((line, index) => {
-      const values = line.split(',');
+      // Simple CSV parsing - handles quoted fields
+      // For production, should use proper CSV library (e.g., papaparse)
+      const values = [];
+      let current = '';
+      let inQuotes = false;
+      
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        if (char === '"') {
+          inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+          values.push(current.trim());
+          current = '';
+        } else {
+          current += char;
+        }
+      }
+      values.push(current.trim()); // Last value
+      
       const row = {};
       headers.forEach((header, i) => {
-        row[header.trim()] = values[i]?.trim() || '';
+        row[header.trim()] = values[i] || '';
       });
       
+      // ScreenAI annotation CSV has screen_id and screen_annotation
+      // Screenshots are referenced by screen_id (Rico dataset)
+      const screenId = row.screen_id || null;
+      
       return {
-        id: `screenai-annotation-${index}`,
-        screenshot: row.image_path || row.screenshot || null,
+        id: `screenai-annotation-${screenId || index}`,
+        screenshot: null, // Screenshots are in Rico dataset, not ScreenAI
+        screenId: screenId, // Store screen_id for Rico lookup
         groundTruth: {
           structuredFeatures: {
-            annotations: row.annotations ? JSON.parse(row.annotations) : {},
+            annotations: row.screen_annotation || row.annotations || '',
             taskType: row.task_type || 'annotation'
           },
           humanAnnotations: {
             annotatorId: 'screenai-dataset',
-            source: 'ScreenAI Dataset',
+            source: 'ScreenAI Research Dataset',
             timestamp: row.timestamp || null
           }
         },
@@ -270,14 +332,21 @@ export class ScreenAIAdapter {
           dataset: 'ScreenAI-Annotation',
           source: 'ScreenAI Research Dataset',
           originalFormat: 'screenai-csv',
-          split: 'train'
+          split: 'train',
+          note: 'Screenshots require Rico dataset. screen_id references Rico dataset images.',
+          ricoScreenId: screenId
         }
       };
-    }).filter(s => s.screenshot);
+    });
+    // Don't filter by screenshot - ScreenAI annotation data is valid without screenshots
   }
 
   /**
    * Load from ScreenAI QA format (JSON)
+   * 
+   * Note: ScreenAI uses image_id which references Rico dataset images.
+   * Screenshots are not included in ScreenAI dataset - need Rico dataset.
+   * This adapter loads the QA data but screenshot will be null.
    */
   loadQASamples(limit = null) {
     const jsonPath = join(this.basePath, 'screen_qa', 'short_answers', 'train.json');
@@ -289,28 +358,41 @@ export class ScreenAIAdapter {
     const samples = Array.isArray(data) ? data : (data.samples || []);
     const limited = limit ? samples.slice(0, limit) : samples;
     
-    return limited.map((item, index) => ({
-      id: `screenai-qa-${index}`,
-      screenshot: item.image || item.screenshot || null,
-      groundTruth: {
-        structuredFeatures: {
-          question: item.question,
-          answer: item.answer,
-          taskType: 'qa'
+    return limited.map((item, index) => {
+      // ScreenAI uses image_id to reference Rico dataset
+      // Screenshots are not in ScreenAI - need to download Rico separately
+      const imageId = item.image_id;
+      
+      return {
+        id: `screenai-qa-${imageId}-${index}`,
+        screenshot: null, // Screenshots are in Rico dataset, not ScreenAI
+        imageId: imageId, // Store image_id for Rico lookup
+        groundTruth: {
+          structuredFeatures: {
+            question: item.question,
+            answer: Array.isArray(item.ground_truth) ? item.ground_truth[0] : (item.ground_truth || item.answer || null),
+            allAnswers: Array.isArray(item.ground_truth) ? item.ground_truth : [item.ground_truth || item.answer].filter(Boolean),
+            imageWidth: item.image_width || null,
+            imageHeight: item.image_height || null,
+            taskType: 'qa'
+          },
+          humanAnnotations: {
+            annotatorId: 'screenai-dataset',
+            source: 'ScreenAI Research Dataset',
+            timestamp: null
+          }
         },
-        humanAnnotations: {
-          annotatorId: 'screenai-dataset',
+        metadata: {
+          dataset: 'ScreenAI-QA',
           source: 'ScreenAI Research Dataset',
-          timestamp: item.timestamp || null
+          originalFormat: 'screenai-json',
+          split: 'train',
+          note: 'Screenshots require Rico dataset. image_id references Rico dataset images.',
+          ricoImageId: imageId
         }
-      },
-      metadata: {
-        dataset: 'ScreenAI-QA',
-        source: 'ScreenAI Research Dataset',
-        originalFormat: 'screenai-json',
-        split: 'train'
-      }
-    })).filter(s => s.screenshot);
+      };
+    });
+    // Don't filter by screenshot - ScreenAI QA data is valid without screenshots
   }
 
   /**
@@ -610,8 +692,12 @@ export async function loadDataset(datasetName, options = {}) {
 
   const adapter = basePath ? new AdapterClass(basePath) : new AdapterClass();
   
-  if (!adapter.isAvailable()) {
-    throw new Error(`Dataset ${datasetName} is not available. Check dataset location.`);
+  const availability = adapter.isAvailable();
+  if (!availability || (typeof availability === 'object' && !availability.available)) {
+    const message = typeof availability === 'object' && availability.message 
+      ? availability.message 
+      : `Dataset ${datasetName} is not available. Check dataset location.`;
+    throw new Error(message);
   }
 
   const samples = await adapter.loadSamples(loadOptions);
@@ -630,15 +716,20 @@ export async function loadDataset(datasetName, options = {}) {
 
 /**
  * List all available datasets
+ * Returns array of { name, available, adapter }
  */
 export function listAvailableDatasets() {
   return Object.keys(DATASET_ADAPTERS).map(name => {
     const AdapterClass = DATASET_ADAPTERS[name];
     const adapter = new AdapterClass();
+    const availability = adapter.isAvailable();
+    const isAvailable = typeof availability === 'boolean' ? availability : availability.available;
     return {
       name,
-      available: adapter.isAvailable(),
-      adapter: AdapterClass.name
+      available: isAvailable,
+      adapter: AdapterClass.name,
+      message: typeof availability === 'object' ? availability.message : null,
+      needsExtraction: typeof availability === 'object' ? availability.needsExtraction : false
     };
   });
 }

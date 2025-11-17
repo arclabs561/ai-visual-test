@@ -1,7 +1,10 @@
 {
   "name": "Real-World Screenshot Dataset",
   "created": "2025-11-11T02:59:55.587Z",
-  "description": "Screenshots captured from real websites with ground truth annotations",
+  "updated": "2025-01-14T00:00:00.000Z",
+  "description": "Screenshots captured from real websites with ground truth annotations. Updated with precise scores and structured annotations.",
+  "quality": "development",
+  "note": "Small dataset (4 samples) for development/testing. Not suitable for statistical validation. Use ScreenAI or WebUI datasets for proper evaluation.",
   "samples": [
     {
       "id": "github-homepage",
@@ -9,25 +12,27 @@
       "url": "https://github.com",
       "screenshot": "/Users/arc/Documents/dev/ai-visual-test/evaluation/datasets/screenshots/github-homepage.png",
       "groundTruth": {
-        "expectedScore": {
-          "min": 7,
-          "max": 10
-        },
-        "expectedIssues": [],
-        "knownGood": [
-          "high contrast",
-          "clear navigation",
-          "accessible",
-          "keyboard navigation"
-        ],
-        "knownBad": [],
-        "annotations": {
-          "accessibility": "good",
-          "contrast": "unknown",
-          "navigation": "unknown"
+        "preciseScore": 8.0,
+        "scoreTolerance": 1.0,
+        "structuredIssues": [],
+        "structuredFeatures": {
+          "accessibility": {
+            "level": "good",
+            "wcagCompliance": "AA",
+            "keyboardNavigation": true,
+            "screenReaderSupport": true
+          },
+          "contrast": {
+            "level": "high",
+            "meetsWCAG": true
+          },
+          "navigation": {
+            "level": "clear",
+            "structure": "logical"
+          }
         },
         "humanAnnotations": {
-          "humanScore": 8,
+          "humanScore": 8.0,
           "humanIssues": [
             "good overall design",
             "clear navigation",
@@ -36,6 +41,18 @@
           "humanReasoning": "Professional design with excellent navigation. High contrast and accessible. Overall very good user experience.",
           "annotatorId": "demo-annotator",
           "timestamp": "2025-11-12T23:37:26.881Z"
+        },
+        "_legacy": {
+          "expectedScore": {
+            "min": 7,
+            "max": 10
+          },
+          "knownGood": [
+            "high contrast",
+            "clear navigation",
+            "accessible",
+            "keyboard navigation"
+          ]
         }
       },
       "metadata": {
@@ -53,25 +70,27 @@
       "url": "https://developer.mozilla.org",
       "screenshot": "/Users/arc/Documents/dev/ai-visual-test/evaluation/datasets/screenshots/mdn-homepage.png",
       "groundTruth": {
-        "expectedScore": {
-          "min": 8,
-          "max": 10
-        },
-        "expectedIssues": [],
-        "knownGood": [
-          "WCAG compliant",
-          "excellent contrast",
-          "keyboard accessible",
-          "screen reader support"
-        ],
-        "knownBad": [],
-        "annotations": {
-          "accessibility": "unknown",
-          "contrast": "unknown",
-          "navigation": "unknown"
+        "preciseScore": 8.0,
+        "scoreTolerance": 1.0,
+        "structuredIssues": [],
+        "structuredFeatures": {
+          "accessibility": {
+            "level": "excellent",
+            "wcagCompliance": "AA",
+            "keyboardNavigation": true,
+            "screenReaderSupport": true
+          },
+          "contrast": {
+            "level": "excellent",
+            "meetsWCAG": true
+          },
+          "navigation": {
+            "level": "clear",
+            "structure": "logical"
+          }
         },
         "humanAnnotations": {
-          "humanScore": 8,
+          "humanScore": 8.0,
           "humanIssues": [
             "good documentation",
             "clear structure",
@@ -80,6 +99,18 @@
           "humanReasoning": "MDN provides excellent documentation with clear structure. Good accessibility and navigation.",
           "annotatorId": "demo-annotator",
           "timestamp": "2025-11-12T23:37:31.800Z"
+        },
+        "_legacy": {
+          "expectedScore": {
+            "min": 8,
+            "max": 10
+          },
+          "knownGood": [
+            "WCAG compliant",
+            "excellent contrast",
+            "keyboard accessible",
+            "screen reader support"
+          ]
         }
       },
       "metadata": {
@@ -97,24 +128,27 @@
       "url": "https://www.w3.org",
       "screenshot": "/Users/arc/Documents/dev/ai-visual-test/evaluation/datasets/screenshots/w3c-homepage.png",
       "groundTruth": {
-        "expectedScore": {
-          "min": 8,
-          "max": 10
-        },
-        "expectedIssues": [],
-        "knownGood": [
-          "WCAG AAA",
-          "perfect accessibility",
-          "excellent design"
-        ],
-        "knownBad": [],
-        "annotations": {
-          "accessibility": "unknown",
-          "contrast": "unknown",
-          "navigation": "unknown"
+        "preciseScore": 9.0,
+        "scoreTolerance": 0.5,
+        "structuredIssues": [],
+        "structuredFeatures": {
+          "accessibility": {
+            "level": "perfect",
+            "wcagCompliance": "AAA",
+            "keyboardNavigation": true,
+            "screenReaderSupport": true
+          },
+          "contrast": {
+            "level": "perfect",
+            "meetsWCAG": true
+          },
+          "navigation": {
+            "level": "excellent",
+            "structure": "logical"
+          }
         },
         "humanAnnotations": {
-          "humanScore": 9,
+          "humanScore": 9.0,
           "humanIssues": [
             "excellent accessibility",
             "WCAG compliant",
@@ -123,6 +157,17 @@
           "humanReasoning": "W3C homepage demonstrates perfect accessibility standards. WCAG AAA compliant with excellent contrast and navigation.",
           "annotatorId": "demo-annotator",
           "timestamp": "2025-11-12T23:37:31.104Z"
+        },
+        "_legacy": {
+          "expectedScore": {
+            "min": 8,
+            "max": 10
+          },
+          "knownGood": [
+            "WCAG AAA",
+            "perfect accessibility",
+            "excellent design"
+          ]
         }
       },
       "metadata": {
@@ -140,20 +185,35 @@
       "url": "https://example.com",
       "screenshot": "/Users/arc/Documents/dev/ai-visual-test/evaluation/datasets/screenshots/example-com.png",
       "groundTruth": {
-        "expectedScore": {
-          "min": 5,
-          "max": 8
+        "preciseScore": 6.5,
+        "scoreTolerance": 1.5,
+        "structuredIssues": [],
+        "structuredFeatures": {
+          "accessibility": {
+            "level": "basic",
+            "wcagCompliance": "partial",
+            "keyboardNavigation": true,
+            "screenReaderSupport": true
+          },
+          "contrast": {
+            "level": "adequate",
+            "meetsWCAG": true
+          },
+          "navigation": {
+            "level": "minimal",
+            "structure": "simple"
+          }
         },
-        "expectedIssues": [],
-        "knownGood": [
-          "simple",
-          "minimal"
-        ],
-        "knownBad": [],
-        "annotations": {
-          "accessibility": "unknown",
-          "contrast": "unknown",
-          "navigation": "unknown"
+        "humanAnnotations": null,
+        "_legacy": {
+          "expectedScore": {
+            "min": 5,
+            "max": 8
+          },
+          "knownGood": [
+            "simple",
+            "minimal"
+          ]
         }
       },
       "metadata": {

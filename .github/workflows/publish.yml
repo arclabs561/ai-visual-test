@@ -55,9 +55,15 @@ jobs:
       - name: Check for secrets
         run: node scripts/detect-secrets.mjs || echo "Secret check completed"
       
+      - name: Build obfuscated package
+        run: npm run build
+        continue-on-error: false
+      
       - name: Publish to npm
         # OIDC trusted publishing: no NODE_AUTH_TOKEN needed if configured on npmjs.com
         # Provenance is automatically generated with OIDC (no --provenance flag needed)
+        # Publishing from dist/ directory with obfuscated code
+        working-directory: dist
         run: |
           if [ "${{ github.event_name }}" = "release" ] || [ "${{ github.event_name }}" = "push" ]; then
             npm publish --access public

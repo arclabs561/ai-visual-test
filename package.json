@@ -27,6 +27,16 @@
     ".secretsignore.example"
   ],
   "scripts": {
+    "test:playwright": "playwright test test/playwright-setup.test.mjs",
+    "test:playwright:ui": "playwright test test/playwright-setup.test.mjs --ui",
+    "test:evaluation": "node test/evaluation-adapter-integration.test.mjs",
+    "test:all": "npm run test:evaluation && npm run test:playwright",
+    "evaluate": "node evaluation/runners/evaluate-cli.mjs",
+    "evaluate:real": "node evaluation/runners/evaluate-cli.mjs real",
+    "evaluate:webui": "node evaluation/runners/evaluate-cli.mjs webui",
+    "evaluate:wcag": "node evaluation/runners/evaluate-cli.mjs wcag",
+    "compare-metrics": "node evaluation/utils/compare-filtered-metrics.mjs",
+    "install:playwright": "npx playwright install chromium",
     "test": "node --test test/*.test.mjs",
     "test:validation": "node --test test/validation-*.test.mjs",
     "test:unit": "node --test test/unit/*.test.mjs",
@@ -56,8 +66,9 @@
     "check:security": "npm run check:secrets",
     "check:test-performance": "node node_modules/@arclabs561/hookwise/src/hooks/test-performance.mjs 2>/dev/null || node scripts/analyze-test-performance.mjs",
     "check:commit": "test -f .git/COMMIT_EDITMSG && npx hookwise test-commit \"$(cat .git/COMMIT_EDITMSG)\" 2>/dev/null || echo '⚠️  Hookwise not available or no commit message (optional developer tooling)'",
-    "check:all": "npm run check:secrets && (npx hookwise garden 2>/dev/null || echo '⚠️  Hookwise not available (optional developer tooling)') && npm run check:test-performance",
-    "garden": "npx hookwise garden 2>&1 || (EXIT_CODE=$?; if [ $EXIT_CODE -eq 127 ]; then echo '⚠️  Hookwise not available (optional developer tooling). Install with: npm link ../../dev/hookwise'; else exit $EXIT_CODE; fi)",
+    "check:all": "npm run check:secrets && (npx hookwise check 2>/dev/null || echo '⚠️  Hookwise not available (optional developer tooling)') && npm run check:test-performance",
+    "check": "npx hookwise check 2>&1 || (EXIT_CODE=$?; if [ $EXIT_CODE -eq 127 ]; then echo '⚠️  Hookwise not available (optional developer tooling). Install with: npm link ../../dev/hookwise'; else exit $EXIT_CODE; fi)",
+    "garden": "npm run check",
     "garden:enhanced": "node scripts/enhanced-garden.mjs",
     "deprecate:old": "node scripts/deprecate-old-package.mjs",
     "garden:watch": "node scripts/watch-garden.mjs",
@@ -93,9 +104,11 @@
     }
   },
   "devDependencies": {
+    "@playwright/test": "1.56.1",
     "@types/node": "^22.10.1",
     "fast-check": "4.3.0",
     "javascript-obfuscator": "4.1.1",
+    "playwright": "1.56.1",
     "proper-lockfile": "4.1.2"
   },
   "engines": {

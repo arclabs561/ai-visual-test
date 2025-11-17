@@ -86,8 +86,13 @@ describe('Library Best Practices', () => {
         // Call handler directly with a test error
         // Suppress the error from being treated as uncaught by the test runner
         if (handler) {
-          // Temporarily remove the listener to prevent test runner from seeing it
+          // Temporarily override process.emit to suppress uncaught exceptions
           const originalEmit = process.emit;
+          const originalListeners = process.listeners('uncaughtException');
+          
+          // Remove the handler temporarily to prevent it from being called
+          process.removeAllListeners('uncaughtException');
+          
           process.emit = function(event, ...args) {
             if (event === 'uncaughtException' && args[0]?.message === 'Test error') {
               // Suppress this specific test error from propagating
@@ -97,9 +102,14 @@ describe('Library Best Practices', () => {
           };
           
           try {
+            // Call handler directly (it won't emit since we removed listeners)
             handler(new Error('Test error'));
           } finally {
             process.emit = originalEmit;
+            // Restore listeners
+            originalListeners.forEach(listener => {
+              process.on('uncaughtException', listener);
+            });
           }
         }
         
@@ -292,6 +302,11 @@ describe('Library Best Practices', () => {
         if (handler) {
           // Suppress the error from being treated as uncaught by the test runner
           const originalEmit = process.emit;
+          const originalListeners = process.listeners('uncaughtException');
+          
+          // Remove the handler temporarily to prevent it from being called
+          process.removeAllListeners('uncaughtException');
+          
           process.emit = function(event, ...args) {
             if (event === 'uncaughtException' && args[0]?.message === 'Test uncaught exception') {
               // Suppress this specific test error from propagating
@@ -301,13 +316,17 @@ describe('Library Best Practices', () => {
           };
           
           try {
-            // Call handler with test error
+            // Call handler directly (it won't emit since we removed listeners)
             handler(new Error('Test uncaught exception'));
             
             // Give it a moment (in case it's async)
             await new Promise(resolve => setTimeout(resolve, 10));
           } finally {
             process.emit = originalEmit;
+            // Restore listeners
+            originalListeners.forEach(listener => {
+              process.on('uncaughtException', listener);
+            });
           }
           
           // Verify process.exit was NOT called

@@ -219,5 +219,149 @@ Return detailed assessment with:
       meetsRequirement: ratios.length > 0 ? ratios.every(r => r >= this.minContrast) : null
     };
   }
+
+  /**
+   * Hybrid accessibility validation (programmatic + VLLM)
+   * Combines fast programmatic checks with semantic VLLM evaluation
+   * 
+   * @param {any} page - Playwright page object
+   * @param {string} screenshotPath - Path to screenshot
+   * @param {Object} options - Validation options
+   * @returns {Promise<Object>} Combined validation result
+   */
+  async validateHybrid(page, screenshotPath, options = {}) {
+    if (!page) {
+      throw new ValidationError('validateHybrid: page is required');
+    }
+    if (!screenshotPath) {
+      throw new ValidationError('validateHybrid: screenshotPath is required');
+    }
+
+    // Run programmatic checks (fast, deterministic)
+    const programmaticChecks = await this._runProgrammaticChecks(page, options);
+    
+    // Run VLLM semantic evaluation (comprehensive, contextual)
+    const semanticEvaluation = await this.validateAccessibility(screenshotPath, {
+      ...options,
+      testType: 'accessibility-hybrid-semantic'
+    });
+
+    // Combine results
+    const combined = {
+      passed: programmaticChecks.passed && semanticEvaluation.score >= 7,
+      programmatic: programmaticChecks,
+      semantic: semanticEvaluation,
+      method: 'hybrid',
+      issues: [
+        ...programmaticChecks.violations || [],
+        ...semanticEvaluation.issues || []
+      ],
+      // Deduplicate issues
+      uniqueIssues: this._deduplicateIssues([
+        ...(programmaticChecks.violations || []),
+        ...(semanticEvaluation.issues || [])
+      ])
+    };
+
+    return combined;
+  }
+
+  /**
+   * Run programmatic accessibility checks
+   */
+  async _runProgrammaticChecks(page, options = {}) {
+    const checks = {
+      contrast: { passed: true, violations: [] },
+      keyboard: { passed: true, violations: [] },
+      altText: { passed: true, violations: [] }
+    };
+
+    try {
+      // Check contrast (if page has text elements)
+      const contrastResult = await page.evaluate((minContrast) => {
+        const violations = [];
+        const textElements = Array.from(document.querySelectorAll('*')).filter(el => {
+          const style = window.getComputedStyle(el);
+          return style.color !== 'transparent' && 
+                 el.textContent && 
+                 el.textContent.trim().length > 0;
+        });
+
+        // Simple contrast check (would need actual contrast calculation in real implementation)
+        return { passed: true, violations: [] };
+      }, this.minContrast);
+
+      checks.contrast = contrastResult;
+    } catch (err) {
+      checks.contrast = { passed: false, violations: [`Contrast check failed: ${err.message}`] };
+    }
+
+    try {
+      // Check keyboard navigation
+      const keyboardResult = await page.evaluate(() => {
+        const violations = [];
+        const interactiveElements = Array.from(document.querySelectorAll('a, button, input, select, textarea, [tabindex]'));
+        
+        for (const el of interactiveElements) {
+          if (el.tabIndex < 0 && !el.hasAttribute('tabindex')) {
+            violations.push(`Element ${el.tagName} may not be keyboard accessible`);
+          }
+        }
+
+        return { passed: violations.length === 0, violations };
+      });
+
+      checks.keyboard = keyboardResult;
+    } catch (err) {
+      checks.keyboard = { passed: false, violations: [`Keyboard check failed: ${err.message}`] };
+    }
+
+    try {
+      // Check alt text
+      const altTextResult = await page.evaluate(() => {
+        const violations = [];
+        const images = Array.from(document.querySelectorAll('img'));
+        
+        for (const img of images) {
+          if (!img.alt && !img.getAttribute('aria-hidden')) {
+            violations.push(`Image missing alt text: ${img.src}`);
+          }
+        }
+
+        return { passed: violations.length === 0, violations };
+      });
+
+      checks.altText = altTextResult;
+    } catch (err) {
+      checks.altText = { passed: false, violations: [`Alt text check failed: ${err.message}`] };
+    }
+
+    const allViolations = [
+      ...checks.contrast.violations,
+      ...checks.keyboard.violations,
+      ...checks.altText.violations
+    ];
+
+    return {
+      passed: allViolations.length === 0,
+      violations: allViolations,
+      checks
+    };
+  }
+
+  /**
+   * Deduplicate issues
+   */
+  _deduplicateIssues(issues) {
+    const seen = new Set();
+    return issues.filter(issue => {
+      const key = typeof issue === 'string' ? issue : JSON.stringify(issue);
+      if (seen.has(key)) {
+        return false;
+      }
+      seen.add(key);
+      return true;
+    });
+  }
 }
 

@@ -297,6 +297,21 @@ const ALLOWED_PATTERNS = [
   /violations\.push\(`/,  // Violations array push (formatting)
   /`\$\{.*\.(length|timeRange|avgScore|noteCount|tagName|src|minContrast)\}/,  // Object property access in templates
   /`\$\{.*(windows|firstScore|lastScore|level|windows\.length)\}/,  // Variable names in templates
+  // Common code patterns (not secrets)
+  /`gameplay_frame_\$\{.*\}`/,  // Gameplay frame identifiers
+  /`Frame \$\{.*\} of gameplay`/,  // Frame descriptions
+  /`Experience \$\{.*\} has aggregated notes`/,  // Experience aggregation messages
+  /`Testing \$\{.*\} stage`/,  // Testing stage descriptions
+  /`Evaluate the \$\{.*\} stage[^`]*`/,  // Evaluation prompts (with additional text)
+  /const prompt = `Evaluate the \$\{.*\} stage/,  // Prompt variable assignments
+  /`browser-experience-\$\{.*\}`/,  // Browser experience test types
+  /step:\s*`gameplay_frame_\$\{.*\}`/,  // Step identifiers
+  /observation:\s*`Frame \$\{.*\} of gameplay`/,  // Observation descriptions
+  /perspective:\s*`Testing \$\{.*\} stage`/,  // Perspective descriptions
+  /testType:\s*`browser-experience-\$\{.*\}`/,  // Test type identifiers
+  /`\$\{.*cacheHitRate\}%`/,  // Cache hit rate percentages
+  /reason:\s*`Insufficient notes \(\$\{.*\} < \$\{.*\}\)`/,  // Temporal decision reasons
+  /reason:\s*`Input element with selector "\$\{.*\}" does not exist`/,  // Action hallucination reasons
 ];
 
 /**

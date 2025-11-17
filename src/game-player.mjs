@@ -107,24 +107,46 @@ export async function decideGameAction(gameState, goal, history = []) {
  * @param {Object} action - Action to execute
  */
 export async function executeGameAction(page, action) {
-  switch (action.type) {
-    case 'keyboard':
-      await page.keyboard.press(action.key);
-      break;
-    case 'click':
-      if (action.selector) {
-        await page.click(action.selector);
-      } else {
-        warn('[GamePlayer] Click action missing selector');
-      }
-      break;
-    case 'wait':
-      await page.waitForTimeout(action.duration || 100);
-      break;
-    default:
-      warn(`[GamePlayer] Unknown action type: ${action.type}, defaulting to wait`);
-      await page.waitForTimeout(100);
+  let executionResult = { success: false, error: null };
+  
+  try {
+    switch (action.type) {
+      case 'keyboard':
+        await page.keyboard.press(action.key);
+        executionResult.success = true;
+        break;
+      case 'click':
+        if (action.selector) {
+          // Verify element exists before clicking
+          const exists = await page.locator(action.selector).count() > 0;
+          if (!exists) {
+            executionResult.success = false;
+            executionResult.error = `Element not found: ${action.selector}`;
+            return executionResult;
+          }
+          
+          await page.click(action.selector);
+          executionResult.success = true;
+        } else {
+          warn('[GamePlayer] Click action missing selector');
+          executionResult.error = 'Click action missing selector';
+        }
+        break;
+      case 'wait':
+        await page.waitForTimeout(action.duration || 100);
+        executionResult.success = true;
+        break;
+      default:
+        warn(`[GamePlayer] Unknown action type: ${action.type}, defaulting to wait`);
+        await page.waitForTimeout(100);
+        executionResult.success = true;
+    }
+  } catch (error) {
+    executionResult.success = false;
+    executionResult.error = error.message;
   }
+  
+  return executionResult;
 }
 
 /**
@@ -196,32 +218,127 @@ export async function playGame(page, options = {}) {
         timestamp: Date.now()
       };
       
-      const stateEvaluation = await validateScreenshot(
-        screenshotPath,
-        `Evaluate current game state. Goal: ${goal}`,
-        {
-          testType: 'gameplay',
-          temporalNotes: history.map(h => ({
-            step: h.step,
-            action: h.action,
-            result: h.result?.score
-          }))
+      // Use TemporalDecisionManager to reduce LLM calls
+      // Only prompt when decision is needed, not on every state change
+      const temporalNotes = history.map(h => ({
+        step: h.step,
+        action: h.action,
+        result: h.result?.score,
+        timestamp: h.state?.timestamp || Date.now()
+      }));
+      
+      let stateEvaluation;
+      if (step > 0 && history.length > 0) {
+        // Use TemporalDecisionManager for subsequent steps
+        try {
+          const { TemporalDecisionManager } = await import('./temporal-decision-manager.mjs');
+          const decisionManager = new TemporalDecisionManager({
+            minNotesForPrompt: 2,
+            coherenceThreshold: 0.5
+          });
+          
+          const currentState = { 
+            score: null, 
+            step,
+            timestamp: Date.now()
+          };
+          const previousState = history[history.length - 1]?.result || null;
+          
+          const decision = decisionManager.shouldPrompt(currentState, previousState, temporalNotes, {
+            stage: 'gameplay',
+            testType: 'gameplay'
+          });
+          
+          if (!decision.shouldPrompt && decision.urgency !== 'high' && previousState) {
+            // Don't prompt yet - reuse previous result
+            stateEvaluation = {
+              ...previousState,
+              skipped: true,
+              skipReason: decision.reason,
+              urgency: decision.urgency
+            };
+          } else {
+            // Prompt now (decision point or high urgency)
+            stateEvaluation = await validateScreenshot(
+              screenshotPath,
+              `Evaluate current game state. Goal: ${goal}`,
+              {
+                testType: 'gameplay',
+                temporalNotes,
+                sequenceIndex: step,
+                useTemporalDecision: true,
+                currentState,
+                previousState,
+                previousResult: previousState
+              }
+            );
+          }
+        } catch (error) {
+          // If TemporalDecisionManager fails, proceed with normal validation
+          stateEvaluation = await validateScreenshot(
+            screenshotPath,
+            `Evaluate current game state. Goal: ${goal}`,
+            {
+              testType: 'gameplay',
+              temporalNotes,
+              sequenceIndex: step
+            }
+          );
         }
-      );
+      } else {
+        // First step - always validate
+        stateEvaluation = await validateScreenshot(
+          screenshotPath,
+          `Evaluate current game state. Goal: ${goal}`,
+          {
+            testType: 'gameplay',
+            temporalNotes,
+            sequenceIndex: step
+          }
+        );
+      }
       
       currentState.evaluation = stateEvaluation;
       
       // 3. Decide what action to take (decision-making)
-      const action = await decideGameAction(
+      let action = await decideGameAction(
         currentState,
         goal,
         history
       );
       
-      log(`[GamePlayer] Step ${step}: score=${stateEvaluation.score}, action=${action.type}:${action.key || action.selector || ''}`);
+      // Try action, with simple retry on failure
+      let actionExecuted = false;
+      let retries = 0;
+      const maxRetries = 2;
       
-      // 4. Execute action (Playwright)
-      await executeGameAction(page, action);
+      while (!actionExecuted && retries < maxRetries) {
+        log(`[GamePlayer] Step ${step}: score=${stateEvaluation.score}, action=${action.type}:${action.key || action.selector || ''}`);
+        
+        // 4. Execute action (Playwright)
+        const executionResult = await executeGameAction(page, action);
+        
+        if (executionResult.success) {
+          actionExecuted = true;
+          action.executionResult = executionResult;
+        } else {
+          // Action failed - wait and retry, or try simple alternative
+          retries++;
+          if (retries < maxRetries) {
+            const { createExploratoryStrategy } = await import('./utils/exploratory-automation.mjs');
+            const exploratoryStrategy = createExploratoryStrategy({ maxAttempts: 2 });
+            const nextAction = exploratoryStrategy.getNextAction(currentState, [action], goal);
+            
+            if (nextAction) {
+              log(`[GamePlayer] Action failed, trying alternative: ${nextAction.type}`);
+              action = nextAction;
+            } else {
+              // Wait and retry original action
+              await page.waitForTimeout(500);
+            }
+          }
+        }
+      }
       
       // 5. Wait for next frame
       await page.waitForTimeout(1000 / fps);

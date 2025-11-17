@@ -360,13 +360,17 @@ Specifically identify and count:
 
 Provide specific counts and detailed analysis.`;
   
+  // Use EnsembleJudge for critical accessibility evaluations (10-20% accuracy improvement)
+  // Research: arXiv:2510.01499 - Optimal ensemble weighting improves accuracy
   const vllmResult = await validateScreenshot(
     sample.screenshot,
     prompt,
     {
       provider: config.provider,
       apiKey: config.apiKey,
-      testType: 'accessibility-ground-truth'
+      testType: 'accessibility-ground-truth',
+      useEnsemble: true, // Critical evaluation - use ensemble for better accuracy
+      ensembleProviders: ['gemini', 'openai'] // Use multiple providers for consensus
     }
   );
   

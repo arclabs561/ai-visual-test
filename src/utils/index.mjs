@@ -173,3 +173,13 @@ export {
   initHumanValidation
 } from '../human-validation-manager.mjs';
 
+// Browser automation utilities
+export * from './counterfactual-tester.mjs';
+export * from './capability-stratifier.mjs';
+export * from './baseline-validator.mjs';
+export * from './intent-recognizer.mjs';
+export * from './action-hallucination-detector.mjs';
+export * from './exploratory-automation.mjs';
+export * from './error-recovery.mjs';
+export * from './explainability-scorer.mjs';
+

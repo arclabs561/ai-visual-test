@@ -2,18 +2,21 @@ import { test } from 'node:test';
 import assert from 'node:assert';
 import { existsSync } from 'fs';
 import { testCounterfactual, batchTestCounterfactual } from '../src/utils/counterfactual-tester.mjs';
+import { testLog } from './test-logger.mjs';
 
 test('testCounterfactual detects memorization vs visual', async function() {
+  testLog.setContext('counterfactual-tester', 'testCounterfactual');
+  
   // Skip if no API key
   if (!process.env.GEMINI_API_KEY) {
-    console.log('   ℹ️  Skipping - no API key available');
+    testLog.skip('No API key available');
     this.skip();
     return;
   }
 
   // Check if test image exists
   if (!existsSync('test-image.png')) {
-    console.log('   ℹ️  Skipping - test image not available');
+    testLog.skip('Test image not available');
     this.skip();
     return;
   }
@@ -22,6 +25,10 @@ test('testCounterfactual detects memorization vs visual', async function() {
   // For now, test the structure
   let result;
   try {
+    testLog.info('Testing counterfactual detection', { 
+      image: 'test-image.png',
+      prompt: 'How many legs does this animal have?'
+    });
     result = await testCounterfactual(
       'test-image.png',
       'How many legs does this animal have?',
@@ -29,8 +36,12 @@ test('testCounterfactual detects memorization vs visual', async function() {
       5, // Expected visual (counterfactual has 5 legs)
       {}
     );
+    testLog.success('Counterfactual test completed', {
+      usesVisual: result.usesVisual,
+      usesMemorization: result.usesMemorization
+    });
   } catch (e) {
-    console.log(`   ℹ️  Test failed: ${e.message}`);
+    testLog.error('Test failed', e);
     this.skip();
     return;
   }
@@ -40,6 +51,8 @@ test('testCounterfactual detects memorization vs visual', async function() {
   assert.ok(result.usesMemorization !== undefined, 'Should detect memorization usage');
   assert.ok(result.biasAligned !== undefined, 'Should detect bias alignment');
   assert.ok(result.recommendation, 'Should provide recommendation');
+  
+  testLog.clearContext();
 });
 
 test('batchTestCounterfactual aggregates results', async function() {

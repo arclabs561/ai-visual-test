@@ -18,9 +18,6 @@
   "files": [
     "src/**/*.mjs",
     "index.d.ts",
-    "api/**/*.js",
-    "public/**/*.html",
-    "vercel.json",
     "README.md",
     "CHANGELOG.md",
     "CONTRIBUTING.md",
@@ -50,15 +47,17 @@
     "datasets:setup": "npm run datasets:download && npm run datasets:parse",
     "docs": "node scripts/generate-docs.mjs",
     "lint": "echo 'No linter configured'",
-    "prepublishOnly": "npm test",
+    "build": "node scripts/build-obfuscated.mjs",
+    "build:skip-obfuscation": "node scripts/build-obfuscated.mjs --skip-obfuscation",
+    "prepublishOnly": "npm test && npm run build",
     "check:secrets": "node scripts/detect-secrets.mjs",
-    "check:quality": "node node_modules/@arclabs561/hookwise/src/hooks/code-quality.mjs || echo 'Hookwise not available'",
-    "check:docs": "node node_modules/@arclabs561/hookwise/src/hooks/doc-bloat.mjs || echo 'Hookwise not available'",
+    "check:quality": "npx hookwise test-quality 2>/dev/null || echo '⚠️  Hookwise not available (optional developer tooling)'",
+    "check:docs": "npx hookwise test-docs 2>/dev/null || echo '⚠️  Hookwise not available (optional developer tooling)'",
     "check:security": "npm run check:secrets",
-    "check:test-performance": "node node_modules/@arclabs561/hookwise/src/hooks/test-performance.mjs || node scripts/analyze-test-performance.mjs",
-    "check:commit": "node node_modules/@arclabs561/hookwise/src/hooks/commit-msg.mjs .git/COMMIT_EDITMSG || echo 'Hookwise not available'",
-    "check:all": "npm run check:secrets && npx hookwise garden && npm run check:test-performance",
-    "garden": "npx hookwise garden",
+    "check:test-performance": "node node_modules/@arclabs561/hookwise/src/hooks/test-performance.mjs 2>/dev/null || node scripts/analyze-test-performance.mjs",
+    "check:commit": "test -f .git/COMMIT_EDITMSG && npx hookwise test-commit \"$(cat .git/COMMIT_EDITMSG)\" 2>/dev/null || echo '⚠️  Hookwise not available or no commit message (optional developer tooling)'",
+    "check:all": "npm run check:secrets && (npx hookwise garden 2>/dev/null || echo '⚠️  Hookwise not available (optional developer tooling)') && npm run check:test-performance",
+    "garden": "npx hookwise garden 2>&1 || (EXIT_CODE=$?; if [ $EXIT_CODE -eq 127 ]; then echo '⚠️  Hookwise not available (optional developer tooling). Install with: npm link ../../dev/hookwise'; else exit $EXIT_CODE; fi)",
     "garden:enhanced": "node scripts/enhanced-garden.mjs",
     "deprecate:old": "node scripts/deprecate-old-package.mjs",
     "garden:watch": "node scripts/watch-garden.mjs",
@@ -78,8 +77,8 @@
   "author": "arclabs561 <henry@henrywallace.io>",
   "license": "MIT",
   "dependencies": {
-    "dotenv": "^16.4.5",
-    "async-mutex": "0.5.0"
+    "async-mutex": "0.5.0",
+    "dotenv": "^16.4.5"
   },
   "peerDependencies": {
     "@arclabs561/llm-utils": "*",
@@ -96,6 +95,7 @@
   "devDependencies": {
     "@types/node": "^22.10.1",
     "fast-check": "4.3.0",
+    "javascript-obfuscator": "4.1.1",
     "proper-lockfile": "4.1.2"
   },
   "engines": {

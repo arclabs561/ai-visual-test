@@ -413,3 +413,247 @@ export function calculateCoherenceExported(windows) {
   return calculateCoherence(windows);
 }
 
+/**
+ * Build temporal graph representation for better coherence
+ * Extends aggregation with explicit entity/state tracking
+ * 
+ * @param {import('./index.mjs').TemporalNote[]} notes - Temporal notes
+ * @param {Object} options - Graph options
+ * @returns {Object} Temporal graph with nodes, edges, entities
+ */
+export async function buildTemporalGraph(notes, options = {}) {
+  const aggregated = aggregateTemporalNotes(notes, options);
+  
+  // Build graph structure (extract entities asynchronously if using LLM)
+  const nodes = await Promise.all(aggregated.windows.map(async (window, index) => ({
+    id: `window_${index}`,
+    index,
+    startTime: window.startTime,
+    endTime: window.endTime,
+    avgScore: window.avgScore,
+    notes: window.notes,
+    entities: await extractEntities(window.notes, options),
+    state: extractState(window.notes)
+  })));
+
+  const edges = [];
+  for (let i = 1; i < nodes.length; i++) {
+    const from = nodes[i - 1];
+    const to = nodes[i];
+    
+    const stateContinuity = calculateStateContinuity(from.state, to.state);
+    const entityContinuity = calculateEntityContinuity(from.entities, to.entities);
+    
+    edges.push({
+      from: from.id,
+      to: to.id,
+      timeDelta: to.startTime - from.startTime,
+      stateContinuity,
+      entityContinuity,
+      coherence: (stateContinuity + entityContinuity) / 2
+    });
+  }
+
+  // Track entities across time
+  const entityTracking = trackEntities(nodes);
+
+  return {
+    ...aggregated, // Include all aggregation results
+    graph: {
+      nodes,
+      edges,
+      entities: entityTracking,
+      averageCoherence: edges.length > 0 
+        ? edges.reduce((sum, e) => sum + e.coherence, 0) / edges.length 
+        : 1.0,
+      lowCoherenceEdges: edges.filter(e => e.coherence < 0.5).length
+    },
+    recommendations: generateGraphRecommendations(edges, entityTracking)
+  };
+}
+
+/**
+ * Extract entities from notes using LLM when available, fallback to keyword matching
+ * 
+ * @param {Array} notes - Temporal notes
+ * @param {Object} options - Extraction options
+ * @param {boolean} options.useLLM - Use LLM for extraction (default: true if API available)
+ * @returns {Promise<Array<string>>} Extracted entity names
+ */
+async function extractEntities(notes, options = {}) {
+  if (!notes || !Array.isArray(notes)) {
+    return [];
+  }
+
+  const { useLLM = true } = options;
+
+  // Try LLM-based extraction first (more accurate)
+  if (useLLM) {
+    try {
+      const { extractStructuredData } = await import('./data-extractor.mjs');
+      const { createConfig } = await import('./config.mjs');
+      
+      const config = createConfig();
+      if (config.enabled) {
+        // Combine all note text for context
+        const combinedText = notes
+          .map(n => `${n.observation || ''} ${n.reasoning || ''} ${n.step || ''}`)
+          .filter(Boolean)
+          .join(' ');
+
+        if (combinedText.trim()) {
+          const schema = {
+            entities: {
+              type: 'array',
+              items: { type: 'string' },
+              description: 'List of UI entities, game elements, or interactive components mentioned in the notes (e.g., "button", "score", "level", "board", "player", "enemy")'
+            }
+          };
+
+          const extracted = await extractStructuredData(combinedText, schema, {
+            fallback: 'auto',
+            provider: config.provider
+          });
+
+          if (extracted && Array.isArray(extracted.entities)) {
+            return [...new Set(extracted.entities)]; // Deduplicate
+          }
+        }
+      }
+    } catch (error) {
+      // Fallback to keyword matching if LLM extraction fails
+      // (silent fallback - keyword matching is acceptable)
+    }
+  }
+
+  // Fallback: Simple keyword matching (fast, no API required)
+  const entities = new Set();
+  const keywordPattern = /\b(button|link|image|form|input|score|level|board|tile|page|element|player|enemy|obstacle|powerup|collectible|ui|menu|dialog|modal|overlay)\b/g;
+  
+  for (const note of notes) {
+    const text = (note.observation || note.reasoning || note.step || '').toLowerCase();
+    const matches = text.match(keywordPattern);
+    if (matches) {
+      matches.forEach(m => entities.add(m));
+    }
+  }
+  return Array.from(entities);
+}
+
+/**
+ * Extract state from notes
+ */
+function extractState(notes) {
+  if (!notes || !Array.isArray(notes)) {
+    return {
+      avgScore: 0,
+      scoreVariance: 0,
+      issues: []
+    };
+  }
+  const scores = notes.map(n => n.score || n.gameState?.score || 0);
+  const issues = notes.flatMap(n => n.issues || []);
+  return {
+    avgScore: scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0,
+    scoreVariance: calculateVarianceForState(scores),
+    issues: [...new Set(issues)]
+  };
+}
+
+/**
+ * Calculate state continuity between two states
+ */
+function calculateStateContinuity(state1, state2) {
+  const scoreDiff = Math.abs(state1.avgScore - state2.avgScore);
+  const scoreContinuity = 1.0 - Math.min(1.0, scoreDiff / 10.0);
+  
+  const issues1 = new Set(state1.issues);
+  const issues2 = new Set(state2.issues);
+  const intersection = new Set([...issues1].filter(x => issues2.has(x)));
+  const union = new Set([...issues1, ...issues2]);
+  const issueContinuity = union.size > 0 ? intersection.size / union.size : 1.0;
+  
+  return (scoreContinuity + issueContinuity) / 2;
+}
+
+/**
+ * Calculate entity continuity between two entity sets
+ */
+function calculateEntityContinuity(entities1, entities2) {
+  if (entities1.length === 0 && entities2.length === 0) return 1.0;
+  if (entities1.length === 0 || entities2.length === 0) return 0.0;
+  
+  const set1 = new Set(entities1);
+  const set2 = new Set(entities2);
+  const intersection = new Set([...set1].filter(x => set2.has(x)));
+  const union = new Set([...set1, ...set2]);
+  
+  return union.size > 0 ? intersection.size / union.size : 0.0;
+}
+
+/**
+ * Track entities across time
+ */
+function trackEntities(nodes) {
+  const entityMap = new Map();
+  
+  for (const node of nodes) {
+    for (const entity of node.entities) {
+      if (!entityMap.has(entity)) {
+        entityMap.set(entity, {
+          firstSeen: node.index,
+          lastSeen: node.index,
+          appearances: [node.index]
+        });
+      } else {
+        const tracking = entityMap.get(entity);
+        tracking.lastSeen = node.index;
+        tracking.appearances.push(node.index);
+      }
+    }
+  }
+  
+  // Calculate continuity for each entity
+  for (const [entity, tracking] of entityMap.entries()) {
+    const gaps = [];
+    for (let i = 1; i < tracking.appearances.length; i++) {
+      gaps.push(tracking.appearances[i] - tracking.appearances[i-1]);
+    }
+    const avgGap = gaps.length > 0 ? gaps.reduce((a, b) => a + b, 0) / gaps.length : 1;
+    tracking.continuity = avgGap === 1 ? 1.0 : Math.max(0, 1.0 - (avgGap - 1) * 0.2);
+  }
+  
+  return Object.fromEntries(entityMap);
+}
+
+/**
+ * Generate graph recommendations
+ */
+function generateGraphRecommendations(edges, entities) {
+  const recommendations = [];
+  const avgCoherence = edges.length > 0 
+    ? edges.reduce((sum, e) => sum + e.coherence, 0) / edges.length 
+    : 1.0;
+  
+  if (avgCoherence < 0.6) {
+    recommendations.push('Low temporal coherence detected. Consider reducing sequence length or increasing capture frequency.');
+  }
+  
+  const lowCoherenceCount = edges.filter(e => e.coherence < 0.5).length;
+  if (lowCoherenceCount > edges.length * 0.3) {
+    recommendations.push('Many low-coherence transitions. Validate that screenshots represent continuous browser automation.');
+  }
+  
+  return recommendations;
+}
+
+/**
+ * Calculate variance for state extraction
+ */
+function calculateVarianceForState(values) {
+  if (values.length === 0) return 0;
+  const mean = values.reduce((a, b) => a + b, 0) / values.length;
+  const squaredDiffs = values.map(v => Math.pow(v - mean, 2));
+  return squaredDiffs.reduce((a, b) => a + b, 0) / values.length;
+}
+

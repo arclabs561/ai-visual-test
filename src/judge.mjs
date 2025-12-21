@@ -20,12 +20,14 @@ import { createConfig, getConfig } from './config.mjs';
 import { getCached, setCached } from './cache.mjs';
 import { FileError, ProviderError, TimeoutError, ValidationError } from './errors.mjs';
 import { log, warn } from './logger.mjs';
-import { retryWithBackoff, enhanceErrorMessage } from './retry.mjs';
+import { evaluateTemporalDecision } from './temporal-logic.mjs';
 import { recordCost } from './cost-tracker.mjs';
 import { normalizeValidationResult } from './validation-result-normalizer.mjs';
 import { validateImagePath, validatePrompt } from './validation.mjs';
 import { sanitizePrompt, validatePromptSecurity } from './utils/prompt-sanitizer.mjs';
 import { getRateLimiter } from './utils/rate-limiter.mjs';
+import { RETRY_CONSTANTS } from './constants.mjs';
+import { retryWithBackoff, enhanceErrorMessage } from './retry.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -165,7 +167,7 @@ export class VLLMJudge {
     // SECURITY: Validate inputs before processing
     // Validate prompt length
     try {
-      validatePrompt(prompt, 10000); // Max 10k characters
+      validatePrompt(prompt); // Uses VALIDATION_CONSTANTS.MAX_PROMPT_LENGTH
     } catch (validationError) {
       throw new ValidationError(`Invalid prompt: ${validationError.message}`);
     }
@@ -239,63 +241,11 @@ export class VLLMJudge {
       }, 'judgeScreenshot-disabled');
     }
 
-    // Temporal Decision Manager: Decide if we should prompt now or wait
-    // Only prompt when decision is needed, not on every state change
-    if (context.useTemporalDecision && context.temporalNotes && context.temporalNotes.length > 0) {
-      try {
-        const { TemporalDecisionManager } = await import('./temporal-decision-manager.mjs');
-        const decisionManager = new TemporalDecisionManager(context.temporalDecisionOptions || {});
-        const currentState = { score: null, issues: [], ...context.currentState };
-        const previousState = context.previousState || null;
-        const decision = decisionManager.shouldPrompt(currentState, previousState, context.temporalNotes, context);
-        
-        if (!decision.shouldPrompt && decision.urgency !== 'high') {
-          // Don't prompt yet - return cached or previous result
-          if (context.previousResult) {
-            // Track metrics: skipped LLM call
-            try {
-              const { researchMetrics } = await import('../evaluation/metrics/research-metrics-collector.mjs');
-              researchMetrics.recordTemporalDecision('with', {
-                llmCalls: 0,
-                skipped: true,
-                accuracy: null,
-                latency: 0,
-                cost: 0
-              });
-            } catch (error) {
-              // Silently fail metrics tracking to avoid breaking validation
-            }
-            
-            return {
-              ...context.previousResult,
-              skipped: true,
-              skipReason: decision.reason,
-              urgency: decision.urgency
-            };
-          }
-          // If no previous result, still prompt but mark as low urgency
-          // (This prevents blocking when there's no history)
-        }
-        // High urgency or shouldPrompt = true: proceed with validation
-        // Track metrics: LLM call made
-        try {
-          const { researchMetrics } = await import('../evaluation/metrics/research-metrics-collector.mjs');
-          researchMetrics.recordTemporalDecision('with', {
-            llmCalls: 1,
-            skipped: false,
-            accuracy: null,
-            latency: null,
-            cost: null
-          });
-        } catch (error) {
-          // Silently fail metrics tracking
-        }
-      } catch (error) {
-        // If TemporalDecisionManager fails, proceed with validation (graceful degradation)
-        if (this.config.debug?.verbose) {
-          log(`[VLLM] TemporalDecisionManager error: ${error.message}`);
-        }
-      }
+    // Temporal Decision Manager
+    // Logic extracted to evaluateTemporalDecision for testability and simplicity
+    const temporalResult = await evaluateTemporalDecision(context, this.config);
+    if (temporalResult) {
+      return temporalResult;
     }
 
     // Initialize cache if needed
@@ -308,6 +258,27 @@ export class VLLMJudge {
       const cacheKey = isMultiImage ? imagePaths.join('|') : imagePath;
       const cached = getCached(cacheKey, prompt, context);
       if (cached) {
+        // Log cache hit (weighted: cache hits are important for performance visibility)
+        // Use safe logger
+        import('./cache.mjs').then(({ getCache }) => {
+          try {
+            const cache = getCache();
+            safeLogCacheOperation({
+              operation: 'hit',
+              hit: true,
+              latency: 0, // Minimal latency for cache hits
+              cacheSize: cache.size,
+              maxSize: 1000 // MAX_CACHE_SIZE
+            });
+          } catch { /* ignore */ }
+        })
+          .catch((importError) => {
+            // Log to console if performance logger unavailable (better than silent failure)
+            if (this.config.debug.verbose) {
+              warn(`[VLLM] Performance logger unavailable: ${importError.message}`);
+            }
+          });
+        
         if (this.config.debug.verbose) {
           log(`[VLLM] Cache hit for ${cacheKey}`);
         }
@@ -323,13 +294,35 @@ export class VLLMJudge {
         }
         
         return { ...cached, cached: true };
-      } else if (context.sessionId) {
-        // Record cache miss
-        try {
-          const { recordSessionCacheMiss } = await import('./session-cost-tracker.mjs');
-          recordSessionCacheMiss(context.sessionId);
-        } catch {
-          // Silently fail if session tracking unavailable
+      } else {
+        // Log cache miss (weighted: cache misses are important for optimization)
+        // Use safe logger
+        import('./cache.mjs').then(({ getCache }) => {
+          try {
+            const cache = getCache();
+            safeLogCacheOperation({
+              operation: 'miss',
+              hit: false,
+              cacheSize: cache.size,
+              maxSize: 1000 // MAX_CACHE_SIZE
+            });
+          } catch { /* ignore */ }
+        })
+          .catch((importError) => {
+            // Log to console if performance logger unavailable (better than silent failure)
+            if (this.config.debug.verbose) {
+              warn(`[VLLM] Performance logger unavailable: ${importError.message}`);
+            }
+          });
+        
+        if (context.sessionId) {
+          // Record cache miss
+          try {
+            const { recordSessionCacheMiss } = await import('./session-cost-tracker.mjs');
+            recordSessionCacheMiss(context.sessionId);
+          } catch {
+            // Silently fail if session tracking unavailable
+          }
         }
       }
     }
@@ -344,6 +337,7 @@ export class VLLMJudge {
     let judgment = null;
     let error = null;
     let attempts = 0;
+    let responseTime = 0; // Initialize for error logging
 
     try {
       // SECURITY: Rate limiting (if enabled)
@@ -378,6 +372,24 @@ export class VLLMJudge {
           case 'gemini':
             apiResponse = await this.callGeminiAPI(base64Images, fullPrompt, abortController.signal, isMultiImage);
             clearTimeout(timeoutId);
+            
+            // Check if response is HTML (error page) instead of JSON
+            const geminiContentType = apiResponse.headers.get('content-type') || '';
+            if (!geminiContentType.includes('application/json')) {
+              const text = await apiResponse.text();
+              const statusCode = apiResponse.status;
+              throw new ProviderError(
+                `Gemini API returned non-JSON response (${geminiContentType}). Status: ${statusCode}. This usually indicates an invalid API key or endpoint issue.`,
+                'gemini',
+                {
+                  statusCode,
+                  contentType: geminiContentType,
+                  responsePreview: text.substring(0, 200),
+                  retryable: false
+                }
+              );
+            }
+            
             apiData = await apiResponse.json();
             
             if (apiData.error) {
@@ -405,6 +417,24 @@ export class VLLMJudge {
           case 'openai':
             apiResponse = await this.callOpenAIAPI(base64Images, fullPrompt, abortController.signal, isMultiImage);
             clearTimeout(timeoutId);
+            
+            // Check if response is HTML (error page) instead of JSON
+            const openaiContentType = apiResponse.headers.get('content-type') || '';
+            if (!openaiContentType.includes('application/json')) {
+              const text = await apiResponse.text();
+              const statusCode = apiResponse.status;
+              throw new ProviderError(
+                `OpenAI API returned non-JSON response (${openaiContentType}). Status: ${statusCode}. This usually indicates an invalid API key or endpoint issue.`,
+                'openai',
+                {
+                  statusCode,
+                  contentType: openaiContentType,
+                  responsePreview: text.substring(0, 200),
+                  retryable: false
+                }
+              );
+            }
+            
             apiData = await apiResponse.json();
             
             if (apiData.error) {
@@ -432,6 +462,24 @@ export class VLLMJudge {
           case 'claude':
             apiResponse = await this.callClaudeAPI(base64Images, fullPrompt, abortController.signal, isMultiImage);
             clearTimeout(timeoutId);
+            
+            // Check if response is HTML (error page) instead of JSON
+            const claudeContentType = apiResponse.headers.get('content-type') || '';
+            if (!claudeContentType.includes('application/json')) {
+              const text = await apiResponse.text();
+              const statusCode = apiResponse.status;
+              throw new ProviderError(
+                `Claude API returned non-JSON response (${claudeContentType}). Status: ${statusCode}. This usually indicates an invalid API key or endpoint issue.`,
+                'claude',
+                {
+                  statusCode,
+                  contentType: claudeContentType,
+                  responsePreview: text.substring(0, 200),
+                  retryable: false
+                }
+              );
+            }
+            
             apiData = await apiResponse.json();
             
             if (apiData.error) {
@@ -461,6 +509,24 @@ export class VLLMJudge {
             // Groq's endpoint is already set in providerConfig.apiUrl (https://api.groq.com/openai/v1)
             apiResponse = await this.callOpenAIAPI(base64Images, fullPrompt, abortController.signal, isMultiImage);
             clearTimeout(timeoutId);
+            
+            // Check if response is HTML (error page) instead of JSON
+            const contentType = apiResponse.headers.get('content-type') || '';
+            if (!contentType.includes('application/json')) {
+              const text = await apiResponse.text();
+              const statusCode = apiResponse.status;
+              throw new ProviderError(
+                `Groq API returned non-JSON response (${contentType}). Status: ${statusCode}. This usually indicates an invalid API key or endpoint issue.`,
+                'groq',
+                {
+                  statusCode,
+                  contentType,
+                  responsePreview: text.substring(0, 200),
+                  retryable: false
+                }
+              );
+            }
+            
             apiData = await apiResponse.json();
             
             if (apiData.error) {
@@ -485,14 +551,65 @@ export class VLLMJudge {
               logprobs
             };
             
+          case 'openrouter':
+            // OpenRouter uses OpenAI-compatible API
+            apiResponse = await this.callOpenAIAPI(base64Images, fullPrompt, abortController.signal, isMultiImage);
+            clearTimeout(timeoutId);
+            
+            const orContentType = apiResponse.headers.get('content-type') || '';
+            if (!orContentType.includes('application/json')) {
+              const text = await apiResponse.text();
+              const statusCode = apiResponse.status;
+              throw new ProviderError(
+                `OpenRouter API returned non-JSON response (${orContentType}). Status: ${statusCode}. Check API key.`,
+                'openrouter',
+                { statusCode, contentType: orContentType, responsePreview: text.substring(0, 200), retryable: false }
+              );
+            }
+            
+            apiData = await apiResponse.json();
+            
+            if (apiData.error) {
+              const statusCode = apiResponse.status;
+              throw new ProviderError(
+                `OpenRouter API error: ${apiData.error.message || 'Unknown error'}`,
+                'openrouter',
+                { apiError: apiData.error, statusCode, retryable: statusCode === 429 || statusCode >= 500 }
+              );
+            }
+            
+            return {
+              judgment: apiData.choices?.[0]?.message?.content || 'No response',
+              data: apiData,
+              logprobs: apiData.choices?.[0]?.logprobs || null
+            };
+            
           default:
             throw new ProviderError(`Unknown provider: ${this.provider}`, this.provider);
         }
       }, {
         maxRetries,
-        baseDelay: 1000,
-        maxDelay: 30000,
+        baseDelay: RETRY_CONSTANTS.DEFAULT_BASE_DELAY_MS,
+        maxDelay: RETRY_CONSTANTS.DEFAULT_MAX_DELAY_MS,
         onRetry: (err, attempt, delay) => {
+          // Log retry attempts (weighted: retries are important for debugging)
+          // Use dynamic import with proper error handling to prevent unhandled promise rejections
+          import('./utils/performance-logger.mjs')
+            .then(({ logErrorPattern }) => {
+              logErrorPattern({
+                error: err,
+                context: `API retry (${this.provider})`,
+                recovery: 'exponential_backoff',
+                retryCount: attempt
+              });
+            })
+            .catch((importError) => {
+              // Log to console if performance logger unavailable (better than silent failure)
+              if (this.config.debug.verbose) {
+                warn(`[VLLM] Performance logger unavailable: ${importError.message}`);
+              }
+            });
+          
           if (this.config.debug.verbose) {
             warn(`[VLLM] Retry ${attempt}/${maxRetries} for ${this.provider} API: ${err.message} (waiting ${delay}ms)`);
           }
@@ -504,6 +621,29 @@ export class VLLMJudge {
       const logprobs = apiResult.logprobs || null;
       
       const responseTime = Date.now() - startTime;
+      
+      // Log API call performance (weighted: always log for critical paths)
+      // Use dynamic import with proper error handling to prevent unhandled promise rejections
+      import('./utils/performance-logger.mjs')
+        .then(({ logAPICallPerformance }) => {
+          logAPICallPerformance({
+            provider: this.provider,
+            latency: responseTime,
+            retries: attempts - 1,
+            cost: estimatedCost?.totalCost || null,
+            inputTokens: estimatedCost?.inputTokens || 0,
+            outputTokens: estimatedCost?.outputTokens || 0,
+            success: true,
+            testName: context.testType || context.step || 'unknown'
+          });
+        })
+        .catch((importError) => {
+          // Log to console if performance logger unavailable (better than silent failure)
+          if (this.config.debug.verbose) {
+            warn(`[VLLM] Performance logger unavailable: ${importError.message}`);
+          }
+        });
+      
       const semanticInfo = this.extractSemanticInfo(judgment);
       
       // Enhance with uncertainty reduction (if enabled)
@@ -666,6 +806,33 @@ export class VLLMJudge {
     } catch (err) {
       clearTimeout(timeoutId);
       error = err;
+      responseTime = Date.now() - startTime;
+      
+      // Log API call failure (weighted: always log errors)
+      // Use dynamic import without await (fire-and-forget logging)
+      import('./utils/performance-logger.mjs').then(({ logAPICallPerformance, logErrorPattern }) => {
+        logAPICallPerformance({
+          provider: this.provider,
+          latency: responseTime,
+          retries: attempts - 1,
+          success: false,
+          error: err,
+          testName: context.testType || context.step || 'unknown'
+        });
+        logErrorPattern({
+          error: err,
+          context: `API call (${this.provider})`,
+          recovery: 'retry_with_backoff',
+          retryCount: attempts - 1,
+          recovered: false
+        });
+      })
+        .catch((importError) => {
+          // Log to console if performance logger unavailable (better than silent failure)
+          if (this.config.debug.verbose) {
+            warn(`[VLLM] Performance logger unavailable: ${importError.message}`);
+          }
+        });
       
       // Handle timeout errors specifically
       if (error.name === 'AbortError' || error.message?.includes('timeout') || error.message?.includes('aborted')) {
@@ -1168,6 +1335,11 @@ export class VLLMJudge {
         inputTokens = data.usage?.prompt_tokens || 0;
         outputTokens = data.usage?.completion_tokens || 0;
         break;
+      case 'openrouter':
+        // OpenRouter uses OpenAI-compatible API format
+        inputTokens = data.usage?.prompt_tokens || 0;
+        outputTokens = data.usage?.completion_tokens || 0;
+        break;
     }
     
     const inputCost = (inputTokens / 1_000_000) * this.providerConfig.pricing.input;
@@ -1193,15 +1365,67 @@ export class VLLMJudge {
  * Optional enhancements:
  * - `useTemporalDecision: true` - Use TemporalDecisionManager to reduce LLM calls by 98.5%
  * - `useEnsemble: true` - Use EnsembleJudge for 10-20% accuracy improvement
+ * - `autoSelectTier: true` - Automatically select model tier based on context (cost optimization)
+ * - `autoSelectProvider: true` - Automatically select cheapest provider (cost optimization)
+ * - `includeCostComparison: true` - Include cost comparison across tiers in result
  * 
  * @param {string} imagePath - Path to screenshot
  * @param {string} prompt - Evaluation prompt
  * @param {import('./index.mjs').ValidationContext} [context={}] - Validation context
  * @param {boolean} [context.useTemporalDecision] - Use TemporalDecisionManager (reduces LLM calls)
  * @param {boolean} [context.useEnsemble] - Use EnsembleJudge (improves accuracy)
+ * @param {boolean} [context.autoSelectTier] - Auto-select model tier (fast/balanced/best)
+ * @param {boolean} [context.autoSelectProvider] - Auto-select cheapest provider
+ * @param {boolean} [context.includeCostComparison] - Include cost comparison in result
  * @returns {Promise<import('./index.mjs').ValidationResult>} Validation result
  */
 export async function validateScreenshot(imagePath, prompt, context = {}) {
+  // Auto-select tier if requested (cost optimization)
+  if (context.autoSelectTier) {
+    try {
+      const { selectModelTier } = await import('./model-tier-selector.mjs');
+      const tier = selectModelTier(context);
+      // Merge tier into context for config creation
+      context = {
+        ...context,
+        modelTier: tier
+      };
+      if (context.debug?.verbose) {
+        log(`[VLLM] Auto-selected tier: ${tier} based on context`);
+      }
+    } catch (error) {
+      // Silently fail - auto-select is optional enhancement
+      if (context.debug?.verbose) {
+        warn(`[VLLM] Auto-tier selection failed: ${error.message}`);
+      }
+    }
+  }
+
+  // Auto-select provider if requested (cost optimization)
+  if (context.autoSelectProvider) {
+    try {
+      const { selectProvider } = await import('./model-tier-selector.mjs');
+      const provider = selectProvider({
+        speed: context.speed,
+        quality: context.quality,
+        costSensitive: context.costSensitive,
+        env: process.env
+      });
+      context = {
+        ...context,
+        provider
+      };
+      if (context.debug?.verbose) {
+        log(`[VLLM] Auto-selected provider: ${provider}`);
+      }
+    } catch (error) {
+      // Silently fail - auto-select is optional enhancement
+      if (context.debug?.verbose) {
+        warn(`[VLLM] Auto-provider selection failed: ${error.message}`);
+      }
+    }
+  }
+
   // Ensemble Judge: Multiple LLM judges with consensus voting
   // Research: arXiv:2510.01499 - Optimal ensemble weighting improves accuracy by 10-20%
   if (context.useEnsemble) {
@@ -1235,5 +1459,20 @@ export async function validateScreenshot(imagePath, prompt, context = {}) {
   }
 
   const judge = new VLLMJudge(context);
-  return judge.judgeScreenshot(imagePath, prompt, context);
+  const result = await judge.judgeScreenshot(imagePath, prompt, context);
+  
+  // Enhance result with cost comparison if requested
+  if (context.includeCostComparison && result.estimatedCost) {
+    try {
+      const { calculateCostComparison } = await import('./cost-optimization.mjs');
+      result.costComparison = calculateCostComparison(context, result);
+    } catch (error) {
+      // Silently fail - cost comparison is optional
+      if (context.debug?.verbose) {
+        warn(`[VLLM] Cost comparison failed: ${error.message}`);
+      }
+    }
+  }
+  
+  return result;
 }

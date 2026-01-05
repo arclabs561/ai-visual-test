@@ -6,7 +6,7 @@
  * 
  * Design Philosophy:
  * - High-frequency decisions (10-60Hz) → use 'fast' tier
- * - Critical evaluations → use 'best' tier
+ * - Critical evaluations → use 'high quality' tier
  * - Cost-sensitive → use 'fast' tier
  * - Standard validations → use 'balanced' tier (default)
  * 

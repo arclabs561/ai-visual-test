@@ -60,6 +60,12 @@ test('enableUncertaintyReduction - actually reduces uncertainty', async function
         }
       );
     } catch (error) {
+      // If API key is invalid, skip the test
+      if (error.code === 'PROVIDER_ERROR' && error.message.includes('API key not valid')) {
+        console.log('   ℹ️  API key not valid, skipping test');
+        this.skip();
+        return;
+      }
       // If image processing fails (e.g., invalid image format), skip this test
       // The goal is to validate research features work, not to test image processing
       if (error.message && (error.message.includes('invalid image') || error.message.includes('Unable to process input image'))) {
@@ -132,6 +138,12 @@ test('enableHallucinationCheck - detects hallucinations', async function() {
         }
       );
     } catch (error) {
+      // If API key is invalid, skip the test
+      if (error.code === 'PROVIDER_ERROR' && error.message.includes('API key not valid')) {
+        console.log('   ℹ️  API key not valid, skipping test');
+        this.skip();
+        return;
+      }
       // If image processing fails (e.g., invalid image format), skip this test
       // The goal is to validate research features work, not to test image processing
       if (error.message && (error.message.includes('invalid image') || error.message.includes('Unable to process input image'))) {

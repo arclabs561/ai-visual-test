@@ -22,11 +22,12 @@ echo "Storage class: STANDARD_IA (Infrequent Access)"
 echo ""
 
 # s5cmd syntax: cp <source> <destination> [options]
-# s5cmd automatically handles directories recursively when using wildcards
-# Use wildcard pattern to copy all contents recursively
-s5cmd cp "${SOURCE_DIR}"* "${S3_BUCKET}" \
-  --storage-class STANDARD_IA \
-  --concurrency 50
+# For large directories, use find + xargs for better control
+# Storage class uses = syntax: --storage-class=STANDARD_IA
+find "${SOURCE_DIR}" -type f | while read file; do
+  rel_path=${file#${SOURCE_DIR}/}
+  s5cmd cp "$file" "${S3_BUCKET}${rel_path}" --storage-class=STANDARD_IA
+done
 
 echo ""
 echo "Backup complete. Verify with:"

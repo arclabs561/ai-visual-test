@@ -101,12 +101,22 @@ test('Accessibility: Print styles are defined', () => {
   );
 });
 
-test('Visual: Page renders correctly in dark mode', async () => {
+test('Visual: Page renders correctly in dark mode', async function() {
   test.skip(shouldSkipVisual, 'No VLLM API key configured');
   
-  const { chromium } = await import('playwright');
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
+  let browser, page;
+  try {
+    const { chromium } = await import('playwright');
+    browser = await chromium.launch();
+    page = await browser.newPage();
+  } catch (error) {
+    if (error.message.includes('Executable doesn\'t exist') || error.message.includes('browserType.launch')) {
+      console.log('   ℹ️  Playwright browsers not installed. Run: npx playwright install chromium');
+      this.skip();
+      return;
+    }
+    throw error;
+  }
   
   try {
     // Set dark mode preference
@@ -166,16 +176,30 @@ ISSUES TO FLAG:
       );
     }
   } finally {
-    await browser.close();
+    if (browser) {
+      if (browser) {
+      await browser.close();
+    }
+    }
   }
 });
 
-test('Visual: Page renders correctly in light mode', async () => {
+test('Visual: Page renders correctly in light mode', async function() {
   test.skip(shouldSkipVisual, 'No VLLM API key configured');
   
-  const { chromium } = await import('playwright');
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
+  let browser, page;
+  try {
+    const { chromium } = await import('playwright');
+    browser = await chromium.launch();
+    page = await browser.newPage();
+  } catch (error) {
+    if (error.message.includes('Executable doesn\'t exist') || error.message.includes('browserType.launch')) {
+      console.log('   ℹ️  Playwright browsers not installed. Run: npx playwright install chromium');
+      this.skip();
+      return;
+    }
+    throw error;
+  }
   
   try {
     // Set light mode preference
@@ -235,14 +259,26 @@ ISSUES TO FLAG:
       );
     }
   } finally {
-    await browser.close();
+    if (browser) {
+      await browser.close();
+    }
   }
 });
 
-test('Accessibility: Color contrast meets WCAG AA standards', async () => {
-  const { chromium } = await import('playwright');
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
+test('Accessibility: Color contrast meets WCAG AA standards', async function() {
+  let browser, page;
+  try {
+    const { chromium } = await import('playwright');
+    browser = await chromium.launch();
+    page = await browser.newPage();
+  } catch (error) {
+    if (error.message.includes('Executable doesn\'t exist') || error.message.includes('browserType.launch')) {
+      console.log('   ℹ️  Playwright browsers not installed. Run: npx playwright install chromium');
+      this.skip();
+      return;
+    }
+    throw error;
+  }
   
   try {
     const content = readFileSync(publicIndexPath, 'utf-8');
@@ -286,16 +322,30 @@ test('Accessibility: Color contrast meets WCAG AA standards', async () => {
       `All text should meet WCAG AA contrast in light mode. Passing: ${lightContrastResult.passing}/${lightContrastResult.total}, Failing: ${lightContrastResult.failing}, Violations: ${lightContrastResult.violations?.length || 0}`
     );
   } finally {
-    await browser.close();
+    if (browser) {
+      if (browser) {
+      await browser.close();
+    }
+    }
   }
 });
 
-test('Accessibility: Hybrid validation (programmatic + visual)', async () => {
+test('Accessibility: Hybrid validation (programmatic + visual)', async function() {
   test.skip(shouldSkipVisual, 'No VLLM API key configured');
   
-  const { chromium } = await import('playwright');
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
+  let browser, page;
+  try {
+    const { chromium } = await import('playwright');
+    browser = await chromium.launch();
+    page = await browser.newPage();
+  } catch (error) {
+    if (error.message.includes('Executable doesn\'t exist') || error.message.includes('browserType.launch')) {
+      console.log('   ℹ️  Playwright browsers not installed. Run: npx playwright install chromium');
+      this.skip();
+      return;
+    }
+    throw error;
+  }
   
   try {
     const content = readFileSync(publicIndexPath, 'utf-8');
@@ -344,7 +394,9 @@ test('Accessibility: Hybrid validation (programmatic + visual)', async () => {
       }
     }
   } finally {
-    await browser.close();
+    if (browser) {
+      await browser.close();
+    }
   }
 });
 
@@ -411,14 +463,26 @@ ISSUES TO FLAG:
       );
     }
   } finally {
-    await browser.close();
+    if (browser) {
+      await browser.close();
+    }
   }
 });
 
-test('Typography: Fluid typography scales correctly', async () => {
-  const { chromium } = await import('playwright');
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
+test('Typography: Fluid typography scales correctly', async function() {
+  let browser, page;
+  try {
+    const { chromium } = await import('playwright');
+    browser = await chromium.launch();
+    page = await browser.newPage();
+  } catch (error) {
+    if (error.message.includes('Executable doesn\'t exist') || error.message.includes('browserType.launch')) {
+      console.log('   ℹ️  Playwright browsers not installed. Run: npx playwright install chromium');
+      this.skip();
+      return;
+    }
+    throw error;
+  }
   
   try {
     const content = readFileSync(publicIndexPath, 'utf-8');
@@ -454,14 +518,26 @@ test('Typography: Fluid typography scales correctly', async () => {
       );
     }
   } finally {
-    await browser.close();
+    if (browser) {
+      await browser.close();
+    }
   }
 });
 
-test('Focus states: Keyboard navigation works correctly', async () => {
-  const { chromium } = await import('playwright');
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
+test('Focus states: Keyboard navigation works correctly', async function() {
+  let browser, page;
+  try {
+    const { chromium } = await import('playwright');
+    browser = await chromium.launch();
+    page = await browser.newPage();
+  } catch (error) {
+    if (error.message.includes('Executable doesn\'t exist') || error.message.includes('browserType.launch')) {
+      console.log('   ℹ️  Playwright browsers not installed. Run: npx playwright install chromium');
+      this.skip();
+      return;
+    }
+    throw error;
+  }
   
   try {
     const content = readFileSync(publicIndexPath, 'utf-8');
@@ -510,16 +586,28 @@ test('Focus states: Keyboard navigation works correctly', async () => {
       );
     }
   } finally {
-    await browser.close();
+    if (browser) {
+      await browser.close();
+    }
   }
 });
 
-test('Status badge: Visual states (ok/error) are distinct', async () => {
+test('Status badge: Visual states (ok/error) are distinct', async function() {
   test.skip(shouldSkipVisual, 'No VLLM API key configured');
   
-  const { chromium } = await import('playwright');
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
+  let browser, page;
+  try {
+    const { chromium } = await import('playwright');
+    browser = await chromium.launch();
+    page = await browser.newPage();
+  } catch (error) {
+    if (error.message.includes('Executable doesn\'t exist') || error.message.includes('browserType.launch')) {
+      console.log('   ℹ️  Playwright browsers not installed. Run: npx playwright install chromium');
+      this.skip();
+      return;
+    }
+    throw error;
+  }
   
   try {
     const content = readFileSync(publicIndexPath, 'utf-8');
@@ -573,7 +661,9 @@ ISSUES TO FLAG:
       );
     }
   } finally {
-    await browser.close();
+    if (browser) {
+      await browser.close();
+    }
   }
 });
 

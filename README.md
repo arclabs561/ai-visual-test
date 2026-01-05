@@ -6,8 +6,6 @@ AI-powered visual testing framework. Uses Vision Language Models (VLLM) to under
 
 Pixel-based testing breaks when content changes. This tool asks "does this look correct?" instead of "did pixels change?"
 
-**Value proposition**: Understand UI meaning, not just pixels. Validate accessibility, design quality, and user experience with AI-powered semantic analysis.
-
 ## Installation
 
 ```bash
@@ -20,7 +18,7 @@ Set an API key in a `.env` file:
 
 ```bash
 # .env file
-GEMINI_API_KEY=your-key-here  # Recommended (Fast & Cheap)
+GEMINI_API_KEY=your-key-here
 # or
 OPENAI_API_KEY=your-key-here
 # or
@@ -29,7 +27,7 @@ ANTHROPIC_API_KEY=your-key-here
 
 ## Quick Start
 
-### With Playwright (Recommended)
+### With Playwright
 
 ```javascript
 import { validatePage } from '@arclabs561/ai-visual-test';
@@ -63,7 +61,7 @@ console.log(result.issues); // ['Missing error messages', 'Low contrast']
 ## Key Features
 
 ### 1. Hybrid Validation
-Combines deterministic code checks (contrast ratios, aria-labels) with AI visual judgment for maximum reliability.
+Combines deterministic code checks (contrast ratios, aria-labels) with AI visual judgment.
 
 ```javascript
 import { validateAccessibilityHybrid } from '@arclabs561/ai-visual-test/validators';
@@ -72,7 +70,7 @@ const result = await validateAccessibilityHybrid(page, 'shot.png');
 ```
 
 ### 2. AI Game Agent
-A cognitive agent that can play Canvas/WebGL games by "seeing" the screen and planning actions. Includes **Reflexion** (learning from mistakes) and **Chain of Thought**.
+Plays Canvas/WebGL games by analyzing screenshots and planning actions. Includes Reflexion (learning from mistakes) and Chain of Thought.
 
 ```javascript
 import { playGame } from '@arclabs561/ai-visual-test';
@@ -80,18 +78,18 @@ await playGame(page, { goal: 'Win the level', maxSteps: 50 });
 ```
 
 ### 3. Cost Optimization
-Built-in caching, model tiering, and provider selection. See `test/performance/optimization-claims-validation.test.mjs` for validation.
+Caching, model tiering, and provider selection. See `test/performance/optimization-claims-validation.test.mjs` for validation.
 
 ## Documentation
 
-- [**EXAMPLES.md**](./EXAMPLES.md) - Code snippets for Game Playing, Hybrid Validation, Playwright integration, and more.
+- [**EXAMPLES.md**](./EXAMPLES.md) - Code snippets for Game Playing, Hybrid Validation, Playwright integration.
 - [**API_QUICK_REFERENCE.md**](./API_QUICK_REFERENCE.md) - Function signatures and options.
-- [**examples/**](./examples/) - Runnable examples for different use cases (Enterprise QA, Game Dev, etc.).
-- **TypeScript**: Full type definitions included.
+- [**examples/**](./examples/) - Runnable examples.
+- **TypeScript**: Type definitions included.
 
 ## Playwright Integration
 
-Custom matchers for idiomatic Playwright tests. **Requires `@playwright/test` to be installed** (already in devDependencies for this project).
+Custom matchers for Playwright tests. **Requires `@playwright/test` to be installed** (already in devDependencies for this project).
 
 ### Setup
 
@@ -128,7 +126,7 @@ npx playwright install chromium
 
 See `examples/playwright-setup.mjs` for a complete setup example.
 
-**Full documentation:** [docs/PLAYWRIGHT_INTEGRATION.md](./docs/PLAYWRIGHT_INTEGRATION.md)
+Documentation: [docs/PLAYWRIGHT_INTEGRATION.md](./docs/PLAYWRIGHT_INTEGRATION.md)
 
 ## License
 

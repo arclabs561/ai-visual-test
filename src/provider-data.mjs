@@ -21,23 +21,23 @@
  * - 185-276 tokens/sec throughput
  * - OpenAI-compatible API
  * - Cost-competitive, free tier available
- * - Best for: Fast tier decisions, high-Hz temporal decisions, real-time applications
+ * - Useful for: Fast tier decisions, high-Hz temporal decisions, real-time applications
  */
 export const MODEL_TIERS = {
   gemini: {
     fast: 'gemini-2.5-flash',          // Fast, cost-effective (stable)
     balanced: 'gemini-2.5-flash',      // Good balance (using Flash as default balanced too)
-    best: 'gemini-3-pro-preview'       // Best quality (preview)
+    best: 'gemini-3-pro-preview'       // High quality (preview)
   },
   openai: {
     fast: 'gpt-4o-mini',               // Fast, cheaper
-    balanced: 'gpt-4o',                // Best balance (current production)
-    best: 'gpt-5'                      // Best quality (late 2025, latest production)
+    balanced: 'gpt-4o',                // Balanced (current production)
+    best: 'gpt-5'                      // High quality (late 2025, latest production)
   },
   claude: {
     fast: 'claude-3-5-haiku-20241022', // Fast, cheaper (latest Haiku)
-    balanced: 'claude-sonnet-4-5',      // Best balance (Sept 2025)
-    best: 'claude-sonnet-4-5'           // Best quality (Sept 2025)
+    balanced: 'claude-sonnet-4-5',      // Balanced (Sept 2025)
+    best: 'claude-sonnet-4-5'           // High quality (Sept 2025)
   },
   groq: {
     // NOTE: Groq vision support requires different model
@@ -45,14 +45,14 @@ export const MODEL_TIERS = {
     // For text-only: llama-3.3-70b-versatile is fastest (~0.22s latency)
     fast: 'meta-llama/llama-4-scout-17b-16e-instruct',   // Vision-capable, fastest Groq option
     balanced: 'meta-llama/llama-4-scout-17b-16e-instruct', // Vision-capable, balanced
-    best: 'meta-llama/llama-4-scout-17b-16e-instruct'   // Vision-capable, best quality (preview)
+    best: 'meta-llama/llama-4-scout-17b-16e-instruct'   // Vision-capable, high quality (preview)
     // WARNING: Groq vision models are preview-only. Text-only: use llama-3.3-70b-versatile
   },
   openrouter: {
     // OpenRouter provides access to multiple models via unified API
     fast: 'anthropic/claude-3-5-haiku',      // Fast, cheaper via OpenRouter
     balanced: 'anthropic/claude-sonnet-4',    // Balanced via OpenRouter
-    best: 'anthropic/claude-sonnet-4'         // Best via OpenRouter
+    best: 'anthropic/claude-sonnet-4'         // High quality via OpenRouter
   }
 };
 
@@ -62,7 +62,7 @@ export const MODEL_TIERS = {
  * GROQ INTEGRATION:
  * - OpenAI-compatible API (easy migration)
  * - ~0.22s latency (10x faster than typical providers)
- * - Best for high-frequency decisions (10-60Hz temporal decisions)
+ * - Useful for high-frequency decisions (10-60Hz temporal decisions)
  * - Free tier available for testing
  */
 export const PROVIDER_CONFIGS = {

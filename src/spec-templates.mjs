@@ -7,7 +7,7 @@
  * Based on research findings:
  * - Real-world BDD patterns (Cucumber, SpecFlow, Behave)
  * - Real-world usage patterns (200+ tests)
- * - Best practices (scenario independence, domain language, living documentation)
+ * - Practices (scenario independence, domain language, living documentation)
  */
 
 import { log } from './logger.mjs';

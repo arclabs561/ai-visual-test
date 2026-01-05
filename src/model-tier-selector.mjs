@@ -1,7 +1,7 @@
 /**
  * Model Tier Selector
  * 
- * Automatically selects the best model tier based on context (frequency, criticality, cost).
+ * Selects model tier based on context (frequency, criticality, cost).
  * Similar pattern to smart-validator.mjs which auto-selects validator types.
  * 
  * Design Philosophy:
@@ -95,7 +95,7 @@ export function selectModelTier(context = {}) {
   }
 
   // Tier 4: Standard validations → balanced (default)
-  // Rationale: Best balance of speed and quality
+  // Rationale: Balanced speed and quality
   log('[ModelTierSelector] Standard validation, selecting balanced tier (default)');
   return 'balanced';
 }

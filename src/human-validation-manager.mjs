@@ -5,8 +5,8 @@
  * - Non-blocking: Doesn't slow down evaluations
  * - Automatic: Collects VLLM judgments when enabled
  * - Smart sampling: Requests human validation for interesting cases
- * - Learning: Automatically calibrates based on collected data
- * - Seamless: Works with all existing systems (batching, temporal, personas)
+ * - Learning: Calibrates based on collected data
+ * - Integration: Works with all existing systems (batching, temporal, personas)
  */
 
 import { warn, log } from './logger.mjs';

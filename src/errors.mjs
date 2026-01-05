@@ -2,7 +2,7 @@
  * Custom Error Classes for ai-visual-test
  * 
  * Provides standardized error handling across the package.
- * Based on Playwright's error handling patterns and industry best practices.
+ * Based on Playwright's error handling patterns and industry practices.
  * 
  * All errors extend AIBrowserTestError for consistent error handling and serialization.
  */

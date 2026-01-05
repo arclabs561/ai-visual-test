@@ -10,7 +10,7 @@ import { loadEnv } from './load-env.mjs';
 import { API_CONSTANTS } from './constants.mjs';
 import { MODEL_TIERS, PROVIDER_CONFIGS } from './provider-data.mjs';
 
-// Load .env file automatically on module load
+// Load .env file on module load
 loadEnv();
 
 /**

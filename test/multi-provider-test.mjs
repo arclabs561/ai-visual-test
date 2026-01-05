@@ -5,48 +5,17 @@
  * to ensure provider-agnostic behavior and catch provider-specific issues.
  */
 
+import './test-setup.mjs'; // Auto-load .env (must be first)
 import { test, describe } from 'node:test';
 import assert from 'node:assert';
-import { loadEnv } from '../src/load-env.mjs';
 import { createConfig, getProvider } from '../src/config.mjs';
 import { VLLMJudge } from '../src/judge.mjs';
-import { writeFileSync, unlinkSync, existsSync, mkdirSync } from 'fs';
+import { unlinkSync, existsSync } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
+import { createTestImage } from './test-image-utils.mjs';
 
-// Ensure .env is loaded before tests
-// Note: config.mjs also calls loadEnv() on import, but we ensure it here too
-loadEnv();
-// Force reload environment to ensure API keys are available
-if (typeof process !== 'undefined' && process.env) {
-  // Environment should already be loaded by config.mjs import
-}
-
-/**
- * Create a test image file (valid PNG)
- * Uses a minimal but valid 1x1 PNG that VLLMs can process
- * Based on research: PNGs need proper format, reasonable size, correct MIME type
- */
-function createTestImage(path) {
-  const dir = join(path, '..');
-  if (!existsSync(dir)) {
-    mkdirSync(dir, { recursive: true });
-  }
-  
-  // Use a minimal but valid PNG (2x2 pixels minimum for Groq)
-  // This is a properly formatted PNG that all VLLM APIs can process
-  // Format: PNG signature + IHDR chunk + IDAT chunk + IEND chunk
-  const minimalPngBase64 = 'iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
-  const imageBuffer = Buffer.from(minimalPngBase64, 'base64');
-  writeFileSync(path, imageBuffer);
-  
-  // Verify it's a valid PNG (check signature)
-  const header = imageBuffer.slice(0, 8);
-  const pngSignature = Buffer.from([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]);
-  if (!header.equals(pngSignature)) {
-    throw new Error('Generated PNG has invalid signature');
-  }
-}
+// createTestImage is imported from test-image-utils.mjs (creates realistic 800x600 images)
 
 /**
  * Test a specific provider
@@ -55,7 +24,7 @@ async function testProvider(providerName) {
   const config = createConfig({ provider: providerName });
   
   if (!config.enabled) {
-    console.log(`⚠️  ${providerName}: API key not configured, skipping`);
+    // API key not available - test will return disabled results
     return { provider: providerName, enabled: false, tests: [] };
   }
   
@@ -78,7 +47,7 @@ async function testProvider(providerName) {
   try {
     const tempDir = join(tmpdir(), `provider-test-${Date.now()}`);
     const screenshotPath = join(tempDir, 'test.png');
-    createTestImage(screenshotPath);
+    await createTestImage(screenshotPath);
     
     const judge = new VLLMJudge({ provider: providerName });
     const result = await judge.judgeScreenshot(screenshotPath, 'Describe this image in one sentence.', {

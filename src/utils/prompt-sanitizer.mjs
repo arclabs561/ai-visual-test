@@ -79,6 +79,10 @@ export function sanitizePrompt(userPrompt, options = {}) {
   // Detect injection patterns
   const detectedPatterns = [];
   for (const pattern of INJECTION_PATTERNS) {
+    // Reset lastIndex for global regex patterns
+    if (pattern.global) {
+      pattern.lastIndex = 0;
+    }
     if (pattern.test(userPrompt)) {
       detectedPatterns.push(pattern.source);
     }
@@ -147,6 +151,10 @@ export function detectPromptInjection(userPrompt) {
 
   const detectedPatterns = [];
   for (const pattern of INJECTION_PATTERNS) {
+    // Reset lastIndex for global regex patterns
+    if (pattern.global) {
+      pattern.lastIndex = 0;
+    }
     if (pattern.test(userPrompt)) {
       detectedPatterns.push(pattern.source);
     }
@@ -193,7 +201,6 @@ export function validatePromptSecurity(userPrompt, strict = true) {
   if (detection.isInjection && strict) {
     throw new ValidationError(
       'Prompt injection detected. Prompt contains suspicious patterns that may attempt to override system instructions.',
-      null,
       {
         severity: detection.severity,
         patternCount: detection.patterns.length

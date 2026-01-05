@@ -4,6 +4,19 @@ All notable changes to ai-visual-test will be documented in this file.
 
 ## [0.6.0] - 2025-01-17
 
+### Changed
+- **Selective Obfuscation** - Core algorithms obfuscated while maintaining debuggability
+  - Obfuscates only Tier 1 files (temporal decision, cost optimization, activity preprocessing)
+  - Keeps API surface, validators, utilities, and cache system readable
+  - Transparent about obfuscation strategy in README
+  - TypeScript definitions enhanced with comprehensive JSDoc (survives obfuscation)
+- **Documentation Strategy** - Minimal, self-contained documentation in package
+  - `API_QUICK_REFERENCE.md` - Essential API patterns (in package)
+  - `EXAMPLES.md` - Working code examples (in package)
+  - Enhanced TypeScript definitions with examples and usage patterns
+  - README updated with obfuscation transparency section
+  - All documentation self-contained (no external hosting, GitHub is private)
+
 ### Security
 - **Path Traversal Prevention** - Added comprehensive path validation to prevent directory traversal attacks
   - `src/utils/path-validator.mjs` - Centralized path validation utilities
@@ -32,11 +45,11 @@ All notable changes to ai-visual-test will be documented in this file.
 ### Changed
 - **Repository Privacy** - GitHub repository made private
   - Source code, history, and internal documentation no longer publicly accessible
-- **npm Package Obfuscation** - Source code obfuscation for published packages
-  - `scripts/build-obfuscated.mjs` - Automated obfuscation build script
-  - Uses `javascript-obfuscator` with balanced protection settings
-  - CI/CD integration for automated obfuscation on publish
-  - Future versions (0.6.0+) will be obfuscated
+- **Selective Obfuscation** - Protects proprietary algorithms while maintaining usability
+  - Obfuscates: `temporal-decision-manager.mjs`, `cost-optimization.mjs`, `model-tier-selector.mjs`, `temporal-preprocessor.mjs`
+  - Readable: API surface, validators, utilities, cache system, error handling
+  - Build script shows which files are obfuscated (🔒) vs readable (📄)
+  - Transparent documentation about obfuscation strategy
 - **Package Cleanup** - Removed deployment-specific files from npm package
   - Removed `vercel.json`, `api/**/*.js`, `public/**/*.html` from package
   - Package now contains only library code (115 files)
@@ -54,11 +67,11 @@ All notable changes to ai-visual-test will be documented in this file.
   - `npm run build` - Build obfuscated package
   - `npm run build:skip-obfuscation` - Build without obfuscation (testing)
 - **Documentation**
-  - `docs/NPM_OBFUSCATION_PLAN.md` - Obfuscation strategy
-  - `docs/OBFUSCATION_VERSION_HANDLING.md` - Version handling strategy
-  - `docs/PRIOR_VERSIONS_OBFUSCATION.md` - Prior versions analysis
-  - `docs/VERCEL_CONFIG_REMOVAL.md` - Package cleanup rationale
-  - `docs/REPO_CLEANUP_PLAN.md` - Repository cleanup plan
+  - `API_QUICK_REFERENCE.md` - Essential API patterns (in package)
+  - `EXAMPLES.md` - Working code examples (in package)
+  - Enhanced TypeScript definitions with comprehensive JSDoc comments
+  - `docs/OBFUSCATION_STRATEGY.md` - Complete obfuscation strategy
+  - `docs/OBFUSCATION_IMPLEMENTATION.md` - Implementation details
 
 ### Improved
 - **Error Handling** - Enhanced error messages with sanitization

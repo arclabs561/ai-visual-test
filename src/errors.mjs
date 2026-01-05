@@ -42,7 +42,11 @@ export class AIBrowserTestError extends Error {
       code: this.code,
       message: this.message,
       details: this.details,
-      stack: this.stack
+      // SECURITY: Stack traces may contain sensitive information
+      // Only include in development mode or when explicitly requested
+      ...(process.env.NODE_ENV === 'development' || process.env.INCLUDE_STACK_TRACES === 'true' 
+        ? { stack: this.stack } 
+        : {})
     };
   }
 }

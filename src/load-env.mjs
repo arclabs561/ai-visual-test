@@ -26,7 +26,8 @@ const ALLOWED_ENV_KEYS = [
   'VLM_MODEL',
   'VLM_MODEL_TIER',
   'RATE_LIMIT_MAX_REQUESTS',
-  'REQUIRE_AUTH'
+  'REQUIRE_AUTH',
+  'DISABLE_LLM_CACHE' // Disable LLM caching globally (set to 'true' to disable)
 ];
 
 // Valid values for VLM_PROVIDER

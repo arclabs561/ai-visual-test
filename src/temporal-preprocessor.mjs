@@ -207,7 +207,7 @@ export class TemporalPreprocessingManager {
    * @param {Object} options - Aggregation options
    * @returns {import('./index.mjs').AggregatedTemporalNotes} Aggregated notes
    */
-  getFastAggregation(notes, options = {}) {
+  async getFastAggregation(notes, options = {}) {
     const activity = this.activityDetector.detectActivityLevel(notes);
     
     // During high activity, use cache if valid
@@ -216,11 +216,11 @@ export class TemporalPreprocessingManager {
       return this.preprocessedCache.aggregated;
     }
     
-    // Full synchronous computation
+    // Full computation (now async due to embeddings)
     // Note: For typical datasets (10-50 notes), full recomputation is fast (<1ms)
     // and simpler than incremental approaches. If use cases emerge with 1000+ notes,
     // consider implementing true incremental aggregation at that time.
-    return aggregateTemporalNotes(notes, options);
+    return await aggregateTemporalNotes(notes, options);
   }
   
   /**
@@ -249,7 +249,7 @@ export class TemporalPreprocessingManager {
     
     try {
       // Do expensive operations
-      const aggregated = aggregateTemporalNotes(notes, {
+      const aggregated = await aggregateTemporalNotes(notes, {
         windowSize: options.windowSize || 10000,
         decayFactor: options.decayFactor || 0.9
       });
@@ -470,7 +470,7 @@ export class AdaptiveTemporalProcessor {
     
     // High activity + interaction = use cache, fast path only
     if (activity === 'high' && hasInteraction) {
-      const aggregated = this.preprocessor.getFastAggregation(notes, options);
+      const aggregated = await this.preprocessor.getFastAggregation(notes, options);
       return {
         aggregated,
         multiScale: this.preprocessor.getFastMultiScale(notes),
@@ -508,7 +508,7 @@ export class AdaptiveTemporalProcessor {
     // Medium activity = hybrid: use cache if valid, else compute
     if (this.preprocessor.isCacheValid(notes)) {
       return {
-        aggregated: this.preprocessor.getFastAggregation(notes, options),
+        aggregated: await this.preprocessor.getFastAggregation(notes, options),
         multiScale: this.preprocessor.getFastMultiScale(notes),
         prunedNotes: this.preprocessor.getFastPrunedNotes(notes, options),
         source: 'cache',
@@ -520,8 +520,8 @@ export class AdaptiveTemporalProcessor {
         }
       };
     } else {
-      // Compute synchronously but lighter version
-      const aggregated = aggregateTemporalNotes(notes, {
+      // Compute (now async due to embeddings)
+      const aggregated = await aggregateTemporalNotes(notes, {
         windowSize: options.windowSize || 10000,
         decayFactor: options.decayFactor || 0.9
       });

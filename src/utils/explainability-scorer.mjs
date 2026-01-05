@@ -40,10 +40,29 @@ export function scoreExplainability(reasoning, action, options = {}) {
   
   // Simple scoring: has reasoning, mentions action, not too technical
   const hasAction = action.type && reasoning.toLowerCase().includes(action.type.toLowerCase());
-  const hasTarget = (action.selector || action.key || action.url) && 
-                    reasoning.includes(action.selector || action.key || action.url || '');
+  
+  // Check for target: selector, key, or URL - also check for semantic mentions (e.g., "submit button" for selector "#submit")
+  let hasTarget = false;
+  if (action.selector) {
+    // Check for exact selector match or semantic match (e.g., "submit button" for "#submit")
+    const selectorLower = action.selector.toLowerCase().replace(/[#.]/g, '');
+    const reasoningLower = reasoning.toLowerCase();
+    hasTarget = reasoning.includes(action.selector) || 
+                (selectorLower && reasoningLower.includes(selectorLower));
+  } else if (action.key) {
+    hasTarget = reasoning.includes(action.key);
+  } else if (action.url) {
+    hasTarget = reasoning.includes(action.url);
+  }
+  
   const notTooTechnical = !reasoning.match(/\b(algorithm|implementation|optimization|paradigm)\b/gi);
   const reasonableLength = reasoning.length > 20 && reasoning.length < 500;
+  
+  // Completeness: considers both action and target, plus reasoning depth
+  const hasDepth = reasoning.split(/[.!?]/).length > 2; // Multiple sentences indicate depth
+  const completeness = (hasAction && hasTarget && hasDepth) ? 0.9 :
+                       (hasAction && hasTarget) ? 0.8 :
+                       (hasAction || hasTarget) ? 0.6 : 0.4;
   
   const score = (hasAction ? 0.4 : 0) + 
                 (hasTarget ? 0.3 : 0) + 
@@ -59,7 +78,7 @@ export function scoreExplainability(reasoning, action, options = {}) {
   return {
     score,
     clarity: notTooTechnical && reasonableLength ? 0.8 : 0.5,
-    completeness: hasAction && hasTarget ? 0.8 : 0.5,
+    completeness,
     relevance: hasAction ? 0.8 : 0.5,
     issues,
     recommendation: score >= 0.7

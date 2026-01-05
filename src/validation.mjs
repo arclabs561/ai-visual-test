@@ -8,6 +8,7 @@
 import { ValidationError } from './errors.mjs';
 import { existsSync } from 'fs';
 import { normalize, resolve } from 'path';
+import { VALIDATION_CONSTANTS } from './constants.mjs';
 
 /**
  * Validate image file path
@@ -66,7 +67,7 @@ export function validateImagePath(imagePath, options = {}) {
  * @returns {true} Always returns true if valid
  * @throws {ValidationError} If prompt is invalid, empty, or too long
  */
-export function validatePrompt(prompt, maxLength = 10000) {
+export function validatePrompt(prompt, maxLength = VALIDATION_CONSTANTS.MAX_PROMPT_LENGTH) {
   if (typeof prompt !== 'string') {
     throw new ValidationError('Prompt must be a string', null, {
       received: typeof prompt
@@ -95,7 +96,7 @@ export function validatePrompt(prompt, maxLength = 10000) {
  * @returns {true} Always returns true if valid
  * @throws {ValidationError} If context is invalid type, too large, or non-serializable
  */
-export function validateContext(context, maxSize = 50000) {
+export function validateContext(context, maxSize = VALIDATION_CONSTANTS.MAX_CONTEXT_SIZE) {
   if (context === null || context === undefined) {
     return true; // Context is optional
   }
@@ -136,7 +137,7 @@ export function validateContext(context, maxSize = 50000) {
  * @returns {true} Always returns true if valid
  * @throws {ValidationError} If timeout is invalid, too short, or too long
  */
-export function validateTimeout(timeout, min = 1000, max = 300000) {
+export function validateTimeout(timeout, min = VALIDATION_CONSTANTS.MIN_TIMEOUT_MS, max = VALIDATION_CONSTANTS.MAX_TIMEOUT_MS) {
   if (typeof timeout !== 'number') {
     throw new ValidationError('Timeout must be a number', null, {
       received: typeof timeout
@@ -197,6 +198,9 @@ export function validateSchema(schema) {
 /**
  * Validate file path (general purpose)
  * 
+ * This is the primary path validation function. For simpler use cases,
+ * see the specialized functions: validateImagePath() for image files.
+ * 
  * @param {string} filePath - File path to validate
  * @param {{
  *   mustExist?: boolean;
@@ -227,6 +231,25 @@ export function validateFilePath(filePath, options = {}) {
   
   if (filePath.length > maxLength) {
     throw new ValidationError(`File path too long (max ${maxLength} characters)`, filePath);
+  }
+  
+  // SECURITY: Check for path traversal patterns in original string (before normalization)
+  // This provides better error messages and catches Windows backslash patterns
+  const traversalPatterns = [
+    /\.\.[\/\\]/,  // ../ or ..\
+    /\.\.%2[fF]/,  // URL-encoded ../
+    /\.\.%5[cC]/,  // URL-encoded ..\
+    /%2[eE]%2[eE][\/\\]/,  // URL-encoded ../
+    /%2[eE]%2[eE]%2[fF]/,  // URL-encoded ../
+    /%2[eE]%2[eE]%5[cC]/   // URL-encoded ..\
+  ];
+  
+  const hasTraversalPattern = traversalPatterns.some(pattern => pattern.test(filePath));
+  if (hasTraversalPattern) {
+    throw new ValidationError('Invalid file path: path traversal detected', filePath, {
+      pattern: 'detected in original path',
+      base: baseDir
+    });
   }
   
   // SECURITY: Use resolve to prevent path traversal

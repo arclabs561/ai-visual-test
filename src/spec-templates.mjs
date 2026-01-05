@@ -11,6 +11,7 @@
  */
 
 import { log } from './logger.mjs';
+import { ValidationError } from './errors.mjs';
 
 /**
  * Built-in templates for common patterns
@@ -221,7 +222,16 @@ export function createSpecFromTemplate(templateName, variables = {}) {
   const template = TEMPLATES[templateName];
   
   if (!template) {
-    throw new Error(`Template "${templateName}" not found. Available: ${Object.keys(TEMPLATES).join(', ')}`);
+    throw new ValidationError(
+      `Template "${templateName}" not found. ` +
+      `Available templates: ${Object.keys(TEMPLATES).join(', ')}. ` +
+      `Use listTemplates() to see all available templates, or registerTemplate() to create a custom one.`,
+      {
+        templateName,
+        availableTemplates: Object.keys(TEMPLATES),
+        function: 'createSpecFromTemplate'
+      }
+    );
   }
   
   // Merge template variables with provided variables
@@ -251,7 +261,15 @@ export function composeTemplates(templates, composition = 'sequential') {
     // Parallel: execute all (would need execution framework support)
     return templates.map(t => t.spec).join('\n\n---\n\n');
   } else {
-    throw new Error(`Unknown composition type: ${composition}`);
+    throw new ValidationError(
+      `Unknown composition type: "${composition}". ` +
+      `Supported types: "sequential" (execute one after another) or "parallel" (execute all).`,
+      {
+        composition,
+        supportedTypes: ['sequential', 'parallel'],
+        function: 'composeTemplates'
+      }
+    );
   }
 }
 
@@ -262,7 +280,16 @@ export function inheritTemplate(baseTemplateName, overrides = {}) {
   const base = TEMPLATES[baseTemplateName];
   
   if (!base) {
-    throw new Error(`Base template "${baseTemplateName}" not found`);
+    throw new ValidationError(
+      `Base template "${baseTemplateName}" not found. ` +
+      `Available templates: ${Object.keys(TEMPLATES).join(', ')}. ` +
+      `Use listTemplates() to see all available templates.`,
+      {
+        baseTemplateName,
+        availableTemplates: Object.keys(TEMPLATES),
+        function: 'inheritTemplate'
+      }
+    );
   }
   
   return {
@@ -280,7 +307,17 @@ export function inheritTemplate(baseTemplateName, overrides = {}) {
  */
 export function registerTemplate(name, template) {
   if (!template.name || !template.spec || !template.variables) {
-    throw new Error('Template must have name, spec, and variables');
+    throw new ValidationError(
+      'Template must have name, spec, and variables properties. ' +
+      'Template structure: { name: string, spec: string, variables: object }. ' +
+      'All three properties are required for template registration.',
+      {
+        hasName: !!template.name,
+        hasSpec: !!template.spec,
+        hasVariables: !!template.variables,
+        function: 'registerTemplate'
+      }
+    );
   }
   
   TEMPLATES[name] = template;
@@ -304,7 +341,16 @@ export function getTemplate(name) {
   const template = TEMPLATES[name];
   
   if (!template) {
-    throw new Error(`Template "${name}" not found. Available: ${Object.keys(TEMPLATES).join(', ')}`);
+    throw new ValidationError(
+      `Template "${name}" not found. ` +
+      `Available templates: ${Object.keys(TEMPLATES).join(', ')}. ` +
+      `Use listTemplates() to see all available templates, or registerTemplate() to create a custom one.`,
+      {
+        templateName: name,
+        availableTemplates: Object.keys(TEMPLATES),
+        function: 'getTemplate'
+      }
+    );
   }
   
   return template;

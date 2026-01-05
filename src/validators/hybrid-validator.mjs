@@ -42,6 +42,18 @@ function getValidateScreenshot() {
   return injectedValidateScreenshot || validateScreenshot;
 }
 
+function deduplicateIssues(issues) {
+  const seen = new Set();
+  return issues.filter(issue => {
+    const key = typeof issue === 'string' ? issue : JSON.stringify(issue);
+    if (seen.has(key)) {
+      return false;
+    }
+    seen.add(key);
+    return true;
+  });
+}
+
 /**
  * Hybrid accessibility validation
  * 
@@ -120,9 +132,39 @@ Provide actionable recommendations based on both programmatic and semantic analy
     programmaticData
   });
   
+  // Calculate programmatic pass status
+  const programmaticPassed = (programmaticData.contrast.failing === 0) && 
+                             (programmaticData.keyboard.violations.length === 0);
+
+  // Combine results
   return {
     ...result,
-    programmaticData
+    passed: programmaticPassed && (result.score === null || result.score >= 6),
+    programmaticData, // Required by tests/consumers
+    programmatic: programmaticData, // Alias for clarity
+    semantic: result,
+    method: 'hybrid',
+    issues: [
+      ...(programmaticData.contrast.violations || []),
+      ...(programmaticData.keyboard.violations || []),
+      ...result.issues || []
+    ],
+    uniqueIssues: deduplicateIssues([
+      ...(programmaticData.contrast.violations || []),
+      ...(programmaticData.keyboard.violations || []),
+      ...(result.issues || [])
+    ]).map(issue => {
+      // Normalize to strings for consistent formatting
+      if (typeof issue === 'string') return issue;
+      if (typeof issue === 'object' && issue !== null) {
+        if (issue.description) return issue.description;
+        if (issue.element && issue.issue) return `${issue.element}: ${issue.issue}`;
+        if (issue.ratio && issue.required) return `Contrast ${issue.ratio}:1 (required: ${issue.required}:1)`;
+        if (issue.message) return issue.message;
+        return JSON.stringify(issue);
+      }
+      return String(issue);
+    })
   };
 }
 
@@ -216,7 +258,8 @@ Provide actionable recommendations based on both programmatic and semantic analy
   
   return {
     ...result,
-    programmaticData
+    programmaticData,
+    method: 'hybrid'
   };
 }
 
@@ -262,7 +305,8 @@ EVALUATION INSTRUCTIONS:
   
   return {
     ...result,
-    programmaticData
+    programmaticData,
+    method: 'hybrid'
   };
 }
 

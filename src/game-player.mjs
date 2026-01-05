@@ -49,19 +49,45 @@ export async function decideGameAction(gameState, goal, history = []) {
     }
   );
   
-  // Use VLLM to decide action
-  const actionPrompt = `Based on the game state, decide what action to take.
-    Goal: ${goal}
-    Current state: ${stateEvaluation.reasoning?.substring(0, 200) || 'Unknown'}
-    Previous actions: ${recentHistory.slice(-3).map(h => h.action?.key || h.action?.type || 'unknown').join(', ')}
+  // Enhanced Prompt with Reflexion and Chain of Thought
+  let reflexionContext = '';
+  const lastStep = recentHistory[recentHistory.length - 1];
+  if (lastStep && lastStep.result?.score !== undefined) {
+    const scoreDelta = (stateEvaluation.score || 0) - (lastStep.result.score || 0);
+    if (scoreDelta < 0) {
+      reflexionContext = `CRITICAL REFLEXION: The previous action (${JSON.stringify(lastStep.action)}) caused the score to drop by ${Math.abs(scoreDelta)}. 
+      Analyze WHY this failed before choosing the next action. Avoid repeating the same mistake.`;
+    } else if (scoreDelta > 0) {
+      reflexionContext = `SUCCESS ANALYSIS: The previous action (${JSON.stringify(lastStep.action)}) increased the score by ${scoreDelta}. Continue this successful strategy.`;
+    }
+  }
+
+  const actionPrompt = `You are an expert game-playing agent. Your goal is: "${goal}".
     
-    Return action as JSON: { "type": "keyboard", "key": "ArrowRight" }
+    ${reflexionContext}
+
+    CURRENT STATE:
+    - Visual Analysis: ${stateEvaluation.reasoning?.substring(0, 300) || 'No analysis available'}
+    - Score: ${stateEvaluation.score}
+    - History: ${recentHistory.length} steps taken
+
+    INSTRUCTIONS:
+    1. THINK: Analyze the game state and physics step-by-step. Anticipate the consequences of moving Left, Right, Up, or Down.
+    2. PLAN: Formulate a short-term plan (next 3 steps).
+    3. ACT: Choose the single best immediate action.
+
+    Return JSON only:
+    {
+      "thought_process": "Step-by-step reasoning...",
+      "plan": "Short term plan...",
+      "type": "keyboard", 
+      "key": "ArrowRight" 
+    }
+    
     Available actions:
     - keyboard: ArrowLeft, ArrowRight, ArrowUp, ArrowDown, Space, Enter
     - click: { "type": "click", "selector": "#button" }
-    - wait: { "type": "wait", "duration": 100 }
-    
-    Choose the action that best achieves the goal.`;
+    - wait: { "type": "wait", "duration": 100 }`;
   
   const actionResult = await validateScreenshot(
     gameState.screenshot,
@@ -69,7 +95,8 @@ export async function decideGameAction(gameState, goal, history = []) {
     { 
       extractStructured: true, 
       testType: 'gameplay-decision',
-      goal: goal
+      goal: goal,
+      temperature: 0.2 // Lower temperature for more deterministic gameplay
     }
   );
   
@@ -79,6 +106,10 @@ export async function decideGameAction(gameState, goal, history = []) {
     try {
       const parsed = JSON.parse(actionMatch[0]);
       if (parsed.type && (parsed.key || parsed.selector || parsed.duration !== undefined)) {
+        // Log thought process for debugging/transparency
+        if (parsed.thought_process) {
+          log(`[GamePlayer] Agent Thought: ${parsed.thought_process}`);
+        }
         return parsed;
       }
     } catch (e) {
@@ -211,11 +242,42 @@ export async function playGame(page, options = {}) {
       const screenshotPath = join(screenshotDir, `gameplay-step-${step}.png`);
       writeFileSync(screenshotPath, screenshot);
       
+      // 2. Extract game state from page (if available)
+      let gameState = null;
+      try {
+        gameState = await page.evaluate(() => {
+          // Try multiple ways to get game state
+          if (window.gameState) {
+            return window.gameState;
+          }
+          // Try common game state patterns
+          if (window.game) {
+            return {
+              score: window.game.score || 0,
+              level: window.game.level || 0,
+              lives: window.game.lives || 0,
+              gameActive: window.game.active !== false
+            };
+          }
+          // Try to extract from DOM
+          const scoreEl = document.querySelector('#score, .score, [data-score]');
+          const score = scoreEl ? parseInt(scoreEl.textContent?.match(/\d+/)?.[0] || '0') : null;
+          return {
+            score,
+            gameActive: true // Assume active if we can't detect
+          };
+        });
+      } catch (error) {
+        // Game state extraction is optional
+        log(`[GamePlayer] Could not extract game state: ${error.message}`);
+      }
+      
       // 2. Understand current state (validation)
       currentState = {
         screenshot: screenshotPath,
         step,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        gameState // Include extracted game state
       };
       
       // Use TemporalDecisionManager to reduce LLM calls
@@ -244,7 +306,7 @@ export async function playGame(page, options = {}) {
           };
           const previousState = history[history.length - 1]?.result || null;
           
-          const decision = decisionManager.shouldPrompt(currentState, previousState, temporalNotes, {
+          const decision = await decisionManager.shouldPrompt(currentState, previousState, temporalNotes, {
             stage: 'gameplay',
             testType: 'gameplay'
           });

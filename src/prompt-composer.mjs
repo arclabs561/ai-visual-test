@@ -111,7 +111,7 @@ export async function composePrompt(basePrompt, options = {}) {
         });
         
         // Aggregate pruned notes
-        processedTemporalNotes = aggregateTemporalNotes(prunedNotes);
+        processedTemporalNotes = await aggregateTemporalNotes(prunedNotes);
       } catch (error) {
         // If pruning/aggregation fails, skip temporal context
         if (context.debug?.verbose) {

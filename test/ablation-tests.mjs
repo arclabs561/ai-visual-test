@@ -133,7 +133,7 @@ describe('Ablation Tests: Research Claim Validation', () => {
   });
   
   describe('Few-Shot Examples Ablation', () => {
-    it('should show semantic matching selects relevant examples (not proven 10-20% improvement)', () => {
+    it('should show semantic matching selects relevant examples (not proven 10-20% improvement)', async () => {
       const examples = [
         { description: 'accessibility contrast keyboard navigation', evaluation: 'Good', score: 9 },
         { description: 'design layout color scheme', evaluation: 'OK', score: 7 },
@@ -141,14 +141,14 @@ describe('Ablation Tests: Research Claim Validation', () => {
       ];
       
       // With semantic matching
-      const withMatching = selectFewShotExamples(
+      const withMatching = await selectFewShotExamples(
         'Evaluate accessibility and contrast',
         examples,
         { useSemanticMatching: true, similarityThreshold: 0.1 }
       );
       
       // Without semantic matching (random selection)
-      const withoutMatching = selectFewShotExamples(
+      const withoutMatching = await selectFewShotExamples(
         'Evaluate accessibility and contrast',
         examples,
         { useSemanticMatching: false, maxExamples: withMatching.length }
@@ -166,7 +166,7 @@ describe('Ablation Tests: Research Claim Validation', () => {
       // Real validation requires A/B testing on actual evaluation tasks
     });
     
-    it('should demonstrate relevance improvement (not quantified)', () => {
+    it('should demonstrate relevance improvement (not quantified)', async () => {
       const examples = Array.from({ length: 10 }, (_, i) => ({
         description: i < 5 
           ? `accessibility contrast keyboard example ${i}`
@@ -178,7 +178,7 @@ describe('Ablation Tests: Research Claim Validation', () => {
       const prompt = 'Evaluate accessibility features';
       
       // With semantic matching
-      const withMatching = selectFewShotExamples(prompt, examples, {
+      const withMatching = await selectFewShotExamples(prompt, examples, {
         useSemanticMatching: true,
         maxExamples: 5,
         similarityThreshold: 0.05
@@ -221,7 +221,7 @@ describe('Ablation Tests: Research Claim Validation', () => {
       
       // 3. Few-shot
       const examples = [{ description: 'test', evaluation: 'OK', score: 7 }];
-      const selected = selectFewShotExamples('Test', examples);
+      const selected = await selectFewShotExamples('Test', examples);
       assert.ok(selected.length >= 0);
       
       // All features work together

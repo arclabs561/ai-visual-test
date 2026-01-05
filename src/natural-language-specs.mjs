@@ -33,6 +33,7 @@ import { testGameplay, testBrowserExperience, validateWithGoals } from './conven
 import { playGame, GameGym } from './game-player.mjs';
 import { log, warn } from './logger.mjs';
 import { getSpecConfig } from './spec-config.mjs';
+import { ValidationError } from './errors.mjs';
 
 /**
  * Extract context from natural language spec text using LLM
@@ -470,7 +471,15 @@ export async function parseSpec(spec, options = {}) {
 export async function mapToInterfaces(parsedSpec, context = {}) {
   // Validate parsedSpec
   if (!parsedSpec || typeof parsedSpec !== 'object') {
-    throw new Error('mapToInterfaces: parsedSpec must be a valid object');
+    throw new ValidationError(
+      'mapToInterfaces: parsedSpec must be a valid object. ' +
+      'This usually means the spec parsing failed. ' +
+      'Check that your spec follows the Given/When/Then format and includes required context.',
+      {
+        received: parsedSpec === null ? 'null' : typeof parsedSpec,
+        function: 'mapToInterfaces'
+      }
+    );
   }
   
   const { page, url, screenshotPath, options = {} } = context;
@@ -781,7 +790,15 @@ export async function executeSpec(page, spec, options = {}) {
       ...options // Options parameter can override
     };
   } else {
-    throw new Error('executeSpec: spec must be a string or object with spec/text property');
+    throw new ValidationError(
+      'executeSpec: spec must be a string or object with spec/text property. ' +
+      'Provide either: 1) A string spec (e.g., "Given... When... Then..."), ' +
+      'or 2) An object with { spec: "..." } or { text: "..." } property.',
+      {
+        received: typeof spec,
+        function: 'executeSpec'
+      }
+    );
   }
   
   // Validate spec structure (optional, can be disabled)
@@ -790,7 +807,18 @@ export async function executeSpec(page, spec, options = {}) {
     if (!validation.valid) {
       const errorMsg = `Spec validation failed:\n${validation.errors.join('\n')}\n\nSuggestions:\n${validation.suggestions.join('\n')}`;
       if (specConfig.strictValidation) {
-        throw new Error(errorMsg);
+        throw new ValidationError(
+          `Spec validation failed in strict mode. ` +
+          `Errors: ${validation.errors.join('; ')}. ` +
+          `Suggestions: ${validation.suggestions.join('; ')}. ` +
+          `To disable strict validation, set strictValidation: false in spec config.`,
+          {
+            errors: validation.errors,
+            suggestions: validation.suggestions,
+            specPreview: typeof spec === 'string' ? spec.substring(0, 200) : 'N/A',
+            function: 'executeSpec'
+          }
+        );
       }
       warn('[NaturalLanguageSpecs]', errorMsg);
       // Don't throw - just warn, allow execution to continue (unless strict)

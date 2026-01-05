@@ -7,6 +7,7 @@
 
 import { ProviderError, TimeoutError } from './errors.mjs';
 import { log, warn } from './logger.mjs';
+import { RETRY_CONSTANTS } from './constants.mjs';
 
 /**
  * Check if an error is retryable
@@ -50,12 +51,12 @@ export function isRetryableError(error) {
  * @param {boolean} jitter - Add random jitter to prevent thundering herd
  * @returns {number} Delay in milliseconds
  */
-export function calculateBackoff(attempt, baseDelay = 1000, maxDelay = 30000, jitter = true) {
+export function calculateBackoff(attempt, baseDelay = RETRY_CONSTANTS.DEFAULT_BASE_DELAY_MS, maxDelay = RETRY_CONSTANTS.DEFAULT_MAX_DELAY_MS, jitter = true) {
   const exponentialDelay = Math.min(baseDelay * Math.pow(2, attempt), maxDelay);
   
   if (jitter) {
-    // Add ±25% random jitter
-    const jitterAmount = exponentialDelay * 0.25;
+    // Add random jitter to prevent thundering herd
+    const jitterAmount = exponentialDelay * RETRY_CONSTANTS.JITTER_PERCENTAGE;
     const jitterValue = (Math.random() * 2 - 1) * jitterAmount;
     return Math.max(0, exponentialDelay + jitterValue);
   }
@@ -80,9 +81,9 @@ export function calculateBackoff(attempt, baseDelay = 1000, maxDelay = 30000, ji
  */
 export async function retryWithBackoff(fn, options = {}) {
   const {
-    maxRetries = 3,
-    baseDelay = 1000,
-    maxDelay = 30000,
+    maxRetries = RETRY_CONSTANTS.DEFAULT_MAX_RETRIES,
+    baseDelay = RETRY_CONSTANTS.DEFAULT_BASE_DELAY_MS,
+    maxDelay = RETRY_CONSTANTS.DEFAULT_MAX_DELAY_MS,
     onRetry = null,
     retryable = isRetryableError
   } = options;
@@ -117,7 +118,20 @@ export async function retryWithBackoff(fn, options = {}) {
     }
   }
   
-  // All retries exhausted
+  // All retries exhausted - enhance error message with retry context
+  const enhancedMessage = enhanceErrorMessage(
+    lastError,
+    maxRetries + 1,
+    'retryWithBackoff'
+  );
+  
+  // Preserve original error but enhance message
+  if (lastError instanceof Error) {
+    lastError.message = enhancedMessage;
+  } else {
+    lastError = new Error(enhancedMessage);
+  }
+  
   throw lastError;
 }
 

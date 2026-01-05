@@ -253,6 +253,11 @@ export function calculateOptimalFPS(changeHistory, options = {}) {
     targetChangeInterval = 100 // Target: capture every 100ms of changes
   } = options;
 
+  // Handle null/undefined or non-array input
+  if (!changeHistory || !Array.isArray(changeHistory)) {
+    return minFPS;
+  }
+
   if (changeHistory.length < 2) {
     return minFPS;
   }

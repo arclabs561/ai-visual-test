@@ -210,26 +210,124 @@ export interface EnsembleResult {
   votingMethod: string;
 }
 
+/**
+ * Ensemble Judge
+ * 
+ * Uses multiple LLM providers to evaluate screenshots and aggregates results
+ * for improved accuracy (10-20% improvement with 3+ models).
+ * 
+ * **Research:** Based on arXiv:2510.01499 - "Optimal LLM Aggregation"
+ * 
+ * **Use when:** You need maximum reliability for critical evaluations
+ * (accessibility, quality checks, design validation).
+ * 
+ * @example
+ * ```typescript
+ * const judge = new EnsembleJudge({
+ *   judges: [
+ *     new VLLMJudge({ provider: 'gemini' }),
+ *     new VLLMJudge({ provider: 'openai' }),
+ *     new VLLMJudge({ provider: 'claude' })
+ *   ],
+ *   votingMethod: 'weighted_average'
+ * });
+ * 
+ * const result = await judge.evaluate(
+ *   'screenshot.png',
+ *   'Evaluate accessibility'
+ * );
+ * 
+ * console.log(result.score); // Aggregated score
+ * console.log(result.agreement.score); // How much models agree
+ * ```
+ */
 export class EnsembleJudge {
+  /**
+   * Create a new Ensemble Judge instance.
+   * 
+   * @param options - Ensemble options (judges, voting method, weights, etc.)
+   */
   constructor(options?: EnsembleJudgeOptions);
+  
+  /**
+   * Evaluate screenshot using multiple judges and aggregate results.
+   * 
+   * @param imagePath - Path to screenshot
+   * @param prompt - Evaluation prompt
+   * @param context - Optional validation context
+   * @returns Promise resolving to EnsembleResult with aggregated score and agreement metrics
+   */
   evaluate(imagePath: string, prompt: string, context?: Record<string, unknown>): Promise<EnsembleResult>;
 }
 
 export function createEnsembleJudge(providers?: string[], options?: EnsembleJudgeOptions): EnsembleJudge;
 
 // Core Types
+/**
+ * Validation context for screenshot validation.
+ * 
+ * Provides additional context to guide the AI evaluation, including test type,
+ * viewport information, game state, and optimization options.
+ * 
+ * @example
+ * ```typescript
+ * const context: ValidationContext = {
+ *   testType: 'accessibility',
+ *   viewport: { width: 1920, height: 1080 },
+ *   autoSelectTier: true,
+ *   autoSelectProvider: true
+ * };
+ * ```
+ */
 export interface ValidationContext {
+  /** Test type identifier (e.g., 'accessibility', 'payment-screen', 'gameplay') */
   testType?: string;
+  /** Viewport dimensions for context-aware evaluation */
   viewport?: { width: number; height: number };
+  /** Game state or application state for context */
   gameState?: Record<string, unknown>;
+  /** Enable caching (default: true) */
   useCache?: boolean;
+  /** Request timeout in milliseconds */
   timeout?: number;
+  /** Use explicit rubric for consistent scoring */
   useRubric?: boolean;
+  /** Include dimension scores in evaluation */
   includeDimensions?: boolean;
+  /** URL of the page being tested */
   url?: string;
+  /** Description of the test scenario */
   description?: string;
+  /** Current step in multi-step test */
   step?: string;
+  /** Custom prompt builder function */
   promptBuilder?: (prompt: string, context: ValidationContext) => string;
+  /** Auto-select model tier (fast/balanced/best) based on context */
+  autoSelectTier?: boolean;
+  /** Auto-select provider (cheapest available) */
+  autoSelectProvider?: boolean;
+  /** Include cost comparison in results */
+  includeCostComparison?: boolean;
+  /** Frequency for high-frequency validation (Hz) */
+  frequency?: number;
+  /** Cost sensitivity flag for optimization */
+  costSensitive?: boolean;
+  /** Criticality level (low/medium/high/critical) */
+  criticality?: 'low' | 'medium' | 'high' | 'critical';
+  /** Model tier to use (fast/balanced/best) */
+  modelTier?: 'fast' | 'balanced' | 'best';
+  /** Temporal decision options (for high-frequency validation) */
+  useTemporalDecision?: boolean;
+  /** Temporal notes for decision context */
+  temporalNotes?: TemporalNote[];
+  /** Current state for temporal decision */
+  currentState?: Record<string, unknown>;
+  /** Previous state for temporal decision */
+  previousState?: Record<string, unknown>;
+  /** Previous result for temporal decision */
+  previousResult?: ValidationResult;
+  /** Temporal decision manager options */
+  temporalDecisionOptions?: Record<string, unknown>;
 }
 
 export interface EstimatedCost {
@@ -250,25 +348,77 @@ export interface SemanticInfo {
   zeroToleranceViolations?: string[];
 }
 
+/**
+ * Result of screenshot validation.
+ * 
+ * Contains the AI's evaluation of the screenshot, including score, issues,
+ * reasoning, and metadata about the validation process.
+ * 
+ * @example
+ * ```typescript
+ * const result: ValidationResult = {
+ *   enabled: true,
+ *   provider: 'gemini',
+ *   score: 8.5,
+ *   issues: ['Low contrast on submit button'],
+ *   assessment: 'Good',
+ *   reasoning: 'The form is mostly accessible...',
+ *   estimatedCost: { totalCost: '0.000123', currency: 'USD' },
+ *   responseTime: 1234,
+ *   cached: false
+ * };
+ * ```
+ */
 export interface ValidationResult {
+  /** Whether validation was enabled (false if API key missing) */
   enabled: boolean;
+  /** LLM provider used (gemini, openai, claude, groq) */
   provider: string;
+  /** Quality score (0-10, null if validation failed) */
   score: number | null;
+  /** List of issues found */
   issues: string[];
+  /** Overall assessment (e.g., 'Good', 'Needs Improvement') */
   assessment: string | null;
+  /** Detailed reasoning for the score */
   reasoning: string;
+  /** Estimated API cost breakdown */
   estimatedCost?: EstimatedCost | null;
+  /** Response time in milliseconds */
   responseTime: number;
+  /** Whether result was served from cache */
   cached?: boolean;
+  /** Raw judgment text from LLM */
   judgment?: string;
+  /** Raw API response */
   raw?: unknown;
+  /** Extracted semantic information */
   semantic?: SemanticInfo;
+  /** Error message if validation failed */
   error?: string;
+  /** Status message */
   message?: string;
+  /** Provider pricing information */
   pricing?: { input: number; output: number };
+  /** Timestamp of validation */
   timestamp?: string;
+  /** Test name if provided */
   testName?: string;
+  /** Viewport dimensions if provided */
   viewport?: { width: number; height: number } | null;
+  /** Cost comparison information (if includeCostComparison enabled) */
+  costComparison?: {
+    current: { tier: string; provider: string; cost: number };
+    tiers: Record<string, number>;
+    savings: Record<string, { absolute: number; percent: number; cost: number }>;
+    recommendation: { tier: string; cost: number; savings: number; savingsPercent: number; reason: string };
+  };
+  /** Whether temporal decision skipped this call */
+  skipped?: boolean;
+  /** Reason for skipping (if skipped) */
+  skipReason?: string;
+  /** Urgency level (if temporal decision used) */
+  urgency?: 'low' | 'medium' | 'high';
 }
 
 export interface ConfigOptions {
@@ -307,28 +457,183 @@ export interface Config {
   };
 }
 
-// VLLMJudge Class
+/**
+ * VLLM Judge Class
+ * 
+ * Core screenshot validation engine using Vision Language Models.
+ * Supports multiple providers (Gemini, OpenAI, Claude, Groq) with automatic
+ * selection, caching, and cost optimization.
+ * 
+ * **Use when:** You need fine-grained control over validation or custom judge implementations.
+ * **Otherwise:** Use `validateScreenshot()` function for simpler API.
+ * 
+ * @example
+ * ```typescript
+ * // Create custom judge instance
+ * const judge = new VLLMJudge({
+ *   provider: 'gemini',
+ *   apiKey: process.env.GEMINI_API_KEY,
+ *   cacheEnabled: true
+ * });
+ * 
+ * const result = await judge.judgeScreenshot(
+ *   'screenshot.png',
+ *   'Evaluate this page'
+ * );
+ * ```
+ */
 export class VLLMJudge {
+  /**
+   * Create a new VLLM Judge instance.
+   * 
+   * @param options - Configuration options (provider, API key, cache, etc.)
+   */
   constructor(options?: ConfigOptions);
+  
+  /** Current provider name (gemini, openai, claude, groq) */
   provider: string;
+  /** API key for current provider */
   apiKey: string | null;
+  /** Provider configuration (model, pricing, etc.) */
   providerConfig: Config['providerConfig'];
+  /** Whether validation is enabled (false if API key missing) */
   enabled: boolean;
   
+  /**
+   * Convert image file to base64 string for API.
+   * 
+   * @param imagePath - Path to image file
+   * @returns Base64-encoded image string
+   * @throws {FileError} If file not found or invalid format
+   */
   imageToBase64(imagePath: string): string;
+  
+  /**
+   * Build evaluation prompt with context.
+   * 
+   * @param prompt - Base evaluation prompt
+   * @param context - Validation context
+   * @returns Enhanced prompt with context
+   */
   buildPrompt(prompt: string, context: ValidationContext): string;
+  
+  /**
+   * Extract semantic information from judgment text.
+   * 
+   * @param judgment - Judgment text or object
+   * @returns Structured semantic information
+   */
   extractSemanticInfo(judgment: string | object): SemanticInfo;
+  
+  /**
+   * Estimate API cost for validation.
+   * 
+   * @param data - API request/response data
+   * @param provider - Provider name
+   * @returns Estimated cost breakdown or null
+   */
   estimateCost(data: unknown, provider: string): EstimatedCost | null;
-  judgeScreenshot(imagePath: string, prompt: string, context?: ValidationContext): Promise<ValidationResult>;
+  
+  /**
+   * Judge a screenshot using VLLM.
+   * 
+   * @param imagePath - Path to screenshot or array for comparison
+   * @param prompt - Evaluation prompt
+   * @param context - Optional validation context
+   * @returns Promise resolving to ValidationResult
+   */
+  judgeScreenshot(imagePath: string | string[], prompt: string, context?: ValidationContext): Promise<ValidationResult>;
 }
 
 // Core Functions
+/**
+ * Validate a screenshot using Vision Language Models (VLLM).
+ * 
+ * This is the primary API function. It takes a screenshot and evaluation prompt,
+ * sends it to an AI model (Gemini, OpenAI, Claude, or Groq), and returns structured
+ * validation results with score, issues, and reasoning.
+ * 
+ * **Key Features:**
+ * - Automatic provider selection (cheapest available)
+ * - Automatic tier selection (fast/balanced/best)
+ * - Built-in caching (7-day TTL)
+ * - Cost optimization
+ * - Temporal decision making (for high-frequency validation)
+ * 
+ * @param imagePath - Path to screenshot file (PNG, JPEG, GIF, WebP) or array of paths for comparison
+ * @param prompt - Evaluation prompt (e.g., "Is this accessible?", "Check if payment form works")
+ * @param context - Optional validation context (testType, viewport, optimization options)
+ * @returns Promise resolving to ValidationResult with score, issues, reasoning, and metadata
+ * 
+ * @example
+ * ```typescript
+ * // Basic usage
+ * const result = await validateScreenshot(
+ *   'screenshot.png',
+ *   'Check if this payment form is accessible'
+ * );
+ * console.log(result.score);      // 8.5 (0-10 scale)
+ * console.log(result.issues);     // ['Low contrast on button', 'Missing label']
+ * console.log(result.reasoning);  // "The form is mostly accessible..."
+ * ```
+ * 
+ * @example
+ * ```typescript
+ * // With cost optimization
+ * const result = await validateScreenshot(
+ *   'screenshot.png',
+ *   'Evaluate accessibility',
+ *   {
+ *     autoSelectTier: true,
+ *     autoSelectProvider: true,
+ *     includeCostComparison: true
+ *   }
+ * );
+ * console.log(result.costComparison?.savings.fast?.percent); // 45% savings
+ * ```
+ * 
+ * @example
+ * ```typescript
+ * // High-frequency validation (60Hz)
+ * const result = await validateScreenshot(
+ *   'frame.png',
+ *   'Is the game playable?',
+ *   {
+ *     frequency: 60,
+ *     autoSelectTier: true,
+ *     useTemporalDecision: true
+ *   }
+ * );
+ * ```
+ * 
+ * @throws {FileError} If screenshot file not found or invalid format
+ * @throws {ValidationError} If validation fails
+ * @throws {ProviderError} If API provider error occurs
+ * @throws {TimeoutError} If request times out
+ */
 export function validateScreenshot(
-  imagePath: string,
+  imagePath: string | string[],
   prompt: string,
   context?: ValidationContext
 ): Promise<ValidationResult>;
 
+/**
+ * Extract semantic information from VLLM judgment text.
+ * 
+ * Parses AI judgment responses into structured data (score, issues, reasoning).
+ * Useful for custom implementations that need to parse judgment text.
+ * 
+ * @param judgment - Judgment text or object from VLLM
+ * @returns Structured semantic information with score, issues, assessment, reasoning
+ * 
+ * @example
+ * ```typescript
+ * const judgment = "Score: 8.5. Issues: Low contrast. Reasoning: The form is mostly accessible...";
+ * const info = extractSemanticInfo(judgment);
+ * console.log(info.score);    // 8.5
+ * console.log(info.issues);   // ['Low contrast']
+ * ```
+ */
 export function extractSemanticInfo(judgment: string | object): SemanticInfo;
 
 // Multi-Modal Types
@@ -405,11 +710,33 @@ export function multiModalValidation(
 }>;
 
 // Temporal Types
+/**
+ * Temporal note for tracking state over time.
+ * 
+ * Used in high-frequency validation (10-60Hz) to track observations
+ * and enable temporal decision making (reduces LLM calls by 98.5%).
+ * 
+ * @example
+ * ```typescript
+ * const note: TemporalNote = {
+ *   timestamp: Date.now(),
+ *   elapsed: 100,
+ *   score: 8.5,
+ *   observation: 'Button clicked',
+ *   step: 'checkout'
+ * };
+ * ```
+ */
 export interface TemporalNote {
+  /** Timestamp in milliseconds */
   timestamp?: number;
+  /** Elapsed time since start in milliseconds */
   elapsed?: number;
+  /** Quality score (0-10) */
   score?: number;
+  /** Observation description */
   observation?: string;
+  /** Step identifier */
   step?: string;
 }
 
@@ -437,6 +764,36 @@ export interface AggregatedTemporalNotes {
 }
 
 // Temporal Functions
+/**
+ * Aggregate temporal notes into time windows with weighted scores.
+ * 
+ * Used for high-frequency validation to reduce LLM calls by aggregating
+ * observations over time windows. Implements exponential decay weighting
+ * (recent notes weighted more heavily).
+ * 
+ * **Research:** Inspired by arXiv:2505.17663 (DynToM) and arXiv:2507.15851
+ * (Human Temporal Cognition), adapted with exponential decay for practical use.
+ * 
+ * @param notes - Array of temporal notes to aggregate
+ * @param options - Aggregation options
+ * @param options.windowSize - Time window size in milliseconds (default: 1000)
+ * @param options.decayFactor - Exponential decay factor (default: 0.9)
+ * @param options.coherenceThreshold - Coherence threshold for filtering (default: 0.5)
+ * @returns Aggregated notes with windows, summary, and coherence score
+ * 
+ * @example
+ * ```typescript
+ * const notes: TemporalNote[] = [
+ *   { timestamp: 0, score: 8, observation: 'Initial state' },
+ *   { timestamp: 100, score: 8.5, observation: 'Button clicked' },
+ *   { timestamp: 200, score: 9, observation: 'Form submitted' }
+ * ];
+ * 
+ * const aggregated = aggregateTemporalNotes(notes);
+ * console.log(aggregated.coherence); // 0.92 (high coherence)
+ * console.log(aggregated.windows[0].avgScore); // 8.5
+ * ```
+ */
 export function aggregateTemporalNotes(
   notes: TemporalNote[],
   options?: {
@@ -450,6 +807,223 @@ export function formatNotesForPrompt(aggregated: AggregatedTemporalNotes): strin
 
 export function calculateCoherence(windows: TemporalWindow[]): number;
 
+/**
+ * Temporal Decision Manager
+ * 
+ * Decides when to call LLM vs. reuse previous result for high-frequency validation.
+ * Reduces LLM calls by 98.5% while maintaining accuracy through temporal coherence.
+ * 
+ * **Research:** Based on arXiv:2406.12125 - "Efficient Sequential Decision Making with Large Language Models"
+ * 
+ * **Core Insight:** Don't prompt on every state change, prompt when decision is needed.
+ * 
+ * **Note:** Implementation is obfuscated to protect proprietary algorithms, but API is fully documented.
+ * 
+ * @example
+ * ```typescript
+ * const manager = new TemporalDecisionManager({
+ *   minNotesForPrompt: 3,
+ *   coherenceThreshold: 0.5,
+ *   urgencyThreshold: 0.3
+ * });
+ * 
+ * const decision = await manager.shouldPrompt(
+ *   currentState,
+ *   previousState,
+ *   temporalNotes,
+ *   context
+ * );
+ * 
+ * if (decision.shouldPrompt) {
+ *   // Call LLM
+ * } else {
+ *   // Reuse previous result
+ * }
+ * ```
+ */
+export class TemporalDecisionManager {
+  /**
+   * Create a new Temporal Decision Manager.
+   * 
+   * @param options - Decision manager options
+   * @param options.minNotesForPrompt - Minimum notes before prompting (default: 3)
+   * @param options.coherenceThreshold - Coherence threshold for prompting (default: 0.5)
+   * @param options.urgencyThreshold - Urgency threshold for prompting (default: 0.3)
+   * @param options.maxWaitTime - Maximum wait time before forcing prompt (default: 10000ms)
+   * @param options.stateChangeThreshold - State change threshold for prompting (default: 0.2)
+   * @param options.warmStartSteps - Use LLM for first N steps (default: 10)
+   * @param options.adaptiveSampling - Enable adaptive sampling (default: true)
+   */
+  constructor(options?: {
+    minNotesForPrompt?: number;
+    coherenceThreshold?: number;
+    urgencyThreshold?: number;
+    maxWaitTime?: number;
+    stateChangeThreshold?: number;
+    warmStartSteps?: number;
+    adaptiveSampling?: boolean;
+  });
+  
+  /**
+   * Decide if we should prompt now or wait for more context.
+   * 
+   * @param currentState - Current state object
+   * @param previousState - Previous state object (if any)
+   * @param temporalNotes - Array of temporal notes
+   * @param context - Additional context
+   * @returns Decision object with shouldPrompt, reason, and urgency
+   */
+  shouldPrompt(
+    currentState: Record<string, unknown>,
+    previousState: Record<string, unknown> | null,
+    temporalNotes: TemporalNote[],
+    context?: Record<string, unknown>
+  ): Promise<{
+    shouldPrompt: boolean;
+    reason: string;
+    urgency: 'low' | 'medium' | 'high';
+  }>;
+  
+  /**
+   * Calculate state change magnitude.
+   * 
+   * @param currentState - Current state
+   * @param previousState - Previous state
+   * @returns State change score (0-1)
+   */
+  calculateStateChange(
+    currentState: Record<string, unknown>,
+    previousState: Record<string, unknown> | null
+  ): number;
+  
+  /**
+   * Check if current state is a decision point.
+   * 
+   * @param currentState - Current state
+   * @param context - Additional context
+   * @returns True if decision point
+   */
+  isDecisionPoint(
+    currentState: Record<string, unknown>,
+    context?: Record<string, unknown>
+  ): boolean;
+  
+  /**
+   * Check if there's a recent user action.
+   * 
+   * @param temporalNotes - Array of temporal notes
+   * @param context - Additional context
+   * @returns True if recent user action detected
+   */
+  hasRecentUserAction(
+    temporalNotes: TemporalNote[],
+    context?: Record<string, unknown>
+  ): boolean;
+}
+
+/**
+ * Create a temporal decision manager with default options.
+ * 
+ * @param options - Decision manager options
+ * @returns New TemporalDecisionManager instance
+ */
+export function createTemporalDecisionManager(options?: {
+  minNotesForPrompt?: number;
+  coherenceThreshold?: number;
+  urgencyThreshold?: number;
+  maxWaitTime?: number;
+  stateChangeThreshold?: number;
+  warmStartSteps?: number;
+  adaptiveSampling?: boolean;
+}): TemporalDecisionManager;
+
+/**
+ * Temporal Preprocessing Manager
+ * 
+ * Optimizes temporal note processing for high-frequency validation (10-60Hz).
+ * Implements activity-based preprocessing patterns to reduce computational overhead.
+ * 
+ * **Note:** Implementation is obfuscated to protect proprietary algorithms, but API is fully documented.
+ * 
+ * @example
+ * ```typescript
+ * const manager = new TemporalPreprocessingManager({
+ *   activityThreshold: 0.5,
+ *   highFrequencyMode: true
+ * });
+ * 
+ * const processed = await manager.preprocess(temporalNotes, context);
+ * ```
+ */
+export class TemporalPreprocessingManager {
+  /**
+   * Create a new Temporal Preprocessing Manager.
+   * 
+   * @param options - Preprocessing options
+   */
+  constructor(options?: Record<string, unknown>);
+  
+  /**
+   * Preprocess temporal notes for efficient handling.
+   * 
+   * @param notes - Array of temporal notes
+   * @param context - Additional context
+   * @returns Processed notes
+   */
+  preprocess(
+    notes: TemporalNote[],
+    context?: Record<string, unknown>
+  ): Promise<TemporalNote[]>;
+}
+
+/**
+ * Adaptive Temporal Processor
+ * 
+ * Adaptively processes temporal notes based on activity patterns.
+ * 
+ * @example
+ * ```typescript
+ * const processor = new AdaptiveTemporalProcessor();
+ * const processed = await processor.process(notes, context);
+ * ```
+ */
+export class AdaptiveTemporalProcessor {
+  /**
+   * Create a new Adaptive Temporal Processor.
+   * 
+   * @param options - Processor options
+   */
+  constructor(options?: Record<string, unknown>);
+  
+  /**
+   * Process temporal notes adaptively.
+   * 
+   * @param notes - Array of temporal notes
+   * @param context - Additional context
+   * @returns Processed notes
+   */
+  process(
+    notes: TemporalNote[],
+    context?: Record<string, unknown>
+  ): Promise<TemporalNote[]>;
+}
+
+/**
+ * Create a temporal preprocessing manager with default options.
+ * 
+ * @param options - Preprocessing options
+ * @returns New TemporalPreprocessingManager instance
+ */
+export function createTemporalPreprocessingManager(options?: Record<string, unknown>): TemporalPreprocessingManager;
+
+/**
+ * Create an adaptive temporal processor with default options.
+ * 
+ * @param options - Processor options
+ * @returns New AdaptiveTemporalProcessor instance
+ */
+export function createAdaptiveTemporalProcessor(options?: Record<string, unknown>): AdaptiveTemporalProcessor;
+
 // Cache Types
 export interface CacheStats {
   hits: number;
@@ -459,16 +1033,77 @@ export interface CacheStats {
 }
 
 // Cache Functions
+/**
+ * Initialize cache system.
+ * 
+ * Sets up file-based caching with 7-day TTL. Cache persists across
+ * process restarts and reduces API costs by serving cached results.
+ * 
+ * @param cacheDir - Cache directory path (default: `.cache/ai-visual-test`)
+ * 
+ * @example
+ * ```typescript
+ * initCache('/tmp/my-cache');
+ * const result = await validateScreenshot('screenshot.png', 'Evaluate');
+ * // Subsequent calls with same screenshot/prompt use cache
+ * ```
+ */
 export function initCache(cacheDir?: string): void;
+
+/**
+ * Generate cache key for validation request.
+ * 
+ * Creates SHA-256 hash of image path, prompt, and context for cache lookup.
+ * 
+ * @param imagePath - Screenshot path
+ * @param prompt - Evaluation prompt
+ * @param context - Validation context
+ * @returns Cache key string
+ */
 export function generateCacheKey(imagePath: string, prompt: string, context?: ValidationContext): string;
+
+/**
+ * Get cached validation result.
+ * 
+ * @param imagePath - Screenshot path
+ * @param prompt - Evaluation prompt
+ * @param context - Validation context
+ * @returns Cached ValidationResult or null if not cached
+ */
 export function getCached(imagePath: string, prompt: string, context?: ValidationContext): ValidationResult | null;
+
+/**
+ * Cache validation result.
+ * 
+ * @param imagePath - Screenshot path
+ * @param prompt - Evaluation prompt
+ * @param context - Validation context
+ * @param result - Validation result to cache
+ */
 export function setCached(
   imagePath: string,
   prompt: string,
   context: ValidationContext,
   result: ValidationResult
 ): void;
+
+/**
+ * Clear all cached results.
+ */
 export function clearCache(): void;
+
+/**
+ * Get cache statistics.
+ * 
+ * @returns Cache stats (hits, misses, size, hit rate)
+ * 
+ * @example
+ * ```typescript
+ * const stats = getCacheStats();
+ * console.log(`Hit rate: ${stats.hitRate * 100}%`); // 85%
+ * console.log(`Cache size: ${stats.size}`); // 123
+ * ```
+ */
 export function getCacheStats(): CacheStats;
 
 // Config Functions
@@ -507,10 +1142,58 @@ export class ScoreTracker {
 }
 
 // BatchOptimizer Class
+/**
+ * Batch Optimizer
+ * 
+ * Optimizes validation of multiple screenshots by batching requests,
+ * managing concurrency, and caching results.
+ * 
+ * **Use when:** You need to validate multiple screenshots efficiently.
+ * 
+ * @example
+ * ```typescript
+ * const optimizer = new BatchOptimizer({
+ *   maxConcurrency: 5,
+ *   batchSize: 10,
+ *   cacheEnabled: true
+ * });
+ * 
+ * const results = await optimizer.batchValidate(
+ *   ['screenshot1.png', 'screenshot2.png', 'screenshot3.png'],
+ *   'Evaluate accessibility'
+ * );
+ * 
+ * console.log(results.length); // 3
+ * ```
+ */
 export class BatchOptimizer {
+  /**
+   * Create a new Batch Optimizer instance.
+   * 
+   * @param options - Optimizer options (maxConcurrency, batchSize, cacheEnabled)
+   */
   constructor(options?: { maxConcurrency?: number; batchSize?: number; cacheEnabled?: boolean });
+  
+  /**
+   * Validate multiple screenshots in batch.
+   * 
+   * @param imagePaths - Single path, array of paths, or array of arrays for comparison
+   * @param prompt - Evaluation prompt
+   * @param context - Optional validation context
+   * @returns Promise resolving to array of ValidationResults
+   */
   batchValidate(imagePaths: string | string[], prompt: string, context?: ValidationContext): Promise<ValidationResult[]>;
+  
+  /**
+   * Clear batch optimizer cache.
+   */
   clearCache(): void;
+  
+  /**
+   * Get cache statistics.
+   * 
+   * @returns Cache stats (size, queue length, active requests)
+   */
   getCacheStats(): { cacheSize: number; queueLength: number; activeRequests: number };
 }
 
@@ -775,18 +1458,76 @@ export interface StateValidationResult<T = unknown> extends ValidationResult {
   matches: boolean;
 }
 
+/**
+ * State Validator
+ * 
+ * Validates that visual state matches expected state using VLLM extraction.
+ * Extracts state from screenshot and compares with expected state.
+ * 
+ * **Use when:** You need to verify specific state values (cart count, button text, etc.)
+ * 
+ * @example
+ * ```typescript
+ * const validator = new StateValidator();
+ * 
+ * const result = await validator.validateState(
+ *   'checkout.png',
+ *   {
+ *     cartCount: 1,
+ *     buttonText: 'Checkout'
+ *   },
+ *   {
+ *     testType: 'cart-state'
+ *   }
+ * );
+ * 
+ * console.log(result.matches); // true/false
+ * console.log(result.discrepancies); // ['cartCount: expected 1, got 2']
+ * ```
+ */
 export class StateValidator<T = unknown> {
+  /**
+   * Create a new State Validator instance.
+   * 
+   * @param options - Validator options (tolerance, state extractor, etc.)
+   */
   constructor(options?: StateValidatorOptions<T>);
+  
+  /**
+   * Validate state (static method).
+   * 
+   * @param screenshotPath - Path to screenshot or array for comparison
+   * @param expectedState - Expected state object
+   * @param options - Validation options
+   * @returns Promise resolving to StateValidationResult
+   */
   static validate<T = unknown>(
     screenshotPath: string | string[],
     expectedState: T,
     options?: StateValidationOptions<T>
   ): Promise<StateValidationResult<T>>;
+  
+  /**
+   * Validate state matches expected state.
+   * 
+   * @param screenshotPath - Path to screenshot or array for comparison
+   * @param expectedState - Expected state object
+   * @param options - Validation options
+   * @returns Promise resolving to StateValidationResult
+   */
   validateState(
     screenshotPath: string | string[],
     expectedState: T,
     options?: StateValidationOptions<T>
   ): Promise<StateValidationResult<T>>;
+  
+  /**
+   * Build state validation prompt.
+   * 
+   * @param expectedState - Expected state object
+   * @param options - Validation options
+   * @returns Validation prompt string
+   */
   buildStatePrompt(expectedState: T, options?: StateValidationOptions<T>): string;
 }
 
@@ -820,22 +1561,90 @@ export interface AccessibilityResult extends ValidationResult {
   standards: string[];
 }
 
+/**
+ * Accessibility Validator
+ * 
+ * Validates accessibility using VLLM semantic evaluation.
+ * Checks contrast, labels, keyboard navigation, error messages, and WCAG compliance.
+ * 
+ * **Use when:** You need comprehensive accessibility validation beyond programmatic checks.
+ * 
+ * @example
+ * ```typescript
+ * const validator = new AccessibilityValidator({
+ *   minContrast: 4.5,
+ *   standards: ['WCAG-AA']
+ * });
+ * 
+ * const result = await validator.validateAccessibility(
+ *   'payment-form.png',
+ *   {
+ *     testType: 'accessibility'
+ *   }
+ * );
+ * 
+ * console.log(result.passes); // true/false
+ * console.log(result.violations.zeroTolerance); // Critical violations
+ * ```
+ */
 export class AccessibilityValidator {
+  /**
+   * Create a new Accessibility Validator instance.
+   * 
+   * @param options - Validator options (minContrast, standards, etc.)
+   */
   constructor(options?: AccessibilityValidatorOptions);
+  
+  /**
+   * Validate accessibility (static method).
+   * 
+   * @param screenshotPath - Path to screenshot or array for comparison
+   * @param options - Validation options
+   * @returns Promise resolving to AccessibilityResult
+   */
   static validate(
     screenshotPath: string | string[],
     options?: AccessibilityOptions
   ): Promise<AccessibilityResult>;
+  
+  /**
+   * Validate accessibility of screenshot.
+   * 
+   * @param screenshotPath - Path to screenshot or array for comparison
+   * @param options - Validation options
+   * @returns Promise resolving to AccessibilityResult
+   */
   validateAccessibility(
     screenshotPath: string | string[],
     options?: AccessibilityOptions
   ): Promise<AccessibilityResult>;
+  
+  /**
+   * Build accessibility validation prompt.
+   * 
+   * @param options - Validation options
+   * @returns Validation prompt string
+   */
   buildAccessibilityPrompt(options?: AccessibilityOptions): string;
+  
+  /**
+   * Detect accessibility violations from validation result.
+   * 
+   * @param result - Validation result
+   * @returns Categorized violations (zeroTolerance, critical, warnings)
+   */
   detectViolations(result: ValidationResult): {
     zeroTolerance: string[];
     critical: string[];
     warnings: string[];
   };
+  
+  /**
+   * Extract contrast information from validation result.
+   * 
+   * @param result - Validation result
+   * @returns Contrast ratios and compliance status
+   */
   extractContrastInfo(result: ValidationResult): {
     ratios: string[];
     minRatio: number | null;

@@ -12,6 +12,7 @@
 import { createConfig } from './config.mjs';
 import { loadEnv } from './load-env.mjs';
 import { warn } from './logger.mjs';
+import { ValidationError } from './errors.mjs';
 // Load env before LLM utils
 loadEnv();
 // Use shared LLM utility library for text-only calls (optional dependency)
@@ -111,7 +112,16 @@ Return ONLY the JSON object, no other text.`;
       if (jsonMatch) {
         parsed = JSON.parse(jsonMatch[0]);
       } else {
-        throw new Error('Could not extract JSON from response');
+        throw new ValidationError(
+          'Could not extract JSON from response. The LLM response did not contain valid JSON. ' +
+          'This may indicate the model failed to follow the schema format. ' +
+          'Try: 1) Simplifying the schema, 2) Using a more capable model tier, or 3) Adding examples to the prompt.',
+          {
+            responseLength: response?.length || 0,
+            responsePreview: response?.substring(0, 200) || 'No response',
+            schema: schema
+          }
+        );
       }
     }
     if (parsed && validateSchema(parsed, schema)) {
@@ -126,25 +136,44 @@ Return ONLY the JSON object, no other text.`;
 
 /**
  * Call LLM API (text-only, no vision)
+ * Uses cached wrapper for better performance and cost reduction
  * Uses shared utility with advanced tier for better extraction quality
  */
 async function callLLMForExtraction(prompt, config) {
   const apiKey = config.apiKey;
   const provider = config.provider || 'gemini';
   
-  // Try to use optional llm-utils library if available
+  // Use cached LLM wrapper (reduces costs and improves performance)
   try {
-    const llmUtils = await import('@arclabs561/llm-utils');
-    const callLLMUtil = llmUtils.callLLM;
+    const { callLLMCached } = await import('./utils/cached-llm.mjs');
     // Use advanced tier for data extraction (needs higher quality)
-    return await callLLMUtil(prompt, provider, apiKey, {
+    return await callLLMCached(prompt, provider, apiKey, {
       tier: 'advanced', // Data extraction benefits from better models
       temperature: 0.1,
       maxTokens: 1000,
+      useCache: true, // Enable caching by default
     });
   } catch (error) {
-    // Fallback: use local implementation or throw
-    throw new Error(`LLM extraction requires @arclabs561/llm-utils package: ${error.message}`);
+    // Fallback: try uncached version if cached wrapper fails
+    try {
+      const llmUtils = await import('@arclabs561/llm-utils');
+      return await llmUtils.callLLM(prompt, provider, apiKey, {
+        tier: 'advanced',
+        temperature: 0.1,
+        maxTokens: 1000,
+      });
+    } catch (fallbackError) {
+      throw new ValidationError(
+        `LLM extraction requires @arclabs561/llm-utils package. ` +
+        `Install it with: npm install @arclabs561/llm-utils. ` +
+        `Error: ${fallbackError.message}`,
+        {
+          package: '@arclabs561/llm-utils',
+          installationCommand: 'npm install @arclabs561/llm-utils',
+          originalError: fallbackError.message
+        }
+      );
+    }
   }
 }
 

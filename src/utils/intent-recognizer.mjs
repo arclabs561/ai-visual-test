@@ -11,7 +11,7 @@
  * 
  * Implementation:
  * - We use simple keyword-based recognition (fast, <1ms)
- * - LLM-based recognition adds latency (>1s) and cost without clear benefit
+ * - LLM-based recognition was considered but adds latency (>1s) and cost without clear benefit for current use cases.
  * - Complex disambiguation happens during action execution, not intent parsing
  * 
  * See docs/research/IMPLEMENTATION_VS_RESEARCH.md for detailed research context.
@@ -39,11 +39,9 @@ export const INTENT_TYPES = {
  * Recognize intent from natural language task
  * 
  * @param {string} task - Natural language task description
- * @param {string} [screenshotPath] - Optional screenshot for visual context
- * @param {Object} [options] - Recognition options
  * @returns {Promise<Object>} Recognized intent with confidence
  */
-export async function recognizeIntent(task, screenshotPath = null, options = {}) {
+export async function recognizeIntent(task) {
   // Simple keyword-based recognition - fast and sufficient
   // LLM-based recognition adds latency and cost without clear benefit
   return recognizeIntentKeyword(task);
@@ -174,10 +172,10 @@ function extractTarget(text) {
 /**
  * Batch recognize intents
  */
-export async function batchRecognizeIntents(tasks, screenshotPaths = [], options = {}) {
+export async function batchRecognizeIntents(tasks, _screenshotPaths = [], _options = {}) {
   const results = await Promise.all(
-    tasks.map((task, i) => 
-      recognizeIntent(task, screenshotPaths[i] || null, options)
+    tasks.map((task) => 
+      recognizeIntent(task)
     )
   );
   
@@ -201,4 +199,3 @@ export async function batchRecognizeIntents(tasks, screenshotPaths = [], options
       : 'Intent recognition accuracy below target. Consider improving prompts or adding more training examples.'
   };
 }
-

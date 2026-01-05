@@ -364,7 +364,7 @@ export async function experiencePageAsPersona(page, persona, options = {}) {
       const { aggregateMultiScale } = await import('./temporal-decision.mjs');
       
       // Standard temporal aggregation
-      aggregated = aggregateTemporalNotes(experienceNotes, {
+      aggregated = await aggregateTemporalNotes(experienceNotes, {
         windowSize: 10000, // 10 second windows
         decayFactor: 0.9
       });

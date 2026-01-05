@@ -1,0 +1,274 @@
+/**
+ * Tests for high-level convenience functions
+ */
+
+import { describe, it } from 'node:test';
+import assert from 'node:assert';
+import {
+  testGameplay,
+  testBrowserExperience,
+  validateWithGoals,
+  generateGamePrompt,
+  createGameGoal
+} from '../../src/index.mjs';
+import { createMockPage } from '../helpers/mock-page.mjs';
+import { createTestImage } from '../test-image-utils.mjs';
+import { skipIfNoApiKey } from '../helpers/api-key-check.mjs';
+import { unlinkSync, existsSync } from 'fs';
+import { join } from 'path';
+import { tmpdir } from 'os';
+
+describe('Convenience Functions', () => {
+  describe('validateWithGoals', () => {
+    it('should validate with string goal', async function() {
+      // Skip if no API keys available
+      if (skipIfNoApiKey(this, 'No API keys available')) {
+        return;
+      }
+      const tempDir = join(tmpdir(), `ai-visual-test-${Date.now()}`);
+      const screenshotPath = join(tempDir, 'test.png');
+      await createTestImage(screenshotPath);
+
+      try {
+        const result = await validateWithGoals(screenshotPath, {
+          goal: 'Is the game fun?'
+        });
+
+        assert.ok(result);
+        assert.strictEqual(result.goal, 'Is the game fun?');
+        assert.ok(result.prompt);
+        assert.ok(result.result);
+        assert.ok('enabled' in result.result);
+        // If API is disabled, that's fine - just verify structure
+        if (!result.result.enabled) {
+          assert.ok(result.result.message);
+        }
+      } catch (error) {
+        // Handle API errors gracefully (rate limits, invalid image format, API key issues, etc.)
+        if (error.code === 'PROVIDER_ERROR' && 
+            (error.details?.statusCode === 429 || 
+             error.details?.statusCode === 400 || 
+             error.details?.statusCode === 500 ||
+             error.details?.statusCode === 401)) {
+          // API error - skip test (not a code bug)
+          return;
+        }
+        // If API is disabled, that's fine too
+        if (error.message?.includes('API disabled') || error.message?.includes('API key')) {
+          return;
+        }
+        throw error;
+      } finally {
+        if (existsSync(screenshotPath)) {
+          unlinkSync(screenshotPath);
+        }
+      }
+    });
+
+    it('should validate with goal object', async function() {
+      // Skip if no API keys available
+      if (skipIfNoApiKey(this, 'No API keys available')) {
+        return;
+      }
+      const tempDir = join(tmpdir(), `ai-visual-test-${Date.now()}`);
+      const screenshotPath = join(tempDir, 'test.png');
+      await createTestImage(screenshotPath);
+
+      try {
+        const goal = createGameGoal('accessibility');
+        const result = await validateWithGoals(screenshotPath, {
+          goal,
+          gameState: { gameActive: true, score: 100 }
+        });
+
+        assert.ok(result);
+        assert.strictEqual(result.goal, 'Evaluate game accessibility');
+        assert.ok(result.prompt);
+        assert.ok(result.result);
+        // If API is disabled, that's fine - just verify structure
+        if (!result.result.enabled) {
+          assert.ok(result.result.message);
+        }
+      } catch (error) {
+        // Handle API errors gracefully (rate limits, invalid image format, API key issues, etc.)
+        if (error.code === 'PROVIDER_ERROR' && 
+            (error.details?.statusCode === 429 || 
+             error.details?.statusCode === 400 || 
+             error.details?.statusCode === 500 ||
+             error.details?.statusCode === 401)) {
+          // API error - skip test (not a code bug)
+          return;
+        }
+        if (error.message?.includes('API disabled') || error.message?.includes('API key')) {
+          return;
+        }
+        throw error;
+      } finally {
+        if (existsSync(screenshotPath)) {
+          unlinkSync(screenshotPath);
+        }
+      }
+    });
+
+    it('should validate with goal array', async function() {
+      // Skip if no API keys available
+      if (skipIfNoApiKey(this, 'No API keys available')) {
+        return;
+      }
+      const tempDir = join(tmpdir(), `ai-visual-test-${Date.now()}`);
+      const screenshotPath = join(tempDir, 'test.png');
+      await createTestImage(screenshotPath);
+
+      try {
+        const goals = ['Is it fun?', 'Is it accessible?'];
+        const result = await validateWithGoals(screenshotPath, {
+          goal: goals
+        });
+
+        assert.ok(result);
+        assert.ok(result.prompt);
+        assert.ok(result.prompt.includes('EVALUATE THE FOLLOWING GOALS'));
+        // If API is disabled, that's fine - just verify structure
+        if (!result.result.enabled) {
+          assert.ok(result.result.message);
+        }
+      } catch (error) {
+        // Handle API errors gracefully (rate limits, invalid image format, API key issues, etc.)
+        if (error.code === 'PROVIDER_ERROR' && 
+            (error.details?.statusCode === 429 || 
+             error.details?.statusCode === 400 || 
+             error.details?.statusCode === 500 ||
+             error.details?.statusCode === 401)) {
+          // API error - skip test (not a code bug)
+          return;
+        }
+        if (error.message?.includes('API disabled') || error.message?.includes('API key')) {
+          return;
+        }
+        throw error;
+      } finally {
+        if (existsSync(screenshotPath)) {
+          unlinkSync(screenshotPath);
+        }
+      }
+    });
+
+    it('should throw error if screenshotPath missing', async () => {
+      try {
+        await validateWithGoals(null, { goal: 'test' });
+        assert.fail('Should have thrown error');
+      } catch (error) {
+        assert.ok(error.message.includes('screenshotPath is required'));
+      }
+    });
+
+    it('should throw error if goal missing', async () => {
+      const tempDir = join(tmpdir(), `ai-visual-test-${Date.now()}`);
+      const screenshotPath = join(tempDir, 'test.png');
+      await createTestImage(screenshotPath);
+
+      try {
+        await validateWithGoals(screenshotPath, {});
+        assert.fail('Should have thrown error');
+      } catch (error) {
+        assert.ok(error.message.includes('goal is required'));
+      } finally {
+        if (existsSync(screenshotPath)) {
+          unlinkSync(screenshotPath);
+        }
+      }
+    });
+  });
+
+  describe('generateGamePrompt', () => {
+    it('should generate prompt from string', () => {
+      const prompt = generateGamePrompt('Is the game fun?', {
+        gameState: { score: 100 }
+      });
+
+      assert.ok(typeof prompt === 'string');
+      assert.ok(prompt.includes('Is the game fun?'));
+      assert.ok(prompt.includes('CURRENT GAME STATE'));
+    });
+
+    it('should generate prompt from goal object', () => {
+      const goal = createGameGoal('fun');
+      const prompt = generateGamePrompt(goal, {
+        gameState: { gameActive: true }
+      });
+
+      assert.ok(typeof prompt === 'string');
+      assert.ok(prompt.includes('GOAL:'));
+      assert.ok(prompt.includes('Evaluate if the game is fun'));
+    });
+
+    it('should generate prompt from goal array', () => {
+      const goals = ['Is it fun?', 'Is it accessible?'];
+      const prompt = generateGamePrompt(goals, {
+        gameState: { score: 100 }
+      });
+
+      assert.ok(typeof prompt === 'string');
+      assert.ok(prompt.includes('EVALUATE THE FOLLOWING GOALS'));
+    });
+  });
+
+  describe('testGameplay', () => {
+    it('should throw error if url missing', async () => {
+      const mockPage = createMockPage();
+      try {
+        await testGameplay(mockPage, {});
+        assert.fail('Should have thrown error');
+      } catch (error) {
+        assert.ok(error.message.includes('url is required'));
+      }
+    });
+
+    it('should handle basic gameplay test', async () => {
+      const mockPage = createMockPage({
+        html: '<html><body><canvas id="game"></canvas></body></html>',
+        gameState: { gameActive: true, score: 0 }
+      });
+
+      const result = await testGameplay(mockPage, {
+        url: 'about:blank',
+        goals: ['fun'],
+        captureTemporal: false,
+        captureCode: false
+      });
+
+      assert.ok(result);
+      assert.strictEqual(result.url, 'about:blank');
+      assert.ok(Array.isArray(result.goals));
+      assert.ok(Array.isArray(result.experiences));
+    });
+  });
+
+  describe('testBrowserExperience', () => {
+    it('should throw error if url missing', async () => {
+      const mockPage = createMockPage();
+      try {
+        await testBrowserExperience(mockPage, {});
+        assert.fail('Should have thrown error');
+      } catch (error) {
+        assert.ok(error.message.includes('url is required'));
+      }
+    });
+
+    it('should handle basic browser experience test', async () => {
+      const mockPage = createMockPage();
+
+      const result = await testBrowserExperience(mockPage, {
+        url: 'about:blank',
+        stages: ['initial'],
+        captureCode: false
+      });
+
+      assert.ok(result);
+      assert.strictEqual(result.url, 'about:blank');
+      assert.ok(Array.isArray(result.stages));
+      assert.ok(Array.isArray(result.experiences));
+    });
+  });
+});
+

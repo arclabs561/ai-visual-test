@@ -2,10 +2,20 @@ import { test } from 'node:test';
 import assert from 'node:assert';
 import { AccessibilityValidator } from '../../src/validators/accessibility-validator.mjs';
 
-test('AccessibilityValidator.validateHybrid combines programmatic and semantic', async () => {
-  const { chromium } = await import('playwright');
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
+test('AccessibilityValidator.validateHybrid combines programmatic and semantic', async function() {
+  let browser, page;
+  try {
+    const { chromium } = await import('playwright');
+    browser = await chromium.launch();
+    page = await browser.newPage();
+  } catch (error) {
+    if (error.message.includes('Executable doesn\'t exist') || error.message.includes('browserType.launch')) {
+      console.log('   ℹ️  Playwright browsers not installed. Run: npx playwright install chromium');
+      this.skip();
+      return;
+    }
+    throw error;
+  }
   
   try {
     // Create realistic test page with proper structure
@@ -70,7 +80,9 @@ test('AccessibilityValidator.validateHybrid combines programmatic and semantic',
       }
     }
   } finally {
-    await browser.close();
+    if (browser) {
+      await browser.close();
+    }
   }
 });
 

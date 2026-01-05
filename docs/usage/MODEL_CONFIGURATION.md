@@ -18,18 +18,18 @@ Each provider offers different model tiers:
 
 ### Gemini
 - **fast**: `gemini-2.0-flash-exp` - Fast, outperforms 1.5 Pro (2x speed)
-- **balanced**: `gemini-2.5-pro` - Best balance (released June 2025, top vision model) (default)
-- **best**: `gemini-2.5-pro` - Best quality (1M+ context, native thinking, #1 on benchmarks)
+- **balanced**: `gemini-2.5-pro` - Balanced (released June 2025, top vision model) (default)
+- **best**: `gemini-2.5-pro` - High quality (1M+ context, native thinking, #1 on benchmarks)
 
 ### OpenAI
 - **fast**: `gpt-4o-mini` - Fast, cheaper
-- **balanced**: `gpt-5` - Best balance (released August 2025, unified reasoning) (default)
-- **best**: `gpt-5` - Best quality (state-of-the-art multimodal, August 2025)
+- **balanced**: `gpt-5` - Balanced (released August 2025, unified reasoning) (default)
+- **best**: `gpt-5` - High quality (multimodal, August 2025)
 
 ### Claude
 - **fast**: `claude-3-5-haiku-20241022` - Fast, cheaper
-- **balanced**: `claude-sonnet-4-5` - Best balance (released September 2025, enhanced vision) (default)
-- **best**: `claude-sonnet-4-5` - Best quality (latest flagship, September 2025)
+- **balanced**: `claude-sonnet-4-5` - Balanced (released September 2025, enhanced vision) (default)
+- **best**: `claude-sonnet-4-5` - High quality (latest flagship, September 2025)
 
 ## Configuration Methods
 
@@ -93,14 +93,14 @@ const result = await judge.judgeScreenshot(
 
 ### Quality vs Speed
 
-| Model | Quality | Speed | Cost | Best For | Release Date |
+| Model | Quality | Speed | Cost | Use Case | Release Date |
 |-------|---------|-------|------|----------|--------------|
 | `gpt-4o-mini` | Good | Very Fast | Low | Quick iterations | 2024 |
-| `gpt-5` | Best | Fast | Medium | Production (default) - Latest August 2025 | Aug 2025 |
+| `gpt-5` | High | Fast | Medium | Production (default) - Latest August 2025 | Aug 2025 |
 | `claude-3-5-haiku` | Good | Very Fast | Low | Quick iterations | 2024 |
-| `claude-sonnet-4-5` | Best | Fast | Medium | Production (default) - Latest September 2025 | Sep 2025 |
-| `gemini-2.0-flash-exp` | Excellent | Very Fast | Low | Fast iterations | 2024 |
-| `gemini-2.5-pro` | Best | Medium | Medium | Production (default) - Latest June 2025, #1 benchmarks | Jun 2025 |
+| `claude-sonnet-4-5` | High | Fast | Medium | Production (default) - Latest September 2025 | Sep 2025 |
+| `gemini-2.0-flash-exp` | Good | Very Fast | Low | Fast iterations | 2024 |
+| `gemini-2.5-pro` | High | Medium | Medium | Production (default) - Latest June 2025, #1 benchmarks | Jun 2025 |
 
 ### Recommendations
 
@@ -110,7 +110,7 @@ const result = await judge.judgeScreenshot(
 
 **For Production:**
 - Use `balanced` tier (default) or `gpt-4o` / `claude-3-5-sonnet` / `gemini-1.5-pro`
-- Best balance of quality and cost
+- Balance of quality and cost
 
 **For Critical Evaluations:**
 - Use `best` tier or `gpt-4-turbo` / `claude-3-5-sonnet` / `gemini-1.5-pro`
@@ -123,7 +123,7 @@ When using human validation, better models improve:
 - **Calibration**: More accurate scores reduce calibration needs
 - **Reasoning**: Better explanations help humans understand VLLM decisions
 
-**Recommendation**: Use `balanced` or `best` tier for human validation workflows.
+Use `balanced` or `best` tier for human validation workflows.
 
 ## Cost Considerations
 
@@ -155,7 +155,7 @@ export VLM_PROVIDER=gemini
 export GEMINI_API_KEY=your-key
 ```
 
-### Production with Best Quality
+### Production with High Quality
 
 ```bash
 export VLM_MODEL_TIER=best

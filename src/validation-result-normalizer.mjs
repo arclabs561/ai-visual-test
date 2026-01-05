@@ -43,10 +43,36 @@ export function normalizeValidationResult(result, source = 'unknown') {
     normalized.score = null;
   }
 
-  // Ensure issues is always an array
+  // Ensure issues is always an array of strings
   if (!Array.isArray(normalized.issues)) {
     warn(`[Normalizer] ${source}: issues is not an array, defaulting to empty array`);
     normalized.issues = [];
+  } else {
+    // Normalize issues to strings for consistent formatting
+    normalized.issues = normalized.issues.map(issue => {
+      if (typeof issue === 'string') {
+        return issue;
+      }
+      if (typeof issue === 'object' && issue !== null) {
+        // Format object issues as strings
+        if (issue.description) {
+          return issue.description;
+        }
+        if (issue.element && issue.issue) {
+          return `${issue.element}: ${issue.issue}`;
+        }
+        if (issue.ratio && issue.required) {
+          return `Contrast ${issue.ratio}:1 (required: ${issue.required}:1)`;
+        }
+        if (issue.message) {
+          return issue.message;
+        }
+        // Fallback: stringify the object
+        return JSON.stringify(issue);
+      }
+      // Fallback: convert to string
+      return String(issue);
+    });
   }
 
   // Ensure reasoning is always present

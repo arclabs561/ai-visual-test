@@ -6,6 +6,11 @@
  * Includes cost tracking, multi-modal validation, and comprehensive reporting.
  */
 
+import { loadEnv } from '../../src/load-env.mjs';
+
+// Auto-load .env for API keys
+loadEnv();
+
 import { startSession, endSession } from '../../src/index.mjs';
 import { spawn } from 'child_process';
 import { join } from 'path';

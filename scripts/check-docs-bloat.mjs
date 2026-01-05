@@ -19,8 +19,8 @@ import { execSync } from 'child_process';
 // Load environment variables before importing LLM utils
 import { loadEnv } from '../src/load-env.mjs';
 loadEnv();
-// Use shared LLM utility library
-import { detectProvider, callLLM, extractJSON } from '@arclabs561/llm-utils';
+// Use cached LLM wrapper for better performance and cost reduction
+import { detectProvider, extractJSON } from '@arclabs561/llm-utils';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -447,11 +447,13 @@ Return ONLY valid JSON:
 Return ONLY valid JSON, no other text.`;
 
   try {
-    const response = await callLLM(
+    // Use cached LLM wrapper for better performance and cost reduction
+    const { callLLMCached } = await import('../src/utils/cached-llm.mjs');
+    const response = await callLLMCached(
       prompt, 
       llmConfig.provider, 
       llmConfig.apiKey,
-      { tier: 'simple', maxTokens: 2000 }
+      { tier: 'simple', maxTokens: 2000, useCache: true }
     );
     return extractJSON(response);
   } catch (error) {

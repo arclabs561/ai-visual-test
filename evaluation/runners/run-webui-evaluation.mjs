@@ -5,6 +5,11 @@
  * Evaluates our validation methods on real WebUI dataset samples.
  */
 
+import { loadEnv } from '../../src/load-env.mjs';
+
+// Auto-load .env for API keys
+loadEnv();
+
 import { loadWebUIDataset, getRandomWebUISamples, filterWebUISamples } from '../utils/load-webui-dataset.mjs';
 import { validateScreenshot } from '../../src/index.mjs';
 import { createConfig } from '../../src/config.mjs';

@@ -27,13 +27,18 @@
  *   node evaluation/runners/evaluate-cli.mjs --dataset real-dataset.json
  */
 
+import { loadEnv } from '../../src/load-env.mjs';
+
+// Auto-load .env for API keys
+loadEnv();
+
 import { runEvaluation } from './evaluate.mjs';
 
 function parseArgs() {
   const args = process.argv.slice(2);
   const options = {
-    dataset: 'real',
-    limit: null,
+    dataset: 'webui', // Default to WebUI for proper evaluation (was 'real' - only 4 samples)
+    limit: 50, // Default to 50 samples for reasonable evaluation time
     provider: null,
     prompt: null,
     outputFile: null,
@@ -71,13 +76,16 @@ Options:
   --help               Show this help
 
 Examples:
-  # Quick test with real dataset (4 samples)
-  node evaluation/runners/evaluate-cli.mjs --dataset real --limit 2
+  # Default: Evaluate WebUI dataset (50 samples)
+  node evaluation/runners/evaluate-cli.mjs
+
+  # Quick test with real dataset (4 samples - for development only)
+  node evaluation/runners/evaluate-cli.mjs --dataset real --limit 4
 
   # Evaluate WebUI dataset (100 samples)
   node evaluation/runners/evaluate-cli.mjs --dataset webui --limit 100
 
-  # Full evaluation with all WebUI samples
+  # Full evaluation with all WebUI samples (~7000 samples - takes hours)
   node evaluation/runners/evaluate-cli.mjs --dataset webui
 
   # Use JSON file (legacy)

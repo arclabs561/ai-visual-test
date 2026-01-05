@@ -143,9 +143,9 @@ export function calculateCohensKappa(judge1, judge2) {
   
   // Calculate expected agreement
   let pe = 0;
-  categories.forEach(cat => {
-    const judge1Count = judge1.filter(j => j === cat).length;
-    const judge2Count = judge2.filter(j => j === cat).length;
+  categories.forEach(category => {
+    const judge1Count = judge1.filter(j => j === category).length;
+    const judge2Count = judge2.filter(j => j === category).length;
     pe += (judge1Count / n) * (judge2Count / n);
   });
   
@@ -289,14 +289,28 @@ export function calculateCorrelation(x, y) {
   if (x.length === 0) return 0;
   
   const n = x.length;
-  const sumX = x.reduce((a, b) => a + b, 0);
-  const sumY = y.reduce((a, b) => a + b, 0);
-  const sumXY = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
-  const sumX2 = x.reduce((sum, xi) => sum + xi * xi, 0);
-  const sumY2 = y.reduce((sum, yi) => sum + yi * yi, 0);
   
-  const numerator = n * sumXY - sumX * sumY;
-  const denominator = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
+  // Filter out null/NaN/Infinity values to avoid invalid calculations
+  const validPairs = [];
+  for (let i = 0; i < n; i++) {
+    if (x[i] !== null && y[i] !== null && 
+        Number.isFinite(x[i]) && Number.isFinite(y[i])) {
+      validPairs.push({ x: x[i], y: y[i] });
+    }
+  }
+  
+  if (validPairs.length === 0) return 0;
+  if (validPairs.length < 2) return 0; // Need at least 2 points for correlation
+  
+  const validN = validPairs.length;
+  const sumX = validPairs.reduce((a, p) => a + p.x, 0);
+  const sumY = validPairs.reduce((a, p) => a + p.y, 0);
+  const sumXY = validPairs.reduce((sum, p) => sum + p.x * p.y, 0);
+  const sumX2 = validPairs.reduce((sum, p) => sum + p.x * p.x, 0);
+  const sumY2 = validPairs.reduce((sum, p) => sum + p.y * p.y, 0);
+  
+  const numerator = validN * sumXY - sumX * sumY;
+  const denominator = Math.sqrt((validN * sumX2 - sumX * sumX) * (validN * sumY2 - sumY * sumY));
   
   return denominator === 0 ? 0 : numerator / denominator;
 }
@@ -314,9 +328,24 @@ export function calculateSpearmanCorrelation(x, y) {
   if (x.length === 0) return 0;
   if (x.length === 1) return 1;
   
+  // Filter out invalid values before ranking (same as calculateCorrelation)
+  const validPairs = [];
+  for (let i = 0; i < x.length; i++) {
+    if (x[i] !== null && y[i] !== null && 
+        Number.isFinite(x[i]) && Number.isFinite(y[i])) {
+      validPairs.push({ x: x[i], y: y[i] });
+    }
+  }
+  
+  if (validPairs.length < 2) return 0; // Need at least 2 valid pairs
+  
+  // Extract valid values for ranking
+  const validX = validPairs.map(p => p.x);
+  const validY = validPairs.map(p => p.y);
+  
   // Rank the values
-  const rankX = rankValues(x);
-  const rankY = rankValues(y);
+  const rankX = rankValues(validX);
+  const rankY = rankValues(validY);
   
   // Calculate Pearson correlation on ranks
   return calculateCorrelation(rankX, rankY);

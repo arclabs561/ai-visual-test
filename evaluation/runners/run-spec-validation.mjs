@@ -8,6 +8,11 @@
  * - Quality metrics
  */
 
+import { loadEnv } from '../../src/load-env.mjs';
+
+// Auto-load .env for API keys (if needed for LLM-based spec validation)
+loadEnv();
+
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { runErrorAnalysis, analyzeSpecQuality } from '../utils/spec-error-analysis.mjs';

@@ -97,7 +97,7 @@ export function sanitizeForLogging(data, options = {}) {
  */
 function isSensitiveField(fieldName) {
   const lower = fieldName.toLowerCase();
-  return SENSITIVE_FIELDS.some(sensitive => lower.includes(sensitive));
+  return SENSITIVE_FIELDS.some(sensitive => lower.includes(sensitive.toLowerCase()));
 }
 
 /**

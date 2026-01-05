@@ -15,14 +15,14 @@ This audit reviews all research citations in the codebase to identify:
 **What we cite**: "Online model selection achieves 6x gains with 1.5% LLM calls"
 **What we actually implement**: 
 - ✅ Multi-scale temporal aggregation (inspired by temporal aspects)
-- ❌ **NOT** the core online model selection algorithm
-- ❌ **NOT** the decision logic for when to prompt
+- ✅ **NOW IMPLEMENTED**: Decision logic for when to prompt (core insight)
+- ✅ **NOW IMPLEMENTED**: Adaptive sampling with warm-start (LLMs early, decay later)
+- ✅ **NOW IMPLEMENTED**: Exponential decay for prompt probability (research formula)
+- ❌ **NOT**: Online model selection (which LLM to use) - we have single provider
 
-**Status**: **OVERCLAIMED** - We cite the paper but don't implement its core contribution
+**Status**: **PARTIALLY IMPLEMENTED** - We implement decision timing (when to call) and adaptive sampling, not model selection (which to call)
 
-**Fix**: Either:
-- Remove citation or clarify "inspired by temporal aspects, not implementing core algorithm"
-- Actually implement the online model selection logic
+**Implementation**: `src/temporal-decision-manager.mjs` - Warm-start + adaptive decay, matches research insight about when to prompt
 
 #### 2. arXiv:2505.13326 - "Serving LLM Reasoning Efficiently"
 **What we cite**: "Short and right thinking management", "Adaptive batching improves efficiency"
@@ -39,13 +39,13 @@ This audit reviews all research citations in the codebase to identify:
 **What we cite**: "Weber-Fechner law, logarithmic compression", "Temporal reference points"
 **What we actually implement**:
 - ✅ Multi-scale temporal aggregation
-- ✅ Exponential decay (not logarithmic)
-- ❌ **NOT** logarithmic compression (Weber-Fechner law)
-- ❌ **NOT** temporal reference points
+- ✅ Exponential decay (default, backward compatible)
+- ✅ **NOW IMPLEMENTED**: Logarithmic compression (Weber-Fechner law) - optional via `decayMethod: 'logarithmic'`
+- ✅ **NOW IMPLEMENTED**: Temporal reference points - optional via `temporalReference` option
 
-**Status**: **PARTIALLY IMPLEMENTED** - We do temporal aggregation but not the specific research findings
+**Status**: **PROPERLY IMPLEMENTED** - Both exponential (default) and logarithmic compression available, temporal reference points supported
 
-**Fix**: Document that we use exponential decay, not logarithmic compression
+**Implementation**: `src/temporal.mjs` - Supports both decay methods, defaults to exponential for backward compatibility
 
 ### ✅ Properly Implemented
 

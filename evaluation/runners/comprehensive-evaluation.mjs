@@ -12,6 +12,11 @@
  * Compares all methods on real dataset and analyzes results.
  */
 
+import { loadEnv } from '../../src/load-env.mjs';
+
+// Auto-load .env for API keys
+loadEnv();
+
 import { 
   validateScreenshot, 
   comparePair, 

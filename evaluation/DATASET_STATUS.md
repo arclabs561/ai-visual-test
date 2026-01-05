@@ -25,23 +25,25 @@
    - Quality: ✅ **HIGH** - Actual human-annotated data
    - Use: ✅ **VALIDATION READY**
 
-### ⚠️ Downloaded But Not Integrated
+### ✅ Downloaded and Available via Adapters
 
 4. **WebUI Dataset** (`webui-7k/`)
-   - Status: ⚠️ **DOWNLOADED, NOT CONVERTED**
-   - Size: 2.70GB, ~7000 samples
+   - Status: ✅ **AVAILABLE VIA ADAPTER**
+   - Size: 2.70GB, ~7000 samples (5,420 extracted)
    - Ground Truth: ✅ **REAL** - Accessibility trees, layouts, styles
    - Quality: ✅ **HIGH** - Research dataset with rich annotations
-   - Action Required: Convert to usable format
-   - Use: ⚠️ **NOT YET USABLE** - Needs conversion
+   - Usage: ✅ **USE ADAPTER** - `loadDataset('webui', { limit: N })`
+   - Adapter: `WebUIAdapter` - Reads from original directories, transforms on-the-fly
+   - Use: ✅ **READY** - No conversion needed, adapter handles it
 
-5. **WCAG Test Cases** (`wcag-test-cases/testcases.json`)
-   - Status: ⚠️ **DOWNLOADED, NOT PARSED**
-   - Format: HTML page (not JSON)
+5. **WCAG Test Cases** (`wcag-test-cases/testcases-actual.json`)
+   - Status: ✅ **AVAILABLE VIA ADAPTER**
+   - Format: JSON (1,189 test cases)
    - Ground Truth: ✅ **REAL** - W3C official test cases
    - Quality: ✅ **HIGH** - Official WCAG test cases
-   - Action Required: Parse HTML to extract test cases
-   - Use: ⚠️ **NOT YET USABLE** - Needs parsing
+   - Usage: ✅ **USE ADAPTER** - `loadDataset('wcag', { limit: N })`
+   - Adapter: `WCAGAdapter` - Reads from JSON file
+   - Use: ✅ **READY** - No parsing needed, adapter handles it
 
 ### ❌ Placeholders (No Data)
 
@@ -68,10 +70,12 @@
 
 ## Recommendations
 
-### Immediate Actions
-1. **Convert WebUI dataset** - 7000 samples with real annotations waiting
-2. **Parse WCAG test cases** - Official test cases ready to use
-3. **Use ScreenAI dataset** - Already integrated, 697 samples ready
+### ✅ All Datasets Ready via Adapters
+1. ✅ **WebUI dataset** - Use `loadDataset('webui')` - 5,420+ samples available
+2. ✅ **WCAG test cases** - Use `loadDataset('wcag')` - 1,189 test cases available
+3. ✅ **ScreenAI dataset** - Use `loadDataset('screenai')` - 697 samples available
+
+**No conversion needed** - Adapters handle transformation on-the-fly!
 
 ### Short-Term Actions
 1. **Improve real-dataset.json** - Replace ranges with precise scores or structured annotations
@@ -86,9 +90,9 @@
 ## Usage Guidelines
 
 ### For Validation (Requires Real Ground Truth)
-- ✅ Use ScreenAI dataset (697 samples)
-- ⚠️ Use WebUI dataset (once converted, 7000 samples)
-- ⚠️ Use WCAG test cases (once parsed)
+- ✅ Use ScreenAI dataset (697 samples) - `loadDataset('screenai')`
+- ✅ Use WebUI dataset (5,420+ samples) - `loadDataset('webui', { limit: N })`
+- ✅ Use WCAG test cases (1,189 test cases) - `loadDataset('wcag', { limit: N })`
 
 ### For Development/Testing
 - ✅ Use real-dataset.json (4 samples, quick tests)
@@ -101,9 +105,9 @@
 
 ## Statistics
 
-- **Total Usable Samples**: 697 (ScreenAI only, until WebUI/WCAG converted)
-- **Total Downloaded But Unused**: ~7000+ (WebUI + WCAG)
+- **Total Usable Samples**: 7,306+ (ScreenAI: 697 + WebUI: 5,420+ + WCAG: 1,189)
+- **Total Available via Adapters**: 7,306+ samples
 - **Total Placeholders**: 2 datasets, 0 samples
-- **Validation Ready**: 1 dataset (ScreenAI)
-- **Needs Conversion**: 2 datasets (WebUI, WCAG)
+- **Validation Ready**: 3 datasets (ScreenAI, WebUI, WCAG)
+- **Needs Conversion**: 0 datasets - All use adapters!
 

@@ -5,106 +5,626 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VLLM Testing - Visual Validation API</title>
   <style>
+    /* CSS Custom Properties - Design Tokens with Liquid Glass Aesthetics */
+    :root {
+      /* Colors - Dark Theme (default) with depth */
+      --bg-primary: #0a0a0a;
+      --bg-secondary: rgba(26, 26, 26, 0.6);
+      --bg-tertiary: rgba(42, 42, 42, 0.4);
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.8);
+      --text-tertiary: rgba(255, 255, 255, 0.6);
+      
+      /* Glass effects - Tailwind-inspired patterns */
+      --glass-bg: rgba(255, 255, 255, 0.1);
+      --glass-bg-hover: rgba(255, 255, 255, 0.15);
+      --glass-border: rgba(255, 255, 255, 0.18);
+      --glass-ring: rgba(0, 0, 0, 0.05); /* Tailwind ring pattern */
+      --glass-shadow: rgba(0, 0, 0, 0.25);
+      --glass-highlight: rgba(255, 255, 255, 0.15);
+      
+      /* Semantic Colors - WCAG AA compliant with glass enhancement */
+      --success: #00d084;
+      --success-text: #000000;
+      --success-glass: rgba(0, 208, 132, 0.2);
+      --error: #ff4444;
+      --error-text: #ffffff;
+      --error-glass: rgba(255, 68, 68, 0.2);
+      --info: #007aff; /* Apple blue */
+      --info-text: #ffffff;
+      --info-glass: rgba(0, 122, 255, 0.2);
+      --accent: #00d084;
+      --accent-glass: rgba(0, 208, 132, 0.15);
+      
+      /* Spacing Scale */
+      --spacing-xs: 0.25rem;
+      --spacing-sm: 0.5rem;
+      --spacing-md: 1rem;
+      --spacing-lg: 1.5rem;
+      --spacing-xl: 2rem;
+      --spacing-2xl: 3rem;
+      
+      /* Typography */
+      --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      --font-family-mono: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Courier New', monospace;
+      --font-size-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+      --font-size-sm: clamp(0.875rem, 0.825rem + 0.25vw, 1rem);
+      --font-size-lg: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);
+      --font-size-xl: clamp(1.5rem, 1.3rem + 1vw, 2.5rem);
+      --line-height-base: 1.6;
+      --line-height-tight: 1.4;
+      
+      /* Border Radius - Liquid Glass rounded corners */
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+      
+      /* Blur effects - Tailwind scale */
+      --blur-sm: 4px;   /* backdrop-blur-sm */
+      --blur-md: 12px;  /* backdrop-blur-md */
+      --blur-lg: 16px;  /* backdrop-blur-lg */
+      --blur-xl: 24px;  /* backdrop-blur-xl */
+      
+      /* Transitions */
+      --transition-fast: 0.15s ease;
+      --transition-normal: 0.2s ease;
+      
+      /* Layout */
+      --max-width: 1200px;
+      --content-padding: clamp(1rem, 2vw, 2rem);
+    }
+    
+    /* Light Theme Support with Liquid Glass */
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg-primary: #f5f5f7;
+        --bg-secondary: rgba(255, 255, 255, 0.7);
+        --bg-tertiary: rgba(255, 255, 255, 0.5);
+        --text-primary: #1d1d1f;
+        --text-secondary: rgba(29, 29, 31, 0.8);
+        --text-tertiary: rgba(29, 29, 31, 0.6);
+        --glass-bg: rgba(255, 255, 255, 0.7);
+        --glass-bg-hover: rgba(255, 255, 255, 0.85);
+        --glass-border: rgba(0, 0, 0, 0.12);
+        --glass-ring: rgba(0, 0, 0, 0.05);
+        --glass-shadow: rgba(0, 0, 0, 0.08);
+        --glass-highlight: rgba(255, 255, 255, 0.9);
+        --success: #00a870;
+        --success-text: #ffffff;
+        --success-glass: rgba(0, 168, 112, 0.15);
+        --error: #dc3545;
+        --error-text: #ffffff;
+        --error-glass: rgba(220, 53, 69, 0.15);
+        --info: #007aff;
+        --info-glass: rgba(0, 122, 255, 0.15);
+      }
+    }
+    
+    /* Base Styles */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
     
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: #0a0a0a;
-      color: #ffffff;
-      line-height: 1.6;
-      padding: 2rem;
-      max-width: 1200px;
-      margin: 0 auto;
+    html {
+      /* Smooth scrolling for better UX */
+      scroll-behavior: smooth;
     }
     
+    body {
+      font-family: var(--font-family);
+      font-size: var(--font-size-base);
+      line-height: var(--line-height-base);
+      background: var(--bg-primary);
+      background-image: 
+        radial-gradient(circle at 20% 50%, rgba(0, 208, 132, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(0, 122, 255, 0.1) 0%, transparent 50%);
+      color: var(--text-primary);
+      padding: var(--content-padding);
+      max-width: var(--max-width);
+      margin: 0 auto;
+      min-height: 100vh;
+      position: relative;
+    }
+    
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 30% 20%, rgba(0, 208, 132, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 70% 60%, rgba(0, 122, 255, 0.05) 0%, transparent 40%);
+      pointer-events: none;
+      z-index: -1;
+    }
+    
+    /* Typography Hierarchy - Enhanced with better spacing */
     h1 {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-      color: #ffffff;
+      font-size: var(--font-size-xl);
+      line-height: var(--line-height-tight);
+      margin-bottom: var(--spacing-lg);
+      margin-top: 0;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.02em;
+      /* Better text rendering */
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
     }
     
     h2 {
-      font-size: 1.5rem;
-      margin-top: 2rem;
-      margin-bottom: 1rem;
-      color: #ffffff;
+      font-size: var(--font-size-lg);
+      line-height: var(--line-height-tight);
+      margin-top: var(--spacing-2xl);
+      margin-bottom: var(--spacing-md);
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      position: relative;
+      padding-left: var(--spacing-lg);
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
     }
     
+    h2::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 70%;
+      background: linear-gradient(180deg, var(--accent), rgba(0, 208, 132, 0.5));
+      border-radius: var(--radius-sm);
+      box-shadow: 0 0 8px rgba(0, 208, 132, 0.3);
+    }
+    
+    p {
+      margin-bottom: var(--spacing-md);
+      color: var(--text-secondary);
+      line-height: 1.7;
+      max-width: 65ch; /* Optimal reading width */
+    }
+    
+    /* Status Badge - Enhanced visibility with shadcn/ui pattern */
     .status {
-      display: inline-block;
-      padding: 0.5rem 1rem;
-      border-radius: 4px;
-      font-weight: bold;
-      margin-bottom: 2rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius-lg);
+      font-weight: 600;
+      font-size: var(--font-size-base);
+      margin-bottom: var(--spacing-xl);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      min-height: 44px;
+      line-height: 1.5;
+      position: relative;
+      overflow: hidden;
+      /* Enhanced visibility with stronger backdrop */
+      background: var(--glass-bg);
+      backdrop-filter: blur(var(--blur-xl)) saturate(180%);
+      -webkit-backdrop-filter: blur(var(--blur-xl)) saturate(180%);
+      /* Stronger border for better definition */
+      border: 1.5px solid var(--glass-border);
+      box-shadow: 
+        0 2px 8px 0 var(--glass-shadow),
+        0 1px 3px -1px var(--glass-shadow),
+        inset 0 1px 0 var(--glass-highlight);
+    }
+    
+    .status::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+    
+    .status:hover::before {
+      left: 100%;
     }
     
     .status.ok {
-      background: #00ff00;
-      color: #000000;
+      background: linear-gradient(135deg, var(--success-glass), var(--success));
+      color: var(--success-text);
+      border-color: rgba(0, 208, 132, 0.4);
+      box-shadow: 
+        0 4px 12px 0 rgba(0, 208, 132, 0.4),
+        0 2px 4px -1px rgba(0, 208, 132, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
     }
     
     .status.error {
-      background: #ff0000;
-      color: #ffffff;
+      background: linear-gradient(135deg, var(--error-glass), var(--error));
+      color: var(--error-text);
+      border-color: rgba(255, 68, 68, 0.4);
+      box-shadow: 
+        0 4px 12px 0 rgba(255, 68, 68, 0.4),
+        0 2px 4px -1px rgba(255, 68, 68, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
     
+    /* Status icon spacing */
+    .status::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: 0.8;
+      margin-left: 0.25rem;
+    }
+    
+    /* Code Elements - Tailwind inline code pattern */
     code {
-      background: #1a1a1a;
-      padding: 0.2rem 0.4rem;
-      border-radius: 3px;
-      font-family: 'Monaco', 'Courier New', monospace;
-      font-size: 0.9em;
+      background: var(--glass-bg);
+      padding: 0.125rem 0.375rem;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-family-mono);
+      font-size: 0.875em;
+      color: var(--text-primary);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(var(--blur-sm)) saturate(180%);
+      -webkit-backdrop-filter: blur(var(--blur-sm)) saturate(180%);
+      box-shadow: 
+        0 1px 2px 0 var(--glass-shadow),
+        inset 0 1px 0 var(--glass-highlight);
+      transition: all 0.15s ease;
+    }
+    
+    code:hover {
+      background: var(--glass-bg-hover);
+      transform: translateY(-0.5px);
     }
     
     pre {
-      background: #1a1a1a;
-      padding: 1rem;
-      border-radius: 4px;
+      background: var(--glass-bg);
+      padding: var(--spacing-lg);
+      border-radius: var(--radius-lg);
       overflow-x: auto;
-      margin: 1rem 0;
+      margin: var(--spacing-md) 0;
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(var(--blur-lg)) saturate(180%);
+      -webkit-backdrop-filter: blur(var(--blur-lg)) saturate(180%);
+      /* Material Design elevation 2 */
+      box-shadow: 
+        0 1px 3px 0 var(--glass-shadow),
+        0 1px 2px -1px var(--glass-shadow),
+        inset 0 1px 0 var(--glass-highlight);
+      position: relative;
     }
     
+    pre::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--glass-highlight), transparent);
+      opacity: 0.5;
+    }
+    
+    pre code {
+      background: transparent;
+      padding: 0;
+      color: var(--text-primary);
+    }
+    
+    /* Endpoint Cards - Material Design 3 card pattern with better spacing */
     .endpoint {
-      background: #1a1a1a;
-      padding: 1.5rem;
-      border-radius: 4px;
-      margin: 1rem 0;
-      border-left: 4px solid #00ff00;
+      background: var(--glass-bg);
+      padding: var(--spacing-xl);
+      border-radius: var(--radius-lg);
+      margin: var(--spacing-xl) 0;
+      border: 1px solid var(--glass-border);
+      border-left: 4px solid var(--accent);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(var(--blur-lg)) saturate(180%);
+      -webkit-backdrop-filter: blur(var(--blur-lg)) saturate(180%);
+      /* Material Design elevation 1 → 2 on hover */
+      box-shadow: 
+        0 1px 3px 0 var(--glass-shadow),
+        0 1px 2px -1px var(--glass-shadow),
+        inset 0 1px 0 var(--glass-highlight);
     }
     
+    .endpoint > *:first-child {
+      margin-top: 0;
+    }
+    
+    .endpoint > *:last-child {
+      margin-bottom: 0;
+    }
+    
+    .endpoint::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(180deg, var(--accent), rgba(0, 208, 132, 0.3));
+      opacity: 0.9;
+      box-shadow: 0 0 12px rgba(0, 208, 132, 0.4);
+    }
+    
+    .endpoint:hover {
+      background: var(--glass-bg-hover);
+      transform: translateY(-1px);
+      /* Material Design elevation 2 */
+      box-shadow: 
+        0 4px 6px -1px var(--glass-shadow),
+        0 2px 4px -2px var(--glass-shadow),
+        inset 0 1px 0 var(--glass-highlight);
+      border-left-color: var(--accent);
+    }
+    
+    .endpoint:hover::before {
+      opacity: 1;
+    }
+    
+    .endpoint p {
+      margin-top: var(--spacing-md);
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .endpoint code {
+      margin: 0 0.25rem;
+    }
+    
+    /* HTTP Method Badges - Material Design chip pattern */
     .method {
-      display: inline-block;
-      padding: 0.25rem 0.5rem;
-      border-radius: 3px;
-      font-weight: bold;
-      margin-right: 0.5rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.375rem 0.75rem;
+      border-radius: 9999px; /* Full pill - Tailwind pattern */
+      font-weight: 600;
+      font-size: 0.75rem;
+      letter-spacing: 0.025em;
+      margin-right: var(--spacing-md);
+      min-width: 64px;
+      min-height: 28px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(var(--blur-sm)) saturate(180%);
+      -webkit-backdrop-filter: blur(var(--blur-sm)) saturate(180%);
+      border: 1px solid var(--glass-border);
+      transition: all 0.15s ease;
+      /* Material Design chip elevation */
+      box-shadow: 
+        0 1px 2px 0 var(--glass-shadow),
+        inset 0 1px 0 var(--glass-highlight);
+    }
+    
+    .method::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.1);
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+    
+    .method:hover::before {
+      opacity: 1;
     }
     
     .method.post {
-      background: #00ff00;
-      color: #000000;
+      background: linear-gradient(135deg, var(--success-glass), var(--success));
+      color: var(--success-text);
+      box-shadow: 
+        0 1px 2px 0 rgba(0, 208, 132, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
     
     .method.get {
-      background: #0066ff;
+      background: linear-gradient(135deg, var(--info-glass), var(--info));
       color: #ffffff;
+      box-shadow: 
+        0 1px 2px 0 rgba(0, 122, 255, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+    
+    .method span {
+      position: relative;
+      z-index: 1;
+    }
+    
+    /* Links - Liquid Glass hover effects */
+    a {
+      color: var(--accent);
+      text-decoration: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border-bottom: 2px solid transparent;
+      position: relative;
+      padding: 2px 4px;
+      border-radius: var(--radius-sm);
+    }
+    
+    a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      transform: translateX(-50%);
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    a:hover {
+      color: var(--success);
+      background: rgba(0, 208, 132, 0.1);
+      transform: translateY(-1px);
+    }
+    
+    a:hover::after {
+      width: 100%;
+      background: linear-gradient(90deg, transparent, var(--success), transparent);
+    }
+    
+    a:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: 4px;
+      border-radius: var(--radius-sm);
+      background: rgba(0, 208, 132, 0.15);
+    }
+    
+    /* Reduced Motion Support */
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+    
+    /* Responsive Adjustments - Enhanced mobile experience */
+    @media (max-width: 768px) {
+      body {
+        padding: var(--spacing-md);
+      }
+      
+      h1 {
+        font-size: clamp(1.5rem, 1.2rem + 1.5vw, 2rem);
+        margin-bottom: var(--spacing-lg);
+      }
+      
+      h2 {
+        font-size: clamp(1.125rem, 1rem + 1vw, 1.25rem);
+        margin-top: var(--spacing-lg);
+        margin-bottom: var(--spacing-md);
+      }
+      
+      .status {
+        width: 100%;
+        justify-content: center;
+        padding: 0.75rem 1rem;
+        font-size: clamp(0.9375rem, 0.875rem + 0.5vw, 1rem);
+        min-height: 48px;
+        margin-bottom: var(--spacing-lg);
+      }
+      
+      .endpoint {
+        padding: var(--spacing-lg);
+        margin: var(--spacing-md) 0;
+        border-left-width: 4px;
+      }
+      
+      .endpoint p {
+        font-size: clamp(0.9375rem, 0.875rem + 0.5vw, 1rem);
+        line-height: 1.6;
+      }
+      
+      pre {
+        font-size: clamp(0.875rem, 0.8125rem + 0.75vw, 1rem);
+        padding: var(--spacing-md);
+        line-height: 1.7;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin: var(--spacing-md) 0;
+        /* Better mobile code block styling */
+        border-radius: var(--radius-md);
+      }
+      
+      code {
+        font-size: clamp(0.875rem, 0.8125rem + 0.5vw, 0.9375rem);
+        padding: 0.25rem 0.5rem;
+        line-height: 1.5;
+        /* Ensure inline code is readable */
+        word-break: break-word;
+      }
+      
+      pre code {
+        font-size: inherit;
+        padding: 0;
+      }
+      
+      .method {
+        min-width: 60px;
+        min-height: 32px;
+        padding: 0.5rem 0.75rem;
+        font-size: clamp(0.75rem, 0.6875rem + 0.5vw, 0.8125rem);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: var(--spacing-sm);
+        margin-bottom: var(--spacing-xs);
+      }
+      
+      /* Ensure touch targets are at least 44x44px (iOS HIG) */
+      a {
+        min-height: 44px;
+        min-width: 44px;
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem;
+        font-size: clamp(0.9375rem, 0.875rem + 0.5vw, 1rem);
+      }
+      
+      /* Better spacing on mobile */
+      p {
+        margin-bottom: var(--spacing-md);
+        line-height: 1.7;
+      }
+    }
+    
+    /* Tablet adjustments */
+    @media (min-width: 769px) and (max-width: 1024px) {
+      body {
+        padding: var(--spacing-lg);
+      }
+      
+      .endpoint {
+        padding: var(--spacing-lg);
+      }
+    }
+    
+    /* Print Styles */
+    @media print {
+      body {
+        background: white;
+        color: black;
+      }
+      
+      .status,
+      .method {
+        border: 1px solid currentColor;
+      }
     }
   </style>
 </head>
 <body>
   <h1>VLLM Testing API</h1>
-  <div id="status" class="status">Checking...</div>
+  <div id="status" class="status" role="status" aria-live="polite">Checking...</div>
   
   <h2>API Endpoints</h2>
   
   <div class="endpoint">
-    <span class="method post">POST</span>
+    <span class="method post"><span>POST</span></span>
     <code>/api/validate</code>
-    <p style="margin-top: 1rem;">Validate a screenshot using Vision Language Models.</p>
+    <p>Validate a screenshot using Vision Language Models.</p>
     <pre>{
   "image": "base64-encoded-image",
   "prompt": "Evaluate this screenshot...",
@@ -116,13 +636,13 @@
   </div>
   
   <div class="endpoint">
-    <span class="method get">GET</span>
+    <span class="method get"><span>GET</span></span>
     <code>/api/health</code>
-    <p style="margin-top: 1rem;">Health check endpoint.</p>
+    <p>Health check endpoint.</p>
   </div>
   
   <h2>Documentation</h2>
-  <p>See <a href="https://github.com/arclabs561/ai-visual-test" style="color: #00ff00;">GitHub repository</a> for full documentation.</p>
+  <p>See <a href="https://github.com/arclabs561/ai-visual-test">GitHub repository</a> for full documentation.</p>
   
   <script>
     // Check health on load

@@ -16,7 +16,11 @@ import { calculateCohensKappa } from '../utils/metrics.mjs';
  * Compare results across multiple providers
  */
 export async function compareProviders(screenshotPath, prompt, context = {}) {
+  // Include Groq if API key is available
   const providers = ['gemini', 'openai', 'claude'];
+  if (process.env.GROQ_API_KEY) {
+    providers.push('groq');
+  }
   const results = {};
   
   for (const provider of providers) {

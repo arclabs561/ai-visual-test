@@ -7,6 +7,11 @@
  * - WCAG Test Cases (accessibility)
  */
 
+import { loadEnv } from '../../src/load-env.mjs';
+
+// Auto-load .env for API keys
+loadEnv();
+
 import { loadWebUIDataset } from '../utils/load-webui-dataset.mjs';
 import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';

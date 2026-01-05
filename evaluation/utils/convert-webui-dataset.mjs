@@ -6,7 +6,7 @@
  * for use in evaluations.
  */
 
-import { readdirSync, readFileSync, existsSync, statSync, writeFileSync, mkdirSync } from 'fs';
+import { readdirSync, readFileSync, existsSync, statSync, writeFileSync, mkdirSync, createWriteStream } from 'fs';
 import { join, dirname } from 'path';
 import { readGzippedJson } from './gzip-utils.mjs';
 
@@ -155,7 +155,23 @@ async function convertSample(sampleDir) {
     metadata,
     annotations: Object.keys(annotations).length > 0 ? annotations : undefined,
     // Ground truth fields for evaluation
+    // WebUI dataset is for accessibility tree validation, not score validation
     groundTruth: {
+      evaluationType: 'accessibility-tree', // Indicates this is for accessibility validation, not score validation
+      structuredFeatures: {
+        accessibility: {
+          hasAccessibilityTree: !!annotations.accessibilityTree,
+          accessibilityTree: annotations.accessibilityTree ? { _note: 'Use adapter to load full tree' } : null,
+          hasBoundingBoxes: !!annotations.boundingBoxes,
+          hasStyles: !!annotations.styles,
+          hasHtml: !!annotations.html,
+          hasClasses: !!annotations.classes,
+          hasViewportMetadata: !!annotations.viewportMetadata,
+          multiViewport: screenshots.length > 1,
+          viewportCount: screenshots.length
+        }
+      },
+      // Metadata about what's available (for compatibility)
       hasScreenshot: true,
       hasAccessibilityTree: !!annotations.accessibilityTree,
       hasBoundingBoxes: !!annotations.boundingBoxes,
@@ -185,13 +201,16 @@ async function convertWebUIDataset(options = {}) {
     process.exit(1);
   }
   
-  // Get all sample directories
-  const sampleDirs = readdirSync(WEBUI_DATASET_DIR)
+  // Get all sample directories - check train_split_web7k subdirectory first
+  const trainSplitDir = join(WEBUI_DATASET_DIR, 'train_split_web7k');
+  const scanDir = existsSync(trainSplitDir) ? trainSplitDir : WEBUI_DATASET_DIR;
+  
+  const sampleDirs = readdirSync(scanDir)
     .filter(item => {
-      const itemPath = join(WEBUI_DATASET_DIR, item);
-      return statSync(itemPath).isDirectory();
+      const itemPath = join(scanDir, item);
+      return statSync(itemPath).isDirectory() && !item.startsWith('.');
     })
-    .map(item => join(WEBUI_DATASET_DIR, item));
+    .map(item => join(scanDir, item));
   
   const totalSamples = limit ? Math.min(limit, sampleDirs.length) : sampleDirs.length;
   console.log(`📊 Found ${sampleDirs.length} samples, processing ${totalSamples}...\n`);
@@ -218,26 +237,81 @@ async function convertWebUIDataset(options = {}) {
     }
   }
   
-  const dataset = {
+  // Write output incrementally to avoid JSON stringify limits
+  const outputDir = dirname(outputFile);
+  mkdirSync(outputDir, { recursive: true });
+  
+  // Write header
+  const header = {
     name: 'WebUI Ground Truth Dataset',
     source: 'WebUI Dataset (webui-7k)',
     version: '1.0.0',
     created: new Date().toISOString(),
-    totalSamples: convertedSamples.length,
-    samples: convertedSamples
+    totalSamples: convertedSamples.length
   };
   
-  // Write output
-  const output = JSON.stringify(dataset, null, 2);
-  writeFileSync(outputFile, output);
+  // Write as streaming JSON to handle large files
+  const stream = createWriteStream(outputFile);
+  stream.write(JSON.stringify(header, null, 2).replace(/\}$/, ''));
+  stream.write(',\n  "samples": [\n');
+  
+  // Write samples one by one
+  for (let i = 0; i < convertedSamples.length; i++) {
+    const sample = convertedSamples[i];
+    // Limit annotation size to prevent huge files
+    if (sample.annotations) {
+      // Truncate large HTML/accessibility trees
+      if (sample.annotations.html && sample.annotations.html.length > 10000) {
+        sample.annotations.html = sample.annotations.html.substring(0, 10000) + '... [truncated]';
+      }
+      if (sample.annotations.accessibilityTree) {
+        const treeStr = JSON.stringify(sample.annotations.accessibilityTree);
+        if (treeStr.length > 50000) {
+          // For converted files, we truncate to save space
+          // But keep enough structure to indicate it exists
+          // Note: For validation, use adapter which loads full tree
+          const originalTree = sample.annotations.accessibilityTree;
+          sample.annotations.accessibilityTree = {
+            _truncated: true,
+            _note: 'Accessibility tree truncated for file size. Use adapter to load full tree.',
+            nodeCount: originalTree.nodes?.length || 
+                      (Array.isArray(originalTree) ? originalTree.length : 0),
+            _hasTree: true, // Indicate tree exists (just truncated)
+            _useAdapter: true // Flag to use adapter for validation
+          };
+        }
+      }
+    }
+    
+    const sampleJson = JSON.stringify(sample, null, 2);
+    const indented = sampleJson.split('\n').map((line, idx) => idx === 0 ? '    ' + line : '    ' + line).join('\n');
+    stream.write(indented);
+    if (i < convertedSamples.length - 1) {
+      stream.write(',\n');
+    } else {
+      stream.write('\n');
+    }
+  }
+  
+  stream.write('  ]\n}');
+  stream.end();
+  
+  // Wait for stream to finish
+  await new Promise((resolve) => stream.on('finish', resolve));
+  
+  // Get file size
+  const fileSize = statSync(outputFile).size;
   
   console.log(`\n✅ Conversion completed!`);
   console.log(`   Processed: ${processed}`);
   console.log(`   Skipped: ${skipped}`);
   console.log(`   Output: ${outputFile}`);
-  console.log(`   Size: ${(output.length / 1024 / 1024).toFixed(2)} MB`);
+  console.log(`   Size: ${(fileSize / 1024 / 1024).toFixed(2)} MB`);
   
-  return dataset;
+  return {
+    ...header,
+    samples: convertedSamples
+  };
 }
 
 // Run if called directly

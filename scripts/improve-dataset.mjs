@@ -11,6 +11,11 @@
  * 7. Edge cases (errors, empty, loading)
  */
 
+import { loadEnv } from '../src/load-env.mjs';
+
+// Auto-load .env for API keys (if needed for LLM-based dataset generation)
+loadEnv();
+
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -332,8 +337,8 @@ async function improveDataset() {
   console.log('\n📁 Dataset Categories:\n');
   const categories = {};
   dataset.samples.forEach(s => {
-    const cat = s.metadata?.category || s.groundTruth?.annotations?.category || 'uncategorized';
-    categories[cat] = (categories[cat] || 0) + 1;
+    const category = s.metadata?.category || s.groundTruth?.annotations?.category || 'uncategorized';
+    categories[category] = (categories[category] || 0) + 1;
   });
   
   Object.entries(categories).forEach(([cat, count]) => {

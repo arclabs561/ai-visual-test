@@ -6,6 +6,11 @@
  * Validates system can handle increasingly complex websites.
  */
 
+import { loadEnv } from '../../src/load-env.mjs';
+
+// Auto-load .env for API keys
+loadEnv();
+
 import { evaluateChallengingWebsites } from '../utils/expert-evaluation-scenarios.mjs';
 import { CHALLENGING_WEBSITES, getWebsitesByDifficulty } from '../utils/challenging-websites.mjs';
 import { getExpectedResults } from '../utils/challenging-websites.mjs';

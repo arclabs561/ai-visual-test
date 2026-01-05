@@ -4,6 +4,13 @@
  * 
  * Provides statistical validation and analysis tools for evaluation metrics.
  * Based on research-backed approaches for evaluation significance testing.
+ * 
+ * Research Foundation:
+ * - n≥30 for statistical validity (central limit theorem)
+ * - t-distribution for small samples (n≤30)
+ * - Confidence intervals for uncertainty quantification
+ * - Precision/recall tradeoff analysis
+ * - F1 score for balanced metric
  */
 
 /**

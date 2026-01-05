@@ -10,7 +10,7 @@
  * 3. Styles - validate CSS-related claims
  */
 
-import { loadWebUIDataset } from './load-webui-dataset.mjs';
+import { loadDataset } from './dataset-adapters.mjs';
 import { validateScreenshot } from '../../src/index.mjs';
 import { createConfig } from '../../src/config.mjs';
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
@@ -224,8 +224,12 @@ function extractElementLocations(boxes) {
 
 /**
  * Validate VLLM accessibility claims against ground truth
+ * 
+ * @param {Object} vllmResult - VLLM evaluation result with score, reasoning, issues
+ * @param {Object} axtreeInfo - Extracted accessibility tree information
+ * @returns {Object} Validation result with accuracy metrics
  */
-function validateAccessibilityClaims(vllmResult, axtreeInfo) {
+export function validateAccessibilityClaims(vllmResult, axtreeInfo) {
   if (!axtreeInfo) {
     return { validated: false, reason: 'No accessibility tree available' };
   }
@@ -412,7 +416,8 @@ async function runGroundTruthValidation(options = {}) {
   console.log(`Provider: ${config.provider}`);
   console.log(`Samples: ${limit}\n`);
   
-  const dataset = await loadWebUIDataset({ limit: null, cache: true });
+  // Use adapter instead of legacy loader
+  const dataset = await loadDataset('webui', { limit: null });
   if (!dataset || !dataset.samples || dataset.samples.length === 0) {
     console.error('❌ No samples available');
     process.exit(1);
@@ -486,5 +491,11 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   runGroundTruthValidation({ limit, provider }).catch(console.error);
 }
 
-export { runGroundTruthValidation, evaluateWithGroundTruth, extractAccessibilityInfo, extractElementLocations };
+export { 
+  runGroundTruthValidation, 
+  evaluateWithGroundTruth, 
+  extractAccessibilityInfo, 
+  extractElementLocations
+  // validateAccessibilityClaims is already exported above as a named export
+};
 

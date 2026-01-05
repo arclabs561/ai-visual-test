@@ -6,6 +6,11 @@
  * Compares VLLM judgments against ground truth annotations.
  */
 
+import { loadEnv } from '../../src/load-env.mjs';
+
+// Auto-load .env for API keys
+loadEnv();
+
 import { validateScreenshot, createConfig, aggregateTemporalNotes, formatNotesForPrompt } from '../../src/index.mjs';
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';

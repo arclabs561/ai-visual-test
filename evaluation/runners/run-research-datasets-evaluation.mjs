@@ -5,6 +5,11 @@
  * Runs evaluation on integrated research datasets.
  */
 
+import { loadEnv } from '../../src/load-env.mjs';
+
+// Auto-load .env for API keys
+loadEnv();
+
 import { validateScreenshot, startSession, endSession } from '../../src/index.mjs';
 import { readFileSync } from 'fs';
 import { join } from 'path';

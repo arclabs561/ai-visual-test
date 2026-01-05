@@ -13,7 +13,7 @@
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { readdir, copyFile, mkdir } from 'fs/promises';
-import { join, dirname, relative, extname } from 'path';
+import { join, dirname, relative as pathRelative, extname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -21,6 +21,25 @@ const __dirname = dirname(__filename);
 const ROOT_DIR = join(__dirname, '..');
 const DIST_DIR = join(ROOT_DIR, 'dist');
 const SRC_DIR = join(ROOT_DIR, 'src');
+
+// Files to obfuscate (Tier 1: Core proprietary algorithms only)
+const OBFUSCATE_FILES = [
+  'src/temporal-decision-manager.mjs',
+  'src/cost-optimization.mjs',
+  'src/model-tier-selector.mjs',
+  'src/temporal-preprocessor.mjs'
+];
+
+// Files to keep readable (API surface, validators, utilities)
+const KEEP_READABLE = [
+  'src/index.mjs',           // API surface
+  'src/judge.mjs',           // API wrapper
+  'src/cache.mjs',           // Cache system
+  'src/validators/',         // Validators directory
+  'src/utils/',              // Utilities directory
+  'src/errors.mjs',          // Error handling
+  'src/config.mjs',          // Configuration
+];
 
 // Obfuscation configuration (balanced protection)
 const OBFUSCATION_CONFIG = {
@@ -82,10 +101,41 @@ function checkObfuscatorAvailable() {
 }
 
 /**
+ * Check if file should be obfuscated (selective obfuscation)
+ */
+function shouldObfuscate(filePath) {
+  const relativePath = pathRelative(SRC_DIR, filePath);
+  
+  // Check if in keep-readable list
+  for (const pattern of KEEP_READABLE) {
+    if (relativePath === pattern || relativePath.startsWith(pattern)) {
+      return false;
+    }
+  }
+  
+  // Check if in obfuscate list (remove 'src/' prefix for comparison)
+  const pathWithoutSrc = relativePath.startsWith('src/') ? relativePath.substring(4) : relativePath;
+  for (const pattern of OBFUSCATE_FILES) {
+    const patternWithoutSrc = pattern.startsWith('src/') ? pattern.substring(4) : pattern;
+    if (relativePath === pattern || relativePath.endsWith('/' + patternWithoutSrc) || pathWithoutSrc === patternWithoutSrc) {
+      return true;
+    }
+  }
+  
+  // Default: don't obfuscate (keep readable for debugging)
+  return false;
+}
+
+/**
  * Obfuscate a single file
  */
 async function obfuscateFile(filePath, skipObfuscation = false) {
   if (skipObfuscation) {
+    return readFileSync(filePath, 'utf-8');
+  }
+
+  // Selective obfuscation: only obfuscate Tier 1 files
+  if (!shouldObfuscate(filePath)) {
     return readFileSync(filePath, 'utf-8');
   }
 
@@ -138,10 +188,12 @@ async function buildSourceFiles(skipObfuscation = false) {
         await processDirectory(srcEntryPath, distEntryPath);
       } else if (entry.isFile()) {
         if (extname(entry.name) === '.mjs') {
-          // Obfuscate .mjs files
+          // Selective obfuscation: only obfuscate Tier 1 files
           const obfuscated = await obfuscateFile(srcEntryPath, skipObfuscation);
           writeFileSync(distEntryPath, obfuscated, 'utf-8');
-          console.log(`   ✓ ${relative(ROOT_DIR, srcEntryPath)}`);
+          const relPath = pathRelative(ROOT_DIR, srcEntryPath);
+          const isObfuscated = shouldObfuscate(srcEntryPath);
+          console.log(`   ${isObfuscated ? '🔒' : '📄'} ${relPath}${isObfuscated ? ' (obfuscated)' : ''}`);
         } else {
           // Copy other files as-is
           const content = readFileSync(srcEntryPath);
@@ -162,7 +214,9 @@ async function buildSourceFiles(skipObfuscation = false) {
     'DEPLOYMENT.md',
     'SECURITY.md',
     'LICENSE',
-    '.secretsignore.example'
+    '.secretsignore.example',
+    'API_QUICK_REFERENCE.md',  // Essential API guide
+    'EXAMPLES.md'              // Essential examples
   ];
 
   // Note: api/ and public/ are excluded from npm package (deployment-only)
@@ -254,7 +308,10 @@ async function main() {
   if (skipObfuscation) {
     console.log('📦 Building package (obfuscation skipped)...\n');
   } else {
-    console.log('🔒 Building obfuscated package...\n');
+    console.log('🔒 Building package with selective obfuscation...\n');
+    console.log('   Obfuscating Tier 1 files (core algorithms only):');
+    OBFUSCATE_FILES.forEach(file => console.log(`   - ${file}`));
+    console.log('   Keeping readable (API surface, validators, utilities)\n');
   }
 
   await buildSourceFiles(skipObfuscation);

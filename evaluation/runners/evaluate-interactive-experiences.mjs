@@ -6,6 +6,11 @@
  * and temporal decision-making.
  */
 
+import { loadEnv } from '../../src/load-env.mjs';
+
+// Auto-load .env for API keys
+loadEnv();
+
 import { experiencePageAsPersona, aggregateMultiScale, SequentialDecisionContext } from '../../src/index.mjs';
 import { INTERACTIVE_EXPERIENCE_WEBSITES, getAllInteractiveWebsitesSorted, buildInteractivePrompt } from '../utils/interactive-experiences.mjs';
 import { chromium } from 'playwright';

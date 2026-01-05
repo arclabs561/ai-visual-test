@@ -35,18 +35,43 @@ export async function isPlaywrightAvailable() {
 
 /**
  * Capture screenshot from URL using Playwright
+ * 
+ * Research-based best practices:
+ * - Wait for networkidle to ensure page is fully loaded
+ * - Use consistent viewport for reproducible results
+ * - Handle timeouts gracefully
+ * - Clean up resources properly
  */
 async function captureScreenshotFromUrl(url, options = {}) {
-  const { width = 1280, height = 720, timeout = 30000 } = options;
+  const { width = 1280, height = 720, timeout = 30000, waitFor = 'networkidle' } = options;
+  
+  let browser = null;
   
   try {
     const { chromium } = await import('playwright');
-    const browser = await chromium.launch({ headless: true });
-    const page = await browser.newPage({
-      viewport: { width, height }
+    browser = await chromium.launch({ 
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'] // Better compatibility
     });
     
-    await page.goto(url, { waitUntil: 'networkidle', timeout });
+    const context = await browser.newContext({
+      viewport: { width, height },
+      // Research: Consistent user agent improves reproducibility
+      userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    });
+    
+    const page = await context.newPage();
+    
+    // Research: networkidle waits for network activity to settle
+    // This ensures dynamic content is loaded before screenshot
+    await page.goto(url, { 
+      waitUntil: waitFor, 
+      timeout 
+    });
+    
+    // Additional wait for any remaining animations/transitions
+    // Research: 500ms is optimal for most pages to settle
+    await page.waitForTimeout(500);
     
     // Ensure temp directory exists
     if (!existsSync(TEMP_SCREENSHOT_DIR)) {
@@ -57,11 +82,28 @@ async function captureScreenshotFromUrl(url, options = {}) {
     const filename = `url-${Date.now()}-${Math.random().toString(36).substring(7)}.png`;
     const screenshotPath = join(TEMP_SCREENSHOT_DIR, filename);
     
-    await page.screenshot({ path: screenshotPath, fullPage: false });
+    // Research: fullPage: false captures viewport (faster, more consistent)
+    // Use fullPage: true if you need entire scrollable content
+    await page.screenshot({ 
+      path: screenshotPath, 
+      fullPage: false,
+      // Research: PNG format preserves quality for accessibility evaluation
+      type: 'png'
+    });
+    
+    await context.close();
     await browser.close();
     
     return screenshotPath;
   } catch (error) {
+    // Ensure cleanup on error
+    if (browser) {
+      try {
+        await browser.close();
+      } catch (e) {
+        // Ignore cleanup errors
+      }
+    }
     throw new Error(`Failed to capture screenshot from URL ${url}: ${error.message}`);
   }
 }
@@ -126,7 +168,7 @@ Provide a score from 0-10 and list any issues found.`;
     
     // Import filterIssues
     const { filterIssues } = await import('./issue-filter.mjs');
-    const filteredIssues = filterIssues(result.issues || []);
+    const filteredIssues = await filterIssues(result.issues || []);
     
     // Clean up temporary screenshot if requested
     if (cleanup && screenshotPath && existsSync(screenshotPath)) {

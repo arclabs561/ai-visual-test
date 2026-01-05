@@ -139,25 +139,19 @@ const experience = await experiencePageAsPersona(page, persona, {
 });
 ```
 
-## Performance Goals (Making It Fast)
+## Performance Goals
 
 ### High-Frequency Scenarios (60Hz)
 
-**The requirement**: <100ms latency for real-time feedback.
+**Requirement**: <100ms latency for real-time feedback.
 
-**Why this matters**: Real-time games need fast feedback. If validation takes 500ms, the game feels laggy. If it takes <100ms, it feels responsive.
+**Implementation**:
+- `LatencyAwareBatchOptimizer` - Bypasses batching for critical requests
+- `selectModelTier('fast')` - Auto-selects fast tier
+- `selectProvider('groq')` - Auto-selects Groq provider
+- Keyword-based entity extraction (faster than LLM)
 
-**What we built**:
-- `LatencyAwareBatchOptimizer` - Bypasses batching for critical requests (<100ms)
-- `selectModelTier('fast')` - Auto-selects fast tier for high-frequency
-- `selectProvider('groq')` - Auto-selects Groq for speed (220ms typical)
-- Keyword-based entity extraction (<1ms) instead of LLM (1-3s)
-
-**How it works**:
-1. Check latency requirement (<100ms? → bypass batching)
-2. Auto-select fast tier (Groq, fast model)
-3. Use keyword extraction (no LLM call needed)
-4. Result: <100ms latency for critical requests
+**Validation**: See `test/performance/optimization-claims-validation.test.mjs`
 
 **Usage**:
 ```javascript
@@ -169,32 +163,26 @@ const result = await optimizer.addRequest(
   screenshotPath,
   'Evaluate gameplay',
   {},
-  50 // 50ms max latency - processes immediately
+  50 // 50ms max latency
 );
 ```
 
 ### Analysis Scenarios (Accuracy Over Speed)
 
-**The requirement**: Accuracy over speed (post-gameplay analysis).
+**Requirement**: Accuracy over speed (post-gameplay analysis).
 
-**Why this matters**: After gameplay, you want accurate analysis. Speed doesn't matter as much—you're not in real-time anymore.
+**Implementation**:
+- LLM-based entity extraction (more accurate, slower)
+- `selectModelTier('best')` - Auto-selects best tier
+- `useEnsemble: true` - Multiple judges for consensus
 
-**What we built**:
-- LLM-based entity extraction (1-3s, more accurate than keywords)
-- `selectModelTier('best')` - Auto-selects best tier for critical evaluations
-- `useEnsemble: true` - Multiple judges for consensus (10-20% accuracy improvement)
-
-**How it works**:
-1. Use LLM extraction (more accurate, slower)
-2. Auto-select best tier (GPT-4, Claude, etc.)
-3. Use ensemble judging (multiple models, consensus)
-4. Result: Maximum accuracy for post-gameplay analysis
+**Validation**: See `test/integration/ensemble-judge.test.mjs`
 
 **Usage**:
 ```javascript
 const result = await validateScreenshot('screenshot.png', 'Evaluate gameplay', {
   useEnsemble: true,
-  frequency: 1 // Post-gameplay analysis
+  frequency: 1
 });
 ```
 

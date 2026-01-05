@@ -11,9 +11,10 @@
 
 2. **Cleaned git history:**
    - Used `git-filter-repo` to remove all dataset files from entire history
-   - `.git` directory reduced from **1.4GB → 2.6MB** (99.8% reduction)
-   - History preserved: 141 commits remain
+   - History rewritten: 141 commits remain, dataset files removed from all commits
+   - **Note**: Pack file still contains old objects (1.4GB) - needs aggressive repack
    - Created backup branch: `backup-before-history-cleanup`
+   - **Status**: History cleaned, but pack file cleanup requires time (repack operations hanging)
 
 3. **Force pushed cleaned history:**
    - Remote updated with cleaned history

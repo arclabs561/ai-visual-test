@@ -115,8 +115,11 @@ test('GameGym - external iterator', async function() {
       await browser.close();
     }
   } catch (error) {
-    if (error.message.includes('Cannot find module') || error.message.includes('playwright')) {
-      test.skip('Playwright not available');
+    if (error.message.includes('Cannot find module') || error.message.includes('playwright') || 
+        error.message.includes('Executable doesn\'t exist') || error.message.includes('browserType.launch')) {
+      console.log('   ℹ️  Playwright not available');
+      this.skip();
+      return;
     } else if (error.name === 'TimeoutError' || error.message.includes('timeout') || error.message.includes('Timeout')) {
       console.log(`   ℹ️  Network timeout: ${error.message}. External site may be unavailable.`);
       this.skip();
@@ -162,8 +165,11 @@ test('testGameplay with play option', async function() {
       await browser.close();
     }
   } catch (error) {
-    if (error.message.includes('Cannot find module') || error.message.includes('playwright')) {
-      test.skip('Playwright not available');
+    if (error.message.includes('Cannot find module') || error.message.includes('playwright') || 
+        error.message.includes('Executable doesn\'t exist') || error.message.includes('browserType.launch')) {
+      console.log('   ℹ️  Playwright not available');
+      this.skip();
+      return;
     } else if (error.name === 'TimeoutError' || error.message.includes('timeout') || error.message.includes('Timeout')) {
       console.log(`   ℹ️  Network timeout: ${error.message}. External site may be unavailable.`);
       this.skip();

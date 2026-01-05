@@ -1,7 +1,7 @@
 /**
  * Smart Validator Selector
  * 
- * Automatically selects the best validator type based on available context.
+ * Selects validator type based on available context.
  * Guides users to the right tool for the job.
  * 
  * Design Philosophy:
@@ -36,10 +36,10 @@ import { log, warn } from './logger.mjs';
 /**
  * Smart accessibility validation
  * 
- * Automatically chooses the best validator based on available context:
+ * Chooses validator based on available context:
  * - Has page access → uses programmatic (fast, deterministic)
  * - Only has screenshot → uses VLLM (semantic evaluation)
- * - Has both and needs semantic context → uses hybrid (best of both)
+ * - Has both and needs semantic context → uses hybrid (combines both)
  * 
  * @param {Object} options - Validation options
  * @param {any} [options.page] - Playwright page object (if available)
@@ -75,7 +75,7 @@ export async function validateAccessibilitySmart(options = {}) {
 
   // Decision tree:
   // 1. Has page access → use programmatic (fast, deterministic)
-  // 2. Has both + need semantic → use hybrid (best of both)
+  // 2. Has both + need semantic → use hybrid (combines both)
   // 3. Only screenshot → use VLLM (semantic evaluation)
 
   if (page && !shouldUseHybrid) {
@@ -132,9 +132,9 @@ export async function validateAccessibilitySmart(options = {}) {
 /**
  * Smart state validation
  * 
- * Automatically chooses the best validator based on available context:
+ * Chooses validator based on available context:
  * - Has page access + direct state → uses programmatic (fast, deterministic)
- * - Has page access + screenshot + need semantic → uses hybrid (best of both)
+ * - Has page access + screenshot + need semantic → uses hybrid (combines both)
  * - Only screenshot → uses VLLM (extracts state from screenshot)
  * 
  * @param {Object} options - Validation options
@@ -236,7 +236,7 @@ export async function validateStateSmart(options = {}) {
 /**
  * Smart element validation
  * 
- * Validates element visibility, position, contrast, etc. using the best available method.
+ * Validates element visibility, position, contrast, etc. using available methods.
  * 
  * @param {Object} options - Validation options
  * @param {any} options.page - Playwright page object
@@ -317,7 +317,7 @@ export async function validateElementSmart(options = {}) {
 /**
  * Smart validation with automatic tool selection
  * 
- * This is the main entry point that automatically selects the best validator
+ * Main entry point that selects validator
  * based on what you're trying to validate and what context you have.
  * 
  * @param {Object} options - Validation options

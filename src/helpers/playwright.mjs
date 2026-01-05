@@ -68,13 +68,27 @@ export async function getPlaywrightPage(options = {}) {
     };
   }
   
-  const browser = await chromium.launch(options.browserOptions || {});
-  const page = await browser.newPage();
-  
-  return {
-    page,
-    browser,
-    isMock: false
-  };
+  try {
+    const browser = await chromium.launch(options.browserOptions || {});
+    const page = await browser.newPage();
+    
+    return {
+      page,
+      browser,
+      isMock: false
+    };
+  } catch (error) {
+    // Browser executable not found, fallback to mock
+    if (error.message.includes('Executable doesn\'t exist') || 
+        error.message.includes('browserType.launch') ||
+        error.message.includes('Browser not found')) {
+      return {
+        page: createMockPage(),
+        browser: null,
+        isMock: true
+      };
+    }
+    throw error;
+  }
 }
 

@@ -22,10 +22,9 @@ echo "Storage class: STANDARD_IA (Infrequent Access)"
 echo ""
 
 # s5cmd syntax: cp <source> <destination> [options]
-# For recursive copy, source directory should be specified without trailing slash
-# and destination should be the target S3 path
-s5cmd cp "${SOURCE_DIR}" "${S3_BUCKET}" \
-  --recursive \
+# s5cmd automatically handles directories recursively when using wildcards
+# Use wildcard pattern to copy all contents recursively
+s5cmd cp "${SOURCE_DIR}"* "${S3_BUCKET}" \
   --storage-class STANDARD_IA \
   --concurrency 50
 

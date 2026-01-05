@@ -117,7 +117,7 @@ Use this programmatic data as ground truth (no hallucinations about measurements
 Evaluate semantic aspects:
 1. Is contrast adequate for readability in context? (ratio alone doesn't tell you if it's readable)
 2. Are contrast violations critical or minor? (some violations might be acceptable in context)
-3. Is keyboard navigation intuitive? (semantic evaluation beyond just focusable elements)
+3. Is keyboard navigation usable? (semantic evaluation beyond just focusable elements)
 4. Does overall accessibility support user goals? (holistic evaluation)
 5. Are there accessibility issues that programmatic checks don't capture? (visual, semantic, contextual)
 

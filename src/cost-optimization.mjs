@@ -114,13 +114,13 @@ function getRecommendationReason(context, tier) {
   if (tier === 'best') {
     return 'Critical evaluation requires best tier for quality';
   }
-  return 'Balanced tier provides best speed/quality tradeoff';
+  return 'Balanced tier provides speed/quality tradeoff';
 }
 
 /**
  * Optimize cost configuration
  * 
- * One-stop function to get optimal configuration for cost optimization.
+ * Function to get configuration for cost optimization.
  * 
  * @param {Object} options - Optimization options
  * @param {string|number} [options.frequency] - Decision frequency ('high'|'medium'|'low' or Hz)

@@ -93,7 +93,7 @@ export class TemporalDecisionManager {
     // Research-based adaptive sampling (arXiv:2406.12125)
     // DESIGN DECISION: Warm-start with LLM, transition to simpler methods
     // - Why: Paper shows LLMs provide good initial performance but don't adapt
-    // - Why this approach: Best of both worlds - good initial + long-term adaptation
+    // - Why this approach: Good initial + long-term adaptation
     // - Research: Use LLMs early (warm-start), transition to simpler methods later
     // - Alternative considered: Always use LLM (expensive) or never use LLM (poor initial)
     //   - Rejected: Research shows adaptive approach achieves 6x performance gain

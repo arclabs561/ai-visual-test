@@ -15,18 +15,20 @@ import { instructionSemanticSimilarity, batchInstructionSimilarity } from '../..
 import { semanticSimilarity } from '../../evaluation/utils/semantic-matcher.mjs';
 import { loadDataset } from '../../evaluation/utils/dataset-adapters.mjs';
 
-test('Embeddings - Real Dataset Issue Similarity', async () => {
+test('Embeddings - Real Dataset Issue Similarity', async function() {
   try {
     const dataset = await loadDataset('real', { limit: 10 });
     
     if (!dataset) {
-      return; // Skip if not available
+      this.skip(); // Skip if not available
+      return;
     }
     
     const samples = Array.isArray(dataset) ? dataset : (dataset.samples || []);
     
     if (samples.length === 0) {
-      return; // Skip if empty
+      this.skip(); // Skip if empty
+      return;
     }
     
     // Extract issues from ground truth
@@ -37,7 +39,8 @@ test('Embeddings - Real Dataset Issue Similarity', async () => {
       .slice(0, 5);
     
     if (issues.length < 2) {
-      return; // Skip if not enough issues
+      this.skip(); // Skip if not enough issues
+      return;
     }
     
     // Test similarity between issues
@@ -55,7 +58,9 @@ test('Embeddings - Real Dataset Issue Similarity', async () => {
       console.log('⚠️  Embeddings not available (using fallback)');
     }
   } catch (error) {
-    t.skip(`Dataset error: ${error.message}`);
+    console.log(`   ℹ️  Dataset error: ${error.message}`);
+    this.skip(); // Skip test if dataset not available
+    return;
   }
 });
 

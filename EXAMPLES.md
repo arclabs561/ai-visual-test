@@ -1,6 +1,6 @@
-# Essential Examples
+# Examples
 
-Working examples for common use cases.
+Examples for common use cases.
 
 ## Basic Validation
 
@@ -17,9 +17,9 @@ console.log('Issues:', result.issues);     // ['Missing error messages', 'Low co
 console.log('Reasoning:', result.reasoning); // "The form is mostly accessible, but..."
 ```
 
-## With Playwright (Recommended)
+## With Playwright
 
-### Using `validatePage()` - Simplest Approach
+### Using `validatePage()`
 
 ```javascript
 import { validatePage } from '@arclabs561/ai-visual-test';
@@ -29,7 +29,7 @@ const browser = await chromium.launch();
 const page = await browser.newPage();
 await page.goto('https://example.com/checkout');
 
-// validatePage() handles screenshotting automatically
+// validatePage() handles screenshotting
 const result = await validatePage(page, 'Check if payment form is accessible');
 
 console.log('Score:', result.score); // 8.2
@@ -65,7 +65,7 @@ npm install --save-dev @playwright/test
 npx playwright install chromium
 ```
 
-See `examples/playwright-setup.mjs` for a complete working example.
+See `examples/playwright-setup.mjs` for working example.
 
 ### Manual Screenshot Approach (Legacy)
 
@@ -130,7 +130,7 @@ console.log('Final Score:', result.finalState.evaluation.score);
 console.log('History:', result.history.map(h => h.action.type));
 ```
 
-## Hybrid Accessibility (Gold Standard)
+## Hybrid Accessibility
 
 Combines programmatic checks (axe-like contrast/aria) with AI visual verification (layout/context).
 
@@ -161,7 +161,7 @@ const result = await validateScreenshot(
   'screenshot.png',
   'Evaluate accessibility',
   {
-    autoSelectTier: true,      // Auto-select tier (fast/balanced/best)
+    autoSelectTier: true,      // Auto-select tier
     autoSelectProvider: true,  // Auto-select cheapest provider
     includeCostComparison: true // Show cost savings
   }

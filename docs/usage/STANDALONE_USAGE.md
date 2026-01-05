@@ -41,7 +41,7 @@ These features **require** Playwright:
 
 ## Language-Agnostic Usage Patterns
 
-### Pattern 1: HTTP API (Recommended)
+### Pattern 1: HTTP API
 
 Deploy the Vercel API endpoint and call it from any language:
 
@@ -326,7 +326,7 @@ ai-visual-test/
 - Node.js >= 18.0.0 (for running the package)
 - Any language (for calling via API or subprocess)
 
-## Best Practices
+## Practices
 
 1. **Use HTTP API for language-agnostic access**
    - Deploy to Vercel

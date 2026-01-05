@@ -1,6 +1,6 @@
 # ai-visual-test
 
-AI-powered visual testing framework. Uses Vision Language Models (VLLM) to understand screenshots, verify accessibility, and even play games.
+Visual testing framework using Vision Language Models. Validates screenshots, checks accessibility, and can play games.
 
 ## Why This Package
 
@@ -37,7 +37,7 @@ const browser = await chromium.launch();
 const page = await browser.newPage();
 await page.goto('https://example.com');
 
-// validatePage() handles screenshotting automatically
+// validatePage() handles screenshotting
 const result = await validatePage(page, 'Check for visual bugs and accessibility issues');
 
 console.log(result.score);  // 7 (0-10 scale)
@@ -124,7 +124,7 @@ npm install --save-dev @playwright/test
 npx playwright install chromium
 ```
 
-See `examples/playwright-setup.mjs` for a complete setup example.
+See `examples/playwright-setup.mjs` for setup example.
 
 Documentation: [docs/PLAYWRIGHT_INTEGRATION.md](./docs/PLAYWRIGHT_INTEGRATION.md)
 

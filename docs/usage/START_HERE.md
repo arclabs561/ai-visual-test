@@ -8,14 +8,14 @@ The human annotation system is **ready for you to use**. Just run:
 npm run annotate
 ```
 
-**That's it!** Follow the prompts and start annotating.
+Follow the prompts and start annotating.
 
 ---
 
 ## What This Does
 
 1. **Finds samples** that need annotation
-2. **Creates tasks** for you automatically
+2. **Creates tasks** for you
 3. **Guides you** through each annotation
 4. **Shows VLLM judgments** for comparison (if available)
 5. **Saves your annotations** for validation
@@ -28,7 +28,7 @@ npm run annotate
 # Start annotating (simplest)
 npm run annotate
 
-# Full workflow menu
+# Workflow menu
 npm run annotate:full
 
 # Validate your annotations
@@ -55,7 +55,7 @@ npm run match:vllm
 
 - **Quick Start**: See `archive/ground-truth-annotation-2025-01/ANNOTATION_QUICK_START.md`
 - **Enhanced System**: See `archive/ground-truth-annotation-2025-01/ENHANCED_ANNOTATION_SYSTEM.md`
-- **Full Guide**: See `archive/ground-truth-annotation-2025-01/` for complete annotation documentation
+- **Guide**: See `archive/ground-truth-annotation-2025-01/` for annotation documentation
 
 ---
 

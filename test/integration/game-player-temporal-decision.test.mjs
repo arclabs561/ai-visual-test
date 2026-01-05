@@ -4,10 +4,19 @@ import assert from 'node:assert';
 import { playGame } from '../../src/game-player.mjs';
 
 test('playGame uses TemporalDecisionManager to reduce LLM calls', async function() {
-
-  const { chromium } = await import('playwright');
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
+  let browser, page;
+  try {
+    const { chromium } = await import('playwright');
+    browser = await chromium.launch();
+    page = await browser.newPage();
+  } catch (error) {
+    if (error.message.includes('Executable doesn\'t exist') || error.message.includes('browserType.launch')) {
+      console.log('   ℹ️  Playwright browsers not installed. Run: npx playwright install chromium');
+      this.skip();
+      return;
+    }
+    throw error;
+  }
   
   try {
     await page.setContent(`
@@ -50,15 +59,26 @@ test('playGame uses TemporalDecisionManager to reduce LLM calls', async function
     // First step should always be prompted (not skipped)
     assert.ok(!result.history[0]?.result?.skipped, 'First step should not be skipped');
   } finally {
-    await browser.close();
+    if (browser) {
+      await browser.close();
+    }
   }
 });
 
 test('playGame handles TemporalDecisionManager failures gracefully', async function() {
-
-  const { chromium } = await import('playwright');
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
+  let browser, page;
+  try {
+    const { chromium } = await import('playwright');
+    browser = await chromium.launch();
+    page = await browser.newPage();
+  } catch (error) {
+    if (error.message.includes('Executable doesn\'t exist') || error.message.includes('browserType.launch')) {
+      console.log('   ℹ️  Playwright browsers not installed. Run: npx playwright install chromium');
+      this.skip();
+      return;
+    }
+    throw error;
+  }
   
   try {
     await page.setContent(`
@@ -81,15 +101,26 @@ test('playGame handles TemporalDecisionManager failures gracefully', async funct
     assert.ok(result, 'Should return result even if TemporalDecisionManager fails');
     assert.ok(result.history.length > 0, 'Should have history');
   } finally {
-    await browser.close();
+    if (browser) {
+      await browser.close();
+    }
   }
 });
 
 test('playGame tracks calibration with sequenceIndex', async function() {
-
-  const { chromium } = await import('playwright');
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
+  let browser, page;
+  try {
+    const { chromium } = await import('playwright');
+    browser = await chromium.launch();
+    page = await browser.newPage();
+  } catch (error) {
+    if (error.message.includes('Executable doesn\'t exist') || error.message.includes('browserType.launch')) {
+      console.log('   ℹ️  Playwright browsers not installed. Run: npx playwright install chromium');
+      this.skip();
+      return;
+    }
+    throw error;
+  }
   
   try {
     await page.setContent(`
@@ -119,7 +150,9 @@ test('playGame tracks calibration with sequenceIndex', async function() {
       // Just verify structure is correct
     }
   } finally {
-    await browser.close();
+    if (browser) {
+      await browser.close();
+    }
   }
 });
 

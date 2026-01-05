@@ -1,6 +1,6 @@
 # API Quick Reference
 
-Essential API patterns for `@arclabs561/ai-visual-test`.
+API patterns for `@arclabs561/ai-visual-test`.
 
 ## Core Function
 
@@ -22,7 +22,7 @@ const result = await validateScreenshot(
 
 ## Common Patterns
 
-### Playwright Integration (Recommended)
+### Playwright Integration
 
 ```javascript
 import { validatePage } from '@arclabs561/ai-visual-test';
@@ -32,7 +32,7 @@ const browser = await chromium.launch();
 const page = await browser.newPage();
 await page.goto('https://example.com');
 
-// Validate page directly (handles screenshotting automatically)
+// Validate page directly (handles screenshotting)
 const result = await validatePage(page, 'Check for visual bugs and accessibility issues');
 
 console.log(`Score: ${result.score}/10`);
@@ -66,7 +66,7 @@ const result = await validateScreenshot(
   'Check if this form is accessible: contrast, labels, keyboard navigation'
 );
 
-// With Playwright page (recommended)
+// With Playwright page
 const result = await validatePage(page, 'Check accessibility: contrast, labels, keyboard navigation');
 
 if (result.score < 6) {
@@ -92,7 +92,7 @@ console.log(`Visual issues: ${result.issues.length}`);
 ```javascript
 import { validateScreenshot } from '@arclabs561/ai-visual-test';
 
-// Auto-optimizes for high frequency
+// Optimizes for high frequency
 const result = await validateScreenshot(
   'frame.png',
   'Is the game playable?',
@@ -111,7 +111,7 @@ const result = await validateScreenshot(
   'screenshot.png',
   'Evaluate this page',
   {
-    autoSelectTier: true,      // Auto-select fast/balanced/best
+    autoSelectTier: true,      // Auto-select tier
     autoSelectProvider: true,  // Auto-select cheapest provider
     includeCostComparison: true // Show cost savings
   }
@@ -153,5 +153,5 @@ ANTHROPIC_API_KEY=your-key-here
 
 ## TypeScript Support
 
-Full TypeScript definitions available. See `index.d.ts` for complete API reference.
+TypeScript definitions available. See `index.d.ts` for API reference.
 

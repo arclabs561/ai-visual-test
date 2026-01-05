@@ -1374,7 +1374,7 @@ export class VLLMJudge {
  * @param {import('./index.mjs').ValidationContext} [context={}] - Validation context
  * @param {boolean} [context.useTemporalDecision] - Use TemporalDecisionManager (reduces LLM calls)
  * @param {boolean} [context.useEnsemble] - Use EnsembleJudge (improves accuracy)
- * @param {boolean} [context.autoSelectTier] - Select model tier (fast/balanced/best)
+ * @param {boolean} [context.autoSelectTier] - Select model tier
  * @param {boolean} [context.autoSelectProvider] - Auto-select cheapest provider
  * @param {boolean} [context.includeCostComparison] - Include cost comparison in result
  * @returns {Promise<import('./index.mjs').ValidationResult>} Validation result

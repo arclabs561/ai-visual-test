@@ -80,11 +80,13 @@ describe('WebUI Dataset Tests', () => {
     } catch (e) {
       console.log(`   ℹ️  Dataset loading failed: ${e.message}`);
       this.skip();
+      return;
     }
     
     if (!dataset || !dataset.samples || dataset.samples.length === 0) {
       console.log('   ℹ️  No samples available in dataset');
       this.skip();
+      return;
     }
     
     const sample = dataset.samples[0];
@@ -93,6 +95,7 @@ describe('WebUI Dataset Tests', () => {
     if (!screenshotPath || !existsSync(screenshotPath)) {
       console.log(`   ℹ️  Sample screenshot not found: ${screenshotPath}`);
       this.skip();
+      return;
     }
     
     // Test validation on a real sample

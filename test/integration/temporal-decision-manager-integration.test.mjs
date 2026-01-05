@@ -163,10 +163,19 @@ test('TemporalDecisionManager detects coherence drops', async () => {
 });
 
 test('TemporalDecisionManager integration in game-player reduces calls', async function() {
-
-  const { chromium } = await import('playwright');
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
+  let browser, page;
+  try {
+    const { chromium } = await import('playwright');
+    browser = await chromium.launch();
+    page = await browser.newPage();
+  } catch (error) {
+    if (error.message.includes('Executable doesn\'t exist') || error.message.includes('browserType.launch')) {
+      console.log('   ℹ️  Playwright browsers not installed. Run: npx playwright install chromium');
+      this.skip();
+      return;
+    }
+    throw error;
+  }
   
   try {
     await page.setContent(`
@@ -209,7 +218,9 @@ test('TemporalDecisionManager integration in game-player reduces calls', async f
       }
     }
   } finally {
-    await browser.close();
+    if (browser) {
+      await browser.close();
+    }
   }
 });
 

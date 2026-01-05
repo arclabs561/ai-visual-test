@@ -400,12 +400,22 @@ test('Accessibility: Hybrid validation (programmatic + visual)', async function(
   }
 });
 
-test('Responsive: Mobile viewport (768px) renders correctly', async () => {
+test('Responsive: Mobile viewport (768px) renders correctly', async function() {
   test.skip(shouldSkipVisual, 'No VLLM API key configured');
   
-  const { chromium } = await import('playwright');
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
+  let browser, page;
+  try {
+    const { chromium } = await import('playwright');
+    browser = await chromium.launch();
+    page = await browser.newPage();
+  } catch (error) {
+    if (error.message.includes('Executable doesn\'t exist') || error.message.includes('browserType.launch')) {
+      console.log('   ℹ️  Playwright browsers not installed. Run: npx playwright install chromium');
+      this.skip();
+      return;
+    }
+    throw error;
+  }
   
   try {
     // Set mobile viewport

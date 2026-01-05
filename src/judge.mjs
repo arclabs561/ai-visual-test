@@ -561,7 +561,7 @@ export class VLLMJudge {
               const text = await apiResponse.text();
               const statusCode = apiResponse.status;
               throw new ProviderError(
-                `OpenRouter API returned non-JSON response (${orContentType}). Status: ${statusCode}. Check API key.`,
+                `OpenRouter API returned non-JSON response (${orContentType}). Status: ${statusCode}. Verify API credentials.`,
                 'openrouter',
                 { statusCode, contentType: orContentType, responsePreview: text.substring(0, 200), retryable: false }
               );

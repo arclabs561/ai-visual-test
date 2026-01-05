@@ -21,7 +21,9 @@ echo "Starting backup of $SOURCE_DIR to $S3_BUCKET"
 echo "Storage class: STANDARD_IA (Infrequent Access)"
 echo ""
 
-s5cmd cp "$SOURCE_DIR/" "$S3_BUCKET" \
+# s5cmd syntax: cp <source> <destination> [options]
+# For recursive copy, source should end with /* or be a directory
+s5cmd cp "${SOURCE_DIR}/*" "${S3_BUCKET}" \
   --recursive \
   --storage-class STANDARD_IA \
   --concurrency 50

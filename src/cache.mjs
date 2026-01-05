@@ -288,7 +288,7 @@ async function saveCache(cache) {
             reason: `LRU eviction: ${evictedCount} entries removed`
           });
         })
-        .catch((importError) => {
+        .catch(async (importError) => {
           // Log to logger if performance logger unavailable (better than silent failure)
           if (process.env.DEBUG_CACHE) {
             try {
@@ -452,7 +452,7 @@ export function getCached(imagePath, prompt, context = {}) {
             reason: `Entry expired (age: ${Math.floor(age / (1000 * 60 * 60 * 24))} days)`
           });
         })
-        .catch((importError) => {
+        .catch(async (importError) => {
           // Log to logger if performance logger unavailable (better than silent failure)
           if (process.env.DEBUG_CACHE) {
             try {
@@ -563,7 +563,7 @@ export function getCachedTextLLM(prompt, provider, options = {}) {
             reason: `Text LLM entry expired (age: ${Math.floor(age / (1000 * 60 * 60 * 24))} days)`
           });
         })
-        .catch((importError) => {
+        .catch(async (importError) => {
           // Log to logger if performance logger unavailable (better than silent failure)
           if (process.env.DEBUG_CACHE) {
             try {

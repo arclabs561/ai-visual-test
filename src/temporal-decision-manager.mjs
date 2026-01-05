@@ -217,9 +217,15 @@ export class TemporalDecisionManager {
             });
           })
           .catch((importError) => {
-            // Log to console if performance logger unavailable (better than silent failure)
+            // Log to logger if performance logger unavailable (better than silent failure)
             if (process.env.DEBUG_TEMPORAL) {
-              console.warn(`[TemporalDecision] Performance logger unavailable: ${importError.message}`);
+              try {
+                const { warn } = await import('./logger.mjs');
+                warn(`[TemporalDecision] Performance logger unavailable: ${importError.message}`);
+              } catch {
+                // Fallback to console if logger also unavailable
+                console.warn(`[TemporalDecision] Performance logger unavailable: ${importError.message}`);
+              }
             }
           });
         
@@ -250,9 +256,15 @@ export class TemporalDecisionManager {
             });
           })
           .catch((importError) => {
-            // Log to console if performance logger unavailable (better than silent failure)
+            // Log to logger if performance logger unavailable (better than silent failure)
             if (process.env.DEBUG_TEMPORAL) {
-              console.warn(`[TemporalDecision] Performance logger unavailable: ${importError.message}`);
+              try {
+                const { warn } = await import('./logger.mjs');
+                warn(`[TemporalDecision] Performance logger unavailable: ${importError.message}`);
+              } catch {
+                // Fallback to console if logger also unavailable
+                console.warn(`[TemporalDecision] Performance logger unavailable: ${importError.message}`);
+              }
             }
           });
         

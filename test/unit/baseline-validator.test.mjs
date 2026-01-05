@@ -3,13 +3,14 @@ import { test } from 'node:test';
 import assert from 'node:assert';
 import { testBaseline, batchTestBaseline } from '../../src/utils/baseline-validator.mjs';
 
-test('testBaseline compares visual vs text-only', async () => {
+test('testBaseline compares visual vs text-only', async function() {
   // API key should be auto-loaded from .env via test-setup.mjs
 
   // Skip if no test image available
   const { existsSync } = await import('node:fs');
   if (!existsSync('test-image.png')) {
-    test.skip('Test image not available');
+    console.log('   ℹ️  Test image not available');
+    this.skip();
     return;
   }
 
@@ -22,13 +23,14 @@ test('testBaseline compares visual vs text-only', async () => {
   assert.ok(result.recommendation, 'Should provide recommendation');
 });
 
-test('batchTestBaseline aggregates baseline tests', async () => {
+test('batchTestBaseline aggregates baseline tests', async function() {
   // API key should be auto-loaded from .env via test-setup.mjs
 
   // Skip if no test images available
   const { existsSync } = await import('node:fs');
   if (!existsSync('test1.png') || !existsSync('test2.png')) {
-    test.skip('Test images not available');
+    console.log('   ℹ️  Test images not available');
+    this.skip();
     return;
   }
 

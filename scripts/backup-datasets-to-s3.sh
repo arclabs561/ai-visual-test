@@ -22,8 +22,9 @@ echo "Storage class: STANDARD_IA (Infrequent Access)"
 echo ""
 
 # s5cmd syntax: cp <source> <destination> [options]
-# For recursive copy, source should end with /* or be a directory
-s5cmd cp "${SOURCE_DIR}/*" "${S3_BUCKET}" \
+# For recursive copy, source directory should be specified without trailing slash
+# and destination should be the target S3 path
+s5cmd cp "${SOURCE_DIR}" "${S3_BUCKET}" \
   --recursive \
   --storage-class STANDARD_IA \
   --concurrency 50

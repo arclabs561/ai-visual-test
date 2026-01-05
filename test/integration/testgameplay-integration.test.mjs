@@ -4,9 +4,19 @@ import assert from 'node:assert';
 import { testGameplay } from '../../src/convenience.mjs';
 
 test('testGameplay integrates temporal graph building', async function() {
-  const { chromium } = await import('playwright');
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
+  let browser, page;
+  try {
+    const { chromium } = await import('playwright');
+    browser = await chromium.launch();
+    page = await browser.newPage();
+  } catch (error) {
+    if (error.message.includes('Executable doesn\'t exist') || error.message.includes('browserType.launch')) {
+      console.log('   ℹ️  Playwright browsers not installed. Run: npx playwright install chromium');
+      this.skip();
+      return;
+    }
+    throw error;
+  }
   
   try {
     // Create a simple test page
@@ -40,14 +50,26 @@ test('testGameplay integrates temporal graph building', async function() {
       assert.ok(true, 'Temporal graph field present (may be null if no notes or building failed)');
     }
   } finally {
-    await browser.close();
+    if (browser) {
+      await browser.close();
+    }
   }
 });
 
 test('testGameplay integrates screenshot selection', async function() {
-  const { chromium } = await import('playwright');
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
+  let browser, page;
+  try {
+    const { chromium } = await import('playwright');
+    browser = await chromium.launch();
+    page = await browser.newPage();
+  } catch (error) {
+    if (error.message.includes('Executable doesn\'t exist') || error.message.includes('browserType.launch')) {
+      console.log('   ℹ️  Playwright browsers not installed. Run: npx playwright install chromium');
+      this.skip();
+      return;
+    }
+    throw error;
+  }
   
   try {
     await page.setContent(`
@@ -93,15 +115,26 @@ test('testGameplay integrates screenshot selection', async function() {
         'selectedScreenshots should not be set when <10 screenshots');
     }
   } finally {
-    await browser.close();
+    if (browser) {
+      await browser.close();
+    }
   }
 });
 
 test('testGameplay tracks calibration during gameplay', async function() {
-
-  const { chromium } = await import('playwright');
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
+  let browser, page;
+  try {
+    const { chromium } = await import('playwright');
+    browser = await chromium.launch();
+    page = await browser.newPage();
+  } catch (error) {
+    if (error.message.includes('Executable doesn\'t exist') || error.message.includes('browserType.launch')) {
+      console.log('   ℹ️  Playwright browsers not installed. Run: npx playwright install chromium');
+      this.skip();
+      return;
+    }
+    throw error;
+  }
   
   try {
     await page.setContent(`
@@ -132,7 +165,9 @@ test('testGameplay tracks calibration during gameplay', async function() {
       assert.ok(true, 'Calibration tracking integrated');
     }
   } finally {
-    await browser.close();
+    if (browser) {
+      await browser.close();
+    }
   }
 });
 

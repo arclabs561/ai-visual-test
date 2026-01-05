@@ -3,9 +3,19 @@ import assert from 'node:assert';
 import { testGameplay } from '../../src/convenience.mjs';
 
 test('testGameplay uses temporal preprocessing by default', async function() {
-  const { chromium } = await import('playwright');
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
+  let browser, page;
+  try {
+    const { chromium } = await import('playwright');
+    browser = await chromium.launch();
+    page = await browser.newPage();
+  } catch (error) {
+    if (error.message.includes('Executable doesn\'t exist') || error.message.includes('browserType.launch')) {
+      console.log('   ℹ️  Playwright browsers not installed. Run: npx playwright install chromium');
+      this.skip();
+      return;
+    }
+    throw error;
+  }
   
   try {
     await page.setContent(`
@@ -44,14 +54,26 @@ test('testGameplay uses temporal preprocessing by default', async function() {
       assert.ok(true, 'Temporal preprocessing skipped (no screenshots captured)');
     }
   } finally {
-    await browser.close();
+    if (browser) {
+      await browser.close();
+    }
   }
 });
 
 test('testGameplay temporal preprocessing handles high activity', async function() {
-  const { chromium } = await import('playwright');
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
+  let browser, page;
+  try {
+    const { chromium } = await import('playwright');
+    browser = await chromium.launch();
+    page = await browser.newPage();
+  } catch (error) {
+    if (error.message.includes('Executable doesn\'t exist') || error.message.includes('browserType.launch')) {
+      console.log('   ℹ️  Playwright browsers not installed. Run: npx playwright install chromium');
+      this.skip();
+      return;
+    }
+    throw error;
+  }
   
   try {
     await page.setContent(`
@@ -89,14 +111,26 @@ test('testGameplay temporal preprocessing handles high activity', async function
       assert.ok(true, 'Temporal preprocessing skipped (no screenshots captured)');
     }
   } finally {
-    await browser.close();
+    if (browser) {
+      await browser.close();
+    }
   }
 });
 
 test('testGameplay temporal preprocessing handles low activity', async function() {
-  const { chromium } = await import('playwright');
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
+  let browser, page;
+  try {
+    const { chromium } = await import('playwright');
+    browser = await chromium.launch();
+    page = await browser.newPage();
+  } catch (error) {
+    if (error.message.includes('Executable doesn\'t exist') || error.message.includes('browserType.launch')) {
+      console.log('   ℹ️  Playwright browsers not installed. Run: npx playwright install chromium');
+      this.skip();
+      return;
+    }
+    throw error;
+  }
   
   try {
     await page.setContent(`
@@ -133,7 +167,9 @@ test('testGameplay temporal preprocessing handles low activity', async function(
       assert.ok(true, 'Temporal preprocessing skipped (no screenshots captured)');
     }
   } finally {
-    await browser.close();
+    if (browser) {
+      await browser.close();
+    }
   }
 });
 

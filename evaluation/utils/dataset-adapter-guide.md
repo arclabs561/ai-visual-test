@@ -31,10 +31,10 @@ Evaluation Runner
 - **Reads**: `screen_annotation/train.csv`, `screen_qa/short_answers/train.json`
 
 ### WCAG Adapter
-- **Original Format**: HTML page from W3C
-- **Location**: `evaluation/datasets/human-annotated/wcag-test-cases/testcases.json`
+- **Original Format**: JSON file from W3C (preferred) or HTML page
+- **Location**: `evaluation/datasets/human-annotated/wcag-test-cases/testcases-actual.json`
 - **Adapter**: `WCAGAdapter`
-- **Reads**: HTML content, extracts test case IDs
+- **Reads**: JSON file with 1,189 test cases (or HTML as fallback)
 
 ### Real Dataset Adapter
 - **Original Format**: Screenshot files + optional metadata file

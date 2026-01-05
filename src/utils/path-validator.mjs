@@ -2,46 +2,38 @@
  * Path Validation Utilities
  * 
  * Provides secure path validation to prevent path traversal attacks.
- * All user-provided paths should be validated using these functions.
+ * 
+ * NOTE: The primary validateFilePath() function is in src/validation.mjs.
+ * This module provides additional utilities for path validation.
+ * 
+ * @deprecated validateFilePath() - Use validateFilePath() from '../validation.mjs' instead
+ * This function is kept for backward compatibility but delegates to the main implementation.
  */
 
-import { resolve, normalize, basename, dirname } from 'path';
+import { resolve, normalize, basename } from 'path';
 import { existsSync } from 'fs';
 import { ValidationError } from '../errors.mjs';
+import { validateFilePath as validateFilePathMain } from '../validation.mjs';
 
 /**
  * Validates and normalizes a file path to prevent path traversal attacks
  * 
+ * @deprecated Use validateFilePath() from '../validation.mjs' instead
  * @param {string} userPath - User-provided file path
  * @param {string} baseDir - Base directory (optional, defaults to process.cwd())
  * @returns {string} - Resolved, normalized path
  * @throws {ValidationError} - If path is invalid or outside base directory
  */
 export function validateFilePath(userPath, baseDir = process.cwd()) {
+  // Validate empty string before delegating (main implementation also checks, but we want consistent error)
   if (typeof userPath !== 'string' || !userPath.trim()) {
     throw new ValidationError('File path must be a non-empty string', null, {
       received: typeof userPath
     });
   }
-
-  // Normalize the path (removes . and .. sequences)
-  const normalized = normalize(userPath);
   
-  // Resolve against base directory
-  const base = resolve(baseDir);
-  const resolved = resolve(base, normalized);
-  
-  // Ensure resolved path is within base directory
-  // Use startsWith with path separator to prevent bypass
-  if (!resolved.startsWith(base + '/') && resolved !== base) {
-    throw new ValidationError('File path must be within the allowed directory', userPath, {
-      resolved,
-      base,
-      normalized
-    });
-  }
-  
-  return resolved;
+  // Delegate to main implementation for consistency
+  return validateFilePathMain(userPath, { baseDir });
 }
 
 /**

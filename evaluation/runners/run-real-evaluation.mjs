@@ -5,6 +5,11 @@
  * Runs comprehensive evaluation on the real dataset we just created.
  */
 
+import { loadEnv } from '../../src/load-env.mjs';
+
+// Auto-load .env for API keys
+loadEnv();
+
 import { validateScreenshot, createConfig, aggregateTemporalNotes, formatNotesForPrompt } from '../../src/index.mjs';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join } from 'path';

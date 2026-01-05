@@ -78,7 +78,8 @@ export function calculatePersonaConsistency(observations) {
     return {
       promptToLine: 1.0,
       lineToLine: 1.0,
-      overall: 1.0
+      overall: 1.0,
+      observationCount: observations.length
     };
   }
 
@@ -169,7 +170,8 @@ export function calculatePersonaDiversity(personaExperiences) {
     return {
       diversityRatio: 0,
       uniqueKeywords: 0,
-      totalKeywords: 0
+      totalKeywords: 0,
+      personaCount: personaExperiences.length
     };
   }
 

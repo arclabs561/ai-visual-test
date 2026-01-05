@@ -17,9 +17,34 @@
 import { loadEnv } from './load-env.mjs';
 loadEnv();
 
+// Optional: Initialize graceful shutdown (only in Node.js environments, not browser)
+// Use dynamic import to avoid top-level await (fire-and-forget)
+if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'test') {
+  import('./graceful-shutdown.mjs').then(({ initGracefulShutdown }) => {
+    initGracefulShutdown({ timeout: 30000 });
+  }).catch(() => {
+    // Graceful shutdown is optional, don't fail if unavailable
+  });
+}
+
 import { VLLMJudge, validateScreenshot as _validateScreenshot } from './judge.mjs';
 
 export { VLLMJudge, _validateScreenshot as validateScreenshot };
+
+// Export startup validation utilities
+export { validateStartup, validateStartupSoft } from './startup-validation.mjs';
+
+// Export graceful shutdown utilities
+export { initGracefulShutdown, registerShutdownHandler, gracefulShutdown } from './graceful-shutdown.mjs';
+
+// Export performance measurement utilities
+export {
+  PerformanceMeasurement,
+  PerformanceProfiler,
+  measureAsync,
+  measureSync,
+  getProfiler
+} from './utils/performance-measurement.mjs';
 
 /**
  * Extract semantic information from VLLM judgment text
@@ -28,7 +53,7 @@ export { VLLMJudge, _validateScreenshot as validateScreenshot };
  * Useful for custom implementations that need to parse judgment text.
  * 
  * @param {string | object} judgment - Judgment text or object from VLLM
- * @returns {import('./index.mjs').SemanticInfo} Structured semantic information with score, issues, assessment, reasoning
+ * @returns {Object} Structured semantic information with score, issues, assessment, reasoning, brutalistViolations (optional), zeroToleranceViolations (optional)
  */
 export function extractSemanticInfo(judgment) {
   // Create a temporary judge instance to access the method
@@ -170,11 +195,19 @@ export {
   calculateBackoff,
   enhanceErrorMessage
 } from './retry.mjs';
+
+// Cost optimization utilities
+export {
+  calculateCostComparison,
+  optimizeCost
+} from './cost-optimization.mjs';
 export {
   CostTracker,
   getCostTracker,
   recordCost,
-  getCostStats
+  getCostStats,
+  setBudgetLimit,
+  getBudgetStatus
 } from './cost-tracker.mjs';
 // Session-level cost tracking
 export {
@@ -292,7 +325,8 @@ export {
 export {
   testGameplay,
   testBrowserExperience,
-  validateWithGoals
+  validateWithGoals,
+  validatePage
 } from './convenience.mjs';
 
 // Game playing (optional - requires Playwright)

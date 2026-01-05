@@ -6,6 +6,11 @@
  * Uses existing datasets to validate the system works.
  */
 
+import { loadEnv } from '../../src/load-env.mjs';
+
+// Auto-load .env for API keys
+loadEnv();
+
 import { 
   startSession, 
   endSession, 
@@ -57,12 +62,15 @@ async function runQuickEvaluation() {
       }
 
       try {
+        // Use Groq for high-frequency evaluation if available
+        const useGroq = process.env.GROQ_API_KEY && process.env.USE_GROQ_FOR_EVALUATION !== 'false';
         const result = await validateScreenshot(
           sample.screenshot,
           'Evaluate this webpage for accessibility, design quality, and usability',
           {
             sessionId: sessionId,
-            testType: 'quick-evaluation'
+            testType: 'quick-evaluation',
+            ...(useGroq ? { provider: 'groq', modelTier: 'fast' } : {})
           }
         );
 

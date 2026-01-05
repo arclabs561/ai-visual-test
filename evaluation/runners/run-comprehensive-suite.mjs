@@ -7,6 +7,11 @@
  * Based on DATASET_CAPABILITY_MAPPING.md analysis.
  */
 
+import { loadEnv } from '../../src/load-env.mjs';
+
+// Auto-load .env for API keys
+loadEnv();
+
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { execSync } from 'child_process';
@@ -141,7 +146,7 @@ async function main() {
   // 9. Unit Tests (core functionality)
   evaluations.push(await runEvaluation(
     'Core Unit Tests',
-    'npm test 2>&1 | tail -50',
+    'npm test 2>&1',
     'Tests core functionality (validateScreenshot, caching, etc.)'
   ));
   

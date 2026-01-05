@@ -2,9 +2,11 @@
  * Cost Tracking Utilities
  * 
  * Tracks API costs over time, provides cost estimates, and helps optimize spending.
+ * Includes budget limits and alerting.
  */
 
 import { getCached, setCached } from './cache.mjs';
+import { warn, log } from './logger.mjs';
 
 /**
  * Cost Tracker Class
@@ -22,11 +24,21 @@ export class CostTracker {
    * Load costs from cache/storage
    */
   loadCosts() {
+    const defaultCosts = { history: [], totals: { total: 0, count: 0 }, byProvider: {}, byDate: {} };
     try {
       const cached = getCached(this.storageKey, 'cost-tracker', {});
-      return cached || { history: [], totals: {}, byProvider: {} };
+      if (cached && typeof cached === 'object' && cached.history) {
+        // Ensure all required properties exist
+        return {
+          history: cached.history || [],
+          totals: { total: 0, count: 0, ...cached.totals },
+          byProvider: cached.byProvider || {},
+          byDate: cached.byDate || {}
+        };
+      }
+      return defaultCosts;
     } catch {
-      return { history: [], totals: {}, byProvider: {} };
+      return defaultCosts;
     }
   }
 
@@ -197,6 +209,106 @@ export class CostTracker {
   }
 
   /**
+   * Set budget limit with alert thresholds
+   * 
+   * @param {number} budgetLimit - Total budget limit (USD)
+   * @param {Object} [options={}] - Budget options
+   * @param {number} [options.warningThreshold=0.8] - Warn at this percentage (0-1)
+   * @param {Function} [options.onWarning] - Callback when warning threshold reached
+   * @param {Function} [options.onExceeded] - Callback when budget exceeded
+   */
+  setBudgetLimit(budgetLimit, options = {}) {
+    const { warningThreshold = 0.8, onWarning = null, onExceeded = null } = options;
+    
+    if (!this.costs.budgets) {
+      this.costs.budgets = [];
+    }
+    
+    const budget = {
+      limit: budgetLimit,
+      warningThreshold,
+      onWarning,
+      onExceeded,
+      createdAt: Date.now()
+    };
+    
+    this.costs.budgets.push(budget);
+    this.saveCosts();
+    
+    // Check immediately
+    this.checkBudgets();
+  }
+
+  /**
+   * Check all budget limits and trigger alerts
+   * 
+   * @returns {Array} Array of budget status objects
+   */
+  checkBudgets() {
+    if (!this.costs.budgets || this.costs.budgets.length === 0) {
+      return [];
+    }
+    
+    const stats = this.getStats();
+    const current = stats.total;
+    const statuses = [];
+    
+    for (const budget of this.costs.budgets) {
+      const percentage = current / budget.limit;
+      const status = {
+        limit: budget.limit,
+        current,
+        percentage,
+        remaining: Math.max(0, budget.limit - current),
+        warningThreshold: budget.warningThreshold,
+        status: percentage >= 1 ? 'exceeded' : (percentage >= budget.warningThreshold ? 'warning' : 'ok')
+      };
+      
+      statuses.push(status);
+      
+      // Trigger callbacks
+      if (percentage >= 1 && budget.onExceeded) {
+        try {
+          budget.onExceeded(status);
+        } catch (err) {
+          // Don't fail if callback errors
+        }
+      } else if (percentage >= budget.warningThreshold && budget.onWarning) {
+        try {
+          budget.onWarning(status);
+        } catch (err) {
+          // Don't fail if callback errors
+        }
+      }
+    }
+    
+    return statuses;
+  }
+
+  /**
+   * Get budget status
+   * 
+   * @returns {Object} Budget status summary
+   */
+  getBudgetStatus() {
+    const statuses = this.checkBudgets();
+    if (statuses.length === 0) {
+      return { hasBudgets: false };
+    }
+    
+    const exceeded = statuses.filter(s => s.status === 'exceeded');
+    const warnings = statuses.filter(s => s.status === 'warning');
+    
+    return {
+      hasBudgets: true,
+      totalBudgets: statuses.length,
+      exceeded: exceeded.length,
+      warnings: warnings.length,
+      statuses
+    };
+  }
+
+  /**
    * Reset cost tracking
    */
   reset() {
@@ -253,5 +365,25 @@ export function recordCost(costData) {
  */
 export function getCostStats() {
   return getCostTracker().getStats();
+}
+
+/**
+ * Set budget limit (convenience function)
+ * 
+ * @param {number} budgetLimit - Budget limit in USD
+ * @param {Object} [options={}] - Budget options
+ */
+export function setBudgetLimit(budgetLimit, options = {}) {
+  const tracker = getCostTracker();
+  tracker.setBudgetLimit(budgetLimit, options);
+}
+
+/**
+ * Get budget status (convenience function)
+ * 
+ * @returns {Object} Budget status
+ */
+export function getBudgetStatus() {
+  return getCostTracker().getBudgetStatus();
 }
 

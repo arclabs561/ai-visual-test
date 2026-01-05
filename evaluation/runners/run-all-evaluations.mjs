@@ -9,6 +9,11 @@
  * 4. Generates comprehensive reports
  */
 
+import { loadEnv } from '../../src/load-env.mjs';
+
+// Auto-load .env for API keys
+loadEnv();
+
 import { runComprehensiveEvaluation } from './evaluation-rig.mjs';
 import { downloadAllDatasets } from './download-datasets.mjs';
 import { readFileSync, existsSync } from 'fs';

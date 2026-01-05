@@ -20,13 +20,12 @@ This guide explains how to use the newly downloaded datasets effectively in eval
 - Links data (links.json)
 - URL information
 
-**Conversion**:
-```bash
-# Convert first 100 samples
-node evaluation/utils/convert-webui-dataset.mjs 100
+**Usage via Adapter** (No conversion needed!):
+```javascript
+import { loadDataset } from './evaluation/utils/dataset-adapters.mjs';
 
-# Convert all samples (takes time)
-node evaluation/utils/convert-webui-dataset.mjs
+// Load any number of samples - adapter handles transformation on-the-fly
+const dataset = await loadDataset('webui', { limit: 100 });
 ```
 
 **Usage in Evaluations**:
@@ -38,21 +37,22 @@ node evaluation/runners/run-webui-evaluation.mjs 50
 node evaluation/runners/comprehensive-evaluation.mjs --datasets webui
 ```
 
-**Programmatic Usage**:
+**Programmatic Usage** (Recommended - Adapter Pattern):
 ```javascript
-import { loadWebUIDataset, getRandomWebUISamples, filterWebUISamples } from './evaluation/utils/load-webui-dataset.mjs';
+import { loadDataset } from './evaluation/utils/dataset-adapters.mjs';
 
-// Load dataset
-const dataset = await loadWebUIDataset({ limit: 100, cache: true });
+// Load dataset via adapter (no conversion needed)
+const result = await loadDataset('webui', { limit: 100 });
 
-// Get random samples
-const randomSamples = getRandomWebUISamples(dataset, 10);
+// Access samples
+const samples = result.samples;
+console.log(`Loaded ${result.loaded} of ${result.totalAvailable} samples`);
 
-// Filter by criteria
-const desktopSamples = filterWebUISamples(dataset, {
-  viewport: { width: 1920, height: 1080 },
-  hasAccessibilityTree: true
-});
+// Filter samples (in-memory after loading)
+const desktopSamples = samples.filter(s => 
+  s.metadata?.viewport?.width === 1920 && 
+  s.groundTruth?.hasAccessibilityTree
+);
 ```
 
 ### 2. WCAG Test Cases
@@ -63,12 +63,15 @@ const desktopSamples = filterWebUISamples(dataset, {
 - HTML page with test case references
 - Links to W3C ACT Rules test cases
 
-**Parsing**:
-```bash
-node evaluation/utils/parse-wcag-testcases.mjs
+**Usage via Adapter** (No parsing needed!):
+```javascript
+import { loadDataset } from './evaluation/utils/dataset-adapters.mjs';
+
+// Load WCAG test cases - adapter reads from JSON file
+const wcag = await loadDataset('wcag', { limit: 50 });
 ```
 
-**Output**: `evaluation/datasets/wcag-ground-truth.json`
+**Note**: The adapter reads from `testcases-actual.json` (original W3C data source).
 
 ## Integration Points
 

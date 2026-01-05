@@ -1,7 +1,7 @@
 /**
  * VLLM Cache
  *
- * Provides persistent caching for VLLM API calls to reduce costs and improve performance.
+ * Provides persistent caching for VLLM API calls (vision) and text-only LLM calls to reduce costs and improve performance.
  * Uses file-based storage for cache persistence across test runs.
  *
  * BUGS FIXED (2025-01):
@@ -15,6 +15,7 @@
  * - Why separate: Different persistence strategy (file vs memory), different lifetime (7 days vs process lifetime),
  *   different failure domain (disk errors don't affect in-memory batching), minimal data overlap (<5%)
  * - No coordination with BatchOptimizer cache or TemporalPreprocessing cache (by design - they serve different purposes)
+ * - Supports both vision LLM calls (with images) and text-only LLM calls (no images)
  */
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync, renameSync, unlinkSync } from 'fs';
@@ -73,36 +74,101 @@ export function initCache(cacheDir) {
 }
 
 /**
- * Generate cache key from image path, prompt, and context
+ * Generate cache key from image path, prompt, and context (for vision LLM calls)
  *
  * @param {string} imagePath - Path to image file
  * @param {string} prompt - Validation prompt
  * @param {import('./index.mjs').ValidationContext} [context={}] - Validation context
  * @returns {string} SHA-256 hash of cache key
  */
+/**
+ * Normalize and sort object keys for deterministic JSON serialization
+ */
+function deterministicStringify(obj) {
+  if (obj === null || typeof obj !== 'object') {
+    return JSON.stringify(obj);
+  }
+  if (Array.isArray(obj)) {
+    return '[' + obj.map(deterministicStringify).join(',') + ']';
+  }
+  const sortedKeys = Object.keys(obj).sort();
+  const pairs = sortedKeys.map(key => {
+    return JSON.stringify(key) + ':' + deterministicStringify(obj[key]);
+  });
+  return '{' + pairs.join(',') + '}';
+}
+
 export function generateCacheKey(imagePath, prompt, context = {}) {
-  // NOTE: Don't truncate cache keys - it causes collisions!
-  //
-  // The bug: Truncating prompt (1000 chars) and gameState (500 chars) means:
-  // - Different prompts with same first 1000 chars = same cache key = wrong cache hit
-  // - Different game states with same first 500 chars = same cache key = wrong cache hit
-  //
-  // The fix: Hash the FULL content, don't truncate
-  // SHA-256 handles arbitrary length, so there's no reason to truncate
-  //
-  // Why truncation existed: Probably to keep keys "manageable", but it's dangerous
-  // Better approach: Hash full content, collisions are cryptographically unlikely
+  // SECURITY: Normalize image path to prevent path injection
+  // Normalize to absolute path and resolve any relative components
+  let normalizedPath = imagePath;
+  try {
+    // Resolve to absolute path if relative, normalize separators
+    if (!imagePath.startsWith('/') && !imagePath.match(/^[A-Z]:/)) {
+      // Relative path - resolve it
+      normalizedPath = resolve(imagePath);
+    } else {
+      // Absolute path - just normalize
+      normalizedPath = normalize(imagePath);
+    }
+  } catch (error) {
+    // If path resolution fails, use original but log warning
+    warn(`Failed to normalize image path for cache key: ${imagePath}`);
+    normalizedPath = imagePath;
+  }
+
+  // Build key data with deterministic structure
   const keyData = {
-    imagePath,
+    type: 'vision', // Distinguish from text-only calls
+    imagePath: normalizedPath, // Normalized path
     prompt, // Full prompt, not truncated
     testType: context.testType || '',
     frame: context.frame || '',
     score: context.score || '',
-    viewport: context.viewport ? JSON.stringify(context.viewport) : '',
-    gameState: context.gameState ? JSON.stringify(context.gameState) : '' // Full game state, not truncated
+    // Use deterministic stringify for nested objects to ensure consistent keys
+    viewport: context.viewport ? deterministicStringify(context.viewport) : '',
+    gameState: context.gameState ? deterministicStringify(context.gameState) : '' // Full game state, not truncated
   };
 
-  const keyString = JSON.stringify(keyData);
+  // Use deterministic stringify to ensure consistent key generation
+  // even if object property order varies
+  const keyString = deterministicStringify(keyData);
+  return createHash('sha256').update(keyString).digest('hex');
+}
+
+/**
+ * Generate cache key for text-only LLM calls
+ *
+ * @param {string} prompt - Text prompt
+ * @param {string} provider - LLM provider (e.g., 'gemini', 'openai', 'claude')
+ * @param {{
+ *   model?: string | null;
+ *   temperature?: number;
+ *   maxTokens?: number;
+ *   tier?: string;
+ * }} [options={}] - LLM call options
+ * @returns {string} SHA-256 hash of cache key
+ */
+export function generateTextLLMCacheKey(prompt, provider, options = {}) {
+  const {
+    model = null,
+    temperature = 0.1,
+    maxTokens = 1000,
+    tier = null
+  } = options;
+
+  const keyData = {
+    type: 'text', // Distinguish from vision calls
+    prompt, // Full prompt, not truncated
+    provider,
+    model,
+    temperature,
+    maxTokens,
+    tier
+  };
+
+  // Use deterministic stringify for consistent cache keys
+  const keyString = deterministicStringify(keyData);
   return createHash('sha256').update(keyString).digest('hex');
 }
 
@@ -208,6 +274,27 @@ async function saveCache(cache) {
 
     // Apply size limits (LRU eviction: keep most recently accessed)
     const entriesToKeep = entries.slice(-MAX_CACHE_SIZE);
+    const evictedCount = entries.length - entriesToKeep.length;
+    
+    // Log cache eviction (weighted: evictions are important for cache health)
+    if (evictedCount > 0) {
+      // Use dynamic import with proper error handling to prevent unhandled promise rejections
+      import('./utils/performance-logger.mjs')
+        .then(({ logCacheOperation }) => {
+          logCacheOperation({
+            operation: 'evict',
+            cacheSize: entriesToKeep.length,
+            maxSize: MAX_CACHE_SIZE,
+            reason: `LRU eviction: ${evictedCount} entries removed`
+          });
+        })
+        .catch((importError) => {
+          // Log to console if performance logger unavailable (better than silent failure)
+          if (process.env.DEBUG_CACHE) {
+            console.warn(`[Cache] Performance logger unavailable: ${importError.message}`);
+          }
+        });
+    }
 
     for (const { key, value, timestamp } of entriesToKeep) {
       const entry = {
@@ -346,6 +433,26 @@ export function getCached(imagePath, prompt, context = {}) {
     const age = Date.now() - originalTimestamp;
     if (age > MAX_CACHE_AGE) {
       cache.delete(key); // Remove expired entry
+      
+      // Log cache expiration (weighted: expirations are important for cache health)
+      // Use dynamic import with proper error handling to prevent unhandled promise rejections
+      import('./utils/performance-logger.mjs')
+        .then(({ logCacheOperation }) => {
+          const currentCache = getCache();
+          logCacheOperation({
+            operation: 'expire',
+            cacheSize: currentCache.size,
+            maxSize: MAX_CACHE_SIZE,
+            reason: `Entry expired (age: ${Math.floor(age / (1000 * 60 * 60 * 24))} days)`
+          });
+        })
+        .catch((importError) => {
+          // Log to console if performance logger unavailable (better than silent failure)
+          if (process.env.DEBUG_CACHE) {
+            console.warn(`[Cache] Performance logger unavailable: ${importError.message}`);
+          }
+        });
+      
       return null;
     }
   }
@@ -401,6 +508,101 @@ export function clearCache() {
   // Save cache to disk (async, fire-and-forget)
   saveCache(cache).catch(error => {
     warn(`[VLLM Cache] Failed to save cache after clear (non-blocking): ${error.message}`);
+  });
+}
+
+/**
+ * Get cached text-only LLM response
+ *
+ * @param {string} prompt - Text prompt
+ * @param {string} provider - LLM provider
+ * @param {{
+ *   model?: string | null;
+ *   temperature?: number;
+ *   maxTokens?: number;
+ *   tier?: string;
+ * }} [options={}] - LLM call options
+ * @returns {string | null} Cached response or null if not found
+ */
+export function getCachedTextLLM(prompt, provider, options = {}) {
+  const cache = getCache();
+  const key = generateTextLLMCacheKey(prompt, provider, options);
+  const cached = cache.get(key);
+
+  if (cached) {
+    // Update access time for LRU eviction
+    cached._lastAccessed = Date.now();
+
+    // Check expiration based on original timestamp
+    const originalTimestamp = cached._originalTimestamp || cached._lastAccessed;
+    const age = Date.now() - originalTimestamp;
+    if (age > MAX_CACHE_AGE) {
+      cache.delete(key); // Remove expired entry
+      
+      // Log cache expiration
+      // Use dynamic import with proper error handling to prevent unhandled promise rejections
+      import('./utils/performance-logger.mjs')
+        .then(({ logCacheOperation }) => {
+          const currentCache = getCache();
+          logCacheOperation({
+            operation: 'expire',
+            cacheSize: currentCache.size,
+            maxSize: MAX_CACHE_SIZE,
+            reason: `Text LLM entry expired (age: ${Math.floor(age / (1000 * 60 * 60 * 24))} days)`
+          });
+        })
+        .catch((importError) => {
+          // Log to console if performance logger unavailable (better than silent failure)
+          if (process.env.DEBUG_CACHE) {
+            console.warn(`[Cache] Performance logger unavailable: ${importError.message}`);
+          }
+        });
+      
+      return null;
+    }
+
+    // Return the cached response (stored as 'response' field for text-only calls)
+    return cached.response || null;
+  }
+
+  return null;
+}
+
+/**
+ * Set cached text-only LLM response
+ *
+ * @param {string} prompt - Text prompt
+ * @param {string} provider - LLM provider
+ * @param {{
+ *   model?: string | null;
+ *   temperature?: number;
+ *   maxTokens?: number;
+ *   tier?: string;
+ * }} [options={}] - LLM call options
+ * @param {string} response - LLM response to cache
+ * @returns {void}
+ */
+export function setCachedTextLLM(prompt, provider, options, response) {
+  const cache = getCache();
+  const key = generateTextLLMCacheKey(prompt, provider, options);
+  const now = Date.now();
+
+  // Check if this is a new entry or updating existing
+  const existing = cache.get(key);
+  const originalTimestamp = existing?._originalTimestamp || now;
+
+  // Store response with metadata for cache management
+  const resultWithMetadata = {
+    response, // Store the text response
+    _lastAccessed: now,
+    _originalTimestamp: originalTimestamp
+  };
+
+  cache.set(key, resultWithMetadata);
+
+  // Save cache (async, fire-and-forget)
+  saveCache(cache).catch(error => {
+    warn(`[VLLM Cache] Failed to save text LLM cache (non-blocking): ${error.message}`);
   });
 }
 

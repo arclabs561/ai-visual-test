@@ -5,6 +5,11 @@
  * Runs multiple evaluation methods on WebUI dataset and compares results.
  */
 
+import { loadEnv } from '../../src/load-env.mjs';
+
+// Auto-load .env for API keys
+loadEnv();
+
 import { loadWebUIDataset, getRandomWebUISamples } from '../utils/load-webui-dataset.mjs';
 import { validateScreenshot } from '../../src/index.mjs';
 import { createConfig } from '../../src/config.mjs';

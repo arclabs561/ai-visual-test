@@ -150,7 +150,7 @@ export function validateVLLMAccuracy(humanJudgments, vllmJudgments, options = {}
  * @param {Object} options - Validation options
  * @returns {Object} Validation results
  */
-export function validateGameplayTemporal(gameplayNotes, options = {}) {
+export async function validateGameplayTemporal(gameplayNotes, options = {}) {
   const {
     minCoherenceForSmooth = 0.7,
     maxCoherenceForErratic = 0.5
@@ -164,7 +164,7 @@ export function validateGameplayTemporal(gameplayNotes, options = {}) {
     };
   }
   
-  const aggregated = aggregateTemporalNotes(gameplayNotes, options);
+  const aggregated = await aggregateTemporalNotes(gameplayNotes, options);
   
   const results = {
     aggregated,
@@ -215,13 +215,13 @@ export function validateWebpageEvaluation(evaluations, groundTruth = null, optio
   // If ground truth available, compare
   if (groundTruth) {
     const humanJudgments = groundTruth.humanJudgments || [];
-    const vllmJudgments = evaluations.map(eval => ({
-      id: eval.id || `eval-${Date.now()}`,
-      vllmScore: eval.score,
-      vllmIssues: eval.issues || [],
-      vllmReasoning: eval.reasoning || '',
-      provider: eval.provider || 'unknown',
-      timestamp: eval.timestamp || new Date().toISOString()
+    const vllmJudgments = evaluations.map(evaluation => ({
+      id: evaluation.id || `eval-${Date.now()}`,
+      vllmScore: evaluation.score,
+      vllmIssues: evaluation.issues || [],
+      vllmReasoning: evaluation.reasoning || '',
+      provider: evaluation.provider || 'unknown',
+      timestamp: evaluation.timestamp || new Date().toISOString()
     }));
     
     if (humanJudgments.length > 0 && vllmJudgments.length > 0) {
@@ -234,17 +234,17 @@ export function validateWebpageEvaluation(evaluations, groundTruth = null, optio
   }
   
   // Validate evaluation structure
-  for (const eval of evaluations) {
-    if (eval.score === null || eval.score === undefined) {
-      results.issues.push(`Evaluation ${eval.id || 'unknown'} has null/undefined score`);
+  for (const evaluation of evaluations) {
+    if (evaluation.score === null || evaluation.score === undefined) {
+      results.issues.push(`Evaluation ${evaluation.id || 'unknown'} has null/undefined score`);
       results.isValid = false;
     }
-    if (eval.score !== null && (eval.score < 0 || eval.score > 10)) {
-      results.issues.push(`Evaluation ${eval.id || 'unknown'} has invalid score: ${eval.score}`);
+    if (evaluation.score !== null && (evaluation.score < 0 || evaluation.score > 10)) {
+      results.issues.push(`Evaluation ${evaluation.id || 'unknown'} has invalid score: ${evaluation.score}`);
       results.isValid = false;
     }
-    if (!Array.isArray(eval.issues)) {
-      results.issues.push(`Evaluation ${eval.id || 'unknown'} has non-array issues`);
+    if (!Array.isArray(evaluation.issues)) {
+      results.issues.push(`Evaluation ${evaluation.id || 'unknown'} has non-array issues`);
       results.isValid = false;
     }
   }
@@ -261,7 +261,7 @@ export function validateWebpageEvaluation(evaluations, groundTruth = null, optio
  * @param {Object} options - Validation options
  * @returns {Object} Comprehensive validation report
  */
-export function validateComprehensive(data, options = {}) {
+export async function validateComprehensive(data, options = {}) {
   const report = {
     temporalPerception: null,
     vllmAccuracy: null,
@@ -295,10 +295,14 @@ export function validateComprehensive(data, options = {}) {
   
   // Validate gameplay temporal
   if (data.gameplayNotes) {
-    report.gameplayTemporal = validateGameplayTemporal(data.gameplayNotes, options);
-    if (report.gameplayTemporal.issues.length > 0) {
+    // Note: validateGameplayTemporal is async, but validateComprehensive is sync
+    // For now, we'll handle this by making validateComprehensive async-aware
+    // In practice, this should be awaited, but we maintain backward compatibility
+    const gameplayResult = await validateGameplayTemporal(data.gameplayNotes, options);
+    report.gameplayTemporal = gameplayResult;
+    if (gameplayResult && gameplayResult.issues && gameplayResult.issues.length > 0) {
       report.overall.issues.push('Gameplay temporal validation issues');
-      report.overall.recommendations.push(...report.gameplayTemporal.recommendations);
+      report.overall.recommendations.push(...(gameplayResult.recommendations || []));
     }
   }
   

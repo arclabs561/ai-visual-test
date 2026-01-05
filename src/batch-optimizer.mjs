@@ -218,6 +218,25 @@ export class BatchOptimizer {
       } catch (metricsError) {
         warn(`[BatchOptimizer] Error updating rejection metrics: ${metricsError.message}`);
       }
+      
+      // Log batch optimizer rejection (weighted: rejections are critical)
+      // Use dynamic import with proper error handling to prevent unhandled promise rejections
+      import('./utils/performance-logger.mjs')
+        .then(({ logBatchOptimizer }) => {
+          logBatchOptimizer({
+            event: 'reject',
+            queueDepth: this.queue.length,
+            maxQueueSize: this.maxQueueSize,
+            activeRequests: this.activeRequests,
+            maxConcurrency: this.maxConcurrency,
+            reason: 'Queue full - preventing memory leak'
+          });
+        })
+        .catch((importError) => {
+          // Log to console if performance logger unavailable (better than silent failure)
+          warn(`[BatchOptimizer] Performance logger unavailable: ${importError.message}`);
+        });
+      
       warn(`[BatchOptimizer] Queue is full (${this.queue.length}/${this.maxQueueSize}). Rejecting request to prevent memory leak. Total rejections: ${this.metrics.queueRejections}`);
       throw new TimeoutError(
         `Queue is full (${this.queue.length}/${this.maxQueueSize}). Too many concurrent requests.`,
@@ -236,6 +255,26 @@ export class BatchOptimizer {
       
       const timeoutId = setTimeout(() => {
         timeoutFired = true;
+        
+        // Log batch optimizer timeout (weighted: timeouts are critical)
+        // Use dynamic import with proper error handling to prevent unhandled promise rejections
+        import('./utils/performance-logger.mjs')
+          .then(({ logBatchOptimizer }) => {
+            logBatchOptimizer({
+              event: 'timeout',
+              queueDepth: this.queue.length,
+              maxQueueSize: this.maxQueueSize,
+              activeRequests: this.activeRequests,
+              maxConcurrency: this.maxConcurrency,
+              waitTime: Date.now() - queueStartTime,
+              reason: 'Request timeout - queue wait exceeded limit'
+            });
+          })
+          .catch((importError) => {
+            // Log to console if performance logger unavailable (better than silent failure)
+            warn(`[BatchOptimizer] Performance logger unavailable: ${importError.message}`);
+          });
+        
         // Remove from queue if still waiting
         // CRITICAL FIX: Use stored queueEntry reference instead of searching by resolve function
         // The resolve function is wrapped, so direct comparison might not work

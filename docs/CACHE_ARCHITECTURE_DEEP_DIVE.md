@@ -12,13 +12,21 @@ This codebase has **three separate, independent cache systems** that don't know 
 
 **Location**: `src/cache.mjs`
 
-**Purpose**: Cache VLLM API responses to disk to avoid redundant API calls
+**Purpose**: Cache VLLM API responses (vision) and text-only LLM calls to disk to avoid redundant API calls
 
 **Storage**: File-based JSON (`test-results/vllm-cache/cache.json`)
 
-**Key Generation**: SHA-256 hash of `{imagePath, prompt, testType, frame, score, viewport, gameState}`
+**Key Generation**: 
+- **Vision calls**: SHA-256 hash of `{type: 'vision', imagePath, prompt, testType, frame, score, viewport, gameState}`
+- **Text-only calls**: SHA-256 hash of `{type: 'text', prompt, provider, model, temperature, maxTokens, tier}`
 
 **Lifetime**: 7 days (MAX_CACHE_AGE)
+
+**Text-Only LLM Caching** (Added 2025-01):
+- Wrapper: `src/utils/cached-llm.mjs` wraps `@arclabs561/llm-utils` calls
+- Normalization: Prompts are normalized (whitespace, line endings) to improve cache hit rates
+- Environment control: Set `DISABLE_LLM_CACHE=true` to disable globally
+- Used by: `src/data-extractor.mjs`, `scripts/check-docs-bloat.mjs`, `scripts/validate-commit-msg.mjs`
 
 **Size Limits**: 
 - 1000 entries (MAX_CACHE_SIZE)

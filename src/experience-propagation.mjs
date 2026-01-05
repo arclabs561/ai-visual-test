@@ -110,10 +110,22 @@ let globalTracker = null;
 
 /**
  * Get or create global propagation tracker
+ * 
+ * @param {Object} [options={}] - Options for tracker (only used on first call)
+ * @returns {ExperiencePropagationTracker} Global tracker instance
  */
 export function getPropagationTracker(options = {}) {
   if (!globalTracker) {
     globalTracker = new ExperiencePropagationTracker(options);
+  } else if (Object.keys(options).length > 0) {
+    // If tracker exists but options provided, update it
+    // This allows reconfiguration (though typically tracker is created once)
+    if (options.enabled !== undefined) {
+      globalTracker.enabled = options.enabled;
+    }
+    if (options.logLevel !== undefined) {
+      globalTracker.logLevel = options.logLevel;
+    }
   }
   return globalTracker;
 }

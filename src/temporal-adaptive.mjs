@@ -127,7 +127,7 @@ export function detectActivityPattern(notes) {
  * }} [options={}] - Aggregation options
  * @returns {import('./index.mjs').AggregatedTemporalNotes} Aggregated temporal notes
  */
-export function aggregateTemporalNotesAdaptive(notes, options = {}) {
+export async function aggregateTemporalNotesAdaptive(notes, options = {}) {
   const {
     adaptive = true,
     windowSize,
@@ -152,7 +152,7 @@ export function aggregateTemporalNotesAdaptive(notes, options = {}) {
     finalWindowSize = 10000; // Default
   }
 
-  return aggregateTemporalNotes(notes, {
+  return await aggregateTemporalNotes(notes, {
     windowSize: finalWindowSize,
     decayFactor,
     coherenceThreshold

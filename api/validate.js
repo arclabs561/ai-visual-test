@@ -25,20 +25,26 @@
 
 import { validateScreenshot, createConfig, normalizeValidationResult } from '../src/index.mjs';
 import { validatePrompt } from '../src/validation.mjs';
+import { API_ENDPOINT_CONSTANTS } from '../src/constants.mjs';
 import { writeFileSync, unlinkSync } from 'fs';
 import { join, basename } from 'path';
 import { tmpdir } from 'os';
 import { randomBytes } from 'crypto';
 
-// Security limits
-const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
-const MAX_PROMPT_LENGTH = 5000;
-const MAX_CONTEXT_SIZE = 10000;
+// Security limits (from constants)
+const MAX_IMAGE_SIZE = API_ENDPOINT_CONSTANTS.MAX_IMAGE_SIZE;
+const MAX_PROMPT_LENGTH = API_ENDPOINT_CONSTANTS.MAX_PROMPT_LENGTH;
+const MAX_CONTEXT_SIZE = API_ENDPOINT_CONSTANTS.MAX_CONTEXT_SIZE;
 
 // Rate limiting configuration
-const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
-const RATE_LIMIT_MAX_REQUESTS = parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '10', 10);
+const RATE_LIMIT_WINDOW = API_ENDPOINT_CONSTANTS.RATE_LIMIT_WINDOW_MS;
+const RATE_LIMIT_MAX_REQUESTS = parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || String(API_ENDPOINT_CONSTANTS.RATE_LIMIT_MAX_REQUESTS), 10);
 const rateLimitStore = new Map(); // In-memory store (use Redis in production)
+
+// Cleanup interval for rate limit store (prevents memory leak)
+// Clean up old entries every 5 minutes instead of on every request
+let lastCleanup = Date.now();
+const CLEANUP_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
 
 // Authentication configuration
 const API_KEY = process.env.API_KEY || process.env.VLLM_API_KEY || null;
@@ -49,22 +55,29 @@ const REQUIRE_AUTH = process.env.REQUIRE_AUTH !== 'false' && API_KEY !== null;
 /**
  * Simple rate limiter (in-memory)
  * For production, use Redis or a dedicated rate limiting service
+ * 
+ * PERFORMANCE FIX: Cleanup happens on interval instead of every request
+ * This prevents O(n) operations on every API call
  */
 function checkRateLimit(identifier) {
   const now = Date.now();
   const windowStart = now - RATE_LIMIT_WINDOW;
   
-  // Clean up old entries
-  for (const [key, timestamps] of rateLimitStore.entries()) {
-    const recent = timestamps.filter(ts => ts > windowStart);
-    if (recent.length === 0) {
-      rateLimitStore.delete(key);
-    } else {
-      rateLimitStore.set(key, recent);
+  // Clean up old entries periodically (not on every request)
+  // This prevents O(n) operations on every API call
+  if (now - lastCleanup > CLEANUP_INTERVAL_MS) {
+    for (const [key, timestamps] of rateLimitStore.entries()) {
+      const recent = timestamps.filter(ts => ts > windowStart);
+      if (recent.length === 0) {
+        rateLimitStore.delete(key);
+      } else {
+        rateLimitStore.set(key, recent);
+      }
     }
+    lastCleanup = now;
   }
   
-  // Check current identifier
+  // Check current identifier (only filter this one's timestamps)
   const timestamps = rateLimitStore.get(identifier) || [];
   const recent = timestamps.filter(ts => ts > windowStart);
   
@@ -241,7 +254,19 @@ export default async function handler(req, res) {
     }
   } catch (error) {
     // Log full error for debugging (server-side only)
-    console.error('[VLLM API] Error:', error);
+    // Use structured error logging with context
+    try {
+      const { error: logError } = await import('../src/logger.mjs');
+      logError('[VLLM API] Error:', {
+        message: error?.message || String(error),
+        code: error?.code || 'UNKNOWN_ERROR',
+        provider: error?.provider || 'unknown',
+        stack: error?.stack
+      });
+    } catch {
+      // Fallback to console if logger unavailable
+      console.error('[VLLM API] Error:', error);
+    }
     
     // Return sanitized error to client (don't leak internal details)
     // Never expose: file paths, API keys, internal structure, stack traces

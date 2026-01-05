@@ -78,3 +78,57 @@ export const UNCERTAINTY_CONSTANTS = {
   EDGE_CASE_SELF_CONSISTENCY_N: 3
 };
 
+/**
+ * API Endpoint Configuration (for serverless functions)
+ */
+export const API_ENDPOINT_CONSTANTS = {
+  /** Maximum image size in bytes (10MB) */
+  MAX_IMAGE_SIZE: 10 * 1024 * 1024,
+  
+  /** Maximum prompt length in characters */
+  MAX_PROMPT_LENGTH: 5000,
+  
+  /** Maximum context size in bytes */
+  MAX_CONTEXT_SIZE: 10000,
+  
+  /** Default rate limit window in milliseconds (1 minute) */
+  RATE_LIMIT_WINDOW_MS: 60 * 1000,
+  
+  /** Default maximum requests per window */
+  RATE_LIMIT_MAX_REQUESTS: 10
+};
+
+/**
+ * Retry Configuration
+ */
+export const RETRY_CONSTANTS = {
+  /** Default base delay for exponential backoff in milliseconds (1 second) */
+  DEFAULT_BASE_DELAY_MS: 1000,
+  
+  /** Default maximum delay for exponential backoff in milliseconds (30 seconds) */
+  DEFAULT_MAX_DELAY_MS: 30000,
+  
+  /** Default maximum number of retries */
+  DEFAULT_MAX_RETRIES: 3,
+  
+  /** Jitter amount as percentage of delay (±25%) */
+  JITTER_PERCENTAGE: 0.25
+};
+
+/**
+ * Validation Configuration
+ */
+export const VALIDATION_CONSTANTS = {
+  /** Maximum prompt length for validation (10k characters) */
+  MAX_PROMPT_LENGTH: 10000,
+  
+  /** Maximum context size in bytes */
+  MAX_CONTEXT_SIZE: 50000,
+  
+  /** Minimum timeout in milliseconds */
+  MIN_TIMEOUT_MS: 1000,
+  
+  /** Maximum timeout in milliseconds (5 minutes) */
+  MAX_TIMEOUT_MS: 300000
+};
+

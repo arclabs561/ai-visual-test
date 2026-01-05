@@ -14,34 +14,53 @@ test/
 
 ## Current Organization
 
-### Unit Tests (Fast, Isolated)
+Tests are organized into subdirectories by type:
+
+### Unit Tests (`test/unit/`) - Fast, Isolated
 - `config.test.mjs` - Configuration loading
 - `logger.test.mjs` - Logging functionality
 - `constants.test.mjs` - Constants validation
 - `errors.test.mjs` - Error handling
-- `helpers/*` - Utility functions
+- `cache.test.mjs` - Cache functionality
+- `rubrics.test.mjs` - Rubric system
+- `bias-detector.test.mjs` - Bias detection
+- And 19 more unit tests
 
-### Integration Tests (Component Interaction)
+### Integration Tests (`test/integration/`) - Component Interaction
 - `integration-*.test.mjs` - Component integration
 - `spec-*.test.mjs` - Spec parsing and validation
 - `temporal-*.test.mjs` - Temporal features
 - `ensemble-*.test.mjs` - Ensemble judge
+- `validators-*.test.mjs` - Validator tests
+- `public-index-styling.test.mjs` - Public API page styling, accessibility, and visual tests
+- And 50+ more integration tests
 
-### E2E Tests (Full Workflows)
+### E2E Tests (`test/e2e/`) - Full Workflows
 - `game-playing.test.mjs` - Complete game testing workflow
-- `accessibility-hybrid.test.mjs` - Hybrid accessibility validation
-- `validation-*.test.mjs` - Full validation workflows
+- `evaluation-adapter-integration.test.mjs` - Evaluation system
+- `playwright-setup.test.mjs` - Playwright integration
+- `validation-human-ground-truth.test.mjs` - Human validation
 
-### Property Tests (Invariants)
-- `calibration-degradation-comprehensive.test.mjs` - Calibration properties
-- `temporal-graph-comprehensive.test.mjs` - Temporal graph properties
-- `screenshot-selection-comprehensive.test.mjs` - Selection strategies
+### Security Tests (`test/security/`) - Security-Focused
+- `path-security.test.mjs` - Path traversal protection
+- `red-team-security.test.mjs` - Security testing
+- `cache-race-conditions.test.mjs` - Race condition testing
 
-### Evaluation Tests
-Located in `evaluation/test/`:
-- Structure tests - Dataset validation
-- Performance tests - Latency and batching
-- Adversarial tests - Edge cases and bias
+### Performance Tests (`test/performance/`) - Performance
+- `performance-latency.test.mjs` - Latency testing
+- `high-frequency-features.test.mjs` - High-frequency validation
+
+### Dataset Tests (`test/datasets/`) - Dataset Validation
+- `dataset-adapters-comprehensive.test.mjs` - Adapter testing
+- `dataset-integration.test.mjs` - Dataset integration
+- `dataset-webui.test.mjs` - WebUI dataset
+- `dataset-wcag.test.mjs` - WCAG dataset
+
+### Test Utilities
+- `test-setup.mjs` - Auto-loads .env (shared by all tests)
+- `test-image-utils.mjs` - Image test utilities
+- `test-logger.mjs` - Test logging utilities
+- `helpers/` - Mock utilities and helpers
 
 ## Running Tests
 
@@ -49,14 +68,17 @@ Located in `evaluation/test/`:
 # Run all tests
 npm test
 
-# Run unit tests only (fast)
-node --test test/unit/*.test.mjs
-
-# Run integration tests
-node --test test/integration-*.test.mjs
+# Run by category
+npm run test:unit          # Fast unit tests
+npm run test:integration   # Integration tests
+npm run test:e2e          # End-to-end tests
+npm run test:security     # Security tests
+npm run test:performance  # Performance tests
+npm run test:datasets     # Dataset tests
 
 # Run specific test
-node --test test/game-playing.test.mjs
+node --test test/integration/judge.test.mjs
+node --test test/unit/config.test.mjs
 ```
 
 ## Test Quality Guidelines
@@ -92,11 +114,19 @@ node --test test/game-playing.test.mjs
 - **E2E Tests**: All user-facing workflows
 - **Property Tests**: All critical invariants
 
-## Migration Notes
+## Test Organization
 
-Tests are being reorganized from flat structure to pyramid:
-- Old: All tests in `test/` root
-- New: Organized by speed/scope in subdirectories
+Tests are organized into a pyramid structure:
+- **Unit tests** (`test/unit/`) - Fast, isolated, no external dependencies
+- **Integration tests** (`test/integration/`) - Component interactions
+- **E2E tests** (`test/e2e/`) - Full workflows
+- **Security tests** (`test/security/`) - Security-focused
+- **Performance tests** (`test/performance/`) - Performance validation
+- **Dataset tests** (`test/datasets/`) - Dataset validation
 
-Old tests still work but will be gradually moved to appropriate directories.
+All tests import shared utilities from `test/` root:
+- `test-setup.mjs` - Auto-loads .env
+- `test-image-utils.mjs` - Image utilities
+- `test-logger.mjs` - Logging utilities
+- `helpers/` - Mock utilities
 

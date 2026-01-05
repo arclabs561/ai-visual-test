@@ -96,7 +96,11 @@ export async function testGameplay(page, options = {}) {
     evaluations: [],
     aggregated: null,
     consistency: null,
-    propagation: []
+    propagation: [],
+    temporalScreenshots: [], // Initialize to empty array for consistency
+    processedTemporalNotes: null, // Initialize to null
+    temporalGraph: null, // Initialize to null
+    selectedScreenshots: undefined // Only set if >10 screenshots
   };
 
   try {
@@ -251,7 +255,7 @@ export async function testGameplay(page, options = {}) {
       // Always return aggregated notes (even if empty) for consistency
     if (allNotes.length > 0) {
       // Use fixed temporal aggregation system
-      const aggregated = aggregateTemporalNotes(allNotes, {
+      const aggregated = await aggregateTemporalNotes(allNotes, {
         windowSize: 5000,
         decayFactor: 0.9
       });
@@ -534,7 +538,7 @@ export async function testBrowserExperience(page, options = {}) {
       // Aggregate temporal notes across all stages
       const allStageNotes = result.experiences.flatMap(exp => exp.notes || []);
       if (allStageNotes.length > 0) {
-        const stageAggregated = aggregateTemporalNotes(allStageNotes, {
+        const stageAggregated = await aggregateTemporalNotes(allStageNotes, {
           windowSize: 10000,
           decayFactor: 0.9
         });
@@ -629,7 +633,7 @@ export async function validateWithGoals(screenshotPath, options = {}) {
   } else if (context.notes && context.notes.length > 0) {
     // Auto-aggregate if notes provided but not aggregated
     try {
-      temporalNotes = aggregateTemporalNotes(context.notes, {
+      temporalNotes = await aggregateTemporalNotes(context.notes, {
         windowSize: TEMPORAL_CONSTANTS.DEFAULT_WINDOW_SIZE_MS,
         decayFactor: TEMPORAL_CONSTANTS.DEFAULT_DECAY_FACTOR
       });
@@ -661,5 +665,56 @@ export async function validateWithGoals(screenshotPath, options = {}) {
     prompt,
     result: normalizedResult
   };
+}
+
+/**
+ * Validate a Playwright Page directly
+ * 
+ * Handles screenshotting, code extraction, and validation in one step.
+ * Reduces boilerplate for common Playwright testing workflows.
+ * 
+ * @param {import('playwright').Page} page - Playwright page object
+ * @param {string} prompt - Evaluation prompt
+ * @param {Object} options - Validation options
+ * @param {boolean} [options.fullPage] - Capture full page screenshot
+ * @param {boolean} [options.captureCode] - Extract rendered code (default: true)
+ * @param {string} [options.tempDir] - Directory for temp screenshot (default: os.tmpdir())
+ * @param {boolean} [options.keepScreenshot] - Keep screenshot after validation (default: false)
+ * @returns {Promise<Object>} Validation result
+ */
+export async function validatePage(page, prompt, options = {}) {
+  if (!page || typeof page.screenshot !== 'function') {
+    throw new ValidationError('validatePage: page must be a Playwright Page object', { received: typeof page });
+  }
+
+  // Create temp screenshot
+  const fs = await import('fs');
+  const path = await import('path');
+  const os = await import('os');
+  const tempDir = options.tempDir || os.tmpdir();
+  const screenshotPath = path.join(tempDir, `validate-page-${Date.now()}.png`);
+  
+  try {
+    await page.screenshot({ path: screenshotPath, fullPage: options.fullPage ?? false });
+    
+    // Extract code if requested
+    let renderedCode = null;
+    if (options.captureCode !== false) {
+      renderedCode = await extractRenderedCode(page);
+    }
+
+    // Validate
+    const result = await validateScreenshot(screenshotPath, prompt, {
+      ...options,
+      renderedCode
+    });
+
+    return result;
+  } finally {
+    // Cleanup unless requested to keep
+    if (!options.keepScreenshot && fs.existsSync(screenshotPath)) {
+      fs.unlinkSync(screenshotPath);
+    }
+  }
 }
 

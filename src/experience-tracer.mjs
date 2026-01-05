@@ -11,6 +11,7 @@
  */
 
 import { warn } from './logger.mjs';
+import { ValidationError } from './errors.mjs';
 
 /**
  * Experience Trace
@@ -133,7 +134,7 @@ export class ExperienceTrace {
    * @param {Record<string, unknown>} [options={}] - Aggregation options
    * @returns {import('./index.mjs').AggregatedTemporalNotes} Aggregated notes
    */
-  aggregateNotes(aggregateTemporalNotes, options = {}) {
+  async aggregateNotes(aggregateTemporalNotes, options = {}) {
     // Extract notes from events and validations
     const eventNotes = this.events
       .filter(e => e.type === 'interaction' || e.type === 'observation')
@@ -157,7 +158,7 @@ export class ExperienceTrace {
     
     const notes = [...eventNotes, ...validationNotes].sort((a, b) => a.timestamp - b.timestamp);
 
-    this.aggregatedNotes = aggregateTemporalNotes(notes, options);
+    this.aggregatedNotes = await aggregateTemporalNotes(notes, options);
     return this.aggregatedNotes;
   }
 
@@ -296,7 +297,15 @@ export class ExperienceTracerManager {
   async metaEvaluateTrace(sessionId, validateScreenshot) {
     const trace = this.getTrace(sessionId);
     if (!trace) {
-      throw new Error(`Trace not found: ${sessionId}`);
+      throw new ValidationError(
+        `Trace not found for session: ${sessionId}. ` +
+        `Use startTrace() to create a new trace, or listTraces() to see all available traces.`,
+        {
+          sessionId,
+          availableSessions: Object.keys(this.traces),
+          function: 'metaEvaluateTrace'
+        }
+      );
     }
 
     const evaluation = {

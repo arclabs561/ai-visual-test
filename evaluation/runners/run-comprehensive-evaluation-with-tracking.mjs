@@ -6,6 +6,11 @@
  * Provides "trap debug" hooks to show total ML API resources for usage tracking.
  */
 
+import { loadEnv } from '../../src/load-env.mjs';
+
+// Auto-load .env for API keys
+loadEnv();
+
 import { startSession, endSession, getSessionCosts } from '../../src/index.mjs';
 import { spawn } from 'child_process';
 import { join } from 'path';

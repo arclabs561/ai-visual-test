@@ -63,7 +63,8 @@ test('enableUncertaintyReduction - actually reduces uncertainty', async function
       // If image processing fails (e.g., invalid image format), skip this test
       // The goal is to validate research features work, not to test image processing
       if (error.message && (error.message.includes('invalid image') || error.message.includes('Unable to process input image'))) {
-        test.skip('Image processing failed - this is expected for minimal test images. Research features validation requires real screenshots.');
+        console.log('   ℹ️  Image processing failed - this is expected for minimal test images. Research features validation requires real screenshots.');
+        this.skip();
         return;
       }
       throw error;
@@ -134,7 +135,8 @@ test('enableHallucinationCheck - detects hallucinations', async function() {
       // If image processing fails (e.g., invalid image format), skip this test
       // The goal is to validate research features work, not to test image processing
       if (error.message && (error.message.includes('invalid image') || error.message.includes('Unable to process input image'))) {
-        test.skip('Image processing failed - this is expected for minimal test images. Research features validation requires real screenshots.');
+        console.log('   ℹ️  Image processing failed - this is expected for minimal test images. Research features validation requires real screenshots.');
+        this.skip();
         return;
       }
       throw error;

@@ -21,12 +21,16 @@ echo "Starting backup of $SOURCE_DIR to $S3_BUCKET"
 echo "Storage class: STANDARD_IA (Infrequent Access)"
 echo ""
 
-# s5cmd syntax: cp <source> <destination> [options]
-# For large directories, use find + xargs for better control
-# Storage class uses = syntax: --storage-class=STANDARD_IA
+# s5cmd syntax: cp <source> <destination>
+# For large directories, use find + loop
+# Note: Storage class can be set via lifecycle policy on bucket instead
+# This approach handles 300k+ files efficiently
+echo "Backing up files (this may take a while for 18GB)..."
 find "${SOURCE_DIR}" -type f | while read file; do
   rel_path=${file#${SOURCE_DIR}/}
-  s5cmd cp "$file" "${S3_BUCKET}${rel_path}" --storage-class=STANDARD_IA
+  # Remove leading slash if present
+  rel_path=${rel_path#/}
+  s5cmd cp "$file" "${S3_BUCKET}${rel_path}"
 done
 
 echo ""

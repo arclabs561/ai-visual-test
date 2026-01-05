@@ -216,7 +216,7 @@ export class TemporalDecisionManager {
               hasUserAction
             });
           })
-          .catch((importError) => {
+          .catch(async (importError) => {
             // Log to logger if performance logger unavailable (better than silent failure)
             if (process.env.DEBUG_TEMPORAL) {
               try {
@@ -255,7 +255,7 @@ export class TemporalDecisionManager {
               hasUserAction
             });
           })
-          .catch((importError) => {
+          .catch(async (importError) => {
             // Log to logger if performance logger unavailable (better than silent failure)
             if (process.env.DEBUG_TEMPORAL) {
               try {

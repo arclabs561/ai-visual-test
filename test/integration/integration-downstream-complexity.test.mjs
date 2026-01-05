@@ -122,6 +122,14 @@ describe('Downstream Complexity: Multi-Persona with BatchOptimizer', () => {
           assert.ok(result.provider);
         }
       });
+    } catch (error) {
+      // If API key is invalid, skip the test
+      if (error.code === 'PROVIDER_ERROR' && error.message.includes('API key not valid')) {
+        console.log('   ℹ️  API key not valid, skipping test');
+        this.skip();
+        return;
+      }
+      throw error;
     } finally {
       // Cleanup temp files
       if (config.enabled) {
@@ -244,6 +252,12 @@ describe('Downstream Complexity: Multi-Modal with Rendered Code', () => {
       // multiModalValidation returns validation result structure
       assert.ok(result !== undefined);
     } catch (error) {
+      // If API key is invalid, skip the test
+      if (error.code === 'PROVIDER_ERROR' && error.message.includes('API key not valid')) {
+        console.log('   ℹ️  API key not valid, skipping test');
+        this.skip();
+        return;
+      }
       // If screenshot fails on mock page, that's expected - just verify renderedCode works
       assert.ok(renderedCode);
       assert.ok(renderedCode.html);
@@ -306,6 +320,14 @@ describe('Downstream Complexity: Multi-Perspective with Rendered Code', () => {
         assert.ok(evaluation.persona);
         assert.ok(evaluation.evaluation);
       });
+    } catch (error) {
+      // If API key is invalid, skip the test
+      if (error.code === 'PROVIDER_ERROR' && error.message.includes('API key not valid')) {
+        console.log('   ℹ️  API key not valid, skipping test');
+        this.skip();
+        return;
+      }
+      throw error;
     } finally {
       if (existsSync(screenshotPath)) {
         unlinkSync(screenshotPath);
@@ -413,6 +435,14 @@ describe('Downstream Complexity: Full Integration Workflow', () => {
           assert.ok(result.provider);
         }
       });
+    } catch (error) {
+      // If API key is invalid, skip the test
+      if (error.code === 'PROVIDER_ERROR' && error.message.includes('API key not valid')) {
+        console.log('   ℹ️  API key not valid, skipping test');
+        this.skip();
+        return;
+      }
+      throw error;
     } finally {
       // Cleanup temp files
       if (config.enabled) {

@@ -67,6 +67,14 @@ test('Uncertainty reduction with goals', async function() {
     // Test passed - uncertainty reduction working
     // Log values for debugging but don't require specific values (model-dependent)
     
+  } catch (error) {
+    // If API key is invalid, skip the test
+    if (error.code === 'PROVIDER_ERROR' && error.message.includes('API key not valid')) {
+      console.log('   ℹ️  API key not valid, skipping test');
+      this.skip();
+      return;
+    }
+    throw error;
   } finally {
     // Cleanup
     if (existsSync(testImagePath)) {
@@ -111,6 +119,14 @@ test('Uncertainty reduction without goals', async function() {
     
     // Test passed - uncertainty reduction working without goals
     
+  } catch (error) {
+    // If API key is invalid, skip the test
+    if (error.code === 'PROVIDER_ERROR' && error.message.includes('API key not valid')) {
+      console.log('   ℹ️  API key not valid, skipping test');
+      this.skip();
+      return;
+    }
+    throw error;
   } finally {
     if (existsSync(testImagePath)) {
       try {

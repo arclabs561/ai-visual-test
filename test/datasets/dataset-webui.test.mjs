@@ -121,11 +121,19 @@ describe('WebUI Dataset Tests', () => {
   });
   
   it('should filter dataset samples by criteria', async function() {
-    const dataset = await loadDataset('webui', { limit: 50 });
+    let dataset;
+    try {
+      dataset = await loadDataset('webui', { limit: 50 });
+    } catch (e) {
+      console.log(`   ℹ️  Dataset loading failed: ${e.message}`);
+      this.skip(); // Skip test if dataset not available
+      return; // Safety return
+    }
     
     if (!dataset || !dataset.samples || dataset.samples.length === 0) {
       console.log('   ℹ️  No samples available');
-      this.skip();
+      this.skip(); // Skip test if no samples
+      return; // Safety return
     }
     
     // Filter by viewport

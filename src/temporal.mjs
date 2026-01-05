@@ -264,7 +264,7 @@ export async function aggregateTemporalNotes(notes, options = {}) {
  * Falls back to general embeddings, then keyword matching if embeddings unavailable.
  * 
  * @param {Array} windows - Temporal window summaries with avgScore
- * @returns {Promise<number>} Coherence score 0-1 (1 = perfectly consistent, 0 = erratic)
+ * @returns {Promise<number>} Coherence score 0-1 (1 = fully consistent, 0 = erratic)
  */
 async function calculateCoherence(windows, options = {}) {
   // Validation: Ensure windows is an array
@@ -755,7 +755,7 @@ const ENTITY_CACHE_TTL = 3600000; // 1 hour
 /**
  * Extract entities from notes using LLM when available, fallback to keyword matching
  * 
- * Modern best practices applied:
+ * Modern practices applied:
  * - Auto-detects frequency requirements (60Hz = keyword, analysis = LLM)
  * - Circuit breaker pattern for LLM failures
  * - Structured error handling with graceful degradation

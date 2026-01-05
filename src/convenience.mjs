@@ -23,7 +23,7 @@ import { TEMPORAL_CONSTANTS } from './constants.mjs';
 /**
  * Test gameplay with variable goals
  * 
- * Complete workflow for testing games with variable goals/prompts.
+ * Workflow for testing games with variable goals/prompts.
  * Originally motivated by interactive web applications that require
  * real-time validation, variable goals, and temporal understanding.
  * 
@@ -425,7 +425,7 @@ export async function testGameplay(page, options = {}) {
 /**
  * Test browser experience with multiple stages
  * 
- * Complete workflow for testing browser experiences across multiple stages
+ * Workflow for testing browser experiences across multiple stages
  * (initial, form, payment, gameplay, etc.).
  * 
  * @param {import('playwright').Page} page - Playwright page object

@@ -7,7 +7,7 @@
  * GROQ INTEGRATION:
  * - Groq uses OpenAI-compatible API (routes to callOpenAIAPI)
  * - ~0.22s latency (10x faster than typical providers)
- * - Best for high-frequency decisions (10-60Hz temporal decisions)
+ * - Useful for high-frequency decisions (10-60Hz temporal decisions)
  * 
  * NOTE: Groq should also be added to @arclabs561/llm-utils for text-only LLM calls.
  * This package handles VLLM (vision) calls; llm-utils handles text-only calls.
@@ -886,7 +886,7 @@ export class VLLMJudge {
    * Research: Explicit rubrics improve reliability by 10-20% (arXiv:2412.05579)
    * 
    * Supports variable goals: if context.goal is provided, it will be used to generate
-   * the base prompt before composition. This allows seamless integration of variable
+   * the base prompt before composition. This allows integration of variable
    * goals throughout the system.
    * 
    * @param {string} prompt - Base prompt (or ignored if context.goal is provided)
@@ -1365,8 +1365,8 @@ export class VLLMJudge {
  * Optional enhancements:
  * - `useTemporalDecision: true` - Use TemporalDecisionManager to reduce LLM calls by 98.5%
  * - `useEnsemble: true` - Use EnsembleJudge for 10-20% accuracy improvement
- * - `autoSelectTier: true` - Automatically select model tier based on context (cost optimization)
- * - `autoSelectProvider: true` - Automatically select cheapest provider (cost optimization)
+ * - `autoSelectTier: true` - Select model tier based on context (cost optimization)
+ * - `autoSelectProvider: true` - Select cheapest provider (cost optimization)
  * - `includeCostComparison: true` - Include cost comparison across tiers in result
  * 
  * @param {string} imagePath - Path to screenshot
@@ -1374,7 +1374,7 @@ export class VLLMJudge {
  * @param {import('./index.mjs').ValidationContext} [context={}] - Validation context
  * @param {boolean} [context.useTemporalDecision] - Use TemporalDecisionManager (reduces LLM calls)
  * @param {boolean} [context.useEnsemble] - Use EnsembleJudge (improves accuracy)
- * @param {boolean} [context.autoSelectTier] - Auto-select model tier (fast/balanced/best)
+ * @param {boolean} [context.autoSelectTier] - Select model tier (fast/balanced/best)
  * @param {boolean} [context.autoSelectProvider] - Auto-select cheapest provider
  * @param {boolean} [context.includeCostComparison] - Include cost comparison in result
  * @returns {Promise<import('./index.mjs').ValidationResult>} Validation result

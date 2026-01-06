@@ -33,6 +33,12 @@ jobs:
           # But set dummy values to avoid errors if tests check for env vars
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || 'test-key' }}
       
+      - name: Run e2e tests
+        run: npm run test:e2e
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || 'test-key' }}
+        continue-on-error: false
+      
       - name: Check for version bump
         if: github.event_name == 'pull_request'
         run: |

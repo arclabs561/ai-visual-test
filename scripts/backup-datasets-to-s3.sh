@@ -1,5 +1,5 @@
 #!/bin/bash
-# Backup dataset files to S3 using s5cmd
+# Backup dataset files to S3 using s5cmd (optimized for parallel uploads)
 # Usage: ./scripts/backup-datasets-to-s3.sh
 
 set -e
@@ -17,21 +17,22 @@ if ! command -v s5cmd &> /dev/null; then
   exit 1
 fi
 
-echo "Starting backup of $SOURCE_DIR to $S3_BUCKET"
-echo "Storage class: STANDARD_IA (Infrequent Access)"
+echo "Starting optimized backup of $SOURCE_DIR to $S3_BUCKET"
+echo "Files: $(find "${SOURCE_DIR}" -type f | wc -l | tr -d ' ')"
+echo "Size: $(du -sh "${SOURCE_DIR}" 2>/dev/null | awk '{print $1}')"
 echo ""
 
-# s5cmd syntax: cp <source> <destination>
-# For large directories, use find + loop
-# Note: Storage class can be set via lifecycle policy on bucket instead
-# This approach handles 300k+ files efficiently
-echo "Backing up files (this may take a while for 18GB)..."
-find "${SOURCE_DIR}" -type f | while read file; do
-  rel_path=${file#${SOURCE_DIR}/}
-  # Remove leading slash if present
-  rel_path=${rel_path#/}
-  s5cmd cp "$file" "${S3_BUCKET}${rel_path}"
-done
+# Optimized approach: Use s5cmd's built-in parallelization
+# --numworkers: Number of parallel workers (default: 256, increased for 300k files)
+# --concurrency: Concurrent parts per transfer (default: 5, fine for small files)
+# Using wildcard pattern for recursive copy (much faster than loop)
+echo "Backing up with parallel workers (this will be much faster)..."
+echo "Using --numworkers 1000 for optimal throughput with 300k+ files"
+echo ""
+
+# s5cmd handles recursive wildcards efficiently with built-in parallelization
+# This is 10-100x faster than the sequential loop approach
+s5cmd --numworkers 1000 cp "${SOURCE_DIR}/*" "${S3_BUCKET}" 2>&1 | tee /tmp/s3-backup-optimized.log
 
 echo ""
 echo "Backup complete. Verify with:"

@@ -33,7 +33,10 @@ echo ""
 # s5cmd handles recursive wildcards efficiently with built-in parallelization
 # This is 10-100x faster than the sequential loop approach
 # Using --if-size-differ to skip already-uploaded files (resumable)
-s5cmd --numworkers 1000 cp --if-size-differ "${SOURCE_DIR}/*" "${S3_BUCKET}" 2>&1 | tee /tmp/s3-backup-optimized.log
+# Using --stat to get execution statistics
+# Note: 1000 workers may cause "can't assign requested address" errors on some systems
+# s5cmd will automatically retry failed operations
+s5cmd --numworkers 1000 --stat cp --if-size-differ "${SOURCE_DIR}/*" "${S3_BUCKET}" 2>&1 | tee /tmp/s3-backup-optimized.log
 
 echo ""
 echo "Backup complete. Verify with:"

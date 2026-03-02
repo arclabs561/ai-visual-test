@@ -1038,13 +1038,45 @@ export class VLLMJudge {
     // Fallback: extract basic info from text
     // Try to extract score from the full judgment text (including reasoning)
     const extractedScore = this.extractScore(judgmentText);
-    
+
     return {
       score: extractedScore,
       issues: this.extractIssues(judgmentText),
       assessment: this.extractAssessment(judgmentText),
-      reasoning: judgmentText.substring(0, 500)
+      reasoning: judgmentText.substring(0, 500),
+      dimensionScores: this.extractDimensionScores(judgmentText),
     };
+  }
+
+  /**
+   * Extract dimension scores from free-text VLM responses.
+   * Matches patterns like "GAME AUTHENTICITY: 8/10" or "game_authenticity: 8"
+   * or JSON-like "game_authenticity": 8.
+   */
+  extractDimensionScores(text) {
+    if (!text || typeof text !== 'string') return null;
+
+    // Try embedded JSON first: "dimensionScores": { ... }
+    const jsonMatch = text.match(/"dimensionScores"\s*:\s*\{([^}]+)\}/);
+    if (jsonMatch) {
+      try {
+        return JSON.parse(`{${jsonMatch[1]}}`);
+      } catch { /* fall through */ }
+    }
+
+    // Regex: "DIMENSION_NAME: N/10" or "dimension_name: N"
+    const scores = {};
+    // Match "WORD WORD: N/10" or "word_word: N/10" patterns
+    const pattern = /(?:^|\n)\s*(?:\d+\.\s*)?[*]*([A-Z][A-Z_ &]+)[*]*\s*:\s*(\d+)\s*(?:\/\s*10)?/gm;
+    for (const match of text.matchAll(pattern)) {
+      const name = match[1].trim().toLowerCase().replace(/[& ]+/g, '_');
+      const value = parseInt(match[2], 10);
+      if (value >= 0 && value <= 10) {
+        scores[name] = value;
+      }
+    }
+
+    return Object.keys(scores).length > 0 ? scores : null;
   }
 
   /**

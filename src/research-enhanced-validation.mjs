@@ -307,12 +307,14 @@ export async function validateWithExplicitRubric(imagePath, prompt, options = {}
   // Import rubric builder
   const { buildRubricPrompt, DEFAULT_RUBRIC } = await import('./rubrics.mjs');
   
-  // Build prompt with explicit rubric
+  // Build prompt: user prompt + rubric evaluation framework.
+  // buildRubricPrompt(rubric, includeDimensions) returns the rubric text;
+  // we prepend the user's prompt so both are sent to the VLM.
+  const rubricToUse = rubric || (useDefaultRubric ? DEFAULT_RUBRIC : null);
   let enhancedPrompt = prompt;
-  if (useDefaultRubric && !rubric) {
-    enhancedPrompt = buildRubricPrompt(prompt, DEFAULT_RUBRIC);
-  } else if (rubric) {
-    enhancedPrompt = buildRubricPrompt(prompt, rubric);
+  if (rubricToUse) {
+    const rubricText = buildRubricPrompt(rubricToUse, true);
+    enhancedPrompt = `${prompt}\n\n${rubricText}`;
   }
   
   // Perform validation

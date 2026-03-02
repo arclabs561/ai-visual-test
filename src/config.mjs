@@ -25,7 +25,7 @@ export function createConfig(options = {}) {
     apiKey = null,
     env = process.env,
     cacheDir = null,
-    cacheEnabled = true,
+    cacheEnabled = process.env.DISABLE_LLM_CACHE !== 'true',
     maxConcurrency = API_CONSTANTS.DEFAULT_MAX_CONCURRENCY,
     timeout = API_CONSTANTS.DEFAULT_TIMEOUT_MS,
     verbose = false,

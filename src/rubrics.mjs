@@ -162,6 +162,10 @@ Provide your evaluation as JSON:
     "visual": "<visual evidence from screenshot>",
     "functional": "<functional evidence>",
     "accessibility": "<accessibility evidence>"
+  },
+  "dimensionScores": {
+    "<dimension_name>": <0-10 integer>,
+    ...for each dimension in the rubric
   }
 }`;
 

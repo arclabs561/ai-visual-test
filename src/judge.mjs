@@ -728,6 +728,7 @@ export class VLLMJudge {
         viewport: context.viewport || null,
         raw: data || null,
         semantic: semanticInfo,
+        dimensionScores: semanticInfo.dimensionScores || null,
         attempts: attempts || 1,
         logprobs, // Include logprobs for uncertainty estimation (if available)
         uncertainty, // Uncertainty estimate (0-1, higher = more uncertain)
@@ -984,6 +985,7 @@ export class VLLMJudge {
         strengths: judgment.strengths || [],
         recommendations: recommendations,
         evidence: judgment.evidence || null,
+        dimensionScores: judgment.dimensionScores || null,
         brutalistViolations: judgment.brutalistViolations || [],
         zeroToleranceViolations: judgment.zeroToleranceViolations || []
       };
@@ -1024,6 +1026,7 @@ export class VLLMJudge {
           strengths: parsed.strengths || [],
           recommendations: recommendations,
           evidence: parsed.evidence || null,
+          dimensionScores: parsed.dimensionScores || null,
           brutalistViolations: parsed.brutalistViolations || [],
           zeroToleranceViolations: parsed.zeroToleranceViolations || []
         };

@@ -35,9 +35,9 @@ export const MODEL_TIERS = {
     best: 'gpt-5'                      // High quality (late 2025, latest production)
   },
   claude: {
-    fast: 'claude-3-5-haiku-20241022', // Fast, cheaper (latest Haiku)
+    fast: 'claude-haiku-4-5',           // Fast, cheaper (Haiku 4.5, Feb 2025)
     balanced: 'claude-sonnet-4-5',      // Balanced (Sept 2025)
-    best: 'claude-sonnet-4-5'           // High quality (Sept 2025)
+    best: 'claude-opus-4-6'             // High quality (Opus 4.6, March 2026)
   },
   groq: {
     // NOTE: Groq vision support requires different model
@@ -50,9 +50,9 @@ export const MODEL_TIERS = {
   },
   openrouter: {
     // OpenRouter provides access to multiple models via unified API
-    fast: 'anthropic/claude-3-5-haiku',      // Fast, cheaper via OpenRouter
-    balanced: 'anthropic/claude-sonnet-4',    // Balanced via OpenRouter
-    best: 'anthropic/claude-sonnet-4'         // High quality via OpenRouter
+    fast: 'anthropic/claude-haiku-4-5',       // Fast, cheaper via OpenRouter
+    balanced: 'anthropic/claude-sonnet-4-5',  // Balanced via OpenRouter
+    best: 'anthropic/claude-opus-4-6'         // High quality via OpenRouter
   }
 };
 

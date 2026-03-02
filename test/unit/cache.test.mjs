@@ -65,8 +65,34 @@ test('generateCacheKey - generates consistent keys', () => {
 test('generateCacheKey - different inputs generate different keys', () => {
   const key1 = generateCacheKey('test1.png', 'prompt', { testType: 'test' });
   const key2 = generateCacheKey('test2.png', 'prompt', { testType: 'test' });
-  
+
   assert.notStrictEqual(key1, key2);
+});
+
+test('generateCacheKey - content-addressed: same path, different content = different key', () => {
+  // Write two different images to the same path, verify keys differ
+  const imgPath = join(TEST_CACHE_DIR, 'content-test.png');
+  writeFileSync(imgPath, Buffer.from('image-version-1'));
+  const key1 = generateCacheKey(imgPath, 'prompt', {});
+
+  writeFileSync(imgPath, Buffer.from('image-version-2'));
+  const key2 = generateCacheKey(imgPath, 'prompt', {});
+
+  assert.notStrictEqual(key1, key2, 'same path with different content must produce different keys');
+
+  // Same content again = same key (deterministic)
+  writeFileSync(imgPath, Buffer.from('image-version-2'));
+  const key3 = generateCacheKey(imgPath, 'prompt', {});
+  assert.strictEqual(key2, key3, 'same content must produce the same key');
+
+  unlinkSync(imgPath);
+});
+
+test('generateCacheKey - falls back to path hash when file unreadable', () => {
+  // Non-existent file should still produce a deterministic key (path-based fallback)
+  const key1 = generateCacheKey('/no/such/file.png', 'prompt', {});
+  const key2 = generateCacheKey('/no/such/file.png', 'prompt', {});
+  assert.strictEqual(key1, key2, 'fallback must be deterministic');
 });
 
 test('setCached and getCached - basic caching', () => {

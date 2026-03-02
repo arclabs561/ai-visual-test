@@ -99,28 +99,33 @@ function deterministicStringify(obj) {
 }
 
 export function generateCacheKey(imagePath, prompt, context = {}) {
-  // SECURITY: Normalize image path to prevent path injection
-  // Normalize to absolute path and resolve any relative components
-  let normalizedPath = imagePath;
-  try {
-    // Resolve to absolute path if relative, normalize separators
-    if (!imagePath.startsWith('/') && !imagePath.match(/^[A-Z]:/)) {
-      // Relative path - resolve it
-      normalizedPath = resolve(imagePath);
-    } else {
-      // Absolute path - just normalize
-      normalizedPath = normalize(imagePath);
+  // Content-addressed: hash image bytes, not the file path.
+  // This ensures cache invalidation when a screenshot is regenerated
+  // to the same path (e.g. /tmp/vlm_magic.png).
+  //
+  // For multi-image keys, imagePath may be a pipe-delimited string
+  // like "path1|path2" from judge.mjs.
+  const pathStr = imagePath || '';
+  const paths = pathStr.includes('|') ? pathStr.split('|') : [pathStr];
+  const imageHashes = paths.map(p => {
+    try {
+      const bytes = readFileSync(p);
+      return createHash('sha256').update(bytes).digest('hex');
+    } catch (error) {
+      // File unreadable (deleted, permissions) -- fall back to path hash
+      // so the key is still deterministic for error cases.
+      warn(`Cannot read image for cache key, falling back to path hash: ${p}`);
+      return createHash('sha256').update(p).digest('hex');
     }
-  } catch (error) {
-    // If path resolution fails, use original but log warning
-    warn(`Failed to normalize image path for cache key: ${imagePath}`);
-    normalizedPath = imagePath;
-  }
+  });
+  const imageDigest = imageHashes.length === 1
+    ? imageHashes[0]
+    : createHash('sha256').update(imageHashes.join(':')).digest('hex');
 
   // Build key data with deterministic structure
   const keyData = {
     type: 'vision', // Distinguish from text-only calls
-    imagePath: normalizedPath, // Normalized path
+    imageDigest, // SHA-256 of image bytes (content-addressed)
     prompt, // Full prompt, not truncated
     testType: context.testType || '',
     frame: context.frame || '',

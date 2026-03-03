@@ -156,8 +156,65 @@ export class VLLMJudge {
   }
 
   /**
+   * Resolve anchor images from config and per-call context into base64.
+   * Returns { images: string[], count: { positive: number, negative: number } }
+   * so the prompt composer can label them.
+   *
+   * @param {import('./index.mjs').ValidationContext} context
+   * @returns {{ images: string[], count: { positive: number, negative: number } }}
+   */
+  _resolveAnchorImages(context) {
+    const configAnchors = this.config.anchors || {};
+    const ctxAnchors = context.anchors || {};
+
+    const positivePaths = [
+      ...(configAnchors.positiveExamples || []),
+      ...(ctxAnchors.positiveExamples || [])
+    ];
+    const negativePaths = [
+      ...(configAnchors.negativeExamples || []),
+      ...(ctxAnchors.negativeExamples || [])
+    ];
+
+    if (positivePaths.length === 0 && negativePaths.length === 0) {
+      return { images: [], count: { positive: 0, negative: 0 } };
+    }
+
+    const images = [];
+    let positiveCount = 0;
+    let negativeCount = 0;
+
+    // Positive examples first
+    for (const p of positivePaths) {
+      try {
+        images.push(this.imageToBase64(p));
+        positiveCount++;
+      } catch (err) {
+        if (this.config.debug.verbose) {
+          warn(`[VLLM] Skipping anchor image ${p}: ${err.message}`);
+        }
+        // Non-fatal: skip missing/invalid anchor images
+      }
+    }
+
+    // Then negative examples
+    for (const p of negativePaths) {
+      try {
+        images.push(this.imageToBase64(p));
+        negativeCount++;
+      } catch (err) {
+        if (this.config.debug.verbose) {
+          warn(`[VLLM] Skipping anchor image ${p}: ${err.message}`);
+        }
+      }
+    }
+
+    return { images, count: { positive: positiveCount, negative: negativeCount } };
+  }
+
+  /**
    * Judge screenshot using VLLM API
-   * 
+   *
    * @param {string | string[]} imagePath - Single image path or array of image paths for comparison
    * @param {string} prompt - Evaluation prompt
    * @param {import('./index.mjs').ValidationContext} [context={}] - Validation context
@@ -355,9 +412,16 @@ export class VLLMJudge {
         }
       }
       
-      // Convert all images to base64
-      const base64Images = imagePaths.map(path => this.imageToBase64(path));
-      const fullPrompt = await this.buildPrompt(prompt, context, isMultiImage);
+      // Resolve anchor images (config-level + per-call), then the evaluation target(s)
+      // Order: [positive examples] [negative examples] [target screenshot(s)]
+      // The prompt text labels which images are references vs. evaluation targets
+      const anchorImages = this._resolveAnchorImages(context);
+      const targetImages = imagePaths.map(path => this.imageToBase64(path));
+      const base64Images = [...anchorImages.images, ...targetImages];
+      const fullPrompt = await this.buildPrompt(prompt, {
+        ...context,
+        _anchorImageCount: anchorImages.count
+      }, isMultiImage);
       
       // Retry API calls with exponential backoff
       const maxRetries = context.maxRetries ?? 3;
@@ -900,18 +964,23 @@ export class VLLMJudge {
     if (context.promptBuilder && typeof context.promptBuilder === 'function') {
       return context.promptBuilder(prompt, context);
     }
-    
+
     // Use unified prompt composition system (which handles variable goals)
+    // Config-level anchors are passed via composer options; per-call anchors
+    // live on context.anchors. The composer merges both (config first, per-call appends).
     // Pass goal in context - composeSingleImagePrompt/composeComparisonPrompt will handle it
     try {
+      const composerAnchors = this.config.anchors || null;
       if (isMultiImage) {
         return await composeComparisonPrompt(prompt, context, {
-          includeRubric: context.includeRubric !== false // Default true (research-backed)
+          includeRubric: context.includeRubric !== false, // Default true (research-backed)
+          anchors: composerAnchors
         });
       } else {
         return await composeSingleImagePrompt(prompt, context, {
           includeRubric: context.includeRubric !== false, // Default true (research-backed)
-          temporalNotes: context.temporalNotes || null
+          temporalNotes: context.temporalNotes || null,
+          anchors: composerAnchors
         });
       }
     } catch (error) {

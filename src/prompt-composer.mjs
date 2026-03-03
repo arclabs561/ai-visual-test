@@ -38,6 +38,7 @@ async function getGenerateGamePrompt() {
  * @param {{
  *   rubric?: import('./index.mjs').Rubric;
  *   includeRubric?: boolean;
+ *   anchors?: import('./index.mjs').VisualAnchors | null;
  *   temporalNotes?: import('./index.mjs').AggregatedTemporalNotes | null;
  *   persona?: import('./index.mjs').Persona | null;
  *   renderedCode?: import('./index.mjs').RenderedCode | null;
@@ -52,6 +53,7 @@ export async function composePrompt(basePrompt, options = {}) {
   const {
     rubric = DEFAULT_RUBRIC,
     includeRubric = true, // Default true (research: 10-20% improvement)
+    anchors = null,
     temporalNotes = null,
     persona = null,
     renderedCode = null,
@@ -63,12 +65,18 @@ export async function composePrompt(basePrompt, options = {}) {
   } = options;
   
   const parts = [];
-  
+
   // 1. Rubric (research: explicit rubrics improve reliability by 10-20%)
   if (includeRubric) {
     parts.push(buildRubricPrompt(rubric, true));
   }
-  
+
+  // 1.5. Visual anchors (domain-level grounding cues for the VLM)
+  const mergedAnchors = mergeAnchors(context.anchors, anchors);
+  if (mergedAnchors) {
+    parts.push('\n\n' + buildAnchorsSection(mergedAnchors, context._anchorImageCount || null));
+  }
+
   // 2. Base prompt (or generate from goal if provided)
   let finalBasePrompt = basePrompt;
   if (goal) {
@@ -300,6 +308,7 @@ function buildContextSection(context) {
 export async function composeSingleImagePrompt(basePrompt, context = {}, options = {}) {
   return await composePrompt(basePrompt, {
     includeRubric: options.includeRubric !== false,
+    anchors: options.anchors || null,
     temporalNotes: options.temporalNotes || null,
     persona: context.persona ? {
       name: context.persona,
@@ -328,6 +337,7 @@ export async function composeSingleImagePrompt(basePrompt, context = {}, options
 export async function composeComparisonPrompt(basePrompt, context = {}, options = {}) {
   return await composePrompt(basePrompt, {
     includeRubric: options.includeRubric !== false,
+    anchors: options.anchors || null,
     temporalNotes: null, // Pair comparison doesn't use temporal notes
     persona: null, // Pair comparison is objective
     renderedCode: null, // Pair comparison is visual-only
@@ -372,4 +382,94 @@ export async function composeMultiModalPrompt(basePrompt, context = {}, options 
   });
 }
 
+/**
+ * Merge anchors from context (config-level) and per-call options.
+ * Per-call anchors append to config-level anchors (not replace).
+ *
+ * @param {import('./index.mjs').VisualAnchors | null | undefined} contextAnchors - From config/context
+ * @param {import('./index.mjs').VisualAnchors | null | undefined} optionAnchors - Per-call overrides
+ * @returns {import('./index.mjs').VisualAnchors | null} Merged anchors, or null if empty
+ */
+function mergeAnchors(contextAnchors, optionAnchors) {
+  if (!contextAnchors && !optionAnchors) return null;
 
+  const merged = {};
+
+  // Domain: per-call overrides config-level (more specific wins)
+  const domain = optionAnchors?.domain || contextAnchors?.domain;
+  if (domain) merged.domain = domain;
+
+  // Arrays: concatenate (config-level first, then per-call additions)
+  const concat = (key) => [
+    ...(contextAnchors?.[key] || []),
+    ...(optionAnchors?.[key] || [])
+  ];
+
+  for (const key of ['positive', 'negative', 'positiveExamples', 'negativeExamples']) {
+    const arr = concat(key);
+    if (arr.length > 0) merged[key] = arr;
+  }
+
+  return Object.keys(merged).length > 0 ? merged : null;
+}
+
+/**
+ * Build prompt section from visual anchors.
+ *
+ * Placed between the rubric and the base prompt so the VLM sees
+ * domain calibration cues before the specific evaluation question.
+ *
+ * When image anchors are present, the prompt labels which attached images
+ * are reference examples vs. the evaluation target. Image ordering:
+ *   [positive examples 1..N] [negative examples 1..M] [evaluation target(s)]
+ *
+ * @param {import('./index.mjs').VisualAnchors} anchors - Merged text + image anchors
+ * @param {{ positive: number, negative: number }} [imageCounts] - Number of attached reference images
+ * @returns {string} Formatted anchors section
+ */
+function buildAnchorsSection(anchors, imageCounts) {
+  const lines = ['VISUAL ANCHORS:'];
+
+  if (anchors.domain) {
+    lines.push(`Domain: ${anchors.domain}`);
+  }
+
+  // Image reference labels (if anchor images were attached)
+  const posImgs = imageCounts?.positive || 0;
+  const negImgs = imageCounts?.negative || 0;
+  if (posImgs > 0 || negImgs > 0) {
+    lines.push('');
+    lines.push('Reference images are attached in order:');
+    let idx = 1;
+    if (posImgs > 0) {
+      const range = posImgs === 1 ? `Image ${idx}` : `Images ${idx}-${idx + posImgs - 1}`;
+      lines.push(`  ${range}: GOOD example${posImgs > 1 ? 's' : ''} (what quality looks like)`);
+      idx += posImgs;
+    }
+    if (negImgs > 0) {
+      const range = negImgs === 1 ? `Image ${idx}` : `Images ${idx}-${idx + negImgs - 1}`;
+      lines.push(`  ${range}: BAD example${negImgs > 1 ? 's' : ''} (what to flag as problems)`);
+      idx += negImgs;
+    }
+    lines.push(`  Image${idx > idx ? 's' : ''} ${idx}+: Screenshot(s) to evaluate`);
+    lines.push('Evaluate ONLY the final screenshot(s). Use the reference images for calibration.');
+  }
+
+  if (anchors.positive?.length) {
+    lines.push('');
+    lines.push('Look for (positive signals):');
+    for (const anchor of anchors.positive) {
+      lines.push(`  - ${anchor}`);
+    }
+  }
+
+  if (anchors.negative?.length) {
+    lines.push('');
+    lines.push('Flag (negative signals):');
+    for (const anchor of anchors.negative) {
+      lines.push(`  - ${anchor}`);
+    }
+  }
+
+  return lines.join('\n');
+}

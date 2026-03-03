@@ -804,6 +804,8 @@ export class VLLMJudge {
         issues: semanticInfo.issues,
         assessment: semanticInfo.assessment,
         reasoning: semanticInfo.reasoning,
+        recommendations: semanticInfo.recommendations || [],
+        strengths: semanticInfo.strengths || [],
         pricing: this.providerConfig.pricing,
         estimatedCost,
         responseTime,

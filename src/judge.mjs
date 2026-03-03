@@ -216,9 +216,7 @@ export class VLLMJudge {
         images.push(resolveImage(ref));
         positiveCount++;
       } catch (err) {
-        if (this.config.debug.verbose) {
-          warn(`[VLLM] Skipping anchor image ${ref.slice(0, 60)}: ${err.message}`);
-        }
+        warn(`[VLLM] Skipping positive anchor image ${ref.slice(0, 80)}: ${err.message}`);
       }
     }
 
@@ -227,9 +225,7 @@ export class VLLMJudge {
         images.push(resolveImage(ref));
         negativeCount++;
       } catch (err) {
-        if (this.config.debug.verbose) {
-          warn(`[VLLM] Skipping anchor image ${ref.slice(0, 60)}: ${err.message}`);
-        }
+        warn(`[VLLM] Skipping negative anchor image ${ref.slice(0, 80)}: ${err.message}`);
       }
     }
 

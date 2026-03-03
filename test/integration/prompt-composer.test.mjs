@@ -193,6 +193,45 @@ describe('Prompt Composer', () => {
       assert.ok(!negOnly.includes('Look for (positive signals):'));
       assert.ok(negOnly.includes('Flag (negative signals):'));
     });
+
+    it('should support dimension-scoped anchor entries', async () => {
+      const prompt = await composeSingleImagePrompt('Evaluate', {
+        anchors: {
+          positive: [
+            'Flat anchor',
+            { text: 'Card art visible', dimension: 'card_presentation' },
+            { text: 'Brand colors match', dimension: 'game_authenticity' },
+          ],
+          negative: [
+            { text: 'Cramped cards', dimension: 'spacing_layout' },
+          ]
+        }
+      });
+
+      // Flat entry appears without dimension prefix
+      assert.ok(prompt.includes('  - Flat anchor'));
+      // Dimension-scoped entries appear with [dimension] prefix
+      assert.ok(prompt.includes('[card presentation] Card art visible'));
+      assert.ok(prompt.includes('[game authenticity] Brand colors match'));
+      assert.ok(prompt.includes('[spacing layout] Cramped cards'));
+    });
+
+    it('should handle mixed string and object entries', async () => {
+      const prompt = await composeSingleImagePrompt('Evaluate', {
+        anchors: {
+          positive: [
+            'Plain string',
+            { text: 'Object with text' },
+            { image: '/tmp/good.png', label: 'Good example' },  // image-only, no prompt text for this one
+          ]
+        }
+      });
+
+      assert.ok(prompt.includes('  - Plain string'));
+      assert.ok(prompt.includes('  - Object with text'));
+      // Image-only entries with only a label still appear (label used as text)
+      assert.ok(prompt.includes('  - Good example'));
+    });
   });
 
   describe('composeMultiModalPrompt', () => {

@@ -158,32 +158,56 @@ test('createConfig - anchors positive-only', () => {
   assert.strictEqual(config.anchors.negative, undefined);
 });
 
-test('createConfig - anchors with image examples', () => {
+test('createConfig - anchors with object entries (dimension + image)', () => {
   const config = createConfig({
     anchors: {
-      positiveExamples: ['/tmp/good.png', '', '/tmp/also-good.png'],
-      negativeExamples: ['/tmp/bad.png']
+      positive: [
+        'Plain text anchor',
+        { text: 'Scoped anchor', dimension: 'game_authenticity' },
+        { image: '/tmp/good.png', label: 'Good layout' },
+      ],
+      negative: [
+        { image: '/tmp/bad.png', dimension: 'spacing_layout' },
+      ]
     }
   });
   assert.ok(config.anchors);
-  assert.deepStrictEqual(config.anchors.positiveExamples, ['/tmp/good.png', '/tmp/also-good.png']);
-  assert.deepStrictEqual(config.anchors.negativeExamples, ['/tmp/bad.png']);
+  assert.strictEqual(config.anchors.positive.length, 3);
+  assert.strictEqual(config.anchors.negative.length, 1);
+  // Object entries preserved
+  assert.strictEqual(config.anchors.positive[1].dimension, 'game_authenticity');
+  assert.strictEqual(config.anchors.positive[2].image, '/tmp/good.png');
 });
 
-test('createConfig - anchors mixed text and images', () => {
+test('createConfig - anchors filters invalid object entries', () => {
+  const config = createConfig({
+    anchors: {
+      positive: [
+        { text: '' },               // empty text, no image -> filtered
+        { image: '' },              // empty image, no text -> filtered
+        { dimension: 'foo' },       // no text or image -> filtered
+        { text: 'Valid' },          // has text -> kept
+        null,                       // null -> filtered
+      ]
+    }
+  });
+  assert.ok(config.anchors);
+  assert.strictEqual(config.anchors.positive.length, 1);
+  assert.strictEqual(config.anchors.positive[0].text, 'Valid');
+});
+
+test('createConfig - anchors mixed text and image objects', () => {
   const config = createConfig({
     anchors: {
       domain: 'E-commerce',
       positive: ['Clear CTAs'],
-      negativeExamples: ['/tmp/cluttered.png']
+      negative: [{ image: '/tmp/cluttered.png', label: 'Cluttered layout' }]
     }
   });
   assert.ok(config.anchors);
   assert.strictEqual(config.anchors.domain, 'E-commerce');
   assert.deepStrictEqual(config.anchors.positive, ['Clear CTAs']);
-  assert.deepStrictEqual(config.anchors.negativeExamples, ['/tmp/cluttered.png']);
-  assert.strictEqual(config.anchors.negative, undefined);
-  assert.strictEqual(config.anchors.positiveExamples, undefined);
+  assert.strictEqual(config.anchors.negative[0].image, '/tmp/cluttered.png');
 });
 
 test('getConfig - singleton pattern', () => {

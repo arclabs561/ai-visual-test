@@ -160,6 +160,11 @@ export class VLLMJudge {
    * Returns { images: string[], count: { positive: number, negative: number } }
    * so the prompt composer can label them.
    *
+   * AnchorEntry images can be:
+   *   - A file path (resolved via imageToBase64)
+   *   - A data URI ("data:image/png;base64,...") -- base64 extracted directly
+   *   - A raw base64 string (no path separators, length > 100)
+   *
    * @param {import('./index.mjs').ValidationContext} context
    * @returns {{ images: string[], count: { positive: number, negative: number } }}
    */
@@ -167,16 +172,24 @@ export class VLLMJudge {
     const configAnchors = this.config.anchors || {};
     const ctxAnchors = context.anchors || {};
 
-    const positivePaths = [
-      ...(configAnchors.positiveExamples || []),
-      ...(ctxAnchors.positiveExamples || [])
+    // Extract image refs from AnchorEntry arrays (mixed string + object entries)
+    const extractImageRefs = (entries) => {
+      if (!Array.isArray(entries)) return [];
+      return entries
+        .filter(e => typeof e === 'object' && e !== null && e.image)
+        .map(e => e.image);
+    };
+
+    const positiveRefs = [
+      ...extractImageRefs(configAnchors.positive),
+      ...extractImageRefs(ctxAnchors.positive)
     ];
-    const negativePaths = [
-      ...(configAnchors.negativeExamples || []),
-      ...(ctxAnchors.negativeExamples || [])
+    const negativeRefs = [
+      ...extractImageRefs(configAnchors.negative),
+      ...extractImageRefs(ctxAnchors.negative)
     ];
 
-    if (positivePaths.length === 0 && negativePaths.length === 0) {
+    if (positiveRefs.length === 0 && negativeRefs.length === 0) {
       return { images: [], count: { positive: 0, negative: 0 } };
     }
 
@@ -184,27 +197,38 @@ export class VLLMJudge {
     let positiveCount = 0;
     let negativeCount = 0;
 
-    // Positive examples first
-    for (const p of positivePaths) {
+    const resolveImage = (ref) => {
+      // Data URI: extract base64 payload
+      if (ref.startsWith('data:image/')) {
+        const commaIdx = ref.indexOf(',');
+        if (commaIdx > 0) return ref.slice(commaIdx + 1);
+      }
+      // Looks like raw base64 (no path separators, long enough)
+      if (!ref.includes('/') && !ref.includes('\\') && ref.length > 100) {
+        return ref;
+      }
+      // File path: read and convert
+      return this.imageToBase64(ref);
+    };
+
+    for (const ref of positiveRefs) {
       try {
-        images.push(this.imageToBase64(p));
+        images.push(resolveImage(ref));
         positiveCount++;
       } catch (err) {
         if (this.config.debug.verbose) {
-          warn(`[VLLM] Skipping anchor image ${p}: ${err.message}`);
+          warn(`[VLLM] Skipping anchor image ${ref.slice(0, 60)}: ${err.message}`);
         }
-        // Non-fatal: skip missing/invalid anchor images
       }
     }
 
-    // Then negative examples
-    for (const p of negativePaths) {
+    for (const ref of negativeRefs) {
       try {
-        images.push(this.imageToBase64(p));
+        images.push(resolveImage(ref));
         negativeCount++;
       } catch (err) {
         if (this.config.debug.verbose) {
-          warn(`[VLLM] Skipping anchor image ${p}: ${err.message}`);
+          warn(`[VLLM] Skipping anchor image ${ref.slice(0, 60)}: ${err.message}`);
         }
       }
     }

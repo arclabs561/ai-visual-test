@@ -405,7 +405,7 @@ function mergeAnchors(contextAnchors, optionAnchors) {
     ...(optionAnchors?.[key] || [])
   ];
 
-  for (const key of ['positive', 'negative', 'positiveExamples', 'negativeExamples']) {
+  for (const key of ['positive', 'negative']) {
     const arr = concat(key);
     if (arr.length > 0) merged[key] = arr;
   }
@@ -414,14 +414,47 @@ function mergeAnchors(contextAnchors, optionAnchors) {
 }
 
 /**
+ * Extract the text description from an AnchorEntry.
+ * @param {string | { text?: string, image?: string, label?: string, dimension?: string }} entry
+ * @returns {string | null}
+ */
+function anchorText(entry) {
+  if (typeof entry === 'string') return entry;
+  return entry.text || entry.label || null;
+}
+
+/**
+ * Extract the dimension from an AnchorEntry, if present.
+ * @param {string | { dimension?: string }} entry
+ * @returns {string | null}
+ */
+function anchorDimension(entry) {
+  if (typeof entry === 'string') return null;
+  return entry.dimension || null;
+}
+
+/**
+ * Check if an AnchorEntry has an image reference.
+ * @param {string | { image?: string }} entry
+ * @returns {boolean}
+ */
+function anchorHasImage(entry) {
+  return typeof entry === 'object' && !!entry.image;
+}
+
+/**
  * Build prompt section from visual anchors.
  *
  * Placed between the rubric and the base prompt so the VLM sees
  * domain calibration cues before the specific evaluation question.
  *
+ * Anchors can be:
+ *   - Plain strings (flat, no dimension scope)
+ *   - Objects with { text, dimension? } (scoped to a rubric dimension)
+ *   - Objects with { image, label?, dimension? } (reference screenshot)
+ *
  * When image anchors are present, the prompt labels which attached images
- * are reference examples vs. the evaluation target. Image ordering:
- *   [positive examples 1..N] [negative examples 1..M] [evaluation target(s)]
+ * are reference examples vs. the evaluation target.
  *
  * @param {import('./index.mjs').VisualAnchors} anchors - Merged text + image anchors
  * @param {{ positive: number, negative: number }} [imageCounts] - Number of attached reference images
@@ -451,23 +484,42 @@ function buildAnchorsSection(anchors, imageCounts) {
       lines.push(`  ${range}: BAD example${negImgs > 1 ? 's' : ''} (what to flag as problems)`);
       idx += negImgs;
     }
-    lines.push(`  Image${idx > idx ? 's' : ''} ${idx}+: Screenshot(s) to evaluate`);
+    lines.push(`  Image ${idx}+: Screenshot(s) to evaluate`);
     lines.push('Evaluate ONLY the final screenshot(s). Use the reference images for calibration.');
   }
 
-  if (anchors.positive?.length) {
-    lines.push('');
-    lines.push('Look for (positive signals):');
-    for (const anchor of anchors.positive) {
-      lines.push(`  - ${anchor}`);
-    }
-  }
+  // Format anchor entries, grouping by dimension when scoped
+  for (const [polarity, label] of [['positive', 'Look for (positive signals):'], ['negative', 'Flag (negative signals):']]) {
+    const entries = anchors[polarity];
+    if (!entries?.length) continue;
 
-  if (anchors.negative?.length) {
-    lines.push('');
-    lines.push('Flag (negative signals):');
-    for (const anchor of anchors.negative) {
-      lines.push(`  - ${anchor}`);
+    // Separate into unscoped (flat) and dimension-scoped
+    const flat = [];
+    const byDimension = new Map();
+    for (const entry of entries) {
+      const text = anchorText(entry);
+      if (!text) continue; // image-only entries don't add prompt text
+      const dim = anchorDimension(entry);
+      if (dim) {
+        if (!byDimension.has(dim)) byDimension.set(dim, []);
+        byDimension.get(dim).push(text);
+      } else {
+        flat.push(text);
+      }
+    }
+
+    if (flat.length > 0 || byDimension.size > 0) {
+      lines.push('');
+      lines.push(label);
+      for (const text of flat) {
+        lines.push(`  - ${text}`);
+      }
+      for (const [dim, texts] of byDimension) {
+        const dimLabel = dim.replace(/_/g, ' ');
+        for (const text of texts) {
+          lines.push(`  - [${dimLabel}] ${text}`);
+        }
+      }
     }
   }
 

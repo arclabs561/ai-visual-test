@@ -424,11 +424,36 @@ export interface ValidationResult {
 }
 
 /**
+ * A single visual anchor: either a plain text string or an object
+ * with optional dimension scoping and/or an image reference.
+ *
+ * Plain string: `"Card images large enough to see art"`
+ * With dimension: `{ text: "Card images large", dimension: "card_presentation" }`
+ * Image ref: `{ image: "/path/to/good.png", label: "Well-themed Magic layout" }`
+ * Image + dimension: `{ image: "/path/to/good.png", label: "...", dimension: "game_authenticity" }`
+ *
+ * Images accept a file path or a data URI (`data:image/png;base64,...`).
+ */
+export type AnchorEntry = string | {
+  /** Text description of the anchor signal */
+  text?: string;
+  /** File path or data URI of a reference screenshot */
+  image?: string;
+  /** Short label for the image (shown in prompt) */
+  label?: string;
+  /** Rubric dimension this anchor relates to (e.g., "game_authenticity") */
+  dimension?: string;
+};
+
+/**
  * Domain-level visual anchors for VLM evaluation grounding.
  *
  * Text anchors describe what to look for / flag in words.
  * Image anchors provide reference screenshots as few-shot visual examples
  * so the VLM can calibrate against concrete good/bad instances.
+ *
+ * Anchors can optionally be scoped to rubric dimensions via the
+ * `dimension` field on AnchorEntry objects.
  *
  * Set once in config for the project; per-call anchors in
  * ValidationContext append to (not replace) config-level anchors.
@@ -436,14 +461,10 @@ export interface ValidationResult {
 export interface VisualAnchors {
   /** Brief domain description injected as context (e.g., "Card game search UI for TCG players") */
   domain?: string;
-  /** Positive text signals the VLM should look for */
-  positive?: string[];
-  /** Negative text signals the VLM should flag */
-  negative?: string[];
-  /** Paths to reference screenshots showing good examples */
-  positiveExamples?: string[];
-  /** Paths to reference screenshots showing bad examples */
-  negativeExamples?: string[];
+  /** Positive signals the VLM should look for (text and/or image entries) */
+  positive?: AnchorEntry[];
+  /** Negative signals the VLM should flag (text and/or image entries) */
+  negative?: AnchorEntry[];
 }
 
 export interface ConfigOptions {

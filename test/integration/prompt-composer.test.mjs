@@ -72,6 +72,129 @@ describe('Prompt Composer', () => {
     });
   });
 
+  describe('visual anchors', () => {
+    it('should include anchors section when provided via context', async () => {
+      const prompt = await composeSingleImagePrompt('Evaluate this page', {
+        anchors: {
+          domain: 'Card game search UI',
+          positive: ['Card images large enough to see art'],
+          negative: ['Generic unthemed styling']
+        }
+      });
+
+      assert.ok(prompt.includes('VISUAL ANCHORS:'));
+      assert.ok(prompt.includes('Domain: Card game search UI'));
+      assert.ok(prompt.includes('Look for (positive signals):'));
+      assert.ok(prompt.includes('Card images large enough to see art'));
+      assert.ok(prompt.includes('Flag (negative signals):'));
+      assert.ok(prompt.includes('Generic unthemed styling'));
+    });
+
+    it('should include anchors section when provided via options', async () => {
+      const prompt = await composeSingleImagePrompt('Evaluate', {}, {
+        anchors: {
+          positive: ['Clean layout'],
+          negative: ['Broken images']
+        }
+      });
+
+      assert.ok(prompt.includes('VISUAL ANCHORS:'));
+      assert.ok(prompt.includes('Clean layout'));
+      assert.ok(prompt.includes('Broken images'));
+    });
+
+    it('should merge context and option anchors (config + per-call)', async () => {
+      const prompt = await composeSingleImagePrompt('Evaluate', {
+        anchors: {
+          domain: 'TCG app',
+          positive: ['Config-level positive'],
+          negative: ['Config-level negative']
+        }
+      }, {
+        anchors: {
+          positive: ['Per-call positive'],
+          negative: ['Per-call negative']
+        }
+      });
+
+      assert.ok(prompt.includes('Domain: TCG app'));
+      // Config-level comes first, per-call appends
+      assert.ok(prompt.includes('Config-level positive'));
+      assert.ok(prompt.includes('Per-call positive'));
+      assert.ok(prompt.includes('Config-level negative'));
+      assert.ok(prompt.includes('Per-call negative'));
+    });
+
+    it('should omit anchors section when none provided', async () => {
+      const prompt = await composeSingleImagePrompt('Evaluate this page');
+
+      assert.ok(!prompt.includes('VISUAL ANCHORS:'));
+    });
+
+    it('should place anchors between rubric and base prompt', async () => {
+      const prompt = await composeSingleImagePrompt('MY_BASE_PROMPT', {
+        anchors: { positive: ['Anchor marker'] }
+      });
+
+      const rubricIdx = prompt.indexOf('EVALUATION RUBRIC');
+      const anchorIdx = prompt.indexOf('VISUAL ANCHORS:');
+      const baseIdx = prompt.indexOf('MY_BASE_PROMPT');
+
+      // Rubric exists (default is on) and comes before anchors
+      assert.ok(rubricIdx >= 0, 'rubric should be present');
+      assert.ok(anchorIdx > rubricIdx, 'anchors should follow rubric');
+      assert.ok(baseIdx > anchorIdx, 'base prompt should follow anchors');
+    });
+
+    it('should include anchors in comparison prompts', async () => {
+      const prompt = await composeComparisonPrompt('Compare', {}, {
+        anchors: {
+          domain: 'E-commerce checkout',
+          positive: ['Clear CTAs']
+        }
+      });
+
+      assert.ok(prompt.includes('VISUAL ANCHORS:'));
+      assert.ok(prompt.includes('E-commerce checkout'));
+    });
+
+    it('should label reference images when anchor image counts are provided', async () => {
+      const prompt = await composeSingleImagePrompt('Evaluate', {
+        anchors: { positive: ['Good layout'] },
+        _anchorImageCount: { positive: 2, negative: 1 }
+      });
+
+      assert.ok(prompt.includes('Reference images are attached in order:'));
+      assert.ok(prompt.includes('GOOD example'));
+      assert.ok(prompt.includes('BAD example'));
+      assert.ok(prompt.includes('Screenshot(s) to evaluate'));
+      assert.ok(prompt.includes('Evaluate ONLY the final screenshot'));
+    });
+
+    it('should not include image labels when no anchor images attached', async () => {
+      const prompt = await composeSingleImagePrompt('Evaluate', {
+        anchors: { positive: ['Text only anchor'] }
+      });
+
+      assert.ok(prompt.includes('VISUAL ANCHORS:'));
+      assert.ok(!prompt.includes('Reference images are attached'));
+    });
+
+    it('should work with positive-only or negative-only anchors', async () => {
+      const posOnly = await composeSingleImagePrompt('Eval', {
+        anchors: { positive: ['Good thing'] }
+      });
+      assert.ok(posOnly.includes('Look for (positive signals):'));
+      assert.ok(!posOnly.includes('Flag (negative signals):'));
+
+      const negOnly = await composeSingleImagePrompt('Eval', {
+        anchors: { negative: ['Bad thing'] }
+      });
+      assert.ok(!negOnly.includes('Look for (positive signals):'));
+      assert.ok(negOnly.includes('Flag (negative signals):'));
+    });
+  });
+
   describe('composeMultiModalPrompt', () => {
     it('should compose multi-modal prompt', async () => {
       const prompt = await composeMultiModalPrompt('Evaluate', {

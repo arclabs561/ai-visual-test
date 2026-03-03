@@ -120,6 +120,72 @@ test('getProvider - invalid provider falls back to gemini', () => {
   assert.strictEqual(provider.name, 'gemini');
 });
 
+test('createConfig - anchors normalization', () => {
+  const config = createConfig({
+    anchors: {
+      domain: 'Card game search UI',
+      positive: ['Good layout', '', 'Clear hierarchy'],
+      negative: ['Broken images', null, 'Bad contrast']
+    }
+  });
+
+  assert.ok(config.anchors);
+  assert.strictEqual(config.anchors.domain, 'Card game search UI');
+  assert.deepStrictEqual(config.anchors.positive, ['Good layout', 'Clear hierarchy']);
+  // null entries filtered out (not strings)
+  assert.deepStrictEqual(config.anchors.negative, ['Broken images', 'Bad contrast']);
+});
+
+test('createConfig - anchors null when empty', () => {
+  const config = createConfig({ anchors: {} });
+  assert.strictEqual(config.anchors, null);
+
+  const config2 = createConfig({ anchors: { positive: [], negative: [] } });
+  assert.strictEqual(config2.anchors, null);
+});
+
+test('createConfig - anchors null when not provided', () => {
+  const config = createConfig();
+  assert.strictEqual(config.anchors, null);
+});
+
+test('createConfig - anchors positive-only', () => {
+  const config = createConfig({
+    anchors: { positive: ['One signal'] }
+  });
+  assert.ok(config.anchors);
+  assert.deepStrictEqual(config.anchors.positive, ['One signal']);
+  assert.strictEqual(config.anchors.negative, undefined);
+});
+
+test('createConfig - anchors with image examples', () => {
+  const config = createConfig({
+    anchors: {
+      positiveExamples: ['/tmp/good.png', '', '/tmp/also-good.png'],
+      negativeExamples: ['/tmp/bad.png']
+    }
+  });
+  assert.ok(config.anchors);
+  assert.deepStrictEqual(config.anchors.positiveExamples, ['/tmp/good.png', '/tmp/also-good.png']);
+  assert.deepStrictEqual(config.anchors.negativeExamples, ['/tmp/bad.png']);
+});
+
+test('createConfig - anchors mixed text and images', () => {
+  const config = createConfig({
+    anchors: {
+      domain: 'E-commerce',
+      positive: ['Clear CTAs'],
+      negativeExamples: ['/tmp/cluttered.png']
+    }
+  });
+  assert.ok(config.anchors);
+  assert.strictEqual(config.anchors.domain, 'E-commerce');
+  assert.deepStrictEqual(config.anchors.positive, ['Clear CTAs']);
+  assert.deepStrictEqual(config.anchors.negativeExamples, ['/tmp/cluttered.png']);
+  assert.strictEqual(config.anchors.negative, undefined);
+  assert.strictEqual(config.anchors.positiveExamples, undefined);
+});
+
 test('getConfig - singleton pattern', () => {
   const config1 = getConfig();
   const config2 = getConfig();

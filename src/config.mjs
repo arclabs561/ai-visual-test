@@ -69,23 +69,30 @@ export function createConfig(options = {}) {
     providerConfig.model = env.VLM_MODEL;
   }
 
-  // Normalize anchors: ensure arrays, filter empty/invalid entries
+  // Normalize anchors: ensure arrays, filter empty/invalid entries.
+  // Each entry can be a plain string or { text?, image?, label?, dimension? }.
   let normalizedAnchors = null;
   if (anchors && typeof anchors === 'object') {
-    const filterStrings = arr => Array.isArray(arr) ? arr.filter(s => typeof s === 'string' && s.trim()) : [];
-    const pos = filterStrings(anchors.positive);
-    const neg = filterStrings(anchors.negative);
-    const posEx = filterStrings(anchors.positiveExamples);
-    const negEx = filterStrings(anchors.negativeExamples);
+    const normalizeEntries = (arr) => {
+      if (!Array.isArray(arr)) return [];
+      return arr.filter(entry => {
+        if (typeof entry === 'string') return entry.trim().length > 0;
+        if (entry && typeof entry === 'object') {
+          return (entry.text && typeof entry.text === 'string' && entry.text.trim()) ||
+                 (entry.image && typeof entry.image === 'string' && entry.image.trim());
+        }
+        return false;
+      });
+    };
+    const pos = normalizeEntries(anchors.positive);
+    const neg = normalizeEntries(anchors.negative);
     const hasDomain = anchors.domain && typeof anchors.domain === 'string' && anchors.domain.trim();
 
-    if (pos.length > 0 || neg.length > 0 || posEx.length > 0 || negEx.length > 0 || hasDomain) {
+    if (pos.length > 0 || neg.length > 0 || hasDomain) {
       normalizedAnchors = {};
       if (hasDomain) normalizedAnchors.domain = anchors.domain.trim();
       if (pos.length > 0) normalizedAnchors.positive = pos;
       if (neg.length > 0) normalizedAnchors.negative = neg;
-      if (posEx.length > 0) normalizedAnchors.positiveExamples = posEx;
-      if (negEx.length > 0) normalizedAnchors.negativeExamples = negEx;
     }
   }
 

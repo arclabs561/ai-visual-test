@@ -260,8 +260,10 @@ function updatePackageJson() {
 
   // Create a publish version
   // NOTE: Paths are relative to dist/ directory (where we publish from)
+  // Strip scripts (especially prepublishOnly) -- CI handles tests/build
+  const { scripts: _scripts, devDependencies: _devDeps, ...publishBase } = packageJson;
   const publishPackageJson = {
-    ...packageJson,
+    ...publishBase,
     main: 'src/index.mjs',
     exports: {
       '.': './src/index.mjs',

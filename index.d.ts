@@ -341,11 +341,41 @@ export interface EstimatedCost {
   currency: string;
 }
 
+/** A structured issue with metadata (importance, evidence, suggestion). */
+export interface RichIssue {
+  /** Human-readable issue description */
+  description: string;
+  /** Importance level */
+  importance?: 'low' | 'medium' | 'high' | 'critical';
+  /** Annoyance level */
+  annoyance?: 'low' | 'medium' | 'high';
+  /** Impact category */
+  impact?: string;
+  /** Evidence observed in the screenshot */
+  evidence?: string;
+  /** Suggested fix */
+  suggestion?: string;
+}
+
+/** A structured recommendation with priority and expected impact. */
+export interface Recommendation {
+  /** Priority level */
+  priority?: 'low' | 'medium' | 'high';
+  /** What to change */
+  suggestion: string;
+  /** Expected improvement from the change */
+  expectedImpact?: string;
+}
+
 export interface SemanticInfo {
   score: number | null;
-  issues: string[];
+  issues: RichIssue[];
   assessment: string | null;
-  reasoning: string;
+  reasoning: string | null;
+  strengths?: string[];
+  recommendations?: Recommendation[];
+  evidence?: string | Record<string, unknown> | null;
+  dimensionScores?: Record<string, number> | null;
   brutalistViolations?: string[];
   zeroToleranceViolations?: string[];
 }
@@ -378,12 +408,20 @@ export interface ValidationResult {
   provider: string;
   /** Quality score (0-10, null if validation failed) */
   score: number | null;
-  /** List of issues found */
+  /** List of issues found (flat strings for backward compat) */
   issues: string[];
+  /** Structured issues with importance, evidence, and suggestions */
+  richIssues?: RichIssue[];
   /** Overall assessment (e.g., 'Good', 'Needs Improvement') */
   assessment: string | null;
   /** Detailed reasoning for the score */
   reasoning: string;
+  /** Actionable recommendations with priority and expected impact */
+  recommendations?: Recommendation[];
+  /** What the UI does well */
+  strengths?: string[];
+  /** Per-dimension scores (e.g., game_authenticity: 9, typography: 7) */
+  dimensionScores?: Record<string, number> | null;
   /** Estimated API cost breakdown */
   estimatedCost?: EstimatedCost | null;
   /** Response time in milliseconds */

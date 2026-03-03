@@ -328,6 +328,8 @@ export interface ValidationContext {
   previousResult?: ValidationResult;
   /** Temporal decision manager options */
   temporalDecisionOptions?: Record<string, unknown>;
+  /** Per-call visual anchors (appended to config-level anchors) */
+  anchors?: VisualAnchors | null;
 }
 
 export interface EstimatedCost {
@@ -421,6 +423,29 @@ export interface ValidationResult {
   urgency?: 'low' | 'medium' | 'high';
 }
 
+/**
+ * Domain-level visual anchors for VLM evaluation grounding.
+ *
+ * Text anchors describe what to look for / flag in words.
+ * Image anchors provide reference screenshots as few-shot visual examples
+ * so the VLM can calibrate against concrete good/bad instances.
+ *
+ * Set once in config for the project; per-call anchors in
+ * ValidationContext append to (not replace) config-level anchors.
+ */
+export interface VisualAnchors {
+  /** Brief domain description injected as context (e.g., "Card game search UI for TCG players") */
+  domain?: string;
+  /** Positive text signals the VLM should look for */
+  positive?: string[];
+  /** Negative text signals the VLM should flag */
+  negative?: string[];
+  /** Paths to reference screenshots showing good examples */
+  positiveExamples?: string[];
+  /** Paths to reference screenshots showing bad examples */
+  negativeExamples?: string[];
+}
+
 export interface ConfigOptions {
   provider?: 'gemini' | 'openai' | 'claude' | null;
   apiKey?: string | null;
@@ -430,6 +455,8 @@ export interface ConfigOptions {
   maxConcurrency?: number;
   timeout?: number;
   verbose?: boolean;
+  /** Domain-level visual anchors included in every evaluation prompt */
+  anchors?: VisualAnchors | null;
 }
 
 export interface Config {
@@ -444,6 +471,8 @@ export interface Config {
     priority: number;
   };
   enabled: boolean;
+  /** Normalized visual anchors (null when none configured) */
+  anchors: VisualAnchors | null;
   cache: {
     enabled: boolean;
     dir: string | null;

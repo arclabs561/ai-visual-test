@@ -30,7 +30,8 @@ export function createConfig(options = {}) {
     timeout = API_CONSTANTS.DEFAULT_TIMEOUT_MS,
     verbose = false,
     modelTier = null, // 'fast', 'balanced', 'best', or null for default
-    model = null      // Explicit model override
+    model = null,     // Explicit model override
+    anchors = null    // Domain visual anchors: { domain?, positive?: string[], negative?: string[] }
   } = options;
 
   // Auto-detect provider if not specified
@@ -68,11 +69,32 @@ export function createConfig(options = {}) {
     providerConfig.model = env.VLM_MODEL;
   }
 
+  // Normalize anchors: ensure arrays, filter empty/invalid entries
+  let normalizedAnchors = null;
+  if (anchors && typeof anchors === 'object') {
+    const filterStrings = arr => Array.isArray(arr) ? arr.filter(s => typeof s === 'string' && s.trim()) : [];
+    const pos = filterStrings(anchors.positive);
+    const neg = filterStrings(anchors.negative);
+    const posEx = filterStrings(anchors.positiveExamples);
+    const negEx = filterStrings(anchors.negativeExamples);
+    const hasDomain = anchors.domain && typeof anchors.domain === 'string' && anchors.domain.trim();
+
+    if (pos.length > 0 || neg.length > 0 || posEx.length > 0 || negEx.length > 0 || hasDomain) {
+      normalizedAnchors = {};
+      if (hasDomain) normalizedAnchors.domain = anchors.domain.trim();
+      if (pos.length > 0) normalizedAnchors.positive = pos;
+      if (neg.length > 0) normalizedAnchors.negative = neg;
+      if (posEx.length > 0) normalizedAnchors.positiveExamples = posEx;
+      if (negEx.length > 0) normalizedAnchors.negativeExamples = negEx;
+    }
+  }
+
   return {
     provider: selectedProvider,
     apiKey: selectedApiKey,
     providerConfig,
     enabled: !!selectedApiKey,
+    anchors: normalizedAnchors,
     cache: {
       enabled: cacheEnabled,
       dir: cacheDir

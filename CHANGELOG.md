@@ -2,6 +2,31 @@
 
 All notable changes to ai-visual-test will be documented in this file.
 
+## [0.7.4] - 2026-03-03
+
+### Added
+- **Structured result fields at top level** - `result.richIssues`, `result.recommendations`, `result.strengths` promoted from `result.semantic` to the top-level result object, eliminating the need to reach into `result.semantic` for structured output.
+  - `richIssues`: array of `{ description, importance, annoyance, impact, evidence, suggestion }` objects
+  - `recommendations`: array of `{ priority, suggestion, expectedImpact }` objects
+  - `strengths`: array of strings describing what works well
+- **TypeScript types** for `RichIssue`, `Recommendation`; updated `SemanticInfo` and `ValidationResult` interfaces.
+
+### Fixed
+- `result.issues` (flat strings) is preserved for backward compatibility; `result.richIssues` adds the structured version alongside it.
+
+## [0.7.3] - 2026-03-02
+
+### Added
+- **Visual anchors** - domain-level grounding cues (text + image) injected into VLM prompts. Supports `AnchorEntry` union type: plain strings, dimension-scoped text, image references, or combinations. Config-level anchors merge with per-call `context.anchors`.
+- **Dimension-scoped anchors** - tag anchors with rubric dimension names for targeted evaluation.
+- **Image anchor resolution** - file paths, data URIs, and raw base64 supported for reference screenshots.
+
+### Fixed
+- Prompt composer: proper `\n\n` separation between anchor section and base prompt.
+- Judge: always warn on missing anchor images (not just verbose mode).
+- Build script: strip `scripts` and `devDependencies` from dist `package.json`.
+- Publish workflow: run only unit tests in CI; audit prod deps only.
+
 ## [0.6.0] - 2025-01-17
 
 ### Changed

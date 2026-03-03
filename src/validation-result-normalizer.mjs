@@ -47,8 +47,16 @@ export function normalizeValidationResult(result, source = 'unknown') {
   if (!Array.isArray(normalized.issues)) {
     warn(`[Normalizer] ${source}: issues is not an array, defaulting to empty array`);
     normalized.issues = [];
+    normalized.richIssues = [];
   } else {
-    // Normalize issues to strings for consistent formatting
+    // Preserve original rich issue objects before flattening
+    normalized.richIssues = normalized.issues.map(issue => {
+      if (typeof issue === 'string') {
+        return { description: issue };
+      }
+      return typeof issue === 'object' && issue !== null ? { ...issue } : { description: String(issue) };
+    });
+    // Normalize issues to strings for consistent formatting (backward compat)
     normalized.issues = normalized.issues.map(issue => {
       if (typeof issue === 'string') {
         return issue;

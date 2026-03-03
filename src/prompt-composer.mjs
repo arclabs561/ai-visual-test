@@ -102,8 +102,13 @@ export async function composePrompt(basePrompt, options = {}) {
       }
     }
   }
-  parts.push(finalBasePrompt);
-  
+  // Separate base prompt from preceding sections (rubric, anchors)
+  if (parts.length > 0) {
+    parts.push('\n\n' + finalBasePrompt);
+  } else {
+    parts.push(finalBasePrompt);
+  }
+
   // 3. Temporal context (if available)
   if (temporalNotes) {
     // Check if temporalNotes is raw array or aggregated object
@@ -485,7 +490,7 @@ function buildAnchorsSection(anchors, imageCounts) {
       idx += negImgs;
     }
     lines.push(`  Image ${idx}+: Screenshot(s) to evaluate`);
-    lines.push('Evaluate ONLY the final screenshot(s). Use the reference images for calibration.');
+    lines.push('IMPORTANT: Evaluate ONLY the final screenshot(s). Reference images are for style/quality calibration only -- do NOT report issues visible in the reference images.');
   }
 
   // Format anchor entries, grouping by dimension when scoped

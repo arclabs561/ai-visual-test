@@ -1,5 +1,8 @@
 # ai-visual-test
 
+[![npm](https://img.shields.io/npm/v/@arclabs561/ai-visual-test)](https://www.npmjs.com/package/@arclabs561/ai-visual-test)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Visual testing framework using Vision Language Models. Validates screenshots, checks accessibility, and can play games.
 
 ## Why This Package

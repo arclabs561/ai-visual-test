@@ -27,10 +27,13 @@ yarn-error.log*
 # Generated docs
 docs-generated/
 
-# Archived documentation
+# Non-core directories (kept on disk, not tracked)
 archive/
-docs/archive/
-evaluation/archive/
+docs/
+evaluation/
+api/
+docs-site/
+public/
 
 # IDE
 .vscode/
@@ -50,13 +53,6 @@ logs/
 .cache/
 .parcel-cache/
 
-# Evaluation artifacts
-evaluation/results/
-evaluation/screenshots/
-evaluation/temp-screenshots/
-evaluation/datasets/
-evaluation/human-validation/*.json
-
 # Temporary files
 tmp/
 temp/
@@ -72,11 +68,34 @@ CRITICAL_AUDIT.md
 
 # Vercel
 .vercel/
+vercel.json
 
 # Large files
 *.zip
 *.tar.gz
 *.tgz
 
-# Evaluation datasets (large, not tracked)
-evaluation/datasets/
+# Orphaned scripts (keep tracked: build-obfuscated, detect-secrets, ensure-playwright, verify-intelligence)
+scripts/*
+!scripts/build-obfuscated.mjs
+!scripts/detect-secrets.mjs
+!scripts/ensure-playwright.mjs
+!scripts/verify-intelligence.mjs
+
+# Dev tool configs (optional, not tracked)
+.hookwise.config.mjs
+.secretsignore
+.secretsignore.example
+.security.txt
+.well-known/
+
+# One-off / generated docs
+openmemory.md
+API_QUICK_REFERENCE.md
+PLAYWRIGHT_SETUP.md
+DEPLOYMENT.md
+CONTRIBUTING.md
+EXAMPLES.md
+
+# Claude Code
+.claude/

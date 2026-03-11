@@ -57,9 +57,5 @@ jobs:
         # Install devDependencies (async-mutex, etc.) for security tests
       
       - name: Run security tests
-        run: npm test -- test/red-team-security.test.mjs || echo "Security tests completed"
-        continue-on-error: true
-      
-      - name: Run ablation tests
-        run: npm test -- test/ablation-tests.mjs || echo "Ablation tests completed"
+        run: npm run test:security || echo "Security tests completed"
         continue-on-error: true

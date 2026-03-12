@@ -185,7 +185,7 @@ export function isTemporalNote(value) {
  */
 export function assertObject(value, name = 'value') {
   if (!isObject(value)) {
-    throw new ValidationError(`${name} must be an object`, null, {
+    throw new ValidationError(`${name} must be an object`, {
       received: typeof value
     });
   }
@@ -201,7 +201,7 @@ export function assertObject(value, name = 'value') {
  */
 export function assertString(value, name = 'value') {
   if (!isString(value)) {
-    throw new ValidationError(`${name} must be a string`, null, {
+    throw new ValidationError(`${name} must be a string`, {
       received: typeof value
     });
   }
@@ -232,7 +232,7 @@ export function assertNonEmptyString(value, name = 'value') {
  */
 export function assertNumber(value, name = 'value') {
   if (!isNumber(value)) {
-    throw new ValidationError(`${name} must be a number`, null, {
+    throw new ValidationError(`${name} must be a number`, {
       received: typeof value
     });
   }
@@ -249,7 +249,7 @@ export function assertNumber(value, name = 'value') {
  */
 export function assertArray(value, name = 'value') {
   if (!isArray(value)) {
-    throw new ValidationError(`${name} must be an array`, null, {
+    throw new ValidationError(`${name} must be an array`, {
       received: typeof value
     });
   }
@@ -265,7 +265,7 @@ export function assertArray(value, name = 'value') {
  */
 export function assertFunction(value, name = 'value') {
   if (!isFunction(value)) {
-    throw new ValidationError(`${name} must be a function`, null, {
+    throw new ValidationError(`${name} must be a function`, {
       received: typeof value
     });
   }

@@ -29,7 +29,7 @@ import { createHash } from 'crypto';
  * @class BatchOptimizer
  */
 import { API_CONSTANTS, BATCH_OPTIMIZER_CONSTANTS } from './constants.mjs';
-import { TimeoutError } from './errors.mjs';
+import { TimeoutError, ValidationError } from './errors.mjs';
 import { warn } from './logger.mjs';
 
 export class BatchOptimizer {
@@ -103,7 +103,7 @@ export class BatchOptimizer {
     const keyData = {
       imagePath,
       prompt: prompt || '',
-      context: context ? JSON.stringify(context) : ''
+      context: context ? JSON.stringify(context, Object.keys(context).sort()) : ''
     };
     const keyString = JSON.stringify(keyData);
     return createHash('sha256').update(keyString).digest('hex');
@@ -238,7 +238,7 @@ export class BatchOptimizer {
         });
       
       warn(`[BatchOptimizer] Queue is full (${this.queue.length}/${this.maxQueueSize}). Rejecting request to prevent memory leak. Total rejections: ${this.metrics.queueRejections}`);
-      throw new TimeoutError(
+      throw new ValidationError(
         `Queue is full (${this.queue.length}/${this.maxQueueSize}). Too many concurrent requests.`,
         { queueSize: this.queue.length, maxQueueSize: this.maxQueueSize }
       );

@@ -71,23 +71,12 @@ export class VLLMJudge {
     // Note: imagePath may already be validated/resolved from judgeScreenshot
     let validatedPath;
     try {
-      // If path is already absolute (starts with / or is in tmpdir), allow it
-      // This allows legitimate temp files and absolute paths
-      // For relative paths, use standard validation (prevents path traversal)
-      if (imagePath.startsWith('/') || imagePath.startsWith(process.cwd())) {
-        // Absolute path - resolve and validate format only
-        const resolved = resolve(imagePath);
-        // Check if it's a valid image format
-        const validExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.webp'];
-        const hasValidExtension = validExtensions.some(ext => 
-          resolved.toLowerCase().endsWith(ext)
-        );
-        if (!hasValidExtension) {
-          throw new ValidationError('Invalid image format. Supported: png, jpg, jpeg, gif, webp', resolved);
-        }
-        validatedPath = resolved;
+      // All paths go through validateImagePath for traversal + extension checks.
+      // Absolute paths use their own directory as baseDir so the "within base"
+      // check passes, while still validating extension and normalizing.
+      if (imagePath.startsWith('/')) {
+        validatedPath = validateImagePath(basename(imagePath), { baseDir: dirname(resolve(imagePath)) });
       } else {
-        // Relative path - use standard validation (prevents path traversal)
         validatedPath = validateImagePath(imagePath);
       }
     } catch (validationError) {
@@ -1069,7 +1058,7 @@ export class VLLMJudge {
       }
       
       return {
-        score: judgment.score || null,
+        score: judgment.score ?? null,
         issues: issues,
         assessment: judgment.assessment || null,
         reasoning: judgment.reasoning || null,
@@ -1110,7 +1099,7 @@ export class VLLMJudge {
         }
         
         return {
-          score: parsed.score || null,
+          score: parsed.score ?? null,
           issues: issues,
           assessment: parsed.assessment || null,
           reasoning: parsed.reasoning || null,

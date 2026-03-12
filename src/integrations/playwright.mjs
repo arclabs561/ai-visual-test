@@ -66,10 +66,15 @@ export function createMatchers(expect) {
         result = await validatePage(target, prompt, options);
       }
 
+      // Format issues for display
+      const formattedIssues = result.issues?.slice(0, 5).map(issue => {
+        if (typeof issue === 'string') return issue;
+        return JSON.stringify(issue);
+      }).join(', ') || 'none';
+
       // Handle null scores gracefully (API may be unavailable or validation disabled)
       const pass = result.score !== null && result.score >= minScore;
-      
-      // If score is null, provide helpful error message
+
       if (result.score === null) {
         return {
           message: () =>
@@ -84,12 +89,6 @@ export function createMatchers(expect) {
         };
       }
 
-      // Format issues for display
-      const formattedIssues = result.issues?.slice(0, 5).map(issue => {
-        if (typeof issue === 'string') return issue;
-        return JSON.stringify(issue);
-      }).join(', ') || 'none';
-      
       return {
         message: () =>
           `expected visual score to be >= ${minScore}, but got ${result.score}.\nIssues: ${formattedIssues}${result.issues?.length > 5 ? ` (and ${result.issues.length - 5} more)` : ''}\nReasoning: ${result.reasoning?.substring(0, 200)}${result.reasoning?.length > 200 ? '...' : ''}`,

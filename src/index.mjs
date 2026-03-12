@@ -17,16 +17,6 @@
 import { loadEnv } from './load-env.mjs';
 loadEnv();
 
-// Optional: Initialize graceful shutdown (only in Node.js environments, not browser)
-// Use dynamic import to avoid top-level await (fire-and-forget)
-if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'test') {
-  import('./graceful-shutdown.mjs').then(({ initGracefulShutdown }) => {
-    initGracefulShutdown({ timeout: 30000 });
-  }).catch(() => {
-    // Graceful shutdown is optional, don't fail if unavailable
-  });
-}
-
 import { VLLMJudge, validateScreenshot as _validateScreenshot } from './judge.mjs';
 
 export { VLLMJudge, _validateScreenshot as validateScreenshot };

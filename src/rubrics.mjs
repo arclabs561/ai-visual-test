@@ -72,12 +72,19 @@ export const DEFAULT_RUBRIC = {
 
 /**
  * Build rubric prompt section
- * 
+ *
  * @param {import('./index.mjs').Rubric | null} [rubric=null] - Rubric to use, or null for default
  * @param {boolean} [includeDimensions=true] - Whether to include evaluation dimensions
+ * @param {{ referenceImages?: Record<number, string> }} [options={}] - Options
+ *   referenceImages: map of score level -> image path for visual anchoring.
+ *   When provided, the rubric prompt instructs the VLM to compare against
+ *   reference images for each score level (Prometheus-Vision, arXiv:2401.06591).
+ *   The caller is responsible for encoding and attaching images to the API call;
+ *   this function only generates the text prompt referencing them.
  * @returns {string} Formatted rubric prompt text
  */
-export function buildRubricPrompt(rubric = null, includeDimensions = true) {
+export function buildRubricPrompt(rubric = null, includeDimensions = true, options = {}) {
+  const { referenceImages = null } = options;
   const rubricToUse = rubric || DEFAULT_RUBRIC;
   let prompt = `## EVALUATION RUBRIC
 
@@ -113,6 +120,19 @@ JSON: {"score": 3, "assessment": "fail", "issues": ["broken layout", "critical c
 6. Provide a score from 0-10 based on the rubric above
 7. List specific issues found (if any)
 8. Provide reasoning for your score`;
+
+  // Visual anchoring: reference images for score levels (Prometheus-Vision, arXiv:2401.06591)
+  if (referenceImages && typeof referenceImages === 'object') {
+    const levels = Object.keys(referenceImages).map(Number).sort((a, b) => b - a);
+    if (levels.length > 0) {
+      prompt += `\n\n### Visual Reference Anchors:
+The following reference images are provided as calibration anchors for specific score levels.
+Compare the screenshot being evaluated against these references to calibrate your scoring.
+${levels.map(level => `- **Score ${level}**: See reference image labeled "REF_SCORE_${level}"`).join('\n')}
+
+Use these references to anchor your absolute scores. A screenshot similar in quality to REF_SCORE_9 should score around 9, etc.`;
+    }
+  }
 
   if (includeDimensions && rubricToUse.dimensions) {
     prompt += `\n\n### Evaluation Dimensions:

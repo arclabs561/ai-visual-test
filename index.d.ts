@@ -2116,3 +2116,98 @@ export function validateWithProgrammaticContext(
   options?: ValidationContext
 ): Promise<HybridValidationResult>;
 
+// --- Score Calibration (arXiv:2601.05114) ---
+
+export interface CalibrationProfile {
+  offset: number;
+  scale: number;
+}
+
+export interface DerivedCalibrationProfile extends CalibrationProfile {
+  r2: number;
+}
+
+export interface ScoreDistribution {
+  mean: number;
+  stddev: number;
+  skew: number;
+  histogram: Record<number, number>;
+}
+
+export function calibrateScore(score: number | null, provider: string): number | null;
+export function setCalibrationProfile(provider: string, profile: CalibrationProfile): void;
+export function getCalibrationProfile(provider: string): CalibrationProfile;
+export function resetCalibrationProfiles(): void;
+export function deriveCalibrationProfile(pairs: Array<{ raw: number; expected: number }>): DerivedCalibrationProfile;
+export function analyzeScoreDistribution(scores: number[]): ScoreDistribution;
+
+// --- Calibration Suite / Meta-evaluation (arXiv:2507.10062) ---
+
+export interface CalibrationSample {
+  screenshot: string;
+  expectedScore: number;
+  label?: string;
+  prompt?: string;
+}
+
+export interface CalibrationReport {
+  sampleCount: number;
+  scoredCount: number;
+  pearsonR: number | null;
+  spearmanR: number | null;
+  meanAbsoluteError: number | null;
+  maxError: number | null;
+  falsePositiveRate: number | null;
+  falseNegativeRate: number | null;
+  suggestedCalibration: DerivedCalibrationProfile | null;
+  scoreDistribution: ScoreDistribution;
+  details: Array<{
+    screenshot: string;
+    label: string;
+    expected: number;
+    actual: number | null;
+    error: number | null;
+    skipped?: string;
+  }>;
+  error?: string;
+}
+
+export interface CalibrationSuiteInstance {
+  samples: CalibrationSample[];
+  run(judgeOptions?: ConfigOptions): Promise<CalibrationReport>;
+}
+
+export function createCalibrationSuite(
+  samples: CalibrationSample[],
+  options?: { passThreshold?: number }
+): CalibrationSuiteInstance;
+
+// --- Known VLM Limitations (arXiv:2501.09236, arXiv:2511.03471) ---
+
+export interface VLMLimitation {
+  description: string;
+  severity: 'high' | 'medium' | 'low';
+  recommendation: string;
+  vlmAccuracy: 'none' | 'low' | 'medium' | 'high';
+}
+
+export type VLMLimitationKey =
+  | 'subtleSpatialShifts'
+  | 'elementOverlap'
+  | 'keyboardNavigation'
+  | 'screenReaderOrder'
+  | 'colorContrastPrecision'
+  | 'dynamicContent'
+  | 'textContent'
+  | 'interactiveState';
+
+export type TestType = 'accessibility' | 'layout' | 'visual' | 'interaction' | 'general';
+
+export const VLM_LIMITATIONS: Record<VLMLimitationKey, VLMLimitation>;
+
+export function getLimitationsForTestType(
+  testType: TestType
+): Array<{ key: string } & VLMLimitation>;
+
+export function shouldUseHybridValidation(testType: TestType): boolean;
+

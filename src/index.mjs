@@ -368,6 +368,26 @@ export {
   selectModelTierAndProvider
 } from './model-tier-selector.mjs';
 export { normalizeValidationResult } from './validation-result-normalizer.mjs';
+
+// Score calibration (per-provider bias correction, arXiv:2601.05114)
+export {
+  calibrateScore,
+  setCalibrationProfile,
+  getCalibrationProfile,
+  resetCalibrationProfiles,
+  deriveCalibrationProfile,
+  analyzeScoreDistribution
+} from './score-calibration.mjs';
+
+// Meta-evaluation (test the tester, arXiv:2507.10062)
+export { createCalibrationSuite } from './calibration-suite.mjs';
+
+// Known VLM limitations (arXiv:2501.09236, arXiv:2511.03471)
+export {
+  VLM_LIMITATIONS,
+  getLimitationsForTestType,
+  shouldUseHybridValidation
+} from './limitations.mjs';
 export { CACHE_CONSTANTS, TEMPORAL_CONSTANTS, API_CONSTANTS, UNCERTAINTY_CONSTANTS, BATCH_OPTIMIZER_CONSTANTS } from './constants.mjs';
 export {
   StateValidator,

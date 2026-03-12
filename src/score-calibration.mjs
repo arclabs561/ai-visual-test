@@ -13,6 +13,7 @@
  */
 
 import { warn } from './logger.mjs';
+import { ValidationError } from './errors.mjs';
 
 /**
  * Default calibration profiles per provider.
@@ -43,10 +44,10 @@ let userProfiles = {};
  */
 export function setCalibrationProfile(provider, profile) {
   if (typeof profile.offset !== 'number' || typeof profile.scale !== 'number') {
-    throw new Error('Calibration profile must have numeric offset and scale');
+    throw new ValidationError('Calibration profile must have numeric offset and scale', { offset: typeof profile.offset, scale: typeof profile.scale });
   }
   if (profile.scale <= 0) {
-    throw new Error('Calibration scale must be positive');
+    throw new ValidationError('Calibration scale must be positive', { scale: profile.scale });
   }
   userProfiles[provider] = { ...profile };
 }
@@ -98,7 +99,7 @@ export function calibrateScore(score, provider) {
  */
 export function deriveCalibrationProfile(pairs) {
   if (!Array.isArray(pairs) || pairs.length < 2) {
-    throw new Error('Need at least 2 (raw, expected) pairs to derive calibration');
+    throw new ValidationError('Need at least 2 (raw, expected) pairs to derive calibration', { count: pairs?.length ?? 0 });
   }
 
   const n = pairs.length;

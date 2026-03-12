@@ -17,6 +17,7 @@
  */
 
 import { validatePage } from '../convenience.mjs';
+import { ConfigError } from '../errors.mjs';
 
 /**
  * Create custom matchers for Playwright's expect
@@ -42,7 +43,7 @@ import { validatePage } from '../convenience.mjs';
  */
 export function createMatchers(expect) {
   if (!expect || typeof expect.extend !== 'function') {
-    throw new Error('createMatchers requires Playwright\'s expect object. Import it from @playwright/test');
+    throw new ConfigError('createMatchers requires Playwright\'s expect object. Import it from @playwright/test');
   }
   expect.extend({
     /**

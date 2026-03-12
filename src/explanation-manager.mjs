@@ -1,8 +1,11 @@
 /**
  * Explanation Manager
- * 
- * Provides late interaction capabilities for explaining VLLM judgments.
- * Allows humans to ask questions about judgments after they've been made.
+ *
+ * Post-hoc explanation of VLM judgments. After a VLM scores a screenshot,
+ * this module lets callers ask follow-up questions ("why was the score low?",
+ * "what specific element caused the issue?") by sending the original judgment
+ * plus the question back to the VLM for a targeted explanation.
+ * Explanations are cached to avoid redundant API calls.
  */
 
 import { VLLMJudge } from './judge.mjs';
@@ -11,9 +14,10 @@ import { log, warn } from './logger.mjs';
 import { formatNotesForPrompt } from './temporal.mjs';
 
 /**
- * Explanation Manager
- * 
- * Manages interactive explanations of VLLM judgments
+ * Post-hoc explanation engine for VLM judgments.
+ *
+ * Sends the original judgment + a follow-up question to the VLM,
+ * returning a targeted explanation. Results are cached per judgment+question pair.
  */
 export class ExplanationManager {
   constructor(options = {}) {

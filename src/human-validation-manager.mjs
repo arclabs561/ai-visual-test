@@ -13,11 +13,19 @@ import { warn, log } from './logger.mjs';
 import { existsSync, readFileSync, writeFileSync, mkdirSync, readdirSync } from 'fs';
 import { join } from 'path';
 
-// Lazy import to avoid circular dependencies
+// Lazy import -- evaluation/ directory may not be present (removed from dist)
 let humanValidationModule = null;
+let humanValidationUnavailable = false;
 async function getHumanValidationModule() {
+  if (humanValidationUnavailable) return null;
   if (!humanValidationModule) {
-    humanValidationModule = await import('../evaluation/human-validation/human-validation.mjs');
+    try {
+      humanValidationModule = await import('../evaluation/human-validation/human-validation.mjs');
+    } catch {
+      humanValidationUnavailable = true;
+      warn('[HumanValidation] evaluation/human-validation module not available. Human validation features disabled.');
+      return null;
+    }
   }
   return humanValidationModule;
 }
@@ -101,6 +109,7 @@ export class HumanValidationManager {
    */
   async _saveCalibrationCache() {
     const humanValidation = await getHumanValidationModule();
+    if (!humanValidation) return;
     const VALIDATION_DIR = humanValidation.VALIDATION_DIR;
     
     if (!this.calibrationCachePath) {
@@ -239,7 +248,7 @@ export class HumanValidationManager {
           };
           
           const humanValidation = await getHumanValidationModule();
-          humanValidation.collectHumanJudgment(humanJudgment);
+          if (humanValidation) humanValidation.collectHumanJudgment(humanJudgment);
           
           // Update calibration cache
           this._updateCalibrationCache(vllmJudgment, humanJudgment);
@@ -306,20 +315,20 @@ export class HumanValidationManager {
     
     try {
       const humanValidation = await getHumanValidationModule();
+      if (!humanValidation) return;
       const humanJudgments = this.calibrationCache.judgments.map(j => j.human);
       const vllmJudgments = this.calibrationCache.judgments.map(j => j.vllm);
-      
+
       const calibration = humanValidation.compareJudgments(humanJudgments, vllmJudgments);
-      
+
       this.calibrationCache.lastCalibration = {
         ...calibration,
         timestamp: new Date().toISOString(),
         sampleSize: this.calibrationCache.judgments.length
       };
-      
+
       // Save calibration results
-      const humanValidationModule = await getHumanValidationModule();
-      humanValidationModule.saveCalibrationResults(calibration);
+      humanValidation.saveCalibrationResults(calibration);
       
       // Log calibration status
       const correlation = calibration.agreement.pearson;
@@ -485,6 +494,7 @@ export class HumanValidationManager {
    */
   async _saveVLLMJudgments() {
     const humanValidation = await getHumanValidationModule();
+    if (!humanValidation) return;
     const VALIDATION_DIR = humanValidation.VALIDATION_DIR;
     
     if (!existsSync(VALIDATION_DIR)) {
@@ -521,6 +531,9 @@ export class HumanValidationManager {
    */
   async calibrate() {
     const humanValidation = await getHumanValidationModule();
+    if (!humanValidation) {
+      return { success: false, message: 'Human validation module not available' };
+    }
     const VALIDATION_DIR = humanValidation.VALIDATION_DIR;
     
     // Load all human judgments

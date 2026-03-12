@@ -77,7 +77,7 @@ export function normalizePrompt(prompt) {
  */
 export async function callLLMCached(prompt, provider, apiKey, options = {}) {
   const {
-    useCache = process.env.DISABLE_LLM_CACHE !== 'true', // Cache by default, can disable via env var
+    useCache = process.env.DISABLE_LLM_CACHE !== 'true', // Same env var as config.mjs cacheEnabled
     ...llmOptions
   } = options;
 

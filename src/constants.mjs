@@ -99,6 +99,17 @@ export const API_ENDPOINT_CONSTANTS = {
 };
 
 /**
+ * Rate Limit Validation Bounds
+ */
+export const RATE_LIMIT_BOUNDS = {
+  /** Minimum allowed value for RATE_LIMIT_MAX_REQUESTS */
+  MIN: 1,
+
+  /** Maximum allowed value for RATE_LIMIT_MAX_REQUESTS */
+  MAX: 1000
+};
+
+/**
  * Retry Configuration
  */
 export const RETRY_CONSTANTS = {

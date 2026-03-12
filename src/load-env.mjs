@@ -9,6 +9,7 @@ import { readFileSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { warn } from './logger.mjs';
+import { RATE_LIMIT_BOUNDS } from './constants.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -37,8 +38,8 @@ const VALID_PROVIDERS = ['gemini', 'openai', 'claude', 'groq'];
 // Validation functions for environment variables
 function validateRateLimitMaxRequests(value) {
   const num = parseInt(value, 10);
-  if (isNaN(num) || num < 1 || num > 1000) {
-    warn(`[LoadEnv] Invalid RATE_LIMIT_MAX_REQUESTS: ${value}. Must be between 1 and 1000. Using default.`);
+  if (isNaN(num) || num < RATE_LIMIT_BOUNDS.MIN || num > RATE_LIMIT_BOUNDS.MAX) {
+    warn(`[LoadEnv] Invalid RATE_LIMIT_MAX_REQUESTS: ${value}. Must be between ${RATE_LIMIT_BOUNDS.MIN} and ${RATE_LIMIT_BOUNDS.MAX}. Using default.`);
     return null; // Will use default
   }
   return num;

@@ -2211,3 +2211,25 @@ export function getLimitationsForTestType(
 
 export function shouldUseHybridValidation(testType: TestType): boolean;
 
+// --- Human Validation Manager ---
+
+export interface HumanValidationManagerOptions {
+  enabled?: boolean;
+  autoCollect?: boolean;
+  smartSampling?: boolean;
+  calibrationThreshold?: number;
+  humanValidatorFn?: ((vllmResult: ValidationResult) => Promise<unknown>) | null;
+}
+
+export class HumanValidationManager {
+  constructor(options?: HumanValidationManagerOptions);
+  enabled: boolean;
+  collectJudgment(result: ValidationResult): void;
+  requestValidation(result: ValidationResult): Promise<unknown>;
+  getCalibrationData(): Promise<unknown>;
+  isCalibrated(): boolean;
+}
+
+export function getHumanValidationManager(): HumanValidationManager;
+export function initHumanValidation(options?: HumanValidationManagerOptions): HumanValidationManager;
+

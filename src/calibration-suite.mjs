@@ -16,6 +16,7 @@
 
 import { VLLMJudge } from './judge.mjs';
 import { ValidationError, ConfigError } from './errors.mjs';
+import { warn } from './logger.mjs';
 import { pearsonCorrelation, spearmanCorrelation } from './metrics.mjs';
 import { deriveCalibrationProfile, analyzeScoreDistribution } from './score-calibration.mjs';
 
@@ -116,13 +117,15 @@ export function createCalibrationSuite(samples, options = {}) {
             });
           }
         } catch (err) {
+          warn(`[CalibrationSuite] Sample "${sample.label || sample.screenshot}" failed: ${err.message}`);
           details.push({
             screenshot: sample.screenshot,
             label: sample.label || sample.screenshot,
             expected: sample.expectedScore,
             actual: null,
             error: null,
-            skipped: err.message
+            errorMessage: err.message,
+            skipped: true
           });
         }
       }

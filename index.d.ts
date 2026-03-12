@@ -2233,3 +2233,26 @@ export class HumanValidationManager {
 export function getHumanValidationManager(): HumanValidationManager;
 export function initHumanValidation(options?: HumanValidationManagerOptions): HumanValidationManager;
 
+// --- Explanation Manager ---
+
+export class ExplanationManager {
+  constructor(options?: ConfigOptions);
+  explainJudgment(vllmJudgment: object, question?: string | null, options?: object): Promise<object>;
+}
+
+export function getExplanationManager(options?: ConfigOptions): ExplanationManager;
+
+// --- Temporal Batch Optimizer ---
+
+export class TemporalBatchOptimizer extends BatchOptimizer {
+  constructor(options?: object);
+  addWithDependencies(request: object, dependencies?: string[]): Promise<ValidationResult>;
+}
+
+// --- Latency-Aware Batch Optimizer ---
+
+export class LatencyAwareBatchOptimizer extends BatchOptimizer {
+  constructor(options?: { maxConcurrency?: number; batchSize?: number; cacheEnabled?: boolean; defaultMaxLatency?: number; adaptiveBatchSize?: boolean });
+  addWithLatencyTarget(request: object, maxLatencyMs?: number): Promise<ValidationResult>;
+}
+

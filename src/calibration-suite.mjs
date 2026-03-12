@@ -15,6 +15,7 @@
  */
 
 import { VLLMJudge } from './judge.mjs';
+import { ValidationError, ConfigError } from './errors.mjs';
 import { pearsonCorrelation, spearmanCorrelation } from './metrics.mjs';
 import { deriveCalibrationProfile, analyzeScoreDistribution } from './score-calibration.mjs';
 
@@ -52,15 +53,15 @@ const DEFAULT_PASS_THRESHOLD = 7;
  */
 export function createCalibrationSuite(samples, options = {}) {
   if (!Array.isArray(samples) || samples.length < 2) {
-    throw new Error('Calibration suite requires at least 2 labeled samples');
+    throw new ValidationError('Calibration suite requires at least 2 labeled samples', { count: samples?.length ?? 0 });
   }
 
   for (const s of samples) {
     if (typeof s.screenshot !== 'string' || typeof s.expectedScore !== 'number') {
-      throw new Error('Each sample must have a screenshot path (string) and expectedScore (number)');
+      throw new ValidationError('Each sample must have a screenshot path (string) and expectedScore (number)', { screenshot: typeof s.screenshot, expectedScore: typeof s.expectedScore });
     }
     if (s.expectedScore < 0 || s.expectedScore > 10) {
-      throw new Error(`expectedScore must be 0-10, got ${s.expectedScore}`);
+      throw new ValidationError(`expectedScore must be 0-10, got ${s.expectedScore}`, { expectedScore: s.expectedScore });
     }
   }
 
@@ -79,7 +80,7 @@ export function createCalibrationSuite(samples, options = {}) {
       const judge = new VLLMJudge(judgeOptions);
 
       if (!judge.enabled) {
-        throw new Error('VLLMJudge is disabled -- cannot run calibration suite');
+        throw new ConfigError('VLLMJudge is disabled -- cannot run calibration suite');
       }
 
       const details = [];

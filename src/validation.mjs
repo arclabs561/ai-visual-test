@@ -21,7 +21,7 @@ export function validateImagePath(imagePath, options = {}) {
   const { baseDir = process.cwd() } = options;
   
   if (typeof imagePath !== 'string') {
-    throw new ValidationError('Image path must be a string', null, {
+    throw new ValidationError('Image path must be a string', {
       received: typeof imagePath
     });
   }
@@ -69,7 +69,7 @@ export function validateImagePath(imagePath, options = {}) {
  */
 export function validatePrompt(prompt, maxLength = VALIDATION_CONSTANTS.MAX_PROMPT_LENGTH) {
   if (typeof prompt !== 'string') {
-    throw new ValidationError('Prompt must be a string', null, {
+    throw new ValidationError('Prompt must be a string', {
       received: typeof prompt
     });
   }
@@ -79,7 +79,7 @@ export function validatePrompt(prompt, maxLength = VALIDATION_CONSTANTS.MAX_PROM
   }
   
   if (prompt.length > maxLength) {
-    throw new ValidationError(`Prompt too long (max ${maxLength} characters)`, null, {
+    throw new ValidationError(`Prompt too long (max ${maxLength} characters)`, {
       length: prompt.length,
       maxLength
     });
@@ -102,7 +102,7 @@ export function validateContext(context, maxSize = VALIDATION_CONSTANTS.MAX_CONT
   }
   
   if (typeof context !== 'object' || Array.isArray(context)) {
-    throw new ValidationError('Context must be an object', null, {
+    throw new ValidationError('Context must be an object', {
       received: Array.isArray(context) ? 'array' : typeof context
     });
   }
@@ -111,7 +111,7 @@ export function validateContext(context, maxSize = VALIDATION_CONSTANTS.MAX_CONT
   try {
     const contextString = JSON.stringify(context);
     if (contextString.length > maxSize) {
-      throw new ValidationError(`Context too large (max ${maxSize} bytes)`, null, {
+      throw new ValidationError(`Context too large (max ${maxSize} bytes)`, {
         size: contextString.length,
         maxSize
       });
@@ -120,7 +120,7 @@ export function validateContext(context, maxSize = VALIDATION_CONSTANTS.MAX_CONT
     if (error instanceof ValidationError) {
       throw error;
     }
-    throw new ValidationError('Context contains non-serializable data', null, {
+    throw new ValidationError('Context contains non-serializable data', {
       originalError: error.message
     });
   }
@@ -139,20 +139,20 @@ export function validateContext(context, maxSize = VALIDATION_CONSTANTS.MAX_CONT
  */
 export function validateTimeout(timeout, min = VALIDATION_CONSTANTS.MIN_TIMEOUT_MS, max = VALIDATION_CONSTANTS.MAX_TIMEOUT_MS) {
   if (typeof timeout !== 'number') {
-    throw new ValidationError('Timeout must be a number', null, {
+    throw new ValidationError('Timeout must be a number', {
       received: typeof timeout
     });
   }
   
   if (timeout < min) {
-    throw new ValidationError(`Timeout too short (min ${min}ms)`, null, {
+    throw new ValidationError(`Timeout too short (min ${min}ms)`, {
       timeout,
       min
     });
   }
   
   if (timeout > max) {
-    throw new ValidationError(`Timeout too long (max ${max}ms)`, null, {
+    throw new ValidationError(`Timeout too long (max ${max}ms)`, {
       timeout,
       max
     });
@@ -170,7 +170,7 @@ export function validateTimeout(timeout, min = VALIDATION_CONSTANTS.MIN_TIMEOUT_
  */
 export function validateSchema(schema) {
   if (!schema || typeof schema !== 'object' || Array.isArray(schema)) {
-    throw new ValidationError('Schema must be a non-empty object', null, {
+    throw new ValidationError('Schema must be a non-empty object', {
       received: Array.isArray(schema) ? 'array' : typeof schema
     });
   }
@@ -179,13 +179,13 @@ export function validateSchema(schema) {
   
   for (const [key, field] of Object.entries(schema)) {
     if (typeof field !== 'object' || Array.isArray(field)) {
-      throw new ValidationError(`Schema field "${key}" must be an object`, null, {
+      throw new ValidationError(`Schema field "${key}" must be an object`, {
         field
       });
     }
     
     if (!field.type || !validTypes.includes(field.type)) {
-      throw new ValidationError(`Schema field "${key}" has invalid type`, null, {
+      throw new ValidationError(`Schema field "${key}" has invalid type`, {
         type: field.type,
         validTypes
       });
@@ -220,7 +220,7 @@ export function validateFilePath(filePath, options = {}) {
   } = options;
   
   if (typeof filePath !== 'string') {
-    throw new ValidationError('File path must be a string', null, {
+    throw new ValidationError('File path must be a string', {
       received: typeof filePath
     });
   }

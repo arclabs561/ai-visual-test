@@ -55,12 +55,11 @@ let cacheMetrics = { atomicWrites: 0, atomicWriteFailures: 0, tempFileCleanups: 
 export function initCache(cacheDir) {
   // SECURITY: Validate and normalize cache directory to prevent path traversal
   if (cacheDir) {
-    const normalized = normalize(resolve(cacheDir));
-    // Prevent path traversal
-    if (normalized.includes('..')) {
+    // Prevent path traversal: reject raw input containing '..' segments
+    if (cacheDir.includes('..')) {
       throw new CacheError('Invalid cache directory: path traversal detected', { cacheDir });
     }
-    CACHE_DIR = normalized;
+    CACHE_DIR = normalize(resolve(cacheDir));
   } else {
     CACHE_DIR = join(__dirname, '..', '..', '..', 'test-results', 'vllm-cache');
   }

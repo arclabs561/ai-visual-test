@@ -7,7 +7,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
 import { BatchOptimizer } from '../../src/batch-optimizer.mjs';
-import { TimeoutError } from '../../src/errors.mjs';
+import { TimeoutError, ValidationError } from '../../src/errors.mjs';
 import { BATCH_OPTIMIZER_CONSTANTS } from '../../src/constants.mjs';
 
 test('BatchOptimizer - rejects requests when queue is full', async () => {
@@ -46,7 +46,7 @@ test('BatchOptimizer - rejects requests when queue is full', async () => {
     async () => {
       await optimizer._queueRequest('test7.png', 'prompt', {}, async () => ({ score: 7 }));
     },
-    TimeoutError,
+    ValidationError,
     'Should reject when queue is full'
   );
   

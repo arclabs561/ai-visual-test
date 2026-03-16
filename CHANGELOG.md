@@ -2,6 +2,13 @@
 
 All notable changes to ai-visual-test will be documented in this file.
 
+## [0.7.5] - 2026-03-16
+
+### Fixed
+- **Test image generator**: replaced 1x1 pixel PNG stub with programmatic 100x100 gradient PNG using raw PNG chunk construction (zlib deflate). Fixes Groq API rejections ("Image must have at least 2 pixels") in integration tests.
+- **BatchOptimizer queue-full test**: matched error type to actual `ValidationError` thrown by `_queueRequest` (was expecting `TimeoutError`).
+- **Deleted stale test**: removed `validation-framework.test.mjs` referencing deleted `src/validation-framework.mjs` module.
+
 ## [0.7.4] - 2026-03-03
 
 ### Added

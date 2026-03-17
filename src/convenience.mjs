@@ -441,7 +441,8 @@ export async function testBrowserExperience(page, options = {}) {
   const {
     url,
     personas = null,
-    stages = ['initial', 'form', 'payment'],
+    stages = ['initial'],
+    navigateBetweenStages = null,
     captureCode = true,
     captureTemporal = false
   } = options;
@@ -551,16 +552,13 @@ export async function testBrowserExperience(page, options = {}) {
         result.aggregatedMultiScale = stageMultiScale;
       }
 
-      // Navigate to next stage (if needed)
-      if (stage === 'form' && stages.includes('payment')) {
-        // Fill form to get to payment
+      // Navigate to next stage (if callback provided)
+      const stageIndex = stages.indexOf(stage);
+      if (navigateBetweenStages && stageIndex < stages.length - 1) {
         try {
-          await page.fill('#name', 'Test User');
-          await page.fill('#amount', '5');
-          await page.click('#continue-btn');
-          await page.waitForSelector('#payment:not(.hidden)', { timeout: 10000 });
+          await navigateBetweenStages(page, stage, stages[stageIndex + 1]);
         } catch (e) {
-          warn(`[Convenience] Could not navigate to payment stage: ${e.message}`);
+          warn(`[Convenience] Could not navigate from ${stage} to ${stages[stageIndex + 1]}: ${e.message}`);
         }
       }
     }

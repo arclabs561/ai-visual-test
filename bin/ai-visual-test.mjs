@@ -12,7 +12,7 @@
  *   ai-visual-test --version
  */
 
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync, existsSync, statSync } from 'fs';
 import { resolve, dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -266,12 +266,25 @@ async function main() {
   if (!existsSync(imagePath)) {
     die(`Image file not found: ${imagePath}`);
   }
+  try {
+    if (statSync(imagePath).isDirectory()) {
+      die(`Path is a directory, not an image file: ${imagePath}`);
+    }
+  } catch {
+    // statSync failed -- existsSync passed, so this shouldn't happen
+  }
 
-  // Load .env before detecting provider
+  // Load .env BEFORE detecting provider so .env keys are available
   const { loadEnv } = await import('../src/load-env.mjs');
   loadEnv();
 
-  // Determine provider
+  // Validate --provider if explicitly set
+  const validProviders = Object.keys(PROVIDER_ENV_MAP);
+  if (parsed.provider && !validProviders.includes(parsed.provider)) {
+    die(`Unknown provider: "${parsed.provider}". Must be one of: ${validProviders.join(', ')}`);
+  }
+
+  // Determine provider (explicit flag > auto-detect from env)
   const provider = parsed.provider || detectProvider();
   if (!provider) {
     const keys = Object.values(PROVIDER_ENV_MAP).join(', ');
@@ -323,4 +336,7 @@ async function main() {
   process.exit(pass ? 0 : 1);
 }
 
-main();
+main().catch(err => {
+  process.stderr.write(`Error: ${err.message}\n`);
+  process.exit(1);
+});

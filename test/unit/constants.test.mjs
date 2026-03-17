@@ -57,13 +57,13 @@ test('API_CONSTANTS are defined and have correct types', () => {
   assert.strictEqual(API_CONSTANTS.DEFAULT_TIMEOUT_MS, 30000);
 });
 
-test('Constants are exported from index.mjs', async () => {
-  const { CACHE_CONSTANTS: IndexCache, TEMPORAL_CONSTANTS: IndexTemporal, API_CONSTANTS: IndexAPI } = await import('../../src/index.mjs');
-  
-  assert(IndexCache, 'CACHE_CONSTANTS should be exported from index.mjs');
-  assert(IndexTemporal, 'TEMPORAL_CONSTANTS should be exported from index.mjs');
-  assert(IndexAPI, 'API_CONSTANTS should be exported from index.mjs');
-  
+test('Constants are exported from utils subpath', async () => {
+  const { CACHE_CONSTANTS: IndexCache, TEMPORAL_CONSTANTS: IndexTemporal, API_CONSTANTS: IndexAPI } = await import('../../src/utils/index.mjs');
+
+  assert(IndexCache, 'CACHE_CONSTANTS should be exported from utils subpath');
+  assert(IndexTemporal, 'TEMPORAL_CONSTANTS should be exported from utils subpath');
+  assert(IndexAPI, 'API_CONSTANTS should be exported from utils subpath');
+
   // Verify they're the same objects
   assert.strictEqual(IndexCache.MAX_CACHE_AGE_MS, CACHE_CONSTANTS.MAX_CACHE_AGE_MS);
   assert.strictEqual(IndexTemporal.DEFAULT_WINDOW_SIZE_MS, TEMPORAL_CONSTANTS.DEFAULT_WINDOW_SIZE_MS);

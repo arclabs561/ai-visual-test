@@ -24,10 +24,9 @@ const SRC_DIR = join(ROOT_DIR, 'src');
 
 // Files to obfuscate (Tier 1: Core proprietary algorithms only)
 const OBFUSCATE_FILES = [
-  'src/temporal-decision-manager.mjs',
+  'src/temporal-orchestration.mjs',
   'src/cost-optimization.mjs',
-  'src/model-tier-selector.mjs',
-  'src/temporal-preprocessor.mjs'
+  'src/model-tier-selector.mjs'
 ];
 
 // Files to keep readable (API surface, validators, utilities)

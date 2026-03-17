@@ -1,21 +1,36 @@
 /**
- * ai-visual-test
+ * ai-visual-test -- VLM-powered visual testing
  *
- * Visual testing utilities using Vision Language Models (VLLM) for multi-modal validation.
+ * Quick start:
  *
- * This is the core entry point with ~15 essential exports.
- * Additional functionality is available via subpath imports:
+ *   // 1. Set an API key: export GEMINI_API_KEY=... (or OPENAI/ANTHROPIC/GROQ)
+ *   // 2. Validate a screenshot:
+ *   import { validateScreenshot } from '@arclabs561/ai-visual-test';
+ *   const result = await validateScreenshot('screenshot.png', 'Is this accessible?');
+ *   // result.score (0-10), result.issues, result.recommendations
  *
- *   import { ... } from '@arclabs561/ai-visual-test/temporal'
- *   import { ... } from '@arclabs561/ai-visual-test/validators'
- *   import { ... } from '@arclabs561/ai-visual-test/multi-modal'
- *   import { ... } from '@arclabs561/ai-visual-test/ensemble'
- *   import { ... } from '@arclabs561/ai-visual-test/persona'
- *   import { ... } from '@arclabs561/ai-visual-test/specs'
- *   import { ... } from '@arclabs561/ai-visual-test/utils'
- *   import { ... } from '@arclabs561/ai-visual-test/game'
- *   import { ... } from '@arclabs561/ai-visual-test/errors'
- *   import { ... } from '@arclabs561/ai-visual-test/playwright'
+ *   // 3. Optional: validate config early for clear error messages
+ *   import { validateStartup } from '@arclabs561/ai-visual-test';
+ *   validateStartup(); // throws ConfigError if API key missing
+ *
+ *   // 4. Per-call overrides (provider, model, threshold):
+ *   const result = await validateScreenshot('img.png', 'prompt', {
+ *     provider: 'openai',    // override auto-detected provider
+ *     model: 'gpt-4o',       // override default model
+ *     modelTier: 'best',     // or use tier-based selection
+ *   });
+ *
+ * Subpath imports for advanced features:
+ *
+ *   '@arclabs561/ai-visual-test/temporal'    -- temporal aggregation
+ *   '@arclabs561/ai-visual-test/validators'  -- smart/accessibility/state validators
+ *   '@arclabs561/ai-visual-test/ensemble'    -- multi-provider ensemble judging
+ *   '@arclabs561/ai-visual-test/persona'     -- persona-based experience testing
+ *   '@arclabs561/ai-visual-test/game'        -- game playing and testing
+ *   '@arclabs561/ai-visual-test/specs'       -- natural language spec execution
+ *   '@arclabs561/ai-visual-test/playwright'  -- Playwright matchers
+ *   '@arclabs561/ai-visual-test/errors'      -- all error types
+ *   '@arclabs561/ai-visual-test/utils'       -- utilities, cost tracking, calibration
  */
 
 // Auto-load .env file on module initialization

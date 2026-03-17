@@ -7,6 +7,7 @@
 
 import { getCached, setCached } from './cache.mjs';
 import { warn, log } from './logger.mjs';
+import { PROVIDER_CONFIGS, MODEL_TIERS } from './provider-data.mjs';
 
 /**
  * Cost Tracker Class
@@ -385,5 +386,65 @@ export function setBudgetLimit(budgetLimit, options = {}) {
  */
 export function getBudgetStatus() {
   return getCostTracker().getBudgetStatus();
+}
+
+// Token estimation defaults for pre-call cost estimation
+const DEFAULT_TOKENS_PER_IMAGE = 1500;
+const DEFAULT_PROMPT_TOKENS = 50;
+const DEFAULT_OUTPUT_TOKENS = 500;
+
+/**
+ * Estimate cost of a validation call before making it.
+ *
+ * Uses PROVIDER_CONFIGS pricing (per 1M tokens) and rough token estimates
+ * for images and prompts. Intended for CI budgeting, not exact billing.
+ *
+ * @param {string} provider - Provider name (gemini, openai, claude, groq, openrouter)
+ * @param {Object} [options={}] - Estimation options
+ * @param {number} [options.imageCount=1] - Number of images to validate
+ * @param {number} [options.promptLength=100] - Approximate prompt character length
+ * @param {string|null} [options.model=null] - Model override (defaults to provider default)
+ * @returns {{
+ *   provider: string;
+ *   model: string;
+ *   estimatedInputTokens: number;
+ *   estimatedOutputTokens: number;
+ *   estimatedCost: string;
+ *   currency: string;
+ * }}
+ */
+export function estimateCost(provider, options = {}) {
+  const {
+    imageCount = 1,
+    promptLength = 100,
+    model = null
+  } = options;
+
+  const config = PROVIDER_CONFIGS[provider];
+  if (!config) {
+    const known = Object.keys(PROVIDER_CONFIGS).join(', ');
+    throw new Error(`Unknown provider "${provider}". Known providers: ${known}`);
+  }
+
+  const resolvedModel = model || config.model;
+
+  // Estimate prompt tokens: ~4 chars per token is a common heuristic
+  const promptTokens = Math.max(DEFAULT_PROMPT_TOKENS, Math.ceil(promptLength / 4));
+  const imageTokens = imageCount * DEFAULT_TOKENS_PER_IMAGE;
+  const estimatedInputTokens = promptTokens + imageTokens;
+  const estimatedOutputTokens = DEFAULT_OUTPUT_TOKENS;
+
+  const inputCost = (estimatedInputTokens / 1_000_000) * config.pricing.input;
+  const outputCost = (estimatedOutputTokens / 1_000_000) * config.pricing.output;
+  const totalCost = inputCost + outputCost;
+
+  return {
+    provider,
+    model: resolvedModel,
+    estimatedInputTokens,
+    estimatedOutputTokens,
+    estimatedCost: totalCost.toFixed(6),
+    currency: 'USD'
+  };
 }
 

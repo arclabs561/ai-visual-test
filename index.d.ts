@@ -730,14 +730,47 @@ export function validateScreenshot(
 ): Promise<ValidationResult>;
 
 /**
+ * Compare two screenshots using VLM.
+ *
+ * Bridges pixel-diff workflows to VLM-based testing by sending both images
+ * to the vision model and asking it to identify changes between them.
+ *
+ * @param beforePath - Path to the "before" screenshot
+ * @param afterPath - Path to the "after" screenshot
+ * @param prompt - What to compare (e.g., "Check that the button color changed")
+ * @param context - Additional validation context (provider, model, etc.)
+ * @returns Validation result with comparison analysis
+ *
+ * @throws {FileError} If either screenshot path is invalid or file not found
+ * @throws {ValidationError} If prompt is missing or invalid
+ *
+ * @example
+ * ```typescript
+ * const result = await validateComparison(
+ *   'before.png',
+ *   'after.png',
+ *   'Check that the header layout did not regress'
+ * );
+ * console.log(result.score);   // 9.0
+ * console.log(result.issues);  // ['Font size decreased in nav bar']
+ * ```
+ */
+export function validateComparison(
+  beforePath: string,
+  afterPath: string,
+  prompt: string,
+  context?: ValidationContext
+): Promise<ValidationResult>;
+
+/**
  * Extract semantic information from VLLM judgment text.
- * 
+ *
  * Parses AI judgment responses into structured data (score, issues, reasoning).
  * Useful for custom implementations that need to parse judgment text.
- * 
+ *
  * @param judgment - Judgment text or object from VLLM
  * @returns Structured semantic information with score, issues, assessment, reasoning
- * 
+ *
  * @example
  * ```typescript
  * const judgment = "Score: 8.5. Issues: Low contrast. Reasoning: The form is mostly accessible...";
@@ -2277,6 +2310,34 @@ export class HumanValidationManager {
 
 export function getHumanValidationManager(): HumanValidationManager;
 export function initHumanValidation(options?: HumanValidationManagerOptions): HumanValidationManager;
+
+// --- Cost Estimation ---
+
+export interface CostEstimate {
+  provider: string;
+  model: string;
+  estimatedInputTokens: number;
+  estimatedOutputTokens: number;
+  estimatedCost: string;
+  currency: string;
+}
+
+/**
+ * Estimate the cost of a validation call before making it.
+ *
+ * Uses provider pricing data and rough token estimates for images/prompts.
+ * Intended for CI budgeting, not exact billing.
+ *
+ * @param provider - Provider name (gemini, openai, claude, groq, openrouter)
+ * @param options - Estimation options
+ * @returns Estimated cost breakdown
+ * @throws {Error} If provider is unknown
+ */
+export function estimateCost(provider: string, options?: {
+  imageCount?: number;
+  promptLength?: number;
+  model?: string | null;
+}): CostEstimate;
 
 // --- Explanation Manager ---
 

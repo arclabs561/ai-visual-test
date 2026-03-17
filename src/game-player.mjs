@@ -293,7 +293,7 @@ export async function playGame(page, options = {}) {
       if (step > 0 && history.length > 0) {
         // Use TemporalDecisionManager for subsequent steps
         try {
-          const { TemporalDecisionManager } = await import('./temporal-decision-manager.mjs');
+          const { TemporalDecisionManager } = await import('./temporal-orchestration.mjs');
           const decisionManager = new TemporalDecisionManager({
             minNotesForPrompt: 2,
             coherenceThreshold: 0.5

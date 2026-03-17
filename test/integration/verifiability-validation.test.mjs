@@ -7,7 +7,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
 import { enableDebug } from '../../src/logger.mjs';
-import { SequentialDecisionContext } from '../../src/temporal-decision.mjs';
+import { SequentialDecisionContext } from '../../src/temporal-multi-scale.mjs';
 import { BatchOptimizer } from '../../src/batch-optimizer.mjs';
 import { selfConsistencyCheck } from '../../src/uncertainty-reducer.mjs';
 import { initCache, getCacheStats, setCached, clearCache } from '../../src/cache.mjs';

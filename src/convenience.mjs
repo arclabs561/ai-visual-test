@@ -11,8 +11,8 @@ import { validateScreenshot } from './judge.mjs';
 import { normalizeValidationResult } from './validation-result-normalizer.mjs';
 import { experiencePageAsPersona, experiencePageWithPersonas } from './persona-experience.mjs';
 import { extractRenderedCode, captureTemporalScreenshots, multiPerspectiveEvaluation } from './multi-modal.mjs';
-import { aggregateTemporalNotes, formatNotesForPrompt } from './temporal.mjs';
-import { aggregateMultiScale } from './temporal-decision.mjs';
+import { aggregateTemporalNotes, formatNotesForPrompt } from './temporal-core.mjs';
+import { aggregateMultiScale } from './temporal-multi-scale.mjs';
 import { generateGamePrompt, createGameGoal, createGameGoals } from './game-goal-prompts.mjs';
 import { checkCrossModalConsistency, validateExperienceConsistency } from './cross-modal-consistency.mjs';
 import { trackPropagation } from './experience-propagation.mjs';
@@ -174,7 +174,7 @@ export async function testGameplay(page, options = {}) {
         // Use temporal preprocessing by default
         // Activity-based: high-Hz uses cache, low-Hz does expensive preprocessing
       if (temporalScreenshots.length > 0) {
-        const { createTemporalPreprocessingManager, createAdaptiveTemporalProcessor } = await import('./temporal-preprocessor.mjs');
+        const { createTemporalPreprocessingManager, createAdaptiveTemporalProcessor } = await import('./temporal-orchestration.mjs');
         const preprocessingManager = createTemporalPreprocessingManager();
         const adaptiveProcessor = createAdaptiveTemporalProcessor(preprocessingManager);
         
@@ -258,7 +258,7 @@ export async function testGameplay(page, options = {}) {
       // Also use multi-scale aggregation for richer analysis
       // Always return multi-scale result (even if empty) for consistency
       try {
-        const { aggregateMultiScale } = await import('./temporal-decision.mjs');
+        const { aggregateMultiScale } = await import('./temporal-multi-scale.mjs');
         const aggregatedMultiScale = aggregateMultiScale(allNotes, {
           attentionWeights: true
         });
@@ -282,7 +282,7 @@ export async function testGameplay(page, options = {}) {
       
       // IMPROVEMENT: Build temporal graph for better coherence understanding
       try {
-        const { buildTemporalGraph } = await import('./temporal.mjs');
+        const { buildTemporalGraph } = await import('./temporal-core.mjs');
         const temporalGraph = await buildTemporalGraph(allNotes, {
           windowSize: 5000,
           decayFactor: 0.9,
@@ -304,7 +304,7 @@ export async function testGameplay(page, options = {}) {
       // IMPROVEMENT: Select representative screenshots for context window management
       if (result.temporalScreenshots && result.temporalScreenshots.length > 10) {
         try {
-          const { selectRepresentativeScreenshots } = await import('./temporal-note-pruner.mjs');
+          const { selectRepresentativeScreenshots } = await import('./temporal-prompt-formatting.mjs');
           const evaluations = allNotes.map(n => ({ score: n.score ?? 0 }));
           const selectedScreenshots = selectRepresentativeScreenshots(
             result.temporalScreenshots,

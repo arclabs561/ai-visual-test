@@ -18,12 +18,12 @@ import {
   aggregateTemporalNotes,
   formatNotesForPrompt,
   calculateCoherenceExported as calculateCoherence
-} from '../../src/temporal.mjs';
+} from '../../src/temporal-core.mjs';
 import {
   aggregateMultiScale,
   humanPerceptionTime
-} from '../../src/temporal-decision.mjs';
-import { TIME_SCALES } from '../../src/temporal-constants.mjs';
+} from '../../src/temporal-multi-scale.mjs';
+import { TIME_SCALES } from '../../src/temporal-core.mjs';
 
 test.describe('Gameplay Temporal Experience Validation', () => {
   

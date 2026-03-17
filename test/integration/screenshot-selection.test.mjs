@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { selectRepresentativeScreenshots } from '../../src/temporal-note-pruner.mjs';
+import { selectRepresentativeScreenshots } from '../../src/temporal-prompt-formatting.mjs';
 
 test('selectRepresentativeScreenshots returns all if under limit', () => {
   const screenshots = [

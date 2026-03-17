@@ -10,7 +10,7 @@ import {
   aggregateMultiScale,
   SequentialDecisionContext,
   humanPerceptionTime
-} from '../../src/temporal-decision.mjs';
+} from '../../src/temporal-multi-scale.mjs';
 
 describe('SequentialDecisionContext', () => {
   test('constructor with default options', () => {

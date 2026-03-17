@@ -10,8 +10,8 @@ import {
   SequentialDecisionContext,
   aggregateMultiScale,
   humanPerceptionTime
-} from '../../src/temporal-decision.mjs';
-import { TemporalBatchOptimizer } from '../../src/temporal-batch-optimizer.mjs';
+} from '../../src/temporal-multi-scale.mjs';
+import { TemporalBatchOptimizer } from '../../src/temporal-orchestration.mjs';
 
 describe('Temporal Decision-Making Integration', () => {
   test('sequential context + multi-scale aggregation', () => {

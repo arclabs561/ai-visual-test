@@ -11,7 +11,7 @@ import {
   AdaptiveTemporalProcessor,
   createTemporalPreprocessingManager,
   createAdaptiveTemporalProcessor
-} from '../../src/temporal-preprocessor.mjs';
+} from '../../src/temporal-orchestration.mjs';
 
 describe('Temporal Preprocessing Manager', () => {
   test('ActivityDetector - detects high activity', () => {
@@ -413,7 +413,7 @@ describe('Temporal Preprocessing Manager', () => {
     const incrementalResult = await manager.getFastAggregation(notes);
     
     // Do full recomputation for comparison
-    const { aggregateTemporalNotes } = await import('../../src/temporal.mjs');
+    const { aggregateTemporalNotes } = await import('../../src/temporal-core.mjs');
     const fullResult = await aggregateTemporalNotes(notes);
     
     // CRITICAL: "Incremental" produces same result as full recomputation

@@ -39,9 +39,18 @@ export const TEMPORAL_CONSTANTS = {
 export const API_CONSTANTS = {
   /** Default timeout for API calls in milliseconds (30 seconds) */
   DEFAULT_TIMEOUT_MS: 30000,
-  
+
   /** Default maximum concurrency for API calls */
-  DEFAULT_MAX_CONCURRENCY: 5
+  DEFAULT_MAX_CONCURRENCY: 5,
+
+  /** Default max output tokens for VLM responses */
+  DEFAULT_MAX_OUTPUT_TOKENS: 2000,
+
+  /** Default temperature for VLM calls (low for consistent scoring) */
+  DEFAULT_TEMPERATURE: 0.1,
+
+  /** Default top_p for VLM calls */
+  DEFAULT_TOP_P: 0.95
 };
 
 /**

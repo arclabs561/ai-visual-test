@@ -2,6 +2,26 @@
 
 All notable changes to ai-visual-test will be documented in this file.
 
+## [0.8.0] - 2026-03-17
+
+### Breaking
+- **Main entry point reduced to 17 core exports.** Consumers importing non-core symbols from the main entry need to switch to subpath imports (`./game`, `./errors`, `./temporal`, `./validators`, etc.).
+
+### Added
+- **CLI** - `ai-visual-test check <image> "<prompt>"` for command-line screenshot validation.
+- **Subpath imports** - `./game` and `./errors` subpath exports for structured access to game and error modules.
+
+### Changed
+- **Temporal subsystem consolidated** from 13 files to 4, reducing internal complexity and eliminating circular dependencies.
+
+### Fixed
+- **Score-0 coercion bug** - 24 instances of `|| 0` replaced with `?? 0` to preserve intentional zero scores.
+- **Circular dependency** in `game-player.mjs` resolved.
+
+### Removed
+- Dead `evaluation/` directory imports (10 call sites).
+- DeckSage-specific hardcoded selectors from `testBrowserExperience`.
+
 ## [0.7.5] - 2026-03-16
 
 ### Fixed

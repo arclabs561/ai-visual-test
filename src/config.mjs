@@ -14,7 +14,12 @@ import { MODEL_TIERS, PROVIDER_CONFIGS } from './provider-data.mjs';
 loadEnv();
 
 /**
- * Create configuration from environment or options
+ * Create configuration from environment or options.
+ *
+ * Precedence (highest to lowest):
+ *   1. Explicit options (provider, apiKey, model, modelTier)
+ *   2. Environment variables (VLM_PROVIDER, VLM_MODEL, VLM_MODEL_TIER, *_API_KEY)
+ *   3. Defaults (auto-detect cheapest provider, default model per provider)
  *
  * @param {import('./index.mjs').ConfigOptions} [options={}] - Configuration options
  * @returns {import('./index.mjs').Config} Configuration object
@@ -96,11 +101,20 @@ export function createConfig(options = {}) {
     }
   }
 
+  const enabled = !!selectedApiKey;
+  if (!enabled && selectedProvider) {
+    const expectedKey = selectedProvider === 'claude' ? 'ANTHROPIC_API_KEY' : `${selectedProvider.toUpperCase()}_API_KEY`;
+    // Import warn lazily to avoid circular deps at module load
+    import('./logger.mjs').then(({ warn }) => {
+      warn(`[Config] No API key found for provider "${selectedProvider}". Set ${expectedKey} in your environment or .env file. VLM calls will be disabled.`);
+    }).catch(() => {});
+  }
+
   return {
     provider: selectedProvider,
     apiKey: selectedApiKey,
     providerConfig,
-    enabled: !!selectedApiKey,
+    enabled,
     anchors: normalizedAnchors,
     cache: {
       enabled: cacheEnabled,

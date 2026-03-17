@@ -279,48 +279,70 @@ export function createEnsembleJudge(providers?: string[], options?: EnsembleJudg
  * };
  * ```
  */
+/**
+ * Context for a single validateScreenshot call.
+ *
+ * Most users only need the first section (provider/model overrides).
+ * Everything else is optional and for advanced use cases.
+ */
 export interface ValidationContext {
-  /** Override provider for this call (gemini, openai, claude, groq, openrouter) */
+  // -- Provider overrides (most common) --
+
+  /** Override provider for this call (groq, gemini, openai, claude, openrouter) */
   provider?: string;
   /** Override model for this call (provider-specific, e.g., 'gpt-4o', 'gemini-2.5-pro') */
   model?: string;
+  /** Model tier shorthand: 'fast' (cheapest), 'balanced', 'best' (most capable) */
+  modelTier?: 'fast' | 'balanced' | 'best';
+
+  // -- Test metadata (improves prompt quality) --
+
   /** Test type identifier (e.g., 'accessibility', 'payment-screen', 'gameplay') */
   testType?: string;
-  /** Viewport dimensions for context-aware evaluation */
-  viewport?: { width: number; height: number };
-  /** Game state or application state for context */
-  gameState?: Record<string, unknown>;
-  /** Enable caching (default: true) */
-  useCache?: boolean;
-  /** Request timeout in milliseconds */
-  timeout?: number;
-  /** Use explicit rubric for consistent scoring */
-  useRubric?: boolean;
-  /** Include dimension scores in evaluation */
-  includeDimensions?: boolean;
   /** URL of the page being tested */
   url?: string;
   /** Description of the test scenario */
   description?: string;
   /** Current step in multi-step test */
   step?: string;
+  /** Viewport dimensions for context-aware evaluation */
+  viewport?: { width: number; height: number };
+
+  // -- Evaluation options --
+
+  /** Use explicit rubric for consistent scoring */
+  useRubric?: boolean;
+  /** Include dimension scores in evaluation */
+  includeDimensions?: boolean;
+  /** Enable caching (default: true) */
+  useCache?: boolean;
+  /** Request timeout in milliseconds */
+  timeout?: number;
   /** Custom prompt builder function */
   promptBuilder?: (prompt: string, context: ValidationContext) => string;
-  /** Auto-select model tier (fast/balanced/best) based on context */
+  /** Per-call visual anchors (appended to config-level anchors) */
+  anchors?: VisualAnchors | null;
+
+  // -- Cost optimization (advanced) --
+
+  /** Auto-select model tier based on context */
   autoSelectTier?: boolean;
-  /** Auto-select provider (cheapest available) */
+  /** Auto-select cheapest available provider */
   autoSelectProvider?: boolean;
   /** Include cost comparison in results */
   includeCostComparison?: boolean;
-  /** Frequency for high-frequency validation (Hz) */
-  frequency?: number;
   /** Cost sensitivity flag for optimization */
   costSensitive?: boolean;
-  /** Criticality level (low/medium/high/critical) */
+  /** Criticality level (affects model selection) */
   criticality?: 'low' | 'medium' | 'high' | 'critical';
-  /** Model tier to use (fast/balanced/best) */
-  modelTier?: 'fast' | 'balanced' | 'best';
-  /** Temporal decision options (for high-frequency validation) */
+  /** Frequency for high-frequency validation (Hz) */
+  frequency?: number;
+
+  // -- Temporal / stateful validation (advanced) --
+
+  /** Game state or application state for context */
+  gameState?: Record<string, unknown>;
+  /** Enable temporal decision management */
   useTemporalDecision?: boolean;
   /** Temporal notes for decision context */
   temporalNotes?: TemporalNote[];
@@ -332,8 +354,6 @@ export interface ValidationContext {
   previousResult?: ValidationResult;
   /** Temporal decision manager options */
   temporalDecisionOptions?: Record<string, unknown>;
-  /** Per-call visual anchors (appended to config-level anchors) */
-  anchors?: VisualAnchors | null;
 }
 
 export interface EstimatedCost {

@@ -407,7 +407,7 @@ export function enhanceWithUncertainty(partialResult, options = {}, context = {}
   const logprobs = partialResult.logprobs || null;
   const attempts = partialResult.attempts || 1;
   const judgment = partialResult.judgment || null;
-  const score = partialResult.score || null;
+  const score = partialResult.score ?? null;
   const issues = partialResult.issues || [];
   const uncertainty = partialResult.uncertainty || null;
 

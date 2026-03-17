@@ -91,7 +91,7 @@ export function aggregateMultiScale(notes, options = {}) {
       
       windows[windowIndex].notes.push({ ...note, weight });
       
-      const score = note.gameState?.score || note.score || 0;
+      const score = note.gameState?.score ?? note.score ?? 0;
       windows[windowIndex].weightedScore += score * weight;
       windows[windowIndex].totalWeight += weight;
     }

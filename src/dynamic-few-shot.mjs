@@ -63,47 +63,7 @@ export async function selectFewShotExamples(prompt, examples = [], options = {})
   const shouldUseEmbeddingsForLargeArrays = options.useEmbeddings === true;
   const autoDisableForLargeArrays = exampleCount > 100 && !shouldUseEmbeddingsForLargeArrays;
   
-  // Try embeddings first (more accurate) - but skip for large arrays unless explicitly requested
-  if (!autoDisableForLargeArrays) {
-    try {
-      const { instructionSemanticSimilarity, isInstructionEmbeddingsAvailable } = await import('../evaluation/utils/instruction-embeddings.mjs');
-      const { semanticSimilarity, isEmbeddingsAvailable } = await import('../evaluation/utils/semantic-matcher.mjs');
-      
-      const useInstructionEmbeddings = await isInstructionEmbeddingsAvailable();
-      const useGeneralEmbeddings = !useInstructionEmbeddings && await isEmbeddingsAvailable();
-      
-      if (useInstructionEmbeddings || useGeneralEmbeddings) {
-        // Use embeddings for similarity calculation
-        const similarityFn = useInstructionEmbeddings
-          ? (text1, text2) => instructionSemanticSimilarity(text1, text2, task)
-          : (text1, text2) => semanticSimilarity(text1, text2);
-        
-        // Score each example using embeddings
-        const scored = await Promise.all(
-          examples.map(async (example) => {
-            const exampleText = (example.description || '') + ' ' + (example.evaluation || '');
-            const similarity = await similarityFn(prompt, exampleText);
-            
-            return {
-              example,
-              similarity: similarity !== null ? similarity : 0
-            };
-          })
-        );
-        
-        // Sort by similarity and take top N
-        return scored
-          .filter(s => s.similarity >= similarityThreshold)
-          .sort((a, b) => b.similarity - a.similarity)
-          .slice(0, maxExamples)
-          .map(s => s.example);
-      }
-    } catch (error) {
-      // Fall through to keyword matching if embeddings unavailable
-    }
-  }
-  
-  // Fallback: Keyword-based similarity (Jaccard)
+  // Keyword-based similarity (Jaccard)
   // For very long prompts, limit keyword extraction to avoid performance issues
   const maxPromptLength = 10000; // Limit prompt processing to 10KB for performance
   const processedPrompt = prompt.length > maxPromptLength 

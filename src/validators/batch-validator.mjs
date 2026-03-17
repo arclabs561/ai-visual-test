@@ -88,8 +88,8 @@ export class BatchValidator extends BatchOptimizer {
       results,
       stats: this.trackStats ? {
         total: screenshots.length,
-        passed: results.filter(r => (r.score || 0) >= (context.passingScore || 7)).length,
-        failed: results.filter(r => (r.score || 0) < (context.passingScore || 7)).length,
+        passed: results.filter(r => (r.score ?? 0) >= (context.passingScore || 7)).length,
+        failed: results.filter(r => (r.score ?? 0) < (context.passingScore || 7)).length,
         duration,
         costStats: this.trackCosts && this.costTracker ? this.costTracker.getStats() : null,
         performance: this.trackStats ? {

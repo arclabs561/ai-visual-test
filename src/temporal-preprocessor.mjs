@@ -352,7 +352,7 @@ export class TemporalPreprocessingManager {
     const conflicts = [];
     
     // Simple trend detection: score progression
-    const scores = notes.map(n => n.score || n.gameState?.score || 0);
+    const scores = notes.map(n => n.score ?? n.gameState?.score ?? 0);
     if (scores.length >= 3) {
       const first = scores[0];
       const last = scores[scores.length - 1];

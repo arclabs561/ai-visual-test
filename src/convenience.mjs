@@ -16,7 +16,8 @@ import { aggregateMultiScale } from './temporal-multi-scale.mjs';
 import { generateGamePrompt, createGameGoal, createGameGoals } from './game-goal-prompts.mjs';
 import { checkCrossModalConsistency, validateExperienceConsistency } from './cross-modal-consistency.mjs';
 import { trackPropagation } from './experience-propagation.mjs';
-import { ValidationError } from './errors.mjs';
+import { ValidationError, FileError } from './errors.mjs';
+import { validatePrompt } from './validation.mjs';
 import { log, warn } from './logger.mjs';
 import { TEMPORAL_CONSTANTS } from './constants.mjs';
 
@@ -708,5 +709,59 @@ export async function validatePage(page, prompt, options = {}) {
       fs.unlinkSync(screenshotPath);
     }
   }
+}
+
+/**
+ * Compare two screenshots using VLM
+ *
+ * Bridges pixel-diff workflows to VLM-based testing by sending both images
+ * to the vision model and asking it to compare them. The judge already
+ * supports multi-image input, so this is a convenience wrapper that
+ * validates inputs and wraps the prompt for comparison.
+ *
+ * @param {string} beforePath - Path to the "before" screenshot
+ * @param {string} afterPath - Path to the "after" screenshot
+ * @param {string} prompt - What to compare (e.g., "Check that the button color changed")
+ * @param {Object} [context={}] - Additional validation context (provider, model, etc.)
+ * @returns {Promise<import('./index.mjs').ValidationResult>} Validation result with comparison analysis
+ * @throws {FileError} If either screenshot path is invalid or file not found
+ * @throws {ValidationError} If prompt is missing or invalid
+ */
+export async function validateComparison(beforePath, afterPath, prompt, context = {}) {
+  // Validate image paths (type + empty).
+  // Full path-traversal and existence checks happen inside judgeScreenshot,
+  // which already handles absolute paths, temp files, etc.
+  if (typeof beforePath !== 'string') {
+    throw new ValidationError('beforePath must be a string', { received: typeof beforePath });
+  }
+  if (beforePath.length === 0) {
+    throw new ValidationError('beforePath cannot be empty');
+  }
+  if (typeof afterPath !== 'string') {
+    throw new ValidationError('afterPath must be a string', { received: typeof afterPath });
+  }
+  if (afterPath.length === 0) {
+    throw new ValidationError('afterPath cannot be empty');
+  }
+
+  // Validate the prompt
+  validatePrompt(prompt);
+
+  const comparisonPrompt =
+    `Compare these two screenshots (before and after). ${prompt} ` +
+    'Identify what changed and whether the changes are improvements or regressions.';
+
+  log('[Convenience] Comparing screenshots:', { beforePath, afterPath });
+
+  const result = await validateScreenshot(
+    [beforePath, afterPath],
+    comparisonPrompt,
+    {
+      testType: 'comparison',
+      ...context
+    }
+  );
+
+  return result;
 }
 

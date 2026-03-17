@@ -43,7 +43,7 @@ export { VLLMJudge, _validateScreenshot as validateScreenshot };
 // Internal alias for backward compatibility
 export { _validateScreenshot };
 
-export { validatePage } from './convenience.mjs';
+export { validatePage, validateComparison } from './convenience.mjs';
 export { validateWithRubric } from './validators/index.mjs';
 
 /**
@@ -68,6 +68,9 @@ export { validateStartup } from './startup-validation.mjs';
 
 // --- Cache ---
 export { getCached, setCached, clearCache, getCacheStats } from './cache.mjs';
+
+// --- Cost estimation ---
+export { estimateCost } from './cost-tracker.mjs';
 
 // --- Errors (user-facing types for catch blocks) ---
 export { ValidationError, ConfigError, ProviderError, FileError } from './errors.mjs';

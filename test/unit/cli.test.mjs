@@ -103,6 +103,19 @@ describe('CLI', () => {
       assert.ok(stderr.includes('No provider detected') || stderr.includes('not set'));
     });
 
+    it('should error when path is a directory', async () => {
+      const { code, stderr } = await run('check', __dirname, 'test prompt');
+      assert.notStrictEqual(code, 0);
+      assert.ok(stderr.includes('directory'));
+    });
+
+    it('should reject invalid --provider name', async () => {
+      const { code, stderr } = await run('check', join(__dirname, '..', 'test-image-utils.mjs'), 'test', '--provider', 'invalid');
+      assert.notStrictEqual(code, 0);
+      assert.ok(stderr.includes('Unknown provider'));
+      assert.ok(stderr.includes('groq'));
+    });
+
     it('should reject invalid --min-score', async () => {
       const { code, stderr } = await run('check', 'img.png', 'prompt', '--min-score', '15');
       assert.notStrictEqual(code, 0);

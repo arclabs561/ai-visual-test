@@ -131,18 +131,12 @@ export async function testGameplay(page, options = {}) {
       trackPropagation('capture', { renderedCode }, 'Captured HTML/CSS for gameplay test');
     }
 
-    // Extract game state (handles window.gameState structure and other games)
+    // Extract game state from window.gameState (game-agnostic)
     const gameState = await page.evaluate(() => {
       const state = window.gameState || {};
       return {
-        gameActive: state.gameActive || false,
+        gameActive: state.gameActive ?? false,
         score: state.score ?? 0,
-        level: state.level || 0,
-        lives: state.lives || 3,
-        ball: state.ball || null,
-        paddle: state.paddle || null,
-        bricks: state.bricks || null,
-        // Include any other game state properties
         ...state
       };
     });

@@ -280,6 +280,10 @@ export function createEnsembleJudge(providers?: string[], options?: EnsembleJudg
  * ```
  */
 export interface ValidationContext {
+  /** Override provider for this call (gemini, openai, claude, groq, openrouter) */
+  provider?: string;
+  /** Override model for this call (provider-specific, e.g., 'gpt-4o', 'gemini-2.5-pro') */
+  model?: string;
   /** Test type identifier (e.g., 'accessibility', 'payment-screen', 'gameplay') */
   testType?: string;
   /** Viewport dimensions for context-aware evaluation */
@@ -1199,6 +1203,17 @@ export function createConfig(options?: ConfigOptions): Config;
 export function getConfig(): Config;
 export function setConfig(config: Config): void;
 export function getProvider(providerName?: string | null): Config['providerConfig'];
+
+/**
+ * Validate configuration at startup. Call early to get clear error messages
+ * instead of cryptic 401 errors at API call time.
+ *
+ * @throws {ConfigError} In strict mode if required env vars are missing
+ */
+export function validateStartup(options?: {
+  strict?: boolean;
+  provider?: string | null;
+}): { valid: boolean; warnings: string[] };
 
 // Utility Functions
 export function loadEnv(basePath?: string | null): void;

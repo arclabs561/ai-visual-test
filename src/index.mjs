@@ -48,6 +48,9 @@ export function extractSemanticInfo(judgment) {
 // --- Config ---
 export { createConfig, getConfig } from './config.mjs';
 
+// --- Startup validation (call early to get clear error messages) ---
+export { validateStartup } from './startup-validation.mjs';
+
 // --- Cache ---
 export { getCached, setCached, clearCache, getCacheStats } from './cache.mjs';
 

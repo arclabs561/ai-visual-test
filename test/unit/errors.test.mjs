@@ -10,7 +10,7 @@ import {
   FileError,
   isAIBrowserTestError,
   isErrorType
-} from '../../src/index.mjs';
+} from '../../src/errors/index.mjs';
 
 test('AIBrowserTestError - basic functionality', () => {
   const error = new AIBrowserTestError('Test error', 'TEST_ERROR', { detail: 'test' });

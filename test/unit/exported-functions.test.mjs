@@ -10,12 +10,16 @@ import {
   LatencyAwareBatchOptimizer,
   HumanValidationManager,
   getHumanValidationManager,
-  ExperienceTracerManager,
-  getTracerManager,
-  checkCrossModalConsistency,
-  validateExperienceConsistency,
   normalizeValidationResult
-} from '../../src/index.mjs';
+} from '../../src/utils/index.mjs';
+import {
+  ExperienceTracerManager,
+  getTracerManager
+} from '../../src/persona/index.mjs';
+import {
+  checkCrossModalConsistency,
+  validateExperienceConsistency
+} from '../../src/multi-modal/index.mjs';
 import { createMockPage } from '../helpers/mock-page.mjs';
 
 describe('Exported Functions Tests', () => {

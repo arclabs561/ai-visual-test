@@ -173,6 +173,65 @@ export {
   initHumanValidation
 } from '../human-validation-manager.mjs';
 
+// Startup validation
+export { validateStartup, validateStartupSoft } from '../startup-validation.mjs';
+
+// Graceful shutdown
+export { initGracefulShutdown, registerShutdownHandler, gracefulShutdown } from '../graceful-shutdown.mjs';
+
+// Performance measurement
+export {
+  PerformanceMeasurement,
+  PerformanceProfiler,
+  measureAsync,
+  measureSync,
+  getProfiler
+} from './performance-measurement.mjs';
+
+// Cost optimization
+export {
+  calculateCostComparison,
+  optimizeCost
+} from '../cost-optimization.mjs';
+
+// Cost tracker (additional exports)
+export {
+  setBudgetLimit,
+  getBudgetStatus
+} from '../cost-tracker.mjs';
+
+// Session cost tracking
+export {
+  startSession,
+  endSession,
+  getSessionCosts,
+  recordSessionCost,
+  recordSessionCacheHit,
+  recordSessionCacheMiss,
+  getActiveSessions,
+  getGlobalCostStats
+} from '../session-cost-tracker.mjs';
+
+// Score calibration
+export {
+  calibrateScore,
+  setCalibrationProfile,
+  getCalibrationProfile,
+  resetCalibrationProfiles,
+  deriveCalibrationProfile,
+  analyzeScoreDistribution
+} from '../score-calibration.mjs';
+
+// Meta-evaluation / calibration suite
+export { createCalibrationSuite } from '../calibration-suite.mjs';
+
+// VLM limitations
+export {
+  VLM_LIMITATIONS,
+  getLimitationsForTestType,
+  shouldUseHybridValidation
+} from '../limitations.mjs';
+
 // Browser automation utilities
 export * from './counterfactual-tester.mjs';
 export * from './capability-stratifier.mjs';

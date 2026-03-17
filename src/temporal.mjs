@@ -377,26 +377,9 @@ async function calculateCoherence(windows, options = {}) {
   // - Performance: ~5% faster for typical datasets
   const stability = Math.max(0, Math.min(1, 1.0 - (directionChanges / trendsLength)));
   
-  // Metric 4: Observation consistency (enhanced with embeddings)
-  // 
-  // DESIGN DECISION: Use instruction-tuned embeddings for observation consistency
-  // - Why: Observations can be semantically similar but use different words
-  //   - Example: "Gameplay is smooth and responsive" vs "Frame rate is consistent and fluid"
-  //   - Keyword overlap: 0.000 (zero overlap, would fail)
-  //   - Embedding similarity: 0.787 (correctly identifies semantic similarity)
-  // - Why instruction-tuned: Task-specific instructions improve precision
-  //   - Task: 'temporal' - "Find temporal patterns or sequences similar to..."
-  //   - Better than general embeddings for temporal pattern matching
-  // - Why fallback chain: Embeddings → General → Keywords
-  //   - Embeddings can fail (model not loaded, network issues)
-  //   - System should work even if embeddings unavailable
-  // - Alternative considered: Keyword-only matching
-  //   - Rejected: Fails for semantically similar but differently-worded observations
-  //   - Real-world test: Zero keyword overlap but perfect coherence (1.0) with embeddings
-  // 
-  // Check if observations use similar semantic content across windows
-  // Uses instruction-tuned embeddings for temporal pattern matching when available
-  // Falls back to general embeddings, then keyword matching
+  // Metric 4: Observation consistency
+  // Measures whether observations use similar content across windows
+  // Uses Jaccard keyword similarity (word overlap between consecutive observations)
   let observationConsistency = 1.0;
   if (windows.length > 1) {
     const observations = windows.map(w => (w.observations || '').trim());

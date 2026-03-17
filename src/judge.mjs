@@ -26,7 +26,7 @@ import { normalizeValidationResult } from './validation-result-normalizer.mjs';
 import { validateImagePath, validatePrompt } from './validation.mjs';
 import { sanitizePrompt, validatePromptSecurity } from './utils/prompt-sanitizer.mjs';
 import { getRateLimiter } from './utils/rate-limiter.mjs';
-import { RETRY_CONSTANTS } from './constants.mjs';
+import { RETRY_CONSTANTS, API_CONSTANTS } from './constants.mjs';
 import { retryWithBackoff, enhanceErrorMessage } from './retry.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -1315,9 +1315,9 @@ export class VLLMJudge {
         body: JSON.stringify({
           contents: [{ parts }],
           generationConfig: {
-            temperature: 0.1,
-            maxOutputTokens: 2000,
-            topP: 0.95,
+            temperature: API_CONSTANTS.DEFAULT_TEMPERATURE,
+            maxOutputTokens: API_CONSTANTS.DEFAULT_MAX_OUTPUT_TOKENS,
+            topP: API_CONSTANTS.DEFAULT_TOP_P,
             topK: 40
           }
         })
@@ -1365,12 +1365,12 @@ export class VLLMJudge {
         // Only include temperature if model supports custom values (omit for models that require default)
         ...(this.providerConfig.model.includes('mini') || this.providerConfig.model.includes('gpt-5')
           ? {} // Use default temperature (1) - don't specify for models that require it
-          : { temperature: 0.1, top_p: 0.95 } // Custom values for models that support them
+          : { temperature: API_CONSTANTS.DEFAULT_TEMPERATURE, top_p: API_CONSTANTS.DEFAULT_TOP_P } // Custom values for models that support them
         ),
         // Use max_completion_tokens for newer models (gpt-4o, gpt-5), max_tokens for older models
         ...(this.providerConfig.model.startsWith('gpt-4o') || this.providerConfig.model.startsWith('gpt-5')
-          ? { max_completion_tokens: 2000 }
-          : { max_tokens: 2000 })
+          ? { max_completion_tokens: API_CONSTANTS.DEFAULT_MAX_OUTPUT_TOKENS }
+          : { max_tokens: API_CONSTANTS.DEFAULT_MAX_OUTPUT_TOKENS })
         // Note: logprobs removed - not all OpenAI models support it (e.g., vision models)
         // If needed, can be conditionally added based on model support
       })
@@ -1412,7 +1412,7 @@ export class VLLMJudge {
       signal,
       body: JSON.stringify({
         model: this.providerConfig.model,
-        max_tokens: 2000, // Increased for pair comparison
+        max_tokens: API_CONSTANTS.DEFAULT_MAX_OUTPUT_TOKENS,
         messages: [{
           role: 'user',
           content

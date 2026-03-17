@@ -2362,3 +2362,24 @@ export class LatencyAwareBatchOptimizer extends BatchOptimizer {
   addWithLatencyTarget(request: object, maxLatencyMs?: number): Promise<ValidationResult>;
 }
 
+// --- Test Framework Integrations ---
+
+/**
+ * Create custom Playwright matchers.
+ * Import from '@arclabs561/ai-visual-test/playwright'.
+ *
+ * Adds: toHaveVisualScore(minScore, prompt, options?)
+ */
+export function createMatchers(expect: any): void;
+
+/**
+ * Create custom Vitest/Jest matchers.
+ * Import from '@arclabs561/ai-visual-test/vitest' or './jest'.
+ *
+ * Adds:
+ * - toPassVisualCheck(prompt, options?) -- pass if score >= 7
+ * - toHaveVisualScore(minScore, prompt, options?) -- assert minimum score
+ * - toMatchVisually(otherPath, prompt, options?) -- compare two screenshots
+ */
+export function createVitestJestMatchers(expect: any): void;
+

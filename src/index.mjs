@@ -29,6 +29,8 @@
  *   '@arclabs561/ai-visual-test/game'        -- game playing and testing
  *   '@arclabs561/ai-visual-test/specs'       -- natural language spec execution
  *   '@arclabs561/ai-visual-test/playwright'  -- Playwright matchers
+ *   '@arclabs561/ai-visual-test/vitest'      -- Vitest/Jest matchers
+ *   '@arclabs561/ai-visual-test/jest'         -- same as vitest (alias)
  *   '@arclabs561/ai-visual-test/errors'      -- all error types
  *   '@arclabs561/ai-visual-test/utils'       -- utilities, cost tracking, calibration
  */

@@ -54,15 +54,6 @@ export async function selectFewShotExamples(prompt, examples = [], options = {})
     return examples.slice(0, maxExamples);
   }
   
-  // UX OPTIMIZATION: Auto-disable embeddings for large example arrays (>100) unless explicitly requested
-  // - Why: Embeddings add ~15ms per example, so 1000 examples = ~15s latency
-  // - User experience: Most users have 10-50 examples, so embeddings are fast and valuable
-  // - Edge case: Large datasets (1000+ examples) should use keyword matching for speed
-  // - Exception: If useEmbeddings is explicitly set to true, respect user preference
-  const exampleCount = examples.length;
-  const shouldUseEmbeddingsForLargeArrays = options.useEmbeddings === true;
-  const autoDisableForLargeArrays = exampleCount > 100 && !shouldUseEmbeddingsForLargeArrays;
-  
   // Keyword-based similarity (Jaccard)
   // For very long prompts, limit keyword extraction to avoid performance issues
   const maxPromptLength = 10000; // Limit prompt processing to 10KB for performance

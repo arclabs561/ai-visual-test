@@ -2224,10 +2224,20 @@ export interface HumanValidationManagerOptions {
 export class HumanValidationManager {
   constructor(options?: HumanValidationManagerOptions);
   enabled: boolean;
-  collectJudgment(result: ValidationResult): void;
-  requestValidation(result: ValidationResult): Promise<unknown>;
-  getCalibrationData(): Promise<unknown>;
-  isCalibrated(): boolean;
+  autoCollect: boolean;
+  smartSampling: boolean;
+  calibrationThreshold: number;
+  humanValidatorFn: ((vllmResult: ValidationResult) => Promise<unknown>) | null;
+  vllmJudgments: object[];
+  collectVLLMJudgment(vllmResult: ValidationResult, imagePath: string, prompt: string, context?: ValidationContext): Promise<void>;
+  getCalibrationStatus(): { calibrated: boolean; message?: string; correlation?: number; kappa?: number; mae?: number; isGood?: boolean; sampleSize?: number; recommendations?: string[]; lastCalibration?: string };
+  trackSequenceCalibration(sequenceIndex: number, result: ValidationResult): { degraded: boolean; degradation?: number; recommendation?: string; suggestedAction?: string };
+  getSequenceCalibrationMetrics(): { quality: string; variance?: number; trend?: number; recommendation?: string };
+  applyCalibration(vllmScore: number): number;
+  loadVLLMJudgments(): object[];
+  calibrate(): Promise<{ success: boolean; message?: string; calibration?: object; sampleSize?: number }>;
+  calculateVariance(values: number[]): number;
+  calculateTrend(values: number[]): number;
 }
 
 export function getHumanValidationManager(): HumanValidationManager;

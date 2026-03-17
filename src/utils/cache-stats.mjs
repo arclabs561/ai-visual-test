@@ -6,7 +6,6 @@
  */
 
 import { getCacheStats } from '../cache.mjs';
-import { getCacheStats as getEmbeddingCacheStats } from '../../evaluation/utils/embedding-cache.mjs';
 
 /**
  * Get comprehensive cache statistics across all cache systems
@@ -15,14 +14,6 @@ import { getCacheStats as getEmbeddingCacheStats } from '../../evaluation/utils/
  */
 export function getAllCacheStats() {
   const vllmStats = getCacheStats();
-  let embeddingStats = null;
-  
-  try {
-    embeddingStats = getEmbeddingCacheStats();
-  } catch {
-    // Embedding cache might not be available
-  }
-
   return {
     vllm: {
       size: vllmStats.size,
@@ -33,12 +24,7 @@ export function getAllCacheStats() {
       atomicWrites: vllmStats.atomicWrites || 0,
       atomicWriteFailures: vllmStats.atomicWriteFailures || 0,
       atomicWriteSuccessRate: vllmStats.atomicWriteSuccessRate || 100
-    },
-    embedding: embeddingStats ? {
-      size: embeddingStats.size,
-      maxSize: embeddingStats.maxSize,
-      utilization: embeddingStats.utilization
-    } : null
+    }
   };
 }
 
@@ -62,14 +48,6 @@ export function formatCacheStats(stats = null) {
     ''
   ];
 
-  if (allStats.embedding) {
-    lines.push(
-      'Embedding Cache:',
-      `  Size: ${allStats.embedding.size} / ${allStats.embedding.maxSize} entries (${allStats.embedding.utilization})`,
-      ''
-    );
-  }
-
   lines.push('=== End Cache Statistics ===');
   
   return lines.join('\n');
@@ -92,11 +70,6 @@ export function checkCacheHealth() {
   // Check atomic write success rate
   if (stats.vllm.atomicWriteSuccessRate < 95 && stats.vllm.atomicWrites > 10) {
     warnings.push(`Low atomic write success rate: ${stats.vllm.atomicWriteSuccessRate.toFixed(1)}%. Check disk permissions.`);
-  }
-
-  // Check embedding cache utilization
-  if (stats.embedding && parseInt(stats.embedding.utilization) > 90) {
-    warnings.push(`Embedding cache is nearly full (${stats.embedding.utilization}). Consider increasing limit.`);
   }
 
   return warnings;

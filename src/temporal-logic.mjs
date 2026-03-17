@@ -59,8 +59,6 @@ export async function evaluateTemporalDecision(context, config) {
     if (!decision.shouldPrompt && decision.urgency !== 'high') {
       // Don't prompt yet - return cached or previous result
       if (context.previousResult) {
-        trackMetrics(false);
-        
         return {
           ...context.previousResult,
           skipped: true,
@@ -72,7 +70,6 @@ export async function evaluateTemporalDecision(context, config) {
     }
     
     // Proceeding with validation
-    trackMetrics(true);
     return null; // Null means "proceed with validation"
 
   } catch (error) {
@@ -84,21 +81,4 @@ export async function evaluateTemporalDecision(context, config) {
   }
 }
 
-/**
- * Track metrics for temporal decisions
- */
-async function trackMetrics(prompted) {
-  try {
-    const { researchMetrics } = await import('../evaluation/metrics/research-metrics-collector.mjs');
-    researchMetrics.recordTemporalDecision('with', {
-      llmCalls: prompted ? 1 : 0,
-      skipped: !prompted,
-      accuracy: null,
-      latency: prompted ? null : 0,
-      cost: prompted ? null : 0
-    });
-  } catch (error) {
-    // Silently fail metrics tracking
-  }
-}
 

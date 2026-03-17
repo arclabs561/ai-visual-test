@@ -210,8 +210,8 @@ function selectKeyframes(screenshots, evaluations, maxScreenshots) {
 
   // Detect significant state changes
   for (let i = 1; i < evaluations.length; i++) {
-    const prevScore = evaluations[i-1]?.score || 0;
-    const currScore = evaluations[i]?.score || 0;
+    const prevScore = evaluations[i-1]?.score ?? 0;
+    const currScore = evaluations[i]?.score ?? 0;
     const scoreChange = Math.abs(currScore - prevScore);
 
     if (scoreChange > 2.0) { // Significant change threshold
@@ -238,7 +238,7 @@ function selectByDiversity(screenshots, evaluations, maxScreenshots) {
   const last = screenshots[screenshots.length - 1];
 
   // Calculate score variance for diversity
-  const scores = evaluations.map(e => e.score || 0).filter(s => s !== null);
+  const scores = evaluations.map(e => e.score ?? 0).filter(s => s !== null);
   if (scores.length === 0) {
     return selectUniform(screenshots, maxScreenshots);
   }

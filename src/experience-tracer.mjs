@@ -143,7 +143,7 @@ export class ExperienceTrace {
         timestamp: e.timestamp,
         elapsed: e.elapsed,
         observation: e.data.observation || e.data.reasoning || '',
-        score: e.data.score || null,
+        score: e.data.score ?? null,
         gameState: e.data.gameState || null
       }));
     
@@ -152,7 +152,7 @@ export class ExperienceTrace {
       timestamp: v.timestamp,
       elapsed: v.elapsed,
       observation: v.validation.reasoning || v.validation.issues?.join(' ') || '',
-      score: v.validation.score || null,
+      score: v.validation.score ?? null,
       gameState: v.context.gameState || null
     }));
     

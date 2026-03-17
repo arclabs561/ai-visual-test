@@ -8,7 +8,7 @@ import {
   aggregateTemporalNotes,
   formatNotesForPrompt,
   calculateCoherenceExported as calculateCoherence
-} from '../../src/temporal.mjs';
+} from '../../src/temporal-core.mjs';
 
 test('aggregateTemporalNotes - empty notes', async () => {
   const result = await aggregateTemporalNotes([]);

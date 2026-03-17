@@ -14,8 +14,8 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { aggregateTemporalNotes } from '../../src/temporal.mjs';
-import { TemporalDecisionManager } from '../../src/temporal-decision-manager.mjs';
+import { aggregateTemporalNotes } from '../../src/temporal-core.mjs';
+import { TemporalDecisionManager } from '../../src/temporal-orchestration.mjs';
 
 test('Temporal Aggregation - Extreme Window Sizes', async () => {
   const notes = Array.from({ length: 10 }, (_, i) => ({

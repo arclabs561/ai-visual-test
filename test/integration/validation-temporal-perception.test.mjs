@@ -13,8 +13,8 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { humanPerceptionTime } from '../../src/temporal-decision.mjs';
-import { TIME_SCALES } from '../../src/temporal-constants.mjs';
+import { humanPerceptionTime } from '../../src/temporal-multi-scale.mjs';
+import { TIME_SCALES } from '../../src/temporal-core.mjs';
 
 test.describe('Temporal Perception Validation', () => {
   

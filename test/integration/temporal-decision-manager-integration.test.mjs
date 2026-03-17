@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { TemporalDecisionManager } from '../../src/temporal-decision-manager.mjs';
+import { TemporalDecisionManager } from '../../src/temporal-orchestration.mjs';
 import { validateScreenshot } from '../../src/index.mjs';
 
 test('TemporalDecisionManager shouldPrompt logic', async () => {

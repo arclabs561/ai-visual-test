@@ -12,9 +12,9 @@
  */
 
 import { buildRubricPrompt, DEFAULT_RUBRIC } from './rubrics.mjs';
-import { formatNotesForPrompt, aggregateTemporalNotes } from './temporal.mjs';
-import { formatTemporalContext } from './temporal-prompt-formatter.mjs';
-import { selectTopWeightedNotes } from './temporal-note-pruner.mjs';
+import { formatNotesForPrompt, aggregateTemporalNotes } from './temporal-core.mjs';
+import { formatTemporalContext } from './temporal-prompt-formatting.mjs';
+import { selectTopWeightedNotes } from './temporal-prompt-formatting.mjs';
 import { warn } from './logger.mjs';
 
 // Lazy import for variable goals

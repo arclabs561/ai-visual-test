@@ -13,8 +13,8 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { aggregateTemporalNotes } from '../../src/temporal.mjs';
-import { TemporalDecisionManager } from '../../src/temporal-decision-manager.mjs';
+import { aggregateTemporalNotes } from '../../src/temporal-core.mjs';
+import { TemporalDecisionManager } from '../../src/temporal-orchestration.mjs';
 import { loadDataset } from '../../evaluation/utils/dataset-adapters.mjs';
 
 test('Temporal Aggregation - Real Dataset Validation', async () => {

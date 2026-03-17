@@ -20,7 +20,7 @@ import { createConfig, getConfig } from './config.mjs';
 import { getCached, setCached } from './cache.mjs';
 import { FileError, ProviderError, TimeoutError, ValidationError } from './errors.mjs';
 import { log, warn } from './logger.mjs';
-import { evaluateTemporalDecision } from './temporal-logic.mjs';
+import { evaluateTemporalDecision } from './temporal-prompt-formatting.mjs';
 import { recordCost } from './cost-tracker.mjs';
 import { normalizeValidationResult } from './validation-result-normalizer.mjs';
 import { validateImagePath, validatePrompt } from './validation.mjs';

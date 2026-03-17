@@ -8,11 +8,11 @@ import assert from 'node:assert';
 import {
   createTemporalContext,
   mergeTemporalContext
-} from '../../src/temporal-context.mjs';
+} from '../../src/temporal-core.mjs';
 import {
   formatTemporalContext,
   formatTemporalForPrompt
-} from '../../src/temporal-prompt-formatter.mjs';
+} from '../../src/temporal-prompt-formatting.mjs';
 
 describe('Temporal Context', () => {
   describe('createTemporalContext', () => {

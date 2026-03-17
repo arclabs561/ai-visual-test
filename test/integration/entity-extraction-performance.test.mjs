@@ -10,7 +10,7 @@
 import '../test-setup.mjs'; // Auto-load .env (must be first)
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { buildTemporalGraph } from '../../src/temporal.mjs';
+import { buildTemporalGraph } from '../../src/temporal-core.mjs';
 import { testLog } from '../test-logger.mjs';
 
 test('Keyword extraction is fast enough for 60Hz (<1ms)', async () => {

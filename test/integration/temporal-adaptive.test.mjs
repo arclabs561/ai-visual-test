@@ -9,7 +9,7 @@ import {
   calculateOptimalWindowSize,
   detectActivityPattern,
   aggregateTemporalNotesAdaptive
-} from '../../src/temporal-adaptive.mjs';
+} from '../../src/temporal-multi-scale.mjs';
 
 describe('Temporal Adaptive', () => {
   describe('calculateOptimalWindowSize', () => {

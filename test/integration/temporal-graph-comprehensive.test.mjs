@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { buildTemporalGraph } from '../../src/temporal.mjs';
+import { buildTemporalGraph } from '../../src/temporal-core.mjs';
 
 test('buildTemporalGraph handles empty notes', async () => {
   const graph = await buildTemporalGraph([], { useLLM: false });

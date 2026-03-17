@@ -11,7 +11,7 @@
 import { VLLMJudge } from './judge.mjs';
 import { getCached, setCached } from './cache.mjs';
 import { log, warn } from './logger.mjs';
-import { formatNotesForPrompt } from './temporal.mjs';
+import { formatNotesForPrompt } from './temporal-core.mjs';
 
 /**
  * Post-hoc explanation engine for VLM judgments.

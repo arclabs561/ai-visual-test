@@ -136,7 +136,7 @@ export async function testGameplay(page, options = {}) {
       const state = window.gameState || {};
       return {
         gameActive: state.gameActive || false,
-        score: state.score || 0,
+        score: state.score ?? 0,
         level: state.level || 0,
         lives: state.lives || 3,
         ball: state.ball || null,
@@ -311,7 +311,7 @@ export async function testGameplay(page, options = {}) {
       if (result.temporalScreenshots && result.temporalScreenshots.length > 10) {
         try {
           const { selectRepresentativeScreenshots } = await import('./temporal-note-pruner.mjs');
-          const evaluations = allNotes.map(n => ({ score: n.score || 0 }));
+          const evaluations = allNotes.map(n => ({ score: n.score ?? 0 }));
           const selectedScreenshots = selectRepresentativeScreenshots(
             result.temporalScreenshots,
             evaluations,

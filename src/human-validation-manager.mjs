@@ -13,21 +13,9 @@ import { warn, log } from './logger.mjs';
 import { existsSync, readFileSync, writeFileSync, mkdirSync, readdirSync } from 'fs';
 import { join } from 'path';
 
-// Lazy import -- evaluation/ directory may not be present (removed from dist)
-let humanValidationModule = null;
-let humanValidationUnavailable = false;
-async function getHumanValidationModule() {
-  if (humanValidationUnavailable) return null;
-  if (!humanValidationModule) {
-    try {
-      humanValidationModule = await import('../evaluation/human-validation/human-validation.mjs');
-    } catch {
-      humanValidationUnavailable = true;
-      warn('[HumanValidation] evaluation/human-validation module not available. Human validation features disabled.');
-      return null;
-    }
-  }
-  return humanValidationModule;
+// evaluation/human-validation module was removed; all calls return null
+function getHumanValidationModule() {
+  return null;
 }
 
 /**
@@ -78,7 +66,8 @@ export class HumanValidationManager {
    */
   async _loadCalibrationCache() {
     try {
-      const humanValidation = await getHumanValidationModule();
+      const humanValidation = getHumanValidationModule();
+      if (!humanValidation) return;
       const VALIDATION_DIR = humanValidation.VALIDATION_DIR;
       
       // Ensure validation directory exists
@@ -108,7 +97,7 @@ export class HumanValidationManager {
    * Save calibration cache
    */
   async _saveCalibrationCache() {
-    const humanValidation = await getHumanValidationModule();
+    const humanValidation = getHumanValidationModule();
     if (!humanValidation) return;
     const VALIDATION_DIR = humanValidation.VALIDATION_DIR;
     
@@ -247,7 +236,7 @@ export class HumanValidationManager {
             evaluatorId: humanResult.evaluatorId
           };
           
-          const humanValidation = await getHumanValidationModule();
+          const humanValidation = getHumanValidationModule();
           if (humanValidation) humanValidation.collectHumanJudgment(humanJudgment);
           
           // Update calibration cache
@@ -314,7 +303,7 @@ export class HumanValidationManager {
     }
     
     try {
-      const humanValidation = await getHumanValidationModule();
+      const humanValidation = getHumanValidationModule();
       if (!humanValidation) return;
       const humanJudgments = this.calibrationCache.judgments.map(j => j.human);
       const vllmJudgments = this.calibrationCache.judgments.map(j => j.vllm);
@@ -493,7 +482,7 @@ export class HumanValidationManager {
    * Save VLLM judgments to disk
    */
   async _saveVLLMJudgments() {
-    const humanValidation = await getHumanValidationModule();
+    const humanValidation = getHumanValidationModule();
     if (!humanValidation) return;
     const VALIDATION_DIR = humanValidation.VALIDATION_DIR;
     
@@ -530,7 +519,7 @@ export class HumanValidationManager {
    * Manually trigger calibration
    */
   async calibrate() {
-    const humanValidation = await getHumanValidationModule();
+    const humanValidation = getHumanValidationModule();
     if (!humanValidation) {
       return { success: false, message: 'Human validation module not available' };
     }

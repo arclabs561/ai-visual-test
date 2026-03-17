@@ -353,8 +353,6 @@ export {
   setSpecConfig,
   resetSpecConfig
 } from './spec-config.mjs';
-// Error analysis utilities (evaluation tools, not core API)
-// Import from evaluation/utils/spec-error-analysis.mjs if needed
 export {
   validateSmart,
   validateAccessibilitySmart,

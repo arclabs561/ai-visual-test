@@ -82,7 +82,7 @@ export function detectActivityPattern(notes) {
 
   // Calculate score variance
   const scores = notes
-    .map(n => n.gameState?.score || 0)
+    .map(n => n.gameState?.score ?? 0)
     .filter(s => typeof s === 'number');
 
   if (scores.length < 2) {

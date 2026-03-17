@@ -37,8 +37,8 @@ export async function testBaseline(imagePath, prompt, options = {}) {
     extractedValue: null
   };
 
-  const visualScore = visualResult?.score || 0;
-  const baselineScore = baselineResult?.score || 0;
+  const visualScore = visualResult?.score ?? 0;
+  const baselineScore = baselineResult?.score ?? 0;
   const accuracyDrop = visualScore > 0 ? (visualScore - baselineScore) / visualScore : 0;
 
   return {

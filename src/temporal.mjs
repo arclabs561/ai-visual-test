@@ -167,7 +167,7 @@ export async function aggregateTemporalNotes(notes, options = {}) {
     // Extract score from gameState if available
     // NOTE: Score extraction order matters - gameState.score takes precedence over note.score
     // This is because gameState.score is more reliable (from actual game state)
-    const score = note.gameState?.score || note.score || 0;
+    const score = note.gameState?.score ?? note.score ?? 0;
     
     // Accumulate weighted score and total weight for this window
     // INVARIANT: weightedScore must be divided by totalWeight to get average
@@ -401,111 +401,24 @@ async function calculateCoherence(windows, options = {}) {
   if (windows.length > 1) {
     const observations = windows.map(w => (w.observations || '').trim());
     
-    // Try embeddings first (more accurate for semantic similarity)
-    // UX OPTIMIZATION: Auto-disable embeddings for large note arrays (>100) unless explicitly requested
-    // - Why: Embeddings add ~15ms per comparison, so 1000 notes = ~15s latency
-    // - User experience: Most users have 10-50 notes, so embeddings are fast and valuable
-    // - Edge case: Large datasets (1000+ notes) should use keyword matching for speed
-    // - Exception: If useEmbeddings is explicitly set to true, respect user preference
-    // Use totalNoteCount if provided (from aggregateTemporalNotes), otherwise fall back to observations.length
-    const noteCount = options.totalNoteCount || observations.length;
-    const shouldUseEmbeddingsForLargeArrays = options.useEmbeddings === true;
-    const autoDisableForLargeArrays = noteCount > 100 && !shouldUseEmbeddingsForLargeArrays;
-    
-    let useEmbeddings = false;
-    let useInstructionEmbeddings = false;
-    let instructionSemanticSimilarity = null;
-    let semanticSimilarity = null;
-    
-    if (!autoDisableForLargeArrays) {
-      try {
-        const embeddingsModule = await import('../evaluation/utils/instruction-embeddings.mjs');
-        const semanticModule = await import('../evaluation/utils/semantic-matcher.mjs');
-        
-        instructionSemanticSimilarity = embeddingsModule.instructionSemanticSimilarity;
-        semanticSimilarity = semanticModule.semanticSimilarity;
-        
-        useInstructionEmbeddings = await embeddingsModule.isInstructionEmbeddingsAvailable();
-        const useGeneralEmbeddings = !useInstructionEmbeddings && await semanticModule.isEmbeddingsAvailable();
-        useEmbeddings = useInstructionEmbeddings || useGeneralEmbeddings;
-      } catch (error) {
-        // Fall through to keyword matching if embeddings unavailable
-        useEmbeddings = false;
-      }
-      
-      if (useEmbeddings) {
-        // DESIGN DECISION: Use 'temporal' task for instruction-tuned embeddings
-        // - Why: Task-specific instructions improve precision for temporal patterns
-        // - Instruction: "Find temporal patterns or sequences similar to..."
-        // - Alternative: General embeddings or keyword matching
-        //   - Rejected: Lower precision, misses semantic similarities
-        // Calculate semantic similarities between consecutive observations
-        // Validation: Ensure functions are callable before using them
-        const isValidFunction = (fn) => typeof fn === 'function';
-        const similarityFn = useInstructionEmbeddings && isValidFunction(instructionSemanticSimilarity)
-          ? (text1, text2) => instructionSemanticSimilarity(text1, text2, 'temporal')
-          : isValidFunction(semanticSimilarity)
-            ? (text1, text2) => semanticSimilarity(text1, text2)
-            : null; // Fall back to keyword matching if no valid function
-        
-        if (similarityFn) {
-          let similaritySum = 0;
-          let validComparisons = 0;
-          
-          for (let i = 1; i < observations.length; i++) {
-            const prev = observations[i - 1];
-            const curr = observations[i];
-            
-            // Validation: Ensure both observations are valid strings
-            if (prev && curr && typeof prev === 'string' && typeof curr === 'string' && prev.length > 0 && curr.length > 0) {
-              try {
-                const similarity = await similarityFn(prev, curr);
-                // Validation: Ensure similarity result is valid
-                if (similarity !== null && similarity !== undefined && isFinite(similarity) && similarity >= 0 && similarity <= 1) {
-                  similaritySum += similarity;
-                  validComparisons++;
-                }
-              } catch (error) {
-                // Validation: Handle errors gracefully, skip invalid comparisons
-                // This can happen if embedding functions fail at runtime
-                continue;
-              }
-            }
-          }
-          
-          // Validation: Ensure we have valid comparisons before calculating average
-          if (validComparisons > 0) {
-            observationConsistency = Math.max(0, Math.min(1, similaritySum / validComparisons));
-          }
-        }
+    // Keyword matching for observation consistency (Jaccard similarity)
+    const keywords = observations.map(obs => {
+      const words = obs.toLowerCase().split(/\s+/).filter(w => w.length > 3);
+      return new Set(words);
+    });
+
+    let overlapSum = 0;
+    for (let i = 1; i < keywords.length; i++) {
+      const prev = keywords[i - 1];
+      const curr = keywords[i];
+      if (prev && curr && prev.size > 0 && curr.size > 0) {
+        const intersection = new Set([...prev].filter(x => curr.has(x)));
+        const union = new Set([...prev, ...curr]);
+        const overlap = union.size > 0 ? intersection.size / union.size : 0;
+        overlapSum += overlap;
       }
     }
-    
-    // Fallback to keyword matching if embeddings not used
-    // DESIGN DECISION: Keyword matching as final fallback
-    // - Why: Always works, no dependencies
-    // - Performance: Fast (~1ms per comparison)
-    // - Accuracy: Lower than embeddings (misses semantic similarities)
-    // - Use case: When embeddings unavailable or for quick checks
-    if (!useEmbeddings) {
-      const keywords = observations.map(obs => {
-        const words = obs.toLowerCase().split(/\s+/).filter(w => w.length > 3);
-        return new Set(words);
-      });
-      
-      let overlapSum = 0;
-      for (let i = 1; i < keywords.length; i++) {
-        const prev = keywords[i - 1];
-        const curr = keywords[i];
-        if (prev && curr && prev.size > 0 && curr.size > 0) {
-          const intersection = new Set([...prev].filter(x => curr.has(x)));
-          const union = new Set([...prev, ...curr]);
-          const overlap = union.size > 0 ? intersection.size / union.size : 0;
-          overlapSum += overlap;
-        }
-      }
-      observationConsistency = Math.max(0, Math.min(1, overlapSum / Math.max(1, keywords.length - 1)));
-    }
+    observationConsistency = Math.max(0, Math.min(1, overlapSum / Math.max(1, keywords.length - 1)));
   }
   
   // Final coherence: Weighted combination of all metrics
@@ -810,24 +723,9 @@ async function extractEntities(notes, options = {}) {
     const cacheKey = createHash('sha256').update(combinedText).digest('hex');
     const cached = entityExtractionCache.get(cacheKey);
     if (cached && (Date.now() - cached.timestamp) < ENTITY_CACHE_TTL) {
-      // Track metrics: cache hit
-      try {
-        const { researchMetrics } = await import('../evaluation/metrics/research-metrics-collector.mjs');
-        researchMetrics.recordEntityCaching(true);
-      } catch (error) {
-        // Silently fail metrics tracking
-      }
       return cached.entities;
     }
     
-    // Track metrics: cache miss
-    try {
-      const { researchMetrics } = await import('../evaluation/metrics/research-metrics-collector.mjs');
-      researchMetrics.recordEntityCaching(false);
-    } catch (error) {
-      // Silently fail metrics tracking
-    }
-
     const schema = {
       entities: {
         type: 'array',
@@ -909,7 +807,7 @@ function extractState(notes) {
       issues: []
     };
   }
-  const scores = notes.map(n => n.score || n.gameState?.score || 0);
+  const scores = notes.map(n => n.score ?? n.gameState?.score ?? 0);
   const issues = notes.flatMap(n => n.issues || []);
   return {
     avgScore: scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0,

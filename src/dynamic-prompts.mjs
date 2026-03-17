@@ -346,7 +346,7 @@ CURRENT GAME STATE:
   if (previousState) {
     prompt += `\n\nPREVIOUS STATE:
 - Bricks: ${previousState.bricks?.length || 0}
-- Score: ${previousState.score || 0}`;
+- Score: ${previousState.score ?? 0}`;
 
     const bricksDestroyed = (previousState.bricks?.length || 0) - (gameState.bricks?.length || 0);
     if (bricksDestroyed > 0) {

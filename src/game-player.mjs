@@ -17,7 +17,7 @@
  * 2. `GameGym` - External iterator (advanced API for power users, RL integration, parallel games)
  */
 
-import { validateScreenshot } from './index.mjs';
+import { validateScreenshot } from './judge.mjs';
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
 import { log, warn } from './logger.mjs';
@@ -53,7 +53,7 @@ export async function decideGameAction(gameState, goal, history = []) {
   let reflexionContext = '';
   const lastStep = recentHistory[recentHistory.length - 1];
   if (lastStep && lastStep.result?.score !== undefined) {
-    const scoreDelta = (stateEvaluation.score || 0) - (lastStep.result.score || 0);
+    const scoreDelta = (stateEvaluation.score ?? 0) - (lastStep.result.score ?? 0);
     if (scoreDelta < 0) {
       reflexionContext = `CRITICAL REFLEXION: The previous action (${JSON.stringify(lastStep.action)}) caused the score to drop by ${Math.abs(scoreDelta)}. 
       Analyze WHY this failed before choosing the next action. Avoid repeating the same mistake.`;
@@ -253,7 +253,7 @@ export async function playGame(page, options = {}) {
           // Try common game state patterns
           if (window.game) {
             return {
-              score: window.game.score || 0,
+              score: window.game.score ?? 0,
               level: window.game.level || 0,
               lives: window.game.lives || 0,
               gameActive: window.game.active !== false
@@ -597,8 +597,8 @@ export class GameGym {
     );
     
     // Calculate reward (based on goal)
-    const previousScore = this.currentState?.observation?.evaluation?.score || 0;
-    const currentScore = evaluation.score || 0;
+    const previousScore = this.currentState?.observation?.evaluation?.score ?? 0;
+    const currentScore = evaluation.score ?? 0;
     const reward = this.calculateReward(evaluation, this.currentState);
     
     // Update state
@@ -643,8 +643,8 @@ export class GameGym {
    * @returns {number} Reward value
    */
   calculateReward(evaluation, previousState) {
-    const currentScore = evaluation.score || 0;
-    const previousScore = previousState?.observation?.evaluation?.score || 0;
+    const currentScore = evaluation.score ?? 0;
+    const previousScore = previousState?.observation?.evaluation?.score ?? 0;
     
     // Reward based on goal
     if (this.options.goal.includes('maximize') || this.options.goal.includes('score')) {

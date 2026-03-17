@@ -1552,18 +1552,6 @@ export async function validateScreenshot(imagePath, prompt, context = {}) {
       const result = await ensemble.judge(imagePath, prompt, context);
       const latency = Date.now() - startTime;
       
-      // Track metrics: ensemble evaluation
-      try {
-        const { researchMetrics } = await import('../evaluation/metrics/research-metrics-collector.mjs');
-        researchMetrics.recordEnsemble('ensemble', {
-          accuracy: context.groundTruth ? Math.abs(result.score - context.groundTruth.score) : null,
-          latency,
-          cost: result.estimatedCost?.total || 0
-        });
-      } catch (error) {
-        // Silently fail metrics tracking
-      }
-      
       return result;
     } catch (error) {
       // If EnsembleJudge fails, fall back to single judge (graceful degradation)

@@ -78,11 +78,10 @@ describe('Cache Stats', () => {
       assert.strictEqual(typeof stats.vllm.atomicWriteSuccessRate, 'number');
     });
 
-    it('should handle missing embedding cache gracefully', () => {
+    it('should not include embedding cache (evaluation/ removed)', () => {
       const stats = getAllCacheStats();
-      
-      // Embedding cache may or may not be available
-      assert.ok(stats.embedding === null || typeof stats.embedding === 'object');
+
+      assert.strictEqual(stats.embedding, undefined);
     });
   });
 
@@ -129,29 +128,10 @@ describe('Cache Stats', () => {
       assert.ok(formatted.includes('100 / 1000'));
     });
 
-    it('should include embedding cache if available', () => {
-      const stats = {
-        vllm: {
-          size: 100,
-          maxSize: 1000,
-          maxAge: 604800000,
-          utilization: '10.0%',
-          cacheFile: '/tmp/cache.json',
-          atomicWrites: 0,
-          atomicWriteFailures: 0,
-          atomicWriteSuccessRate: 100
-        },
-        embedding: {
-          size: 50,
-          maxSize: 100,
-          utilization: '50.0%'
-        }
-      };
-      
-      const formatted = formatCacheStats(stats);
-      
-      assert.ok(formatted.includes('Embedding Cache'));
-      assert.ok(formatted.includes('50 / 100'));
+    it('should not include embedding cache section', () => {
+      const formatted = formatCacheStats();
+
+      assert.ok(!formatted.includes('Embedding Cache'));
     });
   });
 

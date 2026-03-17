@@ -181,7 +181,7 @@ function findRepetitivePhrases(text) {
 function calculateSeverity(detectedBiases) {
   if (detectedBiases.length === 0) return 'none';
   
-  const avgScore = detectedBiases.reduce((sum, b) => sum + (b.score || 0), 0) / detectedBiases.length;
+  const avgScore = detectedBiases.reduce((sum, b) => sum + (b.score ?? 0), 0) / detectedBiases.length;
   
   if (avgScore >= 0.7) return 'high';
   if (avgScore >= 0.4) return 'medium';

@@ -120,7 +120,7 @@ export function mitigateBias(result, biasDetection, options = {}) {
     totalAdjustment = Math.max(minAdjustment, Math.min(maxAdjustment, totalAdjustment));
     
     // Apply adjustment
-    adjustedScore = Math.max(0, Math.min(10, (result.score || 0) + totalAdjustment));
+    adjustedScore = Math.max(0, Math.min(10, (result.score ?? 0) + totalAdjustment));
   }
   
   return {
@@ -186,7 +186,7 @@ export function mitigatePositionBias(judgments, options = {}) {
         adjustment = -1.0;
       }
       
-      const adjustedScore = Math.max(0, Math.min(10, (judgment.score || 0) + adjustment));
+      const adjustedScore = Math.max(0, Math.min(10, (judgment.score ?? 0) + adjustment));
       
       return {
         ...judgment,

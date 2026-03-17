@@ -502,7 +502,7 @@ export async function multiModalValidation(validateFn, page, testName, options =
   
   // 7. Aggregate evaluation
   const aggregatedScore = perspectives.length > 0
-    ? perspectives.reduce((sum, p) => sum + (p.evaluation?.score || 0), 0) / perspectives.length
+    ? perspectives.reduce((sum, p) => sum + (p.evaluation?.score ?? 0), 0) / perspectives.length
     : null;
   
   const aggregatedIssues = perspectives.length > 0

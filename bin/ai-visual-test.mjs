@@ -33,11 +33,13 @@ function readVersion() {
   }
 }
 
+// Detection order: cheapest/fastest first (matches src/config.mjs priority)
 const PROVIDER_ENV_MAP = {
+  groq: 'GROQ_API_KEY',
   gemini: 'GEMINI_API_KEY',
   openai: 'OPENAI_API_KEY',
   claude: 'ANTHROPIC_API_KEY',
-  groq: 'GROQ_API_KEY',
+  openrouter: 'OPENROUTER_API_KEY',
 };
 
 function detectProvider() {
@@ -140,7 +142,7 @@ COMMANDS
   check   Validate a screenshot against a prompt
 
 CHECK OPTIONS
-  --provider <name>    LLM provider (gemini, openai, claude, groq)
+  --provider <name>    LLM provider (groq, gemini, openai, claude, openrouter)
                        Auto-detected from env vars if omitted
   --model <name>       Model name (provider-specific)
   --min-score <n>      Minimum passing score, 0-10 (default: 7)
@@ -150,13 +152,14 @@ CHECK OPTIONS
   -V, --version        Show version
 
 ENVIRONMENT
-  GEMINI_API_KEY       Gemini provider
-  OPENAI_API_KEY       OpenAI provider
-  ANTHROPIC_API_KEY    Claude provider
-  GROQ_API_KEY         Groq provider
+  GROQ_API_KEY         Groq (cheapest, auto-detected first)
+  GEMINI_API_KEY       Gemini
+  OPENAI_API_KEY       OpenAI
+  ANTHROPIC_API_KEY    Claude (not CLAUDE_API_KEY)
+  OPENROUTER_API_KEY   OpenRouter
 
-  Provider is auto-detected from whichever key is set. Explicit
-  --provider flag takes precedence.
+  Provider is auto-detected from whichever key is set (cheapest
+  first). Explicit --provider flag takes precedence.
 
   A .env file in the current directory is loaded automatically.
 

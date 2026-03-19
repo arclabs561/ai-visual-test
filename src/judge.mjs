@@ -34,9 +34,15 @@ import { composeSingleImagePrompt, composeComparisonPrompt } from './prompt-comp
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+/** Clamp a score to [0, 10] or null. */
+function _clampScore(raw) {
+  if (raw == null || typeof raw !== 'number' || isNaN(raw)) return null;
+  return Math.max(0, Math.min(10, raw));
+}
+
 /**
  * VLLM Judge Class
- * 
+ *
  * Handles screenshot validation using Vision Language Models.
  */
 export class VLLMJudge {
@@ -90,11 +96,17 @@ export class VLLMJudge {
     }
     try {
       const imageBuffer = readFileSync(validatedPath);
-      
+
+      // Enforce size limit to prevent OOM from oversized images
+      if (imageBuffer.length > API_CONSTANTS.MAX_IMAGE_SIZE) {
+        const sizeMB = (imageBuffer.length / (1024 * 1024)).toFixed(1);
+        const limitMB = (API_CONSTANTS.MAX_IMAGE_SIZE / (1024 * 1024)).toFixed(0);
+        throw new FileError(`Image too large: ${sizeMB}MB (limit: ${limitMB}MB)`, basename(validatedPath));
+      }
+
       // SECURITY: Validate image format using magic bytes
-      // Prevents MIME type spoofing and ensures file is actually an image
       this._validateImageFormat(imageBuffer, validatedPath);
-      
+
       return imageBuffer.toString('base64');
     } catch (error) {
       // Sanitize error message - don't leak full path
@@ -232,68 +244,9 @@ export class VLLMJudge {
    * @returns {Promise<import('./index.mjs').ValidationResult>} Validation result
    */
   async judgeScreenshot(imagePath, prompt, context = {}) {
-    // SECURITY: Validate inputs before processing
-    // Validate prompt length
-    try {
-      validatePrompt(prompt); // Uses VALIDATION_CONSTANTS.MAX_PROMPT_LENGTH
-    } catch (validationError) {
-      throw new ValidationError(`Invalid prompt: ${validationError.message}`);
-    }
-    
-    // SECURITY: Detect and prevent prompt injection
-    // Use strict mode if configured (throws on detection)
-    // Otherwise, sanitize automatically
-    const strictMode = context.strictPromptSecurity !== false; // Default true
-    try {
-      if (strictMode) {
-        validatePromptSecurity(prompt, true);
-      }
-      // Sanitize prompt (removes injection patterns and prepends system prefix)
-      // Only sanitize if not in strict mode (strict mode throws instead)
-      if (!strictMode) {
-        prompt = sanitizePrompt(prompt, {
-          systemPrefix: 'You are a UI evaluation assistant. User request:'
-        });
-      }
-    } catch (validationError) {
-      throw new ValidationError(`Prompt security violation: ${validationError.message}`);
-    }
-    
-    // Support both single image and multi-image (for pair comparison)
+    prompt = this._validateAndSanitizePrompt(prompt, context);
     const imagePaths = Array.isArray(imagePath) ? imagePath : [imagePath];
-    
-    // Validate all image paths and resolve them
-    // For absolute paths, allow them if they're explicitly provided (not from user input manipulation)
-    // This allows temp files and other legitimate absolute paths
-    const validatedPaths = [];
-    for (const path of imagePaths) {
-      try {
-        // If path is already absolute and exists, allow it (legitimate temp files, etc.)
-        // Still validate to ensure it's a valid image format
-        if (path.startsWith('/') || path.startsWith(process.cwd())) {
-          // Absolute path - validate format but allow if it's a real absolute path
-          const resolved = resolve(path);
-          // Check if it's a valid image format
-          const validExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.webp'];
-          const hasValidExtension = validExtensions.some(ext => 
-            resolved.toLowerCase().endsWith(ext)
-          );
-          if (!hasValidExtension) {
-            throw new ValidationError('Invalid image format. Supported: png, jpg, jpeg, gif, webp', path);
-          }
-          validatedPaths.push(resolved);
-        } else {
-          // Relative path - use standard validation (prevents path traversal)
-          const resolved = validateImagePath(path);
-          validatedPaths.push(resolved);
-        }
-      } catch (validationError) {
-        throw new FileError(`Invalid image path: ${validationError.message}`, basename(path));
-      }
-    }
-    
-    // Use validated paths for processing
-    const finalImagePaths = validatedPaths.length > 0 ? validatedPaths : imagePaths;
+    this._validateImagePaths(imagePaths);
     const isMultiImage = imagePaths.length > 1;
     if (!this.enabled) {
       // Return normalized disabled result
@@ -780,7 +733,7 @@ export class VLLMJudge {
       }
       
       return {
-        score: judgment.score ?? null,
+        score: _clampScore(judgment.score),
         issues: issues,
         assessment: judgment.assessment || null,
         reasoning: judgment.reasoning || null,
@@ -795,7 +748,7 @@ export class VLLMJudge {
 
     // Handle case where judgment is a string
     const judgmentText = typeof judgment === 'string' ? judgment : String(judgment || '');
-    
+
     try {
       const jsonMatch = judgmentText.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
@@ -810,7 +763,7 @@ export class VLLMJudge {
             impact: 'minor-inconvenience'
           }));
         }
-        
+
         let recommendations = parsed.recommendations || [];
         if (recommendations.length > 0 && typeof recommendations[0] === 'string') {
           recommendations = recommendations.map(suggestion => ({
@@ -819,9 +772,9 @@ export class VLLMJudge {
             expectedImpact: 'improved user experience'
           }));
         }
-        
+
         return {
-          score: parsed.score ?? null,
+          score: _clampScore(parsed.score),
           issues: issues,
           assessment: parsed.assessment || null,
           reasoning: parsed.reasoning || null,
@@ -998,6 +951,52 @@ export class VLLMJudge {
     }
     
     return null;
+  }
+
+  /**
+   * Validate prompt length and security. Returns sanitized prompt.
+   */
+  _validateAndSanitizePrompt(prompt, context) {
+    try {
+      validatePrompt(prompt);
+    } catch (err) {
+      throw new ValidationError(`Invalid prompt: ${err.message}`);
+    }
+
+    const strictMode = context.strictPromptSecurity !== false;
+    try {
+      if (strictMode) {
+        validatePromptSecurity(prompt, true);
+      } else {
+        prompt = sanitizePrompt(prompt, {
+          systemPrefix: 'You are a UI evaluation assistant. User request:'
+        });
+      }
+    } catch (err) {
+      throw new ValidationError(`Prompt security violation: ${err.message}`);
+    }
+    return prompt;
+  }
+
+  /**
+   * Validate and resolve image paths. Throws on invalid paths.
+   */
+  _validateImagePaths(imagePaths) {
+    const validExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.webp'];
+    for (const path of imagePaths) {
+      try {
+        if (path.startsWith('/') || path.startsWith(process.cwd())) {
+          const resolved = resolve(path);
+          if (!validExtensions.some(ext => resolved.toLowerCase().endsWith(ext))) {
+            throw new ValidationError('Invalid image format. Supported: png, jpg, jpeg, gif, webp', path);
+          }
+        } else {
+          validateImagePath(path);
+        }
+      } catch (err) {
+        throw new FileError(`Invalid image path: ${err.message}`, basename(path));
+      }
+    }
   }
 
   /**

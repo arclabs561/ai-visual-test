@@ -20,23 +20,10 @@ export {
   calculatePersonaDiversity
 } from '../persona-enhanced.mjs';
 
-// Experience tracing
-export {
-  ExperienceTrace,
-  ExperienceTracerManager,
-  getTracerManager
-} from '../experience-tracer.mjs';
-
-// Experience propagation
+// Experience propagation (used by convenience.mjs and persona-experience.mjs)
 export {
   ExperiencePropagationTracker,
   getPropagationTracker,
   trackPropagation
 } from '../experience-propagation.mjs';
-
-// Explanation manager
-export {
-  ExplanationManager,
-  getExplanationManager
-} from '../explanation-manager.mjs';
 

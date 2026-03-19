@@ -3,133 +3,233 @@
 [![npm](https://img.shields.io/npm/v/@arclabs561/ai-visual-test)](https://www.npmjs.com/package/@arclabs561/ai-visual-test)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Visual testing framework using Vision Language Models. Validates screenshots, checks accessibility, and can play games.
+Validate screenshots against natural-language expectations using vision LLMs. Scores pages 0-10, lists issues, and returns structured results you can assert on in tests.
 
-## Why This Package
-
-Pixel-based testing breaks when content changes. This tool asks "does this look correct?" instead of "did pixels change?"
-
-## Installation
+## Install
 
 ```bash
 npm install @arclabs561/ai-visual-test
 ```
 
-## Configuration
+## Configure
 
-Set an API key in a `.env` file:
+Set one API key. The package auto-detects the provider from whichever key is present (checked in order: Groq, Gemini, OpenAI, Claude, OpenRouter -- cheapest first).
 
 ```bash
-# .env file
+# .env (loaded automatically)
 GEMINI_API_KEY=your-key-here
-# or
-OPENAI_API_KEY=your-key-here
-# or
-ANTHROPIC_API_KEY=your-key-here
+# or OPENAI_API_KEY, ANTHROPIC_API_KEY, GROQ_API_KEY, OPENROUTER_API_KEY
 ```
 
-## Quick Start
-
-### With Playwright
+Validate configuration early in your test setup to catch missing keys before tests run:
 
 ```javascript
-import { validatePage } from '@arclabs561/ai-visual-test';
-import { chromium } from 'playwright';
+import { validateStartup } from '@arclabs561/ai-visual-test';
 
-const browser = await chromium.launch();
-const page = await browser.newPage();
-await page.goto('https://example.com');
-
-// validatePage() handles screenshotting
-const result = await validatePage(page, 'Check for visual bugs and accessibility issues');
-
-console.log(result.score);  // 7 (0-10 scale)
-console.log(result.issues); // ['Missing error messages', 'Low contrast']
+validateStartup(); // throws ConfigError if no API key found
 ```
 
-### With Screenshot Path
+Override provider, model, or caching per-call or globally:
+
+```javascript
+import { createConfig } from '@arclabs561/ai-visual-test';
+
+const config = createConfig({
+  provider: 'openai',         // override auto-detection
+  model: 'gpt-4o',            // override default model for provider
+  modelTier: 'fast',          // or 'balanced', 'best' (tier-based selection)
+  cacheEnabled: true,          // default: true (disable with DISABLE_LLM_CACHE=true)
+  timeout: 30000,             // ms, default: 30000
+  verbose: false,
+});
+```
+
+## Usage
+
+### Validate a screenshot
 
 ```javascript
 import { validateScreenshot } from '@arclabs561/ai-visual-test';
 
 const result = await validateScreenshot(
   'screenshot.png',
-  'Check if this payment form is accessible and usable'
+  'Is this payment form accessible and usable?'
 );
 
-console.log(result.score);  // 7 (0-10 scale)
-console.log(result.issues); // ['Missing error messages', 'Low contrast']
+// result.score    -- 0-10 (null if provider disabled)
+// result.issues   -- ['Low contrast on helper text', 'No error states shown']
+// result.recommendations -- ['Increase contrast ratio to 4.5:1', ...]
+// result.reasoning -- LLM's explanation
+// result.provider  -- 'gemini'
+// result.model     -- 'gemini-2.0-flash'
 ```
 
-## Key Features
-
-### 1. Hybrid Validation
-Combines deterministic code checks (contrast ratios, aria-labels) with AI visual judgment.
+Per-call overrides:
 
 ```javascript
-import { validateAccessibilityHybrid } from '@arclabs561/ai-visual-test/validators';
-// Checks code AND pixels
-const result = await validateAccessibilityHybrid(page, 'shot.png');
-```
-
-### 2. AI Game Agent
-Plays Canvas/WebGL games by analyzing screenshots and planning actions. Includes Reflexion (learning from mistakes) and Chain of Thought.
-
-```javascript
-import { playGame } from '@arclabs561/ai-visual-test';
-await playGame(page, { goal: 'Win the level', maxSteps: 50 });
-```
-
-### 3. Cost Optimization
-Caching, model tiering, and provider selection. See `test/performance/optimization-claims-validation.test.mjs` for validation.
-
-## Documentation
-
-- [**EXAMPLES.md**](./EXAMPLES.md) - Code snippets for Game Playing, Hybrid Validation, Playwright integration.
-- [**API_QUICK_REFERENCE.md**](./API_QUICK_REFERENCE.md) - Function signatures and options.
-- [**examples/**](./examples/) - Runnable examples.
-- **TypeScript**: Type definitions included.
-
-## Playwright Integration
-
-Custom matchers for Playwright tests. **Requires `@playwright/test` to be installed** (already in devDependencies for this project).
-
-### Setup
-
-```javascript
-import { expect } from '@playwright/test';
-import { createMatchers } from '@arclabs561/ai-visual-test/playwright';
-
-// Extend expect with custom matchers (call once in your test setup)
-createMatchers(expect);
-```
-
-### Usage in Tests
-
-```javascript
-test('visual quality', async ({ page }) => {
-  await page.goto('https://example.com');
-  
-  // Visual quality check
-  await expect(page).toHaveVisualScore(7, 'Check visual quality');
-  
-  // Hybrid accessibility check (programmatic + AI)
-  await expect(page).toBeAccessibleHybrid(4.5);
+const result = await validateScreenshot('screenshot.png', 'Check layout', {
+  provider: 'openai',
+  model: 'gpt-4o',
+  modelTier: 'best',
 });
 ```
 
-### Installation
+### Validate a Playwright page
 
-For development in this project, Playwright is already installed. For use in other projects:
+```javascript
+import { validatePage } from '@arclabs561/ai-visual-test';
+
+// Takes a screenshot internally, sends it to the LLM
+const result = await validatePage(page, 'Check for visual bugs', {
+  fullPage: true,        // full-page screenshot (default: false)
+  captureCode: true,     // extract HTML/CSS for context (default: true)
+});
+```
+
+### Compare before/after screenshots
+
+```javascript
+import { validateComparison } from '@arclabs561/ai-visual-test';
+
+const result = await validateComparison(
+  'before.png',
+  'after.png',
+  'Did the redesign fix the contrast issues?'
+);
+```
+
+### Estimate cost before calling
+
+```javascript
+import { estimateCost } from '@arclabs561/ai-visual-test';
+
+const estimate = estimateCost('gemini', { imageCount: 2, promptLength: 200 });
+// estimate.estimatedCost   -- '0.000350' (USD)
+// estimate.estimatedInputTokens  -- 3100
+// estimate.estimatedOutputTokens -- 500
+```
+
+## Test Framework Integration
+
+### Vitest / Jest
+
+```javascript
+// vitest.setup.js (or jest.setup.js)
+import { expect } from 'vitest'; // or from '@jest/globals'
+import { createMatchers } from '@arclabs561/ai-visual-test/vitest';
+
+createMatchers(expect);
+```
+
+```javascript
+// your-component.test.js
+test('login page passes visual check', async () => {
+  await expect('screenshot.png').toPassVisualCheck(
+    'Login form is complete and accessible'
+  );
+});
+
+test('score meets threshold', async () => {
+  await expect('screenshot.png').toHaveVisualScore(
+    7,                                    // minimum score
+    'Check visual quality'                // prompt
+  );
+});
+
+test('redesign preserved layout', async () => {
+  await expect('before.png').toMatchVisually(
+    'after.png',
+    'Layout and content should be equivalent'
+  );
+});
+```
+
+### Playwright
 
 ```bash
 npm install --save-dev @playwright/test
 npx playwright install chromium
 ```
 
-See `examples/playwright-setup.mjs` for setup example.
+```javascript
+// playwright.config.js or test setup
+import { expect } from '@playwright/test';
+import { createMatchers } from '@arclabs561/ai-visual-test/playwright';
 
-Documentation: [docs/PLAYWRIGHT_INTEGRATION.md](./docs/PLAYWRIGHT_INTEGRATION.md)
+createMatchers(expect);
+```
+
+```javascript
+test('visual quality', async ({ page }) => {
+  await page.goto('https://example.com');
+
+  // Visual quality check (0-10, fails if below threshold)
+  await expect(page).toHaveVisualScore(7, 'Check visual quality');
+
+  // Hybrid accessibility (programmatic contrast + AI semantic check)
+  await expect(page).toBeAccessibleHybrid(4.5);
+});
+```
+
+## CLI
+
+Validate screenshots from the command line:
+
+```bash
+npx ai-visual-test check screenshot.png "Is this accessible?"
+```
+
+Options:
+
+```
+--provider <name>    LLM provider (groq, gemini, openai, claude, openrouter)
+--model <name>       Model name (provider-specific)
+--min-score <n>      Minimum passing score, 0-10 (default: 7)
+--json               Machine-readable JSON output
+--verbose            Show additional details
+```
+
+Exit code 0 if score >= min-score, 1 otherwise.
+
+```bash
+# CI usage: fail the build if score drops below 6
+npx ai-visual-test check screenshot.png "Check accessibility" --min-score 6
+
+# JSON output for scripting
+npx ai-visual-test check screenshot.png "Check layout" --json | jq '.score'
+```
+
+## Advanced Features
+
+These are available as subpath imports:
+
+| Subpath | What it provides |
+|---------|-----------------|
+| `@arclabs561/ai-visual-test/validators` | Hybrid accessibility validation, programmatic contrast/keyboard checks, rubric-based validation, batch validation |
+| `@arclabs561/ai-visual-test/temporal` | Temporal screenshot aggregation, multi-scale analysis, adaptive capture |
+| `@arclabs561/ai-visual-test/ensemble` | Multi-provider ensemble judging, bias detection and mitigation, hallucination detection |
+| `@arclabs561/ai-visual-test/persona` | Persona-based experience testing (test as different user types) |
+| `@arclabs561/ai-visual-test/game` | AI game agent (plays Canvas/WebGL games via Playwright, analyzes screenshots, dispatches actions) |
+| `@arclabs561/ai-visual-test/specs` | Natural-language spec parsing and execution |
+| `@arclabs561/ai-visual-test/multi-modal` | Multi-modal validation (screenshot + HTML + CSS fusion) |
+| `@arclabs561/ai-visual-test/utils` | Cost tracking, score calibration, model/provider selection, type guards |
+| `@arclabs561/ai-visual-test/errors` | Error types (ValidationError, ConfigError, ProviderError, FileError) |
+
+Example:
+
+```javascript
+import { validateAccessibilityHybrid } from '@arclabs561/ai-visual-test/validators';
+
+// Runs programmatic contrast checks + AI semantic evaluation
+const result = await validateAccessibilityHybrid(page, 'screenshot.png');
+```
+
+## Limitations
+
+- Scores are non-deterministic: same image + prompt can return different scores across calls. Use caching or ensemble judging for stability.
+- Groq's multi-image support is limited (llama-4-scout returns null scores for comparison).
+- Game agent requires Playwright and works best with simple 2D games.
+- No offline mode: requires an API key and network access.
 
 ## License
 

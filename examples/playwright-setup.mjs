@@ -1,36 +1,29 @@
 #!/usr/bin/env node
 /**
- * Playwright Integration Setup Example
- * 
- * Shows how to set up and use the Playwright integration in your tests.
- * 
- * Run this to verify your Playwright integration is working:
- * node examples/playwright-setup.mjs
+ * Playwright Integration Setup
+ *
+ * Verifies your Playwright integration is working.
+ *
+ * Run: node examples/playwright-setup.mjs
+ * Requires: GEMINI_API_KEY, OPENAI_API_KEY, or ANTHROPIC_API_KEY
  */
 
-import { test, expect } from '@playwright/test';
-import { createMatchers } from '../src/integrations/playwright.mjs';
-import { hasAnyApiKey, getAvailableProviders } from '../test/helpers/api-key-check.mjs';
-
-// Extend expect with custom matchers
-createMatchers(expect);
+import { createMatchers } from '@arclabs561/ai-visual-test/playwright';
 
 async function runSetupTest() {
-  // Check for API keys
-  if (!hasAnyApiKey()) {
-    console.log('⚠️  No API keys configured');
-    console.log('   Set GEMINI_API_KEY, OPENAI_API_KEY, or ANTHROPIC_API_KEY in .env');
-    console.log('   Example will fail without API keys.\n');
-    return;
+  if (!process.env.GEMINI_API_KEY && !process.env.OPENAI_API_KEY && !process.env.ANTHROPIC_API_KEY && !process.env.GROQ_API_KEY) {
+    console.log('No API keys configured.');
+    console.log('Set GEMINI_API_KEY, OPENAI_API_KEY, or ANTHROPIC_API_KEY in .env');
+    process.exit(1);
   }
-  
-  const providers = getAvailableProviders();
-  console.log(`✅ Using providers: ${providers.join(', ')}\n`);
 
-  console.log('🧪 Running Playwright integration setup test...\n');
-
-  // This is a demonstration - in real tests, use test() from @playwright/test
   const { chromium } = await import('playwright');
+  const { expect } = await import('@playwright/test');
+
+  createMatchers(expect);
+
+  console.log('Running Playwright integration setup test...\n');
+
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage();
 
@@ -57,40 +50,39 @@ async function runSetupTest() {
     await page.setContent(html);
     await page.waitForLoadState('networkidle');
 
-    console.log('1️⃣  Testing toHaveVisualScore matcher...');
+    console.log('Testing toHaveVisualScore...');
     try {
       await expect(page).toHaveVisualScore(6, 'Check for visual quality');
-      console.log('   ✅ toHaveVisualScore passed');
+      console.log('  PASSED');
     } catch (error) {
-      console.log(`   ⚠️  toHaveVisualScore: ${error.message.substring(0, 100)}...`);
+      console.log(`  FAILED: ${error.message.substring(0, 100)}...`);
     }
 
-    console.log('\n2️⃣  Testing toBeAccessibleHybrid matcher...');
+    console.log('Testing toBeAccessibleHybrid...');
     try {
       await expect(page).toBeAccessibleHybrid(4.5);
-      console.log('   ✅ toBeAccessibleHybrid passed');
+      console.log('  PASSED');
     } catch (error) {
-      // Hybrid validation may fail due to AI semantic concerns, which is fine
       const message = error.message || '';
       if (message.includes('Programmatic checks should pass')) {
-        console.log('   ⚠️  toBeAccessibleHybrid: AI found semantic issues (programmatic checks passed)');
+        console.log('  AI found semantic issues (programmatic checks passed)');
       } else {
-        console.log(`   ⚠️  toBeAccessibleHybrid: ${error.message.substring(0, 100)}...`);
+        console.log(`  FAILED: ${error.message.substring(0, 100)}...`);
       }
     }
 
-    console.log('\n✅ Playwright integration setup complete!');
-    console.log('\n📝 To use in your Playwright tests:');
-    console.log('   1. Import: import { createMatchers } from "@arclabs561/ai-visual-test/playwright";');
-    console.log('   2. Setup: createMatchers(expect);');
-    console.log('   3. Use: await expect(page).toHaveVisualScore(7, "Check quality");');
+    console.log('\nSetup verified.');
+    console.log('In your Playwright tests:');
+    console.log('  1. import { createMatchers } from "@arclabs561/ai-visual-test/playwright"');
+    console.log('  2. createMatchers(expect)');
+    console.log('  3. await expect(page).toHaveVisualScore(7, "prompt")');
 
   } catch (error) {
-    console.error('❌ Error:', error.message);
+    console.error('Error:', error.message);
+    process.exit(1);
   } finally {
     await browser.close();
   }
 }
 
 runSetupTest().catch(console.error);
-

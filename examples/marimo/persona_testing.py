@@ -25,32 +25,43 @@ def __():
     from pydantic import ValidationError
     from models import Persona, PersonaExperienceResult
     from config import AppSettings
-    
+
     # Configuration using Pydantic Settings
     settings = AppSettings()
     API_KEY = settings.api_key
     URL = settings.test_url
-    
+
     # Define personas using Pydantic models
     personas = [
         Persona(
             name="Casual Gamer",
             perspective="entertainment",
-            focus=["gameplay", "user-experience", "fun-factor"]
+            focus=["gameplay", "user-experience", "fun-factor"],
         ),
         Persona(
             name="Accessibility Advocate",
             perspective="accessibility",
-            focus=["wcag-compliance", "keyboard-navigation", "screen-reader-support"]
+            focus=["wcag-compliance", "keyboard-navigation", "screen-reader-support"],
         ),
         Persona(
             name="Mobile User",
             perspective="mobile-usability",
-            focus=["responsive-design", "touch-interactions", "mobile-performance"]
-        )
+            focus=["responsive-design", "touch-interactions", "mobile-performance"],
+        ),
     ]
-    
-    return API_KEY, URL, ValidationError, Persona, PersonaExperienceResult, json, os, personas, Path, settings
+
+    return (
+        API_KEY,
+        URL,
+        ValidationError,
+        Persona,
+        PersonaExperienceResult,
+        json,
+        os,
+        personas,
+        Path,
+        settings,
+    )
 
 
 @app.cell
@@ -59,7 +70,7 @@ def __(Persona, personas):
     Step 1: Display personas
     """
     import marimo as mo
-    
+
     persona_cards = []
     for persona in personas:
         # Handle both Pydantic models and dicts
@@ -71,16 +82,16 @@ def __(Persona, personas):
             name = persona["name"]
             perspective = persona["perspective"]
             focus = ", ".join(persona["focus"])
-        
+
         persona_cards.append(f"""
         ### {name}
         
         - **Perspective:** {perspective}
         - **Focus Areas:** {focus}
         """)
-    
+
     mo.md("## Test Personas\n\n" + "\n".join(persona_cards))
-    
+
     return mo, persona_cards
 
 
@@ -88,15 +99,15 @@ def __(Persona, personas):
 def __(API_KEY, URL, json, personas, Persona):
     """
     Step 2: Run persona-based testing
-    
+
     In production, this would call:
     experiencePageWithPersonas(page, personas, options)
-    
+
     Note: This requires Playwright. The actual return type is PersonaExperienceResult[]
     which includes: persona, notes, screenshots, renderedCode, gameState, evaluation, timestamp
     """
     import json as py_json
-    
+
     # Create Node.js script for persona testing
     # Updated to use experiencePageAsPersona (new API) instead of experiencePageWithPersonas
     node_script = f"""
@@ -141,68 +152,78 @@ def __(API_KEY, URL, json, personas, Persona):
     
     run();
     """
-    
-    print("📝 Persona testing script created")
+
+    print("Persona testing script created")
     print("   (In production, this would execute and return results)")
     print("   Note: Uses experiencePageAsPersona (updated API)")
     print("   Note: Automatically performs temporal aggregation")
     print("   Note: Requires @playwright/test to be installed")
-    
+
     # Mock results matching actual PersonaExperienceResult structure
     # In production, these would be validated with PersonaExperienceResult.model_validate()
     results = []
     for persona in personas:
         # Convert Pydantic model to dict if needed
-        persona_dict = persona.model_dump() if hasattr(persona, 'model_dump') else persona
-        
+        persona_dict = persona.model_dump() if hasattr(persona, "model_dump") else persona
+
         # Mock result structure matching PersonaExperienceResult
-        result = {{
-            "persona": persona_dict,
-            "notes": [
-                {{
-                    "step": "initial_experience",
-                    "persona": persona_dict["name"],
-                    "observation": f"Arrived at page - viewed from {persona_dict['perspective']} perspective",
-                    "timestamp": 1234567890,
-                    "elapsed": 0
-                }},
-                {{
-                    "step": "reading",
-                    "persona": persona_dict["name"],
-                    "observation": f"Reading page content focusing on: {', '.join(persona_dict['focus'])}",
-                    "timestamp": 1234567891,
-                    "elapsed": 1000
-                }}
-            ],
-            "screenshots": [
-                {{
-                    "path": f"test-results/persona-{persona_dict['name'].lower().replace(' ', '-')}-page-load-1234567890.png",
-                    "timestamp": 1234567890,
-                    "elapsed": 0,
-                    "step": "page-load",
-                    "description": "Page loaded"
-                }}
-            ],
-            "renderedCode": {{
-                "html": "<html>...</html>",
-                "css": "body {{ ... }}",
-                "domStructure": {{}}
-            }},
-            "gameState": {{}},
-            "evaluation": {{
-                "enabled": True,
-                "provider": "gemini",
-                "score": 7.5 + (hash(persona_dict["name"]) % 20) / 10,  # Scores are 0-10
-                "issues": [] if persona_dict["name"] == "Casual Gamer" else ["Minor accessibility concern"],
-                "assessment": f"Good experience from {persona_dict['perspective']} perspective",
-                "reasoning": f"Page meets most expectations for {persona_dict['name']}",
-                "responseTime": 2500,  # milliseconds
-                "cached": False
-            }},
-            "timestamp": 1234567890
-        }}
+        result = {
+            {
+                "persona": persona_dict,
+                "notes": [
+                    {
+                        {
+                            "step": "initial_experience",
+                            "persona": persona_dict["name"],
+                            "observation": f"Arrived at page - viewed from {persona_dict['perspective']} perspective",
+                            "timestamp": 1234567890,
+                            "elapsed": 0,
+                        }
+                    },
+                    {
+                        {
+                            "step": "reading",
+                            "persona": persona_dict["name"],
+                            "observation": f"Reading page content focusing on: {', '.join(persona_dict['focus'])}",
+                            "timestamp": 1234567891,
+                            "elapsed": 1000,
+                        }
+                    },
+                ],
+                "screenshots": [
+                    {
+                        {
+                            "path": f"test-results/persona-{persona_dict['name'].lower().replace(' ', '-')}-page-load-1234567890.png",
+                            "timestamp": 1234567890,
+                            "elapsed": 0,
+                            "step": "page-load",
+                            "description": "Page loaded",
+                        }
+                    }
+                ],
+                "renderedCode": {
+                    {"html": "<html>...</html>", "css": "body {{ ... }}", "domStructure": {{}}}
+                },
+                "gameState": {{}},
+                "evaluation": {
+                    {
+                        "enabled": True,
+                        "provider": "gemini",
+                        "score": 7.5 + (hash(persona_dict["name"]) % 20) / 10,  # Scores are 0-10
+                        "issues": []
+                        if persona_dict["name"] == "Casual Gamer"
+                        else ["Minor accessibility concern"],
+                        "assessment": f"Good experience from {persona_dict['perspective']} perspective",
+                        "reasoning": f"Page meets most expectations for {persona_dict['name']}",
+                        "responseTime": 2500,  # milliseconds
+                        "cached": False,
+                    }
+                },
+                "timestamp": 1234567890,
+            }
+        }
         results.append(result)
-    
+
     return results, node_script
 
 
@@ -212,7 +233,7 @@ def __(PersonaExperienceResult, mo, results):
     Step 3: Display persona test results
     """
     import pandas as pd
-    
+
     # Create results table from PersonaExperienceResult structure
     # Handle both validated models and dicts
     rows = []
@@ -233,20 +254,22 @@ def __(PersonaExperienceResult, mo, results):
             eval_response_time = r.get("evaluation", {}).get("responseTime")
             notes_count = len(r.get("notes", []))
             screenshots_count = len(r.get("screenshots", []))
-        
-        rows.append({
-            "Persona": persona_name,
-            "Perspective": persona_perspective,
-            "Score": f"{eval_score:.2f}" if eval_score is not None else "N/A",
-            "Issues": len(eval_issues),
-            "Notes": notes_count,
-            "Screenshots": screenshots_count,
-            "Duration (s)": f"{eval_response_time / 1000:.2f}" if eval_response_time else "N/A"
-        })
-    
+
+        rows.append(
+            {
+                "Persona": persona_name,
+                "Perspective": persona_perspective,
+                "Score": f"{eval_score:.2f}" if eval_score is not None else "N/A",
+                "Issues": len(eval_issues),
+                "Notes": notes_count,
+                "Screenshots": screenshots_count,
+                "Duration (s)": f"{eval_response_time / 1000:.2f}" if eval_response_time else "N/A",
+            }
+        )
+
     df = pd.DataFrame(rows)
     mo.ui.table(df)
-    
+
     return df, pd
 
 
@@ -277,22 +300,38 @@ def __(PersonaExperienceResult, mo, results):
             evaluation = validated.evaluation
             notes = validated.notes
             screenshots = validated.screenshots
-        
+
         # Extract values
-        persona_name = persona.name if hasattr(persona, 'name') else persona.get("name", "Unknown")
-        persona_perspective = persona.perspective if hasattr(persona, 'perspective') else persona.get("perspective", "Unknown")
-        persona_focus = persona.focus if hasattr(persona, 'focus') else persona.get("focus", [])
-        
-        score = evaluation.score if hasattr(evaluation, 'score') else evaluation.get("score") if evaluation else None
-        issues = evaluation.issues if hasattr(evaluation, 'issues') else evaluation.get("issues", []) if evaluation else []
-        
+        persona_name = persona.name if hasattr(persona, "name") else persona.get("name", "Unknown")
+        persona_perspective = (
+            persona.perspective
+            if hasattr(persona, "perspective")
+            else persona.get("perspective", "Unknown")
+        )
+        persona_focus = persona.focus if hasattr(persona, "focus") else persona.get("focus", [])
+
+        score = (
+            evaluation.score
+            if hasattr(evaluation, "score")
+            else evaluation.get("score")
+            if evaluation
+            else None
+        )
+        issues = (
+            evaluation.issues
+            if hasattr(evaluation, "issues")
+            else evaluation.get("issues", [])
+            if evaluation
+            else []
+        )
+
         if score is not None:
             # Scores are 0-10, not 0-1
             score_color = "green" if score >= 8 else "orange" if score >= 6 else "red"
-            score_display = f"<span style=\"color: {score_color}\">{score:.1f}/10</span>"
+            score_display = f'<span style="color: {score_color}">{score:.1f}/10</span>'
         else:
             score_display = "N/A"
-        
+
         mo.md(f"""
         ### {persona_name} Results
         
@@ -309,7 +348,7 @@ def __(PersonaExperienceResult, mo, results):
         
         **Screenshots:** {len(screenshots)}
         """)
-    
+
     return
 
 
@@ -317,11 +356,10 @@ def __(PersonaExperienceResult, mo, results):
 def __():
     """
     Benefits of Persona-Based Testing
-    
+
     1. **Multiple Perspectives**: Same page evaluated from different viewpoints
     2. **Real-World Scenarios**: Tests actual user goals and expectations
     3. **Device-Specific**: Validates responsive design and device compatibility
-    4. **Comprehensive Coverage**: Catches issues that single-perspective testing might miss
+    4. **Wider Coverage**: Catches issues that single-perspective testing might miss
     """
     return
-

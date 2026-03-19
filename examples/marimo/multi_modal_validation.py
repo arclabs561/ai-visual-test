@@ -26,13 +26,23 @@ def __():
     from pydantic import ValidationError
     from models import MultiModalValidationResult
     from config import AppSettings
-    
+
     # Configuration using Pydantic Settings
     settings = AppSettings()
     API_KEY = settings.api_key
     URL = settings.test_url
-    
-    return API_KEY, Path, URL, ValidationError, MultiModalValidationResult, json, os, settings, subprocess
+
+    return (
+        API_KEY,
+        Path,
+        URL,
+        ValidationError,
+        MultiModalValidationResult,
+        json,
+        os,
+        settings,
+        subprocess,
+    )
 
 
 @app.cell
@@ -41,12 +51,12 @@ def __(API_KEY):
     Setup: Check configuration
     """
     if not API_KEY:
-        print("⚠️  Warning: No API key found")
+        print("Warning: No API key found")
     else:
-        print("✅ API key configured")
-    
-    print(f"🌐 Target URL: {URL}")
-    
+        print("API key configured")
+
+    print(f"Target URL: {URL}")
+
     return
 
 
@@ -54,14 +64,14 @@ def __(API_KEY):
 def __(API_KEY, URL, json, subprocess):
     """
     Step 1: Capture screenshot and extract rendered code
-    
+
     This would typically use Playwright in a real scenario.
     Here we demonstrate the concept.
     """
     # Create Node.js script for multi-modal validation
     # Note: multiModalValidation requires a validateFn that matches validateScreenshot signature
     import json as py_json
-    
+
     node_script = f"""
     import {{ multiModalValidation, validateScreenshot }} from 'ai-browser-test';
     import {{ chromium }} from 'playwright';
@@ -99,46 +109,50 @@ def __(API_KEY, URL, json, subprocess):
     
     run();
     """
-    
+
     # In a real scenario, you would:
     # 1. Write the script to a file
     # 2. Run it with Node.js
     # 3. Parse the JSON output
-    
-    print("📝 Multi-modal validation script created")
+
+    print("Multi-modal validation script created")
     print("   (In production, this would execute and return results)")
     print("   Note: Requires @playwright/test to be installed")
-    
+
     # Mock result structure matching actual multiModalValidation return type
     # In production, this would be validated with MultiModalValidationResult
-    mock_result = {{
-        "screenshotPath": "test-results/multimodal-homepage-test-1234567890.png",
-        "renderedCode": {{
-            "html": "<html>...</html>",
-            "css": "body {{ ... }}",
-            "domStructure": {{}}
-        }},
-        "gameState": {{}},
-        "temporalScreenshots": [],
-        "perspectives": [
-            {{
-                "persona": "Design Critic",
-                "perspective": "visual-design",
-                "focus": "aesthetics",
-                "evaluation": {{
-                    "score": 8.5,
-                    "issues": ["Minor contrast issue"],
-                    "assessment": "Good overall design",
-                    "reasoning": "Well-structured layout with minor improvements needed"
-                }}
-            }}
-        ],
-        "codeValidation": {{}},
-        "aggregatedScore": 8.5,
-        "aggregatedIssues": ["Minor contrast issue"],
-        "timestamp": 1234567890
-    }}
-    
+    mock_result = {
+        {
+            "screenshotPath": "test-results/multimodal-homepage-test-1234567890.png",
+            "renderedCode": {
+                {"html": "<html>...</html>", "css": "body {{ ... }}", "domStructure": {{}}}
+            },
+            "gameState": {{}},
+            "temporalScreenshots": [],
+            "perspectives": [
+                {
+                    {
+                        "persona": "Design Critic",
+                        "perspective": "visual-design",
+                        "focus": "aesthetics",
+                        "evaluation": {
+                            {
+                                "score": 8.5,
+                                "issues": ["Minor contrast issue"],
+                                "assessment": "Good overall design",
+                                "reasoning": "Well-structured layout with minor improvements needed",
+                            }
+                        },
+                    }
+                }
+            ],
+            "codeValidation": {{}},
+            "aggregatedScore": 8.5,
+            "aggregatedIssues": ["Minor contrast issue"],
+            "timestamp": 1234567890,
+        }
+    }
+
     return mock_result, node_script
 
 
@@ -148,15 +162,21 @@ def __(mock_result):
     Step 2: Display multi-modal results
     """
     import marimo as mo
-    
+
     result = mock_result
-    
+
     # Extract scores from perspectives if available (scores are 0-10, not 0-1)
-    perspective_scores = [p["evaluation"]["score"] for p in result.get("perspectives", []) if p.get("evaluation", {}).get("score") is not None]
-    avg_score = result.get("aggregatedScore") or (sum(perspective_scores) / len(perspective_scores) if perspective_scores else None)
-    
+    perspective_scores = [
+        p["evaluation"]["score"]
+        for p in result.get("perspectives", [])
+        if p.get("evaluation", {}).get("score") is not None
+    ]
+    avg_score = result.get("aggregatedScore") or (
+        sum(perspective_scores) / len(perspective_scores) if perspective_scores else None
+    )
+
     score_display = f"{avg_score:.1f}/10" if avg_score is not None else "N/A"
-    
+
     mo.md(f"""
     ## Multi-Modal Validation Results
     
@@ -173,7 +193,7 @@ def __(mock_result):
     - **Aggregated Score:** {score_display}
     - **Aggregated Issues:** {len(result.get("aggregatedIssues", []))}
     """)
-    
+
     return mo, result
 
 
@@ -183,7 +203,7 @@ def __(result):
     Step 3: Detailed analysis
     """
     import marimo as mo
-    
+
     # Display perspectives
     if result.get("perspectives"):
         perspective_text = []
@@ -201,7 +221,7 @@ def __(result):
             {issues_text}
             """)
         mo.md("## Perspective Details\n" + "\n".join(perspective_text))
-    
+
     # Display aggregated issues
     if result.get("aggregatedIssues"):
         mo.md(f"""
@@ -209,7 +229,7 @@ def __(result):
         
         {chr(10).join(f"- {issue}" for issue in result["aggregatedIssues"])}
         """)
-    
+
     # Display rendered code preview
     rendered_code = result.get("renderedCode", {})
     if rendered_code:
@@ -226,19 +246,18 @@ def __(result):
         {rendered_code.get("css", "")[:200]}...
         ```
         """)
-    
-    return mo,
+
+    return (mo,)
 
 
 @app.cell
 def __():
     """
     Benefits of Multi-Modal Validation
-    
+
     1. **Visual + Code**: Catches issues in both appearance and implementation
     2. **Context-Aware**: Understands the relationship between code and visual output
-    3. **Comprehensive**: Validates accessibility, design, and code quality together
+    3. **Combined**: Validates accessibility, design, and code quality together
     4. **Actionable**: Provides specific feedback on what to fix
     """
     return
-

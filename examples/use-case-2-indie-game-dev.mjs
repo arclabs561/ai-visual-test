@@ -1,36 +1,32 @@
 #!/usr/bin/env node
 /**
  * Use Case 2: Indie Game Developer
- * 
- * Scenario: Testing a simple game for fun, playability, and visual polish
- * 
- * This script demonstrates:
- * - Using playGame() for AI-driven gameplay
- * - Goal-based evaluation
- * - Temporal capture and analysis
+ *
+ * Testing a simple game for playability and visual polish.
+ *
+ * Demonstrates:
+ * - playGame() for AI-driven gameplay
+ * - validateWithGoals() for goal-based evaluation
+ * - testGameplay() for complete workflow
+ *
+ * Run: node examples/use-case-2-indie-game-dev.mjs
+ * Requires: GEMINI_API_KEY, OPENAI_API_KEY, or ANTHROPIC_API_KEY
  */
 
-import { chromium } from 'playwright';
-import { playGame, testGameplay, validateWithGoals } from '../src/index.mjs';
-import { skipIfNoApiKey } from '../test/helpers/api-key-check.mjs';
+import { playGame, testGameplay, validateWithGoals } from '@arclabs561/ai-visual-test/game';
 
 async function testGame() {
-  // Check for API keys (informational only - examples will work if keys are set)
-  const { hasAnyApiKey, getAvailableProviders } = await import('../test/helpers/api-key-check.mjs');
-  if (!hasAnyApiKey()) {
-    console.log('⚠️  No API keys configured');
-    console.log('   Set GEMINI_API_KEY, OPENAI_API_KEY, or ANTHROPIC_API_KEY in .env');
-    console.log('   Example will fail without API keys.\n');
-    return;
+  if (!process.env.GEMINI_API_KEY && !process.env.OPENAI_API_KEY && !process.env.ANTHROPIC_API_KEY && !process.env.GROQ_API_KEY) {
+    console.log('No API keys configured.');
+    console.log('Set GEMINI_API_KEY, OPENAI_API_KEY, or ANTHROPIC_API_KEY in .env');
+    process.exit(1);
   }
-  const providers = getAvailableProviders();
-  console.log(`✅ Using providers: ${providers.join(', ')}\n`);
 
-  const browser = await chromium.launch({ headless: false }); // Show browser for game
+  const { chromium } = await import('playwright');
+  const browser = await chromium.launch({ headless: false }); // show browser for game
   const page = await browser.newPage();
-  
+
   try {
-    // Create a simple Pong-like game
     const html = `
       <!DOCTYPE html>
       <html>
@@ -63,19 +59,19 @@ async function testGame() {
           let ballY = 300;
           let ballVX = 2;
           let ballVY = -2;
-          
+
           window.gameState = { gameActive: false, score: 0, level: 1, lives: 3 };
-          
+
           const paddle = document.getElementById('paddle');
           const ball = document.getElementById('ball');
           const scoreEl = document.getElementById('score');
-          
+
           function updateGame() {
             if (!gameActive) return;
-            
+
             ballX += ballVX;
             ballY += ballVY;
-            
+
             if (ballX < 0 || ballX > 780) ballVX = -ballVX;
             if (ballY < 0) ballVY = -ballVY;
             if (ballY > 580) {
@@ -83,17 +79,17 @@ async function testGame() {
               ballX = 400;
               score = Math.max(0, score - 1);
             }
-            
+
             if (ballY > 560 && ballX > paddleX && ballX < paddleX + 100) {
               ballVY = -ballVY;
               score++;
             }
-            
+
             ball.style.left = ballX + 'px';
             ball.style.top = ballY + 'px';
             scoreEl.textContent = 'Score: ' + score;
-            window.gameState = { 
-              gameActive: true, 
+            window.gameState = {
+              gameActive: true,
               score: score,
               level: Math.floor(score / 10) + 1,
               lives: 3,
@@ -101,10 +97,10 @@ async function testGame() {
               ballY: ballY,
               paddleX: paddleX
             };
-            
+
             requestAnimationFrame(updateGame);
           }
-          
+
           document.addEventListener('keydown', (e) => {
             if (e.key === 'g' || e.key === 'G') {
               gameActive = true;
@@ -123,73 +119,70 @@ async function testGame() {
     await page.setContent(html);
     await page.waitForLoadState('networkidle');
 
-    console.log('🎮 Testing game...\n');
+    // 1. Play the game with AI
+    console.log('AI Gameplay Test');
+    console.log('  (takes ~30 seconds as AI plays the game)');
 
-    // Test 1: Play the game with AI
-    console.log('1️⃣  AI Gameplay Test');
-    console.log('   (This will take ~30 seconds as AI plays the game)');
-    
     const playResult = await playGame(page, {
       goal: 'Maximize score by hitting the ball with the paddle',
-      maxSteps: 20, // Short test
+      maxSteps: 20,
       fps: 2,
       gameActivationKey: 'g',
       gameSelector: '#paddle'
     });
-    
-    console.log(`   Final Score: ${playResult.finalScore || 0}`);
-    console.log(`   Steps Taken: ${playResult.steps?.length || 0}`);
-    console.log(`   Average Score: ${playResult.averageScore || 0}`);
+
+    console.log(`  Final Score: ${playResult.finalScore || 0}`);
+    console.log(`  Steps Taken: ${playResult.steps?.length || 0}`);
+    console.log(`  Average Score: ${playResult.averageScore || 0}`);
     console.log();
 
-    // Test 2: Goal-based evaluation
-    console.log('2️⃣  Goal-Based Evaluation');
-    const tempDir = (await import('os')).tmpdir();
-    const path = (await import('path'));
-    const fs = (await import('fs'));
-    const screenshotPath = path.join(tempDir, `game-${Date.now()}.png`);
+    // 2. Goal-based evaluation
+    console.log('Goal-Based Evaluation');
+    const path = await import('path');
+    const os = await import('os');
+    const screenshotPath = path.join(os.tmpdir(), `game-${Date.now()}.png`);
     await page.screenshot({ path: screenshotPath });
-    
+
     const funResult = await validateWithGoals(screenshotPath, {
       goal: 'Is this game fun and engaging? Rate the visual appeal and playability.',
       gameState: await page.evaluate(() => window.gameState || {})
     });
-    
-    console.log(`   Fun Score: ${funResult.result.score}/10`);
-    console.log(`   Reasoning: ${funResult.result.reasoning?.substring(0, 100)}...`);
+
+    console.log(`  Fun Score: ${funResult.result.score}/10`);
+    console.log(`  Reasoning: ${funResult.result.reasoning?.substring(0, 100)}...`);
     console.log();
 
-    // Test 3: Complete gameplay test workflow
-    console.log('3️⃣  Complete Gameplay Test Workflow');
+    // 3. Complete gameplay test workflow
+    console.log('Complete Gameplay Test');
     const gameplayResult = await testGameplay(page, {
-      url: 'about:blank', // We're using setContent, but testGameplay needs a URL
+      url: 'about:blank',
       goals: ['fun', 'visual polish', 'playability'],
       captureTemporal: true,
       fps: 2,
-      duration: 3000, // 3 seconds
-      play: false // Don't play, just evaluate
+      duration: 3000,
+      play: false
     });
-    
-    console.log(`   Evaluations: ${gameplayResult.evaluations?.length || 0}`);
+
+    console.log(`  Evaluations: ${gameplayResult.evaluations?.length || 0}`);
     if (gameplayResult.evaluations?.length > 0) {
       gameplayResult.evaluations.forEach((evaluation, i) => {
-        console.log(`   ${i + 1}. ${evaluation.goal}: ${evaluation.evaluation.score}/10`);
+        console.log(`  ${i + 1}. ${evaluation.goal}: ${evaluation.evaluation.score}/10`);
       });
     }
     console.log();
 
-    console.log('✅ Indie game dev test complete!');
-    console.log(`   Game is ${playResult.finalScore > 0 ? 'playable' : 'needs work'}`);
+    console.log('Done.');
+    console.log(`  Game is ${playResult.finalScore > 0 ? 'playable' : 'needs work'}`);
 
   } catch (error) {
-    console.error('❌ Error:', error.message);
+    console.error('Error:', error.message);
     if (error.details) {
-      console.error('   Details:', error.details);
+      console.error('  Details:', error.details);
     }
+    process.exit(1);
   } finally {
     await browser.close();
   }
 }
 
 testGame().catch(console.error);
-

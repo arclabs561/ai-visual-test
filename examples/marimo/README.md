@@ -2,15 +2,12 @@
 
 These notebooks demonstrate how to use `ai-visual-test` in interactive Python notebooks using [marimo](https://marimo.io).
 
-**Status**: ✅ All notebooks have been reviewed and updated to match the actual API signatures and return types.
+Notebooks match the current API signatures and return types.
 
-**Improvements**:
-- ✅ **Pydantic models** (`models.py`) for type-safe validation of API responses
-- ✅ **Pydantic Settings** (`config.py`) for configuration management with `.env` support
-- ✅ **`uv` support** (`pyproject.toml`) for fast dependency management
-- ✅ **Proper error handling** with `ValidationError` for better debugging
-- ✅ **Type safety** - All API responses are validated against Pydantic models
-- ✅ **IDE support** - Full type hints and autocomplete for validated data
+Includes:
+- Pydantic models (`models.py`) for type-safe validation of API responses
+- Pydantic Settings (`config.py`) for configuration management with `.env` support
+- `uv` support (`pyproject.toml`) for dependency management
 
 ## Prerequisites
 
@@ -105,8 +102,8 @@ Persona-based testing from multiple perspectives:
 - Uses `experiencePageAsPersona` (updated API)
 - Automatic temporal aggregation
 
-### 4. `comprehensive_apis.py` ⭐ NEW
-Comprehensive demonstration of ALL available APIs:
+### 4. `comprehensive_apis.py`
+Demonstration of all available APIs:
 - `validateScreenshot` (primary API)
 - `testGameplay` (gameplay testing)
 - `testBrowserExperience` (browser experience)
@@ -117,7 +114,7 @@ Comprehensive demonstration of ALL available APIs:
 
 ## Notes
 
-⚠️ **Important:** These notebooks demonstrate calling the Node.js package from Python. Key points:
+**Note:** These notebooks demonstrate calling the Node.js package from Python. Key points:
 
 1. **Function Signatures:**
    - `validateScreenshot(imagePath, prompt, context)` - **Primary API** for screenshot validation
@@ -151,13 +148,13 @@ Comprehensive demonstration of ALL available APIs:
      - `estimatedCost`: { totalCost, inputCost, outputCost, inputTokens, outputTokens } | null
      - `responseTime`: number (milliseconds)
      - `enabled`: boolean (false if API key missing)
-     - `uncertainty`: number | null (0-1, higher = more uncertain) ⭐ NEW
-     - `confidence`: number | null (0-1, higher = more confident) ⭐ NEW
-     - `selfConsistencyRecommended`: boolean | null ⭐ NEW
+     - `uncertainty`: number | null (0-1, higher = more uncertain)
+     - `confidence`: number | null (0-1, higher = more confident)
+     - `selfConsistencyRecommended`: boolean | null
    - `testGameplay` returns object with: `result` (ValidationResult), `stages`, `aggregated`, `aggregatedMultiScale`
    - `testBrowserExperience` returns object with: `stages`, `averageScore`, `aggregated`, `aggregatedMultiScale`
    - `validateWithGoals` returns object with: `result` (ValidationResult), `goal`, `aggregated` (if temporal notes provided)
-   - `experiencePageAsPersona` returns `PersonaExperienceResult` with: `persona`, `notes`, `screenshots`, `renderedCode`, `evaluation` (ValidationResult), `aggregated`, `aggregatedMultiScale` ⭐ NEW
+   - `experiencePageAsPersona` returns `PersonaExperienceResult` with: `persona`, `notes`, `screenshots`, `renderedCode`, `evaluation` (ValidationResult), `aggregated`, `aggregatedMultiScale`
 
 3. **For Playwright integration:**
    - The multi-modal and persona examples require Playwright
@@ -219,9 +216,9 @@ The package can be used from any language by:
 
 The core validation functionality (`validateScreenshot`, `VLLMJudge`) is **standalone** and doesn't require Playwright:
 
-- ✅ Works without Playwright (for screenshot validation)
-- ✅ Can be used from any language via API or subprocess
-- ✅ Zero runtime dependencies (except Node.js)
+- Works without Playwright (for screenshot validation)
+- Can be used from any language via API or subprocess
+- Single runtime dependency (`async-mutex`)
 
 Playwright is only required for:
 - Multi-modal validation (extracting HTML/CSS)

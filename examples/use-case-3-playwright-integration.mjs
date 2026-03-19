@@ -1,67 +1,66 @@
 #!/usr/bin/env node
 /**
  * Use Case 3: Playwright Integration
- * 
- * Scenario: Using custom matchers in Playwright tests
- * 
- * This script demonstrates:
- * - Creating custom matchers
- * - Using validatePage() in test context
- * - Real test workflow
+ *
+ * Using custom matchers in Playwright tests.
+ *
+ * NOTE: This file demonstrates the pattern. The test() blocks require
+ * Playwright's test runner (`npx playwright test`), not `node`.
+ * Run this script with `node` for the standalone demo at the bottom.
+ *
+ * Run: node examples/use-case-3-playwright-integration.mjs
+ * Requires: GEMINI_API_KEY, OPENAI_API_KEY, or ANTHROPIC_API_KEY
  */
 
-import { test, expect } from '@playwright/test';
-import { createMatchers } from '../src/integrations/playwright.mjs';
-import { skipIfNoApiKey } from '../test/helpers/api-key-check.mjs';
+// --- Pattern for Playwright test files ---
+//
+// import { test, expect } from '@playwright/test';
+// import { createMatchers } from '@arclabs561/ai-visual-test/playwright';
+//
+// createMatchers(expect);
+//
+// test('visual quality', async ({ page }) => {
+//   await page.goto('https://example.com');
+//   await expect(page).toHaveVisualScore(7, 'Check visual quality');
+//   await expect(page).toBeAccessibleHybrid(4.5);
+// });
 
-// Extend expect with custom matchers
-createMatchers(expect);
+// --- Standalone demo (runs with node) ---
 
-async function runPlaywrightTests() {
-  // Skip if no API keys
-  if (!(await import('../test/helpers/api-key-check.mjs')).hasAnyApiKey()) {
-    console.log('⚠️  Skipping: No API keys configured');
-    console.log('   Set GEMINI_API_KEY, OPENAI_API_KEY, or ANTHROPIC_API_KEY in .env');
-    return;
+import { createMatchers } from '@arclabs561/ai-visual-test/playwright';
+
+async function runDemo() {
+  if (!process.env.GEMINI_API_KEY && !process.env.OPENAI_API_KEY && !process.env.ANTHROPIC_API_KEY && !process.env.GROQ_API_KEY) {
+    console.log('No API keys configured.');
+    console.log('Set GEMINI_API_KEY, OPENAI_API_KEY, or ANTHROPIC_API_KEY in .env');
+    process.exit(1);
   }
 
-  console.log('🧪 Running Playwright integration tests...\n');
+  const { chromium } = await import('playwright');
+  // Playwright's expect for standalone usage
+  const { expect } = await import('@playwright/test');
 
-  test('should validate page with custom matcher', async ({ page }) => {
-    const html = `
-      <!DOCTYPE html>
-      <html>
-      <head><title>Test Page</title></head>
-      <body>
-        <h1>Hello World</h1>
-        <p>This is a test page with good contrast and clear layout.</p>
-      </body>
-      </html>
-    `;
+  createMatchers(expect);
 
-    await page.setContent(html);
-    await page.waitForLoadState('networkidle');
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage();
 
-    // Use custom matcher
-    await expect(page).toHaveVisualScore(7, 'Check for visual quality and readability');
-    console.log('   ✅ Visual score matcher passed');
-  });
-
-  test('should validate accessibility with hybrid matcher', async ({ page }) => {
+  try {
     const html = `
       <!DOCTYPE html>
       <html>
       <head>
-        <title>Accessible Page</title>
+        <title>Test Page</title>
         <style>
-          body { font-family: Arial; padding: 20px; }
-          h1 { color: #000; background: #fff; } /* Good contrast */
+          body { font-family: Arial; padding: 20px; background: #fff; color: #000; }
+          h1 { color: #000; background: #fff; }
           button { padding: 10px; background: #007bff; color: #fff; }
         </style>
       </head>
       <body>
-        <h1>Accessible Page</h1>
-        <button>Click Me</button>
+        <h1>Playwright Integration Test</h1>
+        <p>This page tests the Playwright custom matchers.</p>
+        <button>Test Button</button>
       </body>
       </html>
     `;
@@ -69,19 +68,39 @@ async function runPlaywrightTests() {
     await page.setContent(html);
     await page.waitForLoadState('networkidle');
 
-    // Use hybrid accessibility matcher
-    await expect(page).toBeAccessibleHybrid(4.5);
-    console.log('   ✅ Accessibility matcher passed');
-  });
+    console.log('Testing toHaveVisualScore matcher...');
+    try {
+      await expect(page).toHaveVisualScore(6, 'Check for visual quality');
+      console.log('  PASSED');
+    } catch (error) {
+      console.log(`  FAILED: ${error.message.substring(0, 100)}...`);
+    }
 
-  // Note: In real Playwright tests, you'd use test() from @playwright/test
-  // This is a demonstration script, so we'll just show the pattern
-  console.log('✅ Playwright integration examples complete!');
-  console.log('   To use in real tests:');
-  console.log('   1. Import createMatchers from "@arclabs561/ai-visual-test/playwright"');
-  console.log('   2. Call createMatchers(expect) in your test setup');
-  console.log('   3. Use expect(page).toHaveVisualScore() in your tests');
+    console.log('Testing toBeAccessibleHybrid matcher...');
+    try {
+      await expect(page).toBeAccessibleHybrid(4.5);
+      console.log('  PASSED');
+    } catch (error) {
+      const message = error.message || '';
+      if (message.includes('Programmatic checks should pass')) {
+        console.log('  AI found semantic issues (programmatic checks passed)');
+      } else {
+        console.log(`  FAILED: ${error.message.substring(0, 100)}...`);
+      }
+    }
+
+    console.log();
+    console.log('To use in Playwright tests:');
+    console.log('  1. import { createMatchers } from "@arclabs561/ai-visual-test/playwright"');
+    console.log('  2. createMatchers(expect)');
+    console.log('  3. await expect(page).toHaveVisualScore(7, "prompt")');
+
+  } catch (error) {
+    console.error('Error:', error.message);
+    process.exit(1);
+  } finally {
+    await browser.close();
+  }
 }
 
-runPlaywrightTests().catch(console.error);
-
+runDemo().catch(console.error);

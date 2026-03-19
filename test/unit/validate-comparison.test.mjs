@@ -23,7 +23,7 @@ await setup();
 // -- Input validation tests (no mocking needed, these throw before calling judge) --
 
 test('validateComparison: throws on non-string beforePath', async () => {
-  const { validateComparison } = await import('../../src/convenience.mjs');
+  const { validateComparison } = await import('../../src/page-validation.mjs');
   await assert.rejects(
     () => validateComparison(123, join(TEST_DIR, 'after.png'), 'compare'),
     (err) => {
@@ -34,7 +34,7 @@ test('validateComparison: throws on non-string beforePath', async () => {
 });
 
 test('validateComparison: throws on non-string afterPath', async () => {
-  const { validateComparison } = await import('../../src/convenience.mjs');
+  const { validateComparison } = await import('../../src/page-validation.mjs');
   await assert.rejects(
     () => validateComparison(join(TEST_DIR, 'before.png'), null, 'compare'),
     (err) => {
@@ -45,7 +45,7 @@ test('validateComparison: throws on non-string afterPath', async () => {
 });
 
 test('validateComparison: throws on empty beforePath', async () => {
-  const { validateComparison } = await import('../../src/convenience.mjs');
+  const { validateComparison } = await import('../../src/page-validation.mjs');
   await assert.rejects(
     () => validateComparison('', join(TEST_DIR, 'after.png'), 'compare'),
     (err) => {
@@ -56,7 +56,7 @@ test('validateComparison: throws on empty beforePath', async () => {
 });
 
 test('validateComparison: throws on empty afterPath', async () => {
-  const { validateComparison } = await import('../../src/convenience.mjs');
+  const { validateComparison } = await import('../../src/page-validation.mjs');
   await assert.rejects(
     () => validateComparison(join(TEST_DIR, 'before.png'), '', 'compare'),
     (err) => {
@@ -67,7 +67,7 @@ test('validateComparison: throws on empty afterPath', async () => {
 });
 
 test('validateComparison: throws on empty prompt', async () => {
-  const { validateComparison } = await import('../../src/convenience.mjs');
+  const { validateComparison } = await import('../../src/page-validation.mjs');
   await assert.rejects(
     () => validateComparison(join(TEST_DIR, 'before.png'), join(TEST_DIR, 'after.png'), ''),
     (err) => {
@@ -78,7 +78,7 @@ test('validateComparison: throws on empty prompt', async () => {
 });
 
 test('validateComparison: throws on missing prompt (non-string)', async () => {
-  const { validateComparison } = await import('../../src/convenience.mjs');
+  const { validateComparison } = await import('../../src/page-validation.mjs');
   await assert.rejects(
     () => validateComparison(join(TEST_DIR, 'before.png'), join(TEST_DIR, 'after.png'), undefined),
     (err) => {
@@ -93,7 +93,7 @@ test('validateComparison: throws on missing prompt (non-string)', async () => {
 // while verifying the full call chain.
 
 test('validateComparison: passes both images and wrapped prompt to judge', async () => {
-  const { validateComparison } = await import('../../src/convenience.mjs');
+  const { validateComparison } = await import('../../src/page-validation.mjs');
   const { VLLMJudge } = await import('../../src/judge.mjs');
 
   const originalJudge = VLLMJudge.prototype.judgeScreenshot;
@@ -157,7 +157,7 @@ test('validateComparison: passes both images and wrapped prompt to judge', async
 });
 
 test('validateComparison: user context can override testType', async () => {
-  const { validateComparison } = await import('../../src/convenience.mjs');
+  const { validateComparison } = await import('../../src/page-validation.mjs');
   const { VLLMJudge } = await import('../../src/judge.mjs');
 
   const originalJudge = VLLMJudge.prototype.judgeScreenshot;

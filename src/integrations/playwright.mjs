@@ -16,7 +16,7 @@
  * ```
  */
 
-import { validatePage } from '../convenience.mjs';
+import { validatePage } from '../page-validation.mjs';
 import { ConfigError } from '../errors.mjs';
 
 /**

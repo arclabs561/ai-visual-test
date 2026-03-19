@@ -59,8 +59,7 @@ describe('API Sub-Modules', () => {
       const persona = await import('../../src/persona/index.mjs');
       
       assert.ok(typeof persona.experiencePageAsPersona === 'function', 'Should export experiencePageAsPersona');
-      assert.ok(persona.ExperienceTrace, 'Should export ExperienceTrace');
-      assert.ok(persona.ExperienceTracerManager, 'Should export ExperienceTracerManager');
+      assert.ok(typeof persona.trackPropagation === 'function', 'Should export trackPropagation');
     });
   });
   

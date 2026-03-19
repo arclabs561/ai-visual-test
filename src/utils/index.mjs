@@ -1,9 +1,9 @@
 /**
  * Utils Sub-Module
- * 
+ *
  * Utility functions, helpers, and infrastructure.
- * 
- * Import from 'ai-visual-test/utils'
+ *
+ * Import from '@arclabs561/ai-visual-test/utils'
  */
 
 // Cache
@@ -57,7 +57,9 @@ export {
   CostTracker,
   getCostTracker,
   recordCost,
-  getCostStats
+  getCostStats,
+  setBudgetLimit,
+  getBudgetStatus
 } from '../cost-tracker.mjs';
 
 // Score tracking
@@ -106,12 +108,12 @@ export {
 } from '../type-guards.mjs';
 
 // Constants
-export { 
-  CACHE_CONSTANTS, 
-  TEMPORAL_CONSTANTS, 
-  API_CONSTANTS, 
-  UNCERTAINTY_CONSTANTS, 
-  BATCH_OPTIMIZER_CONSTANTS 
+export {
+  CACHE_CONSTANTS,
+  TEMPORAL_CONSTANTS,
+  API_CONSTANTS,
+  UNCERTAINTY_CONSTANTS,
+  BATCH_OPTIMIZER_CONSTANTS
 } from '../constants.mjs';
 
 // Validation result normalization
@@ -119,29 +121,6 @@ export { normalizeValidationResult } from '../validation-result-normalizer.mjs';
 
 // Error handlers
 export { initErrorHandlers } from '../error-handler.mjs';
-
-// Uncertainty reduction
-export {
-  estimateUncertainty,
-  selfConsistencyCheck,
-  combineUncertaintySources,
-  enhanceWithUncertainty,
-  shouldUseSelfConsistency
-} from '../uncertainty-reducer.mjs';
-
-// Dynamic few-shot
-export {
-  selectFewShotExamples,
-  formatFewShotExamples
-} from '../dynamic-few-shot.mjs';
-
-// Dynamic prompts
-export {
-  generateDynamicPrompt,
-  generatePromptVariations,
-  generateInteractionPrompt,
-  generateGameplayPrompt
-} from '../dynamic-prompts.mjs';
 
 // Rubrics
 export {
@@ -157,60 +136,14 @@ export {
   selectModelTierAndProvider
 } from '../model-tier-selector.mjs';
 
-// Smart validator
-export {
-  validateSmart,
-  validateAccessibilitySmart,
-  validateStateSmart,
-  validateElementSmart,
-  detectValidationMethod
-} from '../smart-validator.mjs';
-
-// Human validation
-export {
-  HumanValidationManager,
-  getHumanValidationManager,
-  initHumanValidation
-} from '../human-validation-manager.mjs';
-
 // Startup validation
 export { validateStartup, validateStartupSoft } from '../startup-validation.mjs';
-
-// Graceful shutdown
-export { initGracefulShutdown, registerShutdownHandler, gracefulShutdown } from '../graceful-shutdown.mjs';
-
-// Performance measurement
-export {
-  PerformanceMeasurement,
-  PerformanceProfiler,
-  measureAsync,
-  measureSync,
-  getProfiler
-} from './performance-measurement.mjs';
 
 // Cost optimization
 export {
   calculateCostComparison,
   optimizeCost
 } from '../cost-optimization.mjs';
-
-// Cost tracker (additional exports)
-export {
-  setBudgetLimit,
-  getBudgetStatus
-} from '../cost-tracker.mjs';
-
-// Session cost tracking
-export {
-  startSession,
-  endSession,
-  getSessionCosts,
-  recordSessionCost,
-  recordSessionCacheHit,
-  recordSessionCacheMiss,
-  getActiveSessions,
-  getGlobalCostStats
-} from '../session-cost-tracker.mjs';
 
 // Score calibration
 export {
@@ -221,24 +154,3 @@ export {
   deriveCalibrationProfile,
   analyzeScoreDistribution
 } from '../score-calibration.mjs';
-
-// Meta-evaluation / calibration suite
-export { createCalibrationSuite } from '../calibration-suite.mjs';
-
-// VLM limitations
-export {
-  VLM_LIMITATIONS,
-  getLimitationsForTestType,
-  shouldUseHybridValidation
-} from '../limitations.mjs';
-
-// Browser automation utilities
-export * from './counterfactual-tester.mjs';
-export * from './capability-stratifier.mjs';
-export * from './baseline-validator.mjs';
-export * from './intent-recognizer.mjs';
-export * from './action-hallucination-detector.mjs';
-export * from './exploratory-automation.mjs';
-export * from './error-recovery.mjs';
-export * from './explainability-scorer.mjs';
-

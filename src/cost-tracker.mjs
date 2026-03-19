@@ -1,6 +1,6 @@
 /**
  * Cost Tracking Utilities
- * 
+ *
  * Tracks API costs over time, provides cost estimates, and helps optimize spending.
  * Includes budget limits and alerting.
  */
@@ -8,6 +8,7 @@
 import { getCached, setCached } from './cache.mjs';
 import { warn, log } from './logger.mjs';
 import { PROVIDER_CONFIGS, MODEL_TIERS } from './provider-data.mjs';
+import { ConfigError } from './errors.mjs';
 
 /**
  * Cost Tracker Class
@@ -423,7 +424,7 @@ export function estimateCost(provider, options = {}) {
   const config = PROVIDER_CONFIGS[provider];
   if (!config) {
     const known = Object.keys(PROVIDER_CONFIGS).join(', ');
-    throw new Error(`Unknown provider "${provider}". Known providers: ${known}`);
+    throw new ConfigError(`Unknown provider "${provider}". Known providers: ${known}`);
   }
 
   const resolvedModel = model || config.model;

@@ -530,7 +530,7 @@ export interface VisualAnchors {
 }
 
 export interface ConfigOptions {
-  provider?: 'gemini' | 'openai' | 'claude' | null;
+  provider?: 'gemini' | 'openai' | 'claude' | 'groq' | 'openrouter' | null;
   apiKey?: string | null;
   env?: NodeJS.ProcessEnv;
   cacheDir?: string | null;
@@ -2240,77 +2240,6 @@ export interface CalibrationReport {
   error?: string;
 }
 
-export interface CalibrationSuiteInstance {
-  samples: CalibrationSample[];
-  run(judgeOptions?: ConfigOptions): Promise<CalibrationReport>;
-}
-
-export function createCalibrationSuite(
-  samples: CalibrationSample[],
-  options?: { passThreshold?: number }
-): CalibrationSuiteInstance;
-
-// --- Known VLM Limitations (arXiv:2501.09236, arXiv:2511.03471) ---
-
-export interface VLMLimitation {
-  description: string;
-  severity: 'high' | 'medium' | 'low';
-  recommendation: string;
-  vlmAccuracy: 'none' | 'low' | 'medium' | 'high';
-}
-
-export type VLMLimitationKey =
-  | 'subtleSpatialShifts'
-  | 'elementOverlap'
-  | 'keyboardNavigation'
-  | 'screenReaderOrder'
-  | 'colorContrastPrecision'
-  | 'dynamicContent'
-  | 'textContent'
-  | 'interactiveState';
-
-export type TestType = 'accessibility' | 'layout' | 'visual' | 'interaction' | 'general';
-
-export const VLM_LIMITATIONS: Record<VLMLimitationKey, VLMLimitation>;
-
-export function getLimitationsForTestType(
-  testType: TestType
-): Array<{ key: string } & VLMLimitation>;
-
-export function shouldUseHybridValidation(testType: TestType): boolean;
-
-// --- Human Validation Manager ---
-
-export interface HumanValidationManagerOptions {
-  enabled?: boolean;
-  autoCollect?: boolean;
-  smartSampling?: boolean;
-  calibrationThreshold?: number;
-  humanValidatorFn?: ((vllmResult: ValidationResult) => Promise<unknown>) | null;
-}
-
-export class HumanValidationManager {
-  constructor(options?: HumanValidationManagerOptions);
-  enabled: boolean;
-  autoCollect: boolean;
-  smartSampling: boolean;
-  calibrationThreshold: number;
-  humanValidatorFn: ((vllmResult: ValidationResult) => Promise<unknown>) | null;
-  vllmJudgments: object[];
-  collectVLLMJudgment(vllmResult: ValidationResult, imagePath: string, prompt: string, context?: ValidationContext): Promise<void>;
-  getCalibrationStatus(): { calibrated: boolean; message?: string; correlation?: number; kappa?: number; mae?: number; isGood?: boolean; sampleSize?: number; recommendations?: string[]; lastCalibration?: string };
-  trackSequenceCalibration(sequenceIndex: number, result: ValidationResult): { degraded: boolean; degradation?: number; recommendation?: string; suggestedAction?: string };
-  getSequenceCalibrationMetrics(): { quality: string; variance?: number; trend?: number; recommendation?: string };
-  applyCalibration(vllmScore: number): number;
-  loadVLLMJudgments(): object[];
-  calibrate(): Promise<{ success: boolean; message?: string; calibration?: object; sampleSize?: number }>;
-  calculateVariance(values: number[]): number;
-  calculateTrend(values: number[]): number;
-}
-
-export function getHumanValidationManager(): HumanValidationManager;
-export function initHumanValidation(options?: HumanValidationManagerOptions): HumanValidationManager;
-
 // --- Cost Estimation ---
 
 export interface CostEstimate {
@@ -2331,22 +2260,13 @@ export interface CostEstimate {
  * @param provider - Provider name (gemini, openai, claude, groq, openrouter)
  * @param options - Estimation options
  * @returns Estimated cost breakdown
- * @throws {Error} If provider is unknown
+ * @throws {ConfigError} If provider is unknown
  */
 export function estimateCost(provider: string, options?: {
   imageCount?: number;
   promptLength?: number;
   model?: string | null;
 }): CostEstimate;
-
-// --- Explanation Manager ---
-
-export class ExplanationManager {
-  constructor(options?: ConfigOptions);
-  explainJudgment(vllmJudgment: object, question?: string | null, options?: object): Promise<object>;
-}
-
-export function getExplanationManager(options?: ConfigOptions): ExplanationManager;
 
 // --- Temporal Batch Optimizer ---
 

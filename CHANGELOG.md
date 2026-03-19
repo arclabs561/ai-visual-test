@@ -2,7 +2,7 @@
 
 All notable changes to ai-visual-test will be documented in this file.
 
-## [0.8.0] - 2026-03-19
+## [0.9.0] - 2026-03-19
 
 ### Breaking
 - **Main entry point reduced to 20 core exports.** Consumers importing non-core symbols from the main entry need to switch to subpath imports (`./game`, `./errors`, `./temporal`, `./validators`, etc.).

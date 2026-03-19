@@ -325,73 +325,9 @@ export class VLLMJudge {
       // Use original paths for cache key (before validation/resolution)
       const cacheKey = isMultiImage ? imagePaths.join('|') : imagePath;
       const cached = getCached(cacheKey, prompt, context);
+      this._logCacheResult(cached ? 'hit' : 'miss', context, cacheKey);
       if (cached) {
-        // Log cache hit (weighted: cache hits are important for performance visibility)
-        // Use safe logger
-        import('./cache.mjs').then(({ getCache }) => {
-          try {
-            const cache = getCache();
-            safeLogCacheOperation({
-              operation: 'hit',
-              hit: true,
-              latency: 0, // Minimal latency for cache hits
-              cacheSize: cache.size,
-              maxSize: 1000 // MAX_CACHE_SIZE
-            });
-          } catch { /* ignore */ }
-        })
-          .catch((importError) => {
-            // Log to console if performance logger unavailable (better than silent failure)
-            if (this.config.debug.verbose) {
-              warn(`[VLLM] Performance logger unavailable: ${importError.message}`);
-            }
-          });
-        
-        if (this.config.debug.verbose) {
-          log(`[VLLM] Cache hit for ${cacheKey}`);
-        }
-        
-        // Record cache hit in session tracker if sessionId provided
-        if (context.sessionId) {
-          try {
-            const { recordSessionCacheHit } = await import('./session-cost-tracker.mjs');
-            recordSessionCacheHit(context.sessionId);
-          } catch {
-            // Silently fail if session tracking unavailable
-          }
-        }
-        
         return { ...cached, cached: true };
-      } else {
-        // Log cache miss (weighted: cache misses are important for optimization)
-        // Use safe logger
-        import('./cache.mjs').then(({ getCache }) => {
-          try {
-            const cache = getCache();
-            safeLogCacheOperation({
-              operation: 'miss',
-              hit: false,
-              cacheSize: cache.size,
-              maxSize: 1000 // MAX_CACHE_SIZE
-            });
-          } catch { /* ignore */ }
-        })
-          .catch((importError) => {
-            // Log to console if performance logger unavailable (better than silent failure)
-            if (this.config.debug.verbose) {
-              warn(`[VLLM] Performance logger unavailable: ${importError.message}`);
-            }
-          });
-        
-        if (context.sessionId) {
-          // Record cache miss
-          try {
-            const { recordSessionCacheMiss } = await import('./session-cost-tracker.mjs');
-            recordSessionCacheMiss(context.sessionId);
-          } catch {
-            // Silently fail if session tracking unavailable
-          }
-        }
       }
     }
 
@@ -442,226 +378,10 @@ export class VLLMJudge {
         let apiData;
         let logprobs = null; // Declare once outside switch
         
-        // Route to appropriate API based on provider
-        switch (this.provider) {
-          case 'gemini':
-            apiResponse = await this.callGeminiAPI(base64Images, fullPrompt, abortController.signal, isMultiImage);
-            clearTimeout(timeoutId);
-            
-            // Check if response is HTML (error page) instead of JSON
-            const geminiContentType = apiResponse.headers.get('content-type') || '';
-            if (!geminiContentType.includes('application/json')) {
-              const text = await apiResponse.text();
-              const statusCode = apiResponse.status;
-              throw new ProviderError(
-                `Gemini API returned non-JSON response (${geminiContentType}). Status: ${statusCode}. This usually indicates an invalid API key or endpoint issue.`,
-                'gemini',
-                {
-                  statusCode,
-                  contentType: geminiContentType,
-                  responsePreview: text.substring(0, 200),
-                  retryable: false
-                }
-              );
-            }
-            
-            apiData = await apiResponse.json();
-            
-            if (apiData.error) {
-              const statusCode = apiResponse.status;
-              throw new ProviderError(
-                `Gemini API error: ${apiData.error.message}`,
-                'gemini',
-                {
-                  apiError: apiData.error,
-                  statusCode,
-                  retryable: statusCode === 429 || statusCode >= 500
-                }
-              );
-            }
-            
-            // Extract logprobs if available (for uncertainty estimation)
-            logprobs = apiData.candidates?.[0]?.content?.parts?.[0]?.logprobs || null;
-            
-            return {
-              judgment: apiData.candidates?.[0]?.content?.parts?.[0]?.text || 'No response',
-              data: apiData,
-              logprobs
-            };
-            
-          case 'openai':
-            apiResponse = await this.callOpenAIAPI(base64Images, fullPrompt, abortController.signal, isMultiImage);
-            clearTimeout(timeoutId);
-            
-            // Check if response is HTML (error page) instead of JSON
-            const openaiContentType = apiResponse.headers.get('content-type') || '';
-            if (!openaiContentType.includes('application/json')) {
-              const text = await apiResponse.text();
-              const statusCode = apiResponse.status;
-              throw new ProviderError(
-                `OpenAI API returned non-JSON response (${openaiContentType}). Status: ${statusCode}. This usually indicates an invalid API key or endpoint issue.`,
-                'openai',
-                {
-                  statusCode,
-                  contentType: openaiContentType,
-                  responsePreview: text.substring(0, 200),
-                  retryable: false
-                }
-              );
-            }
-            
-            apiData = await apiResponse.json();
-            
-            if (apiData.error) {
-              const statusCode = apiResponse.status;
-              throw new ProviderError(
-                `OpenAI API error: ${apiData.error.message}`,
-                'openai',
-                {
-                  apiError: apiData.error,
-                  statusCode,
-                  retryable: statusCode === 429 || statusCode >= 500
-                }
-              );
-            }
-            
-            // Extract logprobs if available (OpenAI provides logprobs when requested)
-            logprobs = apiData.choices?.[0]?.logprobs || null;
-            
-            return {
-              judgment: apiData.choices?.[0]?.message?.content || 'No response',
-              data: apiData,
-              logprobs
-            };
-            
-          case 'claude':
-            apiResponse = await this.callClaudeAPI(base64Images, fullPrompt, abortController.signal, isMultiImage);
-            clearTimeout(timeoutId);
-            
-            // Check if response is HTML (error page) instead of JSON
-            const claudeContentType = apiResponse.headers.get('content-type') || '';
-            if (!claudeContentType.includes('application/json')) {
-              const text = await apiResponse.text();
-              const statusCode = apiResponse.status;
-              throw new ProviderError(
-                `Claude API returned non-JSON response (${claudeContentType}). Status: ${statusCode}. This usually indicates an invalid API key or endpoint issue.`,
-                'claude',
-                {
-                  statusCode,
-                  contentType: claudeContentType,
-                  responsePreview: text.substring(0, 200),
-                  retryable: false
-                }
-              );
-            }
-            
-            apiData = await apiResponse.json();
-            
-            if (apiData.error) {
-              const statusCode = apiResponse.status;
-              throw new ProviderError(
-                `Claude API error: ${apiData.error.message || 'Unknown error'}`,
-                'claude',
-                {
-                  apiError: apiData.error,
-                  statusCode,
-                  retryable: statusCode === 429 || statusCode >= 500
-                }
-              );
-            }
-            
-            // Claude doesn't provide logprobs in standard API
-            logprobs = null;
-            
-            return {
-              judgment: apiData.content?.[0]?.text || 'No response',
-              data: apiData,
-              logprobs
-            };
-            
-          case 'groq':
-            // Groq uses OpenAI-compatible API, so we can reuse callOpenAIAPI
-            // Groq's endpoint is already set in providerConfig.apiUrl (https://api.groq.com/openai/v1)
-            apiResponse = await this.callOpenAIAPI(base64Images, fullPrompt, abortController.signal, isMultiImage);
-            clearTimeout(timeoutId);
-            
-            // Check if response is HTML (error page) instead of JSON
-            const contentType = apiResponse.headers.get('content-type') || '';
-            if (!contentType.includes('application/json')) {
-              const text = await apiResponse.text();
-              const statusCode = apiResponse.status;
-              throw new ProviderError(
-                `Groq API returned non-JSON response (${contentType}). Status: ${statusCode}. This usually indicates an invalid API key or endpoint issue.`,
-                'groq',
-                {
-                  statusCode,
-                  contentType,
-                  responsePreview: text.substring(0, 200),
-                  retryable: false
-                }
-              );
-            }
-            
-            apiData = await apiResponse.json();
-            
-            if (apiData.error) {
-              const statusCode = apiResponse.status;
-              throw new ProviderError(
-                `Groq API error: ${apiData.error.message || 'Unknown error'}`,
-                'groq',
-                {
-                  apiError: apiData.error,
-                  statusCode,
-                  retryable: statusCode === 429 || statusCode >= 500
-                }
-              );
-            }
-            
-            // Groq may provide logprobs (OpenAI-compatible, but check availability)
-            logprobs = apiData.choices?.[0]?.logprobs || null;
-            
-            return {
-              judgment: apiData.choices?.[0]?.message?.content || 'No response',
-              data: apiData,
-              logprobs
-            };
-            
-          case 'openrouter':
-            // OpenRouter uses OpenAI-compatible API
-            apiResponse = await this.callOpenAIAPI(base64Images, fullPrompt, abortController.signal, isMultiImage);
-            clearTimeout(timeoutId);
-            
-            const orContentType = apiResponse.headers.get('content-type') || '';
-            if (!orContentType.includes('application/json')) {
-              const text = await apiResponse.text();
-              const statusCode = apiResponse.status;
-              throw new ProviderError(
-                `OpenRouter API returned non-JSON response (${orContentType}). Status: ${statusCode}. Verify API credentials.`,
-                'openrouter',
-                { statusCode, contentType: orContentType, responsePreview: text.substring(0, 200), retryable: false }
-              );
-            }
-            
-            apiData = await apiResponse.json();
-            
-            if (apiData.error) {
-              const statusCode = apiResponse.status;
-              throw new ProviderError(
-                `OpenRouter API error: ${apiData.error.message || 'Unknown error'}`,
-                'openrouter',
-                { apiError: apiData.error, statusCode, retryable: statusCode === 429 || statusCode >= 500 }
-              );
-            }
-            
-            return {
-              judgment: apiData.choices?.[0]?.message?.content || 'No response',
-              data: apiData,
-              logprobs: apiData.choices?.[0]?.logprobs || null
-            };
-            
-          default:
-            throw new ProviderError(`Unknown provider: ${this.provider}`, this.provider);
-        }
+        // Call the appropriate API and parse the response
+        apiResponse = await this._callProviderAPI(base64Images, fullPrompt, abortController.signal, isMultiImage);
+        clearTimeout(timeoutId);
+        return this._parseProviderResponse(apiResponse);
       }, {
         maxRetries,
         baseDelay: RETRY_CONSTANTS.DEFAULT_BASE_DELAY_MS,
@@ -1281,8 +1001,98 @@ export class VLLMJudge {
   }
 
   /**
+   * Log cache hit/miss with optional session tracking. Fire-and-forget.
+   */
+  _logCacheResult(operation, context, cacheKey) {
+    const isHit = operation === 'hit';
+    import('./cache.mjs').then(({ getCache }) => {
+      try {
+        safeLogCacheOperation({ operation, hit: isHit, latency: 0, cacheSize: getCache().size, maxSize: 1000 });
+      } catch { /* ignore */ }
+    }).catch(() => {});
+
+    if (isHit && this.config.debug.verbose) {
+      log(`[VLLM] Cache hit for ${cacheKey}`);
+    }
+
+    if (context.sessionId) {
+      const method = isHit ? 'recordSessionCacheHit' : 'recordSessionCacheMiss';
+      import('./session-cost-tracker.mjs').then(m => m[method](context.sessionId)).catch(() => {});
+    }
+  }
+
+  /**
+   * Route to the correct provider API method.
+   */
+  async _callProviderAPI(base64Images, prompt, signal, isMultiImage) {
+    switch (this.provider) {
+      case 'gemini':
+        return this.callGeminiAPI(base64Images, prompt, signal, isMultiImage);
+      case 'openai':
+      case 'groq':
+      case 'openrouter':
+        return this.callOpenAIAPI(base64Images, prompt, signal, isMultiImage);
+      case 'claude':
+        return this.callClaudeAPI(base64Images, prompt, signal, isMultiImage);
+      default:
+        throw new ProviderError(`Unknown provider: ${this.provider}`, this.provider);
+    }
+  }
+
+  /**
+   * Parse a provider API response: validate content-type, check for errors,
+   * extract judgment text and logprobs.
+   */
+  _parseProviderResponse(apiResponse) {
+    const ct = apiResponse.headers.get('content-type') || '';
+    if (!ct.includes('application/json')) {
+      const statusCode = apiResponse.status;
+      return apiResponse.text().then(text => {
+        throw new ProviderError(
+          `${this.provider} API returned non-JSON response (${ct}). Status: ${statusCode}. Check API key or endpoint.`,
+          this.provider,
+          { statusCode, contentType: ct, responsePreview: text.substring(0, 200), retryable: false }
+        );
+      });
+    }
+
+    return apiResponse.json().then(apiData => {
+      if (apiData.error) {
+        const statusCode = apiResponse.status;
+        throw new ProviderError(
+          `${this.provider} API error: ${apiData.error.message || 'Unknown error'}`,
+          this.provider,
+          { apiError: apiData.error, statusCode, retryable: statusCode === 429 || statusCode >= 500 }
+        );
+      }
+
+      // Extract judgment text and logprobs per provider response format
+      if (this.provider === 'gemini') {
+        return {
+          judgment: apiData.candidates?.[0]?.content?.parts?.[0]?.text || 'No response',
+          data: apiData,
+          logprobs: apiData.candidates?.[0]?.content?.parts?.[0]?.logprobs || null
+        };
+      }
+      if (this.provider === 'claude') {
+        return {
+          judgment: apiData.content?.[0]?.text || 'No response',
+          data: apiData,
+          logprobs: null
+        };
+      }
+      // OpenAI, Groq, OpenRouter (all OpenAI-compatible)
+      return {
+        judgment: apiData.choices?.[0]?.message?.content || 'No response',
+        data: apiData,
+        logprobs: apiData.choices?.[0]?.logprobs || null
+      };
+    });
+  }
+
+  /**
    * Call Google Gemini API
-   * 
+   *
    * @param {string | string[]} base64Images - Single image or array of images (base64)
    * @param {string} prompt - Evaluation prompt
    * @param {AbortSignal} signal - Abort signal for timeout

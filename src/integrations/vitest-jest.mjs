@@ -30,7 +30,7 @@
  */
 
 import { validateScreenshot } from '../judge.mjs';
-import { validateComparison } from '../convenience.mjs';
+import { validateComparison } from '../page-validation.mjs';
 import { ConfigError } from '../errors.mjs';
 
 /**

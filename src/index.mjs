@@ -44,7 +44,7 @@ export { VLLMJudge, _validateScreenshot as validateScreenshot };
 // Internal alias for backward compatibility
 export { _validateScreenshot };
 
-export { validatePage, validateComparison } from './convenience.mjs';
+export { validatePage, validateComparison } from './page-validation.mjs';
 export { validateWithRubric } from './validators/index.mjs';
 
 /**

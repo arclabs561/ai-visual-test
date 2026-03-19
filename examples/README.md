@@ -29,7 +29,8 @@ npx playwright install chromium
 | Use matchers in Playwright tests | `use-case-3-playwright-integration.mjs` |
 | Reduce API costs with tier/provider selection | `cost-optimization.mjs` |
 | Use auto-optimization flags | `auto-optimization.mjs` |
-| Use from Python notebooks | `marimo/` |
+| Set up Vitest/Jest matchers | `vitest-matchers.mjs` |
+| Compare before/after screenshots | `comparison.mjs` |
 
 ## Standalone Examples (run with node)
 
@@ -39,12 +40,10 @@ node examples/use-case-1-enterprise-qa.mjs
 node examples/use-case-2-indie-game-dev.mjs
 node examples/use-case-3-playwright-integration.mjs
 node examples/use-case-4-real-website.mjs
+node examples/vitest-matchers.mjs
+node examples/comparison.mjs
 ```
 
 ## Playwright Test Examples (run with npx playwright test)
 
 `cost-optimization.mjs` and `auto-optimization.mjs` use `@playwright/test` and should be run via the Playwright test runner, not `node`.
-
-## Marimo Notebooks (Python)
-
-See `marimo/README.md` for Python notebook examples that call the Node.js package.

@@ -13,9 +13,8 @@
  * This package handles VLLM (vision) calls; llm-utils handles text-only calls.
  */
 
-import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { join, dirname, basename, resolve } from 'path';
-import { fileURLToPath } from 'url';
+import { readFileSync, existsSync } from 'fs';
+import { dirname, basename, resolve } from 'path';
 import { createConfig, getConfig } from './config.mjs';
 import { getCached, setCached } from './cache.mjs';
 import { FileError, ProviderError, TimeoutError, ValidationError } from './errors.mjs';
@@ -30,9 +29,6 @@ import { RETRY_CONSTANTS, API_CONSTANTS } from './constants.mjs';
 import { retryWithBackoff, enhanceErrorMessage } from './retry.mjs';
 import { safeLogCacheOperation } from './safe-logger.mjs';
 import { composeSingleImagePrompt, composeComparisonPrompt } from './prompt-composer.mjs';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 /** Clamp a score to [0, 10] or null. */
 function _clampScore(raw) {
@@ -327,12 +323,7 @@ export class VLLMJudge {
       const maxRetries = context.maxRetries ?? 3;
       const apiResult = await retryWithBackoff(async () => {
         attempts++;
-        let apiResponse;
-        let apiData;
-        let logprobs = null; // Declare once outside switch
-        
-        // Call the appropriate API and parse the response
-        apiResponse = await this._callProviderAPI(base64Images, fullPrompt, abortController.signal, isMultiImage);
+        const apiResponse = await this._callProviderAPI(base64Images, fullPrompt, abortController.signal, isMultiImage);
         clearTimeout(timeoutId);
         return this._parseProviderResponse(apiResponse);
       }, {
@@ -340,58 +331,18 @@ export class VLLMJudge {
         baseDelay: RETRY_CONSTANTS.DEFAULT_BASE_DELAY_MS,
         maxDelay: RETRY_CONSTANTS.DEFAULT_MAX_DELAY_MS,
         onRetry: (err, attempt, delay) => {
-          // Log retry attempts (weighted: retries are important for debugging)
-          // Use dynamic import with proper error handling to prevent unhandled promise rejections
-          import('./utils/performance-logger.mjs')
-            .then(({ logErrorPattern }) => {
-              logErrorPattern({
-                error: err,
-                context: `API retry (${this.provider})`,
-                recovery: 'exponential_backoff',
-                retryCount: attempt
-              });
-            })
-            .catch((importError) => {
-              // Log to console if performance logger unavailable (better than silent failure)
-              if (this.config.debug.verbose) {
-                warn(`[VLLM] Performance logger unavailable: ${importError.message}`);
-              }
-            });
-          
+          this._logPerf({ error: err, context: `API retry (${this.provider})`, recovery: 'exponential_backoff', retryCount: attempt }, 'logErrorPattern');
           if (this.config.debug.verbose) {
             warn(`[VLLM] Retry ${attempt}/${maxRetries} for ${this.provider} API: ${err.message} (waiting ${delay}ms)`);
           }
         }
       });
-      
+
       judgment = apiResult.judgment;
       data = apiResult.data;
       const logprobs = apiResult.logprobs || null;
-      
       const responseTime = Date.now() - startTime;
-      
-      // Log API call performance (weighted: always log for critical paths)
-      // Use dynamic import with proper error handling to prevent unhandled promise rejections
-      import('./utils/performance-logger.mjs')
-        .then(({ logAPICallPerformance }) => {
-          logAPICallPerformance({
-            provider: this.provider,
-            latency: responseTime,
-            retries: attempts - 1,
-            cost: estimatedCost?.totalCost || null,
-            inputTokens: estimatedCost?.inputTokens || 0,
-            outputTokens: estimatedCost?.outputTokens || 0,
-            success: true,
-            testName: context.testType || context.step || 'unknown'
-          });
-        })
-        .catch((importError) => {
-          // Log to console if performance logger unavailable (better than silent failure)
-          if (this.config.debug.verbose) {
-            warn(`[VLLM] Performance logger unavailable: ${importError.message}`);
-          }
-        });
-      
+
       const validationResult = await this._buildResult(
         { judgment, data, logprobs, attempts, responseTime, imagePath, context }
       );
@@ -407,32 +358,9 @@ export class VLLMJudge {
       error = err;
       responseTime = Date.now() - startTime;
       
-      // Log API call failure (weighted: always log errors)
-      // Use dynamic import without await (fire-and-forget logging)
-      import('./utils/performance-logger.mjs').then(({ logAPICallPerformance, logErrorPattern }) => {
-        logAPICallPerformance({
-          provider: this.provider,
-          latency: responseTime,
-          retries: attempts - 1,
-          success: false,
-          error: err,
-          testName: context.testType || context.step || 'unknown'
-        });
-        logErrorPattern({
-          error: err,
-          context: `API call (${this.provider})`,
-          recovery: 'retry_with_backoff',
-          retryCount: attempts - 1,
-          recovered: false
-        });
-      })
-        .catch((importError) => {
-          // Log to console if performance logger unavailable (better than silent failure)
-          if (this.config.debug.verbose) {
-            warn(`[VLLM] Performance logger unavailable: ${importError.message}`);
-          }
-        });
-      
+      this._logPerf({ provider: this.provider, latency: responseTime, retries: attempts - 1, success: false, error: err, testName: context.testType || context.step || 'unknown' }, 'logAPICallPerformance');
+      this._logPerf({ error: err, context: `API call (${this.provider})`, recovery: 'retry_with_backoff', retryCount: attempts - 1, recovered: false }, 'logErrorPattern');
+
       // Handle timeout errors specifically
       if (error.name === 'AbortError' || error.message?.includes('timeout') || error.message?.includes('aborted')) {
         const enhancedMessage = enhanceErrorMessage(
@@ -835,8 +763,15 @@ export class VLLMJudge {
       }
     }
 
-    // Cost estimation and recording
     const estimatedCost = data ? this.estimateCost(data, this.provider) : null;
+
+    // Log performance with actual cost data (fire-and-forget)
+    this._logPerf({
+      provider: this.provider, latency: responseTime, retries: attempts - 1,
+      cost: estimatedCost?.totalCost || null, inputTokens: estimatedCost?.inputTokens || 0,
+      outputTokens: estimatedCost?.outputTokens || 0, success: true, testName
+    }, 'logAPICallPerformance');
+
     if (estimatedCost?.totalCost) {
       try {
         recordCost({ provider: this.provider, cost: estimatedCost.totalCost, inputTokens: estimatedCost.inputTokens || 0, outputTokens: estimatedCost.outputTokens || 0, testName });
@@ -921,6 +856,17 @@ export class VLLMJudge {
         throw new FileError(`Invalid image path: ${err.message}`, basename(path));
       }
     }
+  }
+
+  /**
+   * Fire-and-forget performance log. Dynamically imports performance-logger.
+   * @param {Object} payload - Data to log
+   * @param {string} method - Logger method name ('logAPICallPerformance' or 'logErrorPattern')
+   */
+  _logPerf(payload, method) {
+    import('./utils/performance-logger.mjs')
+      .then(m => m[method](payload))
+      .catch(() => {});
   }
 
   /**

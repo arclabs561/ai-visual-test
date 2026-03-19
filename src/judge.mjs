@@ -1240,32 +1240,17 @@ export class VLLMJudge {
       return null; // Free or self-hosted
     }
     
-    let inputTokens = 0;
-    let outputTokens = 0;
-    
-    switch (provider) {
-      case 'gemini':
-        inputTokens = data.usageMetadata?.promptTokenCount || 0;
-        outputTokens = data.usageMetadata?.candidatesTokenCount || 0;
-        break;
-      case 'openai':
-        inputTokens = data.usage?.prompt_tokens || 0;
-        outputTokens = data.usage?.completion_tokens || 0;
-        break;
-      case 'claude':
-        inputTokens = data.usage?.input_tokens || 0;
-        outputTokens = data.usage?.output_tokens || 0;
-        break;
-      case 'groq':
-        // Groq uses OpenAI-compatible API format
-        inputTokens = data.usage?.prompt_tokens || 0;
-        outputTokens = data.usage?.completion_tokens || 0;
-        break;
-      case 'openrouter':
-        // OpenRouter uses OpenAI-compatible API format
-        inputTokens = data.usage?.prompt_tokens || 0;
-        outputTokens = data.usage?.completion_tokens || 0;
-        break;
+    let inputTokens, outputTokens;
+    if (provider === 'gemini') {
+      inputTokens = data.usageMetadata?.promptTokenCount || 0;
+      outputTokens = data.usageMetadata?.candidatesTokenCount || 0;
+    } else if (provider === 'claude') {
+      inputTokens = data.usage?.input_tokens || 0;
+      outputTokens = data.usage?.output_tokens || 0;
+    } else {
+      // OpenAI, Groq, OpenRouter (all OpenAI-compatible)
+      inputTokens = data.usage?.prompt_tokens || 0;
+      outputTokens = data.usage?.completion_tokens || 0;
     }
     
     const inputCost = (inputTokens / 1_000_000) * this.providerConfig.pricing.input;

@@ -29,13 +29,24 @@ def __():
     from pydantic import ValidationError
     from models import ValidationResult, PersonaExperienceResult
     from config import AppSettings
-    
+
     # Configuration using Pydantic Settings
     settings = AppSettings()
     API_KEY = settings.api_key
     URL = settings.test_url or "https://example.com"
-    
-    return API_KEY, Path, URL, ValidationError, PersonaExperienceResult, ValidationResult, json, os, settings, subprocess
+
+    return (
+        API_KEY,
+        Path,
+        URL,
+        ValidationError,
+        PersonaExperienceResult,
+        ValidationResult,
+        json,
+        os,
+        settings,
+        subprocess,
+    )
 
 
 @app.cell
@@ -44,13 +55,13 @@ def __(API_KEY):
     Setup: Check configuration
     """
     if not API_KEY:
-        print("⚠️  Warning: No API key found")
+        print("Warning: No API key found")
         print("   Set GEMINI_API_KEY, OPENAI_API_KEY, or ANTHROPIC_API_KEY")
     else:
-        print("✅ API key configured")
-    
-    print(f"🌐 Target URL: {URL}")
-    
+        print("API key configured")
+
+    print(f"Target URL: {URL}")
+
     return
 
 
@@ -58,11 +69,11 @@ def __(API_KEY):
 def __(API_KEY, URL, json, subprocess):
     """
     Test 1: Basic Validation (validateScreenshot - Primary API)
-    
+
     This is the primary API for screenshot validation.
     """
     import json as py_json
-    
+
     node_script = f"""
     import {{ validateScreenshot }} from 'ai-browser-test';
     
@@ -89,22 +100,22 @@ def __(API_KEY, URL, json, subprocess):
         process.exit(1);
     }});
     """
-    
-    print("📊 Test 1: Basic Validation (validateScreenshot)")
+
+    print("Test 1: Basic Validation (validateScreenshot)")
     print("   Primary API with uncertainty reduction")
-    
-    return node_script,
+
+    return (node_script,)
 
 
 @app.cell
 def __(API_KEY, URL, json, subprocess):
     """
     Test 2: Goals-Based Validation (validateWithGoals)
-    
+
     New convenience function for goals-based validation.
     """
     import json as py_json
-    
+
     node_script = f"""
     import {{ validateWithGoals, createGameGoal }} from 'ai-browser-test';
     import {{ chromium }} from 'playwright';
@@ -151,22 +162,22 @@ def __(API_KEY, URL, json, subprocess):
     
     run();
     """
-    
-    print("🎯 Test 2: Goals-Based Validation (validateWithGoals)")
+
+    print("Test 2: Goals-Based Validation (validateWithGoals)")
     print("   Supports string, object, array, and function goals")
-    
-    return node_script,
+
+    return (node_script,)
 
 
 @app.cell
 def __(API_KEY, URL, json, subprocess):
     """
     Test 3: Browser Experience Testing (testBrowserExperience)
-    
+
     New convenience function for full browser experience testing.
     """
     import json as py_json
-    
+
     node_script = f"""
     import {{ testBrowserExperience }} from 'ai-browser-test';
     import {{ chromium }} from 'playwright';
@@ -195,22 +206,22 @@ def __(API_KEY, URL, json, subprocess):
     
     run();
     """
-    
-    print("🌐 Test 3: Browser Experience Testing (testBrowserExperience)")
+
+    print("Test 3: Browser Experience Testing (testBrowserExperience)")
     print("   Full browser experience across multiple stages")
-    
-    return node_script,
+
+    return (node_script,)
 
 
 @app.cell
 def __(API_KEY, URL, json, subprocess):
     """
     Test 4: Gameplay Testing (testGameplay)
-    
+
     New convenience function for gameplay testing.
     """
     import json as py_json
-    
+
     node_script = f"""
     import {{ testGameplay }} from 'ai-browser-test';
     import {{ chromium }} from 'playwright';
@@ -240,22 +251,22 @@ def __(API_KEY, URL, json, subprocess):
     
     run();
     """
-    
-    print("🎮 Test 4: Gameplay Testing (testGameplay)")
+
+    print("Test 4: Gameplay Testing (testGameplay)")
     print("   Gameplay experience testing with temporal aggregation")
-    
-    return node_script,
+
+    return (node_script,)
 
 
 @app.cell
 def __(API_KEY, URL, json, subprocess):
     """
     Test 5: Persona Experience (experiencePageAsPersona)
-    
+
     Updated API for persona-based testing with automatic temporal aggregation.
     """
     import json as py_json
-    
+
     node_script = f"""
     import {{ experiencePageAsPersona }} from 'ai-browser-test';
     import {{ chromium }} from 'playwright';
@@ -295,22 +306,22 @@ def __(API_KEY, URL, json, subprocess):
     
     run();
     """
-    
-    print("👤 Test 5: Persona Experience (experiencePageAsPersona)")
+
+    print("Test 5: Persona Experience (experiencePageAsPersona)")
     print("   Persona-based testing with automatic temporal aggregation")
-    
-    return node_script,
+
+    return (node_script,)
 
 
 @app.cell
 def __(API_KEY, URL, json, subprocess):
     """
     Test 6: Temporal Aggregation
-    
+
     Demonstrates temporal aggregation functions.
     """
     import json as py_json
-    
+
     node_script = f"""
     import {{ aggregateTemporalNotes, aggregateMultiScale }} from 'ai-browser-test';
     
@@ -344,22 +355,22 @@ def __(API_KEY, URL, json, subprocess):
         aggregatedMultiScale
     }}, null, 2));
     """
-    
-    print("⏱️  Test 6: Temporal Aggregation")
+
+    print("Test 6: Temporal Aggregation")
     print("   Standard and multi-scale temporal aggregation")
-    
-    return node_script,
+
+    return (node_script,)
 
 
 @app.cell
 def __(API_KEY, URL, json, subprocess):
     """
     Test 7: Uncertainty Reduction
-    
+
     Demonstrates uncertainty reduction features.
     """
     import json as py_json
-    
+
     node_script = f"""
     import {{ validateScreenshot, shouldUseSelfConsistency }} from 'ai-browser-test';
     
@@ -407,39 +418,39 @@ def __(API_KEY, URL, json, subprocess):
         process.exit(1);
     }});
     """
-    
-    print("🔬 Test 7: Uncertainty Reduction")
+
+    print("Test 7: Uncertainty Reduction")
     print("   Uncertainty estimation and adaptive self-consistency")
-    
-    return node_script,
+
+    return (node_script,)
 
 
 @app.cell
 def __():
     """
     Summary: All Available APIs
-    
+
     ## Primary API
     - `validateScreenshot(imagePath, prompt, context)` - Core validation
-    
+
     ## Convenience Functions
     - `testGameplay(page, options)` - Gameplay testing
     - `testBrowserExperience(page, options)` - Browser experience testing
     - `validateWithGoals(imagePath, options)` - Goals-based validation
-    
+
     ## Persona & Experience
     - `experiencePageAsPersona(page, persona, options)` - Persona-based testing
-    
+
     ## Temporal Aggregation
     - `aggregateTemporalNotes(notes, options)` - Standard aggregation
     - `aggregateMultiScale(notes, options)` - Multi-scale aggregation
-    
+
     ## Uncertainty Reduction
     - `shouldUseSelfConsistency(context, partialResult)` - Adaptive self-consistency
-    
+
     ## Goals
     - `createGameGoal(goalType)` - Create game goals
-    
+
     All functions support:
     - Uncertainty reduction
     - Goals-based validation
@@ -447,4 +458,3 @@ def __():
     - Multi-modal validation (screenshot + HTML + CSS)
     """
     return
-

@@ -25,12 +25,24 @@ def __():
     import io
     from pydantic import ValidationError
     from models import ValidationResult
-    
+
     # Configuration
     API_KEY = os.getenv("GEMINI_API_KEY") or os.getenv("OPENAI_API_KEY")
     SCREENSHOT_PATH = "screenshot.png"
-    
-    return API_KEY, Image, Path, ValidationError, ValidationResult, base64, io, json, os, subprocess, SCREENSHOT_PATH
+
+    return (
+        API_KEY,
+        Image,
+        Path,
+        ValidationError,
+        ValidationResult,
+        base64,
+        io,
+        json,
+        os,
+        subprocess,
+        SCREENSHOT_PATH,
+    )
 
 
 @app.cell
@@ -39,11 +51,11 @@ def __(API_KEY):
     Setup: Check if API key is configured
     """
     if not API_KEY:
-        print("⚠️  Warning: No API key found. Set GEMINI_API_KEY or OPENAI_API_KEY")
+        print("Warning: No API key found. Set GEMINI_API_KEY or OPENAI_API_KEY")
         print("   The package will run in disabled mode.")
     else:
-        print("✅ API key configured")
-    
+        print("API key configured")
+
     return
 
 
@@ -53,15 +65,15 @@ def __(SCREENSHOT_PATH, Path):
     Step 1: Check if screenshot exists
     """
     screenshot_path = Path(SCREENSHOT_PATH)
-    
+
     if not screenshot_path.exists():
-        print(f"❌ Screenshot not found: {SCREENSHOT_PATH}")
+        print(f"ERROR: Screenshot not found: {SCREENSHOT_PATH}")
         print("   Please provide a screenshot file.")
         screenshot_available = False
     else:
-        print(f"✅ Screenshot found: {SCREENSHOT_PATH}")
+        print(f"Screenshot found: {SCREENSHOT_PATH}")
         screenshot_available = True
-    
+
     return screenshot_available, screenshot_path
 
 
@@ -73,27 +85,27 @@ def __(screenshot_available, screenshot_path, base64, io, Image):
     if screenshot_available:
         # Load image
         img = Image.open(screenshot_path)
-        
+
         # Display image
         display(img)
-        
+
         # Get image info
         width, height = img.size
-        print(f"📐 Image size: {width}x{height} pixels")
-        
+        print(f"Image size: {width}x{height} pixels")
+
         # Convert to base64 for API
         buffer = io.BytesIO()
-        img.save(buffer, format='PNG')
-        img_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
-        
+        img.save(buffer, format="PNG")
+        img_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
+
         image_info = {
             "width": width,
             "height": height,
-            "base64": img_base64[:50] + "..."  # Preview only
+            "base64": img_base64[:50] + "...",  # Preview only
         }
     else:
         image_info = None
-    
+
     return height, image_info, img, width
 
 
@@ -101,19 +113,20 @@ def __(screenshot_available, screenshot_path, base64, io, Image):
 def __(API_KEY, Path, height, image_info, json, os, screenshot_path, subprocess, width):
     """
     Step 3: Validate screenshot using ai-browser-test
-    
+
     This calls the Node.js package via subprocess.
     In production, you might use a proper Python bridge.
     """
     if not image_info:
         result = None
-        print("⏭️  Skipping validation (no screenshot)")
+        print("Skipping validation (no screenshot)")
     else:
         # Create a Node.js script to call the package
         # Note: Using JSON.dumps to properly escape the path
         import json as py_json
+
         screenshot_path_str = str(screenshot_path.resolve())
-        
+
         node_script = f"""
         import {{ validateScreenshot }} from 'ai-browser-test';
         
@@ -137,33 +150,33 @@ def __(API_KEY, Path, height, image_info, json, os, screenshot_path, subprocess,
             process.exit(1);
         }});
         """
-        
+
         # Write temporary script
         script_path = Path("temp_validate.mjs")
         script_path.write_text(node_script)
-        
+
         try:
             # Run Node.js script
             process = subprocess.run(
                 ["node", str(script_path)],
                 capture_output=True,
                 text=True,
-                env={**os.environ, "GEMINI_API_KEY": API_KEY or ""}
+                env={**os.environ, "GEMINI_API_KEY": API_KEY or ""},
             )
-            
+
             if process.returncode == 0:
                 # Parse and validate with Pydantic
                 try:
                     raw_result = json.loads(process.stdout)
                     validated_result = ValidationResult.model_validate(raw_result)
                     result = validated_result
-                    print("✅ Validation completed")
+                    print("Validation completed")
                 except ValidationError as e:
                     result = {"error": f"Validation error: {e}", "raw_data": raw_result}
-                    print(f"❌ Pydantic validation error: {e}")
+                    print(f"ERROR: Pydantic validation error: {e}")
                 except json.JSONDecodeError as e:
                     result = {"error": f"JSON parse error: {e}", "raw_output": process.stdout}
-                    print(f"❌ JSON parse error: {e}")
+                    print(f"ERROR: JSON parse error: {e}")
             else:
                 # Try to parse error as JSON, fallback to plain text
                 try:
@@ -171,16 +184,16 @@ def __(API_KEY, Path, height, image_info, json, os, screenshot_path, subprocess,
                     result = {"error": error_data.get("error", process.stderr)}
                 except:
                     result = {"error": process.stderr}
-                print(f"❌ Validation failed: {process.stderr}")
+                print(f"ERROR: Validation failed: {process.stderr}")
         except Exception as e:
             result = {"error": str(e)}
-            print(f"❌ Error: {e}")
+            print(f"ERROR: {e}")
         finally:
             # Clean up
             if script_path.exists():
                 script_path.unlink()
-    
-    return result,
+
+    return (result,)
 
 
 @app.cell
@@ -189,7 +202,7 @@ def __(ValidationResult, result):
     Step 4: Display validation results
     """
     import marimo as mo
-    
+
     # Check if result is a ValidationResult instance or dict
     if isinstance(result, ValidationResult):
         # Pydantic model - use directly
@@ -198,7 +211,7 @@ def __(ValidationResult, result):
             issues = result.issues
             assessment = result.assessment
             reasoning = result.reasoning
-            
+
             # Display score (scores are 0-10, not 0-1)
             if score is not None:
                 score_color = "green" if score >= 8 else "orange" if score >= 6 else "red"
@@ -211,25 +224,25 @@ def __(ValidationResult, result):
                 **Cached:** {result.cached or False}
                 **Response Time:** {result.responseTime:.0f}ms
                 """)
-                
+
                 # Display uncertainty/confidence if available
-                if hasattr(result, 'uncertainty') and result.uncertainty is not None:
+                if hasattr(result, "uncertainty") and result.uncertainty is not None:
                     mo.md(f"""
                 **Uncertainty:** {result.uncertainty:.2f} (0-1, higher = more uncertain)
                 """)
-                if hasattr(result, 'confidence') and result.confidence is not None:
+                if hasattr(result, "confidence") and result.confidence is not None:
                     mo.md(f"""
                 **Confidence:** {result.confidence:.2f} (0-1, higher = more confident)
                 """)
-                
+
                 # Display cost if available
                 if result.estimatedCost:
                     mo.md(f"""
                 **Estimated Cost:** ${result.estimatedCost.totalCost}
                 """)
             else:
-                mo.md("## Validation Results\n\n⚠️ No score available")
-            
+                mo.md("## Validation Results\n\nWarning: No score available")
+
             # Display issues
             if issues:
                 mo.md(f"""
@@ -237,7 +250,7 @@ def __(ValidationResult, result):
                 
                 {chr(10).join(f"- {issue}" for issue in issues)}
                 """)
-            
+
             # Display assessment
             if assessment:
                 mo.md(f"""
@@ -245,7 +258,7 @@ def __(ValidationResult, result):
                 
                 {assessment}
                 """)
-            
+
             # Display reasoning
             if reasoning:
                 mo.md(f"""
@@ -267,15 +280,15 @@ def __(ValidationResult, result):
         """)
     else:
         mo.md("## No Results\n\nRun validation to see results.")
-    
-    return mo,
+
+    return (mo,)
 
 
 @app.cell
 def __():
     """
     Next Steps
-    
+
     - Try different prompts for specific evaluations
     - Test with different viewport sizes
     - Use different testType values: 'homepage', 'payment-screen', 'game-ui', etc.
@@ -286,4 +299,3 @@ def __():
     - Use createConfig() for advanced configuration
     """
     return
-

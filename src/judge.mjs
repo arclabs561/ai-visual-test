@@ -392,167 +392,15 @@ export class VLLMJudge {
           }
         });
       
-      const semanticInfo = this.extractSemanticInfo(judgment);
-      
-      // Enhance with uncertainty reduction (if enabled)
-      let uncertainty = null;
-      let confidence = null;
-      let selfConsistencyRecommended = false;
-      let selfConsistencyN = 0;
-      let selfConsistencyReason = '';
-      
-      if (context.enableUncertaintyReduction !== false) {
-        try {
-          const { enhanceWithUncertainty } = await import('./uncertainty-reducer.mjs');
-          // Pass context and partial result for adaptive self-consistency decision
-          const enhanced = enhanceWithUncertainty({
-            judgment,
-            logprobs,
-            attempts,
-            screenshotPath: imagePath,
-            score: semanticInfo.score,
-            issues: semanticInfo.issues || []
-          }, {
-            enableHallucinationCheck: context.enableHallucinationCheck !== false,
-            adaptiveSelfConsistency: context.adaptiveSelfConsistency !== false
-          }, context);
-          uncertainty = enhanced.uncertainty;
-          confidence = enhanced.confidence;
-          // Extract self-consistency recommendation (for future use or logging)
-          selfConsistencyRecommended = enhanced.selfConsistencyRecommended || false;
-          selfConsistencyN = enhanced.selfConsistencyN || 0;
-          selfConsistencyReason = enhanced.selfConsistencyReason || '';
-        } catch (error) {
-          // Silently fail - uncertainty reduction is optional
-          if (this.config.debug.verbose) {
-            warn(`[VLLM] Uncertainty reduction failed: ${error.message}`);
-          }
-        }
-      }
-      
-      // Estimate cost (data might not be available if retry succeeded)
-      const estimatedCost = data ? this.estimateCost(data, this.provider) : null;
-      
-      // Record cost for tracking (both global and session-level)
-      if (estimatedCost && estimatedCost.totalCost) {
-        try {
-          recordCost({
-            provider: this.provider,
-            cost: estimatedCost.totalCost,
-            inputTokens: estimatedCost.inputTokens || 0,
-            outputTokens: estimatedCost.outputTokens || 0,
-            testName: context.testType || context.step || 'unknown'
-          });
-          
-          // Also record in session tracker if sessionId provided
-          if (context.sessionId) {
-            const { recordSessionCost } = await import('./session-cost-tracker.mjs');
-            recordSessionCost(context.sessionId, {
-              provider: this.provider,
-              cost: estimatedCost.totalCost,
-              inputTokens: estimatedCost.inputTokens || 0,
-              outputTokens: estimatedCost.outputTokens || 0,
-              testName: context.testType || context.step || 'unknown'
-            });
-          }
-        } catch {
-          // Silently fail if cost tracking unavailable
-        }
-      }
-      
-      const validationResult = {
-        enabled: true,
-        provider: this.provider,
-        judgment,
-        score: semanticInfo.score,
-        issues: semanticInfo.issues,
-        assessment: semanticInfo.assessment,
-        reasoning: semanticInfo.reasoning,
-        recommendations: semanticInfo.recommendations || [],
-        strengths: semanticInfo.strengths || [],
-        pricing: this.providerConfig.pricing,
-        estimatedCost,
-        responseTime,
-        timestamp: new Date().toISOString(),
-        testName: context.testType || context.step || 'unknown',
-        viewport: context.viewport || null,
-        raw: data || null,
-        semantic: semanticInfo,
-        dimensionScores: semanticInfo.dimensionScores || null,
-        attempts: attempts || 1,
-        logprobs, // Include logprobs for uncertainty estimation (if available)
-        uncertainty, // Uncertainty estimate (0-1, higher = more uncertain)
-        confidence, // Confidence estimate (0-1, higher = more confident)
-        screenshotPath: imagePath, // Include for human validation
-        // Self-consistency recommendation (based on uncertainty × payout analysis)
-        selfConsistencyRecommended, // Whether self-consistency is recommended for this validation
-        selfConsistencyN, // Recommended number of self-consistency calls (0 = not recommended)
-        selfConsistencyReason // Reason for recommendation (for logging/debugging)
-      };
-      
-      // Collect VLLM judgment for human validation (non-blocking)
-      if (context.enableHumanValidation !== false) {
-        try {
-          const { getHumanValidationManager } = await import('./human-validation-manager.mjs');
-          const manager = getHumanValidationManager();
-          if (manager && manager.enabled) {
-            // Non-blocking: Don't wait for human validation collection
-            manager.collectVLLMJudgment(validationResult, imagePath, prompt, context)
-              .catch(err => {
-                // Silently fail - human validation is optional
-                if (this.config.debug.verbose) {
-                  warn('[VLLM] Human validation collection failed:', err.message);
-                }
-              });
-            
-            // Track sequence calibration if in temporal context
-            if (context.temporalNotes || context.sequenceIndex !== undefined) {
-              const degradation = manager.trackSequenceCalibration(
-                context.sequenceIndex || 0,
-                validationResult
-              );
-              
-              if (degradation.degraded) {
-                validationResult.calibrationDegraded = true;
-                validationResult.calibrationDegradation = degradation.degradation;
-                validationResult.calibrationRecommendation = degradation.recommendation;
-                
-                if (this.config.debug.verbose) {
-                  warn(`[VLLM] Calibration degraded at index ${context.sequenceIndex || 0}: ${degradation.degradation.toFixed(3)}`);
-                }
-              }
-            }
-          }
-        } catch (err) {
-          // Silently fail if human validation manager not available
-        }
-      }
-      
-      // Apply calibration if available (non-blocking check)
-      if (context.applyCalibration !== false && validationResult.score !== null) {
-        try {
-          const { getHumanValidationManager } = await import('./human-validation-manager.mjs');
-          const manager = getHumanValidationManager();
-          if (manager && manager.enabled) {
-            const calibratedScore = manager.applyCalibration(validationResult.score);
-            if (calibratedScore !== validationResult.score) {
-              validationResult.originalScore = validationResult.score;
-              validationResult.score = calibratedScore;
-              validationResult.calibrated = true;
-            }
-          }
-        } catch (err) {
-          // Silently fail if calibration not available
-        }
-      }
-      
-      // Cache result (use first image path for single image, or combined key for multi-image)
+      const validationResult = await this._buildResult(
+        { judgment, data, logprobs, attempts, responseTime, imagePath, context }
+      );
+
       if (useCache) {
         const cacheKey = isMultiImage ? imagePaths.join('|') : imagePath;
         setCached(cacheKey, prompt, context, validationResult);
       }
-      
-      // Normalize result structure before returning (ensures consistent structure)
+
       return normalizeValidationResult(validationResult, 'judgeScreenshot');
     } catch (err) {
       clearTimeout(timeoutId);
@@ -951,6 +799,82 @@ export class VLLMJudge {
     }
     
     return null;
+  }
+
+  /**
+   * Build the validation result from API response data.
+   * Handles semantic extraction, uncertainty, and cost recording.
+   */
+  async _buildResult({ judgment, data, logprobs, attempts, responseTime, imagePath, context }) {
+    const semanticInfo = this.extractSemanticInfo(judgment);
+    const testName = context.testType || context.step || 'unknown';
+
+    // Uncertainty reduction (optional, lazy-loaded)
+    let uncertainty = null, confidence = null;
+    let selfConsistencyRecommended = false, selfConsistencyN = 0, selfConsistencyReason = '';
+
+    if (context.enableUncertaintyReduction !== false) {
+      try {
+        const { enhanceWithUncertainty } = await import('./uncertainty-reducer.mjs');
+        const enhanced = enhanceWithUncertainty({
+          judgment, logprobs, attempts,
+          screenshotPath: imagePath,
+          score: semanticInfo.score,
+          issues: semanticInfo.issues || []
+        }, {
+          enableHallucinationCheck: context.enableHallucinationCheck !== false,
+          adaptiveSelfConsistency: context.adaptiveSelfConsistency !== false
+        }, context);
+        uncertainty = enhanced.uncertainty;
+        confidence = enhanced.confidence;
+        selfConsistencyRecommended = enhanced.selfConsistencyRecommended || false;
+        selfConsistencyN = enhanced.selfConsistencyN || 0;
+        selfConsistencyReason = enhanced.selfConsistencyReason || '';
+      } catch (err) {
+        if (this.config.debug.verbose) warn(`[VLLM] Uncertainty reduction failed: ${err.message}`);
+      }
+    }
+
+    // Cost estimation and recording
+    const estimatedCost = data ? this.estimateCost(data, this.provider) : null;
+    if (estimatedCost?.totalCost) {
+      try {
+        recordCost({ provider: this.provider, cost: estimatedCost.totalCost, inputTokens: estimatedCost.inputTokens || 0, outputTokens: estimatedCost.outputTokens || 0, testName });
+        if (context.sessionId) {
+          const { recordSessionCost } = await import('./session-cost-tracker.mjs');
+          recordSessionCost(context.sessionId, { provider: this.provider, cost: estimatedCost.totalCost, inputTokens: estimatedCost.inputTokens || 0, outputTokens: estimatedCost.outputTokens || 0, testName });
+        }
+      } catch { /* cost tracking is optional */ }
+    }
+
+    return {
+      enabled: true,
+      provider: this.provider,
+      judgment,
+      score: semanticInfo.score,
+      issues: semanticInfo.issues,
+      assessment: semanticInfo.assessment,
+      reasoning: semanticInfo.reasoning,
+      recommendations: semanticInfo.recommendations || [],
+      strengths: semanticInfo.strengths || [],
+      pricing: this.providerConfig.pricing,
+      estimatedCost,
+      responseTime,
+      timestamp: new Date().toISOString(),
+      testName,
+      viewport: context.viewport || null,
+      raw: data || null,
+      semantic: semanticInfo,
+      dimensionScores: semanticInfo.dimensionScores || null,
+      attempts: attempts || 1,
+      logprobs,
+      uncertainty,
+      confidence,
+      screenshotPath: imagePath,
+      selfConsistencyRecommended,
+      selfConsistencyN,
+      selfConsistencyReason
+    };
   }
 
   /**

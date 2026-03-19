@@ -28,6 +28,8 @@ import { sanitizePrompt, validatePromptSecurity } from './utils/prompt-sanitizer
 import { getRateLimiter } from './utils/rate-limiter.mjs';
 import { RETRY_CONSTANTS, API_CONSTANTS } from './constants.mjs';
 import { retryWithBackoff, enhanceErrorMessage } from './retry.mjs';
+import { safeLogCacheOperation } from './safe-logger.mjs';
+import { composeSingleImagePrompt, composeComparisonPrompt } from './prompt-composer.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

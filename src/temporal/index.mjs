@@ -75,14 +75,5 @@ export {
   TemporalBatchError
 } from '../temporal-orchestration.mjs';
 
-// Render change detection (not a temporal file, unchanged)
-export {
-  detectRenderChanges,
-  calculateOptimalFPS,
-  detectVisualChanges,
-  captureOnRenderChanges,
-  captureAdaptiveTemporalScreenshots
-} from '../render-change-detector.mjs';
-
 // Temporal screenshots (from multi-modal)
 export { captureTemporalScreenshots } from '../multi-modal.mjs';

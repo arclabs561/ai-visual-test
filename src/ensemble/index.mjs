@@ -31,17 +31,6 @@ export {
   shouldUseCounterBalance
 } from '../position-counterbalance.mjs';
 
-// Pair comparison
-export {
-  comparePair,
-  rankBatch
-} from '../pair-comparison.mjs';
-
-// Hallucination detection
-export {
-  detectHallucination
-} from '../hallucination-detector.mjs';
-
 // Research-enhanced validation
 export {
   validateWithResearchEnhancements,

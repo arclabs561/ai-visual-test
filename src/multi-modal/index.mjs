@@ -14,14 +14,7 @@ export {
   multiPerspectiveEvaluation
 } from '../multi-modal.mjs';
 
-// Multi-modal fusion
-export {
-  buildStructuredFusionPrompt,
-  calculateModalityWeights,
-  compareFusionStrategies
-} from '../multi-modal-fusion.mjs';
-
-// Cross-modal consistency
+// Cross-modal consistency (used by convenience.mjs and persona-experience.mjs)
 export {
   checkCrossModalConsistency,
   validateExperienceConsistency

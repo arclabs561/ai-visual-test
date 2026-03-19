@@ -2,25 +2,38 @@
 
 All notable changes to ai-visual-test will be documented in this file.
 
-## [0.8.0] - 2026-03-17
+## [0.8.0] - 2026-03-19
 
 ### Breaking
-- **Main entry point reduced to 17 core exports.** Consumers importing non-core symbols from the main entry need to switch to subpath imports (`./game`, `./errors`, `./temporal`, `./validators`, etc.).
+- **Main entry point reduced to 20 core exports.** Consumers importing non-core symbols from the main entry need to switch to subpath imports (`./game`, `./errors`, `./temporal`, `./validators`, etc.).
+- **`./specs` subpath removed.** Natural-language spec parsing had zero external consumers and was never published.
+- **`rawScore` field removed from validation results.** The auto-applied calibration was a no-op (identity defaults). Score calibration remains available as an opt-in utility via `./utils`.
 
 ### Added
-- **CLI** - `ai-visual-test check <image> "<prompt>"` for command-line screenshot validation.
-- **Subpath imports** - `./game` and `./errors` subpath exports for structured access to game and error modules.
+- **CLI** - `ai-visual-test check <image> "<prompt>"` for command-line screenshot validation with `--provider`, `--model`, `--min-score`, `--json`, `--verbose` flags.
+- **Vitest/Jest matchers** - `createMatchers(expect)` via `./vitest` subpath with `toPassVisualCheck`, `toHaveVisualScore`, `toMatchVisually`.
+- **`validateComparison()`** - Compare before/after screenshots.
+- **`estimateCost()`** - Pre-call cost estimation per provider.
+- **`validateStartup()`** - Early config validation for CI/test setup.
 
 ### Changed
 - **Temporal subsystem consolidated** from 13 files to 4, reducing internal complexity and eliminating circular dependencies.
+- **Codebase reduced** from 99 source files / 28K LOC to 73 files / 21K LOC. Removed 26 orphaned modules, collapsed utils barrel from 126+ to ~60 exports.
+- **README rewritten** as a consumer integration guide (install, configure, usage, matchers, CLI).
+- **Examples fixed** -- all use correct package imports, no relative paths, no emojis.
 
 ### Fixed
+- **Broken imports in judge.mjs** -- `composeSingleImagePrompt` and `safeLogCacheOperation` were used but never imported. The prompt composition system (532 LOC) was silently falling to an inline fallback on every call.
 - **Score-0 coercion bug** - 24 instances of `|| 0` replaced with `?? 0` to preserve intentional zero scores.
 - **Circular dependency** in `game-player.mjs` resolved.
+- **data-extractor.mjs** -- removed broken import of deleted `cached-llm.mjs`.
 
 ### Removed
-- Dead `evaluation/` directory imports (10 call sites).
-- DeckSage-specific hardcoded selectors from `testBrowserExperience`.
+- 26 orphaned source modules with no callers outside barrel re-exports.
+- `./specs` subpath (natural-language-specs, spec-templates, spec-config, smart-validator).
+- `marimo/` Python notebook examples.
+- Auto-applied score calibration from result normalizer (kept as opt-in utility).
+- Dead `evaluation/` directory imports.
 
 ## [0.7.5] - 2026-03-16
 

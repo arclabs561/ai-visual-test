@@ -6,7 +6,6 @@
  */
 
 import { warn } from './logger.mjs';
-import { calibrateScore } from './score-calibration.mjs';
 
 /**
  * Normalize validation result to ensure consistent structure
@@ -92,13 +91,6 @@ export function normalizeValidationResult(result, source = 'unknown') {
   // Ensure assessment is present (may be null)
   if (normalized.assessment === undefined) {
     normalized.assessment = null;
-  }
-
-  // Apply score calibration if provider is known
-  // Stores both raw and calibrated scores for transparency
-  if (normalized.score !== null && normalized.provider) {
-    normalized.rawScore = normalized.score;
-    normalized.score = calibrateScore(normalized.score, normalized.provider);
   }
 
   return normalized;

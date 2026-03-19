@@ -210,7 +210,6 @@ These are available as subpath imports:
 | `@arclabs561/ai-visual-test/ensemble` | Multi-provider ensemble judging, bias detection and mitigation, hallucination detection |
 | `@arclabs561/ai-visual-test/persona` | Persona-based experience testing (test as different user types) |
 | `@arclabs561/ai-visual-test/game` | AI game agent (plays Canvas/WebGL games via Playwright, analyzes screenshots, dispatches actions) |
-| `@arclabs561/ai-visual-test/specs` | Natural-language spec parsing and execution |
 | `@arclabs561/ai-visual-test/multi-modal` | Multi-modal validation (screenshot + HTML + CSS fusion) |
 | `@arclabs561/ai-visual-test/utils` | Cost tracking, score calibration, model/provider selection, type guards |
 | `@arclabs561/ai-visual-test/errors` | Error types (ValidationError, ConfigError, ProviderError, FileError) |

@@ -1,12 +1,8 @@
-import { describe, it, beforeEach } from 'node:test';
+import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { normalizeValidationResult } from '../../src/validation-result-normalizer.mjs';
-import { setCalibrationProfile, resetCalibrationProfiles } from '../../src/score-calibration.mjs';
 
 describe('Normalizer end-to-end', () => {
-  beforeEach(() => {
-    resetCalibrationProfiles();
-  });
 
   it('normalizes a raw VLM-style response into standard shape', () => {
     const raw = {
@@ -49,29 +45,6 @@ describe('Normalizer end-to-end', () => {
     }, 'test');
 
     assert.strictEqual(result.score, null);
-  });
-
-  it('applies provider-based calibration with offset and scale', () => {
-    setCalibrationProfile('openai', { offset: -0.5, scale: 1.2 });
-    const result = normalizeValidationResult({
-      score: 8,
-      provider: 'openai',
-      issues: []
-    }, 'test');
-
-    assert.equal(result.rawScore, 8);
-    // calibrated = (8 + (-0.5)) * 1.2 = 7.5 * 1.2 = 9.0
-    assert.equal(result.score, 9);
-  });
-
-  it('does not set rawScore when provider is missing', () => {
-    const result = normalizeValidationResult({
-      score: 6,
-      issues: []
-    }, 'test');
-
-    assert.equal(result.score, 6);
-    assert.equal(result.rawScore, undefined);
   });
 
   it('flattens object issues to strings via description field', () => {

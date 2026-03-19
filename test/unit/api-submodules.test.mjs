@@ -63,17 +63,6 @@ describe('API Sub-Modules', () => {
     });
   });
   
-  describe('specs sub-module', () => {
-    it('should export spec functions', async () => {
-      const specs = await import('../../src/specs/index.mjs');
-      
-      assert.ok(typeof specs.parseSpec === 'function', 'Should export parseSpec');
-      assert.ok(typeof specs.executeSpec === 'function', 'Should export executeSpec');
-      assert.ok(specs.TEMPLATES, 'Should export TEMPLATES');
-      assert.ok(typeof specs.createSpecFromTemplate === 'function', 'Should export createSpecFromTemplate');
-    });
-  });
-  
   describe('utils sub-module', () => {
     it('should export utility functions', async () => {
       const utils = await import('../../src/utils/index.mjs');
@@ -98,7 +87,6 @@ describe('API Sub-Modules', () => {
       assert.ok(pkg.exports['./multi-modal'], 'Should export multi-modal sub-module');
       assert.ok(pkg.exports['./ensemble'], 'Should export ensemble sub-module');
       assert.ok(pkg.exports['./persona'], 'Should export persona sub-module');
-      assert.ok(pkg.exports['./specs'], 'Should export specs sub-module');
       assert.ok(pkg.exports['./utils'], 'Should export utils sub-module');
     });
   });

@@ -143,37 +143,24 @@ async function callLLMForExtraction(prompt, config) {
   const apiKey = config.apiKey;
   const provider = config.provider || 'gemini';
   
-  // Use cached LLM wrapper (reduces costs and improves performance)
   try {
-    const { callLLMCached } = await import('./utils/cached-llm.mjs');
-    // Use advanced tier for data extraction (needs higher quality)
-    return await callLLMCached(prompt, provider, apiKey, {
-      tier: 'advanced', // Data extraction benefits from better models
+    const llmUtils = await import('@arclabs561/llm-utils');
+    return await llmUtils.callLLM(prompt, provider, apiKey, {
+      tier: 'advanced',
       temperature: 0.1,
       maxTokens: 1000,
-      useCache: true, // Enable caching by default
     });
   } catch (error) {
-    // Fallback: try uncached version if cached wrapper fails
-    try {
-      const llmUtils = await import('@arclabs561/llm-utils');
-      return await llmUtils.callLLM(prompt, provider, apiKey, {
-        tier: 'advanced',
-        temperature: 0.1,
-        maxTokens: 1000,
-      });
-    } catch (fallbackError) {
-      throw new ValidationError(
-        `LLM extraction requires @arclabs561/llm-utils package. ` +
-        `Install it with: npm install @arclabs561/llm-utils. ` +
-        `Error: ${fallbackError.message}`,
-        {
-          package: '@arclabs561/llm-utils',
-          installationCommand: 'npm install @arclabs561/llm-utils',
-          originalError: fallbackError.message
-        }
-      );
-    }
+    throw new ValidationError(
+      `LLM extraction requires @arclabs561/llm-utils package. ` +
+      `Install it with: npm install @arclabs561/llm-utils. ` +
+      `Error: ${error.message}`,
+      {
+        package: '@arclabs561/llm-utils',
+        installationCommand: 'npm install @arclabs561/llm-utils',
+        originalError: error.message
+      }
+    );
   }
 }
 

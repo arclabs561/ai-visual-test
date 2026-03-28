@@ -201,27 +201,7 @@ npx ai-visual-test check screenshot.png "Check layout" --json | jq '.score'
 
 ## Advanced Features
 
-These are available as subpath imports:
-
-| Subpath | What it provides |
-|---------|-----------------|
-| `@arclabs561/ai-visual-test/validators` | Hybrid accessibility validation, programmatic contrast/keyboard checks, rubric-based validation, batch validation |
-| `@arclabs561/ai-visual-test/temporal` | Temporal screenshot aggregation, multi-scale analysis, adaptive capture |
-| `@arclabs561/ai-visual-test/ensemble` | Multi-provider ensemble judging, bias detection and mitigation, hallucination detection |
-| `@arclabs561/ai-visual-test/persona` | Persona-based experience testing (test as different user types) |
-| `@arclabs561/ai-visual-test/game` | AI game agent (plays Canvas/WebGL games via Playwright, analyzes screenshots, dispatches actions) |
-| `@arclabs561/ai-visual-test/multi-modal` | Multi-modal validation (screenshot + HTML + CSS fusion) |
-| `@arclabs561/ai-visual-test/utils` | Cost tracking, score calibration, model/provider selection, type guards |
-| `@arclabs561/ai-visual-test/errors` | Error types (ValidationError, ConfigError, ProviderError, FileError) |
-
-Example:
-
-```javascript
-import { validateAccessibilityHybrid } from '@arclabs561/ai-visual-test/validators';
-
-// Runs programmatic contrast checks + AI semantic evaluation
-const result = await validateAccessibilityHybrid(page, 'screenshot.png');
-```
+Additional modules available as subpath imports: `validators` (hybrid accessibility, rubric-based, batch), `temporal` (multi-scale analysis), `ensemble` (multi-provider judging, bias/hallucination detection), `persona` (test as different user types), `game` (AI game agent for Canvas/WebGL), `multi-modal` (screenshot + HTML + CSS fusion), `utils` (cost tracking, calibration), `errors`.
 
 ## Limitations
 

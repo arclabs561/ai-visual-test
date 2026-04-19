@@ -2,6 +2,18 @@
 
 All notable changes to ai-visual-test will be documented in this file.
 
+## [Unreleased]
+
+### Added
+- **Video input adapter** (`./video` subpath, also re-exported from main).
+  `judgeVideo(path, prompt, opts)` and the `VideoJudge` class send recorded
+  videos to video-capable VLMs. Auto-transcodes via ffmpeg if a video exceeds
+  the configurable `maxMB` cap (default 9MB — OpenRouter has been observed to
+  503 above ~10MB inline base64). Supports single videos or arrays with
+  optional per-video labels for multi-clip critique. Provider support gated
+  to gemini direct + openrouter routed to google/* models; other providers
+  throw with a clear pointer to extracting frames yourself.
+
 ## [0.9.0] - 2026-03-19
 
 ### Breaking

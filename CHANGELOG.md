@@ -13,6 +13,20 @@ All notable changes to ai-visual-test will be documented in this file.
   optional per-video labels for multi-clip critique. Provider support gated
   to gemini direct + openrouter routed to google/* models; other providers
   throw with a clear pointer to extracting frames yourself.
+- **Critique extractors** (`./extractors` subpath, also re-exported from main).
+  Pure-function utilities for parsing free-text severity-anchored critique
+  output into structured issues and aggregating across judges:
+  - `extractIssues(text, opts)` — regex-extract `[SEVERITY] MM:SS — desc`
+    lines (tolerant of inline tag text between timestamp and dash).
+  - `extractFixedTimestamps(text, opts)` — convenience for spiral detection.
+  - `findConsensus(byJudge, opts)` — cluster issues across judges by
+    timestamp window (`windowSeconds`, `minJudges`), sorted by min severity.
+  - `detectSpirals(currentByJudge, prevFixedSecs, opts)` — flag re-raised
+    items at a previously-FIXED timestamp.
+  - `timestampToSeconds(ts)` — MM:SS or HH:MM:SS → number.
+  Substrate for tour-style iterated critique loops; lets a thin consumer
+  script do all the consensus work without re-implementing the regex,
+  clustering, or spiral logic.
 
 ## [0.9.0] - 2026-03-19
 

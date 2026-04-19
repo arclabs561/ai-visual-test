@@ -81,3 +81,12 @@ export { createMatchers } from './integrations/playwright.mjs';
 
 // --- Video input (re-export for convenience) ---
 export { VideoJudge, judgeVideo } from './video.mjs';
+
+// --- Critique extractors (re-export for convenience) ---
+export {
+  extractIssues,
+  extractFixedTimestamps,
+  findConsensus,
+  detectSpirals,
+  timestampToSeconds,
+} from './extractors.mjs';

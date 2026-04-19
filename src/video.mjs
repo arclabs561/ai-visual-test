@@ -198,35 +198,70 @@ export class VideoJudge extends VLLMJudge {
    */
   async _callVideoProviderAPI(prompt, videos, context) {
     const maxTokens = context.maxTokens || 16000;
-    if (this.provider === 'gemini') {
-      const parts = buildGeminiParts(prompt, videos);
-      const url = `${this.providerConfig.apiUrl}/models/${this.providerConfig.model}:generateContent`;
-      return fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-goog-api-key': this.apiKey,
+    const attempts = context.attempts ?? 3;
+    const buildRequest = () => {
+      if (this.provider === 'gemini') {
+        const parts = buildGeminiParts(prompt, videos);
+        return {
+          url: `${this.providerConfig.apiUrl}/models/${this.providerConfig.model}:generateContent`,
+          init: {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-goog-api-key': this.apiKey },
+            body: JSON.stringify({
+              contents: [{ role: 'user', parts }],
+              generationConfig: { maxOutputTokens: maxTokens },
+            }),
+          },
+        };
+      }
+      // OpenRouter (only google/* models reach here per supportsVideo guard)
+      const content = buildOpenAIVideoContent(prompt, videos);
+      return {
+        url: `${this.providerConfig.apiUrl}/chat/completions`,
+        init: {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.apiKey}` },
+          body: JSON.stringify({
+            model: this.providerConfig.model,
+            messages: [{ role: 'user', content }],
+            max_tokens: maxTokens,
+          }),
         },
-        body: JSON.stringify({
-          contents: [{ role: 'user', parts }],
-          generationConfig: { maxOutputTokens: maxTokens },
-        }),
-      });
+      };
+    };
+    // Retry on empty body / 5xx / transient network. OpenRouter occasionally
+    // returns 200 with empty body under load (parses as "Unexpected end of
+    // JSON input" downstream). Exponential backoff: 3s, 6s, 9s.
+    /** @type {Response | null} */
+    let lastRes = null;
+    /** @type {Error | null} */
+    let lastErr = null;
+    for (let attempt = 1; attempt <= attempts; attempt++) {
+      const { url, init } = buildRequest();
+      try {
+        const res = await fetch(url, init);
+        if (res.ok) {
+          // Peek at body — empty triggers retry (we need to stash, so consume
+          // the stream into a Response we can parse downstream).
+          const text = await res.text();
+          if (text.trim().length > 0) {
+            return new Response(text, { status: res.status, headers: res.headers });
+          }
+          lastRes = res;
+        } else {
+          lastRes = res;
+          if (res.status < 500 && res.status !== 429) {
+            // Non-retryable client error — return immediately for parser to surface.
+            return res;
+          }
+        }
+      } catch (e) {
+        lastErr = /** @type {Error} */ (e);
+      }
+      if (attempt < attempts) await new Promise((r) => setTimeout(r, 3000 * attempt));
     }
-    // OpenRouter (only google/* models reach here per supportsVideo guard)
-    const content = buildOpenAIVideoContent(prompt, videos);
-    return fetch(`${this.providerConfig.apiUrl}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.apiKey}`,
-      },
-      body: JSON.stringify({
-        model: this.providerConfig.model,
-        messages: [{ role: 'user', content }],
-        max_tokens: maxTokens,
-      }),
-    });
+    if (lastErr) throw lastErr;
+    return /** @type {Response} */ (lastRes);
   }
 }
 

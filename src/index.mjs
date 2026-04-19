@@ -78,3 +78,6 @@ export { ValidationError, ConfigError, ProviderError, FileError } from './errors
 
 // --- Playwright integration (re-export for convenience) ---
 export { createMatchers } from './integrations/playwright.mjs';
+
+// --- Video input (re-export for convenience) ---
+export { VideoJudge, judgeVideo } from './video.mjs';

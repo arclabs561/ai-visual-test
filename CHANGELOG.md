@@ -4,7 +4,17 @@ All notable changes to ai-visual-test will be documented in this file.
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-06-13
+
 ### Added
+- **Perception sampler** (`./perception` subpath). `samplePerceptions(cfg)`
+  samples what viewers PERCEIVE of a screenshot across modes x personas x
+  contexts (question / problem / insight), classifies each (uncertainty locus /
+  severity / strength), aggregates by role-weighted mass, and adversarially
+  verifies the top findings (a refute pass) before they ship. Provider-agnostic
+  via an injected `vision` fn or `makeOpenRouterVision`. Pure `aggregate()` and
+  `parseJsonObject()` are exported and unit-tested. The discovery COMPASS
+  counterpart to `validateScreenshot`'s rubric GATE.
 - **Video input adapter** (`./video` subpath, also re-exported from main).
   `judgeVideo(path, prompt, opts)` and the `VideoJudge` class send recorded
   videos to video-capable VLMs. Auto-transcodes via ffmpeg if a video exceeds

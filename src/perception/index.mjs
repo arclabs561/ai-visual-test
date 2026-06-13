@@ -130,6 +130,23 @@ export function aggregate(samples, mode) {
 }
 
 /**
+ * Does a finding match a known disposition? Same mode (if the disposition pins
+ * one), same category (if pinned), and overlapping normalized target. Returns the
+ * matching disposition or null. Pure + exported so callers/tests can reason about
+ * what gets suppressed.
+ */
+export function matchesDisposition(finding, dispositions = []) {
+  const ft = normTarget(finding.target);
+  for (const d of dispositions) {
+    if (d.mode && d.mode !== finding.mode) continue;
+    if (d.category && String(d.category).toUpperCase() !== String(finding.category).toUpperCase()) continue;
+    const dt = normTarget(d.target);
+    if (dt && ft && (ft === dt || ft.includes(dt) || dt.includes(ft))) return d;
+  }
+  return null;
+}
+
+/**
  * Sample perceptions of one screenshot across modes x personas x contexts,
  * aggregate, and adversarially verify the top findings.
  *
@@ -142,29 +159,48 @@ export function aggregate(samples, mode) {
  * @param {number} [cfg.concurrency=10]
  * @param {number} [cfg.topK=6]       findings verified per mode
  * @param {boolean} [cfg.verify=true]
- * @returns {Promise<{samples:object[], sections:{mode,ranked,top}[]}>}
+ * @param {string[]} [cfg.principles]  governing principles SEEDED into every prompt so the
+ *                                     judge does not flag settled-by-design choices as defects
+ * @param {{mode?,category?,target,disposition,reason}[]} [cfg.dispositions]  known findings to
+ *                                     SUPPRESS from the surfaced set (convergence memory)
+ * @returns {Promise<{samples:object[], sections:{mode,ranked,top,suppressed}[]}>}
  */
-export async function samplePerceptions({ vision, modes = ["question", "problem", "insight"], personas, contexts, n = 2, concurrency = 10, topK = 6, verify = true }) {
+export async function samplePerceptions({ vision, modes = ["question", "problem", "insight"], personas, contexts, n = 2, concurrency = 10, topK = 6, verify = true, principles = [], dispositions = [] }) {
   if (typeof vision !== "function") throw new Error("samplePerceptions: vision fn required");
   if (!personas?.length || !contexts?.length) throw new Error("samplePerceptions: personas and contexts required");
   for (const m of modes) if (!MODE_SPEC[m]) throw new Error(`samplePerceptions: unknown mode '${m}'`);
+
+  // Seed governing principles into every prompt (sampling AND verify) so the judge
+  // treats settled-by-design choices as intended, not as problems/gaps/noise. This
+  // is the upstream half of convergence; dispositions (below) are the downstream half.
+  const seed = principles.length
+    ? "\n\nDESIGN PRINCIPLES IN FORCE -- these are intended and correct; do NOT report them as problems, gaps, conflicts, or noise:\n- " + principles.join("\n- ")
+    : "";
 
   const cells = [];
   for (const mode of modes) for (const persona of personas) for (const context of contexts) for (let s = 0; s < n; s++) cells.push({ mode, persona, context });
   const samples = (await pmap(cells, ({ mode, persona, context }) => {
     const spec = MODE_SPEC[mode];
-    return vision(spec.sys, spec.user(persona, context), 1.05).then((r) => ({ ...r, mode, role: persona.id, weight: persona.weight ?? 1, context: context.id }));
+    return vision(spec.sys + seed, spec.user(persona, context), 1.05).then((r) => ({ ...r, mode, role: persona.id, weight: persona.weight ?? 1, context: context.id }));
   }, concurrency)).filter((r) => r && !r._err && r.headline);
 
   const sections = [];
   for (const mode of modes) {
     const ranked = aggregate(samples, mode);
-    const top = ranked.slice(0, Math.min(topK, ranked.length));
-    if (verify && top.length) {
-      const verdicts = await pmap(top, (g) => vision(VERIFY_SYS, verifyUser(mode, { category: g.category, target: g.target, why: g.heads[0], suggestion: g.sugg[0] }), 0.1), 4);
-      top.forEach((g, i) => { g.verified = verdicts[i] && !verdicts[i]._err ? !verdicts[i].refuted : null; g.vreason = verdicts[i]?.reason || verdicts[i]?._err || ""; });
+    const candidates = ranked.slice(0, Math.min(topK, ranked.length));
+    if (verify && candidates.length) {
+      const verdicts = await pmap(candidates, (g) => vision(VERIFY_SYS + seed, verifyUser(mode, { category: g.category, target: g.target, why: g.heads[0], suggestion: g.sugg[0] }), 0.1), 4);
+      candidates.forEach((g, i) => { g.verified = verdicts[i] && !verdicts[i]._err ? !verdicts[i].refuted : null; g.vreason = verdicts[i]?.reason || verdicts[i]?._err || ""; });
     }
-    sections.push({ mode, ranked, top });
+    // Convergence: partition off findings already dispositioned (fixed/rejected/
+    // deferred) so each run surfaces genuinely-new signal, not re-litigated ones.
+    const top = [], suppressed = [];
+    for (const g of candidates) {
+      const d = matchesDisposition(g, dispositions);
+      if (d) { g.disposition = d.disposition; g.dispositionReason = d.reason || d.adr || ""; suppressed.push(g); }
+      else top.push(g);
+    }
+    sections.push({ mode, ranked, top, suppressed });
   }
   return { samples, sections };
 }
@@ -173,9 +209,11 @@ export async function samplePerceptions({ vision, modes = ["question", "problem"
 export function formatReport({ samples, sections }) {
   const LABEL = { question: "QUESTIONS -> what to add/clarify", problem: "PROBLEMS -> what to fix", insight: "INSIGHTS -> what works, protect it" };
   const lines = [];
-  for (const { mode, top } of sections) {
+  for (const { mode, top, suppressed = [] } of sections) {
     const cats = [...new Set(samples.filter((s) => s.mode === mode).map((s) => s.category))].filter(Boolean);
-    lines.push(`\n=== ${LABEL[mode] || mode} (${samples.filter((s) => s.mode === mode).length} samples; categories: ${cats.join(", ")}) ===`);
+    const supTag = suppressed.length ? `; ${suppressed.length} suppressed by disposition` : "";
+    lines.push(`\n=== ${LABEL[mode] || mode} (${samples.filter((s) => s.mode === mode).length} samples; categories: ${cats.join(", ")}${supTag}) ===`);
+    for (const g of suppressed) lines.push(`  (suppressed ${g.disposition}) [${g.category}] ${g.target} -- ${g.dispositionReason}`);
     top.forEach((g, i) => {
       const v = g.verified === true ? "OK " : g.verified === false ? "REF" : " ? ";
       lines.push(`${String(i + 1).padStart(2)}. ${String(g.category).padEnd(9)} n=${String(g.count).padStart(2)} mass=${g.mass.toFixed(2)} ${v} ${g.target.slice(0, 26).padEnd(26)} ${g.heads[0].slice(0, 64)}`);

@@ -375,6 +375,34 @@ export function formatReport({ samples, sections }) {
 const judgeCount = (g) => (g.judges ? (g.judges.size ?? g.judges.length ?? 1) : 1);
 
 /**
+ * Active-learning selection (PURE): pick the findings where an operator label is
+ * most informative -- the ones the jury is most SPLIT on. Labeling random findings
+ * wastes human attention; labeling the borderline ones (max-disagreement / flip-
+ * flop query, Cho et al 2024) resolves the most uncertainty per touch and gives
+ * the calibration its ground truth. Disagreement is the gap between how much of
+ * the panel RAISED a finding (support) and whether the cross-model verify
+ * CONFIRMED it: a lone-but-verified finding (low support, confirmed) or a
+ * many-but-refuted one (high support, refuted) is exactly where the panel and the
+ * verifier conflict and a human should break the tie.
+ *
+ * @param {{top:object[]}[]} sections   sections from samplePerceptions
+ * @param {object} [cfg]
+ * @param {number} [cfg.k=3]            how many to surface
+ * @param {number} [cfg.panelSize]      number of judges in the panel (for the support fraction)
+ * @returns {{mode,category,target,head,verified,judges,disagreement}[]} most-split first
+ */
+export function selectForReview(sections, { k = 3, panelSize } = {}) {
+  const items = [];
+  for (const sec of sections || []) for (const g of sec.top || []) {
+    if (g.verified == null) continue; // only adjudicated findings have a support-vs-verify signal
+    const support = panelSize ? judgeCount(g) / panelSize : 0.5;
+    const confirmed = g.verified === true ? 1 : 0;
+    items.push({ mode: g.mode, category: g.category, target: g.target, head: g.heads?.[0], verified: g.verified, judges: g.judges ? [...g.judges] : [], disagreement: Math.abs(support - confirmed) });
+  }
+  return items.sort((a, b) => b.disagreement - a.disagreement).slice(0, k);
+}
+
+/**
  * Online per-judge reliability calibration (PURE; the consumer persists the
  * returned weights and feeds them back as `prior` + into the next panel's judge
  * weights). The symbiotic half of the judge graph: the panel produces findings,

@@ -27,6 +27,9 @@ All notable changes to ai-visual-test will be documented in this file.
   `samplePerceptions({complete})` runs it between aggregation and verification.
   Falls back to the unmerged input on any malformed clustering (never drops a
   finding).
+- **Active-learning selection.** `selectForReview(sections, {k, panelSize})`
+  surfaces the findings the jury is most SPLIT on (panel support vs cross-model
+  verify disagree) so a human label resolves the most uncertainty per touch.
 - **Online judge calibration + disposition decay** (the symbiotic / learning
   half). `calibrateJudges({prior, sections})` reweights each judge by the
   verified-survival rate of its findings, EMA-blended with its prior so

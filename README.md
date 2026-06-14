@@ -199,9 +199,46 @@ npx ai-visual-test check screenshot.png "Check accessibility" --min-score 6
 npx ai-visual-test check screenshot.png "Check layout" --json | jq '.score'
 ```
 
+## Perception (judge graph)
+
+`validateScreenshot` is the GATE (score against fixed anchors). `./perception` is
+the COMPASS: it samples what real viewers PERCEIVE and discovers the failures a
+fixed rubric did not anticipate, using a diverse JURY of judge models that learns
+which of its judges to trust over runs.
+
+```js
+import { makePanel, makeOpenRouterText, samplePerceptions, formatReport,
+         calibrateJudges, selectForReview } from "@arclabs561/ai-visual-test/perception";
+
+const imageBase64 = readFileSync("wall.png").toString("base64");
+// Different labs decorrelate bias; one model's samples only repeat it.
+const panel = makePanel({ apiKey, imageBase64, models: [
+  "google/gemini-3.5-flash", "anthropic/claude-haiku-4.5", "openai/gpt-5-mini",
+] });
+
+const result = await samplePerceptions({
+  panel,
+  complete: makeOpenRouterText({ apiKey }),        // cross-judge merge (optional)
+  personas: [{ id: "user", who: "a first-time visitor", weight: 1 }],
+  contexts: [{ id: "glance", ctx: "glancing at the screen" }],
+  principles: ["dense by design -- do not flag information density"], // override the generic UX heuristics
+});
+console.log(formatReport(result));
+
+// Learn over runs (persist + feed back the returned state):
+const weights = calibrateJudges({ prior: {}, sections: result.sections });
+const toLabel = selectForReview(result.sections, { k: 3, panelSize: panel.length });
+```
+
+Mechanisms: diverse panel, generic Nielsen/Gestalt `UX_HEURISTICS` seeded into the
+prompts (overridable by domain `principles`), diversity-weighted aggregation,
+cross-judge `mergeFindings`, cross-model verification, and an online loop
+(`calibrateJudges` / `decayDispositions` / `selectForReview`). Full design +
+research grounding: [docs/judge-graph.md](docs/judge-graph.md).
+
 ## Advanced Features
 
-Additional modules available as subpath imports: `validators` (hybrid accessibility, rubric-based, batch), `temporal` (multi-scale analysis), `ensemble` (multi-provider judging, bias/hallucination detection), `persona` (test as different user types), `game` (AI game agent for Canvas/WebGL), `multi-modal` (screenshot + HTML + CSS fusion), `utils` (cost tracking, calibration), `errors`.
+Additional modules available as subpath imports: `perception` (judge-graph compass, above), `validators` (hybrid accessibility, rubric-based, batch), `temporal` (multi-scale analysis), `ensemble` (multi-provider judging, bias/hallucination detection), `persona` (test as different user types), `game` (AI game agent for Canvas/WebGL), `multi-modal` (screenshot + HTML + CSS fusion), `utils` (cost tracking, calibration), `errors`.
 
 ## Limitations
 

@@ -19,6 +19,14 @@ All notable changes to ai-visual-test will be documented in this file.
   agreement outranks single-model repetition. The verify pass is cross-model
   (the verifier is a judge that did not raise the finding). A bare `vision` fn
   still runs as a one-judge panel (back-compat; score == mass).
+- **Cross-judge canonicalization / merge.** `mergeFindings(groups, {complete})`
+  consolidates aggregated findings that describe the same issue under different
+  wording (different labs name the same region differently) into one golden
+  finding, re-scored over the union judge set so the diversity bonus actually
+  fires. `makeOpenRouterText` builds the text-model `complete` fn it needs.
+  `samplePerceptions({complete})` runs it between aggregation and verification.
+  Falls back to the unmerged input on any malformed clustering (never drops a
+  finding).
 - **Online judge calibration + disposition decay** (the symbiotic / learning
   half). `calibrateJudges({prior, sections})` reweights each judge by the
   verified-survival rate of its findings, EMA-blended with its prior so

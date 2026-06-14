@@ -361,14 +361,15 @@ export function calibrateJudges({ prior = {}, sections, lr = 0.3, floor = 0.25, 
  * @returns {object[]} updated dispositions (confidence adjusted, reopen flagged) -- consumer persists these
  */
 export function decayDispositions({ dispositions, sections, decay = 0.6, reopenBelow = 0.3, minJudges = 2 }) {
-  const recur = new Map(); // normalized target -> strongest recurrence this round (distinct judges)
-  for (const sec of sections) for (const g of (sec.suppressed || [])) {
-    const k = normTarget(g.target);
-    recur.set(k, Math.max(recur.get(k) || 0, judgeCount(g)));
-  }
+  const suppressed = sections.flatMap((s) => s.suppressed || []);
   return dispositions.map((d) => {
     const conf = d.confidence ?? 1;
-    const nj = recur.get(normTarget(d.target)) || 0;
+    // Recurrence is detected with the SAME matcher that suppressed the finding
+    // (matchesDisposition: substring overlap + mode/category pins), not an exact
+    // target lookup -- otherwise a substring-matched suppression ("presence label"
+    // disposition vs a "presence label region" finding) suppresses but never
+    // decays, silently dead-ending the re-open path. nj = strongest recurrence.
+    const nj = suppressed.reduce((m, g) => (matchesDisposition(g, [d]) ? Math.max(m, judgeCount(g)) : m), 0);
     if (d.disposition === "fixed" && nj >= minJudges) {
       const nc = conf * decay;
       return { ...d, confidence: nc, reopen: nc < reopenBelow };

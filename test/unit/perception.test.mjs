@@ -123,6 +123,19 @@ test("decayDispositions: a regressed 'fixed' disposition decays + re-opens; 'rej
   assert.equal(out[1].reopen, false);
 });
 
+test("decayDispositions: recurrence is detected by the SAME matcher that suppressed (substring, not exact)", () => {
+  // disposition target is a substring of the recurring finding's target -- this is
+  // how matchesDisposition suppressed it, so decay must see it too (regression for
+  // the exact-normTarget-lookup bug that dead-ended the re-open path).
+  const out = decayDispositions({
+    dispositions: [{ target: "presence label", disposition: "fixed", confidence: 0.5 }],
+    sections: [{ suppressed: [{ mode: "problem", category: "major", target: "presence label region top-left", judges: new Set(["a/j", "b/j"]) }] }],
+    decay: 0.6, reopenBelow: 0.4, minJudges: 2,
+  });
+  assert.ok(Math.abs(out[0].confidence - 0.3) < 1e-9, "substring-matched recurrence decays the fixed disposition");
+  assert.equal(out[0].reopen, true);
+});
+
 test("decayDispositions: a 'fixed' recurrence from only ONE judge is not enough to re-open", () => {
   const out = decayDispositions({
     dispositions: [{ target: "weather chart", disposition: "fixed", confidence: 0.5 }],

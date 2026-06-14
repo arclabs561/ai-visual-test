@@ -13,7 +13,12 @@ export const MODE_SPEC = {
   question: {
     sys: "Simulate a real person glancing at this display, read at its intended distance. Answer AS THAT PERSON. STRICT JSON, no prose, no fences.",
     user: (persona, context) => `You are ${persona.who}. ${context.ctx}\n` +
-      "You glance at this display. What is the FIRST genuine question that forms -- something you want to know but the display does not clearly answer? Then diagnose WHERE the uncertainty lives (one locus):\n" +
+      "You glance at this display. What is the FIRST genuine, naive question that forms -- the literal thing a curious viewer blurts out about something shown but not explained? Hunt especially for:\n" +
+      "  - an abbreviation, symbol, code, or unit you do not recognize\n" +
+      "  - a visual element that looks odd, inconsistent, or unexplained (a bar that doesn't start from the baseline, one item colored differently from its peers, a second thinner bar with no key, a glyph with assumed meaning)\n" +
+      "  - a number with no context (N of WHAT, over what window, is that high or low?)\n" +
+      "  - a color, dot, or icon whose meaning is assumed, not shown.\n" +
+      "Pick the single sharpest such question -- the one most worth pre-answering. Asking what a term means is fair even when the term is intentional (the answer may be a compact legend, not removing it). Then diagnose WHERE the uncertainty lives (one locus):\n" +
       "  UI = the answer IS on screen but you can't find/read it (too small, buried, low contrast, ambiguous symbol)\n" +
       "  INFO = derivable from data clearly present elsewhere on screen, but not surfaced\n" +
       "  GAP = the data needed simply isn't on the display at all\n" +

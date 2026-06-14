@@ -53,7 +53,7 @@ async function pmap(items, fn, conc) {
  * @param {string[]} [cfg.heuristics]  generic UI/UX heuristics seeded into prompts (default UX_HEURISTICS; [] disables)
  * @returns {Promise<{samples:object[], sections:{mode,ranked,top,suppressed}[], judges:string[]}>}
  */
-export async function samplePerceptions({ panel, vision, complete, modes = ["question", "problem", "insight"], personas, contexts, n = 2, concurrency = 10, topK = 6, verify = true, principles = [], dispositions = [], heuristics = UX_HEURISTICS }) {
+export async function samplePerceptions({ panel, vision, complete, modes = ["question", "problem", "insight"], personas, contexts, n = 2, concurrency = 10, topK = 6, verify = true, principles = [], dispositions = [], heuristics = UX_HEURISTICS, guidance = {} }) {
   // Normalize to a panel; a bare `vision` fn becomes a single-judge jury (back-compat).
   const jury = panel?.length ? panel : (typeof vision === "function" ? [{ id: "default", vision, weight: 1 }] : null);
   if (!jury) throw new Error("samplePerceptions: panel or vision fn required");
@@ -79,7 +79,10 @@ export async function samplePerceptions({ panel, vision, complete, modes = ["que
   for (const mode of modes) for (const persona of personas) for (const context of contexts) for (const judge of jury) for (let s = 0; s < n; s++) cells.push({ mode, persona, context, judge });
   const samples = (await pmap(cells, ({ mode, persona, context, judge }) => {
     const spec = MODE_SPEC[mode];
-    return judge.vision(spec.sys + hseed + seed, spec.user(persona, context), 1.05)
+    // Per-mode surface-specific guidance the CONSUMER injects (config-driven, ADR-0055):
+    // bespoke emphasis for THIS display that the agnostic base prompt must not hardcode.
+    const user = spec.user(persona, context) + (guidance[mode] ? "\n\nSURFACE-SPECIFIC GUIDANCE (what this display wants its judges to weigh):\n" + guidance[mode] : "");
+    return judge.vision(spec.sys + hseed + seed, user, 1.05)
       .then((r) => ({ ...r, mode, role: persona.id, weight: (persona.weight ?? 1) * (judge.weight ?? 1), context: context.id, judge: judge.id }));
   }, concurrency)).filter((r) => r && !r._err && r.headline);
 

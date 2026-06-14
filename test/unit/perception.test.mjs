@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { aggregate, parseJsonObject, MODE_SPEC, matchesDisposition, makePanel } from "../../src/perception/index.mjs";
+import { aggregate, parseJsonObject, MODE_SPEC, matchesDisposition, makePanel, calibrateJudges, decayDispositions } from "../../src/perception/index.mjs";
 
 test("aggregate groups by (category,target) and ranks by role-weighted confidence mass", () => {
   const samples = [
@@ -80,6 +80,57 @@ test("makePanel builds one judge entry per model with id/weight/vision", () => {
   assert.equal(panel[0].weight, 1, "string model defaults weight 1");
   assert.equal(panel[1].weight, 1.3, "object model carries its reliability weight");
   assert.ok(panel.every((j) => typeof j.vision === "function"), "each entry has a callable vision fn");
+});
+
+test("calibrateJudges: survivors gain weight, refuted judges lose it but never below floor", () => {
+  const sections = [{
+    mode: "problem",
+    top: [
+      { judges: new Set(["good/j"]), verified: true },
+      { judges: new Set(["good/j"]), verified: true },
+      { judges: new Set(["bad/j"]), verified: false },
+      { judges: new Set(["bad/j"]), verified: false },
+      { judges: new Set(["unadjudicated/j"]), verified: null }, // ignored
+    ],
+  }];
+  const w = calibrateJudges({ prior: { "good/j": 1, "bad/j": 1 }, sections, lr: 0.5, floor: 0.25, ceil: 2 });
+  assert.ok(w["good/j"] > 1, "all-verified judge moves above its prior toward the ceiling");
+  assert.ok(w["bad/j"] < 1, "all-refuted judge moves below its prior");
+  assert.ok(w["bad/j"] >= 0.25, "but never below the floor (calibrate, not curate)");
+  assert.equal(w["unadjudicated/j"], undefined, "a judge with only null-verdict findings does not move");
+});
+
+test("calibrateJudges: EMA blends with prior rather than replacing it", () => {
+  const sections = [{ top: [{ judges: new Set(["j"]), verified: true }] }];
+  const w = calibrateJudges({ prior: { j: 1 }, sections, lr: 0.3, floor: 0.25, ceil: 2 });
+  // reliability for a 100%-survival judge = ceil (2); EMA: 1*0.7 + 2*0.3 = 1.3
+  assert.ok(Math.abs(w.j - 1.3) < 1e-9, "weight = prior*(1-lr) + reliability*lr");
+});
+
+test("decayDispositions: a regressed 'fixed' disposition decays + re-opens; 'rejected' never decays", () => {
+  const dispositions = [
+    { target: "weather chart", disposition: "fixed", confidence: 0.5 },
+    { target: "presence label", disposition: "rejected", confidence: 1 },
+  ];
+  const sections = [{ suppressed: [
+    { target: "weather chart", judges: new Set(["a/j", "b/j"]) }, // recurs, 2 distinct judges
+    { target: "presence label", judges: new Set(["a/j", "b/j"]) }, // recurs too, but rejected
+  ] }];
+  const out = decayDispositions({ dispositions, sections, decay: 0.6, reopenBelow: 0.4, minJudges: 2 });
+  assert.ok(Math.abs(out[0].confidence - 0.3) < 1e-9, "fixed disposition confidence *= decay on multi-judge recurrence");
+  assert.equal(out[0].reopen, true, "decayed below reopenBelow -> flagged to re-open (anti-ossification)");
+  assert.equal(out[1].confidence, 1, "rejected disposition (intended-by-design) never decays on recurrence");
+  assert.equal(out[1].reopen, false);
+});
+
+test("decayDispositions: a 'fixed' recurrence from only ONE judge is not enough to re-open", () => {
+  const out = decayDispositions({
+    dispositions: [{ target: "weather chart", disposition: "fixed", confidence: 0.5 }],
+    sections: [{ suppressed: [{ target: "weather chart", judges: new Set(["solo/j"]) }] }],
+    minJudges: 2,
+  });
+  assert.equal(out[0].confidence, 0.5, "single-judge recurrence is below the decorrelation guard -> no decay");
+  assert.equal(out[0].reopen, false);
 });
 
 test("MODE_SPEC has all three modes with usable sys + user(persona,context)", () => {

@@ -4,6 +4,30 @@ All notable changes to ai-visual-test will be documented in this file.
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-06-13
+
+### Added
+- **Perception convergence: principle-seeding + disposition suppression.**
+  `samplePerceptions` accepts `principles` (governing facts seeded into every
+  judge prompt so settled-by-design choices are not re-flagged as defects) and
+  `dispositions` (known findings to suppress). `matchesDisposition` is exported.
+- **Diverse jury panel + cross-model verification.** `makePanel({apiKey,
+  imageBase64, models})` builds a panel of judges from a list of model ids
+  (different labs decorrelate bias). `samplePerceptions({panel})` fans every
+  cell across the panel; `aggregate()` now scores findings by mass x a diversity
+  factor in the number of DISTINCT judges that raised them, so cross-judge
+  agreement outranks single-model repetition. The verify pass is cross-model
+  (the verifier is a judge that did not raise the finding). A bare `vision` fn
+  still runs as a one-judge panel (back-compat; score == mass).
+- **Online judge calibration + disposition decay** (the symbiotic / learning
+  half). `calibrateJudges({prior, sections})` reweights each judge by the
+  verified-survival rate of its findings, EMA-blended with its prior so
+  reliability accumulates across runs (calibrate, never curate -- a floor keeps
+  every judge in). `decayDispositions({dispositions, sections})` decays and
+  re-opens a `fixed` disposition when its finding regresses with independent
+  multi-judge support, leaving `rejected`/`deferred` ones untouched. Both pure;
+  the consumer persists the returned state.
+
 ## [0.10.0] - 2026-06-13
 
 ### Added

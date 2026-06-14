@@ -58,6 +58,26 @@ export const MODE_SPEC = {
   },
 };
 
+/**
+ * General, domain-agnostic UI/UX heuristics seeded into the question + problem
+ * prompts so the judge reasons from named, well-established principles rather than
+ * ad-hoc "looks wrong". Grounded in Nielsen's 10 usability heuristics (NN/g) and
+ * Gestalt visual-grouping principles -- the common-sense aesthetics/UX baseline any
+ * surface is held to. A consumer's domain `principles` (passed to samplePerceptions)
+ * are the OVERRIDE: where a principle marks a choice intended (e.g. "dense is by
+ * design, do not flag whitespace"), it wins over the generic heuristic. Override the
+ * set by passing your own `heuristics`, or pass `[]` to disable.
+ */
+export const UX_HEURISTICS = [
+  "Visual hierarchy: the most important value is the most visually prominent (size, weight, position); a glance should land on what matters first.",
+  "Grouping: related items read as a group (proximity, alignment, shared enclosure/color) and unrelated items are visually separated (Gestalt proximity/similarity).",
+  "Legibility: every element is readable at the intended viewing distance with sufficient contrast; nothing is clipped, overlapping, or truncated mid-word.",
+  "Status visibility: the state of each thing (fresh vs stale, on/off, normal vs alarm) is unambiguous at a glance (Nielsen: visibility of system status).",
+  "Consistency: the same kind of value is presented the same way everywhere; units, color meaning, and number formats do not shift between regions (Nielsen: consistency & standards).",
+  "Recognition over recall: labels, icons, and abbreviations are self-evident; the viewer should not have to remember what a symbol means (Nielsen: recognition not recall).",
+  "Signal over noise: every element earns its place; decorative or redundant content competes with the data (Nielsen: aesthetic & minimalist design) -- note this is about NOISE, not information density.",
+];
+
 const VERIFY_SYS = "You are an adversarial reviewer given a screenshot and a CLAIM about it. REFUTE the claim if you can. Default refuted=true when uncertain. STRICT JSON, no fences.";
 const verifyUser = (mode, f) =>
   (mode === "insight"
@@ -291,7 +311,7 @@ export function matchesDisposition(finding, dispositions = []) {
  *                                     SUPPRESS from the surfaced set (convergence memory)
  * @returns {Promise<{samples:object[], sections:{mode,ranked,top,suppressed}[], judges:string[]}>}
  */
-export async function samplePerceptions({ panel, vision, complete, modes = ["question", "problem", "insight"], personas, contexts, n = 2, concurrency = 10, topK = 6, verify = true, principles = [], dispositions = [] }) {
+export async function samplePerceptions({ panel, vision, complete, modes = ["question", "problem", "insight"], personas, contexts, n = 2, concurrency = 10, topK = 6, verify = true, principles = [], dispositions = [], heuristics = UX_HEURISTICS }) {
   // Normalize to a panel; a bare `vision` fn becomes a single-judge jury (back-compat).
   const jury = panel?.length ? panel : (typeof vision === "function" ? [{ id: "default", vision, weight: 1 }] : null);
   if (!jury) throw new Error("samplePerceptions: panel or vision fn required");
@@ -305,13 +325,19 @@ export async function samplePerceptions({ panel, vision, complete, modes = ["que
   const seed = principles.length
     ? "\n\nDESIGN PRINCIPLES IN FORCE -- these are intended and correct; do NOT report them as problems, gaps, conflicts, or noise:\n- " + principles.join("\n- ")
     : "";
+  // General UI/UX heuristics (Nielsen + Gestalt) seeded BEFORE the domain principles
+  // so the judge reasons from named conventions, while the principles above remain the
+  // override where a choice is intended-by-design.
+  const hseed = heuristics.length
+    ? "\n\nGENERAL UI/UX HEURISTICS (apply unless a design principle above marks the choice intended):\n- " + heuristics.join("\n- ")
+    : "";
 
   // Fan every (mode x persona x context x sample) cell across EVERY judge.
   const cells = [];
   for (const mode of modes) for (const persona of personas) for (const context of contexts) for (const judge of jury) for (let s = 0; s < n; s++) cells.push({ mode, persona, context, judge });
   const samples = (await pmap(cells, ({ mode, persona, context, judge }) => {
     const spec = MODE_SPEC[mode];
-    return judge.vision(spec.sys + seed, spec.user(persona, context), 1.05)
+    return judge.vision(spec.sys + hseed + seed, spec.user(persona, context), 1.05)
       .then((r) => ({ ...r, mode, role: persona.id, weight: (persona.weight ?? 1) * (judge.weight ?? 1), context: context.id, judge: judge.id }));
   }, concurrency)).filter((r) => r && !r._err && r.headline);
 

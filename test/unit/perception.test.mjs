@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { aggregate, parseJsonObject, MODE_SPEC, matchesDisposition, makePanel, calibrateJudges, decayDispositions, mergeFindings, selectForReview } from "../../src/perception/index.mjs";
+import { aggregate, parseJsonObject, MODE_SPEC, matchesDisposition, makePanel, calibrateJudges, decayDispositions, mergeFindings, selectForReview, samplePerceptions, UX_HEURISTICS } from "../../src/perception/index.mjs";
 
 test("aggregate groups by (category,target) and ranks by role-weighted confidence mass", () => {
   const samples = [
@@ -186,6 +186,23 @@ test("selectForReview surfaces the most-split findings (panel-vs-verify conflict
   assert.ok(sel.every((s) => s.disagreement >= 0.7), "both surfaced are high-conflict (panel and verifier disagree)");
   assert.ok(!sel.find((s) => s.target === "unanimous confirmed"), "the unanimous-and-confirmed finding carries no info -> not surfaced");
   assert.ok(!sel.find((s) => s.target === "unadjudicated"), "findings with no verdict are skipped");
+});
+
+test("samplePerceptions seeds the generic UX heuristics into the judge prompt by default", async () => {
+  let seenSys = "";
+  const vision = async (sys) => { seenSys = sys; return { headline: "h", category: "major", target: "t", why: "w", suggestion: "s", confidence: 0.5 }; };
+  await samplePerceptions({ vision, modes: ["problem"], personas: [{ id: "o", who: "op", weight: 1 }], contexts: [{ id: "m", ctx: "c" }], n: 1, verify: false });
+  assert.ok(seenSys.includes("UI/UX HEURISTICS"), "default heuristics block seeded");
+  assert.ok(seenSys.includes("Visual hierarchy"), "Nielsen/Gestalt content present");
+  assert.ok(UX_HEURISTICS.length >= 5 && UX_HEURISTICS.every((h) => typeof h === "string"), "UX_HEURISTICS is a non-trivial string list");
+});
+
+test("samplePerceptions UX heuristics are disablable (heuristics: []) and overridable by domain principles", async () => {
+  let seenSys = "";
+  const vision = async (sys) => { seenSys = sys; return { headline: "h", category: "major", target: "t", confidence: 0.5 }; };
+  await samplePerceptions({ vision, heuristics: [], principles: ["density is intended"], modes: ["problem"], personas: [{ id: "o", who: "op", weight: 1 }], contexts: [{ id: "m", ctx: "c" }], n: 1, verify: false });
+  assert.ok(!seenSys.includes("UI/UX HEURISTICS"), "heuristics:[] disables the block");
+  assert.ok(seenSys.includes("density is intended"), "domain principles still seeded as the override");
 });
 
 test("MODE_SPEC has all three modes with usable sys + user(persona,context)", () => {

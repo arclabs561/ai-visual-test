@@ -51,6 +51,9 @@ async function pmap(items, fn, conc) {
  * @param {{mode?,category?,target,disposition,reason}[]} [cfg.dispositions]  known findings to
  *                                     SUPPRESS from the surfaced set (convergence memory)
  * @param {string[]} [cfg.heuristics]  generic UI/UX heuristics seeded into prompts (default UX_HEURISTICS; [] disables)
+ * @param {Record<string,string>} [cfg.guidance]  per-mode surface-specific guidance appended to that
+ *                                     mode's user prompt; lets a consumer bespokely influence the
+ *                                     agnostic base prompts without forking the judge (ADR-0055)
  * @returns {Promise<{samples:object[], sections:{mode,ranked,top,suppressed}[], judges:string[]}>}
  */
 export async function samplePerceptions({ panel, vision, complete, modes = ["question", "problem", "insight"], personas, contexts, n = 2, concurrency = 10, topK = 6, verify = true, principles = [], dispositions = [], heuristics = UX_HEURISTICS, guidance = {} }) {

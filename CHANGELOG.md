@@ -27,6 +27,11 @@ All notable changes to ai-visual-test will be documented in this file.
   `samplePerceptions({complete})` runs it between aggregation and verification.
   Falls back to the unmerged input on any malformed clustering (never drops a
   finding).
+- **Generic UI/UX heuristics seeded into the judge prompt.** `UX_HEURISTICS`
+  (Nielsen's 10 usability heuristics + Gestalt visual principles) is seeded into
+  the question/problem prompts by default so the judge reasons from named
+  conventions; a consumer's domain `principles` override it, `heuristics: []`
+  disables it. Plus a generic design doc at `docs/judge-graph.md`.
 - **Active-learning selection.** `selectForReview(sections, {k, panelSize})`
   surfaces the findings the jury is most SPLIT on (panel support vs cross-model
   verify disagree) so a human label resolves the most uncertainty per touch.

@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { aggregate, parseJsonObject, MODE_SPEC, matchesDisposition, makePanel, calibrateJudges, decayDispositions, mergeFindings } from "../../src/perception/index.mjs";
+import { aggregate, parseJsonObject, MODE_SPEC, matchesDisposition, makePanel, calibrateJudges, decayDispositions, mergeFindings, selectForReview } from "../../src/perception/index.mjs";
 
 test("aggregate groups by (category,target) and ranks by role-weighted confidence mass", () => {
   const samples = [
@@ -172,6 +172,20 @@ test("mergeFindings: falls back to the input on a non-covering / malformed clust
   assert.equal((await mergeFindings(groups, { complete: async () => ({ clusters: [[0, 0, 1]] }) })), groups, "duplicate index -> fall back");
   assert.equal((await mergeFindings(groups, { complete: async () => { throw new Error("boom"); } })), groups, "thrown canonicalizer -> fall back");
   assert.equal((await mergeFindings(groups, {})), groups, "no complete fn -> unchanged");
+});
+
+test("selectForReview surfaces the most-split findings (panel-vs-verify conflict) first", () => {
+  const sections = [{ top: [
+    { mode: "problem", category: "major", target: "lone but confirmed", heads: ["a"], verified: true, judges: new Set(["j1"]) }, // support .25, confirmed -> .75
+    { mode: "problem", category: "major", target: "unanimous confirmed", heads: ["b"], verified: true, judges: new Set(["j1", "j2", "j3", "j4"]) }, // support 1, confirmed -> 0
+    { mode: "problem", category: "minor", target: "many but refuted", heads: ["c"], verified: false, judges: new Set(["j1", "j2", "j3"]) }, // support .75, refuted -> .75
+    { mode: "problem", category: "minor", target: "unadjudicated", heads: ["d"], verified: null, judges: new Set(["j1"]) }, // skipped
+  ] }];
+  const sel = selectForReview(sections, { k: 2, panelSize: 4 });
+  assert.equal(sel.length, 2);
+  assert.ok(sel.every((s) => s.disagreement >= 0.7), "both surfaced are high-conflict (panel and verifier disagree)");
+  assert.ok(!sel.find((s) => s.target === "unanimous confirmed"), "the unanimous-and-confirmed finding carries no info -> not surfaced");
+  assert.ok(!sel.find((s) => s.target === "unadjudicated"), "findings with no verdict are skipped");
 });
 
 test("MODE_SPEC has all three modes with usable sys + user(persona,context)", () => {

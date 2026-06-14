@@ -11,7 +11,7 @@ export function parseJsonObject(text) {
 }
 
 /** Build a vision(sys, user, temperature) -> object fn backed by OpenRouter. */
-export function makeOpenRouterVision({ apiKey, model = "google/gemini-3.5-flash", imageBase64, referer = "https://ai-visual-test", title = "perception-eval" }) {
+export function makeOpenRouterVision({ apiKey, model = "google/gemini-3.5-flash", imageBase64, referer = "https://ai-visual-test", title = "perception-eval", maxTokens = 8000 }) {
   if (!apiKey) throw new Error("makeOpenRouterVision: apiKey required");
   if (!imageBase64) throw new Error("makeOpenRouterVision: imageBase64 required");
   return async (sys, user, temperature) => {
@@ -19,7 +19,10 @@ export function makeOpenRouterVision({ apiKey, model = "google/gemini-3.5-flash"
       method: "POST",
       headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json", "HTTP-Referer": referer, "X-Title": title },
       body: JSON.stringify({
-        model, temperature, response_format: { type: "json_object" },
+        // Generous output cap so a judge never truncates: reasoning-model judges
+        // (qwen-thinking, opus, gpt-5.x) spend reasoning tokens against this, and a
+        // run where "a lot is wrong" needs room to articulate the finding + fix.
+        model, temperature, max_tokens: maxTokens, response_format: { type: "json_object" },
         messages: [
           { role: "system", content: sys },
           { role: "user", content: [

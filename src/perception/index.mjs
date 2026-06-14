@@ -100,6 +100,30 @@ export function makeOpenRouterVision({ apiKey, model = "google/gemini-3.5-flash"
   };
 }
 
+/**
+ * Build a jury panel from a list of OpenRouter model ids: returns
+ * [{ id, vision, weight }] ready for samplePerceptions({ panel }). Picking
+ * models from DIFFERENT labs (e.g. a Google, an Anthropic, an OpenAI, a Qwen)
+ * is the load-bearing choice -- a panel only decorrelates bias if the judges
+ * disagree on the right things, which same-lab models do not (Verga et al 2024).
+ * `weight` per model (optional, default 1) is the reliability weight a gold-set
+ * calibration would set ("LLM-as-a-jury", Qian et al 2026: judges are not equally
+ * reliable, so do not equal-vote).
+ *
+ * @param {object} cfg
+ * @param {string} cfg.apiKey
+ * @param {string} cfg.imageBase64
+ * @param {(string | {id:string, weight?:number})[]} cfg.models  model ids or {id,weight}
+ */
+export function makePanel({ apiKey, imageBase64, models, referer, title }) {
+  if (!models?.length) throw new Error("makePanel: models required");
+  return models.map((m) => {
+    const id = typeof m === "string" ? m : m.id;
+    const weight = typeof m === "string" ? 1 : (m.weight ?? 1);
+    return { id, weight, vision: makeOpenRouterVision({ apiKey, model: id, imageBase64, referer, title }) };
+  });
+}
+
 async function pmap(items, fn, conc) {
   const out = new Array(items.length);
   let i = 0;
@@ -113,20 +137,32 @@ const normTarget = (t) => String(t || "").toLowerCase().replace(/[^a-z0-9 ]/g, "
 
 /**
  * Aggregate raw samples for one mode into ranked findings (PURE, no I/O).
- * Groups by (category, normalized target); ranks by role-weighted confidence mass.
- * Exported so callers (and tests) can re-rank or re-group without re-sampling.
+ * Groups by (category, normalized target); ranks by a JURY score that rewards
+ * cross-judge agreement, not raw sample count.
+ *
+ * The jury score (Verga et al 2024 "Replacing Judges with Juries"; orq.ai "weak
+ * judges, strong panel"): a finding raised independently by several DISTINCT
+ * judge models is far more trustworthy than the same count of samples from one
+ * model -- decorrelated agreement is the signal, correlated repetition is not.
+ * So score = role-weighted confidence mass scaled by a diversity factor in the
+ * number of distinct judges (1 judge -> x1, 2 -> x2, 4 -> x3; log2). A lone-judge
+ * finding keeps its mass but loses the multiplier, so it ranks below corroborated
+ * ones and is the first to be caught by the cross-model verify pass. Single-judge
+ * callers (no s.judge) collapse to the old mass ranking exactly (diversity x1).
  */
 export function aggregate(samples, mode) {
   const groups = new Map();
   for (const s of samples.filter((x) => x.mode === mode)) {
     const key = `${s.category || mode}::${normTarget(s.target)}`;
-    const g = groups.get(key) || { mode, category: s.category || mode, target: normTarget(s.target), count: 0, mass: 0, heads: [], sugg: [], roles: new Set() };
+    const g = groups.get(key) || { mode, category: s.category || mode, target: normTarget(s.target), count: 0, mass: 0, heads: [], sugg: [], roles: new Set(), judges: new Set() };
     g.count++;
     g.mass += (s.weight ?? 1) * (s.confidence ?? 0.5);
     g.heads.push(s.headline); g.sugg.push(s.suggestion); g.roles.add(s.role);
+    g.judges.add(s.judge ?? "default");
     groups.set(key, g);
   }
-  return [...groups.values()].sort((a, b) => b.mass - a.mass);
+  for (const g of groups.values()) g.score = g.mass * (1 + Math.log2(g.judges.size));
+  return [...groups.values()].sort((a, b) => b.score - a.score);
 }
 
 /**
@@ -148,14 +184,30 @@ export function matchesDisposition(finding, dispositions = []) {
 
 /**
  * Sample perceptions of one screenshot across modes x personas x contexts,
- * aggregate, and adversarially verify the top findings.
+ * aggregate with a JURY of diverse judge models, and adversarially verify the
+ * top findings with a CROSS-MODEL refute pass.
+ *
+ * The judge graph (grounded in the panel-of-judges literature):
+ *   1. PANEL not one model. Pass `panel: [{id, vision, weight}]` (build with
+ *      makePanel) -- diverse-lab judges decorrelate bias where one model's
+ *      samples only repeat it (Verga et al 2024, PoLL). `vision` alone is still
+ *      accepted and runs as a one-judge panel (back-compat, no diversity bonus).
+ *   2. MASS SPANS JUDGES. aggregate() scores a finding by role-weighted mass x a
+ *      diversity factor in the number of DISTINCT judges that raised it, so
+ *      cross-judge agreement outranks single-judge repetition.
+ *   3. CROSS-MODEL VERIFY. The refute pass for a finding is run by a judge that
+ *      did NOT raise it whenever the panel allows, so a model cannot rubber-stamp
+ *      its own claim -- the structural debias that more same-model samples cannot
+ *      buy (CyclicJudge 2026; position-bias studies). Falls back to any judge
+ *      when every panel member raised the finding.
  *
  * @param {object} cfg
- * @param {(sys:string,user:string,temperature:number)=>Promise<object>} cfg.vision  required
+ * @param {{id:string, vision:Function, weight?:number}[]} [cfg.panel]  jury of judges (preferred)
+ * @param {(sys:string,user:string,temperature:number)=>Promise<object>} [cfg.vision]  single-judge fallback
  * @param {string[]} [cfg.modes]      subset of ["question","problem","insight"]
  * @param {{id,who,weight}[]} cfg.personas   required (who = 2nd-person persona description; weight scales mass)
  * @param {{id,ctx}[]} cfg.contexts          required (glance contexts / moments)
- * @param {number} [cfg.n=2]          samples per cell
+ * @param {number} [cfg.n=2]          samples per cell PER JUDGE
  * @param {number} [cfg.concurrency=10]
  * @param {number} [cfg.topK=6]       findings verified per mode
  * @param {boolean} [cfg.verify=true]
@@ -163,10 +215,13 @@ export function matchesDisposition(finding, dispositions = []) {
  *                                     judge does not flag settled-by-design choices as defects
  * @param {{mode?,category?,target,disposition,reason}[]} [cfg.dispositions]  known findings to
  *                                     SUPPRESS from the surfaced set (convergence memory)
- * @returns {Promise<{samples:object[], sections:{mode,ranked,top,suppressed}[]}>}
+ * @returns {Promise<{samples:object[], sections:{mode,ranked,top,suppressed}[], judges:string[]}>}
  */
-export async function samplePerceptions({ vision, modes = ["question", "problem", "insight"], personas, contexts, n = 2, concurrency = 10, topK = 6, verify = true, principles = [], dispositions = [] }) {
-  if (typeof vision !== "function") throw new Error("samplePerceptions: vision fn required");
+export async function samplePerceptions({ panel, vision, modes = ["question", "problem", "insight"], personas, contexts, n = 2, concurrency = 10, topK = 6, verify = true, principles = [], dispositions = [] }) {
+  // Normalize to a panel; a bare `vision` fn becomes a single-judge jury (back-compat).
+  const jury = panel?.length ? panel : (typeof vision === "function" ? [{ id: "default", vision, weight: 1 }] : null);
+  if (!jury) throw new Error("samplePerceptions: panel or vision fn required");
+  for (const j of jury) if (typeof j.vision !== "function") throw new Error(`samplePerceptions: judge '${j.id}' missing vision fn`);
   if (!personas?.length || !contexts?.length) throw new Error("samplePerceptions: personas and contexts required");
   for (const m of modes) if (!MODE_SPEC[m]) throw new Error(`samplePerceptions: unknown mode '${m}'`);
 
@@ -177,11 +232,13 @@ export async function samplePerceptions({ vision, modes = ["question", "problem"
     ? "\n\nDESIGN PRINCIPLES IN FORCE -- these are intended and correct; do NOT report them as problems, gaps, conflicts, or noise:\n- " + principles.join("\n- ")
     : "";
 
+  // Fan every (mode x persona x context x sample) cell across EVERY judge.
   const cells = [];
-  for (const mode of modes) for (const persona of personas) for (const context of contexts) for (let s = 0; s < n; s++) cells.push({ mode, persona, context });
-  const samples = (await pmap(cells, ({ mode, persona, context }) => {
+  for (const mode of modes) for (const persona of personas) for (const context of contexts) for (const judge of jury) for (let s = 0; s < n; s++) cells.push({ mode, persona, context, judge });
+  const samples = (await pmap(cells, ({ mode, persona, context, judge }) => {
     const spec = MODE_SPEC[mode];
-    return vision(spec.sys + seed, spec.user(persona, context), 1.05).then((r) => ({ ...r, mode, role: persona.id, weight: persona.weight ?? 1, context: context.id }));
+    return judge.vision(spec.sys + seed, spec.user(persona, context), 1.05)
+      .then((r) => ({ ...r, mode, role: persona.id, weight: (persona.weight ?? 1) * (judge.weight ?? 1), context: context.id, judge: judge.id }));
   }, concurrency)).filter((r) => r && !r._err && r.headline);
 
   const sections = [];
@@ -189,7 +246,14 @@ export async function samplePerceptions({ vision, modes = ["question", "problem"
     const ranked = aggregate(samples, mode);
     const candidates = ranked.slice(0, Math.min(topK, ranked.length));
     if (verify && candidates.length) {
-      const verdicts = await pmap(candidates, (g) => vision(VERIFY_SYS + seed, verifyUser(mode, { category: g.category, target: g.target, why: g.heads[0], suggestion: g.sugg[0] }), 0.1), 4);
+      // Cross-model: verify each finding with a judge that did NOT raise it (so a
+      // model can't rubber-stamp its own claim); fall back to the first judge when
+      // every member raised it. Single-judge juries verify with themselves as before.
+      const verdicts = await pmap(candidates, (g) => {
+        const verifier = jury.find((j) => !g.judges.has(j.id)) || jury[0];
+        g.verifiedBy = verifier.id;
+        return verifier.vision(VERIFY_SYS + seed, verifyUser(mode, { category: g.category, target: g.target, why: g.heads[0], suggestion: g.sugg[0] }), 0.1);
+      }, 4);
       candidates.forEach((g, i) => { g.verified = verdicts[i] && !verdicts[i]._err ? !verdicts[i].refuted : null; g.vreason = verdicts[i]?.reason || verdicts[i]?._err || ""; });
     }
     // Convergence: partition off findings already dispositioned (fixed/rejected/
@@ -202,7 +266,7 @@ export async function samplePerceptions({ vision, modes = ["question", "problem"
     }
     sections.push({ mode, ranked, top, suppressed });
   }
-  return { samples, sections };
+  return { samples, sections, judges: jury.map((j) => j.id) };
 }
 
 /** Format sections + samples as a human-readable report string. */
@@ -216,10 +280,12 @@ export function formatReport({ samples, sections }) {
     for (const g of suppressed) lines.push(`  (suppressed ${g.disposition}) [${g.category}] ${g.target} -- ${g.dispositionReason}`);
     top.forEach((g, i) => {
       const v = g.verified === true ? "OK " : g.verified === false ? "REF" : " ? ";
-      lines.push(`${String(i + 1).padStart(2)}. ${String(g.category).padEnd(9)} n=${String(g.count).padStart(2)} mass=${g.mass.toFixed(2)} ${v} ${g.target.slice(0, 26).padEnd(26)} ${g.heads[0].slice(0, 64)}`);
+      const nj = g.judges ? g.judges.size : 1;
+      lines.push(`${String(i + 1).padStart(2)}. ${String(g.category).padEnd(9)} n=${String(g.count).padStart(2)} ${nj}j score=${(g.score ?? g.mass).toFixed(2)} ${v} ${g.target.slice(0, 26).padEnd(26)} ${g.heads[0].slice(0, 64)}`);
     });
     for (const g of top.filter((x) => x.verified !== false)) {
-      lines.push(`\n  [${g.category}] ${g.target} (n=${g.count}, roles=${[...g.roles].join("/")}, verified=${g.verified})`);
+      const jl = g.judges ? [...g.judges].map((j) => j.split("/").pop()).join("+") : "";
+      lines.push(`\n  [${g.category}] ${g.target} (n=${g.count}, judges=${jl}, roles=${[...g.roles].join("/")}, verified=${g.verified}${g.verifiedBy ? " by " + g.verifiedBy.split("/").pop() : ""})`);
       lines.push(`    ${g.heads.slice(0, 2).map((h) => `"${h}"`).join("  |  ")}`);
       if (mode !== "insight") lines.push(`    fix: ${g.sugg[0]}`);
       if (g.vreason) lines.push(`    verify: ${g.vreason}`);

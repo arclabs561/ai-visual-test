@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { aggregate, parseJsonObject, MODE_SPEC, matchesDisposition } from "../../src/perception/index.mjs";
+import { aggregate, parseJsonObject, MODE_SPEC, matchesDisposition, makePanel } from "../../src/perception/index.mjs";
 
 test("aggregate groups by (category,target) and ranks by role-weighted confidence mass", () => {
   const samples = [
@@ -50,6 +50,36 @@ test("matchesDisposition: mode pin + overlapping target, category pin, no-match"
   assert.equal(matchesDisposition({ mode: "problem", target: "weather chart" }, disp), null);
   // empty dispositions -> null, never throws
   assert.equal(matchesDisposition({ mode: "problem", target: "x" }), null);
+});
+
+test("aggregate: jury diversity outranks single-judge repetition at equal mass", () => {
+  // finding A: same mass split across two DISTINCT judges; finding B: same mass from one judge.
+  const samples = [
+    { mode: "problem", category: "major", target: "alpha", role: "operator", weight: 1, confidence: 0.5, judge: "google/g", headline: "a1", suggestion: "fix" },
+    { mode: "problem", category: "major", target: "alpha", role: "adult", weight: 1, confidence: 0.5, judge: "anthropic/c", headline: "a2", suggestion: "fix" },
+    { mode: "problem", category: "minor", target: "beta", role: "operator", weight: 1, confidence: 0.5, judge: "google/g", headline: "b1", suggestion: "fix" },
+    { mode: "problem", category: "minor", target: "beta", role: "adult", weight: 1, confidence: 0.5, judge: "google/g", headline: "b2", suggestion: "fix" },
+  ];
+  const ranked = aggregate(samples, "problem");
+  assert.equal(ranked[0].target, "alpha", "two-judge finding ranks above the equal-mass one-judge finding");
+  assert.equal(ranked[0].judges.size, 2);
+  assert.ok(Math.abs(ranked[0].mass - ranked[1].mass) < 1e-9, "masses are equal; only the diversity factor separates them");
+  assert.ok(ranked[0].score > ranked[1].score, "diversity factor (log2 distinct judges) breaks the tie toward decorrelated agreement");
+});
+
+test("aggregate: single-judge callers (no s.judge) collapse to mass ranking (score==mass)", () => {
+  const ranked = aggregate([{ mode: "problem", category: "minor", target: "t", role: "r", weight: 1, confidence: 0.7, headline: "h" }], "problem");
+  assert.equal(ranked[0].judges.size, 1, "absent judge => single 'default' judge");
+  assert.ok(Math.abs(ranked[0].score - ranked[0].mass) < 1e-9, "1 judge => diversity factor of 1, score == mass (back-compat)");
+});
+
+test("makePanel builds one judge entry per model with id/weight/vision", () => {
+  const panel = makePanel({ apiKey: "k", imageBase64: "Zm9v", models: ["google/gemini-3.5-flash", { id: "anthropic/claude-haiku-4.5", weight: 1.3 }] });
+  assert.equal(panel.length, 2);
+  assert.equal(panel[0].id, "google/gemini-3.5-flash");
+  assert.equal(panel[0].weight, 1, "string model defaults weight 1");
+  assert.equal(panel[1].weight, 1.3, "object model carries its reliability weight");
+  assert.ok(panel.every((j) => typeof j.vision === "function"), "each entry has a callable vision fn");
 });
 
 test("MODE_SPEC has all three modes with usable sys + user(persona,context)", () => {

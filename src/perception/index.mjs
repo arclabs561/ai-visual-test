@@ -100,6 +100,26 @@ export function makeOpenRouterVision({ apiKey, model = "google/gemini-3.5-flash"
   };
 }
 
+/** Build a text-only complete(sys, user, temperature) -> object fn backed by
+ * OpenRouter (no image -- used by mergeFindings, which reasons over finding text,
+ * not the screenshot, so it can run on a cheap text model). */
+export function makeOpenRouterText({ apiKey, model = "google/gemini-3.5-flash", referer = "https://ai-visual-test", title = "perception-merge" }) {
+  if (!apiKey) throw new Error("makeOpenRouterText: apiKey required");
+  return async (sys, user, temperature = 0.1) => {
+    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json", "HTTP-Referer": referer, "X-Title": title },
+      body: JSON.stringify({
+        model, temperature, response_format: { type: "json_object" },
+        messages: [{ role: "system", content: sys }, { role: "user", content: user }],
+      }),
+    });
+    if (!res.ok) throw new Error(`${res.status} ${(await res.text()).slice(0, 200)}`);
+    const j = await res.json();
+    return parseJsonObject(j.choices?.[0]?.message?.content ?? "");
+  };
+}
+
 /**
  * Build a jury panel from a list of OpenRouter model ids: returns
  * [{ id, vision, weight }] ready for samplePerceptions({ panel }). Picking
@@ -165,6 +185,59 @@ export function aggregate(samples, mode) {
   return [...groups.values()].sort((a, b) => b.score - a.score);
 }
 
+const mergeScore = (mass, judges) => mass * (1 + Math.log2(judges.size));
+
+/**
+ * Canonicalize cross-judge findings: merge aggregated groups that describe the
+ * SAME underlying issue under different wording into one golden finding (entity
+ * consolidation, Deng et al 2017; cluster consolidation, Cattan et al 2023). This
+ * is what lets the diversity bonus actually fire -- different labs name the same
+ * region differently ("weather panel footer" vs "weather widget footer"), so
+ * without a semantic merge each stays single-judge and the cross-judge agreement
+ * is invisible. Uses a text model (the findings are text; no image needed) to
+ * cluster, then unions judges/roles/mass per cluster and re-scores over the UNION
+ * judge set. PURE-on-failure: any malformed or non-covering clustering falls back
+ * to the unmerged input, so a flaky canonicalizer never drops findings.
+ *
+ * @param {object[]} groups   aggregated groups from aggregate() (carry category/target/heads/judges/mass)
+ * @param {object} cfg
+ * @param {(sys:string,user:string,temperature:number)=>Promise<object>} cfg.complete  text completion fn (makeOpenRouterText)
+ * @returns {Promise<object[]>} merged + re-ranked groups (or the input unchanged on any failure)
+ */
+export async function mergeFindings(groups, { complete } = {}) {
+  if (!groups || groups.length < 2 || typeof complete !== "function") return groups;
+  const list = groups.map((g, i) => `[${i}] (${g.category}) ${g.target}: ${(g.heads?.[0] || "").slice(0, 100)}`);
+  const sys = "You consolidate UI-review findings. Different reviewers may describe the SAME issue with different wording. STRICT JSON, no fences.";
+  const user = "Cluster the findings that describe the SAME underlying issue (same screen element AND same problem). Findings about different elements, or different problems on the same element, stay in separate clusters.\n" +
+    list.join("\n") +
+    '\nReturn JSON {"clusters": [[indices], ...]} where every index 0..' + (groups.length - 1) + " appears EXACTLY once (a unique finding is its own one-element cluster).";
+  let clusters = null;
+  try { const r = await complete(sys, user, 0.1); clusters = Array.isArray(r?.clusters) ? r.clusters : null; } catch { clusters = null; }
+  // Validate full, disjoint coverage; any deviation -> fall back to unmerged (never drop a finding).
+  if (!clusters) return groups;
+  const seen = new Set();
+  for (const c of clusters) {
+    if (!Array.isArray(c)) return groups;
+    for (const i of c) { if (typeof i !== "number" || i < 0 || i >= groups.length || seen.has(i)) return groups; seen.add(i); }
+  }
+  if (seen.size !== groups.length) return groups;
+  const merged = clusters.map((c) => {
+    const gs = c.map((i) => groups[i]);
+    if (gs.length === 1) return gs[0];
+    const judges = new Set(), roles = new Set(), heads = [], sugg = [];
+    let mass = 0, count = 0;
+    for (const g of gs) {
+      for (const j of (g.judges || [])) judges.add(j);
+      for (const r of (g.roles || [])) roles.add(r);
+      mass += g.mass || 0; count += g.count || 0;
+      heads.push(...(g.heads || [])); sugg.push(...(g.sugg || []));
+    }
+    const canon = gs.slice().sort((a, b) => (b.mass || 0) - (a.mass || 0))[0]; // most-massive group names the cluster
+    return { mode: canon.mode, category: canon.category, target: canon.target, count, mass, heads, sugg, roles, judges, score: mergeScore(mass, judges), merged: gs.length };
+  });
+  return merged.sort((a, b) => b.score - a.score);
+}
+
 /**
  * Does a finding match a known disposition? Same mode (if the disposition pins
  * one), same category (if pinned), and overlapping normalized target. Returns the
@@ -204,6 +277,7 @@ export function matchesDisposition(finding, dispositions = []) {
  * @param {object} cfg
  * @param {{id:string, vision:Function, weight?:number}[]} [cfg.panel]  jury of judges (preferred)
  * @param {(sys:string,user:string,temperature:number)=>Promise<object>} [cfg.vision]  single-judge fallback
+ * @param {(sys:string,user:string,temperature:number)=>Promise<object>} [cfg.complete]  text model (makeOpenRouterText): if set, cross-judge findings are canonicalized/merged before ranking
  * @param {string[]} [cfg.modes]      subset of ["question","problem","insight"]
  * @param {{id,who,weight}[]} cfg.personas   required (who = 2nd-person persona description; weight scales mass)
  * @param {{id,ctx}[]} cfg.contexts          required (glance contexts / moments)
@@ -217,7 +291,7 @@ export function matchesDisposition(finding, dispositions = []) {
  *                                     SUPPRESS from the surfaced set (convergence memory)
  * @returns {Promise<{samples:object[], sections:{mode,ranked,top,suppressed}[], judges:string[]}>}
  */
-export async function samplePerceptions({ panel, vision, modes = ["question", "problem", "insight"], personas, contexts, n = 2, concurrency = 10, topK = 6, verify = true, principles = [], dispositions = [] }) {
+export async function samplePerceptions({ panel, vision, complete, modes = ["question", "problem", "insight"], personas, contexts, n = 2, concurrency = 10, topK = 6, verify = true, principles = [], dispositions = [] }) {
   // Normalize to a panel; a bare `vision` fn becomes a single-judge jury (back-compat).
   const jury = panel?.length ? panel : (typeof vision === "function" ? [{ id: "default", vision, weight: 1 }] : null);
   if (!jury) throw new Error("samplePerceptions: panel or vision fn required");
@@ -243,7 +317,11 @@ export async function samplePerceptions({ panel, vision, modes = ["question", "p
 
   const sections = [];
   for (const mode of modes) {
-    const ranked = aggregate(samples, mode);
+    // Aggregate, then (if a text model is supplied) canonicalize cross-judge
+    // findings so same-issue/different-wording groups merge BEFORE topK + verify
+    // -- the merged diversity score is what should decide which findings rank.
+    let ranked = aggregate(samples, mode);
+    if (complete) ranked = await mergeFindings(ranked, { complete });
     const candidates = ranked.slice(0, Math.min(topK, ranked.length));
     if (verify && candidates.length) {
       // Cross-model: verify each finding with a judge that did NOT raise it (so a

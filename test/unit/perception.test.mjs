@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { aggregate, parseJsonObject, MODE_SPEC, matchesDisposition, makePanel, calibrateJudges, decayDispositions } from "../../src/perception/index.mjs";
+import { aggregate, parseJsonObject, MODE_SPEC, matchesDisposition, makePanel, calibrateJudges, decayDispositions, mergeFindings } from "../../src/perception/index.mjs";
 
 test("aggregate groups by (category,target) and ranks by role-weighted confidence mass", () => {
   const samples = [
@@ -144,6 +144,34 @@ test("decayDispositions: a 'fixed' recurrence from only ONE judge is not enough 
   });
   assert.equal(out[0].confidence, 0.5, "single-judge recurrence is below the decorrelation guard -> no decay");
   assert.equal(out[0].reopen, false);
+});
+
+test("mergeFindings: clusters same-issue groups, unions judges, re-scores over the union", async () => {
+  const groups = [
+    { mode: "problem", category: "major", target: "weather panel footer", mass: 0.5, count: 1, heads: ["badge overlaps temp"], sugg: ["space it"], roles: new Set(["operator"]), judges: new Set(["google/g"]), score: 0.5 },
+    { mode: "problem", category: "major", target: "weather widget footer", mass: 0.5, count: 1, heads: ["precip collides"], sugg: ["separate"], roles: new Set(["adult"]), judges: new Set(["anthropic/c"]), score: 0.5 },
+    { mode: "problem", category: "minor", target: "clock", mass: 0.4, count: 1, heads: ["small"], sugg: ["bigger"], roles: new Set(["guest"]), judges: new Set(["google/g"]), score: 0.4 },
+  ];
+  // canonicalizer says 0 and 1 are the same issue; 2 is its own.
+  const complete = async () => ({ clusters: [[0, 1], [2]] });
+  const merged = await mergeFindings(groups, { complete });
+  const footer = merged.find((g) => g.merged === 2);
+  assert.ok(footer, "the two footer findings merged into one");
+  assert.equal(footer.judges.size, 2, "judges unioned across the cluster");
+  assert.ok(Math.abs(footer.mass - 1.0) < 1e-9, "mass summed");
+  assert.ok(Math.abs(footer.score - 1.0 * (1 + Math.log2(2))) < 1e-9, "re-scored over the UNION judge set (now gets the diversity bonus)");
+  assert.ok(footer.score > merged.find((g) => g.target === "clock").score, "merged cross-judge finding now outranks the single-judge one");
+});
+
+test("mergeFindings: falls back to the input on a non-covering / malformed clustering (never drops a finding)", async () => {
+  const groups = [
+    { category: "major", target: "a", mass: 1, heads: ["x"], judges: new Set(["j1"]) },
+    { category: "minor", target: "b", mass: 1, heads: ["y"], judges: new Set(["j2"]) },
+  ];
+  assert.equal((await mergeFindings(groups, { complete: async () => ({ clusters: [[0]] }) })), groups, "index 1 missing -> fall back");
+  assert.equal((await mergeFindings(groups, { complete: async () => ({ clusters: [[0, 0, 1]] }) })), groups, "duplicate index -> fall back");
+  assert.equal((await mergeFindings(groups, { complete: async () => { throw new Error("boom"); } })), groups, "thrown canonicalizer -> fall back");
+  assert.equal((await mergeFindings(groups, {})), groups, "no complete fn -> unchanged");
 });
 
 test("MODE_SPEC has all three modes with usable sys + user(persona,context)", () => {

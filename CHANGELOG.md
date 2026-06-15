@@ -4,6 +4,23 @@ All notable changes to ai-visual-test will be documented in this file.
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-06-14
+
+### Added
+- Operator-critique ledger (`appendCritique` / `readLedger` / `ledgerToDispositions`,
+  exported from the perception barrel): an append-only record of live human critiques
+  of a rendered artifact, each anchored to the version it references (a build SHA, git
+  ref, or timestamp the consumer supplies). Open critiques bridge into `samplePerceptions`
+  as dispositions, so a human's live opinion is carried forward as a finding the judge
+  must not regress; an addressed one is suppressed.
+- Per-mode `guidance` parameter on `samplePerceptions`: surface-specific prompt guidance
+  the consumer injects per perception mode, while the base mode prompts stay
+  domain-agnostic.
+
+### Changed
+- Vision calls use a configurable, generous `max_tokens` (default 8000) so judges no
+  longer truncate mid-finding on dense artifacts.
+
 ## [0.11.0] - 2026-06-13
 
 ### Added

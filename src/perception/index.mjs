@@ -27,3 +27,4 @@ export { aggregate, mergeFindings, matchesDisposition } from "./aggregate.mjs";
 export { samplePerceptions } from "./sample.mjs";
 export { selectForReview, calibrateJudges, decayDispositions } from "./learn.mjs";
 export { formatReport } from "./report.mjs";
+export { appendCritique, readLedger, ledgerToDispositions } from "./critiques.mjs";

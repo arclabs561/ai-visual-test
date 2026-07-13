@@ -23,6 +23,8 @@ jobs:
     
     steps:
       - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
       
       - uses: actions/setup-node@v4
         with:
@@ -40,12 +42,15 @@ jobs:
       
       - name: Update deprecation message
         run: |
-          MESSAGE="${{ github.event.inputs.message }}"
+          MESSAGE="${GITHUB_EVENT_INPUTS_MESSAGE}"
           if [ -z "$MESSAGE" ]; then
             MESSAGE="This package has been renamed to ai-visual-test. Please use npm install ai-visual-test instead. See https://www.npmjs.com/package/ai-visual-test for the latest version."
           fi
           echo "Updating deprecation message to: $MESSAGE"
-          npm deprecate ai-browser-test "$MESSAGE" --otp=${{ github.event.inputs.otp }}
+          npm deprecate ai-browser-test "$MESSAGE" --otp="${GITHUB_EVENT_INPUTS_OTP}"
+        env:
+          GITHUB_EVENT_INPUTS_MESSAGE: ${{ github.event.inputs.message }}
+          GITHUB_EVENT_INPUTS_OTP: ${{ github.event.inputs.otp }}
       
       - name: Verify updated deprecation
         run: |
@@ -64,4 +69,3 @@ jobs:
         run: |
           echo "Testing that users will see deprecation warning..."
           npm install ai-browser-test@0.3.1 --dry-run 2>&1 | grep -i "deprecated\|warn" || echo "Note: Deprecation warning may appear during actual install"
-

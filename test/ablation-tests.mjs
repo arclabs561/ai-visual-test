@@ -4,7 +4,6 @@
  * These tests compare results with/without features to validate research claims:
  * 1. Rubrics: Does adding explicit rubrics improve reliability?
  * 2. Counter-balancing: Does it reduce position bias?
- * 3. Few-shot examples: Do they improve relevance?
  * 
  * Note: These are controlled experiments, not production validation.
  * For real validation, run on actual datasets with human annotations.
@@ -14,7 +13,6 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import { validateScreenshot, createConfig } from '../src/index.mjs';
 import { evaluateWithCounterBalance } from '../src/position-counterbalance.mjs';
-import { selectFewShotExamples } from '../src/dynamic-few-shot.mjs';
 import { buildRubricPrompt, getRubricForTestType } from '../src/rubrics.mjs';
 
 describe('Ablation Tests: Research Claim Validation', () => {
@@ -132,75 +130,9 @@ describe('Ablation Tests: Research Claim Validation', () => {
     });
   });
   
-  describe('Few-Shot Examples Ablation', () => {
-    it('should show semantic matching selects relevant examples (not proven 10-20% improvement)', async () => {
-      const examples = [
-        { description: 'accessibility contrast keyboard navigation', evaluation: 'Good', score: 9 },
-        { description: 'design layout color scheme', evaluation: 'OK', score: 7 },
-        { description: 'broken layout issues', evaluation: 'Bad', score: 3 }
-      ];
-      
-      // With semantic matching
-      const withMatching = await selectFewShotExamples(
-        'Evaluate accessibility and contrast',
-        examples,
-        { useSemanticMatching: true, similarityThreshold: 0.1 }
-      );
-      
-      // Without semantic matching (random selection)
-      const withoutMatching = await selectFewShotExamples(
-        'Evaluate accessibility and contrast',
-        examples,
-        { useSemanticMatching: false, maxExamples: withMatching.length }
-      );
-      
-      // With matching should prefer accessibility examples
-      const hasAccessibility = withMatching.some(ex => 
-        ex.description.includes('accessibility') || ex.description.includes('contrast')
-      );
-      
-      assert.ok(hasAccessibility || withMatching.length > 0,
-        'Semantic matching should select relevant examples');
-      
-      // Note: This proves semantic matching works, not that it improves by 10-20%
-      // Real validation requires A/B testing on actual evaluation tasks
-    });
-    
-    it('should demonstrate relevance improvement (not quantified)', async () => {
-      const examples = Array.from({ length: 10 }, (_, i) => ({
-        description: i < 5 
-          ? `accessibility contrast keyboard example ${i}`
-          : `design layout color example ${i}`,
-        evaluation: 'Test',
-        score: 7
-      }));
-      
-      const prompt = 'Evaluate accessibility features';
-      
-      // With semantic matching
-      const withMatching = await selectFewShotExamples(prompt, examples, {
-        useSemanticMatching: true,
-        maxExamples: 5,
-        similarityThreshold: 0.05
-      });
-      
-      // Count accessibility examples
-      const accessibilityCount = withMatching.filter(ex =>
-        ex.description.includes('accessibility')
-      ).length;
-      
-      // Should prefer accessibility examples (but allow for keyword variations)
-      assert.ok(accessibilityCount >= 0, 
-        `Selected ${withMatching.length} examples, ${accessibilityCount} with accessibility keywords`);
-      
-      // Note: This shows relevance, not quantified improvement
-      // Real validation requires measuring evaluation quality with/without examples
-    });
-  });
-  
   describe('End-to-End Ablation', () => {
-    it('should demonstrate all features work together (not validated improvements)', async () => {
-      // Test that all features can be used together
+    it('should demonstrate remaining features work together (not validated improvements)', async () => {
+      // Test that the remaining features can be used together
       // This doesn't prove they improve results, just that they work
       
       // 1. Rubrics
@@ -219,14 +151,6 @@ describe('Ablation Tests: Research Claim Validation', () => {
       );
       assert.strictEqual(counterBalanced.score, 7);
       
-      // 3. Few-shot
-      const examples = [{ description: 'test', evaluation: 'OK', score: 7 }];
-      const selected = await selectFewShotExamples('Test', examples);
-      assert.ok(selected.length >= 0);
-      
-      // All features work together
-      assert.ok(true, 'Features integrate successfully');
-      
       // Note: This proves integration, not that features improve results
       // Real validation requires measuring actual improvements on real tasks
     });
@@ -244,8 +168,6 @@ describe('Ablation Tests: Research Claim Validation', () => {
  * They do NOT prove:
  * 1. 10-20% improvement from rubrics
  * 2. 70-80% bias reduction from counter-balancing
- * 3. 10-20% improvement from few-shot examples
- * 
  * To validate research claims, you need:
  * - Real evaluation datasets
  * - Human-annotated ground truth
@@ -256,4 +178,3 @@ describe('Ablation Tests: Research Claim Validation', () => {
  * Current status: Features are implemented and tested, but research claims
  * are not yet validated in this codebase.
  */
-

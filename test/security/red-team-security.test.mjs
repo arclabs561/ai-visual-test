@@ -7,7 +7,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import { evaluateWithCounterBalance } from '../../src/position-counterbalance.mjs';
-import { selectFewShotExamples, formatFewShotExamples } from '../../src/dynamic-few-shot.mjs';
 import { spearmanCorrelation, calculateRankAgreement } from '../../src/metrics.mjs';
 
 describe('Security & Edge Case Testing', () => {
@@ -87,70 +86,6 @@ describe('Security & Edge Case Testing', () => {
     });
   });
   
-  describe('Dynamic Few-Shot Security', () => {
-    it('should handle malicious prompt injection', async () => {
-      const maliciousPrompt = 'test\n```javascript\neval("malicious code")\n```';
-      const examples = [{ description: 'test', evaluation: 'ok', score: 7 }];
-      
-      // Should not execute code
-      const selected = await selectFewShotExamples(maliciousPrompt, examples);
-      
-      assert.ok(Array.isArray(selected));
-      // Should not have executed eval
-      assert.ok(!selected.some(ex => ex.description?.includes('eval')));
-    });
-    
-    it('should handle extremely long prompts', async () => {
-      const longPrompt = 'a'.repeat(100000); // 100KB prompt
-      const examples = Array.from({ length: 10 }, (_, i) => ({
-        description: `example ${i}`,
-        evaluation: 'test',
-        score: 7
-      }));
-      
-      // Should not crash or hang
-      const start = Date.now();
-      const selected = await selectFewShotExamples(longPrompt, examples);
-      const duration = Date.now() - start;
-      
-      assert.ok(Array.isArray(selected));
-      // For very long prompts (100KB), allow up to 5 seconds (keyword extraction and embedding attempts may take time)
-      assert.ok(duration < 5000, `Should complete in reasonable time even with long prompt (took ${duration}ms)`);
-    });
-    
-    it('should handle empty or null examples safely', async () => {
-      assert.deepStrictEqual(await selectFewShotExamples('test', []), []);
-      assert.deepStrictEqual(await selectFewShotExamples('test', null), []);
-      assert.deepStrictEqual(await selectFewShotExamples('test', undefined), []);
-    });
-    
-    it('should sanitize example content in formatting', () => {
-      const maliciousExamples = [{
-        description: 'test<script>alert("xss")</script>',
-        evaluation: 'ok',
-        score: 7
-      }];
-      
-      const formatted = formatFewShotExamples(maliciousExamples);
-      
-      // Should not contain executable script tags (though this is prompt text, not HTML)
-      // Main concern is that it doesn't break formatting
-      assert.ok(typeof formatted === 'string');
-      assert.ok(formatted.length > 0);
-    });
-    
-    it('should handle negative similarity thresholds', async () => {
-      const examples = [{ description: 'test', evaluation: 'ok', score: 7 }];
-      
-      // Negative threshold should still work (all examples pass)
-      const selected = await selectFewShotExamples('test', examples, {
-        similarityThreshold: -1
-      });
-      
-      assert.ok(selected.length > 0);
-    });
-  });
-  
   describe('Metrics Security', () => {
     it('should handle NaN and Infinity values', () => {
       const x = [1, 2, NaN, 4, 5];
@@ -226,72 +161,9 @@ describe('Security & Edge Case Testing', () => {
         assert.ok(error instanceof Error || error instanceof TypeError);
       }
     });
-    
-    it('should handle non-string prompts in few-shot', async () => {
-      const examples = [{ description: 'test', evaluation: 'ok', score: 7 }];
-      
-      // Should handle non-string gracefully
-      const selected1 = await selectFewShotExamples(null, examples);
-      const selected2 = await selectFewShotExamples(123, examples);
-      const selected3 = await selectFewShotExamples({}, examples);
-      
-      // Should return empty array or handle gracefully
-      assert.ok(Array.isArray(selected1));
-      assert.ok(Array.isArray(selected2));
-      assert.ok(Array.isArray(selected3));
-    });
-    
-    it('should handle non-array examples', async () => {
-      // Should not crash on invalid input types
-      assert.deepStrictEqual(await selectFewShotExamples('test', 'not array'), []);
-      assert.deepStrictEqual(await selectFewShotExamples('test', {}), []);
-    });
   });
   
   describe('Performance Under Load', () => {
-    it('should handle many examples efficiently', async () => {
-      // UX FOCUS: Realistic scenarios have 10-50 examples, not 1000
-      // This test verifies graceful handling of edge cases
-      const manyExamples = Array.from({ length: 1000 }, (_, i) => ({
-        description: `example ${i} with keywords`,
-        evaluation: 'test',
-        score: 7
-      }));
-      
-      const start = Date.now();
-      // selectFewShotExamples uses keyword matching as fallback for large arrays
-      const selected = await selectFewShotExamples('keywords test', manyExamples, {
-        maxExamples: 10
-      });
-      const duration = Date.now() - start;
-      
-      assert.ok(selected.length <= 10);
-      // With 1000 examples, system should gracefully fall back to keyword matching
-      // Keyword matching is fast (<1ms per example), but embedding attempts before fallback may take time
-      // Allow up to 60 seconds for embedding attempts and fallback processing
-      assert.ok(duration < 60000, `Should complete efficiently with fallback to keyword matching (took ${duration}ms)`);
-    });
-    
-    it('should handle realistic example sets efficiently', async () => {
-      // UX FOCUS: Most users have 10-50 examples, so this is the common case
-      const realisticExamples = Array.from({ length: 30 }, (_, i) => ({
-        description: `realistic example ${i} with semantic content`,
-        evaluation: `evaluation for example ${i}`,
-        score: 7 + (i % 3)
-      }));
-      
-      const start = Date.now();
-      const selected = await selectFewShotExamples('semantic test query', realisticExamples, {
-        maxExamples: 5
-      });
-      const duration = Date.now() - start;
-      
-      assert.ok(selected.length <= 5);
-      // Realistic scenarios (10-50 examples) can use embeddings for better accuracy
-      // Allow generous timeout for CI and slow machines with network variability
-      assert.ok(duration < 15000, `Should complete for realistic scenarios (took ${duration}ms)`);
-    });
-    
     it('should handle concurrent counter-balance calls', async () => {
       const fn = async () => ({ score: 7, reasoning: 'test' });
       
@@ -318,18 +190,5 @@ describe('Security & Edge Case Testing', () => {
       assert.deepStrictEqual(xCopy, originalX);
       assert.deepStrictEqual(yCopy, originalY);
     });
-    
-    it('should not mutate input examples in few-shot', () => {
-      const examples = [
-        { description: 'test1', evaluation: 'ok', score: 7 },
-        { description: 'test2', evaluation: 'ok', score: 8 }
-      ];
-      const original = JSON.parse(JSON.stringify(examples));
-      
-      selectFewShotExamples('test', examples);
-      
-      assert.deepStrictEqual(examples, original);
-    });
   });
 });
-

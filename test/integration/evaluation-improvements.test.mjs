@@ -3,14 +3,12 @@
  * 
  * These tests demonstrate that our improvements actually provide better results:
  * 1. Position counter-balancing reduces bias
- * 2. Dynamic few-shot examples improve relevance
- * 3. Spearman correlation provides better rank metrics
+ * 2. Spearman correlation provides better rank metrics
  */
 
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import { evaluateWithCounterBalance } from '../../src/position-counterbalance.mjs';
-import { selectFewShotExamples } from '../../src/dynamic-few-shot.mjs';
 import { spearmanCorrelation, calculateRankAgreement } from '../../src/metrics.mjs';
 
 describe('Improvement Validation', () => {
@@ -87,74 +85,6 @@ describe('Improvement Validation', () => {
     });
   });
   
-  describe('Dynamic Few-Shot Improves Relevance', () => {
-    it('should select more relevant examples for specific tasks', async () => {
-      const examples = [
-        { description: 'accessibility homepage contrast keyboard', evaluation: 'High contrast', score: 9 },
-        { description: 'navigation menu design layout', evaluation: 'Good navigation', score: 7 },
-        { description: 'cluttered interface layout spacing', evaluation: 'Cluttered', score: 6 },
-        { description: 'broken layout accessibility issues', evaluation: 'Broken', score: 3 },
-        { description: 'color scheme visual design', evaluation: 'Good colors', score: 8 }
-      ];
-      
-      // Test accessibility-focused prompt
-      const accessibilityPrompt = 'Evaluate accessibility and contrast of this webpage';
-      const selected = await selectFewShotExamples(accessibilityPrompt, examples, {
-        maxExamples: 3, // Increase to ensure we get relevant ones
-        useSemanticMatching: true,
-        similarityThreshold: 0.1 // Lower threshold for keyword matching
-      });
-      
-      // Should prefer accessibility-related examples (keyword matching)
-      const hasAccessibility = selected.some(ex => 
-        ex.description.includes('accessibility') || ex.description.includes('contrast') || ex.description.includes('keyboard')
-      );
-      assert.ok(hasAccessibility || selected.length > 0, 
-        `Should select examples (got ${selected.length}), preferably accessibility-related`);
-      
-      // Test design-focused prompt
-      const designPrompt = 'Evaluate visual design and layout';
-      const designSelected = await selectFewShotExamples(designPrompt, examples, {
-        maxExamples: 3,
-        useSemanticMatching: true,
-        similarityThreshold: 0.1
-      });
-      
-      // Should prefer design-related examples
-      const hasDesign = designSelected.some(ex =>
-        ex.description.includes('design') || ex.description.includes('layout') || ex.description.includes('color') || ex.description.includes('visual')
-      );
-      assert.ok(hasDesign || designSelected.length > 0, 
-        `Should select examples (got ${designSelected.length}), preferably design-related`);
-    });
-    
-    it('should outperform random selection', async () => {
-      const examples = Array.from({ length: 10 }, (_, i) => ({
-        description: `example ${i} ${i < 5 ? 'accessibility contrast keyboard' : 'design color visual'}`,
-        evaluation: 'Test',
-        score: 7
-      }));
-      
-      const prompt = 'Evaluate accessibility features and contrast';
-      const selected = await selectFewShotExamples(prompt, examples, {
-        maxExamples: 5, // More examples to see pattern
-        useSemanticMatching: true,
-        similarityThreshold: 0.05 // Very low threshold to ensure matches
-      });
-      
-      // With semantic matching, should prefer accessibility examples
-      const accessibilityCount = selected.filter(ex => 
-        ex.description.includes('accessibility')
-      ).length;
-      
-      // At minimum, should select some examples
-      assert.ok(selected.length > 0, 'Should select at least some examples');
-      // If semantic matching works, should prefer accessibility (but allow for keyword variations)
-      assert.ok(accessibilityCount >= 0, 
-        `Selected ${selected.length} examples, ${accessibilityCount} with accessibility keywords`);
-    });
-  });
-  
   describe('Spearman Correlation Better for Ordinal Data', () => {
     it('should handle non-linear relationships better than Pearson', () => {
       // Spearman works on ranks, so handles non-linear relationships
@@ -220,21 +150,10 @@ describe('Improvement Validation', () => {
       
       assert.strictEqual(counterBalanced.score, 7);
       
-      // 2. Dynamic few-shot
-      const examples = [
-        { description: 'accessibility test', evaluation: 'Good', score: 8 },
-        { description: 'design test', evaluation: 'OK', score: 6 }
-      ];
-      const selected = await selectFewShotExamples('Evaluate accessibility', examples);
-      assert.ok(selected.length > 0);
-      
-      // 3. Metrics
+      // 2. Metrics
       const correlation = spearmanCorrelation([1, 2, 3], [1, 2, 3]);
       assert.strictEqual(correlation, 1.0);
       
-      // All improvements work together
-      assert.ok(true, 'All improvements integrated successfully');
     });
   });
 });
-

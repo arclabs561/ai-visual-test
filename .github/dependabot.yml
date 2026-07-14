@@ -26,10 +26,11 @@ updates:
         update-types:
           - "minor"
           - "patch"
-    # Ignore peer dependencies (we control these)
+    # Ignore peer dependencies (we control these); update only on explicit request.
     ignore:
       - dependency-name: "@playwright/test"
-        # Only update on explicit request
+    cooldown:
+      default-days: 7
 
   # Enable version updates for GitHub Actions
   - package-ecosystem: "github-actions"
@@ -44,4 +45,5 @@ updates:
     commit-message:
       prefix: "ci"
       include: "scope"
-
+    cooldown:
+      default-days: 7

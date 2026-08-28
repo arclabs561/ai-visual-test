@@ -30,6 +30,7 @@ export interface ValidationResult {
   differences?: string[];
   scores?: { A: number; B: number };
   comparisonConfidence?: number;
+  captureMetadata?: Record<string, unknown> | null;
   [key: string]: unknown;
 }
 
@@ -86,7 +87,20 @@ export function validateScreenshot(
 export { validateScreenshot as _validateScreenshot };
 
 export function validatePage(page: unknown, prompt: string, options?: ValidationContext & {
-  fullPage?: boolean; captureCode?: boolean; tempDir?: string; keepScreenshot?: boolean;
+  fullPage?: boolean;
+  captureCode?: boolean;
+  tempDir?: string;
+  keepScreenshot?: boolean;
+  screenshot?: Record<string, unknown>;
+  stability?: {
+    enabled?: boolean;
+    maxAttempts?: number;
+    delayMs?: number;
+    requireStable?: boolean;
+    waitForNetworkIdle?: boolean;
+    networkIdleTimeoutMs?: number;
+    waitForFonts?: boolean;
+  };
 }): Promise<ValidationResult>;
 export function validateComparison(
   beforePath: string, afterPath: string, prompt: string, context?: ValidationContext,

@@ -18,6 +18,9 @@
 
 import { validatePage } from '../page-validation.mjs';
 import { ConfigError } from '../errors.mjs';
+import { captureStableScreenshot } from '../stable-capture.mjs';
+
+export { captureStableScreenshot } from '../stable-capture.mjs';
 
 /**
  * Create custom matchers for Playwright's expect
@@ -112,10 +115,14 @@ export function createMatchers(expect) {
       const tempDir = os.tmpdir();
       const screenshotPath = path.join(tempDir, `a11y-check-${Date.now()}.png`);
       
-      await page.screenshot({ path: screenshotPath });
-      
       let result;
       try {
+        await captureStableScreenshot(page, {
+          path: screenshotPath,
+          fullPage: options.fullPage ?? false,
+          screenshot: options.screenshot,
+          stability: options.stability,
+        });
         result = await validateAccessibilityHybrid(page, screenshotPath, minContrast, options);
       } finally {
         if (fs.existsSync(screenshotPath)) {
@@ -137,4 +144,3 @@ export function createMatchers(expect) {
     }
   });
 }
-

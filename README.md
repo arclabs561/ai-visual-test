@@ -70,8 +70,14 @@ import { validatePage } from '@arclabs561/ai-visual-test';
 const result = await validatePage(page, 'Check for visual bugs', {
   fullPage: true,
   captureCode: true,
+  screenshot: { mask: [page.getByTestId('clock')] },
 });
 ```
+
+Static page validation waits for fonts and a bounded network-idle window, disables
+animations by default, and captures until two consecutive frames match. Pass
+Playwright screenshot options through `screenshot`; tune or disable convergence
+through `stability`. Capture diagnostics are returned as `result.captureMetadata`.
 
 Or install matchers:
 

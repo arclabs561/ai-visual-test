@@ -862,6 +862,7 @@ export class VLLMJudge {
       timestamp: new Date().toISOString(),
       testName,
       viewport: context.viewport || null,
+      captureMetadata: context.captureMetadata || null,
       raw: data || null,
       semantic: semanticInfo,
       dimensionScores: semanticInfo.dimensionScores || null,

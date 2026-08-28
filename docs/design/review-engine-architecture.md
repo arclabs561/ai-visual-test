@@ -17,7 +17,7 @@ The immediate failures were contract failures rather than missing features: comp
 
 ## Context
 
-The package is currently native ESM JavaScript (`.mjs`) with a strict `checkJs` TypeScript configuration and hand-maintained `.d.ts` files. It publishes a root entry and multiple feature subpaths. Playwright, Vitest/Jest, the CLI, video, game, temporal review, ensembles, and perception all consume or extend parts of the review behavior.
+The package is currently native ESM JavaScript (`.mjs`) with a strict declaration check and hand-maintained `.d.ts` files. It publishes a root entry and multiple feature subpaths. Playwright, Vitest/Jest, the CLI, video, game, temporal review, ensembles, and perception all consume or extend parts of the review behavior.
 
 External evidence and the repository's own probes favor pairwise comparison over absolute scoring for regressions, strict structured output where a model supports it, explicit disagreement rather than hidden averaging, and deterministic canned provider fixtures in CI. They do not justify treating model confidence or ensemble weights as calibrated truth without screenshot-specific human labels.
 
@@ -51,7 +51,7 @@ Neither fits the primary consumers as well as TypeScript. Playwright, npm test r
 
 ## Chosen approach
 
-Use a contract-first architecture now and adopt TypeScript source as the target implementation through a staged migration, subject to a dedicated migration decision before conversion begins.
+Use a contract-first architecture now and adopt TypeScript source through the staged build and compatibility rules in [ADR 0001](../adr/0001-staged-typescript-source.md). Use private TypeBox review schemas under [ADR 0002](../adr/0002-typebox-review-contracts.md).
 
 The stable kernel is:
 
@@ -79,9 +79,9 @@ Policies remain separate. Pairwise comparison should eventually counterbalance i
 
 ## TypeScript target
 
-If the migration gate is accepted, source becomes `.ts` compiled as ESM with `module` and `moduleResolution` set to `NodeNext`, strict checking, declaration maps, source maps, `exactOptionalPropertyTypes`, and `noUncheckedIndexedAccess`. Package exports point only to built `dist/` runtime and declaration files. The build inherits one export manifest instead of maintaining a second hand-written map.
+Source becomes `.ts` incrementally and compiles as ESM with `module` and `moduleResolution` set to `NodeNext`, strict checking, declaration maps, source maps, `exactOptionalPropertyTypes`, and `noUncheckedIndexedAccess`. A mixed-source staging tree keeps migration commits runnable on Node 18. Package exports in the published artifact point only to files actually emitted into `dist`; a generated manifest replaces the current extension-blind copy.
 
-Runtime schemas should be the source of truth for both provider JSON Schema and static TypeScript types. The concrete schema library is intentionally undecided; TypeBox is the leading candidate because JSON Schema is native to its model, but adopting a new runtime dependency requires a focused decision and packed-package test.
+Private TypeBox 1.x schemas are the source of truth for provider JSON Schema, runtime validation, and static scalar/comparison types. Provider capability negotiation and the legacy scalar repair loop remain separate policies. TypeBox remains a production dependency and is verified from a clean packed install.
 
 ## Tradeoffs
 
@@ -109,9 +109,7 @@ Runtime schemas should be the source of truth for both provider JSON Schema and 
 
 ## Open questions
 
-- Which schema tool should own runtime validation and JSON Schema generation: TypeBox, another library, or a small local schema subset?
-- Should compiled output use `.js` under `type: module` or `.mjs` from `.mts` sources?
 - Which advanced surfaces remain supported public product features after consumer usage is measured?
 
 ---
-Decided: 2026-08-28 | Status: proposed pending TypeScript migration gate
+Decided: 2026-08-28 | Status: accepted by ADR 0001 and ADR 0002

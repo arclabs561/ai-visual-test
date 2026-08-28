@@ -19,10 +19,12 @@ and end-to-end suites; strict declaration compilation; the actual obfuscated
 publish build; package audit; packed-file inspection; and self-import smoke for
 all 15 runtime routes. A fresh diff review found one declaration-gate blocker,
 which was repaired with explicit subpath contracts and runtime/type export
-parity tests. Phase 0 is ready for maintainer review, but remains uncommitted
-and unreleased.
+parity tests. Phase 0 is committed locally and unreleased.
 
-No ADR ledger currently exists. The TypeScript target described in the architecture design is a proposed structural direction, not authorization for an immediate conversion.
+Phase 1 now has centralized stable static capture and order-counterbalanced
+comparison with explicit conflict semantics. The human-reviewed repeatability
+fixture set remains open. ADR 0001 and ADR 0002 accept the staged TypeScript
+and TypeBox boundary decisions, subject to their packed Node 18 gates.
 
 ## Dependency map
 
@@ -71,21 +73,25 @@ remain delivery steps, not implementation work.
 
 **Consumer:** package maintainers and downstream TypeScript users.
 
-This is a structural fork and requires a dedicated ADR before code conversion.
-
-Proposed ADR: **“Adopt staged TypeScript source and schema-derived review contracts.”**
+This structural fork is decided by
+[ADR 0001](../adr/0001-staged-typescript-source.md) and
+[ADR 0002](../adr/0002-typebox-review-contracts.md).
 
 - **Option A — staged TypeScript (recommended):** convert contracts and provider adapters first, compile ESM and declarations into `dist/`, then migrate policies and integrations module by module. Best balance of correctness and reversibility.
 - **Option B — remain `.mjs` + `checkJs`:** generate declarations from JSDoc and strengthen export tests. Lower tooling cost but retains more representational drift risk.
 - **Option C — immediate rewrite:** shortest nominal path, largest review and regression surface. Not recommended.
 
-The ADR must also choose the schema source of truth and emitted extension strategy. TypeBox is the current leading schema candidate, but that dependency is not yet settled.
+The accepted path uses `.ts` to emitted `.js` under `NodeNext`, a mixed-source
+staging tree, generated publish targets, and private TypeBox 1.x review schemas.
 
 **Reversibility:** partially reversible; published generated declarations create downstream expectations.
 
-**Gate:** accepted migration ADR, proof-of-concept conversion of the canonical contract/provider seam, packed consumer compilation, and a documented rollback to the last `.mjs` release.
+**Gate:** ADRs accepted. The remaining gate is a proof-of-concept conversion of
+the canonical contract/provider seam, packed consumer compilation, CLI execution
+on Node 18, and the documented rollback to the last `.mjs` release.
 
-**Guardrail: do not start Phase 3 until the TypeScript/schema fork is decided.**
+**Guardrail satisfied:** Phase 3 may begin, but no converted boundary may land
+without the compiled and clean-packed gates in ADR 0001.
 
 ## Phase 3: Convert contracts and provider adapters
 

@@ -116,6 +116,11 @@ are converted. Three typed protocol adapters now own request serialization,
 model-aware structured-output capabilities, response envelopes, HTTP error
 mapping, and usage extraction for all five supported provider names. Judge
 policy, retry/repair, cache, normalization, and public methods remain outside.
+An opt-in live Groq/Qwen screenshot review verified the complete capture-to-CLI
+path: model-aware JSON-object negotiation with reasoning disabled produced a
+canonical result without repair retries. Dogfooding also exposed and closed a
+public normalization leak where recommendation strings became rich objects;
+flat strings remain canonical and rich metadata is now additive.
 The remaining Phase 3 work is generated public result declarations and removal
 of forwarding compatibility methods after their consumers are migrated.
 

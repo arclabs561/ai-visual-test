@@ -49,13 +49,10 @@ export const MODEL_TIERS = {
     best: 'claude-opus-4-6'             // High quality (Opus 4.6, March 2026)
   },
   groq: {
-    // NOTE: Groq vision support requires different model
-    // For vision: meta-llama/llama-4-scout-17b-16e-instruct (preview, supports vision)
-    // For text-only: llama-3.3-70b-versatile is fastest (~0.22s latency)
-    fast: 'meta-llama/llama-4-scout-17b-16e-instruct',   // Vision-capable, fastest Groq option
-    balanced: 'meta-llama/llama-4-scout-17b-16e-instruct', // Vision-capable, balanced
-    best: 'meta-llama/llama-4-scout-17b-16e-instruct'   // Vision-capable, high quality (preview)
-    // WARNING: Groq vision models are preview-only. Text-only: use llama-3.3-70b-versatile
+    // Qwen 3.6 27B is Groq's current broadly available vision model.
+    fast: 'qwen/qwen3.6-27b',
+    balanced: 'qwen/qwen3.6-27b',
+    best: 'qwen/qwen3.6-27b'
   },
   openrouter: {
     // OpenRouter provides access to multiple models via unified API
@@ -102,14 +99,13 @@ export const PROVIDER_CONFIGS = {
   groq: {
     name: 'groq',
     apiUrl: 'https://api.groq.com/openai/v1', // OpenAI-compatible endpoint
-    model: 'meta-llama/llama-4-scout-17b-16e-instruct',   // Vision-capable (preview), ~0.22s latency
+    model: 'qwen/qwen3.6-27b',          // Vision-capable, up to 3 input images
     freeTier: true,                      // Free tier available
-    pricing: { input: 0.59, output: 0.79 }, // Actual 2025 pricing: $0.59/$0.79 per 1M tokens (real-time API)
+    pricing: { input: 0.60, output: 3.00 }, // Current Qwen 3.6 27B pricing per 1M tokens
     priority: 0,                         // Highest priority for high-frequency decisions
     latency: 220,                        // ~0.22s latency in ms (10x faster than typical)
     throughput: 200,                     // ~200 tokens/sec average
-    visionSupported: true               // llama-4-scout-17b-16e-instruct supports vision (preview)
-    // Text-only alternative: llama-3.3-70b-versatile (faster, no vision)
+    visionSupported: true
   },
   openrouter: {
     name: 'openrouter',

@@ -83,6 +83,36 @@ export function normalizeValidationResult(result, source = 'unknown') {
     });
   }
 
+  // Keep the public recommendations contract flat while retaining optional
+  // structured metadata for callers that need it.
+  if (!Array.isArray(normalized.recommendations)) {
+    normalized.recommendations = [];
+    normalized.richRecommendations = [];
+  } else {
+    const richSource = Array.isArray(normalized.richRecommendations)
+      && normalized.richRecommendations.length === normalized.recommendations.length
+      ? normalized.richRecommendations
+      : normalized.recommendations;
+    normalized.richRecommendations = richSource.map(recommendation => {
+      if (typeof recommendation === 'string') {
+        return { suggestion: recommendation };
+      }
+      return recommendation && typeof recommendation === 'object'
+        ? { ...recommendation }
+        : { suggestion: String(recommendation) };
+    });
+    normalized.recommendations = normalized.recommendations.map((recommendation, index) => {
+      if (typeof recommendation === 'string') return recommendation;
+      const richRecommendation = normalized.richRecommendations[index];
+      return String(
+        richRecommendation.suggestion
+          ?? richRecommendation.description
+          ?? richRecommendation.text
+          ?? JSON.stringify(richRecommendation)
+      );
+    });
+  }
+
   // Ensure reasoning is always present
   if (!normalized.reasoning) {
     normalized.reasoning = normalized.judgment || normalized.message || 'No reasoning provided';
@@ -95,4 +125,3 @@ export function normalizeValidationResult(result, source = 'unknown') {
 
   return normalized;
 }
-

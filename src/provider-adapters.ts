@@ -91,6 +91,9 @@ function schemaSpec(
   }
   if (provider === 'groq') {
     const strict = /^openai\/gpt-oss-/.test(model);
+    if (/^qwen\/qwen3\.6-/.test(model)) {
+      return { mode: 'json-object', schema, name, diagnostic: 'model_schema_support_unknown' };
+    }
     return {
       mode: 'json-schema', schema, name, strict,
       diagnostic: strict ? null : 'best_effort_json_schema',
@@ -207,6 +210,9 @@ function openAICompatibleAdapter(provider: 'openai' | 'groq' | 'openrouter'): Pr
         content.push({ type: 'image_url', image_url: { url: `data:${image.mime};base64,${image.data}` } });
       }
       const responseFormat = openAIResponseFormat(structuredOutput);
+      const maxOutputTokens = provider === 'groq' && /^qwen\/qwen3\.6-/.test(config.model)
+        ? 1024
+        : API_CONSTANTS.DEFAULT_MAX_OUTPUT_TOKENS;
       return fetch(`${config.apiUrl}/chat/completions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
@@ -214,13 +220,16 @@ function openAICompatibleAdapter(provider: 'openai' | 'groq' | 'openrouter'): Pr
         body: JSON.stringify({
           model: config.model,
           messages: [{ role: 'user', content }],
+          ...(provider === 'groq' && /^qwen\/qwen3\.6-/.test(config.model)
+            ? { reasoning_effort: 'none' }
+            : {}),
           ...(responseFormat ? { response_format: responseFormat } : {}),
           ...(config.model.includes('mini') || config.model.includes('gpt-5')
             ? {}
             : { temperature: API_CONSTANTS.DEFAULT_TEMPERATURE, top_p: API_CONSTANTS.DEFAULT_TOP_P }),
           ...(config.model.startsWith('gpt-4o') || config.model.startsWith('gpt-5')
-            ? { max_completion_tokens: API_CONSTANTS.DEFAULT_MAX_OUTPUT_TOKENS }
-            : { max_tokens: API_CONSTANTS.DEFAULT_MAX_OUTPUT_TOKENS }),
+            ? { max_completion_tokens: maxOutputTokens }
+            : { max_tokens: maxOutputTokens }),
         }),
       });
     },

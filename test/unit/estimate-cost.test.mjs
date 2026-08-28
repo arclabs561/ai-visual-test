@@ -98,10 +98,10 @@ describe('estimateCost', () => {
   });
 
   test('groq estimate uses groq pricing', () => {
-    // Groq: input $0.59/1M, output $0.79/1M
+    // Groq Qwen 3.6 27B: input $0.60/1M, output $3.00/1M
     const result = estimateCost('groq');
-    const expectedInput = (1550 / 1_000_000) * 0.59;
-    const expectedOutput = (500 / 1_000_000) * 0.79;
+    const expectedInput = (1550 / 1_000_000) * 0.60;
+    const expectedOutput = (500 / 1_000_000) * 3.00;
     const expected = (expectedInput + expectedOutput).toFixed(6);
     assert.strictEqual(result.estimatedCost, expected);
   });

@@ -12,6 +12,7 @@ test('provider capability negotiation is model-aware and explicit', () => {
     ['openai', 'gpt-4o', 'json-schema', null, true],
     ['openai', 'custom/vision', 'json-object', 'model_schema_support_unknown', undefined],
     ['groq', 'openai/gpt-oss-20b', 'json-schema', null, true],
+    ['groq', 'qwen/qwen3.6-27b', 'json-object', 'model_schema_support_unknown', undefined],
     ['groq', 'meta-llama/vision', 'json-schema', 'best_effort_json_schema', false],
     ['openrouter', 'google/gemini-2.5-flash', 'json-object', 'model_schema_support_unknown', undefined],
     ['claude', 'claude-sonnet-4', 'prompt-only', 'native_schema_unavailable', undefined],
@@ -102,6 +103,23 @@ test('provider envelopes and usage normalize through one contract', async () => 
     assert.equal(parsed.judgment, judgment, provider);
     assert.deepEqual(adapter.extractUsage(parsed.data), usage, provider);
   }
+});
+
+test('Groq Qwen request leaves room for image and prompt tokens', async t => {
+  const originalFetch = globalThis.fetch;
+  t.after(() => { globalThis.fetch = originalFetch; });
+  let body;
+  globalThis.fetch = async (_url, init) => {
+    body = JSON.parse(init.body);
+    return new Response('{}', { headers: { 'content-type': 'application/json' } });
+  };
+  await getProviderAdapter('groq').call({
+    images: [{ data: 'image', mime: 'image/png' }],
+    prompt: 'review', signal: new AbortController().signal, apiKey: 'test-key',
+    config: { apiUrl: 'https://provider.invalid/v1', model: 'qwen/qwen3.6-27b' },
+  });
+  assert.equal(body.max_tokens, 1024);
+  assert.equal(body.reasoning_effort, 'none');
 });
 
 test('provider envelope failures retain status and retry semantics', async () => {

@@ -568,14 +568,8 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
       }
       
       // Normalize recommendations: handle both array of strings and array of objects
-      let recommendations = judgment.recommendations || [];
-      if (recommendations.length > 0 && typeof recommendations[0] === 'string') {
-        recommendations = recommendations.map(suggestion => ({
-          priority: 'medium',
-          suggestion,
-          expectedImpact: 'improved user experience'
-        }));
-      }
+      const richRecommendations = this._normalizeRichRecommendations(judgment.recommendations);
+      const recommendations = richRecommendations.map(recommendation => recommendation.suggestion);
       
       return {
         score: _clampScore(judgment.score),
@@ -584,6 +578,7 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
         reasoning: judgment.reasoning || null,
         strengths: judgment.strengths || [],
         recommendations: recommendations,
+        richRecommendations,
         evidence: judgment.evidence || null,
         dimensionScores: judgment.dimensionScores || null,
         brutalistViolations: judgment.brutalistViolations || [],
@@ -609,14 +604,8 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
           }));
         }
 
-        let recommendations = parsed.recommendations || [];
-        if (recommendations.length > 0 && typeof recommendations[0] === 'string') {
-          recommendations = recommendations.map(suggestion => ({
-            priority: 'medium',
-            suggestion,
-            expectedImpact: 'improved user experience'
-          }));
-        }
+        const richRecommendations = this._normalizeRichRecommendations(parsed.recommendations);
+        const recommendations = richRecommendations.map(recommendation => recommendation.suggestion);
 
         return {
           score: _clampScore(parsed.score),
@@ -625,6 +614,7 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
           reasoning: parsed.reasoning || null,
           strengths: parsed.strengths || [],
           recommendations: recommendations,
+          richRecommendations,
           evidence: parsed.evidence || null,
           dimensionScores: parsed.dimensionScores || null,
           brutalistViolations: parsed.brutalistViolations || [],
@@ -646,6 +636,35 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
       reasoning: judgmentText.substring(0, 500),
       dimensionScores: this.extractDimensionScores(judgmentText),
     };
+  }
+
+  _normalizeRichRecommendations(recommendations) {
+    if (!Array.isArray(recommendations)) return [];
+    return recommendations.map(recommendation => {
+      if (typeof recommendation === 'string') {
+        return {
+          priority: 'medium',
+          suggestion: recommendation,
+          expectedImpact: 'improved user experience'
+        };
+      }
+      if (recommendation && typeof recommendation === 'object') {
+        return {
+          ...recommendation,
+          suggestion: String(
+            recommendation.suggestion
+              ?? recommendation.description
+              ?? recommendation.text
+              ?? JSON.stringify(recommendation)
+          )
+        };
+      }
+      return {
+        priority: 'medium',
+        suggestion: String(recommendation),
+        expectedImpact: 'improved user experience'
+      };
+    });
   }
 
   /**
@@ -872,6 +891,7 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
       assessment: semanticInfo.assessment,
       reasoning: semanticInfo.reasoning,
       recommendations: semanticInfo.recommendations || [],
+      richRecommendations: semanticInfo.richRecommendations || [],
       strengths: semanticInfo.strengths || [],
       pricing: this.providerConfig.pricing,
       estimatedCost,

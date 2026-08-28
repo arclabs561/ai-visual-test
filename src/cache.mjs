@@ -123,9 +123,15 @@ export function generateCacheKey(imagePath, prompt, context = {}) {
 
   // Build key data with deterministic structure
   const keyData = {
+    version: 2,
     type: 'vision', // Distinguish from text-only calls
     imageDigest, // SHA-256 of image bytes (content-addressed)
     prompt, // Full prompt, not truncated
+    provider: context.provider || '',
+    model: context.model || '',
+    reviewMode: context.reviewMode || '',
+    structuredOutputMode: context.structuredOutputMode || '',
+    anchorDigest: context.anchorDigest || '',
     testType: context.testType || '',
     frame: context.frame || '',
     score: context.score || '',
@@ -654,4 +660,3 @@ export function getCacheStats() {
   
   return stats;
 }
-

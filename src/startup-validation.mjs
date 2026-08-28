@@ -17,7 +17,8 @@ const REQUIRED_ENV_VARS = {
   openai: ['OPENAI_API_KEY'],
   anthropic: ['ANTHROPIC_API_KEY'],
   claude: ['ANTHROPIC_API_KEY'], // Claude uses Anthropic API key
-  groq: ['GROQ_API_KEY']
+  groq: ['GROQ_API_KEY'],
+  openrouter: ['OPENROUTER_API_KEY']
 };
 
 /**
@@ -39,11 +40,11 @@ export function validateStartup(options = {}) {
       if (strict) {
         throw new ConfigError(
           'No provider configured. Set VLM_PROVIDER environment variable or provide provider in config. ' +
-          'Supported providers: gemini, openai, claude, groq. ' +
-          'At least one API key must be set: GEMINI_API_KEY, OPENAI_API_KEY, ANTHROPIC_API_KEY, or GROQ_API_KEY.',
+          'Supported providers: gemini, openai, claude, groq, openrouter. ' +
+          'At least one API key must be set: GEMINI_API_KEY, OPENAI_API_KEY, ANTHROPIC_API_KEY, GROQ_API_KEY, or OPENROUTER_API_KEY.',
           {
-            supportedProviders: ['gemini', 'openai', 'claude', 'groq'],
-            requiredEnvVars: ['GEMINI_API_KEY', 'OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'GROQ_API_KEY']
+            supportedProviders: ['gemini', 'openai', 'claude', 'groq', 'openrouter'],
+            requiredEnvVars: ['GEMINI_API_KEY', 'OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'GROQ_API_KEY', 'OPENROUTER_API_KEY']
           }
         );
       } else {
@@ -53,7 +54,7 @@ export function validateStartup(options = {}) {
     }
     
     // Check if provider is valid
-    const validProviders = ['gemini', 'openai', 'claude', 'anthropic', 'groq'];
+    const validProviders = ['gemini', 'openai', 'claude', 'anthropic', 'groq', 'openrouter'];
     if (!validProviders.includes(providerToCheck.toLowerCase())) {
       if (strict) {
         throw new ConfigError(
@@ -123,5 +124,4 @@ export function validateStartup(options = {}) {
 export function validateStartupSoft(options = {}) {
   return validateStartup({ ...options, strict: false });
 }
-
 

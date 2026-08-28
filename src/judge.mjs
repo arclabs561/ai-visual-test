@@ -17,6 +17,7 @@ import { readFileSync, existsSync } from 'fs';
 import { dirname, basename, resolve } from 'path';
 import { createConfig, getConfig } from './config.mjs';
 import { getCached, setCached } from './cache.mjs';
+import { createHash } from 'crypto';
 import { FileError, ProviderError, TimeoutError, ValidationError } from './errors.mjs';
 import { log, warn } from './logger.mjs';
 import { evaluateTemporalDecision } from './temporal-prompt-formatting.mjs';
@@ -26,9 +27,11 @@ import { validateImagePath, validatePrompt } from './validation.mjs';
 import { sanitizePrompt, validatePromptSecurity } from './utils/prompt-sanitizer.mjs';
 import { getRateLimiter } from './utils/rate-limiter.mjs';
 import { RETRY_CONSTANTS, API_CONSTANTS } from './constants.mjs';
-import { retryWithBackoff, enhanceErrorMessage } from './retry.mjs';
+import { retryWithBackoff, enhanceErrorMessage, isRetryableError } from './retry.mjs';
 import { safeLogCacheOperation } from './safe-logger.mjs';
 import { composeSingleImagePrompt, composeComparisonPrompt } from './prompt-composer.mjs';
+import { buildRepairInstruction, parseReviewOutcome } from './review-contract.mjs';
+import { openAIResponseFormat, resolveStructuredOutput } from './structured-output.mjs';
 
 /** Clamp a score to [0, 10] or null. */
 function _clampScore(raw) {
@@ -249,6 +252,7 @@ export class VLLMJudge {
       return normalizeValidationResult({
         enabled: false,
         provider: this.provider,
+        model: this.providerConfig.model,
         message: `API validation disabled (set ${this.provider.toUpperCase()}_API_KEY or API_KEY)`,
         pricing: this.providerConfig.pricing,
         score: null,
@@ -268,17 +272,7 @@ export class VLLMJudge {
     // Initialize cache if needed
     await this._initCache();
     
-    // Check cache first (if caching enabled)
     const useCache = context.useCache !== false && this.config.cache.enabled;
-    if (useCache) {
-      // Use original paths for cache key (before validation/resolution)
-      const cacheKey = isMultiImage ? imagePaths.join('|') : imagePath;
-      const cached = getCached(cacheKey, prompt, context);
-      this._logCacheResult(cached ? 'hit' : 'miss', context, cacheKey);
-      if (cached) {
-        return { ...cached, cached: true };
-      }
-    }
 
     const startTime = Date.now();
     const timeout = context.timeout || this.config.performance.timeout;
@@ -314,29 +308,81 @@ export class VLLMJudge {
       const anchorImages = this._resolveAnchorImages(context);
       const targetImages = imagePaths.map(path => this.imageToBase64(path));
       const base64Images = [...anchorImages.images, ...targetImages];
-      const fullPrompt = await this.buildPrompt(prompt, {
+      const composedPrompt = await this.buildPrompt(prompt, {
         ...context,
         _anchorImageCount: anchorImages.count
       }, isMultiImage);
+
+      const reviewMode = isMultiImage || context.reviewMode === 'comparison' ? 'comparison' : 'scalar';
+      const structuredOutput = resolveStructuredOutput({
+        provider: this.provider,
+        model: this.providerConfig.model,
+        reviewMode,
+        enabled: context.structuredOutput !== false
+      });
+      const fullPrompt = `${composedPrompt}\n\nOUTPUT CONTRACT\nReturn only JSON matching this schema:\n${JSON.stringify(structuredOutput.schema)}`;
+      const anchorDigest = createHash('sha256').update(anchorImages.images.join(':')).digest('hex');
+      const cacheContext = {
+        ...context,
+        provider: this.provider,
+        model: this.providerConfig.model,
+        reviewMode,
+        structuredOutputMode: structuredOutput.mode,
+        anchorDigest
+      };
+      const cacheKey = isMultiImage ? imagePaths.join('|') : imagePaths[0];
+
+      if (useCache) {
+        const cached = getCached(cacheKey, fullPrompt, cacheContext);
+        this._logCacheResult(cached ? 'hit' : 'miss', context, cacheKey);
+        if (cached) {
+          return normalizeValidationResult({ ...cached, cached: true }, 'judgeScreenshot-cache');
+        }
+      }
+
+      let effectivePrompt = fullPrompt;
       
       // Retry API calls with exponential backoff
       const maxRetries = context.maxRetries ?? 3;
       const apiResult = await retryWithBackoff(async () => {
         attempts++;
-        const apiResponse = await this._callProviderAPI(base64Images, fullPrompt, abortController.signal, isMultiImage);
-        clearTimeout(timeoutId);
-        return this._parseProviderResponse(apiResponse);
+        const apiResponse = await this._callProviderAPI(
+          base64Images,
+          effectivePrompt,
+          abortController.signal,
+          isMultiImage,
+          structuredOutput
+        );
+        const parsedResponse = await this._parseProviderResponse(apiResponse);
+        try {
+          const parsedReview = parseReviewOutcome(parsedResponse.judgment, {
+            mode: reviewMode,
+            allowLegacy: context.legacyOutputFallback !== false
+          });
+          return { ...parsedResponse, ...parsedReview };
+        } catch (contractError) {
+          const diagnostics = contractError.diagnostics || ['invalid_output'];
+          effectivePrompt = `${fullPrompt}\n\n${buildRepairInstruction(diagnostics, reviewMode)}`;
+          throw new ProviderError(
+            `${this.provider} returned an invalid ${reviewMode} review`,
+            this.provider,
+            { retryable: true, diagnostics, failureKind: 'output_contract' }
+          );
+        }
       }, {
         maxRetries,
-        baseDelay: RETRY_CONSTANTS.DEFAULT_BASE_DELAY_MS,
-        maxDelay: RETRY_CONSTANTS.DEFAULT_MAX_DELAY_MS,
+        baseDelay: context.retryBaseDelay ?? RETRY_CONSTANTS.DEFAULT_BASE_DELAY_MS,
+        maxDelay: context.retryMaxDelay ?? RETRY_CONSTANTS.DEFAULT_MAX_DELAY_MS,
         onRetry: (err, attempt, delay) => {
           this._logPerf({ error: err, context: `API retry (${this.provider})`, recovery: 'exponential_backoff', retryCount: attempt }, 'logErrorPattern');
           if (this.config.debug.verbose) {
             warn(`[VLLM] Retry ${attempt}/${maxRetries} for ${this.provider} API: ${err.message} (waiting ${delay}ms)`);
           }
-        }
+        },
+        retryable: err => err?.details?.retryable === true || isRetryableError(err)
       });
+
+      clearTimeout(timeoutId);
 
       judgment = apiResult.judgment;
       data = apiResult.data;
@@ -344,15 +390,21 @@ export class VLLMJudge {
       const responseTime = Date.now() - startTime;
 
       const validationResult = await this._buildResult(
-        { judgment, data, logprobs, attempts, responseTime, imagePath, context }
+        {
+          judgment, data, logprobs, attempts, responseTime, imagePath, context,
+          reviewOutcome: apiResult.outcome,
+          outputFormat: apiResult.format,
+          structuredOutput
+        }
       );
 
+      const normalizedResult = normalizeValidationResult(validationResult, 'judgeScreenshot');
+
       if (useCache) {
-        const cacheKey = isMultiImage ? imagePaths.join('|') : imagePath;
-        setCached(cacheKey, prompt, context, validationResult);
+        setCached(cacheKey, fullPrompt, cacheContext, normalizedResult);
       }
 
-      return normalizeValidationResult(validationResult, 'judgeScreenshot');
+      return normalizedResult;
     } catch (err) {
       clearTimeout(timeoutId);
       error = err;
@@ -733,8 +785,18 @@ export class VLLMJudge {
    * Build the validation result from API response data.
    * Handles semantic extraction, uncertainty, and cost recording.
    */
-  async _buildResult({ judgment, data, logprobs, attempts, responseTime, imagePath, context }) {
-    const semanticInfo = this.extractSemanticInfo(judgment);
+  async _buildResult({ judgment, data, logprobs, attempts, responseTime, imagePath, context, reviewOutcome = null, outputFormat = null, structuredOutput = null }) {
+    const isComparison = reviewOutcome?.kind === 'comparison';
+    const semanticInfo = isComparison
+      ? this.extractSemanticInfo({
+          score: reviewOutcome.scores.B,
+          issues: reviewOutcome.differences,
+          assessment: reviewOutcome.winner,
+          reasoning: reviewOutcome.reasoning,
+          recommendations: [],
+          strengths: []
+        })
+      : this.extractSemanticInfo(reviewOutcome || judgment);
     const testName = context.testType || context.step || 'unknown';
 
     // Uncertainty reduction (optional, lazy-loaded)
@@ -784,7 +846,9 @@ export class VLLMJudge {
 
     return {
       enabled: true,
+      kind: reviewOutcome?.kind || 'scalar',
       provider: this.provider,
+      model: this.providerConfig.model,
       judgment,
       score: semanticInfo.score,
       issues: semanticInfo.issues,
@@ -808,7 +872,18 @@ export class VLLMJudge {
       screenshotPath: imagePath,
       selfConsistencyRecommended,
       selfConsistencyN,
-      selfConsistencyReason
+      selfConsistencyReason,
+      outputFormat,
+      structuredOutput: structuredOutput ? {
+        mode: structuredOutput.mode,
+        diagnostic: structuredOutput.diagnostic
+      } : null,
+      ...(isComparison ? {
+        winner: reviewOutcome.winner,
+        differences: reviewOutcome.differences,
+        scores: reviewOutcome.scores,
+        comparisonConfidence: reviewOutcome.confidence
+      } : {})
     };
   }
 
@@ -893,14 +968,14 @@ export class VLLMJudge {
   /**
    * Route to the correct provider API method.
    */
-  async _callProviderAPI(base64Images, prompt, signal, isMultiImage) {
+  async _callProviderAPI(base64Images, prompt, signal, isMultiImage, structuredOutput = null) {
     switch (this.provider) {
       case 'gemini':
-        return this.callGeminiAPI(base64Images, prompt, signal, isMultiImage);
+        return this.callGeminiAPI(base64Images, prompt, signal, isMultiImage, structuredOutput);
       case 'openai':
       case 'groq':
       case 'openrouter':
-        return this.callOpenAIAPI(base64Images, prompt, signal, isMultiImage);
+        return this.callOpenAIAPI(base64Images, prompt, signal, isMultiImage, structuredOutput);
       case 'claude':
         return this.callClaudeAPI(base64Images, prompt, signal, isMultiImage);
       default:
@@ -926,33 +1001,40 @@ export class VLLMJudge {
     }
 
     return apiResponse.json().then(apiData => {
-      if (apiData.error) {
+      if (!apiResponse.ok || apiData.error) {
         const statusCode = apiResponse.status;
         throw new ProviderError(
-          `${this.provider} API error: ${apiData.error.message || 'Unknown error'}`,
+          `${this.provider} API error: ${apiData.error?.message || apiData.detail || `HTTP ${statusCode}`}`,
           this.provider,
-          { apiError: apiData.error, statusCode, retryable: statusCode === 429 || statusCode >= 500 }
+          { apiError: apiData.error || null, statusCode, retryable: statusCode === 429 || statusCode >= 500 }
         );
       }
 
       // Extract judgment text and logprobs per provider response format
       if (this.provider === 'gemini') {
+        const parts = apiData.candidates?.[0]?.content?.parts || [];
+        const judgment = parts.filter(part => typeof part.text === 'string').map(part => part.text).join('\n');
         return {
-          judgment: apiData.candidates?.[0]?.content?.parts?.[0]?.text || 'No response',
+          judgment,
           data: apiData,
-          logprobs: apiData.candidates?.[0]?.content?.parts?.[0]?.logprobs || null
+          logprobs: parts.find(part => part.logprobs)?.logprobs || null
         };
       }
       if (this.provider === 'claude') {
+        const judgment = (apiData.content || [])
+          .filter(block => block.type === 'text' && typeof block.text === 'string')
+          .map(block => block.text)
+          .join('\n');
         return {
-          judgment: apiData.content?.[0]?.text || 'No response',
+          judgment,
           data: apiData,
           logprobs: null
         };
       }
       // OpenAI, Groq, OpenRouter (all OpenAI-compatible)
+      const content = apiData.choices?.[0]?.message?.content;
       return {
-        judgment: apiData.choices?.[0]?.message?.content || 'No response',
+        judgment: typeof content === 'string' ? content : '',
         data: apiData,
         logprobs: apiData.choices?.[0]?.logprobs || null
       };
@@ -968,7 +1050,7 @@ export class VLLMJudge {
    * @param {boolean} [isMultiImage=false] - Whether this is a multi-image request
    * @returns {Promise<Response>} API response
    */
-  async callGeminiAPI(base64Images, prompt, signal, isMultiImage = false) {
+  async callGeminiAPI(base64Images, prompt, signal, isMultiImage = false, structuredOutput = null) {
     const images = Array.isArray(base64Images) ? base64Images : [base64Images];
     
     // Build parts array: text prompt + all images
@@ -999,7 +1081,8 @@ export class VLLMJudge {
             temperature: API_CONSTANTS.DEFAULT_TEMPERATURE,
             maxOutputTokens: API_CONSTANTS.DEFAULT_MAX_OUTPUT_TOKENS,
             topP: API_CONSTANTS.DEFAULT_TOP_P,
-            topK: 40
+            topK: 40,
+            ...(structuredOutput?.generationConfig || {})
           }
         })
       }
@@ -1015,7 +1098,7 @@ export class VLLMJudge {
    * @param {boolean} [isMultiImage=false] - Whether this is a multi-image request
    * @returns {Promise<Response>} API response
    */
-  async callOpenAIAPI(base64Images, prompt, signal, isMultiImage = false) {
+  async callOpenAIAPI(base64Images, prompt, signal, isMultiImage = false, structuredOutput = null) {
     const images = Array.isArray(base64Images) ? base64Images : [base64Images];
     
     // Build content array: text prompt + all images
@@ -1027,6 +1110,7 @@ export class VLLMJudge {
       });
     }
     
+    const responseFormat = structuredOutput ? openAIResponseFormat(structuredOutput) : null;
     return fetch(`${this.providerConfig.apiUrl}/chat/completions`, {
       method: 'POST',
       headers: {
@@ -1040,6 +1124,7 @@ export class VLLMJudge {
           role: 'user',
           content
         }],
+        ...(responseFormat ? { response_format: responseFormat } : {}),
         // Some OpenAI models have limited parameter support
         // Models that only support default temperature (1): gpt-4o-mini, gpt-5
         // Models that support custom temperature: gpt-4o, gpt-4-turbo, etc.
@@ -1215,7 +1300,7 @@ export async function validateScreenshot(imagePath, prompt, context = {}) {
       const providers = context.ensembleProviders || ['gemini', 'openai'];
       const ensemble = createEnsembleJudge(providers, context.ensembleOptions || {});
       const startTime = Date.now();
-      const result = await ensemble.judge(imagePath, prompt, context);
+      const result = await ensemble.evaluate(imagePath, prompt, context);
       const latency = Date.now() - startTime;
       
       return result;

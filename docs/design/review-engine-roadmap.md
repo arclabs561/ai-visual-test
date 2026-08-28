@@ -111,9 +111,13 @@ converted boundary may land without the compiled and clean-packed gates in ADR
 
 **Reversibility:** module-by-module until a release is published.
 
-**Status:** the canonical scalar/comparison contract is converted. Provider
-request serialization, response envelopes, capabilities, and error mapping
-remain the next bounded slice.
+**Status:** the canonical scalar/comparison contract and provider wire boundary
+are converted. Three typed protocol adapters now own request serialization,
+model-aware structured-output capabilities, response envelopes, HTTP error
+mapping, and usage extraction for all five supported provider names. Judge
+policy, retry/repair, cache, normalization, and public methods remain outside.
+The remaining Phase 3 work is generated public result declarations and removal
+of forwarding compatibility methods after their consumers are migrated.
 
 **Gate:** every supported provider passes canned capability/envelope matrices, including arbitrary model override fallback; no provider switch remains above the adapter boundary.
 

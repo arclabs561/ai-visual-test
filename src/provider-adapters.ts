@@ -7,7 +7,7 @@ export type StructuredOutputMode = 'json-schema' | 'json-object' | 'prompt-only'
 
 export interface StructuredOutputSpec {
   mode: StructuredOutputMode;
-  schema: Record<string, unknown>;
+  schema: object;
   name: string;
   strict?: boolean;
   diagnostic: string | null;
@@ -50,7 +50,7 @@ export interface ProviderAdapter {
     model: string;
     reviewMode: ReviewMode;
     enabled: boolean;
-    schema: Record<string, unknown>;
+    schema: object;
   }): StructuredOutputSpec;
   call(input: ProviderCall): Promise<Response>;
   parseResponse(response: Response): Promise<ParsedProviderResponse>;
@@ -75,7 +75,7 @@ function schemaSpec(
     model: string;
     reviewMode: ReviewMode;
     enabled: boolean;
-    schema: Record<string, unknown>;
+    schema: object;
   },
 ): StructuredOutputSpec {
   const name = reviewMode === 'comparison' ? 'visual_comparison' : 'visual_review';
@@ -313,7 +313,7 @@ export function resolveProviderStructuredOutput(input: {
   model: string;
   reviewMode: ReviewMode;
   enabled: boolean;
-  schema: Record<string, unknown>;
+  schema: object;
 }): StructuredOutputSpec {
   return getProviderAdapter(input.provider).resolveStructuredOutput(input);
 }

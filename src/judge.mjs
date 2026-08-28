@@ -32,7 +32,7 @@ import { safeLogCacheOperation } from './safe-logger.mjs';
 import { composeSingleImagePrompt, composeComparisonPrompt } from './prompt-composer.mjs';
 import { buildRepairInstruction, parseReviewOutcome } from '#review-contract';
 import { getProviderAdapter } from '#provider-adapters';
-import { resolveStructuredOutput } from './structured-output.mjs';
+import { resolveStructuredOutput } from '#structured-output';
 
 /** Clamp a score to [0, 10] or null. */
 function _clampScore(raw) {

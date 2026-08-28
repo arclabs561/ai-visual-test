@@ -76,7 +76,7 @@ const result = await validatePage(page, 'Check for visual bugs', {
 Or install matchers:
 
 ```javascript
-import { expect } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import { createMatchers } from '@arclabs561/ai-visual-test/playwright';
 
 createMatchers(expect);
@@ -93,7 +93,7 @@ test('checkout page passes visual check', async ({ page }) => {
 ## Vitest and Jest
 
 ```javascript
-import { expect } from 'vitest';
+import { test, expect } from 'vitest';
 import { createMatchers } from '@arclabs561/ai-visual-test/vitest';
 
 createMatchers(expect);
@@ -116,7 +116,28 @@ const result = await validateComparison(
   'after.png',
   'The redesign preserves layout and fixes contrast'
 );
+
+console.log(result.winner);               // A, B, tie, or indeterminate
+console.log(result.scores);               // { A: 0-10, B: 0-10 }
+console.log(result.differences);           // observed visual differences
+console.log(result.comparisonConfidence); // 0-1
 ```
+
+For compatibility with score-based matchers, `result.score` is the candidate
+(`B`) score. Use `winner` for the pairwise verdict.
+
+## Structured Output
+
+The judge negotiates the strongest output contract supported by the selected
+provider and model: native JSON schema where known, JSON-object mode where
+schema support is uncertain, and prompt-only JSON otherwise. Every response is
+validated against one canonical result shape. Malformed output receives a
+bounded retry containing validation diagnostics; legacy sectioned text remains
+available as a scalar-review fallback.
+
+Inspect `result.outputFormat` (`structured` or `legacy-text`) and
+`result.structuredOutput` to diagnose which mode was used. Pairwise comparison
+requires an unambiguous structured result.
 
 ## CLI
 
@@ -145,7 +166,7 @@ const estimate = estimateCost('gemini', { imageCount: 2, promptLength: 200 });
 console.log(estimate.estimatedCost);
 ```
 
-## Subpath Modules
+## Selected Subpath Modules
 
 | Import | Purpose |
 | --- | --- |
@@ -167,6 +188,8 @@ The perception sampler is documented in [`docs/judge-graph.md`](docs/judge-graph
 - Calls require a provider API key and network access.
 - Model defaults can change; pin `provider` and `model` for reproducible tests.
 - Multi-image support differs by provider.
+- Native structured-output support varies by provider and model; unknown model
+  overrides use a compatible weaker mode and report that choice in the result.
 - The game agent requires Playwright and is intended for simple browser games.
 
 ## License

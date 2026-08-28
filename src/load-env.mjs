@@ -73,6 +73,10 @@ function validateRequireAuth(value) {
  * @returns {boolean} True if .env file was found and loaded
  */
 export function loadEnv(basePath = null) {
+  if (process.env.AI_VISUAL_TEST_DISABLE_ENV_FILE === '1') {
+    return false;
+  }
+
   // Try multiple locations for .env file
   const possiblePaths = basePath 
     ? [

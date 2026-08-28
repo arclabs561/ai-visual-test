@@ -9,22 +9,70 @@
     "ai-visual-test": "./bin/ai-visual-test.mjs"
   },
   "exports": {
-    ".": { "types": "./index.d.ts", "import": "./src/index.mjs" },
-    "./validators": { "types": "./types/validators.d.ts", "import": "./src/validators/index.mjs" },
-    "./temporal": { "types": "./types/temporal.d.ts", "import": "./src/temporal/index.mjs" },
-    "./multi-modal": { "types": "./types/multi-modal.d.ts", "import": "./src/multi-modal/index.mjs" },
-    "./ensemble": { "types": "./types/ensemble.d.ts", "import": "./src/ensemble/index.mjs" },
-    "./video": { "types": "./types/video.d.ts", "import": "./src/video.mjs" },
-    "./extractors": { "types": "./types/extractors.d.ts", "import": "./src/extractors.mjs" },
-    "./persona": { "types": "./types/persona.d.ts", "import": "./src/persona/index.mjs" },
-    "./utils": { "types": "./types/utils.d.ts", "import": "./src/utils/index.mjs" },
-    "./game": { "types": "./types/game.d.ts", "import": "./src/game/index.mjs" },
-    "./errors": { "types": "./types/errors.d.ts", "import": "./src/errors/index.mjs" },
-    "./playwright": { "types": "./types/playwright.d.ts", "import": "./src/integrations/playwright.mjs" },
-    "./vitest": { "types": "./types/vitest-jest.d.ts", "import": "./src/integrations/vitest-jest.mjs" },
-    "./jest": { "types": "./types/vitest-jest.d.ts", "import": "./src/integrations/vitest-jest.mjs" },
-    "./perception": { "types": "./types/perception.d.ts", "import": "./src/perception/index.mjs" },
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./src/index.mjs"
+    },
+    "./validators": {
+      "types": "./types/validators.d.ts",
+      "import": "./src/validators/index.mjs"
+    },
+    "./temporal": {
+      "types": "./types/temporal.d.ts",
+      "import": "./src/temporal/index.mjs"
+    },
+    "./multi-modal": {
+      "types": "./types/multi-modal.d.ts",
+      "import": "./src/multi-modal/index.mjs"
+    },
+    "./ensemble": {
+      "types": "./types/ensemble.d.ts",
+      "import": "./src/ensemble/index.mjs"
+    },
+    "./video": {
+      "types": "./types/video.d.ts",
+      "import": "./src/video.mjs"
+    },
+    "./extractors": {
+      "types": "./types/extractors.d.ts",
+      "import": "./src/extractors.mjs"
+    },
+    "./persona": {
+      "types": "./types/persona.d.ts",
+      "import": "./src/persona/index.mjs"
+    },
+    "./utils": {
+      "types": "./types/utils.d.ts",
+      "import": "./src/utils/index.mjs"
+    },
+    "./game": {
+      "types": "./types/game.d.ts",
+      "import": "./src/game/index.mjs"
+    },
+    "./errors": {
+      "types": "./types/errors.d.ts",
+      "import": "./src/errors/index.mjs"
+    },
+    "./playwright": {
+      "types": "./types/playwright.d.ts",
+      "import": "./src/integrations/playwright.mjs"
+    },
+    "./vitest": {
+      "types": "./types/vitest-jest.d.ts",
+      "import": "./src/integrations/vitest-jest.mjs"
+    },
+    "./jest": {
+      "types": "./types/vitest-jest.d.ts",
+      "import": "./src/integrations/vitest-jest.mjs"
+    },
+    "./perception": {
+      "types": "./types/perception.d.ts",
+      "import": "./src/perception/index.mjs"
+    },
     "./package.json": "./package.json"
+  },
+  "imports": {
+    "#review-contract": "./build/src/review-contract.js"
   },
   "files": [
     "bin/",
@@ -37,21 +85,24 @@
     "LICENSE"
   ],
   "scripts": {
-    "test": "node --test test/unit/*.test.mjs",
-    "test:unit": "node --test test/unit/*.test.mjs",
-    "test:integration": "node --test test/integration/*.test.mjs",
-    "test:e2e": "node --test test/e2e/*.test.mjs",
-    "test:security": "node --test test/security/*.test.mjs",
-    "test:performance": "node --test test/performance/*.test.mjs",
-    "test:datasets": "node --test test/datasets/*.test.mjs",
-    "test:validation": "node --test test/**/validation-*.test.mjs",
+    "test": "npm run test:unit",
+    "test:unit": "npm run build:stage && node scripts/run-staged-tests.mjs unit",
+    "test:integration": "npm run build:stage && node scripts/run-staged-tests.mjs integration",
+    "test:e2e": "npm run build:stage && node scripts/run-staged-tests.mjs e2e",
+    "test:security": "npm run build:stage && node scripts/run-staged-tests.mjs security",
+    "test:performance": "npm run build:stage && node scripts/run-staged-tests.mjs performance",
+    "test:datasets": "npm run build:stage && node scripts/run-staged-tests.mjs datasets",
+    "test:validation": "npm run build:stage && node scripts/run-staged-tests.mjs validation",
     "test:playwright": "playwright test test/**/playwright-*.test.mjs",
     "test:playwright-integration": "playwright test test/integration/playwright-integration.pwtest.mjs",
     "test:types": "tsc -p tsconfig.declarations.json",
+    "test:package": "npm run build:skip-obfuscation && node scripts/verify-packed-package.mjs",
     "test:intelligence": "node scripts/verify-intelligence.mjs",
-    "build": "node scripts/build-obfuscated.mjs",
-    "build:skip-obfuscation": "node scripts/build-obfuscated.mjs --skip-obfuscation",
-    "prepublishOnly": "npm run test:unit && npm run test:types && npm run build",
+    "build:stage": "node scripts/build-stage.mjs",
+    "prepare": "npm run build:stage",
+    "build": "npm run build:stage && node scripts/build-obfuscated.mjs",
+    "build:skip-obfuscation": "npm run build:stage && node scripts/build-obfuscated.mjs --skip-obfuscation",
+    "prepublishOnly": "npm run test:unit && npm run test:types && npm run build && node scripts/verify-packed-package.mjs",
     "check:secrets": "node scripts/detect-secrets.mjs",
     "install:playwright": "npx playwright install chromium",
     "playwright:check": "node scripts/ensure-playwright.mjs",
@@ -71,7 +122,8 @@
   "author": "arclabs561 <henry@henrywallace.io>",
   "license": "MIT",
   "dependencies": {
-    "async-mutex": "0.5.0"
+    "async-mutex": "0.5.0",
+    "typebox": "1.3.20"
   },
   "peerDependencies": {
     "@arclabs561/llm-utils": "*",

@@ -30,7 +30,7 @@ import { RETRY_CONSTANTS, API_CONSTANTS } from './constants.mjs';
 import { retryWithBackoff, enhanceErrorMessage, isRetryableError } from './retry.mjs';
 import { safeLogCacheOperation } from './safe-logger.mjs';
 import { composeSingleImagePrompt, composeComparisonPrompt } from './prompt-composer.mjs';
-import { buildRepairInstruction, parseReviewOutcome } from './review-contract.mjs';
+import { buildRepairInstruction, parseReviewOutcome } from '#review-contract';
 import { openAIResponseFormat, resolveStructuredOutput } from './structured-output.mjs';
 
 /** Clamp a score to [0, 10] or null. */

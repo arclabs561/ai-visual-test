@@ -5,9 +5,11 @@
  * They do NOT make real API calls.
  */
 
-import { describe, it } from 'node:test';
+import { after, describe, it } from 'node:test';
 import assert from 'node:assert';
 import { execFile } from 'node:child_process';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
@@ -15,12 +17,15 @@ import { promisify } from 'node:util';
 const exec = promisify(execFile);
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const CLI = join(__dirname, '..', '..', 'bin', 'ai-visual-test.mjs');
+const CLEAN_CWD = mkdtempSync(join(tmpdir(), 'ai-visual-cli-'));
+const TEST_IMAGE = join(CLEAN_CWD, 'test.png');
+writeFileSync(TEST_IMAGE, Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', 'base64'));
+after(() => rmSync(CLEAN_CWD, { recursive: true, force: true }));
 
 // Run CLI with stripped API keys to prevent real API calls.
-// HOME is set to /tmp to prevent .env loading from the repo root.
+// The unique working directory cannot contain a repository or user .env file.
 const CLEAN_ENV = {
   PATH: process.env.PATH,
-  HOME: '/tmp',
   NODE_PATH: process.env.NODE_PATH || '',
 };
 
@@ -29,7 +34,7 @@ async function run(...args) {
     const result = await exec('node', [CLI, ...args], {
       timeout: 10000,
       env: CLEAN_ENV,
-      cwd: '/tmp',
+      cwd: CLEAN_CWD,
     });
     return { code: 0, stdout: result.stdout, stderr: result.stderr };
   } catch (err) {
@@ -98,7 +103,7 @@ describe('CLI', () => {
     });
 
     it('should error when no API key is set', async () => {
-      const { code, stderr } = await run('check', join(__dirname, '..', 'test-image-utils.mjs'), 'test');
+      const { code, stderr } = await run('check', TEST_IMAGE, 'test');
       assert.notStrictEqual(code, 0);
       assert.ok(stderr.includes('No provider detected') || stderr.includes('not set'));
     });
@@ -110,7 +115,7 @@ describe('CLI', () => {
     });
 
     it('should reject invalid --provider name', async () => {
-      const { code, stderr } = await run('check', join(__dirname, '..', 'test-image-utils.mjs'), 'test', '--provider', 'invalid');
+      const { code, stderr } = await run('check', TEST_IMAGE, 'test', '--provider', 'invalid');
       assert.notStrictEqual(code, 0);
       assert.ok(stderr.includes('Unknown provider'));
       assert.ok(stderr.includes('groq'));

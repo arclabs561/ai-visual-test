@@ -1,4 +1,4 @@
-import { getReviewSchema } from './review-contract.mjs';
+import { getReviewSchema } from '#review-contract';
 
 /**
  * Negotiate the strongest structured-output mode that is safe for a provider

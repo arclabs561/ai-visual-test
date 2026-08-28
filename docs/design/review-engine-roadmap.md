@@ -83,15 +83,21 @@ This structural fork is decided by
 
 The accepted path uses `.ts` to emitted `.js` under `NodeNext`, a mixed-source
 staging tree, generated publish targets, and private TypeBox 1.x review schemas.
+The canonical review contract is now the first converted boundary: TypeBox owns
+its runtime schema and inferred static types, while the existing public result
+shape and bounded legacy-repair behavior remain compatible.
 
 **Reversibility:** partially reversible; published generated declarations create downstream expectations.
 
-**Gate:** ADRs accepted. The remaining gate is a proof-of-concept conversion of
-the canonical contract/provider seam, packed consumer compilation, CLI execution
-on Node 18, and the documented rollback to the last `.mjs` release.
+**Gate:** met locally. The mixed-source compiler emits executable ESM and
+generated declarations; unit, integration, security, and end-to-end suites run
+against the staged JavaScript; a clean packed install resolves all 15 runtime
+routes and executes the installed CLI; CI repeats the packed-package gate on
+Node 18. The last `.mjs` release remains the rollback boundary until publish.
 
-**Guardrail satisfied:** Phase 3 may begin, but no converted boundary may land
-without the compiled and clean-packed gates in ADR 0001.
+**Guardrail satisfied:** Phase 3 may continue provider by provider, but no
+converted boundary may land without the compiled and clean-packed gates in ADR
+0001.
 
 ## Phase 3: Convert contracts and provider adapters
 
@@ -104,6 +110,10 @@ without the compiled and clean-packed gates in ADR 0001.
 - Delete each handwritten declaration only when its generated replacement passes the same public contract.
 
 **Reversibility:** module-by-module until a release is published.
+
+**Status:** the canonical scalar/comparison contract is converted. Provider
+request serialization, response envelopes, capabilities, and error mapping
+remain the next bounded slice.
 
 **Gate:** every supported provider passes canned capability/envelope matrices, including arbitrary model override fallback; no provider switch remains above the adapter boundary.
 

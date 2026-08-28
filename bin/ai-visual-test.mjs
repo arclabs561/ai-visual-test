@@ -276,7 +276,7 @@ async function main() {
 
   // Load .env BEFORE detecting provider so .env keys are available
   const { loadEnv } = await import('../src/load-env.mjs');
-  loadEnv();
+  loadEnv(process.cwd());
 
   // Validate --provider if explicitly set
   const validProviders = Object.keys(PROVIDER_ENV_MAP);

@@ -1,6 +1,6 @@
 import { describe, it, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { normalizeValidationResult } from '../../src/validation-result-normalizer.mjs';
+import { normalizeValidationResult } from '#validation-result-normalizer';
 
 test('flattens rich recommendations while preserving their metadata', () => {
   const result = normalizeValidationResult({
@@ -121,6 +121,7 @@ describe('Normalizer end-to-end', () => {
     assert.equal(result.enabled, false);
     assert.strictEqual(result.score, null);
     assert.deepStrictEqual(result.issues, []);
+    assert.deepStrictEqual(result.recommendations, []);
     assert.equal(typeof result.reasoning, 'string');
   });
 

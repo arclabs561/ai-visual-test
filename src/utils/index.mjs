@@ -117,7 +117,7 @@ export {
 } from '../constants.mjs';
 
 // Validation result normalization
-export { normalizeValidationResult } from '../validation-result-normalizer.mjs';
+export { normalizeValidationResult } from '#validation-result-normalizer';
 
 // Error handlers
 export { initErrorHandlers } from '../error-handler.mjs';

@@ -13,7 +13,7 @@ import { validateScreenshot } from './judge.mjs';
 import { detectBias, detectPositionBias } from './bias-detector.mjs';
 import { mitigateBias, mitigatePositionBias, applyBiasMitigation } from './bias-mitigation.mjs';
 import { evaluateWithCounterBalance } from './position-counterbalance.mjs';
-import { normalizeValidationResult } from './validation-result-normalizer.mjs';
+import { normalizeValidationResult } from '#validation-result-normalizer';
 import { log, warn } from './logger.mjs';
 
 /**
@@ -435,4 +435,3 @@ export async function validateWithAllResearchEnhancements(imagePath, prompt, opt
   // Normalize result structure before returning (ensures consistent structure)
   return normalizeValidationResult(result, 'validateWithAllResearchEnhancements');
 }
-

@@ -22,7 +22,7 @@ import { FileError, ProviderError, TimeoutError, ValidationError } from './error
 import { log, warn } from './logger.mjs';
 import { evaluateTemporalDecision } from './temporal-prompt-formatting.mjs';
 import { recordCost } from './cost-tracker.mjs';
-import { normalizeValidationResult } from './validation-result-normalizer.mjs';
+import { normalizeValidationResult } from '#validation-result-normalizer';
 import { validateImagePath, validatePrompt } from './validation.mjs';
 import { sanitizePrompt, validatePromptSecurity } from './utils/prompt-sanitizer.mjs';
 import { getRateLimiter } from './utils/rate-limiter.mjs';

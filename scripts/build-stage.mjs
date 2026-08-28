@@ -57,6 +57,7 @@ packageJson.imports = {
   '#public-contract': './src/public-contract.js',
   '#review-contract': './src/review-contract.js',
   '#structured-output': './src/structured-output.js',
+  '#validation-result-normalizer': './src/validation-result-normalizer.js',
 };
 writeFileSync(join(STAGE, 'package.json'), `${JSON.stringify(packageJson, null, 2)}\n`);
 

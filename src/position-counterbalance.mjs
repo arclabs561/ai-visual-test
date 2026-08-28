@@ -14,7 +14,7 @@
  * or when context order matters).
  */
 
-import { normalizeValidationResult } from './validation-result-normalizer.mjs';
+import { normalizeValidationResult } from '#validation-result-normalizer';
 
 function reverseWinner(winner) {
   if (winner === 'A') return 'B';

@@ -5,7 +5,7 @@
 import '../test-setup.mjs';
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { normalizeValidationResult } from '../../src/validation-result-normalizer.mjs';
+import { normalizeValidationResult } from '#validation-result-normalizer';
 
 describe('Validation Result Normalizer', () => {
   describe('normalizeValidationResult', () => {
@@ -16,6 +16,7 @@ describe('Validation Result Normalizer', () => {
       assert.strictEqual(result.enabled, false);
       assert.strictEqual(result.score, null);
       assert.deepStrictEqual(result.issues, []);
+      assert.deepStrictEqual(result.recommendations, []);
       assert.ok(result.reasoning.includes('null'));
     });
 
@@ -108,4 +109,3 @@ describe('Validation Result Normalizer', () => {
     });
   });
 });
-

@@ -1,6 +1,36 @@
-import { describe, it } from 'node:test';
+import { describe, it, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { normalizeValidationResult } from '../../src/validation-result-normalizer.mjs';
+
+test('flattens rich recommendations while preserving their metadata', () => {
+  const result = normalizeValidationResult({
+    enabled: true,
+    score: 8,
+    issues: [],
+    recommendations: [{ suggestion: 'Raise contrast', priority: 'high' }]
+  }, 'test');
+
+  assert.deepEqual(result.recommendations, ['Raise contrast']);
+  assert.deepEqual(result.richRecommendations, [{ suggestion: 'Raise contrast', priority: 'high' }]);
+});
+
+test('does not discard existing rich recommendation metadata', () => {
+  const result = normalizeValidationResult({
+    enabled: true,
+    score: 8,
+    issues: [],
+    recommendations: ['Raise contrast'],
+    richRecommendations: [{
+      suggestion: 'Raise contrast',
+      priority: 'high',
+      expectedImpact: 'Readable secondary text'
+    }]
+  }, 'test');
+
+  assert.deepEqual(result.recommendations, ['Raise contrast']);
+  assert.equal(result.richRecommendations[0].priority, 'high');
+  assert.equal(result.richRecommendations[0].expectedImpact, 'Readable secondary text');
+});
 
 describe('Normalizer end-to-end', () => {
 

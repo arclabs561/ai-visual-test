@@ -105,9 +105,9 @@ test('negotiates strict, best-effort, and compatibility output modes', () => {
   const openai = resolveStructuredOutput({ provider: 'openai', model: 'gpt-4o', reviewMode: 'scalar' });
   assert.equal(openAIResponseFormat(openai).json_schema.strict, true);
 
-  const groq = resolveStructuredOutput({ provider: 'groq', model: 'meta-llama/llama-4-scout-17b-16e-instruct' });
-  assert.equal(openAIResponseFormat(groq).json_schema.strict, false);
-  assert.equal(groq.diagnostic, 'best_effort_json_schema');
+  const groq = resolveStructuredOutput({ provider: 'groq', model: 'qwen/qwen3.6-27b' });
+  assert.deepEqual(openAIResponseFormat(groq), { type: 'json_object' });
+  assert.equal(groq.diagnostic, 'model_schema_support_unknown');
 
   const override = resolveStructuredOutput({ provider: 'openai', model: 'custom-vision-model' });
   assert.deepEqual(openAIResponseFormat(override), { type: 'json_object' });

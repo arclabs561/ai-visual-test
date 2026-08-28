@@ -78,6 +78,10 @@ test('sends a native schema and returns a validated scalar result', async t => {
   assert.equal(result.model, 'gpt-4o');
   assert.equal(result.score, 8);
   assert.deepEqual(result.issues, ['Low contrast']);
+  assert.deepEqual(result.recommendations, ['Raise contrast']);
+  assert.equal(typeof result.recommendations[0], 'string');
+  assert.equal(result.richRecommendations[0].suggestion, 'Raise contrast');
+  assert.equal(result.richRecommendations[0].expectedImpact, 'improved user experience');
   assert.equal(result.outputFormat, 'structured');
 });
 
@@ -180,6 +184,8 @@ test('cache hits return the same normalized public result as cold calls', async 
   assert.equal(calls, 1);
   assert.equal(hit.cached, true);
   assert.deepEqual(hit.issues, cold.issues);
+  assert.deepEqual(hit.recommendations, cold.recommendations);
+  assert.equal(typeof hit.recommendations[0], 'string');
   assert.equal(typeof hit.issues[0], 'string');
   assert.equal(hit.score, cold.score);
   assert.equal(hit.kind, cold.kind);

@@ -17,6 +17,7 @@ export interface ValidationResult {
   assessment?: string | null;
   reasoning?: string | null;
   recommendations: string[];
+  richRecommendations?: Array<Record<string, unknown> & { suggestion: string }>;
   strengths?: string[];
   /** Whether the provider response satisfied the structured contract or needed legacy parsing. */
   outputFormat?: 'structured' | 'legacy-text' | null;
@@ -67,6 +68,7 @@ export interface SemanticInfo {
   assessment: string | null;
   reasoning: string | null;
   recommendations: string[];
+  richRecommendations?: Array<Record<string, unknown> & { suggestion: string }>;
   strengths?: string[];
   [key: string]: unknown;
 }

@@ -44,7 +44,10 @@ test('wire adapters preserve image order, signal, and header-only credentials', 
   };
   const signal = new AbortController().signal;
   const common = {
-    images: ['first', 'second'], prompt: 'review', signal, apiKey: 'test-key',
+    images: [
+      { data: 'first', mime: 'image/jpeg' },
+      { data: 'second', mime: 'image/webp' },
+    ], prompt: 'review', signal, apiKey: 'test-key',
     config: { apiUrl: 'https://provider.invalid/v1', model: 'model' },
   };
 
@@ -56,11 +59,16 @@ test('wire adapters preserve image order, signal, and header-only credentials', 
     assert.equal(call.init.signal, signal);
     assert.doesNotMatch(call.url, /test-key/);
   }
-  assert.deepEqual(calls[0].body.contents[0].parts.slice(1).map(part => part.inline_data.data), ['first', 'second']);
+  assert.deepEqual(calls[0].body.contents[0].parts.slice(1).map(part => part.inline_data), [
+    { data: 'first', mime_type: 'image/jpeg' },
+    { data: 'second', mime_type: 'image/webp' },
+  ]);
   assert.equal(calls[0].init.headers['x-goog-api-key'], 'test-key');
   assert.deepEqual(calls[1].body.messages[0].content.slice(1).map(part => part.image_url.url.split(',')[1]), ['first', 'second']);
+  assert.deepEqual(calls[1].body.messages[0].content.slice(1).map(part => part.image_url.url.split(';')[0]), ['data:image/jpeg', 'data:image/webp']);
   assert.equal(calls[1].init.headers.Authorization, 'Bearer test-key');
   assert.deepEqual(calls[2].body.messages[0].content.slice(1).map(part => part.source.data), ['first', 'second']);
+  assert.deepEqual(calls[2].body.messages[0].content.slice(1).map(part => part.source.media_type), ['image/jpeg', 'image/webp']);
   assert.equal(calls[2].init.headers['x-api-key'], 'test-key');
 });
 

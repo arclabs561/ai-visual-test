@@ -76,6 +76,13 @@ export class VLLMJudge {
    * SECURITY: Validates image format using magic bytes to prevent format spoofing
    */
   imageToBase64(imagePath) {
+    return this.imageToProviderInput(imagePath).data;
+  }
+
+  /**
+   * Read an image once and preserve the MIME detected from its magic bytes.
+   */
+  imageToProviderInput(imagePath) {
     // Validate and resolve path before file operations
     // Note: imagePath may already be validated/resolved from judgeScreenshot
     let validatedPath;
@@ -106,9 +113,9 @@ export class VLLMJudge {
       }
 
       // SECURITY: Validate image format using magic bytes
-      this._validateImageFormat(imageBuffer, validatedPath);
+      const mime = this._validateImageFormat(imageBuffer, validatedPath);
 
-      return imageBuffer.toString('base64');
+      return { data: imageBuffer.toString('base64'), mime };
     } catch (error) {
       // Sanitize error message - don't leak full path
       throw new FileError(`Failed to read screenshot: ${error.message}`, basename(validatedPath), { originalError: error.message });
@@ -160,8 +167,8 @@ export class VLLMJudge {
   }
 
   /**
-   * Resolve anchor images from config and per-call context into base64.
-   * Returns { images: string[], count: { positive: number, negative: number } }
+   * Resolve anchor images from config and per-call context into provider inputs.
+   * Returns { images: {data:string,mime:string}[], count: { positive: number, negative: number } }
    * so the prompt composer can label them.
    *
    * AnchorEntry images can be:
@@ -170,7 +177,7 @@ export class VLLMJudge {
    *   - A raw base64 string (no path separators, length > 100)
    *
    * @param {import('./index.mjs').ValidationContext} context
-   * @returns {{ images: string[], count: { positive: number, negative: number } }}
+   * @returns {{ images: Array<{data:string,mime:string}>, count: { positive: number, negative: number } }}
    */
   _resolveAnchorImages(context) {
     const configAnchors = this.config.anchors || {};
@@ -205,14 +212,17 @@ export class VLLMJudge {
       // Data URI: extract base64 payload
       if (ref.startsWith('data:image/')) {
         const commaIdx = ref.indexOf(',');
-        if (commaIdx > 0) return ref.slice(commaIdx + 1);
+        const mime = ref.slice(5, ref.indexOf(';'));
+        if (commaIdx > 0 && ['image/png', 'image/jpeg', 'image/gif', 'image/webp'].includes(mime)) {
+          return { data: ref.slice(commaIdx + 1), mime };
+        }
       }
       // Looks like raw base64 (no path separators, long enough)
       if (!ref.includes('/') && !ref.includes('\\') && ref.length > 100) {
-        return ref;
+        return { data: ref, mime: 'image/png' };
       }
       // File path: read and convert
-      return this.imageToBase64(ref);
+      return this.imageToProviderInput(ref);
     };
 
     for (const ref of positiveRefs) {
@@ -308,8 +318,8 @@ export class VLLMJudge {
       // Order: [positive examples] [negative examples] [target screenshot(s)]
       // The prompt text labels which images are references vs. evaluation targets
       const anchorImages = this._resolveAnchorImages(context);
-      const targetImages = imagePaths.map(path => this.imageToBase64(path));
-      const base64Images = [...anchorImages.images, ...targetImages];
+      const targetImages = imagePaths.map(path => this.imageToProviderInput(path));
+      const providerImages = [...anchorImages.images, ...targetImages];
       const composedPrompt = await this.buildPrompt(prompt, {
         ...context,
         _anchorImageCount: anchorImages.count
@@ -323,7 +333,9 @@ export class VLLMJudge {
         enabled: context.structuredOutput !== false
       });
       const fullPrompt = `${composedPrompt}\n\nOUTPUT CONTRACT\nReturn only JSON matching this schema:\n${JSON.stringify(structuredOutput.schema)}`;
-      const anchorDigest = createHash('sha256').update(anchorImages.images.join(':')).digest('hex');
+      const anchorDigest = createHash('sha256')
+        .update(anchorImages.images.map(image => `${image.mime}:${image.data}`).join(':'))
+        .digest('hex');
       const cacheContext = {
         ...context,
         provider: this.provider,
@@ -349,7 +361,7 @@ export class VLLMJudge {
       const apiResult = await retryWithBackoff(async () => {
         attempts++;
         const apiResponse = await this._callProviderAPI(
-          base64Images,
+          providerImages,
           effectivePrompt,
           abortController.signal,
           isMultiImage,
@@ -974,8 +986,8 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
   /**
    * Route to the correct provider API method.
    */
-  async _callProviderAPI(base64Images, prompt, signal, isMultiImage, structuredOutput = null) {
-    const images = Array.isArray(base64Images) ? base64Images : [base64Images];
+  async _callProviderAPI(providerImages, prompt, signal, isMultiImage, structuredOutput = null) {
+    const images = Array.isArray(providerImages) ? providerImages : [providerImages];
     return this.providerAdapter.call({
       images,
       prompt,
@@ -1004,7 +1016,8 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
    * @returns {Promise<Response>} API response
    */
   async callGeminiAPI(base64Images, prompt, signal, isMultiImage = false, structuredOutput = null) {
-    const images = Array.isArray(base64Images) ? base64Images : [base64Images];
+    const inputs = Array.isArray(base64Images) ? base64Images : [base64Images];
+    const images = inputs.map(input => typeof input === 'string' ? { data: input, mime: 'image/png' } : input);
     return getProviderAdapter('gemini').call({
       images, prompt, signal, apiKey: this.apiKey,
       config: this.providerConfig, structuredOutput,
@@ -1021,7 +1034,8 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
    * @returns {Promise<Response>} API response
    */
   async callOpenAIAPI(base64Images, prompt, signal, isMultiImage = false, structuredOutput = null) {
-    const images = Array.isArray(base64Images) ? base64Images : [base64Images];
+    const inputs = Array.isArray(base64Images) ? base64Images : [base64Images];
+    const images = inputs.map(input => typeof input === 'string' ? { data: input, mime: 'image/png' } : input);
     const provider = ['openai', 'groq', 'openrouter'].includes(this.provider) ? this.provider : 'openai';
     return getProviderAdapter(provider).call({
       images, prompt, signal, apiKey: this.apiKey,
@@ -1039,7 +1053,8 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
    * @returns {Promise<Response>} API response
    */
   async callClaudeAPI(base64Images, prompt, signal, isMultiImage = false) {
-    const images = Array.isArray(base64Images) ? base64Images : [base64Images];
+    const inputs = Array.isArray(base64Images) ? base64Images : [base64Images];
+    const images = inputs.map(input => typeof input === 'string' ? { data: input, mime: 'image/png' } : input);
     return getProviderAdapter('claude').call({
       images, prompt, signal, apiKey: this.apiKey,
       config: this.providerConfig, structuredOutput: null,

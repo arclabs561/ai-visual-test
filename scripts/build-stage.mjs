@@ -54,6 +54,7 @@ packageJson.imports = {
   ...(packageJson.imports || {}),
   '#provider-adapters': './src/provider-adapters.js',
   '#review-contract': './src/review-contract.js',
+  '#structured-output': './src/structured-output.js',
 };
 writeFileSync(join(STAGE, 'package.json'), `${JSON.stringify(packageJson, null, 2)}\n`);
 

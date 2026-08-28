@@ -9,7 +9,7 @@ import {
   buildRepairInstruction,
   parseReviewOutcome
 } from '#review-contract';
-import { openAIResponseFormat, resolveStructuredOutput } from '../../src/structured-output.mjs';
+import { openAIResponseFormat, resolveStructuredOutput } from '#structured-output';
 
 test('validates a canonical scalar review', () => {
   const parsed = parseReviewOutcome({

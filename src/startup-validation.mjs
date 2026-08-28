@@ -8,6 +8,7 @@
 import { ConfigError } from './errors.mjs';
 import { getConfig } from './config.mjs';
 import { warn, error } from './logger.mjs';
+import { PROVIDER_NAMES, canonicalizeProviderName } from './provider-data.mjs';
 
 /**
  * Required environment variables for each provider
@@ -15,7 +16,6 @@ import { warn, error } from './logger.mjs';
 const REQUIRED_ENV_VARS = {
   gemini: ['GEMINI_API_KEY'],
   openai: ['OPENAI_API_KEY'],
-  anthropic: ['ANTHROPIC_API_KEY'],
   claude: ['ANTHROPIC_API_KEY'], // Claude uses Anthropic API key
   groq: ['GROQ_API_KEY'],
   openrouter: ['OPENROUTER_API_KEY']
@@ -34,7 +34,7 @@ export function validateStartup(options = {}) {
   
   try {
     const config = getConfig();
-    const providerToCheck = provider || config.provider;
+    const providerToCheck = canonicalizeProviderName(provider || config.provider);
     
     if (!providerToCheck) {
       if (strict) {
@@ -54,8 +54,8 @@ export function validateStartup(options = {}) {
     }
     
     // Check if provider is valid
-    const validProviders = ['gemini', 'openai', 'claude', 'anthropic', 'groq', 'openrouter'];
-    if (!validProviders.includes(providerToCheck.toLowerCase())) {
+    const validProviders = PROVIDER_NAMES;
+    if (!validProviders.includes(providerToCheck)) {
       if (strict) {
         throw new ConfigError(
           `Invalid provider: ${providerToCheck}. Supported providers: ${validProviders.join(', ')}.`,
@@ -71,7 +71,7 @@ export function validateStartup(options = {}) {
     }
     
     // Check required API keys for the provider
-    const requiredVars = REQUIRED_ENV_VARS[providerToCheck.toLowerCase()] || [];
+    const requiredVars = REQUIRED_ENV_VARS[providerToCheck] || [];
     const missingVars = requiredVars.filter(key => !process.env[key]);
     
     if (missingVars.length > 0) {
@@ -124,4 +124,3 @@ export function validateStartup(options = {}) {
 export function validateStartupSoft(options = {}) {
   return validateStartup({ ...options, strict: false });
 }
-

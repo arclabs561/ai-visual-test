@@ -8,7 +8,7 @@
 import { ConfigError } from './errors.mjs';
 import { loadEnv } from './load-env.mjs';
 import { API_CONSTANTS } from './constants.mjs';
-import { MODEL_TIERS, PROVIDER_CONFIGS } from './provider-data.mjs';
+import { MODEL_TIERS, PROVIDER_CONFIGS, canonicalizeProviderName } from './provider-data.mjs';
 
 // Load .env file on module load
 loadEnv();
@@ -44,6 +44,7 @@ export function createConfig(options = {}) {
   if (!selectedProvider) {
     selectedProvider = detectProvider(env);
   }
+  selectedProvider = canonicalizeProviderName(selectedProvider);
 
   // Get API key - respect explicit null/undefined (don't check env if null/undefined is explicitly passed)
   // Check if apiKey was explicitly provided in options (vs defaulting to null)

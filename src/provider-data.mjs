@@ -6,7 +6,16 @@
  * 
  * ⚠️ IMPORTANT: Model names should be verified against current provider documentation.
  * Some models may be preview-only, deprecated, or have different names in production.
- */
+*/
+
+export const PROVIDER_NAMES = Object.freeze(['gemini', 'openai', 'claude', 'groq', 'openrouter']);
+export const PROVIDER_ALIASES = Object.freeze({ anthropic: 'claude' });
+
+export function canonicalizeProviderName(provider) {
+  if (typeof provider !== 'string') return provider;
+  const normalized = provider.toLowerCase().trim();
+  return PROVIDER_ALIASES[normalized] || normalized;
+}
 
 /**
  * Model tiers for each provider
@@ -112,4 +121,3 @@ export const PROVIDER_CONFIGS = {
     visionSupported: true
   }
 };
-

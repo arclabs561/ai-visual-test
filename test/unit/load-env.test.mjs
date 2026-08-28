@@ -101,6 +101,21 @@ test('loadEnv - supports OpenRouter configuration', () => {
   }
 });
 
+test('loadEnv - canonicalizes anthropic provider alias', () => {
+  const envFile = join(TEST_DIR, '.env');
+  writeFileSync(envFile, 'ANTHROPIC_API_KEY=test_value\nVLM_PROVIDER=anthropic');
+
+  delete process.env.ANTHROPIC_API_KEY;
+  delete process.env.VLM_PROVIDER;
+  try {
+    assert.strictEqual(loadEnv(TEST_DIR), true);
+    assert.strictEqual(process.env.VLM_PROVIDER, 'claude');
+  } finally {
+    delete process.env.ANTHROPIC_API_KEY;
+    delete process.env.VLM_PROVIDER;
+  }
+});
+
 test('loadEnv - skips comments', () => {
   const envFile = join(TEST_DIR, '.env');
   // Use whitelisted key for testing

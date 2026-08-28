@@ -69,6 +69,7 @@ describe('Startup Validation', () => {
         { provider: 'gemini', key: 'GEMINI_API_KEY' },
         { provider: 'openai', key: 'OPENAI_API_KEY' },
         { provider: 'claude', key: 'ANTHROPIC_API_KEY' },
+        { provider: 'anthropic', key: 'ANTHROPIC_API_KEY' },
         { provider: 'groq', key: 'GROQ_API_KEY' },
         { provider: 'openrouter', key: 'OPENROUTER_API_KEY' }
       ];

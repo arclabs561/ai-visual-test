@@ -56,6 +56,18 @@ describe('VLLMJudge', () => {
     assert.ok(base64.length > 0, `base64 should not be empty, got length ${base64.length}`);
   });
 
+  it('should preserve MIME detected from image bytes', () => {
+    const jpegPath = join(testResultsDir, `test-${Date.now()}.jpg`);
+    writeFileSync(jpegPath, Buffer.from([0xff, 0xd8, 0xff, 0xdb, 0x00, 0x01]));
+    try {
+      const input = judge.imageToProviderInput(jpegPath);
+      assert.strictEqual(input.mime, 'image/jpeg');
+      assert.strictEqual(input.data, Buffer.from([0xff, 0xd8, 0xff, 0xdb, 0x00, 0x01]).toString('base64'));
+    } finally {
+      unlinkSync(jpegPath);
+    }
+  });
+
   it('should throw error for non-existent image', () => {
     assert.throws(() => {
       judge.imageToBase64('/nonexistent/image.png');
@@ -144,4 +156,3 @@ describe('validateScreenshot', () => {
     assert.ok('provider' in result, 'result should have provider field');
   });
 });
-

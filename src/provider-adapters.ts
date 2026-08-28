@@ -20,12 +20,17 @@ export interface ProviderConfig {
 }
 
 export interface ProviderCall {
-  images: string[];
+  images: ProviderImage[];
   prompt: string;
   signal: AbortSignal;
   apiKey: string;
   config: ProviderConfig;
   structuredOutput?: StructuredOutputSpec | null;
+}
+
+export interface ProviderImage {
+  data: string;
+  mime: 'image/png' | 'image/jpeg' | 'image/gif' | 'image/webp';
 }
 
 export interface ParsedProviderResponse {
@@ -156,7 +161,7 @@ function geminiAdapter(): ProviderAdapter {
     resolveStructuredOutput: input => schemaSpec(provider, input),
     call({ images, prompt, signal, apiKey, config, structuredOutput }) {
       const parts: Record<string, unknown>[] = [{ text: prompt }];
-      for (const image of images) parts.push({ inline_data: { mime_type: 'image/png', data: image } });
+      for (const image of images) parts.push({ inline_data: { mime_type: image.mime, data: image.data } });
       return fetch(`${config.apiUrl}/models/${config.model}:generateContent`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
@@ -199,7 +204,7 @@ function openAICompatibleAdapter(provider: 'openai' | 'groq' | 'openrouter'): Pr
     call({ images, prompt, signal, apiKey, config, structuredOutput }) {
       const content: Record<string, unknown>[] = [{ type: 'text', text: prompt }];
       for (const image of images) {
-        content.push({ type: 'image_url', image_url: { url: `data:image/png;base64,${image}` } });
+        content.push({ type: 'image_url', image_url: { url: `data:${image.mime};base64,${image.data}` } });
       }
       const responseFormat = openAIResponseFormat(structuredOutput);
       return fetch(`${config.apiUrl}/chat/completions`, {
@@ -245,7 +250,7 @@ function anthropicAdapter(): ProviderAdapter {
     call({ images, prompt, signal, apiKey, config }) {
       const content: Record<string, unknown>[] = [{ type: 'text', text: prompt }];
       for (const image of images) {
-        content.push({ type: 'image', source: { type: 'base64', media_type: 'image/png', data: image } });
+        content.push({ type: 'image', source: { type: 'base64', media_type: image.mime, data: image.data } });
       }
       return fetch(`${config.apiUrl}/messages`, {
         method: 'POST',

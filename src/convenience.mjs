@@ -8,7 +8,7 @@
  */
 
 import { validateScreenshot } from './judge.mjs';
-import { normalizeValidationResult } from './validation-result-normalizer.mjs';
+import { normalizeValidationResult } from '#validation-result-normalizer';
 import { experiencePageAsPersona, experiencePageWithPersonas } from './persona-experience.mjs';
 import { extractRenderedCode, captureTemporalScreenshots, multiPerspectiveEvaluation } from './multi-modal.mjs';
 import { aggregateTemporalNotes, formatNotesForPrompt } from './temporal-core.mjs';

@@ -19,8 +19,9 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const ROOT_DIR = join(__dirname, '..');
+const STAGE_DIR = join(ROOT_DIR, 'build');
 const DIST_DIR = join(ROOT_DIR, 'dist');
-const SRC_DIR = join(ROOT_DIR, 'src');
+const SRC_DIR = join(STAGE_DIR, 'src');
 
 // Files to obfuscate (Tier 1: Core proprietary algorithms only)
 const OBFUSCATE_FILES = [
@@ -186,12 +187,12 @@ async function buildSourceFiles(skipObfuscation = false) {
         await mkdir(distEntryPath, { recursive: true });
         await processDirectory(srcEntryPath, distEntryPath);
       } else if (entry.isFile()) {
-        if (extname(entry.name) === '.mjs') {
+        if (['.mjs', '.js'].includes(extname(entry.name))) {
           // Selective obfuscation: only obfuscate Tier 1 files
           const obfuscated = await obfuscateFile(srcEntryPath, skipObfuscation);
           writeFileSync(distEntryPath, obfuscated, 'utf-8');
           const relPath = pathRelative(ROOT_DIR, srcEntryPath);
-          const isObfuscated = shouldObfuscate(srcEntryPath);
+          const isObfuscated = !skipObfuscation && shouldObfuscate(srcEntryPath);
           console.log(`   ${isObfuscated ? '🔒' : '📄'} ${relPath}${isObfuscated ? ' (obfuscated)' : ''}`);
         } else {
           // Copy other files as-is
@@ -222,7 +223,7 @@ async function buildSourceFiles(skipObfuscation = false) {
   // vercel.json is also excluded (deployment configuration)
 
   for (const file of filesToCopy) {
-    const srcPath = join(ROOT_DIR, file);
+    const srcPath = join(STAGE_DIR, file);
     if (existsSync(srcPath)) {
       const distPath = join(DIST_DIR, file);
       const content = readFileSync(srcPath);
@@ -249,7 +250,7 @@ async function buildSourceFiles(skipObfuscation = false) {
   // Keep every published entry point and declaration route present in dist.
   // The publish manifest below is deliberately inherited from package.json.
   for (const directory of ['bin', 'types']) {
-    const srcPath = join(ROOT_DIR, directory);
+    const srcPath = join(STAGE_DIR, directory);
     if (existsSync(srcPath)) {
       await copyDir(srcPath, join(DIST_DIR, directory));
       console.log(`   ✓ ${directory}/`);
@@ -261,14 +262,53 @@ async function buildSourceFiles(skipObfuscation = false) {
  * Update package.json for publishing from dist/
  */
 function updatePackageJson() {
-  const packageJsonPath = join(ROOT_DIR, 'package.json');
+  const packageJsonPath = join(STAGE_DIR, 'package.json');
   const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
 
   // Create a publish version
   // NOTE: Paths are relative to dist/ directory (where we publish from)
   // Strip scripts (especially prepublishOnly) -- CI handles tests/build
-  const { scripts: _scripts, devDependencies: _devDeps, ...publishBase } = packageJson;
+  const { scripts: _scripts, devDependencies: _devDeps, private: _private, ...publishBase } = packageJson;
   const publishPackageJson = publishBase;
+
+  function emittedTarget(target) {
+    if (typeof target !== 'string' || !target.startsWith('./')) return target;
+    if (target === './package.json') return target;
+    if (existsSync(join(DIST_DIR, target))) return target;
+    const alternative = target.endsWith('.mjs')
+      ? `${target.slice(0, -4)}.js`
+      : target.endsWith('.js')
+        ? `${target.slice(0, -3)}.mjs`
+        : null;
+    if (alternative && existsSync(join(DIST_DIR, alternative))) return alternative;
+    throw new Error(`Published target was not emitted: ${target}`);
+  }
+
+  publishPackageJson.main = emittedTarget(publishPackageJson.main);
+  publishPackageJson.types = emittedTarget(publishPackageJson.types);
+  publishPackageJson.bin = Object.fromEntries(
+    Object.entries(publishPackageJson.bin || {}).map(([name, target]) => [name, emittedTarget(target)]),
+  );
+  publishPackageJson.exports = Object.fromEntries(
+    Object.entries(publishPackageJson.exports || {}).map(([subpath, route]) => [
+      subpath,
+      typeof route === 'string'
+        ? emittedTarget(route)
+        : Object.fromEntries(
+            Object.entries(route).map(([condition, target]) => [condition, emittedTarget(target)]),
+          ),
+    ]),
+  );
+  publishPackageJson.files = [
+    'bin/',
+    'src/',
+    'index.d.ts',
+    'types/',
+    'README.md',
+    'CHANGELOG.md',
+    'SECURITY.md',
+    'LICENSE',
+  ];
 
   writeFileSync(join(DIST_DIR, 'package.json'), JSON.stringify(publishPackageJson, null, 2), 'utf-8');
   console.log('   ✓ package.json (updated for dist/)');

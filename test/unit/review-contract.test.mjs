@@ -1,11 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import * as Value from 'typebox/value';
 
 import {
+  COMPARISON_REVIEW_SCHEMA,
   ReviewContractError,
+  SCALAR_REVIEW_SCHEMA,
   buildRepairInstruction,
   parseReviewOutcome
-} from '../../src/review-contract.mjs';
+} from '#review-contract';
 import { openAIResponseFormat, resolveStructuredOutput } from '../../src/structured-output.mjs';
 
 test('validates a canonical scalar review', () => {
@@ -15,6 +18,36 @@ test('validates a canonical scalar review', () => {
   });
   assert.equal(parsed.format, 'structured');
   assert.equal(parsed.outcome.score, 8);
+});
+
+test('TypeBox schemas enforce canonical bounds and reject unknown keys', () => {
+  const scalar = {
+    kind: 'scalar', score: 8, assessment: 'pass', reasoning: 'Clear hierarchy',
+    issues: [], recommendations: [], strengths: []
+  };
+  assert.equal(Value.Check(SCALAR_REVIEW_SCHEMA, scalar), true);
+  assert.equal(Value.Check(SCALAR_REVIEW_SCHEMA, { ...scalar, unexpected: true }), false);
+  assert.equal(Value.Check(COMPARISON_REVIEW_SCHEMA, {
+    kind: 'comparison', winner: 'indeterminate', confidence: 0,
+    reasoning: 'Orders conflict', differences: [], scores: { A: 8, B: 8 }
+  }), true);
+});
+
+test('structured validation keeps stable scalar diagnostic codes', () => {
+  assert.throws(
+    () => parseReviewOutcome({
+      score: 11, assessment: null, reasoning: 1,
+      issues: ['valid', 2], recommendations: null, strengths: 'none'
+    }, { allowLegacy: false }),
+    error => {
+      assert.ok(error instanceof ReviewContractError);
+      assert.deepEqual(error.diagnostics, [
+        'invalid_score', 'missing_assessment', 'missing_reasoning',
+        'invalid_issues', 'invalid_recommendations', 'invalid_strengths'
+      ]);
+      return true;
+    }
+  );
 });
 
 test('parses realistic legacy sections without mixing their list items', () => {

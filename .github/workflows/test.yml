@@ -43,6 +43,10 @@ jobs:
       - name: Check TypeScript definitions
         run: npm run test:types
 
+      - name: Verify packed package on minimum Node
+        if: matrix.node-version == '18.x'
+        run: npm run test:package
+
   lint:
     runs-on: ubuntu-latest
     

@@ -10,8 +10,10 @@ import { tmpdir } from 'os';
 import { loadEnv } from '../../src/load-env.mjs';
 
 const TEST_DIR = join(tmpdir(), 'ai-visual-test-load-env');
+const ORIGINAL_DISABLE_ENV_FILE = process.env.AI_VISUAL_TEST_DISABLE_ENV_FILE;
 
 test.beforeEach(() => {
+  delete process.env.AI_VISUAL_TEST_DISABLE_ENV_FILE;
   if (existsSync(TEST_DIR)) {
     try {
       rmdirSync(TEST_DIR, { recursive: true });
@@ -34,11 +36,24 @@ test.afterEach(() => {
       // Ignore cleanup errors
     }
   }
+  if (ORIGINAL_DISABLE_ENV_FILE === undefined) delete process.env.AI_VISUAL_TEST_DISABLE_ENV_FILE;
+  else process.env.AI_VISUAL_TEST_DISABLE_ENV_FILE = ORIGINAL_DISABLE_ENV_FILE;
 });
 
 test('loadEnv - returns false when no .env file', () => {
   const result = loadEnv(TEST_DIR);
   assert.strictEqual(result, false);
+});
+
+test('loadEnv - respects explicit env-file disablement', () => {
+  const previous = process.env.AI_VISUAL_TEST_DISABLE_ENV_FILE;
+  process.env.AI_VISUAL_TEST_DISABLE_ENV_FILE = '1';
+  try {
+    assert.strictEqual(loadEnv(TEST_DIR), false);
+  } finally {
+    if (previous === undefined) delete process.env.AI_VISUAL_TEST_DISABLE_ENV_FILE;
+    else process.env.AI_VISUAL_TEST_DISABLE_ENV_FILE = previous;
+  }
 });
 
 test('loadEnv - loads .env file', () => {

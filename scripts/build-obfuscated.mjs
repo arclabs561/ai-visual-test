@@ -246,8 +246,15 @@ async function buildSourceFiles(skipObfuscation = false) {
     }
   }
 
-  // api/ and public/ are excluded from npm package (deployment-only)
-  // They're only needed for Vercel deployment, not for library usage
+  // Keep every published entry point and declaration route present in dist.
+  // The publish manifest below is deliberately inherited from package.json.
+  for (const directory of ['bin', 'types']) {
+    const srcPath = join(ROOT_DIR, directory);
+    if (existsSync(srcPath)) {
+      await copyDir(srcPath, join(DIST_DIR, directory));
+      console.log(`   ✓ ${directory}/`);
+    }
+  }
 }
 
 /**
@@ -261,32 +268,7 @@ function updatePackageJson() {
   // NOTE: Paths are relative to dist/ directory (where we publish from)
   // Strip scripts (especially prepublishOnly) -- CI handles tests/build
   const { scripts: _scripts, devDependencies: _devDeps, ...publishBase } = packageJson;
-  const publishPackageJson = {
-    ...publishBase,
-    main: 'src/index.mjs',
-    exports: {
-      '.': './src/index.mjs',
-      './validators': './src/validators/index.mjs',
-      './temporal': './src/temporal/index.mjs',
-      './multi-modal': './src/multi-modal/index.mjs',
-      './ensemble': './src/ensemble/index.mjs',
-      './persona': './src/persona/index.mjs',
-      './specs': './src/specs/index.mjs',
-      './utils': './src/utils/index.mjs',
-      './package.json': './package.json'
-    },
-    files: [
-      'src/**/*',
-      'index.d.ts',
-      'README.md',
-      'CHANGELOG.md',
-      'CONTRIBUTING.md',
-      'DEPLOYMENT.md',
-      'SECURITY.md',
-      'LICENSE',
-      '.secretsignore.example'
-    ]
-  };
+  const publishPackageJson = publishBase;
 
   writeFileSync(join(DIST_DIR, 'package.json'), JSON.stringify(publishPackageJson, null, 2), 'utf-8');
   console.log('   ✓ package.json (updated for dist/)');
@@ -330,4 +312,3 @@ main().catch(error => {
   console.error('❌ Build failed:', error);
   process.exit(1);
 });
-

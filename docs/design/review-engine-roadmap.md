@@ -147,6 +147,11 @@ release after the deprecation window.
 - Make CLI, Playwright, Vitest/Jest, and video adapters thin consumers of policy results.
 - Retire duplicated logger/config/cache authority only where production callers are proven migrated.
 
+**Status:** begun. The shared public-result normalizer is now a typed compiled
+boundary consumed by core judging, counterbalancing, convenience, research,
+and the utilities subpath. Scalar/pairwise orchestration and framework adapters
+remain `.mjs` and should migrate as separate compatibility-preserving slices.
+
 **Reversibility:** partially reversible across published subpaths.
 
 **Gate:** compiled public-route tests, fixture-backed policy tests, and consumer examples pass without handwritten declaration overlays.

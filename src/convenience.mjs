@@ -33,7 +33,7 @@ import { TEMPORAL_CONSTANTS } from './constants.mjs';
  * - Games that activate from payment screens (not just standalone games)
  * - Game activation via keyboard shortcuts (e.g., 'g' key)
  * - Game state extraction (window.gameState)
- * - Temporal preprocessing for better performance
+ * - Temporal aggregation for screenshot sequences
  * 
  * @param {import('playwright').Page} page - Playwright page object
  * @param {Object} options - Test options
@@ -47,7 +47,6 @@ import { TEMPORAL_CONSTANTS } from './constants.mjs';
  * @param {boolean} [options.checkConsistency] - Check cross-modal consistency
  * @param {string} [options.gameActivationKey] - Keyboard key to activate game (e.g., 'g')
  * @param {string} [options.gameSelector] - Selector to wait for game activation (e.g., '#game-paddle')
- * @param {boolean} [options.useTemporalPreprocessing] - Use temporal preprocessing for better performance
  * @param {boolean} [options.play] - If true, actually play the game (uses playGame() internally)
  * @returns {Promise<Object>} Test results
  */
@@ -63,7 +62,6 @@ export async function testGameplay(page, options = {}) {
     checkConsistency = true,
     gameActivationKey = null, // e.g., 'g' to activate game
     gameSelector = null, // e.g., '#game-paddle' selector
-    useTemporalPreprocessing = false,
     play = false // NEW: Option to actually play the game
   } = options;
   
@@ -165,18 +163,15 @@ export async function testGameplay(page, options = {}) {
       result.experiences = [experience];
     }
 
-    // IMPROVEMENT: Capture temporal screenshots with preprocessing support
+    // Capture and summarize temporal screenshots when requested.
     if (captureTemporal) {
       const temporalScreenshots = await captureTemporalScreenshots(page, fps, duration);
       result.temporalScreenshots = temporalScreenshots;
       trackPropagation('temporal', { count: temporalScreenshots.length }, 'Captured temporal screenshots');
       
-        // Use temporal preprocessing by default
-        // Activity-based: high-Hz uses cache, low-Hz does expensive preprocessing
       if (temporalScreenshots.length > 0) {
-        const { createTemporalPreprocessingManager, createAdaptiveTemporalProcessor } = await import('./temporal-orchestration.mjs');
-        const preprocessingManager = createTemporalPreprocessingManager();
-        const adaptiveProcessor = createAdaptiveTemporalProcessor(preprocessingManager);
+        const { AdaptiveTemporalProcessor } = await import('./temporal-orchestration.mjs');
+        const adaptiveProcessor = new AdaptiveTemporalProcessor();
         
         const notes = temporalScreenshots.map((frame, index) => ({
           timestamp: frame.timestamp,
@@ -186,16 +181,16 @@ export async function testGameplay(page, options = {}) {
           observation: `Frame ${index} of gameplay`
         }));
         
-        const processed = await adaptiveProcessor.process(notes, {
+        const processed = await adaptiveProcessor.processNotes(notes, {
           testType: 'gameplay-temporal',
           viewport: await page.viewportSize()
         });
         
         result.processedTemporalNotes = processed;
-        trackPropagation('temporal-preprocessing', { 
+        trackPropagation('temporal-processing', {
           original: notes.length, 
-          processed: processed.length 
-        }, 'Processed temporal notes with adaptive preprocessing');
+          processed: processed.prunedNotes?.length ?? 0
+        }, 'Processed temporal screenshots');
       }
     }
 
@@ -661,4 +656,3 @@ export async function validateWithGoals(screenshotPath, options = {}) {
 
 // validatePage and validateComparison moved to page-validation.mjs
 // to avoid pulling game/persona deps into the main entry.
-

@@ -273,6 +273,22 @@ describe('Uncertainty Reducer', () => {
   });
 
   describe('enhanceWithUncertainty', () => {
+    it('uses the same logprob estimate as the source combiner', () => {
+      const logprobs = {
+        tokens: ['test', 'result'],
+        token_logprobs: [-1.0, -1.0]
+      };
+
+      const expected = combineUncertaintySources({ logprobs });
+      const result = enhanceWithUncertainty(
+        { logprobs, attempts: 1 },
+        { enableHallucinationCheck: false, adaptiveSelfConsistency: false }
+      );
+
+      assert.strictEqual(result.uncertainty, expected.uncertainty);
+      assert.strictEqual(result.confidence, expected.confidence);
+    });
+
     it('should enhance result with uncertainty information', () => {
       const partialResult = {
         score: 8.0,
@@ -311,4 +327,3 @@ describe('Uncertainty Reducer', () => {
     });
   });
 });
-

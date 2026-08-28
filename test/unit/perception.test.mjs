@@ -205,6 +205,54 @@ test("samplePerceptions UX heuristics are disablable (heuristics: []) and overri
   assert.ok(seenSys.includes("density is intended"), "domain principles still seeded as the override");
 });
 
+test("samplePerceptions reports partial sampling failures without dropping successful findings", async () => {
+  const panel = [
+    { id: "working", vision: async () => ({ headline: "h", category: "major", target: "t", confidence: 0.5 }) },
+    { id: "failing", vision: async () => { throw new Error("provider unavailable"); } },
+  ];
+  const result = await samplePerceptions({ panel, modes: ["problem"], personas: [{ id: "o", who: "op" }], contexts: [{ id: "m", ctx: "c" }], n: 1, verify: false });
+
+  assert.equal(result.samples.length, 1, "the successful judge remains usable");
+  assert.equal(result.diagnostics.status, "partial");
+  assert.deepEqual(result.diagnostics.sampling, { attempted: 2, completed: 1, accepted: 1, failed: 1 });
+  assert.deepEqual(result.diagnostics.failures, [{ phase: "sampling", judge: "failing", mode: "problem", role: "o", context: "m", message: "provider unavailable" }]);
+});
+
+test("samplePerceptions distinguishes a total provider outage from an empty finding response", async () => {
+  const vision = async () => { throw new Error("provider unavailable"); };
+  const common = { modes: ["problem"], personas: [{ id: "o", who: "op" }], contexts: [{ id: "m", ctx: "c" }], n: 1, verify: false };
+  const result = await samplePerceptions({ vision, ...common });
+  const noFindings = await samplePerceptions({ vision: async () => ({}), ...common });
+
+  assert.deepEqual(result.samples, []);
+  assert.equal(result.diagnostics.status, "unavailable");
+  assert.deepEqual(result.diagnostics.sampling, { attempted: 1, completed: 0, accepted: 0, failed: 1 });
+  assert.equal(result.diagnostics.failures[0].phase, "sampling");
+  assert.deepEqual(noFindings.samples, []);
+  assert.equal(noFindings.diagnostics.status, "ok");
+  assert.deepEqual(noFindings.diagnostics.sampling, { attempted: 1, completed: 1, accepted: 0, failed: 0 });
+});
+
+test("samplePerceptions exposes merge and verification provider failures", async () => {
+  let calls = 0;
+  const vision = async () => {
+    calls++;
+    if (calls > 2) throw new Error("verifier unavailable");
+    return { headline: `h${calls}`, category: "major", target: `t${calls}`, confidence: 0.5 };
+  };
+  const complete = async () => { throw new Error("merge unavailable"); };
+  const result = await samplePerceptions({ vision, complete, modes: ["problem"], personas: [{ id: "o", who: "op" }], contexts: [{ id: "m", ctx: "c" }], n: 2, topK: 2 });
+
+  assert.equal(result.diagnostics.status, "partial");
+  assert.deepEqual(result.diagnostics.merge, { attempted: 1, completed: 0, failed: 1 });
+  assert.deepEqual(result.diagnostics.verification, { attempted: 2, completed: 0, failed: 2 });
+  assert.deepEqual(result.diagnostics.failures.map(({ phase, message }) => ({ phase, message })), [
+    { phase: "merge", message: "merge unavailable" },
+    { phase: "verification", message: "verifier unavailable" },
+    { phase: "verification", message: "verifier unavailable" },
+  ]);
+});
+
 test("MODE_SPEC has all three modes with usable sys + user(persona,context)", () => {
   for (const m of ["question", "problem", "insight"]) {
     assert.equal(typeof MODE_SPEC[m].sys, "string");

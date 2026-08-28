@@ -43,8 +43,8 @@ test('testGameplay uses temporal preprocessing by default', async function() {
     if (result.temporalScreenshots && result.temporalScreenshots.length > 0) {
       // processedTemporalNotes may be undefined if preprocessing failed, but field should exist
       if (result.processedTemporalNotes !== undefined && result.processedTemporalNotes !== null) {
-        assert.ok(Array.isArray(result.processedTemporalNotes), 
-          'Processed temporal notes should be an array');
+        assert.ok(typeof result.processedTemporalNotes === 'object',
+          'Processed temporal notes should be a temporal summary');
       } else {
         // Preprocessing may fail or not run - that's acceptable, just verify field exists
         assert.ok(true, 'processedTemporalNotes field present (may be null/undefined if preprocessing failed)');
@@ -102,8 +102,8 @@ test('testGameplay temporal preprocessing handles high activity', async function
     if (result.temporalScreenshots && result.temporalScreenshots.length > 0) {
       // processedTemporalNotes may be undefined if preprocessing failed
       if (result.processedTemporalNotes !== undefined && result.processedTemporalNotes !== null) {
-        assert.ok(Array.isArray(result.processedTemporalNotes), 
-          'Processed temporal notes should be an array');
+        assert.ok(typeof result.processedTemporalNotes === 'object',
+          'Processed temporal notes should be a temporal summary');
       } else {
         assert.ok(true, 'processedTemporalNotes field present (may be null/undefined if preprocessing failed)');
       }
@@ -158,8 +158,8 @@ test('testGameplay temporal preprocessing handles low activity', async function(
     if (result.temporalScreenshots && result.temporalScreenshots.length > 0) {
       // processedTemporalNotes may be undefined if preprocessing failed
       if (result.processedTemporalNotes !== undefined && result.processedTemporalNotes !== null) {
-        assert.ok(Array.isArray(result.processedTemporalNotes), 
-          'Processed temporal notes should be an array');
+        assert.ok(typeof result.processedTemporalNotes === 'object',
+          'Processed temporal notes should be a temporal summary');
       } else {
         assert.ok(true, 'processedTemporalNotes field present (may be null/undefined if preprocessing failed)');
       }
@@ -172,5 +172,4 @@ test('testGameplay temporal preprocessing handles low activity', async function(
     }
   }
 });
-
 

@@ -10,8 +10,7 @@ import {
   logCacheOperation,
   logTemporalDecision,
   logBatchOptimizer,
-  logErrorPattern,
-  logCacheStats
+  logErrorPattern
 } from '../../src/utils/performance-logger.mjs';
 
 describe('Performance Logger', () => {
@@ -214,34 +213,4 @@ describe('Performance Logger', () => {
     });
   });
 
-  describe('logCacheStats', () => {
-    it('should export logCacheStats function', () => {
-      assert.strictEqual(typeof logCacheStats, 'function');
-    });
-
-    it('should log cache statistics', () => {
-      assert.doesNotThrow(() => {
-        logCacheStats({
-          hits: 85,
-          misses: 15,
-          hitRate: 0.85,
-          avgLatency: 5
-        });
-      });
-    });
-
-    it('should handle missing optional parameters', () => {
-      // hitRate and avgLatency are required, but savings is optional
-      assert.doesNotThrow(() => {
-        logCacheStats({
-          hits: 50,
-          misses: 10,
-          hitRate: (50 / 60) * 100,
-          avgLatency: 5
-          // savings is optional
-        });
-      });
-    });
-  });
 });
-

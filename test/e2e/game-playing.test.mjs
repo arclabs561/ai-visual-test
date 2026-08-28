@@ -11,7 +11,7 @@
 import '../test-setup.mjs'; // Auto-load .env (must be first)
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { playGame, GameGym } from '../../src/index.mjs';
+import { playGame, GameGym } from '../../src/game/index.mjs';
 import { skipIfNoApiKey } from '../helpers/api-key-check.mjs';
 
 test('playGame - simple game', async function() {

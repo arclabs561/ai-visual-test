@@ -52,6 +52,7 @@ const packageJson = JSON.parse(readFileSync(join(STAGE, 'package.json'), 'utf8')
 packageJson.private = true;
 packageJson.imports = {
   ...(packageJson.imports || {}),
+  '#provider-adapters': './src/provider-adapters.js',
   '#review-contract': './src/review-contract.js',
 };
 writeFileSync(join(STAGE, 'package.json'), `${JSON.stringify(packageJson, null, 2)}\n`);

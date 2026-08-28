@@ -31,7 +31,8 @@ import { retryWithBackoff, enhanceErrorMessage, isRetryableError } from './retry
 import { safeLogCacheOperation } from './safe-logger.mjs';
 import { composeSingleImagePrompt, composeComparisonPrompt } from './prompt-composer.mjs';
 import { buildRepairInstruction, parseReviewOutcome } from '#review-contract';
-import { openAIResponseFormat, resolveStructuredOutput } from './structured-output.mjs';
+import { getProviderAdapter } from '#provider-adapters';
+import { resolveStructuredOutput } from './structured-output.mjs';
 
 /** Clamp a score to [0, 10] or null. */
 function _clampScore(raw) {
@@ -50,6 +51,7 @@ export class VLLMJudge {
     this.provider = this.config.provider;
     this.apiKey = this.config.apiKey;
     this.providerConfig = this.config.providerConfig;
+    this.providerAdapter = getProviderAdapter(this.provider);
     this.enabled = this.config.enabled;
     this._cacheInitialized = false;
   }
@@ -973,18 +975,15 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
    * Route to the correct provider API method.
    */
   async _callProviderAPI(base64Images, prompt, signal, isMultiImage, structuredOutput = null) {
-    switch (this.provider) {
-      case 'gemini':
-        return this.callGeminiAPI(base64Images, prompt, signal, isMultiImage, structuredOutput);
-      case 'openai':
-      case 'groq':
-      case 'openrouter':
-        return this.callOpenAIAPI(base64Images, prompt, signal, isMultiImage, structuredOutput);
-      case 'claude':
-        return this.callClaudeAPI(base64Images, prompt, signal, isMultiImage);
-      default:
-        throw new ProviderError(`Unknown provider: ${this.provider}`, this.provider);
-    }
+    const images = Array.isArray(base64Images) ? base64Images : [base64Images];
+    return this.providerAdapter.call({
+      images,
+      prompt,
+      signal,
+      apiKey: this.apiKey,
+      config: this.providerConfig,
+      structuredOutput,
+    });
   }
 
   /**
@@ -992,57 +991,7 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
    * extract judgment text and logprobs.
    */
   _parseProviderResponse(apiResponse) {
-    const ct = apiResponse.headers.get('content-type') || '';
-    if (!ct.includes('application/json')) {
-      const statusCode = apiResponse.status;
-      return apiResponse.text().then(text => {
-        throw new ProviderError(
-          `${this.provider} API returned non-JSON response (${ct}). Status: ${statusCode}. Check API key or endpoint.`,
-          this.provider,
-          { statusCode, contentType: ct, responsePreview: text.substring(0, 200), retryable: false }
-        );
-      });
-    }
-
-    return apiResponse.json().then(apiData => {
-      if (!apiResponse.ok || apiData.error) {
-        const statusCode = apiResponse.status;
-        throw new ProviderError(
-          `${this.provider} API error: ${apiData.error?.message || apiData.detail || `HTTP ${statusCode}`}`,
-          this.provider,
-          { apiError: apiData.error || null, statusCode, retryable: statusCode === 429 || statusCode >= 500 }
-        );
-      }
-
-      // Extract judgment text and logprobs per provider response format
-      if (this.provider === 'gemini') {
-        const parts = apiData.candidates?.[0]?.content?.parts || [];
-        const judgment = parts.filter(part => typeof part.text === 'string').map(part => part.text).join('\n');
-        return {
-          judgment,
-          data: apiData,
-          logprobs: parts.find(part => part.logprobs)?.logprobs || null
-        };
-      }
-      if (this.provider === 'claude') {
-        const judgment = (apiData.content || [])
-          .filter(block => block.type === 'text' && typeof block.text === 'string')
-          .map(block => block.text)
-          .join('\n');
-        return {
-          judgment,
-          data: apiData,
-          logprobs: null
-        };
-      }
-      // OpenAI, Groq, OpenRouter (all OpenAI-compatible)
-      const content = apiData.choices?.[0]?.message?.content;
-      return {
-        judgment: typeof content === 'string' ? content : '',
-        data: apiData,
-        logprobs: apiData.choices?.[0]?.logprobs || null
-      };
-    });
+    return this.providerAdapter.parseResponse(apiResponse);
   }
 
   /**
@@ -1056,41 +1005,10 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
    */
   async callGeminiAPI(base64Images, prompt, signal, isMultiImage = false, structuredOutput = null) {
     const images = Array.isArray(base64Images) ? base64Images : [base64Images];
-    
-    // Build parts array: text prompt + all images
-    const parts = [{ text: prompt }];
-    for (const base64Image of images) {
-      parts.push({
-        inline_data: {
-          mime_type: 'image/png',
-          data: base64Image
-        }
-      });
-    }
-    
-    // SECURITY: Use header for API key, not URL parameter
-    // API keys in URLs are exposed in logs, browser history, referrer headers
-    return fetch(
-      `${this.providerConfig.apiUrl}/models/${this.providerConfig.model}:generateContent`,
-      {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'x-goog-api-key': this.apiKey  // Use header instead of URL parameter
-        },
-        signal,
-        body: JSON.stringify({
-          contents: [{ parts }],
-          generationConfig: {
-            temperature: API_CONSTANTS.DEFAULT_TEMPERATURE,
-            maxOutputTokens: API_CONSTANTS.DEFAULT_MAX_OUTPUT_TOKENS,
-            topP: API_CONSTANTS.DEFAULT_TOP_P,
-            topK: 40,
-            ...(structuredOutput?.generationConfig || {})
-          }
-        })
-      }
-    );
+    return getProviderAdapter('gemini').call({
+      images, prompt, signal, apiKey: this.apiKey,
+      config: this.providerConfig, structuredOutput,
+    });
   }
 
   /**
@@ -1104,46 +1022,10 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
    */
   async callOpenAIAPI(base64Images, prompt, signal, isMultiImage = false, structuredOutput = null) {
     const images = Array.isArray(base64Images) ? base64Images : [base64Images];
-    
-    // Build content array: text prompt + all images
-    const content = [{ type: 'text', text: prompt }];
-    for (const base64Image of images) {
-      content.push({
-        type: 'image_url',
-        image_url: { url: `data:image/png;base64,${base64Image}` }
-      });
-    }
-    
-    const responseFormat = structuredOutput ? openAIResponseFormat(structuredOutput) : null;
-    return fetch(`${this.providerConfig.apiUrl}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.apiKey}`
-      },
-      signal,
-      body: JSON.stringify({
-        model: this.providerConfig.model,
-        messages: [{
-          role: 'user',
-          content
-        }],
-        ...(responseFormat ? { response_format: responseFormat } : {}),
-        // Some OpenAI models have limited parameter support
-        // Models that only support default temperature (1): gpt-4o-mini, gpt-5
-        // Models that support custom temperature: gpt-4o, gpt-4-turbo, etc.
-        // Only include temperature if model supports custom values (omit for models that require default)
-        ...(this.providerConfig.model.includes('mini') || this.providerConfig.model.includes('gpt-5')
-          ? {} // Use default temperature (1) - don't specify for models that require it
-          : { temperature: API_CONSTANTS.DEFAULT_TEMPERATURE, top_p: API_CONSTANTS.DEFAULT_TOP_P } // Custom values for models that support them
-        ),
-        // Use max_completion_tokens for newer models (gpt-4o, gpt-5), max_tokens for older models
-        ...(this.providerConfig.model.startsWith('gpt-4o') || this.providerConfig.model.startsWith('gpt-5')
-          ? { max_completion_tokens: API_CONSTANTS.DEFAULT_MAX_OUTPUT_TOKENS }
-          : { max_tokens: API_CONSTANTS.DEFAULT_MAX_OUTPUT_TOKENS })
-        // Note: logprobs removed - not all OpenAI models support it (e.g., vision models)
-        // If needed, can be conditionally added based on model support
-      })
+    const provider = ['openai', 'groq', 'openrouter'].includes(this.provider) ? this.provider : 'openai';
+    return getProviderAdapter(provider).call({
+      images, prompt, signal, apiKey: this.apiKey,
+      config: this.providerConfig, structuredOutput,
     });
   }
 
@@ -1158,36 +1040,9 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
    */
   async callClaudeAPI(base64Images, prompt, signal, isMultiImage = false) {
     const images = Array.isArray(base64Images) ? base64Images : [base64Images];
-    
-    // Build content array: text prompt + all images
-    const content = [{ type: 'text', text: prompt }];
-    for (const base64Image of images) {
-      content.push({
-        type: 'image',
-        source: {
-          type: 'base64',
-          media_type: 'image/png',
-          data: base64Image
-        }
-      });
-    }
-    
-    return fetch(`${this.providerConfig.apiUrl}/messages`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': this.apiKey,
-        'anthropic-version': '2023-06-01'
-      },
-      signal,
-      body: JSON.stringify({
-        model: this.providerConfig.model,
-        max_tokens: API_CONSTANTS.DEFAULT_MAX_OUTPUT_TOKENS,
-        messages: [{
-          role: 'user',
-          content
-        }]
-      })
+    return getProviderAdapter('claude').call({
+      images, prompt, signal, apiKey: this.apiKey,
+      config: this.providerConfig, structuredOutput: null,
     });
   }
 
@@ -1199,18 +1054,7 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
       return null; // Free or self-hosted
     }
     
-    let inputTokens, outputTokens;
-    if (provider === 'gemini') {
-      inputTokens = data.usageMetadata?.promptTokenCount || 0;
-      outputTokens = data.usageMetadata?.candidatesTokenCount || 0;
-    } else if (provider === 'claude') {
-      inputTokens = data.usage?.input_tokens || 0;
-      outputTokens = data.usage?.output_tokens || 0;
-    } else {
-      // OpenAI, Groq, OpenRouter (all OpenAI-compatible)
-      inputTokens = data.usage?.prompt_tokens || 0;
-      outputTokens = data.usage?.completion_tokens || 0;
-    }
+    const { inputTokens, outputTokens } = getProviderAdapter(provider).extractUsage(data);
     
     const inputCost = (inputTokens / 1_000_000) * this.providerConfig.pricing.input;
     const outputCost = (outputTokens / 1_000_000) * this.providerConfig.pricing.output;

@@ -430,9 +430,6 @@ export function enhanceWithUncertainty(partialResult, options = {}, context = {}
     selfConsistencyReason = 'Explicitly enabled';
   }
 
-  // Estimate uncertainty from logprobs
-  const logprobUncertainty = logprobs ? estimateUncertainty(logprobs) : null;
-
   // Check for hallucination
   let hallucinationResult = null;
   if (enableHallucinationCheck && judgment) {
@@ -449,7 +446,7 @@ export function enhanceWithUncertainty(partialResult, options = {}, context = {}
 
   // Combine uncertainty sources
   const combined = combineUncertaintySources({
-    logprobs: logprobUncertainty,
+    logprobs,
     hallucination: hallucinationResult,
     retryCount: attempts
   });
@@ -467,4 +464,3 @@ export function enhanceWithUncertainty(partialResult, options = {}, context = {}
     selfConsistencyReason
   };
 }
-

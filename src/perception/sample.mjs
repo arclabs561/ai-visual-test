@@ -16,6 +16,10 @@ async function pmap(items, fn, conc) {
   return out;
 }
 
+function errorMessage(error) {
+  return String(error?.message || error || "Unknown provider error").slice(0, 500);
+}
+
 /**
  * Sample perceptions of one screenshot across modes x personas x contexts,
  * aggregate with a JURY of diverse judge models, and adversarially verify the
@@ -54,7 +58,7 @@ async function pmap(items, fn, conc) {
  * @param {Record<string,string>} [cfg.guidance]  per-mode surface-specific guidance appended to that
  *                                     mode's user prompt; lets a consumer bespokely influence the
  *                                     agnostic base prompts without forking the judge (ADR-0055)
- * @returns {Promise<{samples:object[], sections:{mode,ranked,top,suppressed}[], judges:string[]}>}
+ * @returns {Promise<{samples:object[], sections:{mode,ranked,top,suppressed}[], judges:string[], diagnostics:{status:string,sampling:object,merge:object,verification:object,failures:object[]}}>}
  */
 export async function samplePerceptions({ panel, vision, complete, modes = ["question", "problem", "insight"], personas, contexts, n = 2, concurrency = 10, topK = 6, verify = true, principles = [], dispositions = [], heuristics = UX_HEURISTICS, guidance = {} }) {
   // Normalize to a panel; a bare `vision` fn becomes a single-judge jury (back-compat).
@@ -80,14 +84,28 @@ export async function samplePerceptions({ panel, vision, complete, modes = ["que
   // Fan every (mode x persona x context x sample) cell across EVERY judge.
   const cells = [];
   for (const mode of modes) for (const persona of personas) for (const context of contexts) for (const judge of jury) for (let s = 0; s < n; s++) cells.push({ mode, persona, context, judge });
-  const samples = (await pmap(cells, ({ mode, persona, context, judge }) => {
+  const sampled = await pmap(cells, async ({ mode, persona, context, judge }) => {
     const spec = MODE_SPEC[mode];
     // Per-mode surface-specific guidance the CONSUMER injects (config-driven, ADR-0055):
     // bespoke emphasis for THIS display that the agnostic base prompt must not hardcode.
     const user = spec.user(persona, context) + (guidance[mode] ? "\n\nSURFACE-SPECIFIC GUIDANCE (what this display wants its judges to weigh):\n" + guidance[mode] : "");
-    return judge.vision(spec.sys + hseed + seed, user, 1.05)
-      .then((r) => ({ ...r, mode, role: persona.id, weight: (persona.weight ?? 1) * (judge.weight ?? 1), context: context.id, judge: judge.id }));
-  }, concurrency)).filter((r) => r && !r._err && r.headline);
+    try {
+      const response = await judge.vision(spec.sys + hseed + seed, user, 1.05);
+      return { ...response, mode, role: persona.id, weight: (persona.weight ?? 1) * (judge.weight ?? 1), context: context.id, judge: judge.id };
+    } catch (error) {
+      return { _failure: { phase: "sampling", judge: judge.id, mode, role: persona.id, context: context.id, message: errorMessage(error) } };
+    }
+  }, concurrency);
+  const failures = sampled.flatMap((result) => result?._failure ? [result._failure] : result?._err ? [{ phase: "sampling", message: result._err }] : []);
+  const sampling = {
+    attempted: cells.length,
+    completed: cells.length - failures.length,
+    accepted: sampled.filter((result) => result && !result._failure && !result._err && result.headline).length,
+    failed: failures.length,
+  };
+  const samples = sampled.filter((result) => result && !result._failure && !result._err && result.headline);
+  const merge = { attempted: 0, completed: 0, failed: 0 };
+  const verification = { attempted: 0, completed: 0, failed: 0 };
 
   const sections = [];
   for (const mode of modes) {
@@ -95,18 +113,50 @@ export async function samplePerceptions({ panel, vision, complete, modes = ["que
     // findings so same-issue/different-wording groups merge BEFORE topK + verify
     // -- the merged diversity score is what should decide which findings rank.
     let ranked = aggregate(samples, mode);
-    if (complete) ranked = await mergeFindings(ranked, { complete });
+    if (complete && ranked.length >= 2) {
+      merge.attempted++;
+      ranked = await mergeFindings(ranked, { complete: async (...args) => {
+        try {
+          const result = await complete(...args);
+          merge.completed++;
+          return result;
+        } catch (error) {
+          merge.failed++;
+          failures.push({ phase: "merge", mode, message: errorMessage(error) });
+          throw error;
+        }
+      } });
+    }
     const candidates = ranked.slice(0, Math.min(topK, ranked.length));
     if (verify && candidates.length) {
       // Cross-model: verify each finding with a judge that did NOT raise it (so a
       // model can't rubber-stamp its own claim); fall back to the first judge when
       // every member raised it. Single-judge juries verify with themselves as before.
-      const verdicts = await pmap(candidates, (g) => {
+      verification.attempted += candidates.length;
+      const verdicts = await pmap(candidates, async (g) => {
         const verifier = jury.find((j) => !g.judges.has(j.id)) || jury[0];
         g.verifiedBy = verifier.id;
-        return verifier.vision(VERIFY_SYS + seed, verifyUser(mode, { category: g.category, target: g.target, why: g.heads[0], suggestion: g.sugg[0] }), 0.1);
+        try {
+          const verdict = await verifier.vision(VERIFY_SYS + seed, verifyUser(mode, { category: g.category, target: g.target, why: g.heads[0], suggestion: g.sugg[0] }), 0.1);
+          return verdict;
+        } catch (error) {
+          return { _failure: { phase: "verification", judge: verifier.id, mode, target: g.target, message: errorMessage(error) } };
+        }
       }, 4);
-      candidates.forEach((g, i) => { g.verified = verdicts[i] && !verdicts[i]._err ? !verdicts[i].refuted : null; g.vreason = verdicts[i]?.reason || verdicts[i]?._err || ""; });
+      candidates.forEach((g, i) => {
+        const verdict = verdicts[i];
+        if (verdict?._failure) {
+          verification.failed++;
+          failures.push(verdict._failure);
+        } else if (verdict?._err) {
+          verification.failed++;
+          failures.push({ phase: "verification", mode, target: g.target, message: verdict._err });
+        } else {
+          verification.completed++;
+        }
+        g.verified = verdict && !verdict._err && !verdict._failure ? !verdict.refuted : null;
+        g.vreason = verdict?.reason || verdict?._failure?.message || verdict?._err || "";
+      });
     }
     // Convergence: partition off findings already dispositioned (fixed/rejected/
     // deferred) so each run surfaces genuinely-new signal, not re-litigated ones.
@@ -118,5 +168,8 @@ export async function samplePerceptions({ panel, vision, complete, modes = ["que
     }
     sections.push({ mode, ranked, top, suppressed });
   }
-  return { samples, sections, judges: jury.map((j) => j.id) };
+  const status = sampling.attempted > 0 && sampling.failed === sampling.attempted
+    ? "unavailable"
+    : failures.length > 0 ? "partial" : "ok";
+  return { samples, sections, judges: jury.map((j) => j.id), diagnostics: { status, sampling, merge, verification, failures } };
 }

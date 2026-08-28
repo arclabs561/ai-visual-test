@@ -284,33 +284,3 @@ export function logErrorPattern(params) {
   });
 }
 
-/**
- * Log cache statistics summary
- * 
- * @param {Object} params - Cache statistics
- * @param {number} params.hits - Number of cache hits
- * @param {number} params.misses - Number of cache misses
- * @param {number} params.hitRate - Hit rate percentage
- * @param {number} params.avgLatency - Average lookup latency in ms
- * @param {number} params.savings - Estimated time/cost savings
- */
-export function logCacheStats(params) {
-  const {
-    hits,
-    misses,
-    hitRate,
-    avgLatency,
-    savings = null
-  } = params;
-
-  // Always log cache statistics (important for optimization)
-  log(`[Cache] Statistics`, {
-    hits,
-    misses,
-    hitRate: `${hitRate.toFixed(1)}%`,
-    avgLatency: `${avgLatency.toFixed(2)}ms`,
-    savings: savings ? `${savings}ms saved` : null,
-    effectiveness: hitRate > 50 ? 'good' : hitRate > 30 ? 'moderate' : 'low'
-  });
-}
-

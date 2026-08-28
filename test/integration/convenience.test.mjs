@@ -10,7 +10,7 @@ import {
   validateWithGoals,
   generateGamePrompt,
   createGameGoal
-} from '../../src/index.mjs';
+} from '../../src/game/index.mjs';
 import { createMockPage } from '../helpers/mock-page.mjs';
 import { createTestImage } from '../test-image-utils.mjs';
 import { skipIfNoApiKey } from '../helpers/api-key-check.mjs';
@@ -271,4 +271,3 @@ describe('Convenience Functions', () => {
     });
   });
 });
-

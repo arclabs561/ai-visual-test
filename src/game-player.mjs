@@ -18,6 +18,7 @@
  */
 
 import { validateScreenshot } from './judge.mjs';
+import { TemporalDecisionManager } from './temporal-orchestration.mjs';
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
 import { log, warn } from './logger.mjs';
@@ -234,6 +235,10 @@ export async function playGame(page, options = {}) {
   
   const history = [];
   let currentState = null;
+  const decisionManager = new TemporalDecisionManager({
+    minNotesForPrompt: 2,
+    coherenceThreshold: 0.5
+  });
   
   for (let step = 0; step < maxSteps; step++) {
     try {
@@ -291,14 +296,9 @@ export async function playGame(page, options = {}) {
       
       let stateEvaluation;
       if (step > 0 && history.length > 0) {
-        // Use TemporalDecisionManager for subsequent steps
+        // Keep one manager for the whole run so warm-start and prompt timing
+        // describe this game, rather than a fresh manager on every frame.
         try {
-          const { TemporalDecisionManager } = await import('./temporal-orchestration.mjs');
-          const decisionManager = new TemporalDecisionManager({
-            minNotesForPrompt: 2,
-            coherenceThreshold: 0.5
-          });
-          
           const currentState = { 
             score: null, 
             step,
@@ -386,19 +386,7 @@ export async function playGame(page, options = {}) {
         } else {
           // Action failed - wait and retry, or try simple alternative
           retries++;
-          if (retries < maxRetries) {
-            const { createExploratoryStrategy } = await import('./utils/exploratory-automation.mjs');
-            const exploratoryStrategy = createExploratoryStrategy({ maxAttempts: 2 });
-            const nextAction = exploratoryStrategy.getNextAction(currentState, [action], goal);
-            
-            if (nextAction) {
-              log(`[GamePlayer] Action failed, trying alternative: ${nextAction.type}`);
-              action = nextAction;
-            } else {
-              // Wait and retry original action
-              await page.waitForTimeout(500);
-            }
-          }
+          if (retries < maxRetries) await page.waitForTimeout(500);
         }
       }
       
@@ -724,4 +712,3 @@ export class GameGym {
     log(`[GameGym] Restored from checkpoint: step ${this.stepCount}`);
   }
 }
-

@@ -23,7 +23,9 @@ parity tests. Phase 0 is committed locally and unreleased.
 
 Phase 1 now has centralized stable static capture and order-counterbalanced
 comparison with explicit conflict semantics. The human-reviewed repeatability
-fixture set remains open. ADR 0001 and ADR 0002 accept the staged TypeScript
+fixture harness now validates reproducibility metadata, asset hashes, independent
+reviewer consensus, and offline agreement/abstention metrics; real screenshots
+and human labels remain open and must not be fabricated. ADR 0001 and ADR 0002 accept the staged TypeScript
 and TypeBox boundary decisions, subject to their packed Node 18 gates.
 
 ## Dependency map
@@ -64,6 +66,11 @@ remain delivery steps, not implementation work.
 - Add first-class A/B comparison counterbalancing. Evaluate both orders and return `indeterminate` when order changes the winner.
 - Keep the numeric candidate/B score for compatibility, but document winner and disagreement as the primary pairwise evidence.
 - Add a small human-reviewed fixture set to measure whether the new pairwise behavior improves alignment.
+
+**Status:** the offline fixture protocol, validator, SHA-256 gate, real
+counterbalance replay, and categorical metrics are implemented. The tracked
+manifest is intentionally empty until real screenshots receive at least two
+independent human reviews with auditable rationales.
 
 **Reversibility:** partially reversible because capture defaults affect baselines.
 
@@ -121,8 +128,11 @@ path: model-aware JSON-object negotiation with reasoning disabled produced a
 canonical result without repair retries. Dogfooding also exposed and closed a
 public normalization leak where recommendation strings became rich objects;
 flat strings remain canonical and rich metadata is now additive.
-The remaining Phase 3 work is generated public result declarations and removal
-of forwarding compatibility methods after their consumers are migrated.
+Structured-output negotiation now also compiles from TypeScript. Screenshot and
+video parsing call the selected adapter directly; duplicated response-format
+logic is gone, while provider-specific forwarding methods retain a documented
+deprecation window. The remaining Phase 3 work is generated public result
+declarations and eventual removal of those forwarding methods in a major release.
 
 **Gate:** every supported provider passes canned capability/envelope matrices, including arbitrary model override fallback; no provider switch remains above the adapter boundary.
 

@@ -16,13 +16,13 @@ import { strict as assert } from 'node:assert';
 import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { validateScreenshot } from '../../src/index.mjs';
 import {
-  validateScreenshot,
   validateAccessibilityHybrid,
   getContrastRatio,
   checkAllTextContrast,
   checkKeyboardNavigation
-} from '../../src/index.mjs';
+} from '../../src/validators/index.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -102,7 +102,7 @@ test('Accessibility: Print styles are defined', () => {
 });
 
 test('Visual: Page renders correctly in dark mode', async function() {
-  test.skip(shouldSkipVisual, 'No VLLM API key configured');
+  if (shouldSkipVisual) { this.skip('No VLLM API key configured'); return; }
   
   let browser, page;
   try {
@@ -185,7 +185,7 @@ ISSUES TO FLAG:
 });
 
 test('Visual: Page renders correctly in light mode', async function() {
-  test.skip(shouldSkipVisual, 'No VLLM API key configured');
+  if (shouldSkipVisual) { this.skip('No VLLM API key configured'); return; }
   
   let browser, page;
   try {
@@ -331,7 +331,7 @@ test('Accessibility: Color contrast meets WCAG AA standards', async function() {
 });
 
 test('Accessibility: Hybrid validation (programmatic + visual)', async function() {
-  test.skip(shouldSkipVisual, 'No VLLM API key configured');
+  if (shouldSkipVisual) { this.skip('No VLLM API key configured'); return; }
   
   let browser, page;
   try {
@@ -401,7 +401,7 @@ test('Accessibility: Hybrid validation (programmatic + visual)', async function(
 });
 
 test('Responsive: Mobile viewport (768px) renders correctly', async function() {
-  test.skip(shouldSkipVisual, 'No VLLM API key configured');
+  if (shouldSkipVisual) { this.skip('No VLLM API key configured'); return; }
   
   let browser, page;
   try {
@@ -608,7 +608,7 @@ test('Focus states: Keyboard navigation works correctly', async function() {
 });
 
 test('Status badge: Visual states (ok/error) are distinct', async function() {
-  test.skip(shouldSkipVisual, 'No VLLM API key configured');
+  if (shouldSkipVisual) { this.skip('No VLLM API key configured'); return; }
   
   let browser, page;
   try {
@@ -681,4 +681,3 @@ ISSUES TO FLAG:
     }
   }
 });
-

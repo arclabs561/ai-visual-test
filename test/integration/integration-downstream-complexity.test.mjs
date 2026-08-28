@@ -16,17 +16,12 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import { 
   validateScreenshot,
-  createConfig,
-  BatchOptimizer,
-  experiencePageAsPersona,
-  experiencePageWithPersonas,
-  captureTemporalScreenshots,
-  aggregateTemporalNotes,
-  formatNotesForPrompt,
-  extractRenderedCode,
-  multiModalValidation,
-  multiPerspectiveEvaluation
+  createConfig
 } from '../../src/index.mjs';
+import { BatchOptimizer } from '../../src/batch-optimizer.mjs';
+import { experiencePageAsPersona, experiencePageWithPersonas } from '../../src/persona-experience.mjs';
+import { captureTemporalScreenshots, extractRenderedCode, multiModalValidation, multiPerspectiveEvaluation } from '../../src/multi-modal.mjs';
+import { aggregateTemporalNotes, formatNotesForPrompt } from '../../src/temporal-core.mjs';
 import { FileError } from '../../src/errors.mjs';
 import { createMockPage } from '../helpers/mock-page.mjs';
 import { createTestImage } from '../test-image-utils.mjs';
@@ -536,4 +531,3 @@ describe('Downstream Complexity: State Tracking', () => {
     // Note: formatted string may not include exact keywords, just verify it's formatted
   });
 });
-

@@ -6,13 +6,13 @@
 
 import { test, describe } from 'node:test';
 import assert from 'node:assert';
+import { validateScreenshot } from '../../src/index.mjs';
 import {
-  validateScreenshot,
   SequentialDecisionContext,
   TemporalBatchOptimizer,
   aggregateMultiScale,
   humanPerceptionTime
-} from '../../src/index.mjs';
+} from '../../src/temporal/index.mjs';
 import { writeFileSync, unlinkSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 
@@ -134,4 +134,3 @@ describe('End-to-End Temporal Decision-Making', () => {
     assert.ok(aggregated.scales);
   });
 });
-

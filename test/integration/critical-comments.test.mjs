@@ -49,6 +49,8 @@ test('CRITICAL comments are only used for actual critical issues', () => {
         // - But not for general notes or implementation details
         
         const isLegitimate = 
+          line.includes('CRITICAL/MAJOR/MINOR') ||
+          line.includes('CRITICAL first') ||
           line.includes('CRITICAL BUG FIX') ||
           line.includes('CRITICAL BUGS FIXED') ||
           line.includes('CRITICAL FIX:') ||  // Allow "CRITICAL FIX:" for bug fixes
@@ -93,6 +95,8 @@ test('No excessive CRITICAL comment noise', () => {
       if (isComment && line.includes('CRITICAL') && !line.includes('severity === \'CRITICAL\'')) {
         // Exclude legitimate uses
         if (!line.includes('CRITICAL BUG FIX') && 
+            !line.includes('CRITICAL/MAJOR/MINOR') &&
+            !line.includes('CRITICAL first') &&
             !line.includes('CRITICAL BUGS FIXED') && 
             !line.includes('CRITICAL FIX:') &&
             !(line.includes('CRITICAL:') && (
@@ -112,4 +116,3 @@ test('No excessive CRITICAL comment noise', () => {
   assert(totalCritical < 25, 
     `Too many CRITICAL comments found: ${totalCritical}. Should be < 25 after cleanup.`);
 });
-

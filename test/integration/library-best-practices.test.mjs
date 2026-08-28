@@ -73,7 +73,7 @@ describe('Library Best Practices', () => {
       const originalNodeEnv = process.env.NODE_ENV;
       process.env.NODE_ENV = 'test';
       
-      const module = await import('../../src/index.mjs');
+      const module = await import('../../src/errors/index.mjs');
       
       // Should export initErrorHandlers
       assert.strictEqual(typeof module.initErrorHandlers, 'function',
@@ -81,7 +81,7 @@ describe('Library Best Practices', () => {
       
       // But should not be called automatically (tested by checking listeners)
       const listenersBefore = process.listenerCount('unhandledRejection');
-      await import('../../src/index.mjs'); // Re-import should not add listeners
+      await import('../../src/errors/index.mjs'); // Re-import should not add listeners
       await new Promise(resolve => setTimeout(resolve, 100)); // Wait for async init
       const listenersAfter = process.listenerCount('unhandledRejection');
       
@@ -220,7 +220,7 @@ describe('Library Best Practices', () => {
     });
     
     it('should allow opt-in error handler initialization', async () => {
-      const { initErrorHandlers } = await import('../../src/index.mjs');
+      const { initErrorHandlers } = await import('../../src/errors/index.mjs');
       
       const listenersBefore = process.listenerCount('unhandledRejection');
       
@@ -235,7 +235,7 @@ describe('Library Best Practices', () => {
     });
     
     it('should handle multiple calls to initErrorHandlers gracefully', async () => {
-      const { initErrorHandlers } = await import('../../src/index.mjs');
+      const { initErrorHandlers } = await import('../../src/errors/index.mjs');
       
       // Call multiple times
       initErrorHandlers();
@@ -401,7 +401,6 @@ describe('Library Best Practices', () => {
       
       // Check files that use module-level caching
       const filesToCheck = [
-        'src/human-validation-manager.mjs',
         'src/persona-experience.mjs',
         'src/prompt-composer.mjs'
       ];
@@ -432,7 +431,6 @@ describe('Library Best Practices', () => {
       // Files that use dynamic imports
       const filesWithDynamicImports = [
         'src/data-extractor.mjs',
-        'src/dynamic-prompts.mjs',
         'src/prompt-composer.mjs',
         'src/persona-experience.mjs'
       ];
@@ -491,4 +489,3 @@ describe('Library Best Practices', () => {
     });
   });
 });
-

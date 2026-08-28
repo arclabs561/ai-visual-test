@@ -10,6 +10,7 @@ import { extractRenderedCode } from './multi-modal.mjs';
 import { ValidationError } from './errors.mjs';
 import { validatePrompt } from './validation.mjs';
 import { log } from './logger.mjs';
+import { captureStableScreenshot } from './stable-capture.mjs';
 
 /**
  * Validate a Playwright page by taking a screenshot and sending it to the VLM.
@@ -35,7 +36,12 @@ export async function validatePage(page, prompt, options = {}) {
   const screenshotPath = path.join(tempDir, `validate-page-${Date.now()}.png`);
 
   try {
-    await page.screenshot({ path: screenshotPath, fullPage: options.fullPage ?? false });
+    const capture = await captureStableScreenshot(page, {
+      path: screenshotPath,
+      fullPage: options.fullPage ?? false,
+      screenshot: options.screenshot,
+      stability: options.stability,
+    });
 
     let renderedCode = null;
     if (options.captureCode !== false) {
@@ -44,7 +50,8 @@ export async function validatePage(page, prompt, options = {}) {
 
     return await validateScreenshot(screenshotPath, prompt, {
       ...options,
-      renderedCode
+      renderedCode,
+      captureMetadata: capture.metadata,
     });
   } finally {
     if (!options.keepScreenshot && fs.existsSync(screenshotPath)) {

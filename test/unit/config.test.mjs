@@ -27,6 +27,13 @@ test('createConfig - explicit provider', () => {
   assert.strictEqual(config.providerConfig.name, 'gemini');
 });
 
+test('createConfig - canonicalizes anthropic provider alias', () => {
+  const config = createConfig({ provider: 'anthropic', apiKey: 'test-key' });
+
+  assert.strictEqual(config.provider, 'claude');
+  assert.strictEqual(config.providerConfig.name, 'claude');
+});
+
 test('createConfig - explicit API key', () => {
   const config = createConfig({ apiKey: 'test-key-123' });
   
@@ -216,4 +223,3 @@ test('getConfig - singleton pattern', () => {
   
   assert.strictEqual(config1, config2);
 });
-

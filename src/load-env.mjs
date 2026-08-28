@@ -10,6 +10,7 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { warn } from './logger.mjs';
 import { RATE_LIMIT_BOUNDS } from './constants.mjs';
+import { PROVIDER_NAMES, canonicalizeProviderName } from './provider-data.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -34,7 +35,7 @@ const ALLOWED_ENV_KEYS = [
 
 // Valid values for VLM_PROVIDER
 // Groq added for high-frequency decisions (10-60Hz temporal decisions)
-const VALID_PROVIDERS = ['gemini', 'openai', 'claude', 'groq', 'openrouter'];
+const VALID_PROVIDERS = [...PROVIDER_NAMES, 'anthropic'];
 
 // Validation functions for environment variables
 function validateRateLimitMaxRequests(value) {
@@ -52,7 +53,7 @@ function validateVLMProvider(value) {
     warn(`[LoadEnv] Invalid VLM_PROVIDER: ${value}. Must be one of: ${VALID_PROVIDERS.join(', ')}. Ignoring.`);
     return null; // Ignore invalid provider
   }
-  return normalized;
+  return canonicalizeProviderName(normalized);
 }
 
 function validateRequireAuth(value) {

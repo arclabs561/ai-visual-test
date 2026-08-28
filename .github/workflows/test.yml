@@ -41,12 +41,7 @@ jobs:
         run: npm audit --audit-level=high || echo "Audit completed with warnings"
       
       - name: Check TypeScript definitions
-        run: |
-          if command -v tsc &> /dev/null; then
-            npx tsc --noEmit index.d.ts || echo "TypeScript check skipped (tsc not available)"
-          else
-            echo "TypeScript check skipped (tsc not installed)"
-          fi
+        run: npm run test:types
 
   lint:
     runs-on: ubuntu-latest

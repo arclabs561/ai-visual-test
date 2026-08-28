@@ -8,6 +8,12 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 
+function registerMatchers(createMatchers) {
+  const registered = {};
+  createMatchers({ extend(matchers) { Object.assign(registered, matchers); } });
+  return registered;
+}
+
 describe('Vitest/Jest Matchers', () => {
   let createMatchers;
 
@@ -26,13 +32,7 @@ describe('Vitest/Jest Matchers', () => {
   });
 
   it('should register matchers when given valid expect', () => {
-    const registered = {};
-    const mockExpect = {
-      extend(matchers) {
-        Object.assign(registered, matchers);
-      }
-    };
-    createMatchers(mockExpect);
+    const registered = registerMatchers(createMatchers);
 
     assert.ok('toPassVisualCheck' in registered, 'Missing toPassVisualCheck');
     assert.ok('toHaveVisualScore' in registered, 'Missing toHaveVisualScore');
@@ -40,8 +40,7 @@ describe('Vitest/Jest Matchers', () => {
   });
 
   it('toPassVisualCheck should reject non-string input', async () => {
-    const registered = {};
-    createMatchers({ extend(m) { Object.assign(registered, m); } });
+    const registered = registerMatchers(createMatchers);
 
     const result = await registered.toPassVisualCheck(123, 'test');
     assert.strictEqual(result.pass, false);
@@ -49,8 +48,7 @@ describe('Vitest/Jest Matchers', () => {
   });
 
   it('toHaveVisualScore should reject non-string input', async () => {
-    const registered = {};
-    createMatchers({ extend(m) { Object.assign(registered, m); } });
+    const registered = registerMatchers(createMatchers);
 
     const result = await registered.toHaveVisualScore(null, 7, 'test');
     assert.strictEqual(result.pass, false);
@@ -58,8 +56,7 @@ describe('Vitest/Jest Matchers', () => {
   });
 
   it('toMatchVisually should reject non-string input', async () => {
-    const registered = {};
-    createMatchers({ extend(m) { Object.assign(registered, m); } });
+    const registered = registerMatchers(createMatchers);
 
     const result = await registered.toMatchVisually(42, 'after.png', 'test');
     assert.strictEqual(result.pass, false);
@@ -67,8 +64,7 @@ describe('Vitest/Jest Matchers', () => {
   });
 
   it('toPassVisualCheck should handle validation errors gracefully', async () => {
-    const registered = {};
-    createMatchers({ extend(m) { Object.assign(registered, m); } });
+    const registered = registerMatchers(createMatchers);
 
     // Pass a path that doesn't exist -- should fail gracefully, not throw.
     // In CI (no API keys), validateScreenshot returns enabled:false with score null.
@@ -76,5 +72,63 @@ describe('Vitest/Jest Matchers', () => {
     // Either way: pass must be false.
     const result = await registered.toPassVisualCheck('/nonexistent/path.png', 'test');
     assert.strictEqual(result.pass, false);
+  });
+
+  it('toMatchVisually uses the counterbalanced candidate score', async (t) => {
+    const { VLLMJudge } = await import('../../src/judge.mjs');
+    const originalJudge = VLLMJudge.prototype.judgeScreenshot;
+    t.after(() => { VLLMJudge.prototype.judgeScreenshot = originalJudge; });
+
+    let callCount = 0;
+    VLLMJudge.prototype.judgeScreenshot = async () => {
+      callCount += 1;
+      return callCount === 1
+        ? {
+            enabled: true, kind: 'comparison', winner: 'B', score: 8,
+            scores: { A: 4, B: 8 }, comparisonConfidence: 0.9,
+            differences: [], issues: [], reasoning: 'B wins', recommendations: [],
+          }
+        : {
+            enabled: true, kind: 'comparison', winner: 'A', score: 5,
+            scores: { A: 9, B: 5 }, comparisonConfidence: 0.8,
+            differences: [], issues: [], reasoning: 'A wins', recommendations: [],
+          };
+    };
+
+    const registered = registerMatchers(createMatchers);
+    const result = await registered.toMatchVisually(
+      'before.png',
+      'after.png',
+      'compare layout',
+      { minScore: 8.5 },
+    );
+
+    assert.strictEqual(callCount, 2);
+    assert.strictEqual(result.pass, true);
+    assert.match(result.message(), /8\.5\/10/);
+  });
+
+  it('toMatchVisually fails when image order changes the winner', async (t) => {
+    const { VLLMJudge } = await import('../../src/judge.mjs');
+    const originalJudge = VLLMJudge.prototype.judgeScreenshot;
+    t.after(() => { VLLMJudge.prototype.judgeScreenshot = originalJudge; });
+
+    VLLMJudge.prototype.judgeScreenshot = async () => ({
+      enabled: true, kind: 'comparison', winner: 'B', score: 9,
+      scores: { A: 8, B: 9 }, comparisonConfidence: 0.95,
+      differences: [], issues: [], reasoning: 'second position wins', recommendations: [],
+    });
+
+    const registered = registerMatchers(createMatchers);
+    const result = await registered.toMatchVisually(
+      'before.png',
+      'after.png',
+      'compare layout',
+      { minScore: 7 },
+    );
+
+    assert.strictEqual(result.pass, false, 'a position-sensitive verdict must not pass on score alone');
+    assert.match(result.message(), /indeterminate/);
+    assert.match(result.message(), /image-order verdicts conflicted/);
   });
 });

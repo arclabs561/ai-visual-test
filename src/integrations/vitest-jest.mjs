@@ -163,14 +163,18 @@ export function createMatchers(expect) {
       }
 
       const score = result.score;
-      const pass = typeof score === 'number' && score >= minScore;
+      const determinate = result.winner !== 'indeterminate';
+      const pass = determinate && typeof score === 'number' && score >= minScore;
       const topIssues = (result.issues || []).slice(0, 3).join('; ') || 'none';
+      const verdict = determinate
+        ? `winner: ${result.winner ?? 'unknown'}`
+        : 'winner: indeterminate (image-order verdicts conflicted)';
 
       return {
         message: () =>
           pass
-            ? `expected comparison score < ${minScore}, but got ${score}/10`
-            : `expected comparison score >= ${minScore}, but got ${score ?? 'null'}/10. Issues: ${topIssues}`,
+            ? `expected comparison score < ${minScore}, but got ${score}/10 (${verdict})`
+            : `expected a determinate comparison score >= ${minScore}, but got ${score ?? 'null'}/10 (${verdict}). Issues: ${topIssues}`,
         pass,
       };
     },

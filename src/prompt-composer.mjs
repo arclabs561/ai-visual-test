@@ -255,12 +255,15 @@ function buildComparisonInstructions(isComparison) {
   return `COMPARISON INSTRUCTIONS:
 You are comparing two screenshots side-by-side. Return JSON with:
 {
-  "winner": "A" | "B" | "tie",
+  "winner": "A" | "B" | "tie" | "indeterminate",
   "confidence": 0.0-1.0,
   "reasoning": "explanation",
   "differences": ["difference1", "difference2"],
   "scores": {"A": 0-10, "B": 0-10}
 }
+
+Image A is the first supplied image; Image B is the second supplied image.
+Use "indeterminate" when the evidence is insufficient to choose or declare a tie.
 
 Focus on:
 - Which screenshot better meets the criteria?

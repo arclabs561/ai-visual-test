@@ -30,6 +30,12 @@ export interface ValidationResult {
   differences?: string[];
   scores?: { A: number; B: number };
   comparisonConfidence?: number;
+  counterBalance?: {
+    enabled: true;
+    status: 'agree' | 'conflict' | 'incomplete';
+    canonicalWinners: Array<'A' | 'B' | 'tie' | 'indeterminate' | null>;
+    [key: string]: unknown;
+  };
   captureMetadata?: Record<string, unknown> | null;
   [key: string]: unknown;
 }
@@ -40,6 +46,7 @@ export interface ValidationContext {
   modelTier?: 'fast' | 'balanced' | 'best';
   testType?: string;
   viewport?: unknown;
+  counterBalance?: boolean;
   [key: string]: unknown;
 }
 

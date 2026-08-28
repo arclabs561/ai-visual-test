@@ -9,7 +9,7 @@ import {
   buildRepairInstruction,
   parseReviewOutcome
 } from '#review-contract';
-import { openAIResponseFormat, resolveStructuredOutput } from '#structured-output';
+import { resolveStructuredOutput } from '#structured-output';
 
 test('validates a canonical scalar review', () => {
   const parsed = parseReviewOutcome({
@@ -103,14 +103,15 @@ test('repair prompt contains diagnostics but never provider output', () => {
 
 test('negotiates strict, best-effort, and compatibility output modes', () => {
   const openai = resolveStructuredOutput({ provider: 'openai', model: 'gpt-4o', reviewMode: 'scalar' });
-  assert.equal(openAIResponseFormat(openai).json_schema.strict, true);
+  assert.equal(openai.mode, 'json-schema');
+  assert.equal(openai.strict, true);
 
   const groq = resolveStructuredOutput({ provider: 'groq', model: 'qwen/qwen3.6-27b' });
-  assert.deepEqual(openAIResponseFormat(groq), { type: 'json_object' });
+  assert.equal(groq.mode, 'json-object');
   assert.equal(groq.diagnostic, 'model_schema_support_unknown');
 
   const override = resolveStructuredOutput({ provider: 'openai', model: 'custom-vision-model' });
-  assert.deepEqual(openAIResponseFormat(override), { type: 'json_object' });
+  assert.equal(override.mode, 'json-object');
 
   const claude = resolveStructuredOutput({ provider: 'claude', model: 'claude-sonnet-4' });
   assert.equal(claude.mode, 'prompt-only');

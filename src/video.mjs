@@ -179,7 +179,7 @@ export class VideoJudge extends VLLMJudge {
     }
     const videos = prepareVideos(input, this.maxMB, this.transcodeParams);
     const apiResponse = await this._callVideoProviderAPI(prompt, videos, context);
-    const parsed = await this._parseProviderResponse(apiResponse);
+    const parsed = await this.providerAdapter.parseResponse(apiResponse);
     return this._buildResult({
       judgment: parsed.judgment,
       data: parsed.data,

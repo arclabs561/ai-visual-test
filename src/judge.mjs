@@ -367,7 +367,7 @@ export class VLLMJudge {
           isMultiImage,
           structuredOutput
         );
-        const parsedResponse = await this._parseProviderResponse(apiResponse);
+        const parsedResponse = await this.providerAdapter.parseResponse(apiResponse);
         try {
           const parsedReview = parseReviewOutcome(parsedResponse.judgment, {
             mode: reviewMode,
@@ -1021,6 +1021,8 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
   /**
    * Parse a provider API response: validate content-type, check for errors,
    * extract judgment text and logprobs.
+   * @deprecated Internal compatibility wrapper. Provider parsing now belongs
+   * to the selected adapter.
    */
   _parseProviderResponse(apiResponse) {
     return this.providerAdapter.parseResponse(apiResponse);
@@ -1028,6 +1030,7 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
 
   /**
    * Call Google Gemini API
+   * @deprecated Use the selected provider adapter through judgeScreenshot.
    *
    * @param {string | string[]} base64Images - Single image or array of images (base64)
    * @param {string} prompt - Evaluation prompt
@@ -1046,6 +1049,7 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
 
   /**
    * Call OpenAI API
+   * @deprecated Use the selected provider adapter through judgeScreenshot.
    * 
    * @param {string | string[]} base64Images - Single image or array of images (base64)
    * @param {string} prompt - Evaluation prompt
@@ -1065,6 +1069,7 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
 
   /**
    * Call Anthropic Claude API
+   * @deprecated Use the selected provider adapter through judgeScreenshot.
    * 
    * @param {string | string[]} base64Images - Single image or array of images (base64)
    * @param {string} prompt - Evaluation prompt

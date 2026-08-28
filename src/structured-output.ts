@@ -25,20 +25,3 @@ export function resolveStructuredOutput({
   const schema = getReviewSchema(reviewMode);
   return resolveProviderStructuredOutput({ provider: provider ?? '', model, reviewMode, enabled, schema });
 }
-
-export function openAIResponseFormat(
-  structured: StructuredOutputSpec,
-): Record<string, unknown> | null {
-  if (structured.mode === 'json-schema') {
-    return {
-      type: 'json_schema',
-      json_schema: {
-        name: structured.name,
-        strict: structured.strict,
-        schema: structured.schema,
-      },
-    };
-  }
-  if (structured.mode === 'json-object') return { type: 'json_object' };
-  return null;
-}

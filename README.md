@@ -130,7 +130,10 @@ console.log(result.comparisonConfidence); // 0-1
 ```
 
 For compatibility with score-based matchers, `result.score` is the candidate
-(`B`) score. Use `winner` for the pairwise verdict.
+(`B`) score. Use `winner` for the pairwise verdict. Comparison runs in both
+image orders by default; conflicting canonical winners return `indeterminate`
+with `result.counterBalance.status === 'conflict'`. Set
+`{ counterBalance: false }` to make a single comparison request.
 
 ## Structured Output
 

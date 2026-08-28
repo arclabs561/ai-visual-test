@@ -16,6 +16,114 @@
 
 import { normalizeValidationResult } from './validation-result-normalizer.mjs';
 
+function reverseWinner(winner) {
+  if (winner === 'A') return 'B';
+  if (winner === 'B') return 'A';
+  return winner;
+}
+
+function isPairwiseResult(result) {
+  return result?.enabled !== false &&
+    result?.kind === 'comparison' &&
+    ['A', 'B', 'tie', 'indeterminate'].includes(result.winner) &&
+    typeof result.scores?.A === 'number' &&
+    typeof result.scores?.B === 'number';
+}
+
+function average(a, b) {
+  if (typeof a === 'number' && typeof b === 'number') return (a + b) / 2;
+  return typeof a === 'number' ? a : b;
+}
+
+function uniqueStrings(...values) {
+  return [...new Set(values.flat().filter(value => typeof value === 'string' && value.length > 0))];
+}
+
+/**
+ * Evaluate a comparison in both image orders and reconcile both passes back to
+ * the caller's canonical before=A / after=B identity.
+ *
+ * @param {(images: string[], prompt: string, context: Record<string, unknown>) => Promise<Record<string, any>>} evaluateFn
+ * @param {string} beforePath
+ * @param {string} afterPath
+ * @param {string} prompt
+ * @param {Record<string, unknown>} [context]
+ * @param {{ enabled?: boolean }} [options]
+ */
+export async function evaluatePairwiseCounterBalance(
+  evaluateFn,
+  beforePath,
+  afterPath,
+  prompt,
+  context = {},
+  options = {},
+) {
+  const original = await evaluateFn(
+    [beforePath, afterPath],
+    prompt,
+    { ...context, comparisonOrder: 'AB' },
+  );
+
+  if (options.enabled === false || !isPairwiseResult(original)) return original;
+
+  const reversed = await evaluateFn(
+    [afterPath, beforePath],
+    prompt,
+    { ...context, comparisonOrder: 'BA' },
+  );
+  if (!isPairwiseResult(reversed)) {
+    return {
+      ...original,
+      winner: 'indeterminate',
+      assessment: 'indeterminate',
+      comparisonConfidence: 0,
+      counterBalance: {
+        enabled: true,
+        status: 'incomplete',
+        canonicalWinners: [original.winner, null],
+      },
+    };
+  }
+
+  const reversedWinner = reverseWinner(reversed.winner);
+  const scores = {
+    A: average(original.scores.A, reversed.scores.B),
+    B: average(original.scores.B, reversed.scores.A),
+  };
+  const agrees = original.winner === reversedWinner;
+  const winner = agrees ? original.winner : 'indeterminate';
+  const originalConfidence = original.comparisonConfidence;
+  const reversedConfidence = reversed.comparisonConfidence;
+  const comparisonConfidence = agrees
+    ? Math.min(
+        typeof originalConfidence === 'number' ? originalConfidence : 1,
+        typeof reversedConfidence === 'number' ? reversedConfidence : 1,
+      )
+    : 0;
+
+  return normalizeValidationResult({
+    ...original,
+    winner,
+    assessment: winner,
+    scores,
+    score: scores.B,
+    comparisonConfidence,
+    differences: uniqueStrings(original.differences || [], reversed.differences || []),
+    issues: uniqueStrings(original.issues || [], reversed.issues || []),
+    reasoning: `Order-counterbalanced comparison:\nA/B: ${original.reasoning || 'N/A'}\nB/A: ${reversed.reasoning || 'N/A'}\nVerdict: ${winner}`,
+    counterBalance: {
+      enabled: true,
+      status: agrees ? 'agree' : 'conflict',
+      canonicalWinners: [original.winner, reversedWinner],
+      orderConfidence: [originalConfidence ?? null, reversedConfidence ?? null],
+      orderScores: {
+        AB: original.scores,
+        BA: reversed.scores,
+      },
+    },
+  }, 'evaluatePairwiseCounterBalance');
+}
+
 /**
  * Run evaluation with counter-balancing to eliminate position bias
  *
@@ -137,4 +245,3 @@ export function shouldUseCounterBalance(context) {
     (Array.isArray(context.images) && context.images.length > 1)
   );
 }
-

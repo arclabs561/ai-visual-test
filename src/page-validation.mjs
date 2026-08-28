@@ -11,6 +11,7 @@ import { ValidationError } from './errors.mjs';
 import { validatePrompt } from './validation.mjs';
 import { log } from './logger.mjs';
 import { captureStableScreenshot } from './stable-capture.mjs';
+import { evaluatePairwiseCounterBalance } from './position-counterbalance.mjs';
 
 /**
  * Validate a Playwright page by taking a screenshot and sending it to the VLM.
@@ -85,9 +86,14 @@ export async function validateComparison(beforePath, afterPath, prompt, context 
 
   log('[Convenience] Comparing screenshots:', { beforePath, afterPath });
 
-  return await validateScreenshot(
-    [beforePath, afterPath],
+  const { counterBalance = true, ...reviewContext } = context;
+  return await evaluatePairwiseCounterBalance(
+    (images, effectivePrompt, effectiveContext) =>
+      validateScreenshot(images, effectivePrompt, effectiveContext),
+    beforePath,
+    afterPath,
     comparisonPrompt,
-    { testType: 'comparison', ...context }
+    { testType: 'comparison', ...reviewContext },
+    { enabled: counterBalance !== false },
   );
 }

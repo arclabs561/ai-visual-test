@@ -97,22 +97,23 @@ test('validateComparison: passes both images and wrapped prompt to judge', async
   const { VLLMJudge } = await import('../../src/judge.mjs');
 
   const originalJudge = VLLMJudge.prototype.judgeScreenshot;
-  let capturedArgs = null;
-
-  const mockResult = {
-    score: 8,
-    pass: true,
-    issues: [],
-    reasoning: 'No regressions detected',
-    assessment: 'pass',
-    recommendations: [],
-    strengths: [],
-    richIssues: []
-  };
+  const capturedArgs = [];
 
   VLLMJudge.prototype.judgeScreenshot = async function (imagePath, prompt, context) {
-    capturedArgs = { imagePath, prompt, context };
-    return mockResult;
+    capturedArgs.push({ imagePath, prompt, context });
+    return capturedArgs.length === 1
+      ? {
+          enabled: true, kind: 'comparison', winner: 'B', score: 8,
+          scores: { A: 4, B: 8 }, comparisonConfidence: 0.9,
+          differences: ['after fixes contrast'], issues: [], reasoning: 'B wins',
+          recommendations: [],
+        }
+      : {
+          enabled: true, kind: 'comparison', winner: 'A', score: 5,
+          scores: { A: 9, B: 5 }, comparisonConfidence: 0.8,
+          differences: ['first image fixes contrast'], issues: [], reasoning: 'A wins',
+          recommendations: [],
+        };
   };
 
   const beforePath = join(TEST_DIR, 'before.png');
@@ -125,32 +126,35 @@ test('validateComparison: passes both images and wrapped prompt to judge', async
     });
 
     // Verify result passes through
-    assert.strictEqual(result.score, 8);
-    assert.strictEqual(result.pass, true);
+    assert.strictEqual(result.score, 8.5);
+    assert.strictEqual(result.winner, 'B');
+    assert.strictEqual(result.counterBalance.status, 'agree');
 
     // Verify judge was called with array of both paths
-    assert.ok(capturedArgs, 'judgeScreenshot should have been called');
-    assert.ok(Array.isArray(capturedArgs.imagePath), 'imagePath should be an array');
-    assert.strictEqual(capturedArgs.imagePath.length, 2);
-    assert.strictEqual(capturedArgs.imagePath[0], beforePath);
-    assert.strictEqual(capturedArgs.imagePath[1], afterPath);
+    assert.strictEqual(capturedArgs.length, 2);
+    assert.deepStrictEqual(capturedArgs.map(call => call.imagePath), [
+      [beforePath, afterPath],
+      [afterPath, beforePath],
+    ]);
 
     // Verify prompt was wrapped with comparison instructions
     assert.ok(
-      capturedArgs.prompt.includes('Compare these two screenshots'),
+      capturedArgs[0].prompt.includes('Compare these two screenshots'),
       'Prompt should include comparison prefix'
     );
     assert.ok(
-      capturedArgs.prompt.includes(userPrompt),
+      capturedArgs[0].prompt.includes(userPrompt),
       'Prompt should include user prompt'
     );
     assert.ok(
-      capturedArgs.prompt.includes('improvements or regressions'),
+      capturedArgs[0].prompt.includes('improvements or regressions'),
       'Prompt should mention improvements/regressions'
     );
 
     // Verify context includes testType
-    assert.strictEqual(capturedArgs.context.testType, 'comparison');
+    assert.strictEqual(capturedArgs[0].context.testType, 'comparison');
+    assert.strictEqual(capturedArgs[0].context.comparisonOrder, 'AB');
+    assert.strictEqual(capturedArgs[1].context.comparisonOrder, 'BA');
   } finally {
     VLLMJudge.prototype.judgeScreenshot = originalJudge;
   }

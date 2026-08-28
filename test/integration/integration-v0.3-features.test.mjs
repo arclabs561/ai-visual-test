@@ -12,7 +12,7 @@ import '../test-setup.mjs'; // Auto-load .env (must be first)
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import { VLLMJudge } from '../../src/judge.mjs';
-import { comparePair } from '../../src/pair-comparison.mjs';
+import { validateComparison } from '../../src/page-validation.mjs';
 import { EnsembleJudge } from '../../src/ensemble-judge.mjs';
 import { detectHallucination } from '../../src/hallucination-detector.mjs';
 import { composeSingleImagePrompt, composeComparisonPrompt } from '../../src/prompt-composer.mjs';
@@ -125,14 +125,13 @@ describe('v0.3.0 Features Integration', () => {
         await createTestImage(img1);
         await createTestImage(img2);
         
-        const result = await comparePair(img1, img2, 'Compare these screenshots', {});
+        const result = await validateComparison(img1, img2, 'Compare these screenshots', {});
         
         assert.ok(result !== undefined);
         if (result.enabled) {
-          // Verify it used multi-image method
-          assert.ok(result.comparison);
-          assert.strictEqual(result.comparison.method, 'multi-image');
-          assert.ok(['A', 'B', 'tie'].includes(result.winner));
+          assert.strictEqual(result.kind, 'comparison');
+          assert.ok(['A', 'B', 'tie', 'indeterminate'].includes(result.winner));
+          assert.ok(result.scores && typeof result.scores.B === 'number');
         }
       } finally {
         cleanup([img1, img2]);
@@ -251,11 +250,11 @@ describe('v0.3.0 Features Integration', () => {
         assert.ok(prompt.includes('accessibility'));
         
         // 2. Use multi-image comparison
-        const comparison = await comparePair(img1, img2, prompt, {});
+        const comparison = await validateComparison(img1, img2, prompt, {});
         
         if (comparison.enabled) {
-          assert.ok(comparison.comparison);
-          assert.strictEqual(comparison.comparison.method, 'multi-image');
+          assert.strictEqual(comparison.kind, 'comparison');
+          assert.ok(['A', 'B', 'tie', 'indeterminate'].includes(comparison.winner));
           
           // 3. Check for hallucination in reasoning
           if (comparison.reasoning) {
@@ -284,4 +283,3 @@ describe('v0.3.0 Features Integration', () => {
     });
   });
 });
-

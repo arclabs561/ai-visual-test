@@ -10,13 +10,9 @@
 
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import {
-  validateScreenshot,
-  validateWithGoals,
-  createGameGoal,
-  generateGamePrompt,
-  composeSingleImagePrompt
-} from '../../src/index.mjs';
+import { validateScreenshot } from '../../src/index.mjs';
+import { validateWithGoals, createGameGoal, generateGamePrompt } from '../../src/game/index.mjs';
+import { composeSingleImagePrompt } from '../../src/prompt-composer.mjs';
 import { createTestImage } from '../test-image-utils.mjs';
 import { createConfig } from '../../src/config.mjs';
 import { skipIfNoApiKey } from '../helpers/api-key-check.mjs';
@@ -298,4 +294,3 @@ describe('Variable Goals Cohesive Integration', () => {
     });
   });
 });
-

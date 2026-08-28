@@ -21,6 +21,7 @@ describe('Startup Validation', () => {
     delete process.env.OPENAI_API_KEY;
     delete process.env.ANTHROPIC_API_KEY;
     delete process.env.GROQ_API_KEY;
+    delete process.env.OPENROUTER_API_KEY;
     delete process.env.VLM_PROVIDER;
   });
   
@@ -68,7 +69,8 @@ describe('Startup Validation', () => {
         { provider: 'gemini', key: 'GEMINI_API_KEY' },
         { provider: 'openai', key: 'OPENAI_API_KEY' },
         { provider: 'claude', key: 'ANTHROPIC_API_KEY' },
-        { provider: 'groq', key: 'GROQ_API_KEY' }
+        { provider: 'groq', key: 'GROQ_API_KEY' },
+        { provider: 'openrouter', key: 'OPENROUTER_API_KEY' }
       ];
       
       for (const { provider, key } of providers) {
@@ -77,6 +79,7 @@ describe('Startup Validation', () => {
         delete process.env.OPENAI_API_KEY;
         delete process.env.ANTHROPIC_API_KEY;
         delete process.env.GROQ_API_KEY;
+        delete process.env.OPENROUTER_API_KEY;
         delete process.env.API_KEY;
         
         // Set provider and key
@@ -132,4 +135,3 @@ describe('Startup Validation', () => {
     });
   });
 });
-

@@ -21,6 +21,7 @@ const ALLOWED_ENV_KEYS = [
   'OPENAI_API_KEY',
   'ANTHROPIC_API_KEY',
   'GROQ_API_KEY',  // Added for Groq integration (high-frequency decisions)
+  'OPENROUTER_API_KEY',
   'API_KEY',
   'VLLM_API_KEY',
   'VLM_PROVIDER',
@@ -33,7 +34,7 @@ const ALLOWED_ENV_KEYS = [
 
 // Valid values for VLM_PROVIDER
 // Groq added for high-frequency decisions (10-60Hz temporal decisions)
-const VALID_PROVIDERS = ['gemini', 'openai', 'claude', 'groq'];
+const VALID_PROVIDERS = ['gemini', 'openai', 'claude', 'groq', 'openrouter'];
 
 // Validation functions for environment variables
 function validateRateLimitMaxRequests(value) {
@@ -158,4 +159,3 @@ export function loadEnv(basePath = null) {
   
   return false;
 }
-

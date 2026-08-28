@@ -65,6 +65,27 @@ test('loadEnv - loads .env file', () => {
   }
 });
 
+test('loadEnv - supports OpenRouter configuration', () => {
+  const envFile = join(TEST_DIR, '.env');
+  writeFileSync(envFile, 'OPENROUTER_API_KEY=test_value\nVLM_PROVIDER=openrouter');
+
+  const originalKey = process.env.OPENROUTER_API_KEY;
+  const originalProvider = process.env.VLM_PROVIDER;
+  delete process.env.OPENROUTER_API_KEY;
+  delete process.env.VLM_PROVIDER;
+
+  try {
+    assert.strictEqual(loadEnv(TEST_DIR), true);
+    assert.strictEqual(process.env.OPENROUTER_API_KEY, 'test_value');
+    assert.strictEqual(process.env.VLM_PROVIDER, 'openrouter');
+  } finally {
+    if (originalKey === undefined) delete process.env.OPENROUTER_API_KEY;
+    else process.env.OPENROUTER_API_KEY = originalKey;
+    if (originalProvider === undefined) delete process.env.VLM_PROVIDER;
+    else process.env.VLM_PROVIDER = originalProvider;
+  }
+});
+
 test('loadEnv - skips comments', () => {
   const envFile = join(TEST_DIR, '.env');
   // Use whitelisted key for testing
@@ -149,4 +170,3 @@ test('loadEnv - ignores non-whitelisted keys', () => {
     delete process.env.ANOTHER_BAD_KEY;
   }
 });
-

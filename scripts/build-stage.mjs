@@ -54,6 +54,7 @@ packageJson.imports = {
   ...(packageJson.imports || {}),
   '#provider-adapters': './src/provider-adapters.js',
   '#pairwise-fixture-metrics': './src/pairwise-fixture-metrics.js',
+  '#public-contract': './src/public-contract.js',
   '#review-contract': './src/review-contract.js',
   '#structured-output': './src/structured-output.js',
 };

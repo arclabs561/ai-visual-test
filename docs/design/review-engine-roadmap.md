@@ -131,8 +131,10 @@ flat strings remain canonical and rich metadata is now additive.
 Structured-output negotiation now also compiles from TypeScript. Screenshot and
 video parsing call the selected adapter directly; duplicated response-format
 logic is gone, while provider-specific forwarding methods retain a documented
-deprecation window. The remaining Phase 3 work is generated public result
-declarations and eventual removal of those forwarding methods in a major release.
+deprecation window. Root result, context, configuration, and semantic contracts
+now also come from generated TypeScript declarations. Phase 3 is locally
+complete; removal of forwarding methods is deliberately reserved for a major
+release after the deprecation window.
 
 **Gate:** every supported provider passes canned capability/envelope matrices, including arbitrary model override fallback; no provider switch remains above the adapter boundary.
 

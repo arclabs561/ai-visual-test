@@ -113,10 +113,10 @@ export function estimateCost(provider: string, options?: {
   imageCount?: number; promptLength?: number; model?: string | null;
 }): CostEstimate;
 
-export class VideoJudge extends VLLMJudge {
-  judgeVideo(input: string | string[] | Array<{ path: string; label?: string; mime?: string }>, prompt: string, context?: ValidationContext): Promise<ValidationResult>;
-}
-export function judgeVideo(input: string | string[] | Array<{ path: string; label?: string; mime?: string }>, prompt: string, context?: ValidationContext): Promise<ValidationResult>;
+export const VideoJudge: typeof import('#video').VideoJudge;
+export type VideoJudge = InstanceType<typeof VideoJudge>;
+export const judgeVideo: typeof import('#video').judgeVideo;
+export type { VideoContext, VideoInput, VideoInputEntry, VideoJudgeOptions, VideoTranscodeOptions } from '#video';
 
 export interface ExtractedIssue { severity: string; timestamp: string; desc: string; }
 export function timestampToSeconds(timestamp: string): number;

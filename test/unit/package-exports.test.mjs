@@ -24,7 +24,7 @@ function exportRoute(entry) {
 function declaredValueExports(source) {
   const declarations = [...source.matchAll(/^export\s+(?:declare\s+)?(?:class|function|const)\s+(\w+)/gm)]
     .map(match => match[1]);
-  const reexports = [...source.matchAll(/^export\s*\{([\s\S]*?)\}\s*from\s+['"][^'"]+['"];?/gm)]
+  const reexports = [...source.matchAll(/^export\s*\{([^}]*)\}\s*from\s+['"][^'"]+['"];?/gm)]
     .flatMap(match => match[1].split(','))
     .map(name => name.trim())
     .filter(name => !name.startsWith('type '))
@@ -34,7 +34,7 @@ function declaredValueExports(source) {
 }
 
 function namedValueReexports(source) {
-  return [...source.matchAll(/^export\s*\{([\s\S]*?)\}\s*from\s+['"]([^'"]+)['"];?/gm)]
+  return [...source.matchAll(/^export\s*\{([^}]*)\}\s*from\s+['"]([^'"]+)['"];?/gm)]
     .map(match => ({
       source: match[2],
       values: match[1].split(',')

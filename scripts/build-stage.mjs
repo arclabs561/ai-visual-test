@@ -50,7 +50,7 @@ copyTestAssets(join(ROOT, 'test'), join(STAGE, 'test'));
 
 const packageJson = JSON.parse(readFileSync(join(STAGE, 'package.json'), 'utf8'));
 packageJson.private = true;
-for (const subpath of ['./temporal', './ensemble', './game', './perception', './playwright', './vitest', './jest']) {
+for (const subpath of ['./temporal', './ensemble', './game', './perception', './video', './playwright', './vitest', './jest']) {
   const route = packageJson.exports?.[subpath];
   if (!route || typeof route !== 'object') {
     throw new Error(`Missing staged package route: ${subpath}`);
@@ -64,6 +64,9 @@ for (const subpath of ['./temporal', './ensemble', './game', './perception', './
   } else if (subpath === './perception') {
     route.import = './src/perception/index.js';
     route.types = './src/perception/index.d.ts';
+  } else if (subpath === './video') {
+    route.import = './src/video.js';
+    route.types = './src/video.d.ts';
   } else if (subpath === './ensemble') {
     route.import = './src/ensemble/index.js';
     route.types = './types/ensemble-barrel.d.ts';
@@ -96,6 +99,7 @@ packageJson.imports = {
   '#temporal-orchestration': './src/temporal-orchestration.js',
   '#temporal-prompt-formatting': './src/temporal-prompt-formatting.js',
   '#validation-result-normalizer': './src/validation-result-normalizer.js',
+  '#video': './src/video.js',
 };
 writeFileSync(join(STAGE, 'package.json'), `${JSON.stringify(packageJson, null, 2)}\n`);
 

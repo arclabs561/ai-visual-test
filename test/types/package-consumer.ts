@@ -13,11 +13,22 @@ import * as playwright from '@arclabs561/ai-visual-test/playwright';
 import * as vitest from '@arclabs561/ai-visual-test/vitest';
 import * as jest from '@arclabs561/ai-visual-test/jest';
 import * as perception from '@arclabs561/ai-visual-test/perception';
+import { VideoJudge, judgeVideo, type VideoContext, type VideoInput, type VideoJudgeOptions } from '@arclabs561/ai-visual-test/video';
 
 export const publicModules = {
   root, validators, temporal, multiModal, ensemble, video, extractors,
   persona, utils, game, errors, playwright, vitest, jest, perception,
 };
+
+const videoInput: VideoInput = [{ path: 'clip.mp4', label: 'checkout flow', mime: 'video/mp4' }];
+const videoOptions: VideoJudgeOptions = { enabled: false, provider: 'gemini', maxMB: 12, maxTotalMB: 20 };
+const videoContext: VideoContext = { maxTokens: 512, attempts: 2, timeout: 5_000 };
+export const videoJudge: VideoJudge = new VideoJudge(videoOptions);
+export const videoResult = judgeVideo(videoInput, 'Review the checkout flow', { ...videoOptions, ...videoContext });
+export const inheritedScreenshotResult: Promise<root.ValidationResult> = videoJudge.judgeScreenshot(
+  'checkout.png',
+  'Review the checkout screenshot',
+);
 
 const gameLocator: game.GameLocator = {
   async count() { return 1; },

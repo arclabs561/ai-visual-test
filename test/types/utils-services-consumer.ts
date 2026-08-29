@@ -39,6 +39,7 @@ selectModelTierAndProvider({ costSensitive: true }).reason satisfies string;
 
 validateStartupSoft({ provider: 'gemini' }).warnings satisfies string[];
 validateStartup({ provider: 'gemini', strict: true }).valid satisfies boolean;
+validateStartupSoft({ env: { VLM_PROVIDER: 'gemini', GEMINI_API_KEY: 'fixture-key' } }).valid satisfies boolean;
 
 buildRubricPrompt(DEFAULT_RUBRIC, true) satisfies string;
 calculateCostComparison({ modelTier: 'balanced' }).recommendation.reason satisfies string;

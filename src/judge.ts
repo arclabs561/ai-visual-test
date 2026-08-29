@@ -1303,7 +1303,7 @@ export async function validateScreenshot(imagePath: ImagePath, prompt: string, c
         speed: context.speed,
         quality: context.quality,
         costSensitive: context.costSensitive,
-        env: process.env
+        env: context.env ?? process.env
       });
       context = {
         ...context,

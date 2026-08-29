@@ -10,6 +10,29 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = join(ROOT, 'dist');
 const scratch = mkdtempSync(join(tmpdir(), 'ai-visual-pack-'));
 const consumer = join(scratch, 'consumer');
+const UTILS_EXPORTS = [
+  'AIBrowserTestError', 'API_CONSTANTS', 'BATCH_OPTIMIZER_CONSTANTS', 'BatchOptimizer',
+  'CACHE_CONSTANTS', 'CacheError', 'ConfigError', 'CostTracker', 'DEFAULT_RUBRIC',
+  'FileError', 'LatencyAwareBatchOptimizer', 'ProviderError', 'ScoreTracker',
+  'StateMismatchError', 'TEMPORAL_CONSTANTS', 'TimeoutError', 'UNCERTAINTY_CONSTANTS',
+  'ValidationError', 'aggregateFeedback', 'analyzeScoreDistribution', 'assertArray',
+  'assertFunction', 'assertNonEmptyString', 'assertNumber', 'assertObject', 'assertString',
+  'buildRubricPrompt', 'calculateBackoff', 'calculateCostComparison',
+  'calculateRankAgreement', 'calibrateScore', 'clearCache', 'compressContext',
+  'compressStateHistory', 'createConfig', 'deriveCalibrationProfile', 'disableDebug',
+  'enableDebug', 'enhanceErrorMessage', 'error', 'extractStructuredData', 'generateCacheKey',
+  'generateRecommendations', 'getBudgetStatus', 'getCacheStats', 'getCached',
+  'getCalibrationProfile', 'getConfig', 'getCostStats', 'getCostTracker', 'getProperty',
+  'getProvider', 'getRubricForTestType', 'initCache', 'initErrorHandlers',
+  'isAIBrowserTestError', 'isArray', 'isDebugEnabled', 'isErrorType', 'isFunction',
+  'isNumber', 'isObject', 'isPersona', 'isPromise', 'isRetryableError', 'isString',
+  'isTemporalNote', 'isValidationContext', 'isValidationResult', 'loadEnv', 'log',
+  'normalizeValidationResult', 'optimizeCost', 'pearsonCorrelation', 'pick', 'recordCost',
+  'resetCalibrationProfiles', 'retryWithBackoff', 'selectModelTier',
+  'selectModelTierAndProvider', 'selectProvider', 'setBudgetLimit', 'setCached',
+  'setCalibrationProfile', 'setConfig', 'spearmanCorrelation', 'validateStartup',
+  'validateStartupSoft', 'warn',
+];
 
 try {
   const tarballName = execFileSync('npm', ['pack', '--silent', '--pack-destination', scratch], {
@@ -37,6 +60,11 @@ try {
       : `${installedManifest.name}/${subpath.slice(2)}`);
   const importProgram = `for (const specifier of ${JSON.stringify(specifiers)}) { const loaded = await import(specifier); if (Object.keys(loaded).length === 0) throw new Error(specifier + ' has no exports'); }`;
   execFileSync(process.execPath, ['--input-type=module', '--eval', importProgram], {
+    cwd: consumer,
+    stdio: 'inherit',
+  });
+  const utilsProgram = `const utils = await import(${JSON.stringify(`${installedManifest.name}/utils`)}); const expected = ${JSON.stringify(UTILS_EXPORTS)}; const actual = Object.keys(utils).sort(); if (JSON.stringify(actual) !== JSON.stringify(expected.slice().sort())) throw new Error('Unexpected packed utils exports: ' + actual.join(','));`;
+  execFileSync(process.execPath, ['--input-type=module', '--eval', utilsProgram], {
     cwd: consumer,
     stdio: 'inherit',
   });
@@ -152,6 +180,21 @@ try {
   const personaConsumerPath = join(consumer, 'persona-consumer.ts');
   writeFileSync(personaConsumerPath, personaTypeConsumer);
   execFileSync(process.execPath, [join(ROOT, 'node_modules', 'typescript', 'bin', 'tsc'), '--noEmit', '--strict', '--target', 'ES2022', '--module', 'NodeNext', '--moduleResolution', 'NodeNext', '--skipLibCheck', 'false', personaConsumerPath], {
+    cwd: consumer,
+    stdio: 'inherit',
+  });
+
+  const utilsTypeConsumer = `import { generateCacheKey, isString, pick } from ${JSON.stringify(`${installedManifest.name}/utils`)};
+const cacheKey: string = generateCacheKey('packed-types', 'utility route', {});
+const picked: Pick<{ provider: string; timeout: number }, 'provider'> = pick({ provider: 'packed', timeout: 5000 }, ['provider']);
+function consume(value: unknown): string { return isString(value) ? value.toUpperCase() : cacheKey; }
+// @ts-expect-error utility keys must belong to the object.
+pick({ provider: 'packed' }, ['missing']);
+void picked;
+void consume;`;
+  const utilsConsumerPath = join(consumer, 'utils-consumer.ts');
+  writeFileSync(utilsConsumerPath, utilsTypeConsumer);
+  execFileSync(process.execPath, [join(ROOT, 'node_modules', 'typescript', 'bin', 'tsc'), '--noEmit', '--strict', '--target', 'ES2022', '--module', 'NodeNext', '--moduleResolution', 'NodeNext', '--skipLibCheck', 'false', utilsConsumerPath], {
     cwd: consumer,
     stdio: 'inherit',
   });

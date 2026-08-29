@@ -58,7 +58,7 @@ test('API_CONSTANTS are defined and have correct types', () => {
 });
 
 test('Constants are exported from utils subpath', async () => {
-  const { CACHE_CONSTANTS: IndexCache, TEMPORAL_CONSTANTS: IndexTemporal, API_CONSTANTS: IndexAPI } = await import('../../src/utils/index.mjs');
+  const { CACHE_CONSTANTS: IndexCache, TEMPORAL_CONSTANTS: IndexTemporal, API_CONSTANTS: IndexAPI } = await import('../../src/utils/index.js');
 
   assert(IndexCache, 'CACHE_CONSTANTS should be exported from utils subpath');
   assert(IndexTemporal, 'TEMPORAL_CONSTANTS should be exported from utils subpath');
@@ -69,4 +69,3 @@ test('Constants are exported from utils subpath', async () => {
   assert.strictEqual(IndexTemporal.DEFAULT_WINDOW_SIZE_MS, TEMPORAL_CONSTANTS.DEFAULT_WINDOW_SIZE_MS);
   assert.strictEqual(IndexAPI.DEFAULT_TIMEOUT_MS, API_CONSTANTS.DEFAULT_TIMEOUT_MS);
 });
-

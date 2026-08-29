@@ -113,7 +113,7 @@ describe('API Sub-Modules', () => {
   
   describe('utils sub-module', () => {
     it('should export utility functions', async () => {
-      const utils = await import('../../src/utils/index.mjs');
+      const utils = await import('../../src/utils/index.js');
       
       assert.ok(typeof utils.getCached === 'function', 'Should export getCached');
       assert.ok(typeof utils.createConfig === 'function', 'Should export createConfig');

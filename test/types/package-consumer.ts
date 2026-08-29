@@ -51,6 +51,19 @@ export const publicModules = {
   persona, utils, game, errors, playwright, vitest, jest, perception,
 };
 
+export function consumeTypedUtils(value: unknown): string {
+  if (utils.isString(value)) return value.toUpperCase();
+  return utils.generateCacheKey('typed-package-consumer', 'utility contract', {});
+}
+
+const pickedUtilityConfig: Pick<{ provider: string; timeout: number }, 'provider'> = utils.pick(
+  { provider: 'typed', timeout: 5_000 },
+  ['provider'],
+);
+void pickedUtilityConfig;
+// @ts-expect-error utils.pick only accepts keys present on the object.
+utils.pick({ provider: 'typed' }, ['missing']);
+
 const personaPage: persona.PersonaPage = {
   async setViewportSize() {},
   async goto() {},

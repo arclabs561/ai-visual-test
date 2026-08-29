@@ -12,6 +12,53 @@ test('buildTemporalGraph handles empty notes', async () => {
   assert.strictEqual(graph.graph.edges.length, 0, 'Should have no edges for empty notes');
 });
 
+test('buildTemporalGraph preserves aggregate timing and weighted source notes', async () => {
+  const startTime = 1_700_000_000_000;
+  const notes = [
+    { timestamp: startTime, elapsed: 0, score: 4, observation: 'button first' },
+    { timestamp: startTime + 500, elapsed: 500, score: 8, observation: 'button second' },
+    { timestamp: startTime + 1_000, elapsed: 1_000, score: 10, observation: 'button third' }
+  ];
+
+  const result = await buildTemporalGraph(notes, {
+    windowSize: 1_000,
+    decayFactor: 1,
+    useLLM: false
+  });
+
+  assert.strictEqual(result.windows.length, 2);
+  assert.deepStrictEqual(
+    result.windows.map(({ startTime: windowStart, endTime, notes: rawNotes }) => ({
+      startTime: windowStart,
+      endTime,
+      noteCount: rawNotes.length,
+      weights: rawNotes.map(note => note.weight)
+    })),
+    [
+      { startTime, endTime: startTime + 1_000, noteCount: 2, weights: [1, 1] },
+      { startTime: startTime + 1_000, endTime: startTime + 2_000, noteCount: 1, weights: [1] }
+    ],
+    'aggregation must retain the timing and weighted notes needed to build a graph'
+  );
+
+  assert.deepStrictEqual(
+    result.graph.nodes.map(node => ({
+      startTime: node.startTime,
+      endTime: node.endTime,
+      rawNoteCount: node.notes.length,
+      avgScore: node.state.avgScore
+    })),
+    [
+      { startTime, endTime: startTime + 1_000, rawNoteCount: 2, avgScore: 6 },
+      { startTime: startTime + 1_000, endTime: startTime + 2_000, rawNoteCount: 1, avgScore: 10 }
+    ]
+  );
+
+  assert.strictEqual(result.graph.edges.length, 1);
+  assert.strictEqual(result.graph.edges[0].timeDelta, 1_000);
+  assert.ok(Number.isFinite(result.graph.edges[0].timeDelta));
+});
+
 test('buildTemporalGraph handles single note', async () => {
   const notes = [
     { timestamp: Date.now(), score: 8, observation: 'button visible', step: 1 }
@@ -160,4 +207,3 @@ test('buildTemporalGraph handles notes with gameState', async () => {
     assert.ok(node.state.avgScore !== undefined, 'State should have avgScore');
   }
 });
-

@@ -30,11 +30,24 @@ test('aggregateTemporalNotes - single note', async () => {
     }
   ];
   
-  const result = await aggregateTemporalNotes(notes);
+  const result = await aggregateTemporalNotes(notes, { windowSize: 3000 });
   
   assert.ok(result);
   assert.strictEqual(result.windows.length, 1);
   assert.ok(result.coherence >= 0 && result.coherence <= 1);
+  assert.strictEqual(result.windows[0].startTime, notes[0].timestamp);
+  assert.strictEqual(result.windows[0].endTime, notes[0].timestamp + 3000);
+  assert.strictEqual(result.windows[0].notes.length, 1);
+  assert.strictEqual(result.windows[0].notes[0].weight, 1);
+});
+
+test('aggregateTemporalNotes preserves a timestamp at the Unix epoch', async () => {
+  const result = await aggregateTemporalNotes([
+    { timestamp: 0, elapsed: 0, score: 5, observation: 'initial frame' }
+  ], { windowSize: 1000 });
+
+  assert.strictEqual(result.windows[0].startTime, 0);
+  assert.strictEqual(result.windows[0].endTime, 1000);
 });
 
 test('aggregateTemporalNotes - multiple notes', async () => {
@@ -422,4 +435,3 @@ test('formatNotesForPrompt - handles empty aggregated notes', () => {
   assert.strictEqual(typeof prompt, 'string');
   assert.ok(prompt.length > 0);
 });
-

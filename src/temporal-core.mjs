@@ -202,7 +202,7 @@ export async function aggregateTemporalNotes(notes, options = {}) {
 
   // Group notes into temporal windows
   const windows = [];
-  const startTime = gameplayNotes[0].timestamp || Date.now();
+  const startTime = gameplayNotes[0].timestamp ?? Date.now();
 
   for (let i = 0; i < gameplayNotes.length; i++) {
     const note = gameplayNotes[i];
@@ -263,6 +263,11 @@ export async function aggregateTemporalNotes(notes, options = {}) {
 
     return {
       window: window.index,
+      // Graph consumers need the absolute bounds and the weighted source notes,
+      // not just their display-oriented summary.
+      startTime: window.startTime,
+      endTime: window.endTime,
+      notes: window.notes,
       timeRange: `${Math.round((window.startTime - startTime) / 1000)}s-${Math.round((window.endTime - startTime) / 1000)}s`,
       noteCount: window.notes.length,
       avgScore: Math.round(avgScore),

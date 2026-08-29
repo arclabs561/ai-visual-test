@@ -1,6 +1,7 @@
 /** Position counter-balancing for scalar and pairwise visual reviews. */
 
 import { normalizeValidationResult } from '#validation-result-normalizer';
+import type { ValidationContext, ValidationResult } from '#public-contract';
 
 type Winner = 'A' | 'B' | 'tie' | 'indeterminate';
 type ScorePair = { A: number; B: number };
@@ -25,8 +26,8 @@ type PairwiseEvaluate = (
 type ScalarEvaluate = (
   imagePath: string,
   prompt: string,
-  context: EvaluationContext,
-) => Promise<EvaluationResult>;
+  context: ValidationContext,
+) => Promise<ValidationResult>;
 
 function reverseWinner(winner: Winner): Winner {
   if (winner === 'A') return 'B';
@@ -68,7 +69,7 @@ export async function evaluatePairwiseCounterBalance(
   beforePath: string,
   afterPath: string,
   prompt: string,
-  context: EvaluationContext = {},
+  context: ValidationContext = {},
   options: { enabled?: boolean } = {},
 ): Promise<unknown> {
   const original = await evaluateFn(
@@ -148,7 +149,7 @@ export async function evaluateWithCounterBalance(
     baselinePath?: string | null;
     contextOrder?: 'original' | 'reversed';
   } = {},
-): Promise<EvaluationResult> {
+): Promise<ValidationResult> {
   const {
     enabled = true,
     baselinePath = null,
@@ -161,8 +162,8 @@ export async function evaluateWithCounterBalance(
   const originalContext = { ...context, contextOrder: 'original' };
   const reversedContext = { ...context, contextOrder: 'reversed' };
 
-  let firstResult: EvaluationResult;
-  let secondResult: EvaluationResult;
+  let firstResult: ValidationResult;
+  let secondResult: ValidationResult;
   if (baselinePath) {
     firstResult = await evaluateFn(imagePath, prompt, {
       ...originalContext,
@@ -197,7 +198,7 @@ export async function evaluateWithCounterBalance(
       ? Math.abs((firstResult.score as number) - (secondResult.score as number))
       : null,
     metadata: {
-      ...firstResult.metadata,
+      ...(firstResult.metadata as Record<string, unknown>),
       counterBalancing: {
         enabled: true,
         originalResult: firstResult,
@@ -207,11 +208,11 @@ export async function evaluateWithCounterBalance(
           : false,
       },
     },
-  }, 'evaluateWithCounterBalance') as EvaluationResult;
+  }, 'evaluateWithCounterBalance') as ValidationResult;
 }
 
 /** Check whether scalar evaluation context requires order counter-balancing. */
-export function shouldUseCounterBalance(context: EvaluationContext): boolean {
+export function shouldUseCounterBalance(context: ValidationContext): boolean {
   return Boolean(
     context.baseline
     || context.contextOrder

@@ -7,7 +7,7 @@
 
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { access, readFile } from 'node:fs/promises';
+import { access, readFile, readdir } from 'node:fs/promises';
 import { constants } from 'node:fs';
 import { resolve } from 'node:path';
 import * as root from '../../src/index.mjs';
@@ -29,6 +29,16 @@ function declaredValueExports(source) {
     .map(name => name.trim().replace(/\s+as\s+\w+$/, ''))
     .filter(Boolean);
   return [...new Set([...declarations, ...reexports])];
+}
+
+function namedValueReexports(source) {
+  return [...source.matchAll(/^export\s*\{([\s\S]*?)\}\s*from\s+['"]([^'"]+)['"];?/gm)]
+    .map(match => ({
+      source: match[2],
+      values: match[1].split(',')
+        .map(name => name.trim().replace(/\s+as\s+\w+$/, ''))
+        .filter(Boolean),
+    }));
 }
 
 describe('package export/type contract', () => {
@@ -63,6 +73,43 @@ describe('package export/type contract', () => {
         `${subpath} declaration exports drifted from runtime`,
       );
     }
+  });
+
+  it('keeps one composition overlay and does not redeclare private-alias values', async () => {
+    const overlays = (await readdir('types'))
+      .filter(name => name.endsWith('-barrel.d.ts'))
+      .sort();
+    const ensembleRoute = exportRoute(packageJson.exports['./ensemble']);
+    const runtimeBarrel = await readFile(resolve(ensembleRoute.import), 'utf8');
+    const legacyRuntimeValues = namedValueReexports(runtimeBarrel)
+      .filter(reexport => reexport.source.endsWith('.mjs'))
+      .flatMap(reexport => reexport.values)
+      .sort();
+    assert.deepEqual(
+      overlays,
+      legacyRuntimeValues.length > 0 ? ['ensemble-barrel.d.ts'] : [],
+      'the composition overlay must exist only while the ensemble barrel exports JavaScript helpers',
+    );
+    if (legacyRuntimeValues.length === 0) return;
+
+    const overlay = await readFile('types/ensemble-barrel.d.ts', 'utf8');
+    const privateAliasValues = new Set(
+      namedValueReexports(overlay)
+        .filter(reexport => reexport.source.startsWith('#'))
+        .flatMap(reexport => reexport.values),
+    );
+    const directValues = [...overlay.matchAll(/^export\s+(?:declare\s+)?(?:class|function|const)\s+(\w+)/gm)]
+      .map(match => match[1]);
+    assert.deepEqual(
+      directValues.filter(name => privateAliasValues.has(name)),
+      [],
+      'the overlay must not redeclare a generated/private-alias value',
+    );
+    assert.deepEqual(
+      directValues.sort(),
+      legacyRuntimeValues,
+      'the overlay declarations must exactly match the JavaScript helper exports that keep it necessary',
+    );
   });
 
   it('loads each public import route through Node package resolution', async () => {

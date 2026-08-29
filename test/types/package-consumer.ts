@@ -151,16 +151,45 @@ export function consumeEnsembleHelperContracts(): void {
     reasoning: 'stable layout',
   };
   const bias = ensemble.detectBias('The response is very very very verbose.', { checkVerbosity: true });
+  const positionBias: ensemble.PositionBiasResult = ensemble.detectPositionBias([
+    { score: 8 },
+    { score: 6 },
+  ], { calculateMetrics: true });
   const mitigated: root.ValidationResult = ensemble.mitigateBias(result, bias, { minAdjustment: -1 });
   const applied: root.ValidationResult = ensemble.applyBiasMitigation(result, 'stable layout', { adjustScores: false });
   const positioned: root.ValidationResult[] = ensemble.mitigatePositionBias([result], { adjustScores: true });
+  const enhanced: Promise<root.ValidationResult> = ensemble.validateWithResearchEnhancements(
+    'candidate.png',
+    'Review the checkout layout',
+    { enableBiasDetection: true },
+  );
   const analysis: Promise<ensemble.PositionAnalysisResult> = ensemble.validateMultipleWithPositionAnalysis(
     ['first.png', 'second.png'],
     'Compare the layout',
     { calculateMetrics: true, qualityGap: 0.5 },
   );
+  const lengthAligned: Promise<root.ValidationResult> = ensemble.validateWithLengthAlignment(
+    'candidate.png',
+    'Review the checkout layout',
+    { referenceLength: 200 },
+  );
+  const rubric: Promise<root.ValidationResult> = ensemble.validateWithExplicitRubric(
+    'candidate.png',
+    'Review the checkout layout',
+    { rubric: ['contrast', 'spacing'] },
+  );
+  const fullyEnhanced: Promise<root.ValidationResult> = ensemble.validateWithAllResearchEnhancements(
+    'candidate.png',
+    'Review the checkout layout',
+    { useCounterBalance: true },
+  );
+  void positionBias;
   void mitigated;
   void applied;
   void positioned;
+  void enhanced;
   void analysis;
+  void lengthAligned;
+  void rubric;
+  void fullyEnhanced;
 }

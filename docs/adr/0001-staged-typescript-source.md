@@ -102,3 +102,12 @@ Before a migration release, revert the module-sized conversion and its generated
 manifest changes. After a migration release, restore the last published `.mjs`
 implementation behind the same export names in a patch release; do not ask
 consumers to import internal emitted filenames.
+
+## Update (2026-08-29)
+
+The team invoked the declaration-overlay review trigger during the mixed
+`./ensemble` migration after evaluating generated-only-barrel alternatives.
+[ADR 0003](0003-temporary-declaration-composition-overlays.md)
+permits one temporary composition overlay under strict packed-consumer and
+runtime/type parity gates; it does not treat that overlay as completion of the
+generated-declaration migration.

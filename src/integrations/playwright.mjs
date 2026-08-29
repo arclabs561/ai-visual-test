@@ -16,7 +16,7 @@
  * ```
  */
 
-import { validatePage } from '../page-validation.mjs';
+import { validatePage } from '#page-validation';
 import { ConfigError } from '../errors.mjs';
 import { captureStableScreenshot } from '../stable-capture.mjs';
 

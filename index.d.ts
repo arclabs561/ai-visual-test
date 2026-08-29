@@ -43,7 +43,23 @@ export function validateScreenshot(
 /** Backward-compatible alias for validateScreenshot. */
 export { validateScreenshot as _validateScreenshot };
 
-export function validatePage(page: unknown, prompt: string, options?: ValidationContext & {
+/** Framework-neutral page surface for screenshot-only reviews. */
+export interface ScreenshotPage {
+  screenshot(options: Record<string, unknown>): Promise<Uint8Array>;
+}
+
+/** Framework-neutral page surface required by the default code-capturing review. */
+export interface PageLike extends ScreenshotPage {
+  content(): Promise<string>;
+  url(): string;
+  viewportSize(): { width: number; height: number } | null;
+  evaluate(
+    callback: (arg?: unknown) => unknown,
+    arg?: unknown,
+  ): Promise<unknown>;
+}
+
+export interface PageValidationOptions extends ValidationContext {
   fullPage?: boolean;
   captureCode?: boolean;
   tempDir?: string;
@@ -58,7 +74,16 @@ export function validatePage(page: unknown, prompt: string, options?: Validation
     networkIdleTimeoutMs?: number;
     waitForFonts?: boolean;
   };
-}): Promise<ValidationResult>;
+}
+export interface ScreenshotPageValidationOptions extends PageValidationOptions {
+  captureCode: false;
+}
+export function validatePage(
+  page: PageLike, prompt: string, options?: PageValidationOptions,
+): Promise<ValidationResult>;
+export function validatePage(
+  page: ScreenshotPage, prompt: string, options: ScreenshotPageValidationOptions,
+): Promise<ValidationResult>;
 export function validateComparison(
   beforePath: string, afterPath: string, prompt: string, context?: ValidationContext,
 ): Promise<ValidationResult>;

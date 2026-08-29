@@ -39,6 +39,32 @@ export const matcherFactories: [typeof vitest.createMatchers, typeof jest.create
   jest.createMatchers,
 ];
 
+const screenshotOnlyPage: root.ScreenshotPage = {
+  async screenshot(_options: Record<string, unknown>) {
+    return new Uint8Array();
+  },
+};
+const fullPage: root.PageLike = {
+  ...screenshotOnlyPage,
+  async content() { return '<main>checkout</main>'; },
+  url() { return 'https://example.test/checkout'; },
+  viewportSize() { return { width: 1280, height: 720 }; },
+  async evaluate(callback: (arg?: unknown) => unknown, arg?: unknown) {
+    return await callback(arg);
+  },
+};
+export const screenshotOnlyValidationResult: Promise<root.ValidationResult> = root.validatePage(
+  screenshotOnlyPage,
+  'Check the checkout layout',
+  { captureCode: false, stability: { enabled: false } },
+);
+export const defaultPageValidationResult: Promise<root.ValidationResult> = root.validatePage(
+  fullPage,
+  'Check the checkout layout',
+);
+// @ts-expect-error default code capture needs content and evaluate.
+root.validatePage(screenshotOnlyPage, 'Check the checkout layout');
+
 export async function consumeEnsembleCounterBalance(): Promise<void> {
   const result = await ensemble.evaluateWithCounterBalance(
     async () => ({

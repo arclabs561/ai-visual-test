@@ -200,6 +200,23 @@ describe('Temporal Context', () => {
       assert.ok(result.length > 0);
     });
 
+    it('should suppress multi-scale aggregation when includeMultiScale is false', () => {
+      const multiScale = {
+        scales: {
+          immediate: {
+            windows: [{ startTime: 0, endTime: 100, avgScore: 5 }],
+            coherence: 0.9
+          }
+        }
+      };
+
+      assert.strictEqual(
+        formatTemporalContext(multiScale, { includeMultiScale: false }),
+        '',
+        'formatTemporalContext must share formatTemporalForPrompt\'s opt-out behavior'
+      );
+    });
+
     it('should handle empty aggregation', () => {
       const aggregated = {
         windows: [],

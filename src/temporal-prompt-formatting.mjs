@@ -197,6 +197,8 @@ export function formatMultiScaleForPrompt(multiScale, options = {}) {
  * @returns {string} Formatted temporal context
  */
 export function formatTemporalContext(temporalNotes, options = {}) {
+  const { includeMultiScale = true } = options;
+
   if (!temporalNotes) {
     return '';
   }
@@ -206,6 +208,9 @@ export function formatTemporalContext(temporalNotes, options = {}) {
   }
 
   if (temporalNotes.scales && !temporalNotes.windows) {
+    if (!includeMultiScale) {
+      return '';
+    }
     return formatMultiScaleForPrompt(temporalNotes, options);
   }
 
@@ -241,10 +246,10 @@ export function pruneTemporalNotes(notes, options = {}) {
 
   if (notes.length === 0) return [];
 
-  const startTime = notes[0].timestamp || currentTime;
+  const startTime = notes[0].timestamp ?? currentTime;
 
   const weightedNotes = notes.map(note => {
-    const elapsed = note.elapsed || (note.timestamp - startTime);
+    const elapsed = note.elapsed ?? (note.timestamp - startTime);
     const weight = calculateAttentionWeight(note, {
       elapsed,
       windowSize,
@@ -271,11 +276,11 @@ export function pruneTemporalNotes(notes, options = {}) {
 function calculateRelevance(note, currentTime, startTime) {
   let relevance = 1.0;
 
-  const age = currentTime - (note.timestamp || startTime);
+  const age = currentTime - (note.timestamp ?? startTime);
   const recency = Math.pow(0.9, age / 10000);
   relevance *= recency;
 
-  const score = note.score || note.gameState?.score || 5;
+  const score = note.score ?? note.gameState?.score ?? 5;
   if (score >= 8 || score <= 2) {
     relevance *= 1.5;
   }
@@ -312,12 +317,12 @@ export function propagateNotes(notes, options = {}) {
 
   if (notes.length === 0) return [];
 
-  const startTime = notes[0].timestamp || currentTime;
+  const startTime = notes[0].timestamp ?? currentTime;
 
   return notes
     .map(note => {
       const relevance = calculateRelevance(note, currentTime, startTime);
-      const weight = Math.pow(0.9, (currentTime - (note.timestamp || startTime)) / 10000);
+      const weight = Math.pow(0.9, (currentTime - (note.timestamp ?? startTime)) / 10000);
 
       return {
         ...note,
@@ -344,10 +349,10 @@ export function selectTopWeightedNotes(notes, options = {}) {
   if (notes.length === 0) return [];
 
   const currentTime = Date.now();
-  const startTime = notes[0].timestamp || currentTime;
+  const startTime = notes[0].timestamp ?? currentTime;
 
   const weighted = notes.map(note => {
-    const elapsed = note.elapsed || (note.timestamp - startTime);
+    const elapsed = note.elapsed ?? (note.timestamp - startTime);
     const weight = calculateAttentionWeight(note, {
       elapsed,
       windowSize: 10000,

@@ -117,6 +117,23 @@ describe('Temporal Note Pruner', () => {
       assert.ok(Array.isArray(result1));
       assert.ok(Array.isArray(result2));
     });
+
+    it('should preserve zero timestamps and elapsed values at the weight threshold', () => {
+      const result = pruneTemporalNotes([
+        { timestamp: 0, elapsed: 0, observation: 'origin', score: 5 }
+      ], {
+        currentTime: 10000,
+        windowSize: 10000,
+        maxNotes: 1,
+        minWeight: 1.05
+      });
+
+      assert.deepStrictEqual(
+        result,
+        [],
+        'the origin note has weight 1, not an artificial future weight from timestamp: 0'
+      );
+    });
   });
 
   describe('propagateNotes', () => {
@@ -189,6 +206,18 @@ describe('Temporal Note Pruner', () => {
         assert.ok(lowScoreNote.relevance > 0);
       }
     });
+
+    it('should preserve timestamp: 0 and score: 0 when calculating relevance', () => {
+      const [origin] = propagateNotes([
+        { timestamp: 0, observation: 'origin', score: 0 }
+      ], {
+        currentTime: 10000,
+        relevanceThreshold: 0
+      });
+
+      assert.strictEqual(origin.weight, 0.9);
+      assert.strictEqual(origin.relevance, 1.35);
+    });
   });
 
   describe('selectTopWeightedNotes', () => {
@@ -250,6 +279,22 @@ describe('Temporal Note Pruner', () => {
 
       assert.strictEqual(result1.length, 5);
       assert.strictEqual(result2.length, 10);
+    });
+
+    it('should honor explicit elapsed: 0 when ranking notes', () => {
+      const originalDateNow = Date.now;
+      Date.now = () => 1000;
+
+      try {
+        const result = selectTopWeightedNotes([
+          { timestamp: 1000, observation: 'baseline', score: 5 },
+          { timestamp: 100000, elapsed: 0, observation: 'immediate high score', score: 9 }
+        ], { topN: 1 });
+
+        assert.deepStrictEqual(result.map(note => note.observation), ['immediate high score']);
+      } finally {
+        Date.now = originalDateNow;
+      }
     });
   });
 
@@ -372,4 +417,3 @@ describe('Temporal Note Pruner', () => {
     });
   });
 });
-

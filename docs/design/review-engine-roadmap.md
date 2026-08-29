@@ -161,8 +161,13 @@ release after the deprecation window.
 **Status:** the shared public-result normalizer, private
 `position-counterbalance` policy, Vitest/Jest adapter, page-validation adapter,
 Playwright adapter, ensemble judge boundary, temporal core, capture,
-orchestration, multi-scale, formatting, and public barrel are now typed compiled
-slices. The ensemble correctness repair landed before its source conversion:
+orchestration, multi-scale, formatting, public barrel, and the complete game
+surface are now typed compiled slices. The game migration preserves its ten
+runtime exports while replacing the opaque handwritten declaration with
+generated contracts for pages, actions, services, loops, Gym state, goals, and
+convenience workflows. The source, staged, and packed `/game` routes are all
+exercised by runtime/type consumers. The ensemble correctness repair landed
+before its source conversion:
 voting ignores failed or invalid scores, reports availability explicitly, and
 makes ties and zero-effective-weight outcomes deterministic. Temporal graph
 traversal now preserves caller graph inputs; prompt selection, multi-scale
@@ -180,9 +185,12 @@ bias mitigation, and research-validation helpers. The route does not count as
 fully generated until those helpers migrate and the overlay is deleted. Strict
 packed consumer compilation and runtime/type export parity remain mandatory.
 
-**Execution order:** the complete temporal public boundary has no declaration
-overlay. The next mechanical area is game, followed by perception, video, and
-CLI integrations. Video and CLI remain last because they couple provider,
+**Execution order:** the complete temporal and game public boundaries have no
+declaration overlays. The next mechanical area is perception, followed by
+video and CLI integrations. Perception keeps its injected `vision`/`complete`
+capability boundary and ranked-section semantics; OpenRouter transport and
+filesystem critique persistence remain separate final slices. Video and CLI
+remain last because they couple provider,
 process, filesystem, and packaging behavior. Each slice keeps existing package
 subpath names and replaces its handwritten declaration overlay only after the
 generated declaration and clean packed install agree.
@@ -237,6 +245,6 @@ made until real independently reviewed labels exist.
 
 ## Review trigger
 
-Re-run this roadmap after the game boundary lands, when the ensemble overlay is
-retired or a second overlay is proposed, or when a consumer survey changes the
-supported-surface assumptions.
+Re-run this roadmap after the perception boundary lands, when the ensemble
+overlay is retired or a second overlay is proposed, or when a consumer survey
+changes the supported-surface assumptions.

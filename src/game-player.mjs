@@ -18,7 +18,7 @@
  */
 
 import { validateScreenshot } from './judge.mjs';
-import { TemporalDecisionManager } from './temporal-orchestration.mjs';
+import { TemporalDecisionManager } from '#temporal-orchestration';
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
 import { log, warn } from './logger.mjs';

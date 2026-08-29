@@ -11,7 +11,7 @@ import {
   aggregateMultiScale,
   humanPerceptionTime
 } from '../../src/temporal-multi-scale.mjs';
-import { TemporalBatchOptimizer } from '../../src/temporal-orchestration.mjs';
+import { TemporalBatchOptimizer } from '#temporal-orchestration';
 
 describe('Temporal Decision-Making Integration', () => {
   test('sequential context + multi-scale aggregation', () => {
@@ -189,4 +189,3 @@ describe('Temporal Decision-Making Integration', () => {
     assert.ok(aggregated.scales.short.coherence <= 1);
   });
 });
-

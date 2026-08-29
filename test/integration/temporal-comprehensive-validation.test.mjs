@@ -14,7 +14,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
 import { aggregateTemporalNotes } from '#temporal-core';
-import { TemporalDecisionManager } from '../../src/temporal-orchestration.mjs';
+import { TemporalDecisionManager } from '#temporal-orchestration';
 import { loadDataset } from '../../evaluation/utils/dataset-adapters.mjs';
 
 test('Temporal Aggregation - Real Dataset Validation', async () => {

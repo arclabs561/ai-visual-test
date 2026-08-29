@@ -170,7 +170,7 @@ export async function testGameplay(page, options = {}) {
       trackPropagation('temporal', { count: temporalScreenshots.length }, 'Captured temporal screenshots');
       
       if (temporalScreenshots.length > 0) {
-        const { AdaptiveTemporalProcessor } = await import('./temporal-orchestration.mjs');
+        const { AdaptiveTemporalProcessor } = await import('#temporal-orchestration');
         const adaptiveProcessor = new AdaptiveTemporalProcessor();
         
         const notes = temporalScreenshots.map((frame, index) => ({

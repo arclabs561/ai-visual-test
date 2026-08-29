@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { TemporalDecisionManager } from '../../src/temporal-orchestration.mjs';
+import { TemporalDecisionManager } from '#temporal-orchestration';
 import { validateScreenshot } from '../../src/index.mjs';
 
 test('TemporalDecisionManager shouldPrompt logic', async () => {
@@ -260,4 +260,3 @@ test('TemporalDecisionManager handles edge cases gracefully', async () => {
   // Should handle missing timestamps gracefully
   assert.ok(typeof decision3.shouldPrompt === 'boolean', 'Should handle missing timestamps');
 });
-

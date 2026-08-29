@@ -506,7 +506,7 @@ export async function evaluateTemporalDecision(context, config) {
   }
 
   try {
-    const { TemporalDecisionManager } = await import('./temporal-orchestration.mjs');
+    const { TemporalDecisionManager } = await import('#temporal-orchestration');
     const { aggregateTemporalNotes } = await import('#temporal-core');
 
     const decisionManager = new TemporalDecisionManager(context.temporalDecisionOptions || {});

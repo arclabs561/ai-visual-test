@@ -64,7 +64,7 @@ function deduplicateIssues(issues) {
  * @param {string} screenshotPath - Path to screenshot
  * @param {number} minContrast - Minimum contrast ratio (default: 4.5)
  * @param {object} options - Validation options
- * @returns {Promise<import('../index.mjs').ValidationResult & {programmaticData: object}>}
+ * @returns {Promise<import('#public-contract').HybridValidationResult>}
  * @throws {ValidationError} If inputs are invalid
  */
 export async function validateAccessibilityHybrid(
@@ -180,7 +180,7 @@ Provide actionable recommendations based on both programmatic and semantic analy
  * @param {object} options - Validation options
  * @param {object} options.selectors - Map of state keys to CSS selectors
  * @param {number} options.tolerance - Pixel tolerance (default: 5)
- * @returns {Promise<import('../index.mjs').ValidationResult & {programmaticData: object}>}
+ * @returns {Promise<import('#public-contract').HybridValidationResult>}
  * @throws {ValidationError} If inputs are invalid
  */
 export async function validateStateHybrid(
@@ -272,7 +272,7 @@ Provide actionable recommendations based on both programmatic and semantic analy
  * @param {string} prompt - Base evaluation prompt
  * @param {object} programmaticData - Programmatic validation data
  * @param {object} options - Validation options
- * @returns {Promise<import('../index.mjs').ValidationResult & {programmaticData: object}>}
+ * @returns {Promise<import('#public-contract').HybridValidationResult>}
  */
 export async function validateWithProgrammaticContext(
   screenshotPath,
@@ -309,4 +309,3 @@ EVALUATION INSTRUCTIONS:
     method: 'hybrid'
   };
 }
-

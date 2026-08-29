@@ -267,7 +267,7 @@ export function consumeEnsembleHelperContracts(): void {
   const rubric: Promise<root.ValidationResult> = ensemble.validateWithExplicitRubric(
     'candidate.png',
     'Review the checkout layout',
-    { rubric: ['contrast', 'spacing'] },
+    { rubric: { score: { criteria: { 10: 'Excellent', 0: 'Unusable' } } } },
   );
   const fullyEnhanced: Promise<root.ValidationResult> = ensemble.validateWithAllResearchEnhancements(
     'candidate.png',

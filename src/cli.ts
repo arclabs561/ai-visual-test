@@ -218,7 +218,12 @@ EXIT CODES
 async function defaultResolveConfig(input: { provider: string | null; model: string | null; verbose: boolean; env: NodeJS.ProcessEnv }): Promise<ResolvedConfig> {
   const { createConfig } = await import('./config.mjs');
   const selected = input.provider ?? (input.env.VLM_PROVIDER ? normalizeProvider(input.env.VLM_PROVIDER) : null);
-  const config = createConfig({ provider: selected, model: input.model, verbose: input.verbose, env: input.env });
+  const config = createConfig({
+    ...(selected === null ? {} : { provider: selected }),
+    ...(input.model === null ? {} : { model: input.model }),
+    verbose: input.verbose,
+    env: input.env,
+  });
   return config as ResolvedConfig;
 }
 

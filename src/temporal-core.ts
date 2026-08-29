@@ -282,13 +282,13 @@ export function extractTemporalContext(options: TemporalContextOptions): Extract
 /**
  * Aggregate notes temporally with coherence analysis
  *
- * @param {import('./index.mjs').TemporalNote[]} notes - Array of temporal notes
+ * @param {TemporalNote[]} notes - Array of temporal notes
  * @param {{
  *   windowSize?: number;
  *   decayFactor?: number;
  *   coherenceThreshold?: number;
  * }} [options={}] - Aggregation options
- * @returns {import('./index.mjs').AggregatedTemporalNotes} Aggregated temporal notes with windows and coherence
+ * @returns {AggregatedTemporalNotes} Aggregated temporal notes with windows and coherence
  */
 export async function aggregateTemporalNotes(
   notes: TemporalNote[],
@@ -641,7 +641,7 @@ function generateSummary(
 /**
  * Format aggregated temporal notes for prompt inclusion
  *
- * @param {import('./index.mjs').AggregatedTemporalNotes} aggregated - Aggregated temporal notes
+ * @param {AggregatedTemporalNotes} aggregated - Aggregated temporal notes
  * @returns {string} Formatted string for prompt inclusion
  */
 export function formatNotesForPrompt(aggregated: AggregatedTemporalNotes): string {
@@ -678,7 +678,7 @@ export function formatNotesForPrompt(aggregated: AggregatedTemporalNotes): strin
 /**
  * Calculate coherence score for temporal windows (exported wrapper)
  *
- * @param {import('./index.mjs').TemporalWindow[]} windows - Array of temporal windows
+ * @param {TemporalWindowSummary[]} windows - Array of temporal windows
  * @returns {number} Coherence score (0-1)
  */
 export async function calculateCoherenceExported(
@@ -694,7 +694,7 @@ export async function calculateCoherenceExported(
 /**
  * Build temporal graph representation for better coherence
  *
- * @param {import('./index.mjs').TemporalNote[]} notes - Temporal notes
+ * @param {TemporalNote[]} notes - Temporal notes
  * @param {Object} options - Graph options
  * @returns {Object} Temporal graph with nodes, edges, entities
  */

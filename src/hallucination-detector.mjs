@@ -17,7 +17,7 @@
  *   checkUncertainty?: boolean;
  *   logprobs?: any;
  * }} [options={}] - Detection options
- * @returns {import('./index.mjs').HallucinationDetectionResult} Detection result
+ * @returns {import('#public-contract').HallucinationDetectionResult} Detection result
  */
 export function detectHallucination(judgment, imagePath = null, options = {}) {
   const {
@@ -151,5 +151,4 @@ function detectContradictions(judgment) {
   
   return issues;
 }
-
 

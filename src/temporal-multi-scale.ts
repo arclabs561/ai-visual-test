@@ -139,7 +139,7 @@ export function aggregateMultiScale(notes: TemporalRecord[], options: MultiScale
  * Calculate attention-based weight
  * Models how human attention affects temporal perception
  *
- * @param {import('./index.mjs').TemporalNote} note - Temporal note
+ * @param {TemporalNote} note - Temporal note
  * @param {Object} context - Context with elapsed, windowSize, scaleName
  * @returns {number} Attention weight
  */
@@ -599,7 +599,7 @@ function calculateVariance(values: number[]): number {
 /**
  * Calculate optimal window size based on note frequency
  *
- * @param {import('./index.mjs').TemporalNote[]} notes - Temporal notes
+ * @param {TemporalNote[]} notes - Temporal notes
  * @param {{
  *   minWindow?: number;
  *   maxWindow?: number;
@@ -642,7 +642,7 @@ export function calculateOptimalWindowSize(notes: TemporalRecord[], options: Win
 /**
  * Detect activity pattern from notes
  *
- * @param {import('./index.mjs').TemporalNote[]} notes - Temporal notes
+ * @param {TemporalNote[]} notes - Temporal notes
  * @returns {'fastChange' | 'slowChange' | 'consistent' | 'erratic'} Activity pattern
  */
 export function detectActivityPattern(notes: TemporalRecord[]): 'fastChange' | 'slowChange' | 'consistent' | 'erratic' {
@@ -690,14 +690,14 @@ export function detectActivityPattern(notes: TemporalRecord[]): 'fastChange' | '
 /**
  * Aggregate temporal notes with adaptive window sizing
  *
- * @param {import('./index.mjs').TemporalNote[]} notes - Temporal notes
+ * @param {TemporalNote[]} notes - Temporal notes
  * @param {{
  *   adaptive?: boolean;
  *   windowSize?: number;
  *   decayFactor?: number;
  *   coherenceThreshold?: number;
  * }} [options={}] - Aggregation options
- * @returns {import('./index.mjs').AggregatedTemporalNotes} Aggregated temporal notes
+ * @returns {AggregatedTemporalNotes} Aggregated temporal notes
  */
 export async function aggregateTemporalNotesAdaptive(notes: TemporalRecord[], options: AdaptiveAggregationOptions = {}): Promise<AggregatedTemporalNotes> {
   const {

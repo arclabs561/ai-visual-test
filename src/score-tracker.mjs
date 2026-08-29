@@ -229,7 +229,7 @@ export class ScoreTracker {
   /**
    * Get baseline stats
    * 
-   * @returns {import('./index.mjs').ScoreTracker['getStats']} Statistics object
+   * @returns {import('#public-contract').ScoreTrackerStats} Statistics object
    */
   getStats() {
     const baselines = this._loadBaselines();
@@ -274,4 +274,3 @@ export class ScoreTracker {
     return stats;
   }
 }
-

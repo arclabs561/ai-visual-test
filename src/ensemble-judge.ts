@@ -130,7 +130,7 @@ export class EnsembleJudge {
   normalizedWeights: number[];
 
   /**
-   * @param {import('./index.mjs').EnsembleJudgeOptions} [options={}] - Ensemble configuration
+   * @param {EnsembleJudgeOptions} [options={}] - Ensemble configuration
    */
   constructor(options: EnsembleJudgeOptions = {}) {
     const {
@@ -258,8 +258,8 @@ export class EnsembleJudge {
    * 
    * @param {string} imagePath - Path to screenshot file
    * @param {string} prompt - Evaluation prompt
-   * @param {import('./index.mjs').ValidationContext} [context={}] - Validation context
-   * @returns {Promise<import('./index.mjs').EnsembleResult>} Ensemble evaluation result
+   * @param {import('#public-contract').ValidationContext} [context={}] - Validation context
+   * @returns {Promise<EnsembleResult>} Ensemble evaluation result
    */
   async evaluate(
     imagePath: string,
@@ -575,7 +575,7 @@ export class EnsembleJudge {
  * Create an ensemble judge with multiple providers
  * 
  * @param {string[]} [providers=['gemini', 'openai']] - Array of provider names
- * @param {import('./index.mjs').EnsembleJudgeOptions} [options={}] - Ensemble configuration
+ * @param {EnsembleJudgeOptions} [options={}] - Ensemble configuration
  * @returns {EnsembleJudge} Configured ensemble judge
  */
 export function createEnsembleJudge(

@@ -33,7 +33,7 @@ import { captureTemporalScreenshots } from '#temporal-capture';
  * @param {string[]} [options.selectors] - Custom selectors to extract (defaults to common patterns)
  * @param {number} [options.htmlLimit=10000] - Max HTML chars to extract (default 10k)
  * @param {boolean} [options.includeAllCSS=false] - Include all computed styles (default: only critical)
- * @returns {Promise<import('./index.mjs').RenderedCode>} Rendered code structure
+ * @returns {Promise<import('#public-contract').RenderedCode>} Rendered code structure
  * @throws {ValidationError} If page is not a valid Playwright Page object
  */
 export async function extractRenderedCode(page, options = {}) {
@@ -237,12 +237,12 @@ export async function extractRenderedCode(page, options = {}) {
  * Multi-perspective evaluation
  * Multiple personas evaluate the same state
  * 
- * @param {(path: string, prompt: string, context: import('./index.mjs').ValidationContext) => Promise<import('./index.mjs').ValidationResult>} validateFn - Function to validate screenshot
+ * @param {(path: string, prompt: string, context: import('#public-contract').ValidationContext) => Promise<import('#public-contract').ValidationResult>} validateFn - Function to validate screenshot
  * @param {string} screenshotPath - Path to screenshot
- * @param {import('./index.mjs').RenderedCode} renderedCode - Rendered code structure
+ * @param {import('#public-contract').RenderedCode} renderedCode - Rendered code structure
  * @param {Record<string, unknown>} [gameState={}] - Game state (optional)
- * @param {import('./index.mjs').Persona[] | null} [personas=null] - Array of persona objects (optional)
- * @returns {Promise<import('./index.mjs').PerspectiveEvaluation[]>} Array of perspective evaluations
+ * @param {import('#public-contract').Persona[] | null} [personas=null] - Array of persona objects (optional)
+ * @returns {Promise<import('#public-contract').PerspectiveEvaluation[]>} Array of perspective evaluations
  * @throws {ValidationError} If validateFn is not a function
  */
 export async function multiPerspectiveEvaluation(validateFn, screenshotPath, renderedCode, gameState = {}, personas = null) {
@@ -358,7 +358,7 @@ Provide evaluation from your persona's perspective.`;
 /**
  * Comprehensive multi-modal validation
  * 
- * @param {(path: string, prompt: string, context: import('./index.mjs').ValidationContext) => Promise<import('./index.mjs').ValidationResult>} validateFn - Function to validate screenshot
+ * @param {(path: string, prompt: string, context: import('#public-contract').ValidationContext) => Promise<import('#public-contract').ValidationResult>} validateFn - Function to validate screenshot
  * @param {any} page - Playwright page object
  * @param {string} testName - Test name
  * @param {{
@@ -370,10 +370,10 @@ Provide evaluation from your persona's perspective.`;
  * }} [options={}] - Validation options
  * @returns {Promise<{
  *   screenshotPath: string;
- *   renderedCode: import('./index.mjs').RenderedCode | null;
+ *   renderedCode: import('#public-contract').RenderedCode | null;
  *   gameState: Record<string, unknown>;
- *   temporalScreenshots: import('./index.mjs').TemporalScreenshot[];
- *   perspectives: import('./index.mjs').PerspectiveEvaluation[];
+ *   temporalScreenshots: import('#temporal-prompt-formatting').TemporalScreenshot[];
+ *   perspectives: import('#public-contract').PerspectiveEvaluation[];
  *   codeValidation: Record<string, boolean>;
  *   aggregatedScore: number | null;
  *   aggregatedIssues: string[];

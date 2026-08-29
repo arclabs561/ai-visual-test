@@ -94,7 +94,7 @@ export function isPromise(value) {
  * Type guard: Check if value is a ValidationResult
  * 
  * @param {unknown} value - Value to check
- * @returns {value is import('./index.mjs').ValidationResult} True if value is a ValidationResult
+ * @returns {value is import('#public-contract').ValidationResult} True if value is a ValidationResult
  */
 export function isValidationResult(value) {
   if (!isObject(value)) return false;
@@ -110,7 +110,7 @@ export function isValidationResult(value) {
  * Type guard: Check if value is a ValidationContext
  * 
  * @param {unknown} value - Value to check
- * @returns {value is import('./index.mjs').ValidationContext} True if value is a ValidationContext
+ * @returns {value is import('#public-contract').ValidationContext} True if value is a ValidationContext
  */
 export function isValidationContext(value) {
   if (value === null || value === undefined) return true; // Optional
@@ -144,7 +144,7 @@ export function isValidationContext(value) {
  * Type guard: Check if value is a Persona
  * 
  * @param {unknown} value - Value to check
- * @returns {value is import('./index.mjs').Persona} True if value is a Persona
+ * @returns {value is import('#public-contract').Persona} True if value is a Persona
  */
 export function isPersona(value) {
   if (!isObject(value)) return false;
@@ -159,7 +159,7 @@ export function isPersona(value) {
  * Type guard: Check if value is a TemporalNote
  * 
  * @param {unknown} value - Value to check
- * @returns {value is import('./index.mjs').TemporalNote} True if value is a TemporalNote
+ * @returns {value is import('#temporal-core').TemporalNote} True if value is a TemporalNote
  */
 export function isTemporalNote(value) {
   if (!isObject(value)) return false;
@@ -308,4 +308,3 @@ export function getProperty(obj, key, defaultValue) {
   assertString(key, 'key');
   return key in obj && obj[key] !== undefined ? obj[key] : defaultValue;
 }
-

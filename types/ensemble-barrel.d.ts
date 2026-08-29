@@ -23,6 +23,10 @@ export type {
   JudgeResponse,
   VotingMethod,
 } from '#ensemble-judge';
+export {
+  evaluateWithCounterBalance,
+  shouldUseCounterBalance,
+} from '#position-counterbalance';
 
 export interface BiasDetection {
   hasBias: boolean;
@@ -67,18 +71,6 @@ export function mitigatePositionBias(
   judgments: ValidationResult[],
   options?: { randomizeOrder?: boolean; adjustScores?: boolean; enabled?: boolean },
 ): ValidationResult[];
-export function evaluateWithCounterBalance(
-  evaluateFn: (imagePath: string, prompt: string, context: ValidationContext) => Promise<ValidationResult>,
-  imagePath: string,
-  prompt: string,
-  context?: ValidationContext,
-  options?: {
-    enabled?: boolean;
-    baselinePath?: string | null;
-    contextOrder?: 'original' | 'reversed';
-  },
-): Promise<ValidationResult>;
-export function shouldUseCounterBalance(context: ValidationContext): boolean;
 export function validateWithResearchEnhancements(
   imagePath: string,
   prompt: string,

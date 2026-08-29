@@ -158,19 +158,32 @@ release after the deprecation window.
 - Make CLI, Playwright, Vitest/Jest, and video adapters thin consumers of policy results.
 - Retire duplicated logger/config/cache authority only where production callers are proven migrated.
 
-**Status:** begun. The shared public-result normalizer is now a typed compiled
-boundary consumed by core judging, counterbalancing, convenience, research,
-and the utilities subpath. Scalar/pairwise orchestration and framework adapters
-remain `.mjs` and should migrate as separate compatibility-preserving slices.
+**Status:** the shared public-result normalizer, private
+`position-counterbalance` policy, Vitest/Jest adapter, page-validation adapter,
+Playwright adapter, and ensemble judge boundary are now typed compiled slices.
+The ensemble correctness repair landed before its source conversion: voting
+ignores failed or invalid scores, reports availability explicitly, and makes
+ties and zero-effective-weight outcomes deterministic. The public `./ensemble`
+route preserves its scalar helpers while the judge contract is generated from
+TypeScript.
 
-**Execution order:** migrate the private `position-counterbalance` policy first,
-then the isolated Vitest/Jest adapter, then `page-validation` with Playwright.
-After those gates pass, introduce a narrow typed ensemble contract before
-moving into temporal core, temporal orchestration, game, and perception. Keep
-video and the CLI as later integration slices because they couple provider,
-process, filesystem, and packaging behavior. Each slice keeps existing package
-subpath names and replaces its handwritten declaration overlay only after the
-generated declaration and clean packed install agree.
+**ADR 0001 review resolved:** [ADR 0003](../adr/0003-temporary-declaration-composition-overlays.md)
+accepts one temporary composition overlay with an enforced expiry condition.
+The live `types/ensemble-barrel.d.ts` overlay re-exports the generated judge and
+counterbalance contracts; it declares only the still-JavaScript bias detection,
+bias mitigation, and research-validation helpers. The route does not count as
+fully generated until those helpers migrate and the overlay is deleted. Strict
+packed consumer compilation and runtime/type export parity remain mandatory.
+
+**Execution order:** with counterbalance, Vitest/Jest, page validation,
+Playwright, ensemble correctness, and the typed ensemble boundary complete,
+migrate temporal core next. Then take temporal orchestration, multi-scale, and
+formatting together only where their contracts require it; follow with game,
+perception pure kernels and sampler, then the video and CLI integrations.
+Video and CLI remain last because they couple provider, process, filesystem,
+and packaging behavior. Each slice keeps existing package subpath names and
+replaces its handwritten declaration overlay only after the generated
+declaration and clean packed install agree.
 
 Human labels do not block these mechanical conversions. They continue to block
 changes that claim calibrated ensemble weights, confidence, or learned
@@ -181,9 +194,10 @@ removing a public subpath, but not for a behavior-preserving source conversion.
 
 **Gate:** each slice passes strict compilation, fixture-backed behavior tests,
 generated declaration checks, and a clean packed runtime/type import for every
-affected public route. The first slice must preserve root `validateComparison`
-counterbalancing and the `./ensemble` scalar helper exports before any framework
-adapter is converted.
+affected public route. A temporary declaration composition overlay additionally
+must satisfy ADR 0003 and does not make its subpath fully generated. The
+completed slices preserve root `validateComparison`
+counterbalancing and the `./ensemble` scalar helper exports.
 
 ## Phase 5: Deliberately narrow the product surface
 
@@ -205,7 +219,10 @@ claims. The governing [dataset evaluation protocol](dataset-evaluation-protocol.
 uses separate external preference, regression, and critique lanes, then a small
 first-party, human-reviewed set with baseline/candidate pairs, rubric,
 environment metadata, and provider/model identity. It should inform Phase 1
-behavior and Phase 5 scope; it must not block Phase 0 correctness repairs.
+behavior and Phase 5 scope; it must not block mechanical source conversions or
+Phase 0 correctness repairs. Vibe artifact verification remains blocked on
+operator-accepted dataset access, and no first-party calibration claim may be
+made until real independently reviewed labels exist.
 
 ## Explicitly parked
 
@@ -215,4 +232,6 @@ behavior and Phase 5 scope; it must not block Phase 0 correctness repairs.
 
 ## Review trigger
 
-Re-run this roadmap after Phase 0 lands, when the TypeScript ADR is accepted or rejected, or when a consumer survey changes the supported-surface assumptions.
+Re-run this roadmap after temporal core lands, when the ensemble overlay is
+retired or a second overlay is proposed, or when a consumer survey changes the
+supported-surface assumptions.

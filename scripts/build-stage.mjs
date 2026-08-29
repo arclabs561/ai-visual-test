@@ -53,6 +53,7 @@ packageJson.private = true;
 packageJson.imports = {
   ...(packageJson.imports || {}),
   '#provider-adapters': './src/provider-adapters.js',
+  '#dataset-evaluation-metrics': './src/dataset-evaluation-metrics.js',
   '#pairwise-fixture-metrics': './src/pairwise-fixture-metrics.js',
   '#public-contract': './src/public-contract.js',
   '#review-contract': './src/review-contract.js',

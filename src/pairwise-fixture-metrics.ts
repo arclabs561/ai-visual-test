@@ -9,7 +9,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { isAbsolute, resolve, sep } from 'node:path';
 
-export const PAIRWISE_FIXTURE_MANIFEST_VERSION = 1;
+export const PAIRWISE_FIXTURE_MANIFEST_VERSION = 2;
 
 export const PAIRWISE_WINNERS = ['A', 'B', 'tie', 'indeterminate'] as const;
 export type PairwiseWinner = typeof PAIRWISE_WINNERS[number];
@@ -37,6 +37,18 @@ export interface PairwiseCaptureMetadata {
   caret: 'hide';
 }
 
+export interface PairwiseFixtureProvenance {
+  dataset: string;
+  revision: string;
+  sourceRecordId: string;
+  sourceUrl: string;
+  license: string;
+  redistribution: 'allowed' | 'external-only' | 'unknown';
+  lane: 'preference' | 'regression' | 'critique' | 'first-party';
+  split: string;
+  groupId: string;
+}
+
 export interface PairwiseFixture {
   id: string;
   prompt: string;
@@ -44,6 +56,7 @@ export interface PairwiseFixture {
   before: FixtureAsset;
   after: FixtureAsset;
   capture: PairwiseCaptureMetadata;
+  provenance: PairwiseFixtureProvenance;
   humanReviews: HumanPairwiseReview[];
 }
 
@@ -73,8 +86,16 @@ export interface PairwiseFixtureResult {
 export interface PairwiseFixtureMetrics {
   totalFixtures: number;
   labeled: number;
+  observed: number;
   decided: number;
   abstained: number;
+  coverage: number | null;
+  humanLabels: {
+    insufficient: string[];
+    abstained: string[];
+    conflict: string[];
+    reviewerAgreement: { agreeingPairs: number; comparedPairs: number; rate: number | null };
+  };
   exactAgreement: { matches: number; compared: number; rate: number | null };
   rates: {
     abstention: number | null;
@@ -192,6 +213,36 @@ function capture(value: unknown, subject: string): PairwiseCaptureMetadata {
   };
 }
 
+function provenance(value: unknown, subject: string): PairwiseFixtureProvenance {
+  const candidate = record(value, subject);
+  const redistribution = candidate.redistribution;
+  if (redistribution !== 'allowed' && redistribution !== 'external-only' && redistribution !== 'unknown') {
+    throw new PairwiseFixtureManifestError(`${subject}.redistribution must be allowed, external-only, or unknown`);
+  }
+  const lane = candidate.lane;
+  if (lane !== 'preference' && lane !== 'regression' && lane !== 'critique' && lane !== 'first-party') {
+    throw new PairwiseFixtureManifestError(`${subject}.lane must identify a supported evidence lane`);
+  }
+  const sourceUrl = string(candidate.sourceUrl, `${subject}.sourceUrl`);
+  try {
+    const parsed = new URL(sourceUrl);
+    if (parsed.protocol !== 'https:' || parsed.username || parsed.password) throw new Error('unsafe URL');
+  } catch {
+    throw new PairwiseFixtureManifestError(`${subject}.sourceUrl must be a credential-free HTTPS URL`);
+  }
+  return {
+    dataset: string(candidate.dataset, `${subject}.dataset`),
+    revision: string(candidate.revision, `${subject}.revision`),
+    sourceRecordId: string(candidate.sourceRecordId, `${subject}.sourceRecordId`),
+    sourceUrl,
+    license: string(candidate.license, `${subject}.license`),
+    redistribution,
+    lane,
+    split: string(candidate.split, `${subject}.split`),
+    groupId: string(candidate.groupId, `${subject}.groupId`),
+  };
+}
+
 function humanLabel(reviewsToClassify: HumanPairwiseReview[]): Pick<ValidatedPairwiseFixture, 'labelStatus' | 'consensusWinner'> {
   if (reviewsToClassify.length < 2) return { labelStatus: 'insufficient', consensusWinner: null };
   const firstWinner = reviewsToClassify[0]!.winner;
@@ -225,10 +276,32 @@ export function validatePairwiseFixtureManifest(value: unknown): ValidatedPairwi
       before: asset(fixture.before, `${subject}.before`),
       after: asset(fixture.after, `${subject}.after`),
       capture: capture(fixture.capture, `${subject}.capture`),
+      provenance: provenance(fixture.provenance, `${subject}.provenance`),
       humanReviews,
       ...humanLabel(humanReviews),
     };
   });
+  const groupSplits = new Map<string, string>();
+  const assetSplits = new Map<string, string>();
+  for (const fixture of fixtures) {
+    const groupKey = `${fixture.provenance.dataset}\u0000${fixture.provenance.groupId}`;
+    const priorGroupSplit = groupSplits.get(groupKey);
+    if (priorGroupSplit !== undefined && priorGroupSplit !== fixture.provenance.split) {
+      throw new PairwiseFixtureManifestError(
+        `provenance group ${fixture.provenance.groupId} crosses ${priorGroupSplit} and ${fixture.provenance.split}`,
+      );
+    }
+    groupSplits.set(groupKey, fixture.provenance.split);
+    for (const source of [fixture.before, fixture.after]) {
+      const priorAssetSplit = assetSplits.get(source.sha256);
+      if (priorAssetSplit !== undefined && priorAssetSplit !== fixture.provenance.split) {
+        throw new PairwiseFixtureManifestError(
+          `asset ${source.sha256} crosses ${priorAssetSplit} and ${fixture.provenance.split}`,
+        );
+      }
+      assetSplits.set(source.sha256, fixture.provenance.split);
+    }
+  }
   return { version: PAIRWISE_FIXTURE_MANIFEST_VERSION, fixtures };
 }
 
@@ -292,6 +365,9 @@ export function computePairwiseFixtureMetrics(
   const missingResults: string[] = [];
   const missingLabels: string[] = [];
   const excludedNonConsensus: string[] = [];
+  const insufficientHumanReviews: string[] = [];
+  const humanAbstained: string[] = [];
+  const humanConflicts: string[] = [];
   const confusion = emptyConfusion();
   let labeled = 0;
   let decided = 0;
@@ -300,13 +376,28 @@ export function computePairwiseFixtureMetrics(
   let observed = 0;
   let conflicts = 0;
   let incomplete = 0;
+  let agreeingReviewerPairs = 0;
+  let comparedReviewerPairs = 0;
 
   for (const fixture of manifest.fixtures) {
-    if (fixture.labelStatus === 'insufficient' || fixture.labelStatus === 'abstained') {
+    for (let left = 0; left < fixture.humanReviews.length; left++) {
+      for (let right = left + 1; right < fixture.humanReviews.length; right++) {
+        comparedReviewerPairs++;
+        if (fixture.humanReviews[left]!.winner === fixture.humanReviews[right]!.winner) agreeingReviewerPairs++;
+      }
+    }
+    if (fixture.labelStatus === 'insufficient') {
+      insufficientHumanReviews.push(fixture.id);
+      missingLabels.push(fixture.id);
+      continue;
+    }
+    if (fixture.labelStatus === 'abstained') {
+      humanAbstained.push(fixture.id);
       missingLabels.push(fixture.id);
       continue;
     }
     if (fixture.labelStatus === 'conflict') {
+      humanConflicts.push(fixture.id);
       excludedNonConsensus.push(fixture.id);
       continue;
     }
@@ -319,8 +410,13 @@ export function computePairwiseFixtureMetrics(
       continue;
     }
     observed++;
-    if (result.counterBalance?.status === 'conflict') conflicts++;
-    if (result.counterBalance?.status === 'incomplete') incomplete++;
+    const counterBalanceStatus = result.counterBalance?.status;
+    if (counterBalanceStatus !== undefined && counterBalanceStatus !== 'agree' &&
+      counterBalanceStatus !== 'conflict' && counterBalanceStatus !== 'incomplete') {
+      throw new PairwiseFixtureManifestError(`result ${result.id}.counterBalance.status is invalid`);
+    }
+    if (counterBalanceStatus === 'conflict') conflicts++;
+    if (counterBalanceStatus === 'incomplete') incomplete++;
     if (result.winner === 'indeterminate') {
       abstained++;
       continue;
@@ -335,8 +431,20 @@ export function computePairwiseFixtureMetrics(
   return {
     totalFixtures: manifest.fixtures.length,
     labeled,
+    observed,
     decided,
     abstained,
+    coverage: rate(observed, labeled),
+    humanLabels: {
+      insufficient: insufficientHumanReviews,
+      abstained: humanAbstained,
+      conflict: humanConflicts,
+      reviewerAgreement: {
+        agreeingPairs: agreeingReviewerPairs,
+        comparedPairs: comparedReviewerPairs,
+        rate: rate(agreeingReviewerPairs, comparedReviewerPairs),
+      },
+    },
     exactAgreement: { matches, compared: decided, rate: rate(matches, decided) },
     rates: {
       abstention: rate(abstained, observed),

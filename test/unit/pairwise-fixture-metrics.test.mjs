@@ -30,6 +30,11 @@ function fixture(id, reviews) {
       viewport: { width: 1280, height: 720 }, browser: 'chromium', deviceScaleFactor: 1,
       colorScheme: 'light', fullPage: false, stable: true, animations: 'disabled', caret: 'hide',
     },
+    provenance: {
+      dataset: 'first-party', revision: 'fixture-v1', sourceRecordId: id,
+      sourceUrl: 'https://example.invalid/visual-fixtures', license: 'private',
+      redistribution: 'external-only', lane: 'first-party', split: 'test', groupId: id,
+    },
     humanReviews: reviews.map(review => ({ rationale: `${review.winner} is clearer`, ...review })),
   };
 }
@@ -38,13 +43,14 @@ test('measures consensus labels while abstaining and excluding non-consensus fix
   const dir = mkdtempSync(join(tmpdir(), 'pairwise-fixtures-'));
   try {
     const manifest = {
-      version: 1,
+      version: 2,
       fixtures: [
         fixture('a-wins', [{ reviewer: 'one', winner: 'A' }, { reviewer: 'two', winner: 'A' }]),
         fixture('b-wins', [{ reviewer: 'one', winner: 'B' }, { reviewer: 'two', winner: 'B' }]),
         fixture('tie', [{ reviewer: 'one', winner: 'tie' }, { reviewer: 'two', winner: 'tie' }]),
         fixture('model-conflict', [{ reviewer: 'one', winner: 'B' }, { reviewer: 'two', winner: 'B' }]),
         fixture('human-conflict', [{ reviewer: 'one', winner: 'A' }, { reviewer: 'two', winner: 'B' }]),
+        fixture('human-abstain', [{ reviewer: 'one', winner: 'indeterminate' }, { reviewer: 'two', winner: 'indeterminate' }]),
         fixture('too-few', [{ reviewer: 'one', winner: 'B' }]),
       ],
     };
@@ -71,6 +77,8 @@ test('measures consensus labels while abstaining and excluding non-consensus fix
     const metrics = computePairwiseFixtureMetrics(manifest, results);
 
     assert.equal(metrics.labeled, 4);
+    assert.equal(metrics.observed, 4);
+    assert.equal(metrics.coverage, 1);
     assert.equal(metrics.decided, 3);
     assert.equal(metrics.abstained, 1);
     assert.deepEqual(metrics.exactAgreement, { matches: 3, compared: 3, rate: 1 });
@@ -83,8 +91,14 @@ test('measures consensus labels while abstaining and excluding non-consensus fix
       tie: { A: 0, B: 0, tie: 1 },
     });
     assert.deepEqual(metrics.missingResults, []);
-    assert.deepEqual(metrics.missingLabels, ['too-few']);
+    assert.deepEqual(metrics.missingLabels, ['human-abstain', 'too-few']);
     assert.deepEqual(metrics.excludedNonConsensus, ['human-conflict']);
+    assert.deepEqual(metrics.humanLabels, {
+      insufficient: ['too-few'],
+      abstained: ['human-abstain'],
+      conflict: ['human-conflict'],
+      reviewerAgreement: { agreeingPairs: 5, comparedPairs: 6, rate: 5 / 6 },
+    });
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
@@ -92,7 +106,7 @@ test('measures consensus labels while abstaining and excluding non-consensus fix
 
 test('rejects unsafe fixture assets and reports missing recorded results', () => {
   assert.throws(() => validatePairwiseFixtureManifest({
-    version: 1,
+    version: 2,
     fixtures: [{
       ...fixture('unsafe', []),
       before: { path: '../outside.png', sha256: sha256('outside') },
@@ -100,11 +114,51 @@ test('rejects unsafe fixture assets and reports missing recorded results', () =>
   }), PairwiseFixtureManifestError);
 
   const manifest = {
-    version: 1,
+    version: 2,
     fixtures: [fixture('missing-result', [{ reviewer: 'one', winner: 'B' }, { reviewer: 'two', winner: 'B' }])],
   };
   const metrics = computePairwiseFixtureMetrics(manifest, []);
   assert.deepEqual(metrics.missingResults, ['missing-result']);
   assert.equal(metrics.exactAgreement.rate, null);
   assert.equal(metrics.rates.abstention, null);
+  assert.equal(metrics.coverage, 0);
+});
+
+test('requires provenance and rejects malformed counterbalance status', () => {
+  const withoutProvenance = fixture('no-provenance', []);
+  delete withoutProvenance.provenance;
+  assert.throws(
+    () => validatePairwiseFixtureManifest({ version: 2, fixtures: [withoutProvenance] }),
+    /provenance must be an object/,
+  );
+
+  const labeled = fixture('bad-status', [
+    { reviewer: 'one', winner: 'B' },
+    { reviewer: 'two', winner: 'B' },
+  ]);
+  assert.throws(
+    () => computePairwiseFixtureMetrics(
+      { version: 2, fixtures: [labeled] },
+      [{ id: 'bad-status', winner: 'B', counterBalance: { status: 'maybe' } }],
+    ),
+    /counterBalance.status is invalid/,
+  );
+});
+
+test('rejects group or asset leakage across declared splits', () => {
+  const first = fixture('first', []);
+  const second = fixture('second', []);
+  second.provenance.groupId = first.provenance.groupId;
+  second.provenance.split = 'held-out';
+  assert.throws(
+    () => validatePairwiseFixtureManifest({ version: 2, fixtures: [first, second] }),
+    /provenance group .* crosses test and held-out/,
+  );
+
+  second.provenance.groupId = 'different-page';
+  second.before.sha256 = first.before.sha256;
+  assert.throws(
+    () => validatePairwiseFixtureManifest({ version: 2, fixtures: [first, second] }),
+    /asset .* crosses test and held-out/,
+  );
 });

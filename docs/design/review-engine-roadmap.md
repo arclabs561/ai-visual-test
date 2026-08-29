@@ -3,6 +3,7 @@ status: proposal
 scope: review engine modernization
 grounded-in:
   - docs/design/review-engine-architecture.md
+  - docs/design/dataset-evaluation-protocol.md
   - docs/judge-graph.md
   - .claude/reports/scrutinize-2026-08-28.md
 review-trigger: after the current contract-hardening release or before any source-language migration
@@ -70,11 +71,21 @@ remain delivery steps, not implementation work.
 **Status:** the offline fixture protocol, validator, SHA-256 gate, real
 counterbalance replay, and categorical metrics are implemented. The tracked
 manifest is intentionally empty until real screenshots receive at least two
-independent human reviews with auditable rationales.
+independent human reviews with auditable rationales. The dataset protocol now
+separates external preference, regression, and critique evidence. Its adapters
+retain dataset-specific non-empty revisions and acquisition receipts verify
+artifact hashes. The dataset evaluator now requires examples and results to
+share one acquisition/provenance identity, selects a named group-disjoint
+split, reconciles recorded AB/BA preference outcomes, and reports critique
+reference-dimension coverage. Provider execution, external download, and
+first-party calibration remain outside that offline evaluator. UICrit and
+DiffSpot adapters have passed bounded smokes against pinned upstream rows; both
+Vibe adapters remain contract-tested but artifact verification is gated on
+operator-accepted dataset access.
 
 **Reversibility:** partially reversible because capture defaults affect baselines.
 
-**Gate:** repeat captures of stable fixtures agree; A/B and B/A conflicts are surfaced rather than averaged away; existing matcher semantics remain tested.
+**Gate:** repeat captures of stable fixtures agree; A/B and B/A conflicts are surfaced rather than averaged away; existing matcher semantics remain tested; every external corpus is pinned, license-reviewed, and measured only in its declared evidence track; its intended split passes the group-disjoint validator; external preference results retain and reconcile AB plus BA outcomes; critique reports matched-dimension coverage; and any calibration claim has a held-out first-party consensus slice and a run-level provenance envelope.
 
 ## Phase 2: Decide the TypeScript migration boundary
 
@@ -171,7 +182,12 @@ remain `.mjs` and should migrate as separate compatibility-preserving slices.
 
 ## Parallel evidence work
 
-Human labeling has a real consumer: validating pairwise decisions and confidence claims. Build a small, versioned screenshot set with baseline/candidate pairs, human preference, rubric, environment metadata, and provider/model identity. It should inform Phase 1 behavior and Phase 5 scope; it must not block Phase 0 correctness repairs.
+Human labeling has a real consumer: validating pairwise decisions and confidence
+claims. The governing [dataset evaluation protocol](dataset-evaluation-protocol.md)
+uses separate external preference, regression, and critique lanes, then a small
+first-party, human-reviewed set with baseline/candidate pairs, rubric,
+environment metadata, and provider/model identity. It should inform Phase 1
+behavior and Phase 5 scope; it must not block Phase 0 correctness repairs.
 
 ## Explicitly parked
 

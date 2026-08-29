@@ -17,7 +17,7 @@
  * multiple goal formats (string, object, array, function) and context-aware generation.
  */
 
-import { warn } from './logger.mjs';
+import { warn } from './logger.js';
 
 export type GameState = Record<string, unknown> & {
   gameActive?: boolean;

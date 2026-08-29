@@ -11,7 +11,7 @@
 
 import { validateScreenshot } from '#judge';
 import { ValidationError, StateMismatchError } from '#errors';
-import { assertString, assertObject } from '../type-guards.mjs';
+import { assertString, assertObject } from '../type-guards.js';
 import type { ValidationContext, ValidationResult } from '#public-contract';
 
 type StateRecord = Record<string, unknown>;

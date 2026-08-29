@@ -11,7 +11,7 @@
  * Weighted logging: More detail for critical paths (API calls, cache misses, errors)
  */
 
-import { log, warn, error, isDebugEnabled } from '../logger.mjs';
+import { log, warn, error, isDebugEnabled } from '../logger.js';
 
 /**
  * Log API call performance
@@ -283,4 +283,3 @@ export function logErrorPattern(params) {
     stack: err.stack
   });
 }
-

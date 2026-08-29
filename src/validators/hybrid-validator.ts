@@ -10,7 +10,7 @@
 import { validateScreenshot } from '#judge';
 import { ValidationError } from '#errors';
 import type { HybridValidationResult, ValidationContext, ValidationResult } from '#public-contract';
-import { assertString, assertObject } from '../type-guards.mjs';
+import { assertString, assertObject } from '../type-guards.js';
 import {
   checkAllTextContrast,
   checkKeyboardNavigation

@@ -6,7 +6,7 @@
  */
 
 import { selectModelTier, selectProvider, selectModelTierAndProvider } from './model-tier-selector.mjs';
-import { createConfig, getProvider } from './config.mjs';
+import { createConfig, getProvider } from './config.js';
 
 /**
  * Calculate cost comparison across tiers
@@ -224,4 +224,3 @@ function getSavingsEstimate(tier, provider, comparisons) {
     vsBalanced: comparisons.balanced ? `${Math.abs(comparisons.balanced.savingsPercent || 0).toFixed(0)}% more expensive` : '0%'
   };
 }
-

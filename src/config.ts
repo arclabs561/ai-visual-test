@@ -5,10 +5,72 @@
  * Designed to be flexible and extensible.
  */
 
-import { ConfigError } from '#errors';
-import { loadEnv } from './load-env.mjs';
-import { API_CONSTANTS } from './constants.mjs';
+import { loadEnv } from './load-env.js';
+import { API_CONSTANTS } from './constants.js';
 import { MODEL_TIERS, PROVIDER_CONFIGS, canonicalizeProviderName } from './provider-data.mjs';
+
+export type Environment = Record<string, string | undefined>;
+type ModelTier = 'fast' | 'balanced' | 'best';
+type AnchorEntry = string | { text?: string; image?: string; label?: string; dimension?: string };
+
+export interface VisualAnchors {
+  domain?: string;
+  positive?: AnchorEntry[];
+  negative?: AnchorEntry[];
+}
+
+export interface ConfigOptions {
+  provider?: string | null;
+  apiKey?: string | null;
+  env?: Environment;
+  cacheDir?: string | null;
+  cacheEnabled?: boolean;
+  maxConcurrency?: number;
+  timeout?: number;
+  verbose?: boolean;
+  modelTier?: ModelTier | null;
+  model?: string | null;
+  anchors?: VisualAnchors | null;
+}
+
+export interface ProviderConfig {
+  name: string;
+  apiUrl: string;
+  model: string;
+  freeTier: boolean;
+  pricing: { input: number; output: number };
+  priority: number;
+  latency?: number;
+  throughput?: number;
+  visionSupported?: boolean;
+}
+
+export interface Config {
+  provider: string;
+  apiKey: string | null;
+  providerConfig: ProviderConfig;
+  enabled: boolean;
+  anchors: VisualAnchors | null;
+  cache: { enabled: boolean; dir: string | null };
+  performance: { maxConcurrency: number; timeout: number };
+  debug: { verbose: boolean };
+}
+
+const providerConfigs = PROVIDER_CONFIGS as Record<string, ProviderConfig>;
+const modelTiers = MODEL_TIERS as Record<string, Partial<Record<ModelTier, string>>>;
+
+function canonicalProviderName(value: string | null | undefined): string {
+  const canonical = canonicalizeProviderName(value);
+  return typeof canonical === 'string' ? canonical : 'gemini';
+}
+
+function defaultProviderConfig(): ProviderConfig {
+  const gemini = providerConfigs.gemini;
+  if (!gemini) {
+    throw new Error('Gemini provider configuration is missing');
+  }
+  return gemini;
+}
 
 // Load .env file on module load
 loadEnv();
@@ -21,10 +83,10 @@ loadEnv();
  *   2. Environment variables (VLM_PROVIDER, VLM_MODEL, VLM_MODEL_TIER, *_API_KEY)
  *   3. Defaults (auto-detect cheapest provider, default model per provider)
  *
- * @param {import('#public-contract').ConfigOptions} [options={}] - Configuration options
- * @returns {import('#public-contract').Config} Configuration object
+ * @param options - Configuration options
+ * @returns Configuration object
  */
-export function createConfig(options = {}) {
+export function createConfig(options: ConfigOptions = {}): Config {
   const {
     provider = null,
     apiKey = null,
@@ -40,11 +102,7 @@ export function createConfig(options = {}) {
   } = options;
 
   // Auto-detect provider if not specified
-  let selectedProvider = provider;
-  if (!selectedProvider) {
-    selectedProvider = detectProvider(env);
-  }
-  selectedProvider = canonicalizeProviderName(selectedProvider);
+  const selectedProvider = canonicalProviderName(provider || detectProvider(env));
 
   // Get API key - respect explicit null/undefined (don't check env if null/undefined is explicitly passed)
   // Check if apiKey was explicitly provided in options (vs defaulting to null)
@@ -59,17 +117,19 @@ export function createConfig(options = {}) {
   }
 
   // Get provider config
-  let providerConfig = { ...PROVIDER_CONFIGS[selectedProvider] || PROVIDER_CONFIGS.gemini };
+  const providerConfig = { ...(providerConfigs[selectedProvider] ?? defaultProviderConfig()) };
 
   // Override model if specified
   if (model) {
     providerConfig.model = model;
-  } else if (modelTier && MODEL_TIERS[selectedProvider] && MODEL_TIERS[selectedProvider][modelTier]) {
+  } else if (modelTier) {
     // Use tier-based model selection
-    providerConfig.model = MODEL_TIERS[selectedProvider][modelTier];
-  } else if (env.VLM_MODEL_TIER && MODEL_TIERS[selectedProvider] && MODEL_TIERS[selectedProvider][env.VLM_MODEL_TIER]) {
+    const tierModel = modelTiers[selectedProvider]?.[modelTier];
+    if (tierModel) providerConfig.model = tierModel;
+  } else if (env.VLM_MODEL_TIER && isModelTier(env.VLM_MODEL_TIER)) {
     // Check environment variable for model tier
-    providerConfig.model = MODEL_TIERS[selectedProvider][env.VLM_MODEL_TIER];
+    const tierModel = modelTiers[selectedProvider]?.[env.VLM_MODEL_TIER];
+    if (tierModel) providerConfig.model = tierModel;
   } else if (env.VLM_MODEL) {
     // Explicit model override from environment
     providerConfig.model = env.VLM_MODEL;
@@ -77,26 +137,27 @@ export function createConfig(options = {}) {
 
   // Normalize anchors: ensure arrays, filter empty/invalid entries.
   // Each entry can be a plain string or { text?, image?, label?, dimension? }.
-  let normalizedAnchors = null;
+  let normalizedAnchors: VisualAnchors | null = null;
   if (anchors && typeof anchors === 'object') {
-    const normalizeEntries = (arr) => {
-      if (!Array.isArray(arr)) return [];
-      return arr.filter(entry => {
+    const normalizeEntries = (entries: unknown): AnchorEntry[] => {
+      if (!Array.isArray(entries)) return [];
+      return entries.filter((entry): entry is AnchorEntry => {
         if (typeof entry === 'string') return entry.trim().length > 0;
         if (entry && typeof entry === 'object') {
-          return (entry.text && typeof entry.text === 'string' && entry.text.trim()) ||
-                 (entry.image && typeof entry.image === 'string' && entry.image.trim());
+          const candidate = entry as { text?: unknown; image?: unknown };
+          return (typeof candidate.text === 'string' && candidate.text.trim().length > 0) ||
+                 (typeof candidate.image === 'string' && candidate.image.trim().length > 0);
         }
         return false;
       });
     };
     const pos = normalizeEntries(anchors.positive);
     const neg = normalizeEntries(anchors.negative);
-    const hasDomain = anchors.domain && typeof anchors.domain === 'string' && anchors.domain.trim();
+    const domain = typeof anchors.domain === 'string' ? anchors.domain.trim() : '';
 
-    if (pos.length > 0 || neg.length > 0 || hasDomain) {
+    if (pos.length > 0 || neg.length > 0 || domain) {
       normalizedAnchors = {};
-      if (hasDomain) normalizedAnchors.domain = anchors.domain.trim();
+      if (domain) normalizedAnchors.domain = domain;
       if (pos.length > 0) normalizedAnchors.positive = pos;
       if (neg.length > 0) normalizedAnchors.negative = neg;
     }
@@ -106,7 +167,7 @@ export function createConfig(options = {}) {
   if (!enabled && selectedProvider) {
     const expectedKey = selectedProvider === 'claude' ? 'ANTHROPIC_API_KEY' : `${selectedProvider.toUpperCase()}_API_KEY`;
     // Import warn lazily to avoid circular deps at module load
-    import('./logger.mjs').then(({ warn }) => {
+    import('./logger.js').then(({ warn }) => {
       warn(`[Config] No API key found for provider "${selectedProvider}". Set ${expectedKey} in your environment or .env file. VLM calls will be disabled.`);
     }).catch(() => {});
   }
@@ -134,16 +195,20 @@ export function createConfig(options = {}) {
 /**
  * Detect provider from environment variables
  */
-function detectProvider(env) {
+function isModelTier(value: string): value is ModelTier {
+  return value === 'fast' || value === 'balanced' || value === 'best';
+}
+
+function detectProvider(env: Environment): string {
   // Priority: explicit VLM_PROVIDER > auto-detect from API keys > default to gemini
   const explicitProvider = env.VLM_PROVIDER?.trim().toLowerCase();
-  if (explicitProvider && PROVIDER_CONFIGS[explicitProvider]) {
+  if (explicitProvider && providerConfigs[explicitProvider]) {
     return explicitProvider;
   }
 
   // Auto-detect: prefer cheaper/faster providers first
   // Groq has priority 0 (highest) for high-frequency decisions
-  const availableProviders = Object.values(PROVIDER_CONFIGS)
+  const availableProviders = Object.values(providerConfigs)
     .filter(config => {
       // Check provider-specific key
       const providerKey = env[`${config.name.toUpperCase()}_API_KEY`];
@@ -160,14 +225,14 @@ function detectProvider(env) {
     .sort((a, b) => a.priority - b.priority); // Lower priority number = higher priority
 
   return availableProviders.length > 0
-    ? availableProviders[0].name
+    ? availableProviders[0]?.name ?? 'gemini'
     : 'gemini'; // Default to gemini (cheapest)
 }
 
 /**
  * Get API key for provider
  */
-function getApiKey(provider, env) {
+function getApiKey(provider: string, env: Environment): string | null {
   // Check provider-specific key first
   const providerKey = env[`${provider.toUpperCase()}_API_KEY`];
   if (providerKey) {
@@ -193,9 +258,9 @@ function getApiKey(provider, env) {
  *
  * @returns {import('#public-contract').Config} Current configuration
  */
-let configInstance = null;
+let configInstance: Config | null = null;
 
-export function getConfig() {
+export function getConfig(): Config {
   if (!configInstance) {
     configInstance = createConfig();
   }
@@ -205,21 +270,20 @@ export function getConfig() {
 /**
  * Set configuration (useful for testing)
  *
- * @param {import('#public-contract').Config} config - Configuration to set
- * @returns {void}
+ * @param config - Configuration to set, or null to clear the singleton.
  */
-export function setConfig(config) {
+export function setConfig(config: Config | null): void {
   configInstance = config;
 }
 
 /**
  * Get provider configuration
  *
- * @param {string | null} [providerName=null] - Provider name, or null to use default
- * @returns {import('#public-contract').Config['providerConfig']} Provider configuration
+ * @param providerName - Provider name, or null to use default
+ * @returns Provider configuration
  */
-export function getProvider(providerName = null) {
+export function getProvider(providerName: string | null = null): ProviderConfig {
   const config = getConfig();
   const provider = providerName || config.provider;
-  return PROVIDER_CONFIGS[provider] || PROVIDER_CONFIGS.gemini;
+  return providerConfigs[provider] ?? defaultProviderConfig();
 }

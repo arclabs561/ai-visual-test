@@ -7,7 +7,7 @@ import {
   warn,
   log,
   error
-} from '../../src/logger.mjs';
+} from '../../src/logger.js';
 
 describe('Logger', () => {
   test('enableDebug enables debug mode', () => {
@@ -61,7 +61,6 @@ describe('Logger', () => {
     assert.doesNotThrow(() => error('Message', { key: 'value' }, 123));
   });
 });
-
 
 
 

@@ -2,7 +2,7 @@ import { trackPropagation, type PropagationSummary } from './experience-propagat
 import type { RenderedCode } from './multi-modal.js';
 import type { AggregatedTemporalNotes, TemporalNote } from './temporal-core.js';
 import type { MultiScaleAggregation, TemporalRecord } from './temporal-multi-scale.js';
-import { warn } from './logger.mjs';
+import { warn } from './logger.js';
 
 export interface Viewport { width: number; height: number; }
 export interface PersonaInput { name: string; device?: string; goals?: string[]; [key: string]: unknown; }

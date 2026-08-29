@@ -1,6 +1,6 @@
 /** Public package barrel for visual review APIs and integration conveniences. */
 
-import { loadEnv } from './load-env.mjs';
+import { loadEnv } from './load-env.js';
 import { VLLMJudge, validateScreenshot as validateScreenshotImpl } from '#judge';
 import type { SemanticInfo } from '#public-contract';
 
@@ -32,9 +32,9 @@ export function extractSemanticInfo(judgment: unknown): SemanticInfo {
   return new VLLMJudge({ enabled: false }).extractSemanticInfo(judgment);
 }
 
-export { createConfig, getConfig } from './config.mjs';
+export { createConfig, getConfig } from './config.js';
 export { validateStartup } from './startup-validation.mjs';
-export { getCached, setCached, clearCache, getCacheStats } from './cache.mjs';
+export { getCached, setCached, clearCache, getCacheStats } from './cache.js';
 export { estimateCost } from './cost-tracker.mjs';
 export { ValidationError, ConfigError, ProviderError, FileError } from './errors.js';
 export { createMatchers } from '#playwright-integration';

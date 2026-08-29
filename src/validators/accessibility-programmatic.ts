@@ -10,7 +10,7 @@
  */
 
 import { ValidationError } from '#errors';
-import { assertString, assertNumber } from '../type-guards.mjs';
+import { assertString, assertNumber } from '../type-guards.js';
 
 type Rgb = [number, number, number];
 

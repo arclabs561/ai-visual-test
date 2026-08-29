@@ -1,7 +1,7 @@
 /** Multi-modal validation over screenshots, rendered code, state, and personas. */
 
 import { ValidationError } from '#errors';
-import { warn } from './logger.mjs';
+import { warn } from './logger.js';
 import { captureTemporalScreenshots } from '#temporal-capture';
 import type {
   Page as TemporalPage,

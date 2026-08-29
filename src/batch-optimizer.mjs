@@ -28,9 +28,9 @@ import { createHash } from 'crypto';
  * 
  * @class BatchOptimizer
  */
-import { API_CONSTANTS, BATCH_OPTIMIZER_CONSTANTS } from './constants.mjs';
+import { API_CONSTANTS, BATCH_OPTIMIZER_CONSTANTS } from './constants.js';
 import { TimeoutError, ValidationError } from '#errors';
-import { warn } from './logger.mjs';
+import { warn } from './logger.js';
 
 export class BatchOptimizer {
   /**

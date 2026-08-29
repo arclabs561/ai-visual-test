@@ -7,7 +7,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { CACHE_CONSTANTS, TEMPORAL_CONSTANTS, API_CONSTANTS } from '../../src/constants.mjs';
+import { CACHE_CONSTANTS, TEMPORAL_CONSTANTS, API_CONSTANTS } from '../../src/constants.js';
 
 test('CACHE_CONSTANTS are defined and have correct types', () => {
   assert.strictEqual(typeof CACHE_CONSTANTS.MAX_CACHE_AGE_MS, 'number');

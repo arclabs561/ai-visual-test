@@ -1,5 +1,5 @@
 /** Visibility into how captured experience context moves through a run. */
-import { log, warn } from './logger.mjs';
+import { log, warn } from './logger.js';
 export type PropagationLogLevel = 'debug' | 'info' | 'warn';
 export interface PropagationContext { renderedCode?: { html?: string; criticalCSS?: unknown; domStructure?: unknown } | undefined; screenshot?: unknown; state?: unknown; pageState?: unknown; gameState?: unknown; [key: string]: unknown; }
 export interface PropagationEntry { stage: string; timestamp: number; hasRenderedCode: boolean; hasHTML: boolean; hasCSS: boolean; hasDOM: boolean; htmlLength: number; hasScreenshot: boolean; hasState: boolean; description: string; }

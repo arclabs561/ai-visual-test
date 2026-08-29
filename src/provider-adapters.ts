@@ -1,4 +1,4 @@
-import { API_CONSTANTS } from './constants.mjs';
+import { API_CONSTANTS } from './constants.js';
 import { ProviderError } from './errors.js';
 
 export type ProviderName = 'gemini' | 'openai' | 'groq' | 'openrouter' | 'claude';

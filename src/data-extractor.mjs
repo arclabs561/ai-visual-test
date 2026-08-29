@@ -9,9 +9,9 @@
  * General-purpose utility - no domain-specific logic.
  */
 
-import { createConfig } from './config.mjs';
-import { loadEnv } from './load-env.mjs';
-import { warn } from './logger.mjs';
+import { createConfig } from './config.js';
+import { loadEnv } from './load-env.js';
+import { warn } from './logger.js';
 import { ValidationError } from '#errors';
 // Load env before LLM utils
 loadEnv();

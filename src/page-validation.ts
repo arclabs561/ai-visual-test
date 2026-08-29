@@ -4,7 +4,7 @@ import { validateScreenshot } from '#judge';
 import { extractRenderedCode } from './multi-modal.js';
 import { ValidationError } from './errors.js';
 import { validatePrompt } from './validation.mjs';
-import { log } from './logger.mjs';
+import { log } from './logger.js';
 import { captureStableScreenshot } from './stable-capture.mjs';
 import { evaluatePairwiseCounterBalance } from '#position-counterbalance';
 import type { ValidationContext, ValidationResult } from '#public-contract';

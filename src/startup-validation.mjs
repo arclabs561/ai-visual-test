@@ -6,8 +6,8 @@
  */
 
 import { ConfigError } from '#errors';
-import { getConfig } from './config.mjs';
-import { warn, error } from './logger.mjs';
+import { getConfig } from './config.js';
+import { warn, error } from './logger.js';
 import { PROVIDER_NAMES, canonicalizeProviderName } from './provider-data.mjs';
 
 /**

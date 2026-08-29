@@ -16,8 +16,8 @@
  */
 
 import { getCostTracker, recordCost } from './cost-tracker.mjs';
-import { getCacheStats } from './cache.mjs';
-import { log, warn } from './logger.mjs';
+import { getCacheStats } from './cache.js';
+import { log, warn } from './logger.js';
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
 
@@ -317,4 +317,3 @@ export function getGlobalCostStats() {
   const tracker = getCostTracker();
   return tracker.getStats();
 }
-

@@ -18,7 +18,7 @@ import {
 import { tmpdir } from 'os';
 import { join } from 'path';
 import { mkdirSync, existsSync, rmdirSync, unlinkSync } from 'fs';
-import { initCache, clearCache } from '../../src/cache.mjs';
+import { initCache, clearCache } from '../../src/cache.js';
 
 const TEST_CACHE_DIR = join(tmpdir(), 'ai-visual-test-session-cost-test');
 
@@ -274,4 +274,3 @@ describe('Session Cost Tracker', () => {
     });
   });
 });
-

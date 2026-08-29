@@ -5,7 +5,7 @@
  * This allows tests to run without manual environment variable setup.
  */
 
-import { loadEnv } from '../src/load-env.mjs';
+import { loadEnv } from '../src/load-env.js';
 
 // Set NODE_ENV to 'test' to prevent automatic initialization of graceful shutdown
 // This ensures library best practices tests pass (no side effects on import)
@@ -19,4 +19,3 @@ loadEnv();
 
 // Re-export for convenience
 export { loadEnv };
-

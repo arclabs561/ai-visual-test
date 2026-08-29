@@ -12,7 +12,7 @@
 
 import { validateScreenshot } from '#judge';
 import { ValidationError } from '#errors';
-import { assertString } from '../type-guards.mjs';
+import { assertString } from '../type-guards.js';
 import type { ValidationContext, ValidationResult } from '#public-contract';
 
 interface BrowserElement {

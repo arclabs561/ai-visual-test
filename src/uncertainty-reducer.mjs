@@ -12,7 +12,7 @@
  */
 
 import { detectHallucination } from './hallucination-detector.mjs';
-import { log, warn } from './logger.mjs';
+import { log, warn } from './logger.js';
 
 /**
  * Estimate uncertainty from logprobs

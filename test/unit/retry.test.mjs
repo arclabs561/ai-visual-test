@@ -10,9 +10,9 @@ import {
   calculateBackoff,
   retryWithBackoff,
   enhanceErrorMessage
-} from '../../src/retry.mjs';
+} from '../../src/retry.js';
 import { ProviderError, TimeoutError, ValidationError } from '../../src/errors.js';
-import { RETRY_CONSTANTS } from '../../src/constants.mjs';
+import { RETRY_CONSTANTS } from '../../src/constants.js';
 
 describe('Retry Utilities', () => {
   describe('isRetryableError', () => {
@@ -284,6 +284,27 @@ describe('Retry Utilities', () => {
       const result = await retryWithBackoff(fn);
       assert.strictEqual(result, 'success');
       assert.strictEqual(callCount, 2);
+    });
+
+    it('should normalize a non-Error rejection before invoking retry policy', async () => {
+      let received;
+      await assert.rejects(
+        retryWithBackoff(
+          async () => { throw 'transient string failure'; },
+          { retryable: error => { received = error; return false; } },
+        ),
+        error => error instanceof Error && error.message === 'transient string failure',
+      );
+      assert.ok(received instanceof Error);
+    });
+
+    it('should reject invalid retry counts before invoking the operation', async () => {
+      let calls = 0;
+      const fn = async () => { calls++; return 'unexpected'; };
+      for (const maxRetries of [-1, 1.5, NaN]) {
+        await assert.rejects(retryWithBackoff(fn, { maxRetries }), RangeError);
+      }
+      assert.strictEqual(calls, 0);
     });
   });
 });

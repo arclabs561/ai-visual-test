@@ -34,11 +34,11 @@ const OBFUSCATE_FILES = [
 const KEEP_READABLE = [
   'src/index.js',            // API surface
   'src/judge.js',            // API wrapper
-  'src/cache.mjs',           // Cache system
+  'src/cache.js',            // Cache system
   'src/validators/',         // Validators directory
   'src/utils/',              // Utilities directory
   'src/errors.js',           // Error handling
-  'src/config.mjs',          // Configuration
+  'src/config.js',           // Configuration
 ];
 
 // Obfuscation configuration (balanced protection)

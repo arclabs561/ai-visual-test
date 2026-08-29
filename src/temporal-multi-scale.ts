@@ -23,7 +23,7 @@ import {
 import type { AggregatedTemporalNotes, TemporalNote } from '#temporal-core';
 import { validateAndSortNotes, validateTimeScales, validateAction, validatePerceptionContext, validateSequentialContextOptions } from '#temporal-orchestration';
 import { MultiScaleError, PerceptionTimeError } from '#temporal-orchestration';
-import { warn, log } from './logger.mjs';
+import { warn, log } from './logger.js';
 
 export type TemporalRecord = TemporalNote & Record<string, unknown>;
 type CoordinateMode = 'timestamp' | 'elapsed';

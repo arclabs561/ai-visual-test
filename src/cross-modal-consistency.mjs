@@ -16,7 +16,7 @@
  * would use VLLM-based verification and entity-level consistency checking as in LVLM4CEC.
  */
 
-import { warn, log } from './logger.mjs';
+import { warn, log } from './logger.js';
 
 /**
  * Check consistency between screenshot and HTML/CSS
@@ -167,4 +167,3 @@ export function validateExperienceConsistency(experience, options = {}) {
     ...options
   });
 }
-

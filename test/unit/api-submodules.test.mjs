@@ -51,6 +51,7 @@ describe('API Sub-Modules', () => {
       assert.ok(typeof ensemble.detectBias === 'function', 'Should export detectBias');
       assert.ok(typeof ensemble.detectPositionBias === 'function', 'Should export detectPositionBias');
       assert.ok(typeof ensemble.evaluateWithCounterBalance === 'function', 'Should export evaluateWithCounterBalance');
+      assert.ok(typeof ensemble.shouldUseCounterBalance === 'function', 'Should export shouldUseCounterBalance');
     });
   });
   
@@ -91,4 +92,3 @@ describe('API Sub-Modules', () => {
     });
   });
 });
-

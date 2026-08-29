@@ -8,7 +8,7 @@
 
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { evaluateWithCounterBalance } from '../../src/position-counterbalance.mjs';
+import { evaluateWithCounterBalance } from '../../src/position-counterbalance.js';
 import { spearmanCorrelation, calculateRankAgreement } from '../../src/metrics.mjs';
 
 describe('Improvement Validation', () => {

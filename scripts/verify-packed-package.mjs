@@ -40,6 +40,11 @@ try {
     cwd: consumer,
     stdio: 'inherit',
   });
+  const ensembleProgram = `const ensemble = await import(${JSON.stringify(`${installedManifest.name}/ensemble`)}); for (const name of ['evaluateWithCounterBalance', 'shouldUseCounterBalance']) { if (typeof ensemble[name] !== 'function') throw new Error('Missing packed ensemble helper: ' + name); }`;
+  execFileSync(process.execPath, ['--input-type=module', '--eval', ensembleProgram], {
+    cwd: consumer,
+    stdio: 'inherit',
+  });
 
   const image = join(consumer, 'pixel.png');
   writeFileSync(image, Buffer.from(

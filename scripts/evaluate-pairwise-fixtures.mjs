@@ -8,7 +8,7 @@ import {
   validatePairwiseFixtureManifest,
   verifyPairwiseFixtureAssets,
 } from '#pairwise-fixture-metrics';
-import { evaluatePairwiseCounterBalance } from '../src/position-counterbalance.mjs';
+import { evaluatePairwiseCounterBalance } from '#position-counterbalance';
 
 function usage() {
   return 'Usage: npm run evaluate:pairwise-fixtures -- --manifest <manifest.json> --results <recorded-orders.json>';

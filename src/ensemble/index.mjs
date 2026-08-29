@@ -29,7 +29,7 @@ export {
 export {
   evaluateWithCounterBalance,
   shouldUseCounterBalance
-} from '../position-counterbalance.mjs';
+} from '#position-counterbalance';
 
 // Research-enhanced validation
 export {
@@ -39,4 +39,3 @@ export {
   validateWithExplicitRubric,
   validateWithAllResearchEnhancements
 } from '../research-enhanced-validation.mjs';
-

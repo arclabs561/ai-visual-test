@@ -4,7 +4,7 @@ import { mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { VLLMJudge } from '../../src/judge.mjs';
+import { VLLMJudge } from '#judge';
 import { generateCacheKey } from '../../src/cache.mjs';
 import { ProviderError } from '../../src/errors.mjs';
 
@@ -221,7 +221,7 @@ test('transport failures are never converted into output-contract repairs', asyn
   }
 });
 
-test('cache identity changes with provider, model, structured mode, and anchors', () => {
+test('cache identity changes with provider, model, structured mode, legacy policy, and anchors', () => {
   const image = fixtureImage();
   const base = generateCacheKey(image, 'effective prompt', {
     provider: 'openai', model: 'gpt-4o', reviewMode: 'scalar',
@@ -229,7 +229,7 @@ test('cache identity changes with provider, model, structured mode, and anchors'
   });
   for (const changed of [
     { provider: 'gemini' }, { model: 'gpt-5' }, { reviewMode: 'comparison' },
-    { structuredOutputMode: 'json-object' }, { anchorDigest: 'b' }
+    { structuredOutputMode: 'json-object' }, { legacyOutputFallback: false }, { anchorDigest: 'b' }
   ]) {
     const candidate = generateCacheKey(image, 'effective prompt', {
       provider: 'openai', model: 'gpt-4o', reviewMode: 'scalar',
@@ -237,6 +237,55 @@ test('cache identity changes with provider, model, structured mode, and anchors'
     });
     assert.notEqual(candidate, base);
   }
+});
+
+test('strict structured calls never reuse a legacy-fallback cache entry', async t => {
+  const originalFetch = globalThis.fetch;
+  t.after(() => { globalThis.fetch = originalFetch; });
+  let calls = 0;
+  globalThis.fetch = async () => {
+    calls++;
+    const content = calls === 1 ? `
+Score: 7/10
+Assessment: needs-improvement
+## Findings
+- Contrast is too dim
+## Recommendations
+- Raise contrast
+## Strengths
+- Clear CTA
+## Reasoning
+The CTA remains discoverable.
+` : JSON.stringify({
+      kind: 'scalar', score: 9, assessment: 'pass', reasoning: 'Structured result',
+      issues: [], recommendations: [], strengths: ['Clear CTA']
+    });
+    return new Response(JSON.stringify({ choices: [{ message: { content } }] }), {
+      headers: { 'content-type': 'application/json' }
+    });
+  };
+
+  const cacheDir = mkdtempSync(join(tmpdir(), 'ai-visual-cache-policy-'));
+  const instance = new VLLMJudge({
+    provider: 'openai', model: 'gpt-4o', apiKey: 'test-key', cacheEnabled: true, cacheDir, env: {}
+  });
+  const image = fixtureImage();
+  const baseContext = {
+    structuredOutput: false,
+    enableUncertaintyReduction: false
+  };
+
+  const legacy = await instance.judgeScreenshot(image, 'Review this interface', baseContext);
+  const strict = await instance.judgeScreenshot(image, 'Review this interface', {
+    ...baseContext,
+    legacyOutputFallback: false
+  });
+
+  assert.equal(calls, 2);
+  assert.equal(legacy.outputFormat, 'legacy-text');
+  assert.equal(strict.cached, undefined);
+  assert.equal(strict.outputFormat, 'structured');
+  assert.equal(strict.score, 9);
 });
 
 test('cache hits return the same normalized public result as cold calls', async t => {

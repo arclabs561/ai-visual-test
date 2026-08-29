@@ -13,7 +13,7 @@ import {
 } from '../../src/multi-modal.mjs';
 import { ValidationError } from '../../src/errors.mjs';
 import { createMockPage } from '../helpers/mock-page.mjs';
-import { validateScreenshot } from '../../src/judge.mjs';
+import { validateScreenshot } from '#judge';
 
 describe('extractRenderedCode', () => {
   it('should extract rendered code from mock page', async () => {

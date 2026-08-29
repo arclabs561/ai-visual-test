@@ -33,7 +33,7 @@ const OBFUSCATE_FILES = [
 // Files to keep readable (API surface, validators, utilities)
 const KEEP_READABLE = [
   'src/index.mjs',           // API surface
-  'src/judge.mjs',           // API wrapper
+  'src/judge.js',            // API wrapper
   'src/cache.mjs',           // Cache system
   'src/validators/',         // Validators directory
   'src/utils/',              // Utilities directory

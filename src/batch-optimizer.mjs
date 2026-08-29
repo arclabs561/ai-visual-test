@@ -354,7 +354,7 @@ export class BatchOptimizer {
   async _processRequest(imagePath, prompt, context, validateFn) {
     if (!validateFn) {
       // Import validateScreenshot if not provided
-      const { validateScreenshot } = await import('./judge.mjs');
+      const { validateScreenshot } = await import('#judge');
       validateFn = validateScreenshot;
     }
     

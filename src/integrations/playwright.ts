@@ -5,7 +5,7 @@ import { existsSync, unlinkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { validateScreenshot } from '../judge.mjs';
+import { validateScreenshot } from '#judge';
 import { ConfigError } from '../errors.mjs';
 import { captureStableScreenshot as captureStable } from '../stable-capture.mjs';
 import { validatePage } from '#page-validation';

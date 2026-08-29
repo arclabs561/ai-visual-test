@@ -86,6 +86,7 @@ packageJson.imports = {
   '#game-convenience': './src/game-convenience.js',
   '#game-goal-prompts': './src/game-goal-prompts.js',
   '#game-player': './src/game-player.js',
+  '#judge': './src/judge.js',
   '#pairwise-fixture-metrics': './src/pairwise-fixture-metrics.js',
   '#page-validation': './src/page-validation.js',
   '#playwright-integration': './src/integrations/playwright.js',

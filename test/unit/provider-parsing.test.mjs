@@ -1,6 +1,6 @@
 import { describe, it, before } from 'node:test';
 import assert from 'node:assert/strict';
-import { VLLMJudge } from '../../src/judge.mjs';
+import { VLLMJudge } from '#judge';
 
 describe('Provider response parsing', () => {
   let judge;

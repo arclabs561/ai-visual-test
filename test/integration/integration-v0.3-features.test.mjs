@@ -11,7 +11,7 @@
 import '../test-setup.mjs'; // Auto-load .env (must be first)
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { VLLMJudge } from '../../src/judge.mjs';
+import { VLLMJudge } from '#judge';
 import { validateComparison } from '../../src/page-validation.js';
 import { EnsembleJudge } from '#ensemble-judge';
 import { detectHallucination } from '../../src/hallucination-detector.mjs';

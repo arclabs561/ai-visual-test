@@ -1,4 +1,4 @@
-import { validateScreenshot } from './judge.mjs';
+import { validateScreenshot } from '#judge';
 import { detectBias, detectPositionBias, type PositionBiasResult } from './bias-detector.js';
 import { mitigateBias, mitigatePositionBias } from './bias-mitigation.js';
 import { evaluateWithCounterBalance } from '#position-counterbalance';

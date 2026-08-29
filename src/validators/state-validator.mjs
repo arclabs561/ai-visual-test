@@ -9,7 +9,7 @@
  * - Extensible via plugins
  */
 
-import { validateScreenshot } from '../judge.mjs';
+import { validateScreenshot } from '#judge';
 import { ValidationError, StateMismatchError } from '../errors.mjs';
 import { assertString, assertObject } from '../type-guards.mjs';
 
@@ -288,4 +288,3 @@ Return structured data with extracted state and validation results.`;
     }
   }
 }
-

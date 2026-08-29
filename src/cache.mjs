@@ -131,6 +131,7 @@ export function generateCacheKey(imagePath, prompt, context = {}) {
     model: context.model || '',
     reviewMode: context.reviewMode || '',
     structuredOutputMode: context.structuredOutputMode || '',
+    legacyOutputFallback: context.legacyOutputFallback === false ? false : true,
     anchorDigest: context.anchorDigest || '',
     testType: context.testType || '',
     frame: context.frame || '',

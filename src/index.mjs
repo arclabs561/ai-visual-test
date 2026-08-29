@@ -39,7 +39,7 @@ import { loadEnv } from './load-env.mjs';
 loadEnv();
 
 // --- Core validation ---
-import { VLLMJudge, validateScreenshot as _validateScreenshot } from './judge.mjs';
+import { VLLMJudge, validateScreenshot as _validateScreenshot } from '#judge';
 export { VLLMJudge, _validateScreenshot as validateScreenshot };
 // Internal alias for backward compatibility
 export { _validateScreenshot };

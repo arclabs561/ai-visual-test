@@ -5,7 +5,7 @@
 import '../test-setup.mjs'; // Auto-load .env (must be first)
 import { describe, it, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert';
-import { VLLMJudge, validateScreenshot } from '../../src/judge.mjs';
+import { VLLMJudge, validateScreenshot } from '#judge';
 import { writeFileSync, unlinkSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 

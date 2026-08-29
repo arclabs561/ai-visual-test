@@ -9,7 +9,7 @@ import './test-setup.mjs'; // Auto-load .env (must be first)
 import { test, describe } from 'node:test';
 import assert from 'node:assert';
 import { createConfig, getProvider } from '../src/config.mjs';
-import { VLLMJudge } from '../src/judge.mjs';
+import { VLLMJudge } from '#judge';
 import { unlinkSync, existsSync } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
@@ -139,4 +139,3 @@ describe('Multi-Provider Testing', () => {
     }
   });
 });
-

@@ -11,7 +11,7 @@
  * - Disagreement analysis
  */
 
-import { VLLMJudge } from './judge.mjs';
+import { VLLMJudge } from '#judge';
 import { detectBias, detectPositionBias } from './bias-detector.js';
 
 export type VotingMethod = 'weighted_average' | 'majority' | 'consensus' | 'optimal';
@@ -584,7 +584,7 @@ export function createEnsembleJudge(
 ): EnsembleJudge {
   const judges = providers.map(provider => {
     const judge = new VLLMJudge({ provider });
-    return judge;
+    return judge as unknown as JudgeLike;
   });
   
   return new EnsembleJudge({

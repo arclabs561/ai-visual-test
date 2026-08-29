@@ -4,7 +4,7 @@ import { existsSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { validatePage } from '../../src/page-validation.js';
-import { VLLMJudge } from '../../src/judge.mjs';
+import { VLLMJudge } from '#judge';
 
 test('validatePage captures a stable frame, forwards metadata, and removes its temporary file', async t => {
   const tempDir = mkdtempSync(join(tmpdir(), 'validate-page-'));

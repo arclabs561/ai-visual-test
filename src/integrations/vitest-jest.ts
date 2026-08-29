@@ -1,6 +1,6 @@
 /** Framework-neutral Vitest/Jest matcher registration. */
 
-import { validateScreenshot } from '../judge.mjs';
+import { validateScreenshot } from '#judge';
 import { validateComparison } from '#page-validation';
 import { ConfigError } from '../errors.mjs';
 

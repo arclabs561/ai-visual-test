@@ -7,7 +7,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import { ValidationError, ProviderError, TimeoutError } from '../../src/errors.mjs';
-import { validateScreenshot } from '../../src/judge.mjs';
+import { validateScreenshot } from '#judge';
 import { getCached, setCached } from '../../src/cache.mjs';
 
 describe('Error Handling Edge Cases', () => {
@@ -203,4 +203,3 @@ describe('Error Handling Edge Cases', () => {
     });
   });
 });
-

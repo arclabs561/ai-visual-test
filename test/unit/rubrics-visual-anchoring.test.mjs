@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildRubricPrompt } from '../../src/rubrics.mjs';
+import { buildRubricPrompt } from '../../src/rubrics.js';
 
 describe('Rubric Visual Anchoring', () => {
   it('should include visual reference section when referenceImages provided', () => {
@@ -21,6 +21,15 @@ describe('Rubric Visual Anchoring', () => {
     const idx3 = prompt.indexOf('REF_SCORE_3');
     assert.ok(idx9 < idx6, 'Score 9 should come before score 6');
     assert.ok(idx6 < idx3, 'Score 6 should come before score 3');
+  });
+
+  it('accepts score level zero as a visual reference anchor', () => {
+    const prompt = buildRubricPrompt(null, true, {
+      referenceImages: { 0: 'broken.png', 10: 'perfect.png' }
+    });
+    const idx10 = prompt.indexOf('REF_SCORE_10');
+    const idx0 = prompt.indexOf('REF_SCORE_0');
+    assert.ok(idx10 < idx0, 'Score 10 should come before score 0');
   });
 
   it('should not include visual reference section without referenceImages', () => {

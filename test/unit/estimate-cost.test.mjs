@@ -1,10 +1,10 @@
 /**
- * Tests for estimateCost() in cost-tracker.mjs
+ * Tests for estimateCost() in cost-tracker.js
  */
 
 import { test, describe } from 'node:test';
 import assert from 'node:assert';
-import { estimateCost } from '../../src/cost-tracker.mjs';
+import { estimateCost } from '../../src/cost-tracker.js';
 import { PROVIDER_CONFIGS } from '../../src/provider-data.mjs';
 
 describe('estimateCost', () => {

@@ -8,7 +8,7 @@ import { test } from 'node:test';
 import assert from 'node:assert';
 import { enableDebug } from '../../src/logger.js';
 import { SequentialDecisionContext } from '#temporal-multi-scale';
-import { BatchOptimizer } from '../../src/batch-optimizer.mjs';
+import { BatchOptimizer } from '../../src/batch-optimizer.js';
 import { selfConsistencyCheck } from '../../src/uncertainty-reducer.mjs';
 import { initCache, getCacheStats, setCached, clearCache } from '../../src/cache.js';
 import { join } from 'path';

@@ -60,17 +60,17 @@ export {
   getCostStats,
   setBudgetLimit,
   getBudgetStatus,
-} from '../cost-tracker.mjs';
+} from '../cost-tracker.js';
 
 // Score tracking
 export { ScoreTracker } from '../score-tracker.js';
 
 // Batch optimization
-export { BatchOptimizer } from '../batch-optimizer.mjs';
+export { BatchOptimizer } from '../batch-optimizer.js';
 export { LatencyAwareBatchOptimizer } from '../latency-aware-batch-optimizer.js';
 
 // Data extraction
-export { extractStructuredData } from '../data-extractor.mjs';
+export { extractStructuredData } from '../data-extractor.js';
 
 // Feedback aggregation
 export { aggregateFeedback, generateRecommendations } from '../feedback-aggregator.js';
@@ -120,30 +120,30 @@ export {
 export { normalizeValidationResult } from '#validation-result-normalizer';
 
 // Error handlers
-export { initErrorHandlers } from '../error-handler.mjs';
+export { initErrorHandlers } from '../error-handler.js';
 
 // Rubrics
 export {
   DEFAULT_RUBRIC,
   buildRubricPrompt,
   getRubricForTestType,
-} from '../rubrics.mjs';
+} from '../rubrics.js';
 
 // Model tier selection
 export {
   selectModelTier,
   selectProvider,
   selectModelTierAndProvider,
-} from '../model-tier-selector.mjs';
+} from '../model-tier-selector.js';
 
 // Startup validation
-export { validateStartup, validateStartupSoft } from '../startup-validation.mjs';
+export { validateStartup, validateStartupSoft } from '../startup-validation.js';
 
 // Cost optimization
 export {
   calculateCostComparison,
   optimizeCost,
-} from '../cost-optimization.mjs';
+} from '../cost-optimization.js';
 
 // Score calibration
 export {

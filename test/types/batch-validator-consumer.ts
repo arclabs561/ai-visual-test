@@ -1,4 +1,4 @@
-import { BatchOptimizer } from '../../build/src/batch-optimizer.mjs';
+import { BatchOptimizer } from '../../build/src/batch-optimizer.js';
 import { BatchValidator } from '@arclabs561/ai-visual-test/validators';
 import type { BatchValidationResult, ValidationResult } from '../../build/src/public-contract.js';
 

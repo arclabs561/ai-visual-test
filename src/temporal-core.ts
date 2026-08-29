@@ -769,7 +769,7 @@ async function extractEntities(notes: WeightedTemporalNote[], options: TemporalG
   }
 
   try {
-    const { extractStructuredData } = await import('./data-extractor.mjs');
+    const { extractStructuredData } = await import('./data-extractor.js');
     const { createConfig } = await import('./config.js');
 
     const config = createConfig();

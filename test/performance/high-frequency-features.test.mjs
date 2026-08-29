@@ -10,7 +10,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
 import { LatencyAwareBatchOptimizer } from '../../src/latency-aware-batch-optimizer.js';
-import { selectModelTier, selectProvider } from '../../src/model-tier-selector.mjs';
+import { selectModelTier, selectProvider } from '../../src/model-tier-selector.js';
 
 test('LatencyAwareBatchOptimizer should bypass batching for <100ms requests', async () => {
   const optimizer = new LatencyAwareBatchOptimizer({

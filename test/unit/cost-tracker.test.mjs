@@ -1,5 +1,5 @@
 /**
- * Tests for cost-tracker.mjs
+ * Tests for cost-tracker.js
  */
 
 import '../test-setup.mjs';
@@ -12,7 +12,7 @@ import {
   getCostStats,
   setBudgetLimit,
   getBudgetStatus
-} from '../../src/cost-tracker.mjs';
+} from '../../src/cost-tracker.js';
 import { initCache, clearCache } from '../../src/cache.js';
 import { tmpdir } from 'os';
 import { join } from 'path';
@@ -110,6 +110,16 @@ describe('Cost Tracker', () => {
       
       assert.strictEqual(tracker.costs.byProvider.gemini.inputTokens, 100);
       assert.strictEqual(tracker.costs.byProvider.gemini.outputTokens, 50);
+    });
+
+    it('persists cost data using the cache payload rather than cache context', () => {
+      const storageKey = 'persisted-costs';
+      const tracker = new CostTracker({ storageKey });
+      tracker.recordCost({ provider: 'gemini', cost: 0.001, inputTokens: 100 });
+
+      const restored = new CostTracker({ storageKey });
+      assert.strictEqual(restored.getStats().count, 1);
+      assert.strictEqual(restored.getStats().byProvider.gemini.inputTokens, 100);
     });
 
     it('should trim history when exceeding maxHistory', () => {

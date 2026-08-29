@@ -59,7 +59,7 @@ export async function validateWithLengthAlignment(imagePath: string, prompt: str
 
 export async function validateWithExplicitRubric(imagePath: string, prompt: string, options: ValidationContext & { rubric?: Rubric | null; useDefaultRubric?: boolean } = {}): Promise<ValidationResult> {
   const { rubric = null, useDefaultRubric = true, ...validationOptions } = options;
-  const { buildRubricPrompt, DEFAULT_RUBRIC } = await import('./rubrics.mjs');
+  const { buildRubricPrompt, DEFAULT_RUBRIC } = await import('./rubrics.js');
   const rubricToUse = rubric || (useDefaultRubric ? DEFAULT_RUBRIC : null);
   const enhancedPrompt = rubricToUse ? `${prompt}\n\n${buildRubricPrompt(rubricToUse, true)}` : prompt;
   const result = normalizeValidationResult(await validateScreenshot(imagePath, enhancedPrompt, validationOptions), 'validateWithExplicitRubric');
@@ -72,7 +72,7 @@ export async function validateWithAllResearchEnhancements(imagePath: string, pro
   ensureQualityGap(qualityGap);
   let enhancedPrompt = prompt;
   if (enableRubrics) {
-    const { buildRubricPrompt, DEFAULT_RUBRIC } = await import('./rubrics.mjs');
+    const { buildRubricPrompt, DEFAULT_RUBRIC } = await import('./rubrics.js');
     // The first argument is the rubric; the user prompt remains the prefix.
     enhancedPrompt = `${prompt}\n\n${buildRubricPrompt(DEFAULT_RUBRIC, true)}`;
   }

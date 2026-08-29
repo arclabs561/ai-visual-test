@@ -13,7 +13,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import { validateScreenshot, createConfig } from '../src/index.js';
 import { evaluateWithCounterBalance } from '../src/position-counterbalance.js';
-import { buildRubricPrompt, getRubricForTestType } from '../src/rubrics.mjs';
+import { buildRubricPrompt, getRubricForTestType } from '../src/rubrics.js';
 
 describe('Ablation Tests: Research Claim Validation', () => {
   describe('Rubrics Ablation', () => {

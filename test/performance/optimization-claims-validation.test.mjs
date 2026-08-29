@@ -17,7 +17,7 @@ import assert from 'node:assert';
 import { validateScreenshot, createConfig } from '../../src/index.js';
 import { LatencyAwareBatchOptimizer } from '../../src/latency-aware-batch-optimizer.js';
 import { getCacheStats, clearCache } from '../../src/cache.js';
-import { getCostStats } from '../../src/cost-tracker.mjs';
+import { getCostStats } from '../../src/cost-tracker.js';
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 

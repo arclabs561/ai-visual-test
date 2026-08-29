@@ -11,7 +11,7 @@
  * This replaces ad-hoc prompt building across modules.
  */
 
-import { buildRubricPrompt, DEFAULT_RUBRIC } from './rubrics.mjs';
+import { buildRubricPrompt, DEFAULT_RUBRIC } from './rubrics.js';
 import { formatNotesForPrompt, aggregateTemporalNotes } from '#temporal-core';
 import { formatTemporalContext, selectTopWeightedNotes } from '#temporal-prompt-formatting';
 import { warn } from './logger.js';

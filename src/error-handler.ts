@@ -23,16 +23,16 @@ import { error } from './logger.js';
  * initErrorHandlers(); // Opt-in to global error handling
  * ```
  */
-export function initErrorHandlers() {
+export function initErrorHandlers(): void {
   // Handle unhandled promise rejections
-  process.on('unhandledRejection', (reason, promise) => {
+  process.on('unhandledRejection', (reason: unknown, promise: Promise<unknown>) => {
     error('[Unhandled Rejection]', {
       reason: reason instanceof Error ? {
         message: reason.message,
         stack: reason.stack,
         name: reason.name
       } : reason,
-      promise: promise?.toString?.() || 'Unknown promise'
+      promise: promise.toString()
     });
     
     // In production, you might want to:
@@ -42,7 +42,7 @@ export function initErrorHandlers() {
   });
   
   // Handle uncaught exceptions
-  process.on('uncaughtException', (err) => {
+  process.on('uncaughtException', (err: Error) => {
     error('[Uncaught Exception]', {
       message: err.message,
       stack: err.stack,
@@ -56,7 +56,7 @@ export function initErrorHandlers() {
   });
   
   // Handle warnings
-  process.on('warning', (warning) => {
+  process.on('warning', (warning: Error) => {
     error('[Process Warning]', {
       name: warning.name,
       message: warning.message,

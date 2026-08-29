@@ -10,8 +10,8 @@
  * - Success rate tracking
  */
 
-import { BatchOptimizer as BatchOptimizerImpl } from '../batch-optimizer.mjs';
-import { getCostTracker } from '../cost-tracker.mjs';
+import { BatchOptimizer as BatchOptimizerImpl } from '../batch-optimizer.js';
+import { getCostTracker } from '../cost-tracker.js';
 import type {
   BatchCostStats,
   BatchPerformanceStats,

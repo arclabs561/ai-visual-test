@@ -15,7 +15,7 @@
  * ```
  */
 
-import { getCostTracker, recordCost } from './cost-tracker.mjs';
+import { getCostTracker, recordCost } from './cost-tracker.js';
 import { getCacheStats } from './cache.js';
 import { log, warn } from './logger.js';
 import { writeFileSync, mkdirSync, existsSync } from 'fs';

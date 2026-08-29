@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { DEFAULT_RUBRIC, buildRubricPrompt, getRubricForTestType } from '../../src/rubrics.mjs';
+import { DEFAULT_RUBRIC, buildRubricPrompt, getRubricForTestType } from '../../src/rubrics.js';
 
 test('DEFAULT_RUBRIC has required structure', () => {
   assert.ok(DEFAULT_RUBRIC.score);

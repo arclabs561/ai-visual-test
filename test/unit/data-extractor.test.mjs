@@ -4,7 +4,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { extractStructuredData } from '../../src/data-extractor.mjs';
+import { extractStructuredData } from '../../src/data-extractor.js';
 
 test('extractStructuredData - empty text', async () => {
   const result = await extractStructuredData('', {});
@@ -30,6 +30,22 @@ test('extractStructuredData - JSON in text', async () => {
   assert.ok(result);
   assert.strictEqual(result.score, 8);
   assert.strictEqual(result.status, 'good');
+});
+
+test('extractStructuredData - rejects JSON values with the wrong primitive type', async () => {
+  const result = await extractStructuredData('Result: {"score":"8"}', {
+    score: { type: 'number', required: true },
+  }, { fallback: 'json' });
+
+  assert.strictEqual(result, null);
+});
+
+test('extractStructuredData - preserves array-shaped schema values', async () => {
+  const result = await extractStructuredData('Result: {"entities":["button","dialog"]}', {
+    entities: { type: 'array', required: true, items: { type: 'string' } },
+  }, { fallback: 'json' });
+
+  assert.deepStrictEqual(result, { entities: ['button', 'dialog'] });
 });
 
 test('extractStructuredData - regex fallback for numbers', async () => {
@@ -81,4 +97,3 @@ test('extractStructuredData - no matching data', async () => {
   // Should return null when no data matches
   assert.ok(result === null || typeof result === 'object');
 });
-

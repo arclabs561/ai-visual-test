@@ -51,6 +51,24 @@ export const publicModules = {
   persona, utils, game, errors, playwright, vitest, jest, perception,
 };
 
+const personaPage: persona.PersonaPage = {
+  async setViewportSize() {},
+  async goto() {},
+  async screenshot() { return new Uint8Array(); },
+  async waitForTimeout() {},
+  viewportSize() { return { width: 1280, height: 720 }; },
+  async evaluate<Result>(pageFunction: (argument?: unknown) => Result): Promise<Result> { return await pageFunction(); },
+  locator() { return {}; },
+};
+const personaInput: persona.PersonaInput = { name: 'checkout shopper', device: 'mobile', goals: ['read'] };
+export const typedPersonaExperience: Promise<persona.PersonaExperienceResult> = persona.experiencePageAsPersona(
+  personaPage,
+  personaInput,
+  { captureScreenshots: false, captureCode: false, timeScale: 'mechanical' },
+);
+export const typedEnhancedPersona: persona.EnhancedPersona = persona.createEnhancedPersona(personaInput);
+export const typedPersonaConsistency: persona.PersonaConsistency = persona.calculatePersonaConsistency(['checkout total is readable']);
+
 declare const multiModalPage: multiModal.MultiModalPage;
 const multiModalValidator = async (): Promise<root.ValidationResult> => ({
   enabled: true,

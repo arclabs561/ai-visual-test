@@ -8,7 +8,7 @@ import {
   ExperiencePropagationTracker,
   getPropagationTracker,
   trackPropagation
-} from '../../src/experience-propagation.mjs';
+} from '../../src/experience-propagation.js';
 
 test('constructor creates tracker with default options', () => {
   const tracker = new ExperiencePropagationTracker();

@@ -8,7 +8,7 @@ import assert from 'node:assert';
 import { 
   experiencePageAsPersona,
   experiencePageWithPersonas
-} from '../../src/persona-experience.mjs';
+} from '../../src/persona-experience.js';
 import { createMockPage } from '../helpers/mock-page.mjs';
 
 describe('experiencePageAsPersona', () => {
@@ -135,4 +135,3 @@ describe('experiencePageWithPersonas', () => {
     assert.strictEqual(results[1].persona, 'Persona 2');
   });
 });
-

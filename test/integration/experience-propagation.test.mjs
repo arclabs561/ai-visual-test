@@ -9,7 +9,7 @@ import {
   ExperiencePropagationTracker,
   getPropagationTracker,
   trackPropagation
-} from '../../src/experience-propagation.mjs';
+} from '../../src/experience-propagation.js';
 
 describe('Experience Propagation', () => {
   let tracker;
@@ -193,4 +193,3 @@ describe('Experience Propagation', () => {
     });
   });
 });
-

@@ -401,7 +401,7 @@ describe('Library Best Practices', () => {
       
       // Check files that use module-level caching
       const filesToCheck = [
-        'src/persona-experience.mjs',
+        'src/persona-experience.js',
         'src/prompt-composer.mjs'
       ];
       
@@ -432,7 +432,7 @@ describe('Library Best Practices', () => {
       const filesWithDynamicImports = [
         'src/data-extractor.mjs',
         'src/prompt-composer.mjs',
-        'src/persona-experience.mjs'
+        'src/persona-experience.js'
       ];
       
       for (const file of filesWithDynamicImports) {

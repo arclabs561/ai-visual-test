@@ -9,13 +9,13 @@
 
 import { validateScreenshot } from '#judge';
 import { normalizeValidationResult } from '#validation-result-normalizer';
-import { experiencePageAsPersona, experiencePageWithPersonas } from './persona-experience.mjs';
+import { experiencePageAsPersona, experiencePageWithPersonas } from './persona-experience.js';
 import { extractRenderedCode, captureTemporalScreenshots } from './multi-modal.js';
 import { aggregateTemporalNotes } from '#temporal-core';
 import { aggregateMultiScale } from '#temporal-multi-scale';
 import { generateGamePrompt } from './game-goal-prompts.js';
 import { checkCrossModalConsistency } from './cross-modal-consistency.mjs';
-import { trackPropagation } from './experience-propagation.mjs';
+import { trackPropagation } from './experience-propagation.js';
 import { ValidationError } from './errors.js';
 import { log, warn } from './logger.mjs';
 import { TEMPORAL_CONSTANTS } from './constants.mjs';
@@ -94,7 +94,7 @@ interface ScreenshotReference { path: string; }
 interface Experience {
   screenshots?: ScreenshotReference[];
   notes?: Array<Record<string, unknown>>;
-  aggregated?: AggregatedTemporalNotes;
+  aggregated?: AggregatedTemporalNotes | null;
 }
 interface GoalEvaluation { goal: string; evaluation: unknown; prompt: string; }
 interface AggregationFallback {
@@ -509,7 +509,7 @@ export async function testGameplay(page: GameConveniencePage, options: GameplayO
     }
 
     // Get propagation history
-    const { getPropagationTracker } = await import('./experience-propagation.mjs');
+    const { getPropagationTracker } = await import('./experience-propagation.js');
     result.propagation = getPropagationTracker().getSummary().path;
 
   } catch (error) {

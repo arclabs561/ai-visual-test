@@ -104,7 +104,7 @@ describe('API Sub-Modules', () => {
   
   describe('persona sub-module', () => {
     it('should export persona functions', async () => {
-      const persona = await import('../../src/persona/index.mjs');
+      const persona = await import('../../src/persona/index.js');
       
       assert.ok(typeof persona.experiencePageAsPersona === 'function', 'Should export experiencePageAsPersona');
       assert.ok(typeof persona.trackPropagation === 'function', 'Should export trackPropagation');

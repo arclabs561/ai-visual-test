@@ -31,6 +31,7 @@ import { enhanceErrorMessage } from './retry.mjs';
 import { safeLogCacheOperation } from './safe-logger.mjs';
 import { composeSingleImagePrompt, composeComparisonPrompt } from './prompt-composer.mjs';
 import { createReviewTask } from '#review-contract';
+import { createGameActionTask } from '#game-action-contract';
 import { getProviderAdapter } from '#provider-adapters';
 import { resolveTaskStructuredOutput } from '#structured-output';
 import { executeStructuredTask } from '#structured-task';
@@ -314,7 +315,7 @@ export class VLLMJudge {
           throw new ValidationError(`Rate limit exceeded: ${rateLimitError.message}`);
         }
       }
-      
+
       // Resolve anchor images (config-level + per-call), then the evaluation target(s)
       // Order: [positive examples] [negative examples] [target screenshot(s)]
       // The prompt text labels which images are references vs. evaluation targets
@@ -357,28 +358,15 @@ export class VLLMJudge {
         }
       }
 
-      const maxRetries = context.maxRetries ?? 3;
-      const apiResult = await executeStructuredTask({
-        adapter: this.providerAdapter,
-        call: {
-          images: providerImages,
-          signal: abortController.signal,
-          apiKey: this.apiKey,
-          config: this.providerConfig,
-        },
+      const apiResult = await executeStructuredImageTask({
+        judge: this,
+        images: providerImages,
         prompt: fullPrompt,
         task: reviewTask,
         structuredOutput,
-        maxRetries,
-        baseDelay: context.retryBaseDelay ?? RETRY_CONSTANTS.DEFAULT_BASE_DELAY_MS,
-        maxDelay: context.retryMaxDelay ?? RETRY_CONSTANTS.DEFAULT_MAX_DELAY_MS,
+        context,
+        signal: abortController.signal,
         onAttempt: attempt => { attempts = attempt; },
-        onRetry: (err, attempt, delay) => {
-          this._logPerf({ error: err, context: `API retry (${this.provider})`, recovery: 'exponential_backoff', retryCount: attempt }, 'logErrorPattern');
-          if (this.config.debug.verbose) {
-            warn(`[VLLM] Retry ${attempt}/${maxRetries} for ${this.provider} API: ${err.message} (waiting ${delay}ms)`);
-          }
-        }
       });
       attempts = apiResult.attempts;
 
@@ -1097,6 +1085,113 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
   }
 }
 
+/** Execute the common provider call for an image-backed structured task. */
+async function executeStructuredImageTask({ judge, images, prompt, task, structuredOutput, context, signal, onAttempt }) {
+  const maxRetries = context.maxRetries ?? 3;
+  return executeStructuredTask({
+    adapter: judge.providerAdapter,
+    call: {
+      images,
+      signal,
+      apiKey: judge.apiKey,
+      config: judge.providerConfig,
+    },
+    prompt,
+    task,
+    structuredOutput,
+    maxRetries,
+    baseDelay: context.retryBaseDelay ?? RETRY_CONSTANTS.DEFAULT_BASE_DELAY_MS,
+    maxDelay: context.retryMaxDelay ?? RETRY_CONSTANTS.DEFAULT_MAX_DELAY_MS,
+    onAttempt,
+    onRetry: (err, attempt, delay) => {
+      judge._logPerf({ error: err, context: `API retry (${judge.provider})`, recovery: 'exponential_backoff', retryCount: attempt }, 'logErrorPattern');
+      if (judge.config.debug.verbose) {
+        warn(`[VLLM] Retry ${attempt}/${maxRetries} for ${judge.provider} API: ${err.message} (waiting ${delay}ms)`);
+      }
+    },
+  });
+}
+
+function checkImageTaskRateLimit(judge, context) {
+  if (context.enableRateLimit === false) return;
+  try {
+    const rateLimiter = getRateLimiter(context.rateLimitOptions || {});
+    const estimatedCost = judge.providerConfig.pricing?.input
+      ? (1000 / 1_000_000) * judge.providerConfig.pricing.input
+      : 0;
+    rateLimiter.checkLimit(estimatedCost);
+  } catch (rateLimitError) {
+    throw new ValidationError(`Rate limit exceeded: ${rateLimitError.message}`);
+  }
+}
+
+async function runGameAction(judge, imagePath, prompt, context) {
+  prompt = judge._validateAndSanitizePrompt(prompt, context);
+  judge._validateImagePaths([imagePath]);
+  if (!judge.enabled) {
+    throw new ProviderError('Game action provider is disabled', judge.provider, {
+      failureKind: 'disabled', retryable: false, imagePath: basename(imagePath), attempts: 0,
+    });
+  }
+
+  const startTime = Date.now();
+  const timeout = context.timeout || judge.config.performance.timeout;
+  let attempts = 0;
+  const task = createGameActionTask(context.legacyActionFallback !== false);
+  const structuredOutput = resolveTaskStructuredOutput({
+    provider: judge.provider, model: judge.providerConfig.model, taskName: task.name,
+    schema: task.schema, enabled: context.structuredOutput !== false,
+  });
+  const fullPrompt = `${prompt}\n\nOUTPUT CONTRACT\nReturn only JSON matching this schema:\n${JSON.stringify(structuredOutput.schema)}`;
+  const abortController = new AbortController();
+  const timeoutId = setTimeout(() => abortController.abort(), timeout);
+
+  try {
+    checkImageTaskRateLimit(judge, context);
+    const result = await executeStructuredImageTask({
+      judge,
+      images: [judge.imageToProviderInput(imagePath)],
+      prompt: fullPrompt,
+      task,
+      structuredOutput,
+      context,
+      signal: abortController.signal,
+      onAttempt: attempt => { attempts = attempt; },
+    });
+    attempts = result.attempts;
+    return {
+      action: result.outcome,
+      outputFormat: result.format,
+      diagnostics: result.diagnostics,
+      attempts,
+      provider: judge.provider,
+      model: judge.providerConfig.model,
+      structuredOutput: { mode: result.structuredOutput.mode, diagnostic: result.structuredOutput.diagnostic },
+    };
+  } catch (error) {
+    const responseTime = Date.now() - startTime;
+    judge._logPerf({ provider: judge.provider, latency: responseTime, retries: attempts - 1, success: false, error, testName: context.testType || context.step || 'game-action' }, 'logAPICallPerformance');
+    judge._logPerf({ error, context: `API call (${judge.provider})`, recovery: 'retry_with_backoff', retryCount: attempts - 1, recovered: false }, 'logErrorPattern');
+    if (error.name === 'AbortError' || error.message?.includes('timeout') || error.message?.includes('aborted')) {
+      const enhancedMessage = enhanceErrorMessage(new TimeoutError(`VLLM API call timed out after ${timeout}ms`, timeout), attempts || 1, 'judgeGameAction');
+      throw new TimeoutError(enhancedMessage, timeout, { provider: judge.provider, imagePath: basename(imagePath), attempts: attempts || 1 });
+    }
+    if (error instanceof ProviderError || error?.code === 'PROVIDER_ERROR') {
+      const enhancedMessage = enhanceErrorMessage(error, attempts || 1, 'judgeGameAction');
+      throw new ProviderError(enhancedMessage, judge.provider, {
+        ...error.details, imagePath: basename(imagePath), prompt: prompt.substring(0, 100), attempts: attempts || 1,
+      });
+    }
+    if (error instanceof FileError || error instanceof TimeoutError) throw error;
+    const enhancedMessage = enhanceErrorMessage(error, attempts || 1, 'judgeGameAction');
+    throw new ProviderError(`VLLM API call failed: ${enhancedMessage}`, judge.provider, {
+      imagePath: basename(imagePath), prompt: prompt.substring(0, 100), attempts: attempts || 1, originalError: error.message,
+    });
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 /**
  * Validate screenshot (convenience function)
  * 
@@ -1203,4 +1298,12 @@ export async function validateScreenshot(imagePath, prompt, context = {}) {
   }
   
   return result;
+}
+
+/**
+ * Internal game-action entry point. It is intentionally not re-exported from
+ * the package root or game route while that public API is still legacy JS.
+ */
+export async function judgeGameAction(imagePath, prompt, context = {}) {
+  return runGameAction(new VLLMJudge(context), imagePath, prompt, context);
 }

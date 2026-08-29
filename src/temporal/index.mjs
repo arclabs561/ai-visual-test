@@ -75,5 +75,5 @@ export {
   TemporalBatchError
 } from '../temporal-orchestration.mjs';
 
-// Temporal screenshots (from multi-modal)
-export { captureTemporalScreenshots } from '../multi-modal.mjs';
+// Temporal screenshots
+export { captureTemporalScreenshots } from '#temporal-capture';

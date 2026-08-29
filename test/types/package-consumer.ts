@@ -71,6 +71,22 @@ const screenshotOnlyPage: root.ScreenshotPage = {
     return new Uint8Array();
   },
 };
+const temporalCapturePage: temporal.Page = screenshotOnlyPage;
+const multiModalCapturePage: multiModal.Page = screenshotOnlyPage;
+export const temporalObjectCapture: Promise<temporal.TemporalScreenshot[]> = temporal.captureTemporalScreenshots(
+  temporalCapturePage,
+  { fps: 2, duration: 1_000 },
+);
+export const temporalPositionalCapture: Promise<temporal.TemporalScreenshot[]> = temporal.captureTemporalScreenshots(
+  temporalCapturePage,
+  2,
+  1_000,
+  { outputDir: 'test-results' },
+);
+export const multiModalObjectCapture: Promise<multiModal.TemporalScreenshot[]> = multiModal.captureTemporalScreenshots(
+  multiModalCapturePage,
+  { fps: 2, duration: 1_000 },
+);
 const fullPage: root.PageLike = {
   ...screenshotOnlyPage,
   async content() { return '<main>checkout</main>'; },

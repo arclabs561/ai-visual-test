@@ -65,11 +65,87 @@ describe('captureTemporalScreenshots', () => {
     assert.ok(screenshots.length >= 4 && screenshots.length <= 6);
   });
 
+  it('accepts the options-object capture form', async () => {
+    const mockPage = createMockPage();
+
+    const screenshots = await captureTemporalScreenshots(mockPage, {
+      fps: 2,
+      duration: 1000,
+      outputDir: 'object-form-results'
+    });
+
+    assert.strictEqual(screenshots.length, 2);
+    assert.match(screenshots[0].path, /^object-form-results\/temporal-/);
+  });
+
   it('should throw ValidationError for invalid page object', async () => {
     await assert.rejects(
       () => captureTemporalScreenshots(null),
       ValidationError
     );
+  });
+
+  it('rejects non-finite and non-positive capture timing', async () => {
+    const mockPage = createMockPage();
+
+    for (const options of [
+      { fps: 0 },
+      { fps: Number.POSITIVE_INFINITY },
+      { duration: 0 },
+      { duration: Number.NaN }
+    ]) {
+      await assert.rejects(
+        () => captureTemporalScreenshots(mockPage, options),
+        ValidationError
+      );
+    }
+  });
+
+  it('does not pass JPEG-only quality to PNG screenshots', async () => {
+    const screenshotOptions = [];
+    const page = {
+      screenshot: async (options) => { screenshotOptions.push(options); },
+      waitForTimeout: async () => {}
+    };
+
+    await captureTemporalScreenshots(page, {
+      fps: 60,
+      duration: 20,
+      optimizeForSpeed: true
+    });
+
+    assert.strictEqual(screenshotOptions.length, 1);
+    assert.strictEqual(screenshotOptions[0].type, 'png');
+    assert.ok(!('quality' in screenshotOptions[0]));
+  });
+
+  it('supports screenshot-only page duck types with a native timer fallback', async () => {
+    const screenshotOptions = [];
+    const page = {
+      screenshot: async (options) => { screenshotOptions.push(options); }
+    };
+
+    const screenshots = await captureTemporalScreenshots(page, { fps: 1000, duration: 1 });
+
+    assert.strictEqual(screenshots.length, 1);
+    assert.strictEqual(screenshotOptions.length, 1);
+  });
+
+  it('uses distinct output paths for same-tick parallel captures', async () => {
+    const screenshotOptions = [];
+    const page = {
+      screenshot: async (options) => { screenshotOptions.push(options); },
+      waitForTimeout: async () => {}
+    };
+
+    const [first, second] = await Promise.all([
+      captureTemporalScreenshots(page, { fps: 1000, duration: 1 }),
+      captureTemporalScreenshots(page, { fps: 1000, duration: 1 })
+    ]);
+
+    assert.strictEqual(first.length, 1);
+    assert.strictEqual(second.length, 1);
+    assert.strictEqual(new Set(screenshotOptions.map(options => options.path)).size, 2);
   });
 });
 
@@ -175,4 +251,3 @@ describe('multiModalValidation', () => {
     );
   });
 });
-

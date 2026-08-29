@@ -12,6 +12,8 @@
 
 import { ValidationError } from './errors.mjs';
 import { warn } from './logger.mjs';
+export { captureTemporalScreenshots } from '#temporal-capture';
+import { captureTemporalScreenshots } from '#temporal-capture';
 
 /**
  * Extract rendered HTML/CSS for dual-view validation
@@ -229,71 +231,6 @@ export async function extractRenderedCode(page, options = {}) {
       height: page.viewportSize()?.height || 0
     }
   };
-}
-
-/**
- * Capture temporal screenshots (for animations)
- * 
- * @param {any} page - Playwright page object
- * @param {number} [fps=2] - Frames per second to capture
- * @param {number} [duration=2000] - Duration in milliseconds
- * @returns {Promise<import('./index.mjs').TemporalScreenshot[]>} Array of temporal screenshots
- * @throws {ValidationError} If page is not a valid Playwright Page object
- */
-export async function captureTemporalScreenshots(page, fps = 2, duration = 2000, options = {}) {
-  if (!page || typeof page.screenshot !== 'function') {
-    throw new ValidationError('captureTemporalScreenshots requires a Playwright Page object', {
-      received: typeof page,
-      hasScreenshot: typeof page?.screenshot === 'function'
-    });
-  }
-
-  const {
-    optimizeForSpeed = false, // Optimize screenshot quality for high FPS
-    outputDir = 'test-results'
-  } = options;
-
-  const screenshots = [];
-  const interval = 1000 / fps; // ms between frames
-  const frames = Math.floor(duration / interval);
-  
-      // Optimize screenshot quality for high FPS to reduce overhead
-  const screenshotOptions = {
-    type: 'png'
-  };
-  
-  if (optimizeForSpeed && fps > 30) {
-    // For high FPS (>30fps), use lower quality to reduce overhead
-    screenshotOptions.quality = 70; // Lower quality (if supported by format)
-  }
-  
-  for (let i = 0; i < frames; i++) {
-    const timestamp = Date.now();
-    const path = `${outputDir}/temporal-${timestamp}-${i}.png`;
-    
-    try {
-      await page.screenshot({ ...screenshotOptions, path });
-      screenshots.push({ path, frame: i, timestamp });
-      
-        // Use more efficient timing for high FPS
-      // For very high FPS (>30), use smaller wait intervals to maintain accuracy
-      if (fps > 30) {
-        // Calculate actual elapsed time and adjust wait
-        const elapsed = Date.now() - timestamp;
-        const waitTime = Math.max(0, interval - elapsed);
-        if (waitTime > 0) {
-          await page.waitForTimeout(waitTime);
-        }
-      } else {
-        await page.waitForTimeout(interval);
-      }
-    } catch (error) {
-      warn(`[Temporal Capture] Screenshot ${i} failed: ${error.message}`);
-      // Continue with next frame
-    }
-  }
-  
-  return screenshots;
 }
 
 /**
@@ -521,4 +458,3 @@ export async function multiModalValidation(validateFn, page, testName, options =
     timestamp: Date.now()
   };
 }
-

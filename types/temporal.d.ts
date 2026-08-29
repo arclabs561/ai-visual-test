@@ -28,7 +28,13 @@ export const buildTemporalGraph: OpaqueFunction;
 export const calculateAttentionWeight: OpaqueFunction;
 export const calculateCoherence: OpaqueFunction;
 export const calculateOptimalWindowSize: OpaqueFunction;
-export const captureTemporalScreenshots: OpaqueFunction;
+export {
+  captureTemporalScreenshots,
+  type Page,
+  type ScreenshotOptions,
+  type TemporalCaptureOptions,
+  type TemporalScreenshot,
+} from '#temporal-capture';
 export const createAdaptiveTemporalProcessor: OpaqueFunction;
 export const createTemporalContext: OpaqueFunction;
 export const createTemporalDecisionManager: OpaqueFunction;

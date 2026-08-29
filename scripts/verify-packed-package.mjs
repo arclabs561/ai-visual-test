@@ -63,6 +63,14 @@ try {
     stdio: 'inherit',
   });
 
+  const temporalCaptureTypeConsumer = `import { captureTemporalScreenshots as temporalCapture, type Page as TemporalPage, type TemporalScreenshot as TemporalScreenshot } from ${JSON.stringify(`${installedManifest.name}/temporal`)}; import { captureTemporalScreenshots as multiModalCapture, type Page as MultiModalPage, type TemporalScreenshot as MultiModalScreenshot } from ${JSON.stringify(`${installedManifest.name}/multi-modal`)}; const page = { async screenshot(_options: { type: 'png'; path: string }) { return new Uint8Array(); } }; const temporalPage: TemporalPage = page; const multiModalPage: MultiModalPage = page; const temporalScreenshots: Promise<TemporalScreenshot[]> = temporalCapture(temporalPage, { fps: 2, duration: 1000 }); const multiModalScreenshots: Promise<MultiModalScreenshot[]> = multiModalCapture(multiModalPage, 2, 1000, { outputDir: 'typed-results' }); void temporalScreenshots; void multiModalScreenshots;`;
+  const temporalCaptureConsumerPath = join(consumer, 'temporal-capture-consumer.ts');
+  writeFileSync(temporalCaptureConsumerPath, temporalCaptureTypeConsumer);
+  execFileSync(process.execPath, [join(ROOT, 'node_modules', 'typescript', 'bin', 'tsc'), '--noEmit', '--strict', '--target', 'ES2022', '--module', 'NodeNext', '--moduleResolution', 'NodeNext', '--skipLibCheck', 'false', temporalCaptureConsumerPath], {
+    cwd: consumer,
+    stdio: 'inherit',
+  });
+
   const image = join(consumer, 'pixel.png');
   writeFileSync(image, Buffer.from(
     'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=',

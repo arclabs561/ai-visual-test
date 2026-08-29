@@ -1,6 +1,12 @@
 import type { OpaqueFunction } from './shared.js';
 
-export const captureTemporalScreenshots: OpaqueFunction;
+export {
+  captureTemporalScreenshots,
+  type Page,
+  type ScreenshotOptions,
+  type TemporalCaptureOptions,
+  type TemporalScreenshot,
+} from '#temporal-capture';
 export const checkCrossModalConsistency: OpaqueFunction;
 export const composeComparisonPrompt: OpaqueFunction;
 export const composeMultiModalPrompt: OpaqueFunction;

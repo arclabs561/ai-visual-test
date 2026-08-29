@@ -6,7 +6,7 @@ extends: 0001
 governs:
   - src/review-contract.*
   - src/structured-output.*
-  - src/providers/**
+  - src/provider-adapters.ts
   - package.json
 why: Provider structured-output schemas, runtime validation, diagnostics, and TypeScript result types must describe the same review contract.
 rejected:

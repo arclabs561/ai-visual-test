@@ -114,8 +114,8 @@ export class BatchOptimizer {
    * 
    * @param {string | string[]} imagePaths - Single image path or array of image paths
    * @param {string} prompt - Validation prompt
-   * @param {import('./index.mjs').ValidationContext} [context={}] - Validation context
-   * @returns {Promise<import('./index.mjs').ValidationResult[]>} Array of validation results
+   * @param {import('#public-contract').ValidationContext} [context={}] - Validation context
+   * @returns {Promise<import('#public-contract').ValidationResult[]>} Array of validation results
    */
   async batchValidate(imagePaths, prompt, context = {}) {
     if (!Array.isArray(imagePaths)) {
@@ -487,4 +487,3 @@ export class BatchOptimizer {
     };
   }
 }
-

@@ -23,6 +23,7 @@ import type { playGame as playGameImplementation } from './game-player.js';
 import type { AggregatedTemporalNotes, TemporalGraphResult, TemporalNote } from '#temporal-core';
 import type { TemporalScreenshot } from '#temporal-capture';
 import type { TemporalScreenshot as PromptScreenshot } from '#temporal-prompt-formatting';
+import type { Persona } from '#public-contract';
 
 export interface GameConveniencePage {
   locator(selector: string): GameConvenienceLocator;
@@ -99,6 +100,19 @@ interface AggregationFallback {
   coherence: number;
   summary: string;
   timeSpan: number;
+}
+
+function requirePersonas(personas: unknown[]): Persona[] {
+  return personas.map((candidate, index) => {
+    if (!candidate || typeof candidate !== 'object') {
+      throw new ValidationError(`personas[${index}] must be an object`);
+    }
+    const persona = candidate as Partial<Persona>;
+    if (typeof persona.name !== 'string' || typeof persona.perspective !== 'string' || !Array.isArray(persona.focus)) {
+      throw new ValidationError(`personas[${index}] must include name, perspective, and focus`);
+    }
+    return persona as Persona;
+  });
 }
 export interface GameplayResult {
   url: string;
@@ -263,7 +277,7 @@ export async function testGameplay(page: GameConveniencePage, options: GameplayO
 
     // Experience with personas (if provided)
     if (personas && personas.length > 0) {
-      const experiences = await experiencePageWithPersonas(page, personas, {
+      const experiences = await experiencePageWithPersonas(page, requirePersonas(personas), {
         url,
         captureScreenshots: true,
         captureCode: captureCode,
@@ -605,7 +619,7 @@ export async function testBrowserExperience(page: GameConveniencePage, options: 
 
       // Experience with personas (if provided)
       if (personas && personas.length > 0) {
-        const experiences = await experiencePageWithPersonas(page, personas, {
+        const experiences = await experiencePageWithPersonas(page, requirePersonas(personas), {
           url,
           captureScreenshots: true,
           captureCode: captureCode,

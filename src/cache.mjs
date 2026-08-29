@@ -77,7 +77,7 @@ export function initCache(cacheDir) {
  *
  * @param {string} imagePath - Path to image file
  * @param {string} prompt - Validation prompt
- * @param {import('./index.mjs').ValidationContext} [context={}] - Validation context
+ * @param {import('#public-contract').ValidationContext} [context={}] - Validation context
  * @returns {string} SHA-256 hash of cache key
  */
 /**
@@ -430,8 +430,8 @@ function getCache() {
  *
  * @param {string} imagePath - Path to image file
  * @param {string} prompt - Validation prompt
- * @param {import('./index.mjs').ValidationContext} [context={}] - Validation context
- * @returns {import('./index.mjs').ValidationResult | null} Cached result or null if not found
+ * @param {import('#public-contract').ValidationContext} [context={}] - Validation context
+ * @returns {import('#public-contract').ValidationResult | null} Cached result or null if not found
  */
 export function getCached(imagePath, prompt, context = {}) {
   const cache = getCache();
@@ -487,8 +487,8 @@ export function getCached(imagePath, prompt, context = {}) {
  *
  * @param {string} imagePath - Path to image file
  * @param {string} prompt - Validation prompt
- * @param {import('./index.mjs').ValidationContext} context - Validation context
- * @param {import('./index.mjs').ValidationResult} result - Validation result to cache
+ * @param {import('#public-contract').ValidationContext} context - Validation context
+ * @param {import('#public-contract').ValidationResult} result - Validation result to cache
  * @returns {void}
  */
 export function setCached(imagePath, prompt, context, result) {
@@ -639,7 +639,7 @@ export function setCachedTextLLM(prompt, provider, options, response) {
  *
  * VERIFIABLE: Includes atomic write metrics to verify "prevents corruption" claim
  *
- * @returns {import('./index.mjs').CacheStats} Cache statistics
+ * @returns {import('#public-contract').CacheStats} Cache statistics
  */
 export function getCacheStats() {
   const cache = getCache();

@@ -39,9 +39,9 @@ export class LatencyAwareBatchOptimizer extends BatchOptimizer {
    *
    * @param {string} imagePath - Screenshot path
    * @param {string} prompt - Validation prompt
-   * @param {import('./index.mjs').ValidationContext} [context={}] - Validation context
+   * @param {import('#public-contract').ValidationContext} [context={}] - Validation context
    * @param {number} [maxLatency=null] - Maximum acceptable latency in ms (null = use default)
-   * @returns {Promise<import('./index.mjs').ValidationResult>} Validation result
+   * @returns {Promise<import('#public-contract').ValidationResult>} Validation result
    */
   async addRequest(imagePath, prompt, context = {}, maxLatency = null) {
     const latencyRequirement = maxLatency || context.maxLatency || this.defaultMaxLatency;
@@ -186,7 +186,6 @@ export class LatencyAwareBatchOptimizer extends BatchOptimizer {
     };
   }
 }
-
 
 
 

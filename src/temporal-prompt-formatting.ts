@@ -118,7 +118,7 @@ export interface SkippedTemporalDecisionResult extends Record<string, unknown> {
  * Handles both single-scale (AggregatedTemporalNotes) and multi-scale (MultiScaleAggregation)
  * temporal notes, formatting them optimally for VLM understanding.
  *
- * @param {import('./index.mjs').AggregatedTemporalNotes | import('./index.mjs').MultiScaleAggregation | Array} temporalNotes
+ * @param {AggregatedTemporalNotes | MultiScaleAggregation | Array} temporalNotes
  * @param {Object} options - Formatting options
  * @param {boolean} [options.includeMultiScale=true] - Include multi-scale insights if available
  * @param {boolean} [options.naturalLanguage=true] - Use natural language formatting
@@ -334,13 +334,13 @@ export function formatTemporalContext(
 /**
  * Prune temporal notes based on relevance and weight
  *
- * @param {import('./index.mjs').TemporalNote[]} notes - Temporal notes
+ * @param {TemporalNote[]} notes - Temporal notes
  * @param {Object} options - Pruning options
  * @param {number} [options.maxNotes=10] - Maximum notes to keep
  * @param {number} [options.minWeight=0.1] - Minimum weight threshold
  * @param {number} [options.currentTime] - Current time (default: Date.now())
  * @param {number} [options.windowSize=10000] - Window size for weight calculation
- * @returns {import('./index.mjs').TemporalNote[]} Pruned notes
+ * @returns {TemporalNote[]} Pruned notes
  */
 export function pruneTemporalNotes(
   notes: TemporalNote[],
@@ -412,11 +412,11 @@ function calculateRelevance(note: TemporalNote, currentTime: number, startTime: 
 /**
  * Propagate notes forward with decay
  *
- * @param {import('./index.mjs').TemporalNote[]} notes - Temporal notes
+ * @param {TemporalNote[]} notes - Temporal notes
  * @param {Object} options - Propagation options
  * @param {number} [options.currentTime] - Current time
  * @param {number} [options.relevanceThreshold=0.2] - Minimum relevance to keep
- * @returns {import('./index.mjs').TemporalNote[]} Propagated notes with updated weights
+ * @returns {TemporalNote[]} Propagated notes with updated weights
  */
 export function propagateNotes(
   notes: TemporalNote[],
@@ -450,10 +450,10 @@ export function propagateNotes(
 /**
  * Select top-weighted notes for prompt inclusion
  *
- * @param {import('./index.mjs').TemporalNote[]} notes - Temporal notes
+ * @param {TemporalNote[]} notes - Temporal notes
  * @param {Object} options - Selection options
  * @param {number} [options.topN=5] - Number of top notes to select
- * @returns {import('./index.mjs').TemporalNote[]} Top-weighted notes
+ * @returns {TemporalNote[]} Top-weighted notes
  */
 export function selectTopWeightedNotes(
   notes: TemporalNote[],

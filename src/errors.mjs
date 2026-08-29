@@ -34,7 +34,7 @@ export class AIBrowserTestError extends Error {
   /**
    * Convert error to JSON for serialization
    * 
-   * @returns {import('./index.mjs').AIBrowserTestError['toJSON']} JSON representation
+   * @returns {ReturnType<AIBrowserTestError['toJSON']>} JSON representation
    */
   toJSON() {
     return {
@@ -166,6 +166,5 @@ export function isAIBrowserTestError(error) {
 export function isErrorType(error, errorClass) {
   return error instanceof errorClass;
 }
-
 
 

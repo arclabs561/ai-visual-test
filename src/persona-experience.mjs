@@ -29,9 +29,9 @@ async function getGenerateGamePrompt() {
  * Experience a page from a persona's perspective
  * 
  * @param {any} page - Playwright page object
- * @param {import('./index.mjs').Persona} persona - Persona configuration
- * @param {import('./index.mjs').PersonaExperienceOptions} [options={}] - Experience options
- * @returns {Promise<import('./index.mjs').PersonaExperienceResult>} Experience result with notes, screenshots, and evaluation
+ * @param {import('#public-contract').Persona} persona - Persona configuration
+ * @param {import('#public-contract').PersonaExperienceOptions} [options={}] - Experience options
+ * @returns {Promise<import('#public-contract').PersonaExperienceResult>} Experience result with notes, screenshots, and evaluation
  */
 export async function experiencePageAsPersona(page, persona, options = {}) {
   const {
@@ -555,9 +555,9 @@ async function extractRenderedCode(page) {
  * Experience a page from multiple persona perspectives
  * 
  * @param {any} page - Playwright page object
- * @param {import('./index.mjs').Persona[]} personas - Array of persona configurations
- * @param {import('./index.mjs').PersonaExperienceOptions} [options={}] - Experience options
- * @returns {Promise<import('./index.mjs').PersonaExperienceResult[]>} Array of experience results
+ * @param {import('#public-contract').Persona[]} personas - Array of persona configurations
+ * @param {import('#public-contract').PersonaExperienceOptions} [options={}] - Experience options
+ * @returns {Promise<import('#public-contract').PersonaExperienceResult[]>} Array of experience results
  */
 export async function experiencePageWithPersonas(page, personas, options = {}) {
   const experiences = [];

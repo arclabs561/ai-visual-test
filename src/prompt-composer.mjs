@@ -35,16 +35,16 @@ async function getGenerateGamePrompt() {
  * 
  * @param {string} basePrompt - Base evaluation prompt
  * @param {{
- *   rubric?: import('./index.mjs').Rubric;
+ *   rubric?: import('#public-contract').Rubric;
  *   includeRubric?: boolean;
- *   anchors?: import('./index.mjs').VisualAnchors | null;
- *   temporalNotes?: import('./index.mjs').AggregatedTemporalNotes | null;
- *   persona?: import('./index.mjs').Persona | null;
- *   renderedCode?: import('./index.mjs').RenderedCode | null;
+ *   anchors?: import('#public-contract').VisualAnchors | null;
+ *   temporalNotes?: import('#temporal-core').AggregatedTemporalNotes | null;
+ *   persona?: import('#public-contract').Persona | null;
+ *   renderedCode?: import('#public-contract').RenderedCode | null;
  *   gameState?: Record<string, unknown>;
  *   isMultiImage?: boolean;
  *   isComparison?: boolean;
- *   context?: import('./index.mjs').ValidationContext;
+ *   context?: import('#public-contract').ValidationContext;
  * }} [options={}] - Composition options
  * @returns {string} Composed prompt
  */
@@ -172,8 +172,8 @@ export async function composePrompt(basePrompt, options = {}) {
 /**
  * Build persona context section
  * 
- * @param {import('./index.mjs').Persona} persona - Persona configuration
- * @param {import('./index.mjs').RenderedCode | null} renderedCode - Rendered code (optional)
+ * @param {import('#public-contract').Persona} persona - Persona configuration
+ * @param {import('#public-contract').RenderedCode | null} renderedCode - Rendered code (optional)
  * @param {Record<string, unknown> | null} gameState - Game state (optional)
  * @returns {string} Persona context section
  */
@@ -204,7 +204,7 @@ function buildPersonaContext(persona, renderedCode = null, gameState = null) {
 /**
  * Build multi-modal context section
  * 
- * @param {import('./index.mjs').RenderedCode | null} renderedCode - Rendered code
+ * @param {import('#public-contract').RenderedCode | null} renderedCode - Rendered code
  * @param {Record<string, unknown> | null} gameState - Game state
  * @returns {string} Multi-modal context section
  */
@@ -276,7 +276,7 @@ Be specific about what makes one better than the other.`;
 /**
  * Build context section
  * 
- * @param {import('./index.mjs').ValidationContext} context - Validation context
+ * @param {import('#public-contract').ValidationContext} context - Validation context
  * @returns {string} Context section
  */
 function buildContextSection(context) {
@@ -305,10 +305,10 @@ function buildContextSection(context) {
  * Compose prompt for single image evaluation
  * 
  * @param {string} basePrompt - Base prompt
- * @param {import('./index.mjs').ValidationContext} context - Validation context
+ * @param {import('#public-contract').ValidationContext} context - Validation context
  * @param {{
  *   includeRubric?: boolean;
- *   temporalNotes?: import('./index.mjs').AggregatedTemporalNotes | null;
+ *   temporalNotes?: import('#temporal-core').AggregatedTemporalNotes | null;
  * }} [options={}] - Additional options
  * @returns {string} Composed prompt
  */
@@ -335,7 +335,7 @@ export async function composeSingleImagePrompt(basePrompt, context = {}, options
  * Compose prompt for pair comparison
  * 
  * @param {string} basePrompt - Base comparison prompt
- * @param {import('./index.mjs').ValidationContext} context - Validation context
+ * @param {import('#public-contract').ValidationContext} context - Validation context
  * @param {{
  *   includeRubric?: boolean;
  * }} [options={}] - Additional options
@@ -360,11 +360,11 @@ export async function composeComparisonPrompt(basePrompt, context = {}, options 
  * Compose prompt for multi-modal validation
  * 
  * @param {string} basePrompt - Base prompt
- * @param {import('./index.mjs').ValidationContext} context - Validation context
+ * @param {import('#public-contract').ValidationContext} context - Validation context
  * @param {{
  *   includeRubric?: boolean;
- *   temporalNotes?: import('./index.mjs').AggregatedTemporalNotes | null;
- *   persona?: import('./index.mjs').Persona | null;
+ *   temporalNotes?: import('#temporal-core').AggregatedTemporalNotes | null;
+ *   persona?: import('#public-contract').Persona | null;
  * }} [options={}] - Additional options
  * @returns {string} Composed multi-modal prompt
  */
@@ -393,9 +393,9 @@ export async function composeMultiModalPrompt(basePrompt, context = {}, options 
  * Merge anchors from context (config-level) and per-call options.
  * Per-call anchors append to config-level anchors (not replace).
  *
- * @param {import('./index.mjs').VisualAnchors | null | undefined} contextAnchors - From config/context
- * @param {import('./index.mjs').VisualAnchors | null | undefined} optionAnchors - Per-call overrides
- * @returns {import('./index.mjs').VisualAnchors | null} Merged anchors, or null if empty
+ * @param {import('#public-contract').VisualAnchors | null | undefined} contextAnchors - From config/context
+ * @param {import('#public-contract').VisualAnchors | null | undefined} optionAnchors - Per-call overrides
+ * @returns {import('#public-contract').VisualAnchors | null} Merged anchors, or null if empty
  */
 function mergeAnchors(contextAnchors, optionAnchors) {
   if (!contextAnchors && !optionAnchors) return null;
@@ -463,7 +463,7 @@ function anchorHasImage(entry) {
  * When image anchors are present, the prompt labels which attached images
  * are reference examples vs. the evaluation target.
  *
- * @param {import('./index.mjs').VisualAnchors} anchors - Merged text + image anchors
+ * @param {import('#public-contract').VisualAnchors} anchors - Merged text + image anchors
  * @param {{ positive: number, negative: number }} [imageCounts] - Number of attached reference images
  * @returns {string} Formatted anchors section
  */

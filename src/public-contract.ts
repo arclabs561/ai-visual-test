@@ -66,3 +66,130 @@ export interface SemanticInfo {
   strengths?: string[];
   [key: string]: unknown;
 }
+
+/** Legacy root contracts still shared by unconverted JavaScript modules. */
+export interface Rubric {
+  score: { description?: string; criteria: Record<number, string> };
+  dimensions?: Record<string, { description?: string; criteria: string[] }>;
+}
+
+export interface RenderedCode {
+  html?: string;
+  stylesheets?: unknown[];
+  criticalCSS?: Record<string, unknown>;
+  [key: string]: unknown;
+}
+
+export interface Persona {
+  name: string;
+  perspective: string;
+  focus: string[];
+  device?: string;
+  [key: string]: unknown;
+}
+
+export interface PerspectiveEvaluation {
+  persona: string;
+  perspective: string;
+  focus: string[];
+  evaluation: ValidationResult;
+  [key: string]: unknown;
+}
+
+export type HybridValidationResult = Omit<ValidationResult, 'issues'> & {
+  passed: boolean;
+  issues: unknown[];
+  uniqueIssues?: string[];
+  programmaticData: Record<string, unknown>;
+  programmatic: Record<string, unknown>;
+  semantic: ValidationResult;
+  method: 'hybrid';
+};
+
+export interface VisualAnchorEntry {
+  text?: string;
+  image?: string;
+  [key: string]: unknown;
+}
+
+export interface VisualAnchors {
+  positive?: Array<string | VisualAnchorEntry>;
+  negative?: Array<string | VisualAnchorEntry>;
+  [key: string]: unknown;
+}
+
+export interface CacheStats {
+  size: number;
+  maxAge: number;
+  cacheFile: string;
+  atomicWrites: number;
+  atomicWriteFailures: number;
+  tempFileCleanups: number;
+  atomicWriteSuccessRate: number;
+  [key: string]: unknown;
+}
+
+export interface ScoreTrackerStats {
+  totalTests: number;
+  averageScore: number | null;
+  [key: string]: unknown;
+}
+
+export interface AggregatedFeedbackAccumulator {
+  scores: number[];
+  issues: Record<string, number>;
+  recommendations: Record<string, number>;
+  strengths: Record<string, number>;
+  weaknesses: Record<string, number>;
+  actionableItems: Record<string, number>;
+  categories: Record<string, string[]>;
+  priority: Record<string, string[]>;
+  trends: Record<string, unknown[]>;
+}
+
+export interface AggregatedFeedbackStats {
+  totalJudgments: number;
+  averageScore: number | null;
+  minScore: number | null;
+  maxScore: number | null;
+  mostCommonIssues: Array<{ issue: string; count: number }>;
+  mostCommonRecommendations: Array<{ rec: string; count: number }>;
+  mostCommonStrengths: Array<{ strength: string; count: number }>;
+  mostCommonWeaknesses: Array<{ weakness: string; count: number }>;
+  mostCommonActionableItems: Array<{ item: string; count: number }>;
+  categoryCounts: Array<{ category: string; count: number }>;
+  priorityCounts: Array<{ level: string; count: number }>;
+}
+
+export interface AggregatedFeedback {
+  aggregated: AggregatedFeedbackAccumulator;
+  stats: AggregatedFeedbackStats;
+  summary: string;
+}
+
+export interface PersonaExperienceOptions {
+  viewport?: { width: number; height: number };
+  device?: string;
+  darkMode?: boolean;
+  timeScale?: 'human' | 'mechanical';
+  captureScreenshots?: boolean;
+  captureState?: boolean;
+  captureCode?: boolean;
+  notes?: unknown[];
+  trace?: unknown;
+  [key: string]: unknown;
+}
+
+export interface PersonaExperienceResult {
+  persona: string;
+  screenshots: Array<{ path: string; [key: string]: unknown }>;
+  notes: Array<Record<string, unknown>>;
+  [key: string]: unknown;
+}
+
+export interface HallucinationDetectionResult {
+  hasHallucination: boolean;
+  issues: string[];
+  confidence: number;
+  severity: 'low' | 'medium' | 'high';
+}

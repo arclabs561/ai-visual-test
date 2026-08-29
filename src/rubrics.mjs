@@ -73,7 +73,7 @@ export const DEFAULT_RUBRIC = {
 /**
  * Build rubric prompt section
  *
- * @param {import('./index.mjs').Rubric | null} [rubric=null] - Rubric to use, or null for default
+ * @param {import('#public-contract').Rubric | null} [rubric=null] - Rubric to use, or null for default
  * @param {boolean} [includeDimensions=true] - Whether to include evaluation dimensions
  * @param {{ referenceImages?: Record<number, string> }} [options={}] - Options
  *   referenceImages: map of score level -> image path for visual anchoring.
@@ -196,7 +196,7 @@ Provide your evaluation as JSON:
  * Get rubric for specific test type
  * 
  * @param {string} testType - Test type identifier (e.g., 'payment-screen', 'gameplay', 'form')
- * @returns {import('./index.mjs').Rubric} Rubric configured for the test type
+ * @returns {import('#public-contract').Rubric} Rubric configured for the test type
  */
 export function getRubricForTestType(testType) {
   const testTypeRubrics = {
@@ -252,4 +252,3 @@ export function getRubricForTestType(testType) {
 
   return testTypeRubrics[testType] || DEFAULT_RUBRIC;
 }
-

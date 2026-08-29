@@ -21,8 +21,8 @@ loadEnv();
  *   2. Environment variables (VLM_PROVIDER, VLM_MODEL, VLM_MODEL_TIER, *_API_KEY)
  *   3. Defaults (auto-detect cheapest provider, default model per provider)
  *
- * @param {import('./index.mjs').ConfigOptions} [options={}] - Configuration options
- * @returns {import('./index.mjs').Config} Configuration object
+ * @param {import('#public-contract').ConfigOptions} [options={}] - Configuration options
+ * @returns {import('#public-contract').Config} Configuration object
  */
 export function createConfig(options = {}) {
   const {
@@ -191,7 +191,7 @@ function getApiKey(provider, env) {
 /**
  * Get current configuration (singleton)
  *
- * @returns {import('./index.mjs').Config} Current configuration
+ * @returns {import('#public-contract').Config} Current configuration
  */
 let configInstance = null;
 
@@ -205,7 +205,7 @@ export function getConfig() {
 /**
  * Set configuration (useful for testing)
  *
- * @param {import('./index.mjs').Config} config - Configuration to set
+ * @param {import('#public-contract').Config} config - Configuration to set
  * @returns {void}
  */
 export function setConfig(config) {
@@ -216,7 +216,7 @@ export function setConfig(config) {
  * Get provider configuration
  *
  * @param {string | null} [providerName=null] - Provider name, or null to use default
- * @returns {import('./index.mjs').Config['providerConfig']} Provider configuration
+ * @returns {import('#public-contract').Config['providerConfig']} Provider configuration
  */
 export function getProvider(providerName = null) {
   const config = getConfig();

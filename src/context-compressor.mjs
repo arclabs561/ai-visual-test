@@ -9,7 +9,7 @@
 /**
  * Compress context by aggregating notes and extracting key insights
  *
- * @param {import('./index.mjs').TemporalNote[]} notes - Array of temporal notes to compress
+ * @param {import('#temporal-core').TemporalNote[]} notes - Array of temporal notes to compress
  * @param {{
  *   maxTokens?: number;
  *   maxNotes?: number;
@@ -17,7 +17,7 @@
  *   includeKeyEvents?: boolean;
  *   aggregationStrategy?: 'temporal' | 'semantic' | 'importance';
  * }} [options={}] - Compression options
- * @returns {import('./index.mjs').TemporalNote[]} Compressed array of notes
+ * @returns {import('#temporal-core').TemporalNote[]} Compressed array of notes
  */
 export function compressContext(notes, options = {}) {
   const {
@@ -347,4 +347,3 @@ function estimateStateTokens(states, summary = '') {
   const totalText = stateText + ' ' + summary;
   return Math.ceil(totalText.length / 4);
 }
-

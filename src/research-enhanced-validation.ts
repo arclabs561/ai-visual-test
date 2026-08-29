@@ -3,7 +3,7 @@ import { detectBias, detectPositionBias, type PositionBiasResult } from './bias-
 import { mitigateBias, mitigatePositionBias } from './bias-mitigation.js';
 import { evaluateWithCounterBalance } from '#position-counterbalance';
 import { normalizeValidationResult } from '#validation-result-normalizer';
-import type { ValidationContext, ValidationResult } from '#public-contract';
+import type { Rubric, ValidationContext, ValidationResult } from '#public-contract';
 
 type TaskMetadata = { inputLength?: number; outputLength?: number; promptLength?: number };
 export interface ResearchOptions extends ValidationContext { enableBiasDetection?: boolean; enableBiasMitigation?: boolean; qualityGap?: number | null; judgeModel?: string | null; taskMetadata?: TaskMetadata; useCounterBalance?: boolean }
@@ -57,7 +57,7 @@ export async function validateWithLengthAlignment(imagePath: string, prompt: str
   return normalizeValidationResult(result, 'validateWithLengthAlignment');
 }
 
-export async function validateWithExplicitRubric(imagePath: string, prompt: string, options: ValidationContext & { rubric?: unknown; useDefaultRubric?: boolean } = {}): Promise<ValidationResult> {
+export async function validateWithExplicitRubric(imagePath: string, prompt: string, options: ValidationContext & { rubric?: Rubric | null; useDefaultRubric?: boolean } = {}): Promise<ValidationResult> {
   const { rubric = null, useDefaultRubric = true, ...validationOptions } = options;
   const { buildRubricPrompt, DEFAULT_RUBRIC } = await import('./rubrics.mjs');
   const rubricToUse = rubric || (useDefaultRubric ? DEFAULT_RUBRIC : null);

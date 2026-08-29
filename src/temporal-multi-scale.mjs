@@ -43,6 +43,7 @@ export function aggregateMultiScale(notes, options = {}) {
 
   // Validate time scales
   validateTimeScales(timeScales);
+  validateFiniteTimeScales(timeScales);
 
   if (sortedNotes.length === 0) {
     return {
@@ -52,26 +53,29 @@ export function aggregateMultiScale(notes, options = {}) {
     };
   }
 
-  const startTime = sortedNotes[0].timestamp || Date.now();
+  const coordinateMode = resolveTemporalCoordinateMode(sortedNotes);
+  const startTime = coordinateMode === 'elapsed'
+    ? 0
+    : getTemporalCoordinate(sortedNotes[0], coordinateMode);
   const scales = {};
 
   // Aggregate at each time scale
   for (const [scaleName, windowSize] of Object.entries(timeScales)) {
-    const windows = [];
+    const windowsByIndex = new Map();
 
     for (const note of sortedNotes) {
-      const elapsed = note.elapsed || (note.timestamp - startTime);
+      const elapsed = getElapsedTime(note, startTime, coordinateMode);
       const windowIndex = Math.floor(elapsed / windowSize);
 
-      if (!windows[windowIndex]) {
-        windows[windowIndex] = {
+      if (!windowsByIndex.has(windowIndex)) {
+        windowsByIndex.set(windowIndex, {
           index: windowIndex,
           startTime: startTime + (windowIndex * windowSize),
           endTime: startTime + ((windowIndex + 1) * windowSize),
           notes: [],
           weightedScore: 0,
           totalWeight: 0
-        };
+        });
       }
 
       // Attention-based weighting
@@ -79,14 +83,15 @@ export function aggregateMultiScale(notes, options = {}) {
         ? calculateAttentionWeight(note, { elapsed, windowSize, scaleName })
         : 1.0;
 
-      windows[windowIndex].notes.push({ ...note, weight });
+      const window = windowsByIndex.get(windowIndex);
+      window.notes.push({ ...note, weight });
 
       const score = note.gameState?.score ?? note.score ?? 0;
-      windows[windowIndex].weightedScore += score * weight;
-      windows[windowIndex].totalWeight += weight;
+      window.weightedScore += score * weight;
+      window.totalWeight += weight;
     }
 
-    const definedWindows = windows.filter(w => w !== undefined);
+    const definedWindows = [...windowsByIndex.values()].sort((a, b) => a.index - b.index);
 
     scales[scaleName] = {
       windowSize,
@@ -145,7 +150,7 @@ export function calculateAttentionWeight(note, context) {
 function calculateSalience(note) {
   let salience = 1.0;
 
-  const score = note.score || note.gameState?.score || 5;
+  const score = note.score ?? note.gameState?.score ?? 5;
   if (score >= 8 || score <= 2) {
     salience *= 1.5;
   }
@@ -578,11 +583,16 @@ export function calculateOptimalWindowSize(notes, options = {}) {
     defaultWindow = 10000
   } = options;
 
+  validateWindowOption('minWindow', minWindow);
+  validateWindowOption('maxWindow', maxWindow);
+  validateWindowOption('defaultWindow', defaultWindow);
+
   if (notes.length < 2) {
     return defaultWindow;
   }
 
-  const timeSpan = notes[notes.length - 1].timestamp - notes[0].timestamp;
+  const coordinateMode = resolveTemporalCoordinateMode(notes);
+  const timeSpan = getTemporalCoordinate(notes[notes.length - 1], coordinateMode) - getTemporalCoordinate(notes[0], coordinateMode);
   if (timeSpan <= 0) {
     return defaultWindow;
   }
@@ -609,7 +619,8 @@ export function detectActivityPattern(notes) {
     return 'consistent';
   }
 
-  const timeSpan = notes[notes.length - 1].timestamp - notes[0].timestamp;
+  const coordinateMode = resolveTemporalCoordinateMode(notes);
+  const timeSpan = getTemporalCoordinate(notes[notes.length - 1], coordinateMode) - getTemporalCoordinate(notes[0], coordinateMode);
   const avgTimeBetween = timeSpan / (notes.length - 1);
 
   const scores = notes
@@ -664,9 +675,13 @@ export async function aggregateTemporalNotesAdaptive(notes, options = {}) {
     coherenceThreshold = 0.7
   } = options;
 
+  if (windowSize !== undefined && windowSize !== null) {
+    validateWindowOption('windowSize', windowSize);
+  }
+
   let finalWindowSize = windowSize;
 
-  if (adaptive && !windowSize) {
+  if (adaptive && (windowSize === undefined || windowSize === null)) {
     finalWindowSize = calculateOptimalWindowSize(notes);
 
     const pattern = detectActivityPattern(notes);
@@ -675,7 +690,7 @@ export async function aggregateTemporalNotesAdaptive(notes, options = {}) {
     } else if (pattern === 'slowChange') {
       finalWindowSize = Math.max(finalWindowSize, 20000);
     }
-  } else if (!finalWindowSize) {
+  } else if (finalWindowSize === undefined || finalWindowSize === null) {
     finalWindowSize = 10000;
   }
 
@@ -684,4 +699,57 @@ export async function aggregateTemporalNotesAdaptive(notes, options = {}) {
     decayFactor,
     coherenceThreshold
   });
+}
+
+function validateFiniteTimeScales(timeScales) {
+  for (const [name, value] of Object.entries(timeScales)) {
+    if (!Number.isFinite(value) || value <= 0) {
+      throw new MultiScaleError(`Invalid time scale ${name}: ${value}`, {
+        scaleName: name,
+        value,
+        type: typeof value
+      });
+    }
+  }
+}
+
+function validateWindowOption(name, value) {
+  if (!Number.isFinite(value) || value <= 0) {
+    throw new MultiScaleError(`${name} must be a finite positive number`, {
+      name,
+      value
+    });
+  }
+}
+
+function resolveTemporalCoordinateMode(notes) {
+  if (notes.every(note => Number.isFinite(note.timestamp))) {
+    return 'timestamp';
+  }
+
+  if (notes.every(note => Number.isFinite(note.elapsed))) {
+    return 'elapsed';
+  }
+
+  throw new MultiScaleError('Temporal aggregation requires one finite coordinate basis shared by every note', {
+    coordinateBases: ['elapsed', 'timestamp']
+  });
+}
+
+function getTemporalCoordinate(note, coordinateMode) {
+  if (coordinateMode === 'elapsed' && Number.isFinite(note.elapsed)) {
+    return note.elapsed;
+  }
+  if (coordinateMode === 'timestamp' && Number.isFinite(note.timestamp)) {
+    return note.timestamp;
+  }
+
+  throw new MultiScaleError(`Temporal note is missing a finite ${coordinateMode} coordinate`, {
+    coordinateMode,
+    note
+  });
+}
+
+function getElapsedTime(note, startTime, coordinateMode) {
+  return getTemporalCoordinate(note, coordinateMode) - startTime;
 }

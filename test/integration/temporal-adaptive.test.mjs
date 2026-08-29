@@ -106,6 +106,30 @@ describe('Temporal Adaptive', () => {
       
       assert.ok(windowSize <= 20000, 'Should respect maxWindow');
     });
+
+    it('uses elapsed time when notes have no epoch timestamps', () => {
+      const notes = [
+        { elapsed: 0 },
+        { elapsed: 5000 }
+      ];
+
+      assert.strictEqual(calculateOptimalWindowSize(notes, { defaultWindow: 10000 }), 20000);
+    });
+
+    it('rejects zero and non-finite window options', () => {
+      assert.throws(
+        () => calculateOptimalWindowSize([], { minWindow: 0 }),
+        /minWindow must be a finite positive number/
+      );
+      assert.throws(
+        () => calculateOptimalWindowSize([], { maxWindow: Number.POSITIVE_INFINITY }),
+        /maxWindow must be a finite positive number/
+      );
+      assert.throws(
+        () => calculateOptimalWindowSize([], { defaultWindow: Number.NaN }),
+        /defaultWindow must be a finite positive number/
+      );
+    });
   });
 
   describe('detectActivityPattern', () => {
@@ -185,6 +209,17 @@ describe('Temporal Adaptive', () => {
       
       assert.strictEqual(pattern, 'consistent');
     });
+
+    it('uses elapsed time to identify rapid score changes without timestamps', () => {
+      const pattern = detectActivityPattern([
+        { elapsed: 0, gameState: { score: 0 } },
+        { elapsed: 500, gameState: { score: 100 } },
+        { elapsed: 1000, gameState: { score: 200 } },
+        { elapsed: 1500, gameState: { score: 50 } }
+      ]);
+
+      assert.strictEqual(pattern, 'fastChange');
+    });
   });
 
   describe('aggregateTemporalNotesAdaptive', () => {
@@ -217,6 +252,19 @@ describe('Temporal Adaptive', () => {
       });
       
       assert.ok(aggregated);
+    });
+
+    it('rejects zero and non-finite explicit window sizes', async () => {
+      const notes = [{ elapsed: 0, observation: 'start' }];
+
+      await assert.rejects(
+        () => aggregateTemporalNotesAdaptive(notes, { adaptive: false, windowSize: 0 }),
+        /windowSize must be a finite positive number/
+      );
+      await assert.rejects(
+        () => aggregateTemporalNotesAdaptive(notes, { adaptive: false, windowSize: Number.NaN }),
+        /windowSize must be a finite positive number/
+      );
     });
 
     it('should adjust window based on activity pattern', async () => {
@@ -260,4 +308,3 @@ describe('Temporal Adaptive', () => {
     });
   });
 });
-

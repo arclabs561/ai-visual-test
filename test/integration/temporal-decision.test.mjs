@@ -8,6 +8,7 @@ import { test, describe } from 'node:test';
 import assert from 'node:assert';
 import {
   aggregateMultiScale,
+  calculateAttentionWeight,
   SequentialDecisionContext,
   humanPerceptionTime
 } from '../../src/temporal-multi-scale.mjs';
@@ -318,6 +319,68 @@ describe('aggregateMultiScale', () => {
     assert.ok(result.scales.custom1);
     assert.ok(result.scales.custom2);
   });
+
+  test('uses elapsed time as a relative timeline when timestamps are absent', () => {
+    const notes = [
+      { elapsed: 0, score: 1 },
+      { elapsed: 500, score: 9 },
+      { elapsed: 1000, score: 2 }
+    ];
+
+    const result = aggregateMultiScale(notes, {
+      timeScales: { sample: 500 }
+    });
+
+    assert.deepStrictEqual(
+      result.scales.sample.windows.map(({ window, timeRange, avgScore }) => ({ window, timeRange, avgScore })),
+      [
+        { window: 0, timeRange: '0s-1s', avgScore: 1 },
+        { window: 1, timeRange: '1s-1s', avgScore: 9 },
+        { window: 2, timeRange: '1s-2s', avgScore: 2 }
+      ]
+    );
+  });
+
+  test('rejects non-finite time scales before calculating windows', () => {
+    assert.throws(
+      () => aggregateMultiScale([{ elapsed: 0, score: 1 }], { timeScales: { invalid: Number.NaN } }),
+      /Invalid time scale invalid/
+    );
+  });
+
+  test('rejects mixed elapsed and epoch timestamp coordinate bases', () => {
+    assert.throws(
+      () => aggregateMultiScale([
+        { elapsed: 0, score: 1 },
+        { timestamp: 1_700_000_000_000, score: 9 }
+      ], { timeScales: { sample: 500 } }),
+      /requires one finite coordinate basis shared by every note/
+    );
+  });
+
+  test('uses timestamps when they span notes enriched with optional elapsed values', () => {
+    const result = aggregateMultiScale([
+      { timestamp: 100_000, elapsed: 0, score: 1 },
+      { timestamp: 100_500, score: 9 }
+    ], { timeScales: { sample: 500 } });
+
+    assert.deepStrictEqual(
+      result.scales.sample.windows.map(({ window, avgScore }) => ({ window, avgScore })),
+      [
+        { window: 0, avgScore: 1 },
+        { window: 1, avgScore: 9 }
+      ]
+    );
+  });
+
+  test('treats score zero as salient rather than falling back to the default score', () => {
+    const weight = calculateAttentionWeight(
+      { score: 0 },
+      { elapsed: 0, windowSize: 500, scaleName: 'sample' }
+    );
+
+    assert.strictEqual(weight, 1.5);
+  });
   
   test('generates summary', () => {
     const now = Date.now();
@@ -564,4 +627,3 @@ describe('aggregateMultiScale', () => {
     assert.ok(time >= 100, 'Valid inputs should return valid time');
   });
 });
-

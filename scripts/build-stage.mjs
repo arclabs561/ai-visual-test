@@ -56,8 +56,8 @@ for (const subpath of ['./temporal', './ensemble', './playwright', './vitest', '
     throw new Error(`Missing staged package route: ${subpath}`);
   }
   if (subpath === './temporal') {
-    route.import = './src/temporal/index.mjs';
-    route.types = './types/temporal.d.ts';
+    route.import = './src/temporal/index.js';
+    route.types = './src/temporal/index.d.ts';
   } else if (subpath === './ensemble') {
     route.import = './src/ensemble/index.js';
     route.types = './types/ensemble-barrel.d.ts';

@@ -12,7 +12,7 @@ import {
   TemporalBatchOptimizer,
   aggregateMultiScale,
   humanPerceptionTime
-} from '../../src/temporal/index.mjs';
+} from '../../src/temporal/index.js';
 import { writeFileSync, unlinkSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 

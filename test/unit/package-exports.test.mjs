@@ -28,7 +28,7 @@ function declaredValueExports(source) {
     .flatMap(match => match[1].split(','))
     .map(name => name.trim())
     .filter(name => !name.startsWith('type '))
-    .map(name => name.replace(/\s+as\s+\w+$/, ''))
+    .map(name => name.replace(/^(\w+)\s+as\s+(\w+)$/, '$2'))
     .filter(Boolean);
   return [...new Set([...declarations, ...reexports])];
 }
@@ -40,7 +40,7 @@ function namedValueReexports(source) {
       values: match[1].split(',')
         .map(name => name.trim())
         .filter(name => !name.startsWith('type '))
-        .map(name => name.replace(/\s+as\s+\w+$/, ''))
+        .map(name => name.replace(/^(\w+)\s+as\s+(\w+)$/, '$2'))
         .filter(Boolean),
     }));
 }

@@ -24,12 +24,40 @@ describe('API Sub-Modules', () => {
   
   describe('temporal sub-module', () => {
     it('should export temporal functions', async () => {
-      const temporal = await import('../../src/temporal/index.mjs');
+      const temporal = await import('../../src/temporal/index.js');
+      const expectedExports = [
+        'ATTENTION_MULTIPLIERS', 'AdaptiveTemporalProcessor', 'COMPLEXITY_MULTIPLIERS',
+        'CONFIDENCE_THRESHOLDS', 'CONTENT_THRESHOLDS', 'MULTI_SCALE_WINDOWS', 'MultiScaleError',
+        'PerceptionTimeError', 'READING_SPEEDS', 'SequentialContextError', 'SequentialDecisionContext',
+        'TIME_BOUNDS', 'TIME_SCALES', 'TemporalBatchError', 'TemporalBatchOptimizer',
+        'TemporalDecisionManager', 'TemporalError', 'TemporalPreprocessingManager', 'aggregateMultiScale',
+        'aggregateTemporalNotes', 'aggregateTemporalNotesAdaptive', 'buildTemporalGraph',
+        'calculateAttentionWeight', 'calculateCoherence', 'calculateOptimalWindowSize',
+        'captureTemporalScreenshots', 'createAdaptiveTemporalProcessor', 'createTemporalContext',
+        'createTemporalDecisionManager', 'createTemporalPreprocessingManager', 'detectActivityPattern',
+        'evaluateTemporalDecision', 'extractTemporalContext', 'formatMultiScaleForPrompt',
+        'formatNotesForPrompt', 'formatSingleScaleForPrompt', 'formatTemporalContext',
+        'formatTemporalForPrompt', 'humanPerceptionTime', 'mergeTemporalContext', 'propagateNotes',
+        'pruneTemporalNotes', 'selectRepresentativeScreenshots', 'selectTopWeightedNotes', 'validateAction',
+        'validateAndSortNotes', 'validateNotes', 'validatePerceptionContext',
+        'validateSequentialContextOptions', 'validateTimeScales',
+      ];
+      assert.deepStrictEqual(
+        Object.keys(temporal).sort(),
+        expectedExports.sort(),
+        'the generated temporal barrel must preserve the public runtime surface',
+      );
       
       assert.ok(typeof temporal.aggregateTemporalNotes === 'function', 'Should export aggregateTemporalNotes');
       assert.ok(temporal.TemporalDecisionManager, 'Should export TemporalDecisionManager');
       assert.ok(temporal.TemporalPreprocessingManager, 'Should export TemporalPreprocessingManager');
       assert.ok(typeof temporal.captureTemporalScreenshots === 'function', 'Should export captureTemporalScreenshots');
+      const multiModal = await import('../../src/multi-modal.mjs');
+      assert.strictEqual(
+        temporal.captureTemporalScreenshots,
+        multiModal.captureTemporalScreenshots,
+        'temporal and multi-modal should share the capture implementation',
+      );
     });
   });
   

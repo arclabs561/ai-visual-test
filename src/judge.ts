@@ -15,19 +15,19 @@
 
 import { readFileSync, existsSync } from 'fs';
 import { dirname, basename, resolve } from 'path';
-import { createConfig, getConfig } from './config.mjs';
-import { getCached, setCached } from './cache.mjs';
+import { createConfig, getConfig } from './config.js';
+import { getCached, setCached } from './cache.js';
 import { createHash } from 'crypto';
 import { FileError, ProviderError, TimeoutError, ValidationError } from './errors.js';
-import { log, warn } from './logger.mjs';
+import { log, warn } from './logger.js';
 import { evaluateTemporalDecision } from '#temporal-prompt-formatting';
 import { recordCost } from './cost-tracker.mjs';
 import { normalizeValidationResult } from '#validation-result-normalizer';
 import { validateImagePath, validatePrompt } from './validation.mjs';
 import { sanitizePrompt, validatePromptSecurity } from './utils/prompt-sanitizer.mjs';
 import { getRateLimiter } from './utils/rate-limiter.mjs';
-import { RETRY_CONSTANTS, API_CONSTANTS } from './constants.mjs';
-import { enhanceErrorMessage } from './retry.mjs';
+import { RETRY_CONSTANTS, API_CONSTANTS } from './constants.js';
+import { enhanceErrorMessage } from './retry.js';
 import { safeLogCacheOperation } from './safe-logger.mjs';
 import { composeSingleImagePrompt, composeComparisonPrompt } from './prompt-composer.mjs';
 import { createReviewTask } from '#review-contract';
@@ -104,7 +104,7 @@ export class VLLMJudge {
     if (this._cacheInitialized || !this.config.cache.enabled) return;
     
     if (this.config.cache.dir) {
-      const { initCache } = await import('./cache.mjs');
+      const { initCache } = await import('./cache.js');
       initCache(this.config.cache.dir);
     }
     this._cacheInitialized = true;
@@ -1009,7 +1009,7 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
    */
   _logCacheResult(operation: 'hit' | 'miss', context: JudgeContext, cacheKey: string): void {
     const isHit = operation === 'hit';
-    import('./cache.mjs').then((module: any) => {
+    import('./cache.js').then((module: any) => {
       try {
         safeLogCacheOperation({ operation, hit: isHit, latency: 0, cacheSize: module.getCache().size, maxSize: 1000 });
       } catch { /* ignore */ }

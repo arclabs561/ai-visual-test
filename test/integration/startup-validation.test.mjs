@@ -6,7 +6,7 @@ import '../test-setup.mjs';
 import { describe, it, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert';
 import { validateStartup, validateStartupSoft } from '../../src/startup-validation.mjs';
-import { setConfig } from '../../src/config.mjs';
+import { setConfig } from '../../src/config.js';
 
 describe('Startup Validation', () => {
   
@@ -88,7 +88,7 @@ describe('Startup Validation', () => {
         process.env[key] = 'test-key';
         
         // Reset config cache to pick up new env vars
-        const { setConfig } = await import('../../src/config.mjs');
+        const { setConfig } = await import('../../src/config.js');
         setConfig(null); // Clear cached config
         
         // Also need to pass provider explicitly to validateStartupSoft

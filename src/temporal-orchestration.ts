@@ -13,7 +13,7 @@
  */
 
 import { aggregateTemporalNotes, type AggregatedTemporalNotes, type TemporalAggregationOptions, type TemporalNote } from '#temporal-core';
-import { log, warn } from './logger.mjs';
+import { log, warn } from './logger.js';
 import { BatchOptimizer } from './batch-optimizer.mjs';
 
 type TemporalRecord = TemporalNote & Record<string, unknown>;
@@ -425,7 +425,7 @@ export class TemporalDecisionManager {
         .catch(async (importError) => {
           if (process.env.DEBUG_TEMPORAL) {
             try {
-              const { warn: w } = await import('./logger.mjs');
+              const { warn: w } = await import('./logger.js');
               w(`[TemporalDecision] Performance logger unavailable: ${importError.message}`);
             } catch {
               console.warn(`[TemporalDecision] Performance logger unavailable: ${importError.message}`);
@@ -460,7 +460,7 @@ export class TemporalDecisionManager {
         .catch(async (importError) => {
           if (process.env.DEBUG_TEMPORAL) {
             try {
-              const { warn: w } = await import('./logger.mjs');
+              const { warn: w } = await import('./logger.js');
               w(`[TemporalDecision] Performance logger unavailable: ${importError.message}`);
             } catch {
               console.warn(`[TemporalDecision] Performance logger unavailable: ${importError.message}`);

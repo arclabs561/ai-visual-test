@@ -12,7 +12,7 @@
 import { validateWithResearchEnhancements } from '#research-enhanced-validation';
 import { PromptBuilder } from './prompt-builder.js';
 import { ValidationError } from '#errors';
-import { assertString, assertObject } from '../type-guards.mjs';
+import { assertString, assertObject } from '../type-guards.js';
 import type { Rubric, ValidationContext, ValidationResult } from '#public-contract';
 
 interface RubricCriterion {

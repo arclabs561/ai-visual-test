@@ -63,7 +63,7 @@ describe('Consumer API', () => {
 
   describe('createConfig', () => {
     it('should create config with defaults', async () => {
-      const { createConfig } = await import('../../src/config.mjs');
+      const { createConfig } = await import('../../src/config.js');
       const config = createConfig({ apiKey: null });
       assert.strictEqual(typeof config, 'object');
       assert.ok('provider' in config);
@@ -73,7 +73,7 @@ describe('Consumer API', () => {
     });
 
     it('should accept explicit provider', async () => {
-      const { createConfig } = await import('../../src/config.mjs');
+      const { createConfig } = await import('../../src/config.js');
       const config = createConfig({ provider: 'openai', apiKey: 'test-key' });
       assert.strictEqual(config.provider, 'openai');
       assert.strictEqual(config.apiKey, 'test-key');
@@ -81,19 +81,19 @@ describe('Consumer API', () => {
     });
 
     it('should set enabled=false when no API key', async () => {
-      const { createConfig } = await import('../../src/config.mjs');
+      const { createConfig } = await import('../../src/config.js');
       const config = createConfig({ provider: 'openai', apiKey: null });
       assert.strictEqual(config.enabled, false);
     });
 
     it('should respect model tier', async () => {
-      const { createConfig } = await import('../../src/config.mjs');
+      const { createConfig } = await import('../../src/config.js');
       const config = createConfig({ provider: 'gemini', apiKey: 'key', modelTier: 'best' });
       assert.ok(config.providerConfig.model);
     });
 
     it('should respect explicit model override', async () => {
-      const { createConfig } = await import('../../src/config.mjs');
+      const { createConfig } = await import('../../src/config.js');
       const config = createConfig({ provider: 'openai', apiKey: 'key', model: 'gpt-4o-mini' });
       assert.strictEqual(config.providerConfig.model, 'gpt-4o-mini');
     });

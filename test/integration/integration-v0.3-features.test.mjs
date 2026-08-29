@@ -16,7 +16,7 @@ import { validateComparison } from '../../src/page-validation.js';
 import { EnsembleJudge } from '#ensemble-judge';
 import { detectHallucination } from '../../src/hallucination-detector.mjs';
 import { composeSingleImagePrompt, composeComparisonPrompt } from '../../src/prompt-composer.mjs';
-import { createConfig } from '../../src/config.mjs';
+import { createConfig } from '../../src/config.js';
 import { skipIfNoApiKey } from '../helpers/api-key-check.mjs';
 import { writeFileSync, unlinkSync, existsSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';

@@ -14,7 +14,7 @@
  * Dependency direction: this is the foundation -- no imports from other temporal-* files.
  */
 
-import { TEMPORAL_CONSTANTS } from './constants.mjs';
+import { TEMPORAL_CONSTANTS } from './constants.js';
 
 /** A timestamped observation used by aggregation and graph construction. */
 export interface TemporalNote {
@@ -552,7 +552,7 @@ async function calculateCoherence(
   );
 
   if (!isFinite(coherence) || isNaN(coherence)) {
-    import('./logger.mjs').then(({ warn }) => {
+    import('./logger.js').then(({ warn }) => {
       warn('[temporal-core.mjs] Invalid coherence value, defaulting to 0.5:', {
         coherence,
         directionConsistency,
@@ -770,7 +770,7 @@ async function extractEntities(notes: WeightedTemporalNote[], options: TemporalG
 
   try {
     const { extractStructuredData } = await import('./data-extractor.mjs');
-    const { createConfig } = await import('./config.mjs');
+    const { createConfig } = await import('./config.js');
 
     const config = createConfig();
     if (!config.enabled) {

@@ -7,7 +7,7 @@ import assert from 'node:assert';
 import { writeFileSync, unlinkSync, existsSync, mkdirSync, rmdirSync } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
-import { loadEnv } from '../../src/load-env.mjs';
+import { loadEnv } from '../../src/load-env.js';
 
 const TEST_DIR = join(tmpdir(), 'ai-visual-test-load-env');
 const ORIGINAL_DISABLE_ENV_FILE = process.env.AI_VISUAL_TEST_DISABLE_ENV_FILE;

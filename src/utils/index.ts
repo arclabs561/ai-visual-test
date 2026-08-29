@@ -14,7 +14,7 @@ export {
   getCacheStats,
   initCache,
   generateCacheKey,
-} from '../cache.mjs';
+} from '../cache.js';
 
 // Config
 export {
@@ -22,13 +22,13 @@ export {
   getProvider,
   getConfig,
   setConfig,
-} from '../config.mjs';
+} from '../config.js';
 
 // Environment
-export { loadEnv } from '../load-env.mjs';
+export { loadEnv } from '../load-env.js';
 
 // Logger
-export { enableDebug, disableDebug, isDebugEnabled, warn, log, error } from '../logger.mjs';
+export { enableDebug, disableDebug, isDebugEnabled, warn, log, error } from '../logger.js';
 
 // Errors
 export {
@@ -50,7 +50,7 @@ export {
   isRetryableError,
   calculateBackoff,
   enhanceErrorMessage,
-} from '../retry.mjs';
+} from '../retry.js';
 
 // Cost tracking
 export {
@@ -105,7 +105,7 @@ export {
   assertFunction,
   pick,
   getProperty,
-} from '../type-guards.mjs';
+} from '../type-guards.js';
 
 // Constants
 export {
@@ -114,7 +114,7 @@ export {
   API_CONSTANTS,
   UNCERTAINTY_CONSTANTS,
   BATCH_OPTIMIZER_CONSTANTS,
-} from '../constants.mjs';
+} from '../constants.js';
 
 // Validation result normalization
 export { normalizeValidationResult } from '#validation-result-normalizer';

@@ -6,11 +6,11 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { enableDebug } from '../../src/logger.mjs';
+import { enableDebug } from '../../src/logger.js';
 import { SequentialDecisionContext } from '#temporal-multi-scale';
 import { BatchOptimizer } from '../../src/batch-optimizer.mjs';
 import { selfConsistencyCheck } from '../../src/uncertainty-reducer.mjs';
-import { initCache, getCacheStats, setCached, clearCache } from '../../src/cache.mjs';
+import { initCache, getCacheStats, setCached, clearCache } from '../../src/cache.js';
 import { join } from 'path';
 import { tmpdir } from 'os';
 import { mkdirSync, rmSync, existsSync } from 'fs';

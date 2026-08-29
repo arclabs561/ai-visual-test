@@ -28,7 +28,7 @@ import {
   assertFunction,
   pick,
   getProperty
-} from '../../src/type-guards.mjs';
+} from '../../src/type-guards.js';
 import { ValidationError } from '../../src/errors.js';
 
 describe('Type Guards', () => {
@@ -193,7 +193,8 @@ describe('Type Guards', () => {
         enabled: true,
         provider: 'gemini',
         score: 0.8,
-        issues: []
+        issues: [],
+        recommendations: []
       };
       assert.strictEqual(isValidationResult(result), true);
     });
@@ -203,7 +204,8 @@ describe('Type Guards', () => {
         enabled: true,
         provider: 'gemini',
         score: null,
-        issues: []
+        issues: [],
+        recommendations: []
       };
       assert.strictEqual(isValidationResult(result), true);
     });
@@ -214,6 +216,13 @@ describe('Type Guards', () => {
       assert.strictEqual(isValidationResult({ enabled: true, provider: 'gemini' }), false);
       assert.strictEqual(isValidationResult(null), false);
       assert.strictEqual(isValidationResult('string'), false);
+    });
+
+    it('should reject non-string issues and missing or non-string recommendations', () => {
+      const valid = { enabled: true, provider: 'gemini', score: 0.8, issues: [], recommendations: [] };
+      assert.strictEqual(isValidationResult({ ...valid, issues: [123] }), false);
+      assert.strictEqual(isValidationResult({ ...valid, recommendations: undefined }), false);
+      assert.strictEqual(isValidationResult({ ...valid, recommendations: [123] }), false);
     });
   });
 
@@ -279,6 +288,7 @@ describe('Type Guards', () => {
 
     it('should return false for invalid focus', () => {
       assert.strictEqual(isPersona({ name: 'Developer', perspective: 'Technical', focus: 'invalid' }), false);
+      assert.strictEqual(isPersona({ name: 'Developer', perspective: 'Technical', focus: ['accessibility', 1] }), false);
     });
   });
 
@@ -298,9 +308,9 @@ describe('Type Guards', () => {
       assert.strictEqual(isTemporalNote({}), true);
     });
 
-    it('should return true with null score', () => {
+    it('should return false with null score', () => {
       const note = { score: null };
-      assert.strictEqual(isTemporalNote(note), true);
+      assert.strictEqual(isTemporalNote(note), false);
     });
 
     it('should return false for invalid timestamp', () => {

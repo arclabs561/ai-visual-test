@@ -1,5 +1,5 @@
 import { ValidationError } from './errors.js';
-import { warn } from './logger.mjs';
+import { warn } from './logger.js';
 import { randomUUID } from 'node:crypto';
 
 export interface TemporalScreenshot {

@@ -8,7 +8,7 @@ import { test } from 'node:test';
 import assert from 'node:assert';
 import { BatchOptimizer } from '../../src/batch-optimizer.mjs';
 import { TimeoutError, ValidationError } from '../../src/errors.js';
-import { BATCH_OPTIMIZER_CONSTANTS } from '../../src/constants.mjs';
+import { BATCH_OPTIMIZER_CONSTANTS } from '../../src/constants.js';
 
 test('BatchOptimizer - rejects requests when queue is full', async () => {
   // Create optimizer with small queue size for testing

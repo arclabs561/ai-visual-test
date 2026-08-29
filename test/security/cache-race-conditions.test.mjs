@@ -17,7 +17,7 @@ import {
   setCached, 
   clearCache,
   generateCacheKey
-} from '../../src/cache.mjs';
+} from '../../src/cache.js';
 
 const TEST_CACHE_DIR = join(tmpdir(), 'ai-visual-test-cache-race-test');
 
@@ -369,4 +369,3 @@ test('cache property: timestamp preservation - original timestamps preserved', a
   // Assert: Property holds - original timestamp preserved
   assert.strictEqual(cached2._originalTimestamp, originalTimestamp, 'Original timestamp should be preserved across save/load');
 });
-

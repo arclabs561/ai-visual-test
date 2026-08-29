@@ -23,7 +23,7 @@ import { parseGameActionOutcome, type GameAction } from '#game-action-contract';
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
 import { randomUUID } from 'crypto';
 import { join } from 'path';
-import { log, warn } from './logger.mjs';
+import { log, warn } from './logger.js';
 
 /** A framework-neutral locator surface used for click actions. */
 export interface GameLocator {

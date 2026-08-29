@@ -18,7 +18,7 @@ import {
   calculateAttentionWeight,
   type MultiScaleAggregation,
 } from '#temporal-multi-scale';
-import { log } from './logger.mjs';
+import { log } from './logger.js';
 import { safeLogTemporalDecision } from './safe-logger.mjs';
 
 export interface TemporalPromptFormattingOptions {

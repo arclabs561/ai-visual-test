@@ -5,7 +5,7 @@
  * Prevents silent failures and improves debugging.
  */
 
-import { error } from './logger.mjs';
+import { error } from './logger.js';
 
 /**
  * Initialize global error handlers
@@ -64,4 +64,3 @@ export function initErrorHandlers() {
     });
   });
 }
-

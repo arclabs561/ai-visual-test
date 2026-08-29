@@ -17,7 +17,7 @@ export const CACHE_CONSTANTS = {
   
   /** Maximum cache file size in bytes (100MB) */
   MAX_CACHE_SIZE_BYTES: 100 * 1024 * 1024
-};
+} as const;
 
 /**
  * Temporal Aggregation Configuration
@@ -31,7 +31,7 @@ export const TEMPORAL_CONSTANTS = {
   
   /** Default coherence threshold for temporal consistency checks (0.7 = 70% coherence required) */
   DEFAULT_COHERENCE_THRESHOLD: 0.7
-};
+} as const;
 
 /**
  * API Configuration
@@ -51,7 +51,7 @@ export const API_CONSTANTS = {
 
   /** Default top_p for VLM calls */
   DEFAULT_TOP_P: 0.95
-};
+} as const;
 
 /**
  * Batch Optimizer Configuration
@@ -62,7 +62,7 @@ export const BATCH_OPTIMIZER_CONSTANTS = {
   
   /** Request timeout in milliseconds (30 seconds) */
   REQUEST_TIMEOUT_MS: 30000
-};
+} as const;
 
 /**
  * Uncertainty Reduction Configuration
@@ -85,7 +85,7 @@ export const UNCERTAINTY_CONSTANTS = {
   
   /** Self-consistency N for edge cases (Tier 2) */
   EDGE_CASE_SELF_CONSISTENCY_N: 3
-};
+} as const;
 
 /**
  * API Endpoint Configuration (for serverless functions)
@@ -105,7 +105,7 @@ export const API_ENDPOINT_CONSTANTS = {
   
   /** Default maximum requests per window */
   RATE_LIMIT_MAX_REQUESTS: 10
-};
+} as const;
 
 /**
  * Rate Limit Validation Bounds
@@ -116,7 +116,7 @@ export const RATE_LIMIT_BOUNDS = {
 
   /** Maximum allowed value for RATE_LIMIT_MAX_REQUESTS */
   MAX: 1000
-};
+} as const;
 
 /**
  * Retry Configuration
@@ -133,7 +133,7 @@ export const RETRY_CONSTANTS = {
   
   /** Jitter amount as percentage of delay (±25%) */
   JITTER_PERCENTAGE: 0.25
-};
+} as const;
 
 /**
  * Validation Configuration
@@ -150,5 +150,4 @@ export const VALIDATION_CONSTANTS = {
   
   /** Maximum timeout in milliseconds (5 minutes) */
   MAX_TIMEOUT_MS: 300000
-};
-
+} as const;

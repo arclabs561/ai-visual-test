@@ -14,7 +14,7 @@
 import { buildRubricPrompt, DEFAULT_RUBRIC } from './rubrics.mjs';
 import { formatNotesForPrompt, aggregateTemporalNotes } from '#temporal-core';
 import { formatTemporalContext, selectTopWeightedNotes } from '#temporal-prompt-formatting';
-import { warn } from './logger.mjs';
+import { warn } from './logger.js';
 
 // Lazy import for variable goals
 let generateGamePrompt = null;

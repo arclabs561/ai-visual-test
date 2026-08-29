@@ -13,7 +13,7 @@
  * This prevents the common mistake of using expensive models for high-frequency decisions.
  */
 
-import { log, warn } from './logger.mjs';
+import { log, warn } from './logger.js';
 
 /**
  * Select model tier based on context
@@ -218,4 +218,3 @@ export function selectModelTierAndProvider(context = {}) {
     reason: `Selected ${provider} ${tier} tier based on context`
   };
 }
-

@@ -14,7 +14,7 @@ import { validateScreenshot } from '../../src/index.js';
 import { validateWithGoals, createGameGoal, generateGamePrompt } from '../../src/game/index.js';
 import { composeSingleImagePrompt } from '../../src/prompt-composer.mjs';
 import { createTestImage } from '../test-image-utils.mjs';
-import { createConfig } from '../../src/config.mjs';
+import { createConfig } from '../../src/config.js';
 import { skipIfNoApiKey } from '../helpers/api-key-check.mjs';
 import { unlinkSync, existsSync } from 'fs';
 import { join } from 'path';

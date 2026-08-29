@@ -1,5 +1,5 @@
 import type { ValidationResult } from '#public-contract';
-import { warn } from './logger.mjs';
+import { warn } from './logger.js';
 
 type RichItem = Record<string, unknown>;
 

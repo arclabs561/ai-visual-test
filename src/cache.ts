@@ -23,28 +23,73 @@ import { join, dirname, normalize, resolve } from 'path';
 import { createHash } from 'crypto';
 import { fileURLToPath } from 'url';
 import { Mutex } from 'async-mutex';
-import { CacheError, FileError } from '#errors';
-import { warn, log } from './logger.mjs';
+import { CacheError } from '#errors';
+import { warn, log } from './logger.js';
+import type { ValidationContext } from '#public-contract';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-import { CACHE_CONSTANTS } from './constants.mjs';
+import { CACHE_CONSTANTS } from './constants.js';
 
 // Default cache directory (can be overridden)
-let CACHE_DIR = null;
-let CACHE_FILE = null;
+let CACHE_DIR: string | null = null;
+let CACHE_FILE: string | null = null;
 const MAX_CACHE_AGE = CACHE_CONSTANTS.MAX_CACHE_AGE_MS;
 const MAX_CACHE_SIZE = CACHE_CONSTANTS.MAX_CACHE_SIZE;
 const MAX_CACHE_SIZE_BYTES = CACHE_CONSTANTS.MAX_CACHE_SIZE_BYTES;
 
 // Cache instance
-let cacheInstance = null;
+/** A serializable vision-cache payload with cache-management metadata. */
+export interface CachedResult extends Record<string, unknown> {
+  _lastAccessed?: number;
+  _originalTimestamp?: number;
+  response?: string;
+}
+
+type CacheMap = Map<string, CachedResult>;
+
+interface SerializedCacheEntry {
+  data: Record<string, unknown>;
+  timestamp: number;
+}
+
+interface CacheMetrics {
+  atomicWrites: number;
+  atomicWriteFailures: number;
+  tempFileCleanups: number;
+}
+
+export interface CacheContext extends ValidationContext {
+  reviewMode?: string;
+  structuredOutputMode?: string;
+  legacyOutputFallback?: boolean;
+  anchorDigest?: string;
+  frame?: string | number;
+  score?: string | number;
+  gameState?: unknown;
+}
+
+export interface TextLLMCacheOptions {
+  model?: string | null;
+  temperature?: number;
+  maxTokens?: number;
+  tier?: string | null;
+}
+
+export interface CacheStatistics extends CacheMetrics {
+  size: number;
+  maxAge: number;
+  cacheFile: string;
+  atomicWriteSuccessRate: number;
+}
+
+let cacheInstance: CacheMap | null = null;
 // Cache write mutex to prevent race conditions (proper async mutex)
 const cacheWriteMutex = new Mutex();
 // VERIFIABLE: Track cache metrics to verify claims about atomic writes
 // Initialize to empty object so metrics are always available (even before first save)
-let cacheMetrics = { atomicWrites: 0, atomicWriteFailures: 0, tempFileCleanups: 0 };
+let cacheMetrics: CacheMetrics = { atomicWrites: 0, atomicWriteFailures: 0, tempFileCleanups: 0 };
 
 /**
  * Initialize cache with directory
@@ -52,7 +97,7 @@ let cacheMetrics = { atomicWrites: 0, atomicWriteFailures: 0, tempFileCleanups: 
  * @param {string | undefined} [cacheDir] - Cache directory path, or undefined for default
  * @returns {void}
  */
-export function initCache(cacheDir) {
+export function initCache(cacheDir?: string): void {
   // SECURITY: Validate and normalize cache directory to prevent path traversal
   if (cacheDir) {
     // Prevent path traversal: reject raw input containing '..' segments
@@ -83,21 +128,26 @@ export function initCache(cacheDir) {
 /**
  * Normalize and sort object keys for deterministic JSON serialization
  */
-function deterministicStringify(obj) {
+function deterministicStringify(obj: unknown): string {
   if (obj === null || typeof obj !== 'object') {
-    return JSON.stringify(obj);
+    return JSON.stringify(obj) ?? 'undefined';
   }
   if (Array.isArray(obj)) {
     return '[' + obj.map(deterministicStringify).join(',') + ']';
   }
-  const sortedKeys = Object.keys(obj).sort();
+  const record = obj as Record<string, unknown>;
+  const sortedKeys = Object.keys(record).sort();
   const pairs = sortedKeys.map(key => {
-    return JSON.stringify(key) + ':' + deterministicStringify(obj[key]);
+    return JSON.stringify(key) + ':' + deterministicStringify(record[key]);
   });
   return '{' + pairs.join(',') + '}';
 }
 
-export function generateCacheKey(imagePath, prompt, context = {}) {
+export function generateCacheKey(
+  imagePath: string | null | undefined,
+  prompt: string | null | undefined,
+  context: CacheContext = {},
+): string {
   // Content-addressed: hash image bytes, not the file path.
   // This ensures cache invalidation when a screenshot is regenerated
   // to the same path (e.g. /tmp/vlm_magic.png).
@@ -105,7 +155,7 @@ export function generateCacheKey(imagePath, prompt, context = {}) {
   // For multi-image keys, imagePath may be a pipe-delimited string
   // like "path1|path2" from judge.mjs.
   const pathStr = imagePath || '';
-  const paths = pathStr.includes('|') ? pathStr.split('|') : [pathStr];
+  const paths: string[] = pathStr.includes('|') ? pathStr.split('|') : [pathStr];
   const imageHashes = paths.map(p => {
     try {
       const bytes = readFileSync(p);
@@ -160,7 +210,11 @@ export function generateCacheKey(imagePath, prompt, context = {}) {
  * }} options - LLM call options
  * @returns {string} SHA-256 hash of cache key
  */
-export function generateTextLLMCacheKey(prompt, provider, options = {}) {
+export function generateTextLLMCacheKey(
+  prompt: string,
+  provider: string,
+  options: TextLLMCacheOptions = {},
+): string {
   const {
     model = null,
     temperature = 0.1,
@@ -193,7 +247,20 @@ export function generateTextLLMCacheKey(prompt, provider, options = {}) {
  * - `timestamp`: When the entry was created (used for expiration)
  * - `data._lastAccessed`: When the entry was last accessed (used for LRU eviction)
  */
-function loadCache() {
+function isSerializedCacheEntry(value: unknown): value is SerializedCacheEntry {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) return false;
+  const entry = value as Record<string, unknown>;
+  return typeof entry.timestamp === 'number'
+    && typeof entry.data === 'object'
+    && entry.data !== null
+    && !Array.isArray(entry.data);
+}
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+function loadCache(): CacheMap {
   if (!CACHE_FILE || !existsSync(CACHE_FILE)) {
     return new Map();
   }
@@ -204,7 +271,7 @@ function loadCache() {
       cacheData = JSON.parse(readFileSync(CACHE_FILE, 'utf8'));
     } catch (parseError) {
       // SECURITY: Handle malformed JSON gracefully to prevent DoS
-      warn(`[VLLM Cache] Failed to parse cache file (corrupted?): ${parseError.message}`);
+      warn(`[VLLM Cache] Failed to parse cache file (corrupted?): ${errorMessage(parseError)}`);
       // Recover by starting with empty cache
       return new Map();
     }
@@ -214,8 +281,11 @@ function loadCache() {
     // Filter out expired entries based on ORIGINAL timestamp
     // IMPORTANT: We preserve the original timestamp from the file
     // This allows 7-day expiration to work correctly
+    if (typeof cacheData !== 'object' || cacheData === null || Array.isArray(cacheData)) {
+      return new Map();
+    }
     for (const [key, value] of Object.entries(cacheData)) {
-      if (value.timestamp && (now - value.timestamp) < MAX_CACHE_AGE) {
+      if (isSerializedCacheEntry(value) && value.timestamp && (now - value.timestamp) < MAX_CACHE_AGE) {
         // Preserve both the data and the original timestamp
         // The timestamp is stored in the file, not in the data object
         // But we need to track it for expiration, so we store it in the data
@@ -229,26 +299,26 @@ function loadCache() {
 
     return cache;
   } catch (error) {
-    warn(`[VLLM Cache] Failed to load cache: ${error.message}`);
+    warn(`[VLLM Cache] Failed to load cache: ${errorMessage(error)}`);
     return new Map();
   }
 }
 
 /**
  * Save cache to file with size limits and race condition protection
- * 
+ *
  * Uses async mutex to prevent concurrent writes and atomic file operations
  * to prevent corruption.
  */
-async function saveCache(cache) {
+async function saveCache(cache: CacheMap): Promise<void> {
   if (!CACHE_FILE) return;
 
   // Use proper async mutex to prevent concurrent writes
   // This ensures only one save operation happens at a time, even with async operations
   const release = await cacheWriteMutex.acquire();
-  
+
   try {
-    const cacheData = {};
+    const cacheData: Record<string, SerializedCacheEntry> = {};
     const now = Date.now();
     let totalSize = 0;
 
@@ -286,7 +356,7 @@ async function saveCache(cache) {
     // Apply size limits (LRU eviction: keep most recently accessed)
     const entriesToKeep = entries.slice(-MAX_CACHE_SIZE);
     const evictedCount = entries.length - entriesToKeep.length;
-    
+
     // Log cache eviction (weighted: evictions are important for cache health)
     if (evictedCount > 0) {
       // Use dynamic import with proper error handling to prevent unhandled promise rejections
@@ -294,6 +364,7 @@ async function saveCache(cache) {
         .then(({ logCacheOperation }) => {
           logCacheOperation({
             operation: 'evict',
+            hit: false,
             cacheSize: entriesToKeep.length,
             maxSize: MAX_CACHE_SIZE,
             reason: `LRU eviction: ${evictedCount} entries removed`
@@ -303,7 +374,7 @@ async function saveCache(cache) {
           // Log to logger if performance logger unavailable (better than silent failure)
           if (process.env.DEBUG_CACHE) {
             try {
-              const { warn } = await import('./logger.mjs');
+              const { warn } = await import('./logger.js');
               warn(`[Cache] Performance logger unavailable: ${importError.message}`);
             } catch {
               // Fallback to console if logger also unavailable
@@ -352,18 +423,18 @@ async function saveCache(cache) {
     const writeStartTime = Date.now();
     let writeSucceeded = false;
     let renameSucceeded = false;
-    
+
     try {
       writeFileSync(tempFile, JSON.stringify(cacheData, null, 2), 'utf8');
       writeSucceeded = true;
       renameSync(tempFile, CACHE_FILE); // Atomic operation on most filesystems
       renameSucceeded = true;
       const writeDuration = Date.now() - writeStartTime;
-      
+
       // Track successful atomic writes (for metrics)
       // NOTE: cacheMetrics is initialized at module level
       cacheMetrics.atomicWrites++;
-      
+
       // Log in debug mode for verification
       if (process.env.DEBUG_CACHE) {
         log(`[VLLM Cache] Atomic write completed in ${writeDuration}ms (${Object.keys(cacheData).length} entries)`);
@@ -382,7 +453,7 @@ async function saveCache(cache) {
           }
         } catch (cleanupError) {
           // Ignore cleanup errors, but log them
-          warn(`[VLLM Cache] Failed to clean up temp file after rename failure: ${cleanupError.message}`);
+          warn(`[VLLM Cache] Failed to clean up temp file after rename failure: ${errorMessage(cleanupError)}`);
         }
       }
       // Re-throw to be caught by outer catch block
@@ -392,8 +463,8 @@ async function saveCache(cache) {
     // VERIFIABLE: Track failures to verify atomic write claim
     // NOTE: cacheMetrics is initialized at module level
     cacheMetrics.atomicWriteFailures++;
-    
-    warn(`[VLLM Cache] Failed to save cache: ${error.message}`);
+
+    warn(`[VLLM Cache] Failed to save cache: ${errorMessage(error)}`);
     // Clean up temp file if it exists
     try {
       const tempFile = CACHE_FILE + '.tmp';
@@ -416,7 +487,7 @@ async function saveCache(cache) {
 /**
  * Get cache instance (singleton)
  */
-function getCache() {
+function getCache(): CacheMap {
   if (!cacheInstance) {
     if (!CACHE_DIR) {
       initCache(); // Initialize with default directory
@@ -431,10 +502,14 @@ function getCache() {
  *
  * @param {string} imagePath - Path to image file
  * @param {string} prompt - Validation prompt
- * @param {import('#public-contract').ValidationContext} [context={}] - Validation context
- * @returns {import('#public-contract').ValidationResult | null} Cached result or null if not found
+ * @param {CacheContext} [context={}] - Validation context
+ * @returns {CachedResult | null} Cached result or null if not found
  */
-export function getCached(imagePath, prompt, context = {}) {
+export function getCached(
+  imagePath: string | null | undefined,
+  prompt: string | null | undefined,
+  context: CacheContext = {},
+): CachedResult | null {
   const cache = getCache();
   const key = generateCacheKey(imagePath, prompt, context);
   const cached = cache.get(key);
@@ -450,7 +525,7 @@ export function getCached(imagePath, prompt, context = {}) {
     const age = Date.now() - originalTimestamp;
     if (age > MAX_CACHE_AGE) {
       cache.delete(key); // Remove expired entry
-      
+
       // Log cache expiration (weighted: expirations are important for cache health)
       // Use dynamic import with proper error handling to prevent unhandled promise rejections
       import('./utils/performance-logger.mjs')
@@ -458,6 +533,7 @@ export function getCached(imagePath, prompt, context = {}) {
           const currentCache = getCache();
           logCacheOperation({
             operation: 'expire',
+            hit: false,
             cacheSize: currentCache.size,
             maxSize: MAX_CACHE_SIZE,
             reason: `Entry expired (age: ${Math.floor(age / (1000 * 60 * 60 * 24))} days)`
@@ -467,7 +543,7 @@ export function getCached(imagePath, prompt, context = {}) {
           // Log to logger if performance logger unavailable (better than silent failure)
           if (process.env.DEBUG_CACHE) {
             try {
-              const { warn } = await import('./logger.mjs');
+              const { warn } = await import('./logger.js');
               warn(`[Cache] Performance logger unavailable: ${importError.message}`);
             } catch {
               // Fallback to console if logger also unavailable
@@ -475,7 +551,7 @@ export function getCached(imagePath, prompt, context = {}) {
             }
           }
         });
-      
+
       return null;
     }
   }
@@ -488,11 +564,16 @@ export function getCached(imagePath, prompt, context = {}) {
  *
  * @param {string} imagePath - Path to image file
  * @param {string} prompt - Validation prompt
- * @param {import('#public-contract').ValidationContext} context - Validation context
- * @param {import('#public-contract').ValidationResult} result - Validation result to cache
+ * @param {CacheContext} context - Validation context
+ * @param {Record<string, unknown>} result - Serializable result to cache
  * @returns {void}
  */
-export function setCached(imagePath, prompt, context, result) {
+export function setCached(
+  imagePath: string | null | undefined,
+  prompt: string | null | undefined,
+  context: CacheContext,
+  result: Record<string, unknown>,
+): void {
   const cache = getCache();
   const key = generateCacheKey(imagePath, prompt, context);
   const now = Date.now();
@@ -516,7 +597,7 @@ export function setCached(imagePath, prompt, context, result) {
   // The if/else was redundant - both branches did the same thing
   // Save is async and fire-and-forget - errors are logged but don't affect in-memory cache
   saveCache(cache).catch(error => {
-    warn(`[VLLM Cache] Failed to save cache (non-blocking): ${error.message}`);
+    warn(`[VLLM Cache] Failed to save cache (non-blocking): ${errorMessage(error)}`);
   });
 }
 
@@ -525,12 +606,12 @@ export function setCached(imagePath, prompt, context, result) {
  *
  * @returns {void}
  */
-export function clearCache() {
+export function clearCache(): void {
   const cache = getCache();
   cache.clear();
   // Save cache to disk (async, fire-and-forget)
   saveCache(cache).catch(error => {
-    warn(`[VLLM Cache] Failed to save cache after clear (non-blocking): ${error.message}`);
+    warn(`[VLLM Cache] Failed to save cache after clear (non-blocking): ${errorMessage(error)}`);
   });
 }
 
@@ -547,7 +628,11 @@ export function clearCache() {
  * } | undefined} options - LLM call options; pass undefined to use defaults
  * @returns {string | null} Cached response or null if not found
  */
-export function getCachedTextLLM(prompt, provider, options = {}) {
+export function getCachedTextLLM(
+  prompt: string,
+  provider: string,
+  options: TextLLMCacheOptions = {},
+): string | null {
   const cache = getCache();
   const key = generateTextLLMCacheKey(prompt, provider, options);
   const cached = cache.get(key);
@@ -561,7 +646,7 @@ export function getCachedTextLLM(prompt, provider, options = {}) {
     const age = Date.now() - originalTimestamp;
     if (age > MAX_CACHE_AGE) {
       cache.delete(key); // Remove expired entry
-      
+
       // Log cache expiration
       // Use dynamic import with proper error handling to prevent unhandled promise rejections
       import('./utils/performance-logger.mjs')
@@ -569,6 +654,7 @@ export function getCachedTextLLM(prompt, provider, options = {}) {
           const currentCache = getCache();
           logCacheOperation({
             operation: 'expire',
+            hit: false,
             cacheSize: currentCache.size,
             maxSize: MAX_CACHE_SIZE,
             reason: `Text LLM entry expired (age: ${Math.floor(age / (1000 * 60 * 60 * 24))} days)`
@@ -578,7 +664,7 @@ export function getCachedTextLLM(prompt, provider, options = {}) {
           // Log to logger if performance logger unavailable (better than silent failure)
           if (process.env.DEBUG_CACHE) {
             try {
-              const { warn } = await import('./logger.mjs');
+              const { warn } = await import('./logger.js');
               warn(`[Cache] Performance logger unavailable: ${importError.message}`);
             } catch {
               // Fallback to console if logger also unavailable
@@ -586,7 +672,7 @@ export function getCachedTextLLM(prompt, provider, options = {}) {
             }
           }
         });
-      
+
       return null;
     }
 
@@ -611,7 +697,12 @@ export function getCachedTextLLM(prompt, provider, options = {}) {
  * @param {string} response - LLM response to cache
  * @returns {void}
  */
-export function setCachedTextLLM(prompt, provider, options, response) {
+export function setCachedTextLLM(
+  prompt: string,
+  provider: string,
+  options: TextLLMCacheOptions,
+  response: string,
+): void {
   const cache = getCache();
   const key = generateTextLLMCacheKey(prompt, provider, options);
   const now = Date.now();
@@ -631,7 +722,7 @@ export function setCachedTextLLM(prompt, provider, options, response) {
 
   // Save cache (async, fire-and-forget)
   saveCache(cache).catch(error => {
-    warn(`[VLLM Cache] Failed to save text LLM cache (non-blocking): ${error.message}`);
+    warn(`[VLLM Cache] Failed to save text LLM cache (non-blocking): ${errorMessage(error)}`);
   });
 }
 
@@ -640,16 +731,20 @@ export function setCachedTextLLM(prompt, provider, options, response) {
  *
  * VERIFIABLE: Includes atomic write metrics to verify "prevents corruption" claim
  *
- * @returns {import('#public-contract').CacheStats} Cache statistics
+ * @returns {CacheStatistics} Cache statistics
  */
-export function getCacheStats() {
+export function getCacheStats(): CacheStatistics {
   const cache = getCache();
-  const stats = {
+  const stats: CacheStatistics = {
     size: cache.size,
     maxAge: MAX_CACHE_AGE,
-    cacheFile: CACHE_FILE
+    cacheFile: CACHE_FILE ?? '',
+    atomicWrites: 0,
+    atomicWriteFailures: 0,
+    tempFileCleanups: 0,
+    atomicWriteSuccessRate: 100,
   };
-  
+
   // VERIFIABLE: Include atomic write metrics to verify "prevents corruption" claim
   // NOTE: cacheMetrics is always initialized at module level
   stats.atomicWrites = cacheMetrics.atomicWrites;
@@ -658,6 +753,6 @@ export function getCacheStats() {
   stats.atomicWriteSuccessRate = cacheMetrics.atomicWrites + cacheMetrics.atomicWriteFailures > 0
     ? (cacheMetrics.atomicWrites / (cacheMetrics.atomicWrites + cacheMetrics.atomicWriteFailures)) * 100
     : 100;
-  
+
   return stats;
 }

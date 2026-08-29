@@ -5,7 +5,7 @@
  * Tests should skip gracefully when API keys are missing.
  */
 
-import { createConfig } from '../../src/config.mjs';
+import { createConfig } from '../../src/config.js';
 
 /**
  * Check if any API provider is enabled (has valid API key)
@@ -69,4 +69,3 @@ export function skipIfNoProviderKey(testContext, provider, message = null) {
   }
   return false;
 }
-

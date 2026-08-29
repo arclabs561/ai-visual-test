@@ -5,7 +5,7 @@
 import '../test-setup.mjs'; // Auto-load .env (must be first)
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { createConfig, getProvider, getConfig } from '../../src/config.mjs';
+import { createConfig, getProvider, getConfig } from '../../src/config.js';
 
 test('createConfig - default configuration', () => {
   const config = createConfig();

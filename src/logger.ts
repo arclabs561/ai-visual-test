@@ -14,21 +14,21 @@ let DEBUG_ENABLED = false;
 /**
  * Enable debug logging
  */
-export function enableDebug() {
+export function enableDebug(): void {
   DEBUG_ENABLED = true;
 }
 
 /**
  * Disable debug logging
  */
-export function disableDebug() {
+export function disableDebug(): void {
   DEBUG_ENABLED = false;
 }
 
 /**
  * Check if debug is enabled
  */
-export function isDebugEnabled() {
+export function isDebugEnabled(): boolean {
   return DEBUG_ENABLED;
 }
 
@@ -37,14 +37,18 @@ export function isDebugEnabled() {
  * 
  * SECURITY: Logs are sanitized to prevent information disclosure.
  */
-export function warn(...args) {
+function sanitizeArguments(args: readonly unknown[]): unknown[] {
+  return args.map((arg) => {
+    if (arg instanceof Error) {
+      return sanitizeErrorForLogging(arg, { includeStack: true });
+    }
+    return sanitizeForLogging(arg);
+  });
+}
+
+export function warn(...args: unknown[]): void {
   if (DEBUG_ENABLED) {
-    const sanitized = args.map(arg => {
-      if (arg instanceof Error) {
-        return sanitizeErrorForLogging(arg, { includeStack: true });
-      }
-      return sanitizeForLogging(arg);
-    });
+    const sanitized = sanitizeArguments(args);
     console.warn(...sanitized);
   }
 }
@@ -54,14 +58,9 @@ export function warn(...args) {
  * 
  * SECURITY: Logs are sanitized to prevent information disclosure.
  */
-export function log(...args) {
+export function log(...args: unknown[]): void {
   if (DEBUG_ENABLED) {
-    const sanitized = args.map(arg => {
-      if (arg instanceof Error) {
-        return sanitizeErrorForLogging(arg, { includeStack: true });
-      }
-      return sanitizeForLogging(arg);
-    });
+    const sanitized = sanitizeArguments(args);
     console.log(...sanitized);
   }
 }
@@ -71,13 +70,7 @@ export function log(...args) {
  * 
  * SECURITY: Logs are sanitized to prevent information disclosure.
  */
-export function error(...args) {
-  const sanitized = args.map(arg => {
-    if (arg instanceof Error) {
-      return sanitizeErrorForLogging(arg, { includeStack: true });
-    }
-    return sanitizeForLogging(arg);
-  });
+export function error(...args: unknown[]): void {
+  const sanitized = sanitizeArguments(args);
   console.error(...sanitized);
 }
-

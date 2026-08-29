@@ -18,6 +18,6 @@ export {
   isRetryableError,
   calculateBackoff,
   enhanceErrorMessage,
-} from '../retry.mjs';
+} from '../retry.js';
 
 export { initErrorHandlers } from '../error-handler.mjs';

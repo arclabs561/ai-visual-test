@@ -8,7 +8,7 @@
 import { ValidationError } from '#errors';
 import { existsSync } from 'fs';
 import { normalize, resolve } from 'path';
-import { VALIDATION_CONSTANTS } from './constants.mjs';
+import { VALIDATION_CONSTANTS } from './constants.js';
 
 /**
  * Validate image file path

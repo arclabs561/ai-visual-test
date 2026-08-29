@@ -8,8 +8,8 @@
 import { readFileSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { warn } from './logger.mjs';
-import { RATE_LIMIT_BOUNDS } from './constants.mjs';
+import { warn } from './logger.js';
+import { RATE_LIMIT_BOUNDS } from './constants.js';
 import { PROVIDER_NAMES, canonicalizeProviderName } from './provider-data.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -31,14 +31,16 @@ const ALLOWED_ENV_KEYS = [
   'RATE_LIMIT_MAX_REQUESTS',
   'REQUIRE_AUTH',
   'DISABLE_LLM_CACHE' // Disable LLM caching globally (set to 'true' to disable)
-];
+] as const;
+
+type AllowedEnvKey = typeof ALLOWED_ENV_KEYS[number];
 
 // Valid values for VLM_PROVIDER
 // Groq added for high-frequency decisions (10-60Hz temporal decisions)
 const VALID_PROVIDERS = [...PROVIDER_NAMES, 'anthropic'];
 
 // Validation functions for environment variables
-function validateRateLimitMaxRequests(value) {
+function validateRateLimitMaxRequests(value: string): number | null {
   const num = parseInt(value, 10);
   if (isNaN(num) || num < RATE_LIMIT_BOUNDS.MIN || num > RATE_LIMIT_BOUNDS.MAX) {
     warn(`[LoadEnv] Invalid RATE_LIMIT_MAX_REQUESTS: ${value}. Must be between ${RATE_LIMIT_BOUNDS.MIN} and ${RATE_LIMIT_BOUNDS.MAX}. Using default.`);
@@ -47,16 +49,17 @@ function validateRateLimitMaxRequests(value) {
   return num;
 }
 
-function validateVLMProvider(value) {
+function validateVLMProvider(value: string): string | null {
   const normalized = value?.toLowerCase().trim();
   if (normalized && !VALID_PROVIDERS.includes(normalized)) {
     warn(`[LoadEnv] Invalid VLM_PROVIDER: ${value}. Must be one of: ${VALID_PROVIDERS.join(', ')}. Ignoring.`);
     return null; // Ignore invalid provider
   }
-  return canonicalizeProviderName(normalized);
+  const canonical = canonicalizeProviderName(normalized);
+  return typeof canonical === 'string' ? canonical : null;
 }
 
-function validateRequireAuth(value) {
+function validateRequireAuth(value: string): boolean | null {
   if (value === 'true' || value === '1' || value === 'yes') {
     return true;
   }
@@ -73,7 +76,11 @@ function validateRequireAuth(value) {
  * @param {string | null} [basePath=null] - Base path to search for .env file (optional)
  * @returns {boolean} True if .env file was found and loaded
  */
-export function loadEnv(basePath = null) {
+function isAllowedEnvKey(key: string): key is AllowedEnvKey {
+  return (ALLOWED_ENV_KEYS as readonly string[]).includes(key);
+}
+
+export function loadEnv(basePath: string | null = null): boolean {
   if (process.env.AI_VISUAL_TEST_DISABLE_ENV_FILE === '1') {
     return false;
   }
@@ -109,12 +116,17 @@ export function loadEnv(basePath = null) {
           // Parse KEY=VALUE format
           const match = trimmed.match(/^([^=]+)=(.*)$/);
           if (match) {
-            const key = match[1].trim();
-            let value = match[2].trim();
+            const rawKey = match[1];
+            const rawValue = match[2];
+            if (rawKey === undefined || rawValue === undefined) {
+              continue;
+            }
+            const key = rawKey.trim();
+            let value = rawValue.trim();
             
             // SECURITY: Only allow whitelisted environment variable keys
             // Prevents malicious .env files from setting arbitrary variables
-            if (!ALLOWED_ENV_KEYS.includes(key)) {
+            if (!isAllowedEnvKey(key)) {
               warn(`[LoadEnv] Ignoring unknown environment variable key: ${key}`);
               continue;
             }

@@ -17,7 +17,7 @@ import {
   getCachedTextLLM,
   setCachedTextLLM,
   generateTextLLMCacheKey
-} from '../../src/cache.mjs';
+} from '../../src/cache.js';
 
 const TEST_CACHE_DIR = join(tmpdir(), 'ai-visual-test-cache-test');
 

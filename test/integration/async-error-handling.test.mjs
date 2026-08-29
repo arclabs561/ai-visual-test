@@ -8,7 +8,7 @@ import '../test-setup.mjs'; // Auto-load .env (must be first)
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import { validateScreenshot } from '#judge';
-import { getCached, setCached } from '../../src/cache.mjs';
+import { getCached, setCached } from '../../src/cache.js';
 import { BatchOptimizer } from '../../src/batch-optimizer.mjs';
 import { ValidationError } from '../../src/errors.js';
 

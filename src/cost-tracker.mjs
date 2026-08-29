@@ -5,8 +5,8 @@
  * Includes budget limits and alerting.
  */
 
-import { getCached, setCached } from './cache.mjs';
-import { warn, log } from './logger.mjs';
+import { getCached, setCached } from './cache.js';
+import { warn, log } from './logger.js';
 import { PROVIDER_CONFIGS, MODEL_TIERS } from './provider-data.mjs';
 import { ConfigError } from '#errors';
 

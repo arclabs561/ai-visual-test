@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { VLLMJudge } from '#judge';
-import { generateCacheKey } from '../../src/cache.mjs';
+import { generateCacheKey } from '../../src/cache.js';
 import { ProviderError } from '../../src/errors.js';
 
 const PNG_1X1 = Buffer.from(

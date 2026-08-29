@@ -1,6 +1,6 @@
 /** Adjust raw VLM scores to reduce provider-specific bias. */
 
-import { warn } from './logger.mjs';
+import { warn } from './logger.js';
 import { ValidationError } from '#errors';
 
 export interface CalibrationProfile {

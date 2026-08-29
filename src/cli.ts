@@ -216,7 +216,7 @@ EXIT CODES
 }
 
 async function defaultResolveConfig(input: { provider: string | null; model: string | null; verbose: boolean; env: NodeJS.ProcessEnv }): Promise<ResolvedConfig> {
-  const { createConfig } = await import('./config.mjs');
+  const { createConfig } = await import('./config.js');
   const selected = input.provider ?? (input.env.VLM_PROVIDER ? normalizeProvider(input.env.VLM_PROVIDER) : null);
   const config = createConfig({
     ...(selected === null ? {} : { provider: selected }),
@@ -256,7 +256,7 @@ export async function runCli(args: readonly string[], dependencies: CliDependenc
 
   const cwd = dependencies.cwd?.() ?? process.cwd();
   if (dependencies.loadEnv) await dependencies.loadEnv(cwd);
-  else (await import('./load-env.mjs')).loadEnv(cwd);
+  else (await import('./load-env.js')).loadEnv(cwd);
   const explicitProvider = options.provider === null ? null : normalizeProvider(options.provider);
   if (options.provider !== null && explicitProvider === null) {
     return outputError('unknown_provider', `Unknown provider: "${options.provider}". Must be one of: ${[...PROVIDERS, 'anthropic'].join(', ')}`, options.json);

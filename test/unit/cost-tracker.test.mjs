@@ -13,7 +13,7 @@ import {
   setBudgetLimit,
   getBudgetStatus
 } from '../../src/cost-tracker.mjs';
-import { initCache, clearCache } from '../../src/cache.mjs';
+import { initCache, clearCache } from '../../src/cache.js';
 import { tmpdir } from 'os';
 import { join } from 'path';
 import { mkdirSync, existsSync, rmdirSync, unlinkSync } from 'fs';
@@ -261,4 +261,3 @@ describe('Cost Tracker', () => {
     });
   });
 });
-

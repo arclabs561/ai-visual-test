@@ -8,7 +8,7 @@
  */
 
 import { ValidationError } from '#errors';
-import { assertString, assertObject, assertNumber } from '../type-guards.mjs';
+import { assertString, assertObject, assertNumber } from '../type-guards.js';
 
 type StateRecord = Record<string, unknown>;
 

@@ -163,9 +163,27 @@ boundary consumed by core judging, counterbalancing, convenience, research,
 and the utilities subpath. Scalar/pairwise orchestration and framework adapters
 remain `.mjs` and should migrate as separate compatibility-preserving slices.
 
+**Execution order:** migrate the private `position-counterbalance` policy first,
+then the isolated Vitest/Jest adapter, then `page-validation` with Playwright.
+After those gates pass, introduce a narrow typed ensemble contract before
+moving into temporal core, temporal orchestration, game, and perception. Keep
+video and the CLI as later integration slices because they couple provider,
+process, filesystem, and packaging behavior. Each slice keeps existing package
+subpath names and replaces its handwritten declaration overlay only after the
+generated declaration and clean packed install agree.
+
+Human labels do not block these mechanical conversions. They continue to block
+changes that claim calibrated ensemble weights, confidence, or learned
+perception quality. A consumer survey is required before moving, narrowing, or
+removing a public subpath, but not for a behavior-preserving source conversion.
+
 **Reversibility:** partially reversible across published subpaths.
 
-**Gate:** compiled public-route tests, fixture-backed policy tests, and consumer examples pass without handwritten declaration overlays.
+**Gate:** each slice passes strict compilation, fixture-backed behavior tests,
+generated declaration checks, and a clean packed runtime/type import for every
+affected public route. The first slice must preserve root `validateComparison`
+counterbalancing and the `./ensemble` scalar helper exports before any framework
+adapter is converted.
 
 ## Phase 5: Deliberately narrow the product surface
 

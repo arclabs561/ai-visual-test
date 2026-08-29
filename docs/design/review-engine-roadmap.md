@@ -161,12 +161,20 @@ release after the deprecation window.
 **Status:** the shared public-result normalizer, private
 `position-counterbalance` policy, Vitest/Jest adapter, page-validation adapter,
 Playwright adapter, ensemble judge boundary, temporal core, capture,
-orchestration, multi-scale, formatting, public barrel, and the complete game
-surface are now typed compiled slices. The game migration preserves its ten
+orchestration, multi-scale, formatting, public barrel, the complete game
+surface, and the complete perception surface are now typed compiled slices. The game migration preserves its ten
 runtime exports while replacing the opaque handwritten declaration with
 generated contracts for pages, actions, services, loops, Gym state, goals, and
 convenience workflows. The source, staged, and packed `/game` routes are all
-exercised by runtime/type consumers. The ensemble correctness repair landed
+exercised by runtime/type consumers. Perception preserves its 17 runtime
+exports and injected `vision`/`complete` capabilities while replacing its
+opaque handwritten declaration with generated contracts. Provider findings,
+merge plans, and verifier verdicts now cross explicit runtime schemas;
+schema-capable OpenRouter requests use native JSON Schema, malformed output
+receives one bounded diagnostic-only repair attempt, and partial provider or
+ledger failures remain observable without turning malformed data into success.
+The source, staged, and packed `/perception` routes are exercised by runtime
+and strict external type consumers. The ensemble correctness repair landed
 before its source conversion:
 voting ignores failed or invalid scores, reports availability explicitly, and
 makes ties and zero-effective-weight outcomes deterministic. Temporal graph
@@ -185,12 +193,9 @@ bias mitigation, and research-validation helpers. The route does not count as
 fully generated until those helpers migrate and the overlay is deleted. Strict
 packed consumer compilation and runtime/type export parity remain mandatory.
 
-**Execution order:** the complete temporal and game public boundaries have no
-declaration overlays. The next mechanical area is perception, followed by
-video and CLI integrations. Perception keeps its injected `vision`/`complete`
-capability boundary and ranked-section semantics; OpenRouter transport and
-filesystem critique persistence remain separate final slices. Video and CLI
-remain last because they couple provider,
+**Execution order:** the complete temporal, game, and perception public
+boundaries have no declaration overlays. Video and CLI integrations are next
+and remain last because they couple provider,
 process, filesystem, and packaging behavior. Each slice keeps existing package
 subpath names and replaces its handwritten declaration overlay only after the
 generated declaration and clean packed install agree.
@@ -245,6 +250,6 @@ made until real independently reviewed labels exist.
 
 ## Review trigger
 
-Re-run this roadmap after the perception boundary lands, when the ensemble
+Re-run this roadmap after the video and CLI boundaries land, when the ensemble
 overlay is retired or a second overlay is proposed, or when a consumer survey
 changes the supported-surface assumptions.

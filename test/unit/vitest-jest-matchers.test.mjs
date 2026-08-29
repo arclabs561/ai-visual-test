@@ -18,7 +18,7 @@ describe('Vitest/Jest Matchers', () => {
   let createMatchers;
 
   it('should load the integration module', async () => {
-    const mod = await import('../../src/integrations/vitest-jest.mjs');
+    const mod = await import('../../src/integrations/vitest-jest.js');
     createMatchers = mod.createMatchers;
     assert.strictEqual(typeof createMatchers, 'function');
   });

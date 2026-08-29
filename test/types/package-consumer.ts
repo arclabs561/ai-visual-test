@@ -25,6 +25,20 @@ export const ensembleScalarHelpers = [
   ensemble.shouldUseCounterBalance,
 ];
 
+const extendableExpect = {
+  extend(matchers: Record<string, unknown>) {
+    void matchers;
+  },
+};
+
+// Both public aliases expose the same generated, framework-neutral contract.
+vitest.createMatchers(extendableExpect);
+jest.createMatchers(extendableExpect);
+export const matcherFactories: [typeof vitest.createMatchers, typeof jest.createMatchers] = [
+  vitest.createMatchers,
+  jest.createMatchers,
+];
+
 export async function consumeEnsembleCounterBalance(): Promise<void> {
   const result = await ensemble.evaluateWithCounterBalance(
     async () => ({

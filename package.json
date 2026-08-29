@@ -58,12 +58,12 @@
       "import": "./src/integrations/playwright.mjs"
     },
     "./vitest": {
-      "types": "./types/vitest-jest.d.ts",
-      "import": "./src/integrations/vitest-jest.mjs"
+      "types": "./build/src/integrations/vitest-jest.d.ts",
+      "import": "./build/src/integrations/vitest-jest.js"
     },
     "./jest": {
-      "types": "./types/vitest-jest.d.ts",
-      "import": "./src/integrations/vitest-jest.mjs"
+      "types": "./build/src/integrations/vitest-jest.d.ts",
+      "import": "./build/src/integrations/vitest-jest.js"
     },
     "./perception": {
       "types": "./types/perception.d.ts",
@@ -102,7 +102,7 @@
     "test:validation": "npm run build:stage && node scripts/run-staged-tests.mjs validation",
     "test:playwright": "playwright test test/**/playwright-*.test.mjs",
     "test:playwright-integration": "playwright test test/integration/playwright-integration.pwtest.mjs",
-    "test:types": "tsc -p tsconfig.declarations.json",
+    "test:types": "npm run build:stage && tsc -p tsconfig.declarations.json",
     "test:package": "npm run build:skip-obfuscation && node scripts/verify-packed-package.mjs",
     "test:intelligence": "node scripts/verify-intelligence.mjs",
     "evaluate:pairwise-fixtures": "npm run build:stage && node scripts/evaluate-pairwise-fixtures.mjs",

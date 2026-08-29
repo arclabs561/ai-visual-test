@@ -50,6 +50,14 @@ copyTestAssets(join(ROOT, 'test'), join(STAGE, 'test'));
 
 const packageJson = JSON.parse(readFileSync(join(STAGE, 'package.json'), 'utf8'));
 packageJson.private = true;
+for (const subpath of ['./vitest', './jest']) {
+  const route = packageJson.exports?.[subpath];
+  if (!route || typeof route !== 'object') {
+    throw new Error(`Missing staged package route: ${subpath}`);
+  }
+  route.import = './src/integrations/vitest-jest.js';
+  route.types = './src/integrations/vitest-jest.d.ts';
+}
 packageJson.imports = {
   ...(packageJson.imports || {}),
   '#provider-adapters': './src/provider-adapters.js',
@@ -63,9 +71,10 @@ packageJson.imports = {
 };
 writeFileSync(join(STAGE, 'package.json'), `${JSON.stringify(packageJson, null, 2)}\n`);
 
-// The checkout still exposes source entry points. Verify their private import
-// aliases resolve through the freshly compiled staging tree.
-execFileSync(process.execPath, ['--input-type=module', '--eval', "await import('./src/judge.mjs')"], {
+// The source manifest intentionally references build/ for migrated modules.
+// Prove Node can self-import each public alias after this mandatory stage.
+const sourceMatcherProgram = `const packageName = ${JSON.stringify(packageJson.name)}; for (const route of ['vitest', 'jest']) { const integration = await import(packageName + '/' + route); const registered = {}; integration.createMatchers({ extend(matchers) { Object.assign(registered, matchers); } }); for (const name of ['toPassVisualCheck', 'toHaveVisualScore', 'toMatchVisually']) { if (typeof registered[name] !== 'function') throw new Error('Missing source ' + route + ' matcher: ' + name); } const outcome = await registered.toPassVisualCheck(123, 'source package check'); if (outcome.pass !== false || !outcome.message().includes('string')) throw new Error('Unexpected source ' + route + ' matcher outcome'); }`;
+execFileSync(process.execPath, ['--input-type=module', '--eval', sourceMatcherProgram], {
   cwd: ROOT,
   stdio: 'inherit',
 });

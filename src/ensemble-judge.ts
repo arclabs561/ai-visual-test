@@ -12,7 +12,7 @@
  */
 
 import { VLLMJudge } from './judge.mjs';
-import { detectBias, detectPositionBias } from './bias-detector.mjs';
+import { detectBias, detectPositionBias } from './bias-detector.js';
 
 export type VotingMethod = 'weighted_average' | 'majority' | 'consensus' | 'optimal';
 

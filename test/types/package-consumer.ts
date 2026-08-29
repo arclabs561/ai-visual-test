@@ -235,11 +235,18 @@ export function consumeEnsembleHelperContracts(): void {
     reasoning: 'stable layout',
   };
   const bias = ensemble.detectBias('The response is very very very verbose.', { checkVerbosity: true });
+  const compatibleBias: ensemble.BiasDetection = {
+    hasBias: true,
+    biases: [{ type: 'verbosity', score: 0.5 }],
+    severity: 'medium',
+    recommendations: [],
+  };
   const positionBias: ensemble.PositionBiasResult = ensemble.detectPositionBias([
     { score: 8 },
     { score: 6 },
   ], { calculateMetrics: true });
   const mitigated: root.ValidationResult = ensemble.mitigateBias(result, bias, { minAdjustment: -1 });
+  const compatibleMitigated: root.ValidationResult = ensemble.mitigateBias(result, compatibleBias);
   const applied: root.ValidationResult = ensemble.applyBiasMitigation(result, 'stable layout', { adjustScores: false });
   const positioned: root.ValidationResult[] = ensemble.mitigatePositionBias([result], { adjustScores: true });
   const enhanced: Promise<root.ValidationResult> = ensemble.validateWithResearchEnhancements(
@@ -271,6 +278,7 @@ export function consumeEnsembleHelperContracts(): void {
   void mitigated;
   void applied;
   void positioned;
+  void compatibleMitigated;
   void enhanced;
   void analysis;
   void lengthAligned;

@@ -9,7 +9,7 @@
  * - Research-enhanced validation integration
  */
 
-import { validateWithResearchEnhancements } from '../research-enhanced-validation.mjs';
+import { validateWithResearchEnhancements } from '#research-enhanced-validation';
 import { PromptBuilder } from './prompt-builder.mjs';
 import { ValidationError } from '../errors.mjs';
 import { assertString, assertObject } from '../type-guards.mjs';
@@ -82,4 +82,3 @@ export async function validateWithRubric(screenshotPath, prompt, rubric, context
     );
   }
 }
-

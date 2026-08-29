@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { detectBias, detectPositionBias } from '../../src/bias-detector.mjs';
+import { detectBias, detectPositionBias } from '../../src/bias-detector.js';
 
 test('detectBias detects verbosity bias', () => {
   const longText = 'very '.repeat(100) + 'really '.repeat(50) + 'quite '.repeat(30);
@@ -76,6 +76,17 @@ test('detectPositionBias handles single judgment', () => {
   assert.ok(result.reason);
 });
 
+test('detectPositionBias diagnoses non-finite scores rather than computing NaN metrics', () => {
+  const result = detectPositionBias([{ score: 7 }, { score: Number.NaN }]);
+  assert.strictEqual(result.detected, false);
+  assert.strictEqual(result.reason, 'Judgments include non-finite scores');
+  assert.strictEqual(result.invalidScoreCount, 1);
+});
+
+test('detectPositionBias rejects out-of-contract quality gaps', () => {
+  assert.throws(() => detectPositionBias([{ score: 7 }, { score: 6 }], { qualityGap: Infinity }), /qualityGap/);
+  assert.throws(() => detectPositionBias([{ score: 7 }, { score: 6 }], { qualityGap: 1.1 }), /qualityGap/);
+});
 
 
 

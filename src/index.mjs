@@ -77,7 +77,7 @@ export { estimateCost } from './cost-tracker.mjs';
 export { ValidationError, ConfigError, ProviderError, FileError } from './errors.mjs';
 
 // --- Playwright integration (re-export for convenience) ---
-export { createMatchers } from './integrations/playwright.mjs';
+export { createMatchers } from '#playwright-integration';
 
 // --- Video input (re-export for convenience) ---
 export { VideoJudge, judgeVideo } from './video.mjs';

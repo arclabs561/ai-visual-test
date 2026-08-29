@@ -12,7 +12,7 @@
 import { validateScreenshot } from './judge.mjs';
 import { detectBias, detectPositionBias } from './bias-detector.mjs';
 import { mitigateBias, mitigatePositionBias, applyBiasMitigation } from './bias-mitigation.mjs';
-import { evaluateWithCounterBalance } from './position-counterbalance.mjs';
+import { evaluateWithCounterBalance } from '#position-counterbalance';
 import { normalizeValidationResult } from '#validation-result-normalizer';
 import { log, warn } from './logger.mjs';
 

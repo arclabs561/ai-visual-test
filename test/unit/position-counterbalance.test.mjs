@@ -4,7 +4,7 @@ import {
   evaluatePairwiseCounterBalance,
   evaluateWithCounterBalance,
   shouldUseCounterBalance,
-} from '../../src/position-counterbalance.mjs';
+} from '../../src/position-counterbalance.js';
 
 describe('Position Counter-Balance', () => {
   it('should return single result when disabled', async () => {
@@ -164,5 +164,13 @@ describe('Pairwise Counter-Balance', () => {
     );
     assert.strictEqual(unavailableCalls, 1);
     assert.strictEqual(unavailable.enabled, false);
+
+    let nullCalls = 0;
+    const nullResult = await evaluatePairwiseCounterBalance(
+      async () => { nullCalls++; return null; },
+      'before.png', 'after.png', 'Compare', {},
+    );
+    assert.strictEqual(nullCalls, 1);
+    assert.strictEqual(nullResult, null);
   });
 });

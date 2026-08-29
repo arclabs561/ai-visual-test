@@ -18,3 +18,34 @@ export const publicModules = {
   root, validators, temporal, multiModal, ensemble, video, extractors,
   persona, utils, game, errors, playwright, vitest, jest, perception,
 };
+
+// Scalar counter-balance helpers remain part of the supported ensemble route.
+export const ensembleScalarHelpers = [
+  ensemble.evaluateWithCounterBalance,
+  ensemble.shouldUseCounterBalance,
+];
+
+export async function consumeEnsembleCounterBalance(): Promise<void> {
+  const result = await ensemble.evaluateWithCounterBalance(
+    async () => ({
+      enabled: true,
+      score: 8,
+      issues: [],
+      recommendations: [],
+      reasoning: 'stable layout',
+    }),
+    'candidate.png',
+    'Check the layout',
+    { baseline: 'baseline.png' },
+    { baselinePath: 'baseline.png' },
+  );
+
+  const score: number | null = result.score;
+  const status = result.counterBalance?.status;
+  const counterBalanced: unknown = result.counterBalanced;
+  const shouldCounterBalance: boolean = ensemble.shouldUseCounterBalance({ baseline: 'baseline.png' });
+  void score;
+  void status;
+  void counterBalanced;
+  void shouldCounterBalance;
+}

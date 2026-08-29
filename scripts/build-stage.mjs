@@ -55,6 +55,7 @@ packageJson.imports = {
   '#provider-adapters': './src/provider-adapters.js',
   '#dataset-evaluation-metrics': './src/dataset-evaluation-metrics.js',
   '#pairwise-fixture-metrics': './src/pairwise-fixture-metrics.js',
+  '#position-counterbalance': './src/position-counterbalance.js',
   '#public-contract': './src/public-contract.js',
   '#review-contract': './src/review-contract.js',
   '#structured-output': './src/structured-output.js',

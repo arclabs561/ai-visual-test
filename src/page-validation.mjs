@@ -11,7 +11,7 @@ import { ValidationError } from './errors.mjs';
 import { validatePrompt } from './validation.mjs';
 import { log } from './logger.mjs';
 import { captureStableScreenshot } from './stable-capture.mjs';
-import { evaluatePairwiseCounterBalance } from './position-counterbalance.mjs';
+import { evaluatePairwiseCounterBalance } from '#position-counterbalance';
 
 /**
  * Validate a Playwright page by taking a screenshot and sending it to the VLM.

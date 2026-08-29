@@ -11,7 +11,7 @@ import {
   validatePairwiseFixtureManifest,
   verifyPairwiseFixtureAssets,
 } from '#pairwise-fixture-metrics';
-import { evaluatePairwiseCounterBalance } from '../../src/position-counterbalance.mjs';
+import { evaluatePairwiseCounterBalance } from '../../src/position-counterbalance.js';
 
 const sha256 = value => createHash('sha256').update(value).digest('hex');
 const comparison = (winner, scores) => ({

@@ -93,7 +93,7 @@ test('validateComparison: throws on missing prompt (non-string)', async () => {
 // while verifying the full call chain.
 
 test('validateComparison: passes both images and wrapped prompt to judge', async () => {
-  const { validateComparison } = await import('../../src/page-validation.mjs');
+  const { validateComparison } = await import('../../src/index.mjs');
   const { VLLMJudge } = await import('../../src/judge.mjs');
 
   const originalJudge = VLLMJudge.prototype.judgeScreenshot;

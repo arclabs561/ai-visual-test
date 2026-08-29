@@ -60,6 +60,11 @@ try {
     cwd: consumer,
     stdio: 'inherit',
   });
+  const perceptionProgram = `const perception = await import(${JSON.stringify(`${installedManifest.name}/perception`)}); for (const name of ['samplePerceptions', 'aggregate', 'formatReport']) { if (typeof perception[name] !== 'function') throw new Error('Missing packed perception export: ' + name); } const result = await perception.samplePerceptions({ vision: async () => ({ headline: 'Checkout total lacks context', category: 'minor', target: 'order summary', why: 'The total has no explanatory label.', suggestion: 'Add a concise explanatory label.', confidence: 0.8 }), personas: [{ id: 'shopper', who: 'A shopper reviewing their order.' }], contexts: [{ id: 'checkout', ctx: 'The checkout review screen.' }], modes: ['problem'], n: 1, concurrency: 1, topK: 1, verify: false }); if (result.samples.length !== 1 || result.diagnostics.status !== 'ok' || result.diagnostics.sampling.accepted !== 1 || result.diagnostics.failures.length !== 0) throw new Error('Packed perception sampling route failed');`;
+  execFileSync(process.execPath, ['--input-type=module', '--eval', perceptionProgram], {
+    cwd: consumer,
+    stdio: 'inherit',
+  });
   const ensembleTypeConsumer = `import { EnsembleJudge, type Availability, type Disagreement, type EnsembleResult, type JudgeLike, evaluateWithCounterBalance } from ${JSON.stringify(`${installedManifest.name}/ensemble`)}; const judges: JudgeLike[] = [{ provider: 'packed-types', async judgeScreenshot() { return { score: 8, issues: [], reasoning: 'typed' }; } }]; const result: EnsembleResult = await new EnsembleJudge({ judges }).evaluate('packed.png', 'typed package route'); const availability: Availability = result.availability; const disagreement: Disagreement = result.disagreement; const counterBalanced = await evaluateWithCounterBalance(async () => ({ enabled: true, score: 8, issues: [], recommendations: [], reasoning: 'typed' }), 'packed.png', 'typed package route', { baseline: 'baseline.png' }, { baselinePath: 'baseline.png' }); const status = counterBalanced.counterBalance?.status; void availability; void disagreement; void status;`;
   const typeConsumerPath = join(consumer, 'ensemble-consumer.ts');
   writeFileSync(typeConsumerPath, ensembleTypeConsumer);
@@ -72,6 +77,14 @@ try {
   const gameConsumerPath = join(consumer, 'game-consumer.ts');
   writeFileSync(gameConsumerPath, gameTypeConsumer);
   execFileSync(process.execPath, [join(ROOT, 'node_modules', 'typescript', 'bin', 'tsc'), '--noEmit', '--strict', '--target', 'ES2022', '--module', 'NodeNext', '--moduleResolution', 'NodeNext', '--skipLibCheck', 'false', gameConsumerPath], {
+    cwd: consumer,
+    stdio: 'inherit',
+  });
+
+  const perceptionTypeConsumer = `import { samplePerceptions, type CritiqueDisposition, type PanelJudge, type PerceptionSection, type SamplePerceptionsOptions, type SamplePerceptionsResult } from ${JSON.stringify(`${installedManifest.name}/perception`)}; const judge: PanelJudge = { id: 'packed-types', async vision() { return { headline: 'Checkout total lacks context', category: 'minor', target: 'order summary', why: 'The total has no explanatory label.', suggestion: 'Add a concise explanatory label.', confidence: 0.8 }; } }; const options: SamplePerceptionsOptions = { panel: [judge], personas: [{ id: 'shopper', who: 'A shopper reviewing their order.' }], contexts: [{ id: 'checkout', ctx: 'The checkout review screen.' }], modes: ['problem'], n: 1, concurrency: 1, topK: 1, verify: false }; const result: Promise<SamplePerceptionsResult> = samplePerceptions(options); const section: PerceptionSection = { mode: 'problem', ranked: [], top: [], suppressed: [] }; const disposition: CritiqueDisposition = { target: 'order summary', disposition: 'operator-critique', reason: 'Needs review.' }; void result; void section; void disposition;`;
+  const perceptionConsumerPath = join(consumer, 'perception-consumer.ts');
+  writeFileSync(perceptionConsumerPath, perceptionTypeConsumer);
+  execFileSync(process.execPath, [join(ROOT, 'node_modules', 'typescript', 'bin', 'tsc'), '--noEmit', '--strict', '--target', 'ES2022', '--module', 'NodeNext', '--moduleResolution', 'NodeNext', '--skipLibCheck', 'false', perceptionConsumerPath], {
     cwd: consumer,
     stdio: 'inherit',
   });

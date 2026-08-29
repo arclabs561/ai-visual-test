@@ -43,6 +43,39 @@ export const gameExecution: Promise<game.GameActionExecutionResult> = game.execu
 );
 export const gameGym: game.GameGym = new game.GameGym(gamePage, gameOptions);
 
+const perceptionJudge: perception.PanelJudge = {
+  id: 'package-types',
+  async vision() {
+    return {
+      headline: 'Checkout summary lacks context',
+      category: 'minor',
+      target: 'order summary',
+      why: 'The total has no explanatory label.',
+      suggestion: 'Add a concise explanatory label.',
+      confidence: 0.8,
+    };
+  },
+};
+const perceptionOptions: perception.SamplePerceptionsOptions = {
+  panel: [perceptionJudge],
+  personas: [{ id: 'shopper', who: 'A shopper reviewing their order.' }],
+  contexts: [{ id: 'checkout', ctx: 'The checkout review screen.' }],
+  modes: ['problem'],
+  n: 1,
+  concurrency: 1,
+  topK: 1,
+  verify: false,
+};
+export const perceptionSample: Promise<perception.SamplePerceptionsResult> = perception.samplePerceptions(
+  perceptionOptions,
+);
+export const perceptionSection: perception.PerceptionSection = {
+  mode: 'problem', ranked: [], top: [], suppressed: [],
+};
+export const critiqueDisposition: perception.CritiqueDisposition = {
+  target: 'order summary', disposition: 'operator-critique', reason: 'Needs review.',
+};
+
 // Scalar counter-balance helpers remain part of the supported ensemble route.
 export const ensembleScalarHelpers = [
   ensemble.evaluateWithCounterBalance,

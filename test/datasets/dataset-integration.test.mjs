@@ -10,7 +10,8 @@ import assert from 'node:assert';
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { loadDataset } from '../../evaluation/utils/dataset-adapters.mjs';
-import { validateScreenshot, StateValidator, AccessibilityValidator } from '../../src/index.mjs';
+import { validateScreenshot } from '../../src/index.mjs';
+import { StateValidator, AccessibilityValidator } from '../../src/validators/index.mjs';
 
 // Note: We use adapters now, not converted JSON files
 
@@ -194,4 +195,3 @@ describe('Dataset Integration Tests', () => {
     });
   });
 });
-

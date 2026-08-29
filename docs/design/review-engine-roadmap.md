@@ -211,13 +211,13 @@ packed install, and the handwritten `index.d.ts` is retired.
 are complete and have no declaration overlays. The ensemble composition overlay
 is also retired. Root contracts, implementation, and public barrel are compiled
 with no root declaration overlay. Phase 5 has begun with the smallest legacy
-leaf declarations. The extractor, error, and validator hierarchies are now
-strict TypeScript with generated public declarations; their handwritten
+leaf declarations. Extractors, errors, validators, multi-modal, and persona are
+now strict TypeScript with generated public declarations; their handwritten
 overlays are retired and their root/subpath runtime identities are checked from
-the packed package. Multi-modal precedes persona because persona dynamically
-loads that emitted boundary; utilities remain last because its broad barrel
-still composes legacy leaves. These boundaries land before any semver-sensitive
-root alias removal.
+the packed package. Utilities remain last because its 89-value barrel still
+composes legacy leaves; those leaves must migrate before the public utility
+declaration can become generated. This boundary lands before any
+semver-sensitive root alias removal.
 
 Human labels do not block these mechanical conversions. They continue to block
 changes that claim calibrated ensemble weights, confidence, or learned

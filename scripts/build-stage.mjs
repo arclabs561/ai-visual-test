@@ -81,6 +81,7 @@ packageJson.imports = {
   '#structured-output': './src/structured-output.js',
   '#temporal-capture': './src/temporal-capture.js',
   '#temporal-core': './src/temporal-core.js',
+  '#temporal-orchestration': './src/temporal-orchestration.js',
   '#validation-result-normalizer': './src/validation-result-normalizer.js',
 };
 writeFileSync(join(STAGE, 'package.json'), `${JSON.stringify(packageJson, null, 2)}\n`);

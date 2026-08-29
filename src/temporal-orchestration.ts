@@ -12,11 +12,51 @@
  * so those must be defined without importing from temporal-multi-scale.mjs.
  */
 
-import { aggregateTemporalNotes } from '#temporal-core';
+import { aggregateTemporalNotes, type AggregatedTemporalNotes, type TemporalAggregationOptions, type TemporalNote } from '#temporal-core';
 import { log, warn } from './logger.mjs';
 import { BatchOptimizer } from './batch-optimizer.mjs';
 
-function serializeTemporalCacheValue(value, seen = new WeakSet()) {
+type TemporalRecord = TemporalNote & Record<string, unknown>;
+type TemporalOptions = TemporalAggregationOptions & {
+  minNotesForPrompt?: number; coherenceThreshold?: number; urgencyThreshold?: number;
+  maxWaitTime?: number; stateChangeThreshold?: number; warmStartSteps?: number;
+  adaptiveSampling?: boolean; preprocessInterval?: number; cacheMaxAge?: number;
+  maxNotes?: number; minWeight?: number; sequentialContext?: SequentialContext | null;
+  adaptiveBatching?: boolean; timestamp?: number; critical?: boolean; testType?: string;
+  maxConcurrency?: number; batchSize?: number; cacheEnabled?: boolean; maxQueueSize?: number; requestTimeout?: number;
+};
+type TemporalStateInput = Record<string, unknown> & { score?: number; issues?: unknown[]; gameState?: Record<string, unknown> };
+type TemporalDecision = { shouldPrompt: boolean; reason: string; urgency: 'low' | 'medium' | 'high' };
+type TemporalContextInput = Record<string, unknown> & { recentAction?: unknown; stage?: string; testType?: string; critical?: unknown; goal?: unknown; goalCompleted?: unknown; coherence?: number; timeSinceLastPrompt?: number };
+type Pattern = { type: string; metric?: string; magnitude?: number; count?: number };
+type PreprocessCache = { aggregated: AggregatedTemporalNotes | null; multiScale: unknown; coherence: number | null; prunedNotes: TemporalRecord[] | null; topWeighted?: TemporalRecord[]; patterns: { trends: Pattern[]; conflicts: Pattern[] } | null; lastPreprocessTime: number; noteCount: number; notesFingerprint: string | null; optionsFingerprint: string | null };
+type SequentialContext = { getContext(): unknown; addDecision(decision: { score: unknown; issues: unknown[]; assessment: unknown; reasoning: unknown }): void; history: unknown[]; identifyPatterns(): unknown };
+type ValidationResult = { score: unknown; issues?: unknown[]; assessment?: unknown; reasoning?: unknown; [key: string]: unknown };
+type ValidateFn = ((imagePath: string, prompt: string, context: Record<string, unknown>) => Promise<ValidationResult>) | null;
+type QueueRequest = { imagePath: string; prompt: string; context: Record<string, unknown>; validateFn: ValidateFn; resolve: (value: ValidationResult) => void; reject: (error: unknown) => void; temporalRequestId?: number };
+type Dependency = { dependencies: string[]; timestamp: number; priority: number; requestId: number };
+type BatchOptimizerRuntime = {
+  queue: QueueRequest[];
+  processing: boolean;
+  cache: Map<string, ValidationResult> | null;
+  batchSize: number;
+  maxConcurrency: number;
+  activeRequests: number;
+  _queueRequest(imagePath: string, prompt: string, context: Record<string, unknown>, validateFn: ValidateFn): Promise<ValidationResult>;
+  _processRequest(imagePath: string, prompt: string, context: Record<string, unknown>, validateFn: ValidateFn): Promise<ValidationResult>;
+  _getCacheKey(imagePath: string, prompt: string, context: Record<string, unknown>): string;
+  getCacheStats(): Record<string, unknown>;
+};
+type BatchOptimizerConstructor = new (options: TemporalOptions) => BatchOptimizerRuntime;
+// Keep the JS parent at runtime while emitting a narrow, self-contained
+// declaration contract for this typed module.
+const BatchOptimizerBase = BatchOptimizer as unknown as BatchOptimizerConstructor;
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+function serializeTemporalCacheValue(value: unknown, seen = new WeakSet<object>()): string {
   if (value === null || typeof value !== 'object') {
     if (typeof value === 'number' && !Number.isFinite(value)) return `number:${value}`;
     if (typeof value === 'undefined') return 'undefined';
@@ -35,8 +75,9 @@ function serializeTemporalCacheValue(value, seen = new WeakSet()) {
     return serialized;
   }
 
-  const serialized = `{${Object.keys(value).sort().map(key =>
-    `${JSON.stringify(key)}:${serializeTemporalCacheValue(value[key], seen)}`
+  const record = value as Record<string, unknown>;
+  const serialized = `{${Object.keys(record).sort().map(key =>
+    `${JSON.stringify(key)}:${serializeTemporalCacheValue(record[key], seen)}`
   ).join(',')}}`;
   seen.delete(value);
   return serialized;
@@ -50,7 +91,10 @@ function serializeTemporalCacheValue(value, seen = new WeakSet()) {
  * Base error class for temporal components
  */
 export class TemporalError extends Error {
-  constructor(message, code, context = {}) {
+  readonly code: string;
+  readonly context: Record<string, unknown>;
+
+  constructor(message: string, code: string, context: Record<string, unknown> = {}) {
     super(message);
     this.name = 'TemporalError';
     this.code = code;
@@ -63,7 +107,7 @@ export class TemporalError extends Error {
  * Error for human perception time calculations
  */
 export class PerceptionTimeError extends TemporalError {
-  constructor(message, context = {}) {
+  constructor(message: string, context: Record<string, unknown> = {}) {
     super(message, 'PERCEPTION_TIME_ERROR', context);
     this.name = 'PerceptionTimeError';
   }
@@ -73,7 +117,7 @@ export class PerceptionTimeError extends TemporalError {
  * Error for sequential decision context
  */
 export class SequentialContextError extends TemporalError {
-  constructor(message, context = {}) {
+  constructor(message: string, context: Record<string, unknown> = {}) {
     super(message, 'SEQUENTIAL_CONTEXT_ERROR', context);
     this.name = 'SequentialContextError';
   }
@@ -83,7 +127,7 @@ export class SequentialContextError extends TemporalError {
  * Error for multi-scale aggregation
  */
 export class MultiScaleError extends TemporalError {
-  constructor(message, context = {}) {
+  constructor(message: string, context: Record<string, unknown> = {}) {
     super(message, 'MULTI_SCALE_ERROR', context);
     this.name = 'MultiScaleError';
   }
@@ -93,7 +137,7 @@ export class MultiScaleError extends TemporalError {
  * Error for temporal batch optimization
  */
 export class TemporalBatchError extends TemporalError {
-  constructor(message, context = {}) {
+  constructor(message: string, context: Record<string, unknown> = {}) {
     super(message, 'TEMPORAL_BATCH_ERROR', context);
     this.name = 'TemporalBatchError';
   }
@@ -106,7 +150,7 @@ export class TemporalBatchError extends TemporalError {
 /**
  * Validate temporal notes
  */
-export function validateNotes(notes) {
+export function validateNotes(notes: unknown): TemporalRecord[] {
   if (!Array.isArray(notes)) {
     throw new MultiScaleError('Notes must be an array', { received: typeof notes });
   }
@@ -137,7 +181,7 @@ export function validateNotes(notes) {
       continue;
     }
 
-    validNotes.push(note);
+    validNotes.push(note as TemporalRecord);
   }
 
   if (invalidNotes.length > 0) {
@@ -150,7 +194,7 @@ export function validateNotes(notes) {
 /**
  * Validate and sort notes
  */
-export function validateAndSortNotes(notes) {
+export function validateAndSortNotes(notes: unknown): TemporalRecord[] {
   const validNotes = validateNotes(notes);
   return validNotes.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
 }
@@ -158,7 +202,7 @@ export function validateAndSortNotes(notes) {
 /**
  * Validate time scales
  */
-export function validateTimeScales(timeScales) {
+export function validateTimeScales(timeScales: unknown): true {
   if (typeof timeScales !== 'object' || timeScales === null) {
     throw new MultiScaleError('Time scales must be an object', { received: typeof timeScales });
   }
@@ -179,7 +223,7 @@ export function validateTimeScales(timeScales) {
 /**
  * Validate action for human perception time
  */
-export function validateAction(action) {
+export function validateAction(action: unknown): true {
   const validActions = ['page-load', 'reading', 'interaction', 'evaluation', 'scanning', 'visual-appeal'];
 
   if (typeof action !== 'string') {
@@ -199,28 +243,29 @@ export function validateAction(action) {
 /**
  * Validate context for human perception time
  */
-export function validatePerceptionContext(context) {
+export function validatePerceptionContext(context: unknown): true {
   if (context === null || typeof context !== 'object') {
     throw new PerceptionTimeError('Context must be an object', { received: typeof context });
   }
 
-  if (context.attentionLevel && !['focused', 'normal', 'distracted'].includes(context.attentionLevel)) {
-    throw new PerceptionTimeError(`Invalid attentionLevel: ${context.attentionLevel}`, {
-      attentionLevel: context.attentionLevel,
+  const perceptionContext = context as Record<string, unknown>;
+  if (perceptionContext.attentionLevel && !['focused', 'normal', 'distracted'].includes(String(perceptionContext.attentionLevel))) {
+    throw new PerceptionTimeError(`Invalid attentionLevel: ${perceptionContext.attentionLevel}`, {
+      attentionLevel: perceptionContext.attentionLevel,
       validLevels: ['focused', 'normal', 'distracted']
     });
   }
 
-  if (context.actionComplexity && !['simple', 'normal', 'complex'].includes(context.actionComplexity)) {
-    throw new PerceptionTimeError(`Invalid actionComplexity: ${context.actionComplexity}`, {
-      actionComplexity: context.actionComplexity,
+  if (perceptionContext.actionComplexity && !['simple', 'normal', 'complex'].includes(String(perceptionContext.actionComplexity))) {
+    throw new PerceptionTimeError(`Invalid actionComplexity: ${perceptionContext.actionComplexity}`, {
+      actionComplexity: perceptionContext.actionComplexity,
       validComplexities: ['simple', 'normal', 'complex']
     });
   }
 
-  if (context.contentLength !== undefined && (typeof context.contentLength !== 'number' || context.contentLength < 0)) {
+  if (perceptionContext.contentLength !== undefined && (typeof perceptionContext.contentLength !== 'number' || perceptionContext.contentLength < 0)) {
     throw new PerceptionTimeError('contentLength must be a non-negative number', {
-      contentLength: context.contentLength
+      contentLength: perceptionContext.contentLength
     });
   }
 
@@ -230,7 +275,7 @@ export function validatePerceptionContext(context) {
 /**
  * Validate sequential decision context options
  */
-export function validateSequentialContextOptions(options) {
+export function validateSequentialContextOptions(options: unknown): true {
   if (options === null || options === undefined) {
     return true;
   }
@@ -239,10 +284,11 @@ export function validateSequentialContextOptions(options) {
     throw new SequentialContextError('Options must be an object', { received: typeof options });
   }
 
-  if (options.maxHistory !== undefined && options.maxHistory !== null) {
-    if (typeof options.maxHistory !== 'number' || options.maxHistory < 1) {
+  const sequentialOptions = options as Record<string, unknown>;
+  if (sequentialOptions.maxHistory !== undefined && sequentialOptions.maxHistory !== null) {
+    if (typeof sequentialOptions.maxHistory !== 'number' || sequentialOptions.maxHistory < 1) {
       throw new SequentialContextError('maxHistory must be a positive number', {
-        maxHistory: options.maxHistory
+        maxHistory: sequentialOptions.maxHistory
       });
     }
   }
@@ -260,7 +306,19 @@ export function validateSequentialContextOptions(options) {
  * Decides when to call LLM vs. reuse previous result.
  */
 export class TemporalDecisionManager {
-  constructor(options = {}) {
+  minNotesForPrompt: number;
+  coherenceThreshold: number;
+  urgencyThreshold: number;
+  maxWaitTime: number;
+  stateChangeThreshold: number;
+  warmStartSteps: number;
+  adaptiveSampling: boolean;
+  stepCount: number;
+  lastPromptTime: number | null;
+  _lastPromptProbability?: number;
+  preprocessor?: TemporalPreprocessingManager;
+
+  constructor(options: TemporalOptions = {}) {
     const minNotes = options.minNotesForPrompt ?? 3;
     const coherenceThresh = options.coherenceThreshold ?? 0.5;
     const urgencyThresh = options.urgencyThreshold ?? 0.3;
@@ -295,7 +353,7 @@ export class TemporalDecisionManager {
     this.lastPromptTime = null;
   }
 
-  async shouldPrompt(currentState, previousState, temporalNotes, context = {}) {
+  async shouldPrompt(currentState: TemporalStateInput, previousState: TemporalStateInput | null | undefined, temporalNotes: TemporalRecord[], context: TemporalContextInput = {}): Promise<TemporalDecision> {
     if (!Array.isArray(temporalNotes)) {
       throw new TypeError('temporalNotes must be an array');
     }
@@ -345,7 +403,7 @@ export class TemporalDecisionManager {
 
     if (isDecisionPoint) {
       this.lastPromptTime = Date.now();
-      const decision = {
+      const decision: TemporalDecision = {
         shouldPrompt: true,
         reason: 'Decision point reached',
         urgency: 'high'
@@ -380,7 +438,7 @@ export class TemporalDecisionManager {
 
     if (coherenceDrop) {
       this.lastPromptTime = Date.now();
-      const decision = {
+      const decision: TemporalDecision = {
         shouldPrompt: true,
         reason: 'Coherence drop detected (quality issue)',
         urgency: 'high'
@@ -443,7 +501,7 @@ export class TemporalDecisionManager {
     this.lastPromptTime = null;
   }
 
-  calculateStateChange(currentState, previousState) {
+  calculateStateChange(currentState: TemporalStateInput, previousState: TemporalStateInput | null | undefined): number {
     if (!currentState || typeof currentState !== 'object') {
       throw new TypeError('currentState must be an object');
     }
@@ -490,7 +548,7 @@ export class TemporalDecisionManager {
     return Math.max(0, Math.min(1, avgChange));
   }
 
-  calculateGameStateChange(current, previous) {
+  calculateGameStateChange(current: Record<string, unknown>, previous: Record<string, unknown>): number {
     const currentKeys = Object.keys(current || {});
     const previousKeys = Object.keys(previous || {});
 
@@ -505,7 +563,7 @@ export class TemporalDecisionManager {
     return totalKeys > 0 ? (added + removed + changed) / totalKeys : 0.0;
   }
 
-  hasRecentUserAction(temporalNotes, context) {
+  hasRecentUserAction(temporalNotes: TemporalRecord[], context: TemporalContextInput): boolean {
     if (context.recentAction) return true;
 
     const recentNotes = temporalNotes.slice(-3);
@@ -520,7 +578,7 @@ export class TemporalDecisionManager {
     });
   }
 
-  isDecisionPoint(currentState, context) {
+  isDecisionPoint(currentState: TemporalStateInput, context: TemporalContextInput): boolean {
     if (context.stage === 'decision' || context.stage === 'evaluation') return true;
     if (context.testType === 'critical' || context.critical) return true;
     if (context.goal && context.goalCompleted) return true;
@@ -528,7 +586,7 @@ export class TemporalDecisionManager {
     return false;
   }
 
-  async detectCoherenceDrop(temporalNotes, currentAggregated) {
+  async detectCoherenceDrop(temporalNotes: TemporalRecord[], currentAggregated: AggregatedTemporalNotes): Promise<boolean> {
     if (temporalNotes.length < 4) return false;
 
     const previousNotes = temporalNotes.slice(0, -1);
@@ -540,7 +598,7 @@ export class TemporalDecisionManager {
     return drop > this.urgencyThreshold;
   }
 
-  calculatePromptUrgency(temporalContext, decision) {
+  calculatePromptUrgency(temporalContext: TemporalContextInput, decision: TemporalDecision): number {
     if (decision.urgency === 'high') return 1.0;
     if (decision.urgency === 'medium') return 0.6;
 
@@ -554,7 +612,7 @@ export class TemporalDecisionManager {
     return 0.2;
   }
 
-  async selectOptimalTiming(requests, temporalContext) {
+  async selectOptimalTiming(requests: Array<{ currentState: TemporalStateInput; previousState?: TemporalStateInput | null; temporalNotes?: TemporalRecord[]; context?: TemporalContextInput }>, temporalContext: TemporalContextInput) {
     const decisions = await Promise.all(requests.map(async req => ({
       request: req,
       decision: await this.shouldPrompt(
@@ -569,7 +627,7 @@ export class TemporalDecisionManager {
     const medium = decisions.filter(d => d.decision.urgency === 'medium');
     const low = decisions.filter(d => d.decision.urgency === 'low');
 
-    const stable = temporalContext.coherence > 0.7;
+    const stable = (temporalContext.coherence ?? 0) > 0.7;
     const shouldBatch = stable && medium.length + low.length > 1;
 
     return {
@@ -584,7 +642,7 @@ export class TemporalDecisionManager {
 /**
  * Create a temporal decision manager with default options
  */
-export function createTemporalDecisionManager(options = {}) {
+export function createTemporalDecisionManager(options: TemporalOptions = {}): TemporalDecisionManager {
   return new TemporalDecisionManager(options);
 }
 
@@ -594,14 +652,16 @@ export function createTemporalDecisionManager(options = {}) {
 
 // Lazy imports to avoid circular dependency (these depend on temporal-multi-scale
 // which depends on this file for validation/errors)
-let _aggregateMultiScale = null;
-let _pruneTemporalNotes = null;
-let _selectTopWeightedNotes = null;
+type MultiScaleAggregate = (notes: TemporalRecord[], options: Record<string, unknown>) => unknown;
+type NotePruner = (notes: TemporalRecord[], options: Record<string, unknown>) => TemporalRecord[];
+let _aggregateMultiScale: MultiScaleAggregate | null = null;
+let _pruneTemporalNotes: NotePruner | null = null;
+let _selectTopWeightedNotes: NotePruner | null = null;
 
 async function getMultiScaleImports() {
   if (!_aggregateMultiScale) {
     const mod = await import('./temporal-multi-scale.mjs');
-    _aggregateMultiScale = mod.aggregateMultiScale;
+    _aggregateMultiScale = mod.aggregateMultiScale as MultiScaleAggregate;
   }
   return _aggregateMultiScale;
 }
@@ -609,8 +669,8 @@ async function getMultiScaleImports() {
 async function getPrunerImports() {
   if (!_pruneTemporalNotes) {
     const mod = await import('./temporal-prompt-formatting.mjs');
-    _pruneTemporalNotes = mod.pruneTemporalNotes;
-    _selectTopWeightedNotes = mod.selectTopWeightedNotes;
+    _pruneTemporalNotes = mod.pruneTemporalNotes as NotePruner;
+    _selectTopWeightedNotes = mod.selectTopWeightedNotes as NotePruner;
   }
   return { pruneTemporalNotes: _pruneTemporalNotes, selectTopWeightedNotes: _selectTopWeightedNotes };
 }
@@ -619,7 +679,7 @@ async function getPrunerImports() {
  * Activity Detector
  */
 class ActivityDetector {
-  detectActivityLevel(notes, recentWindow = 5000) {
+  detectActivityLevel(notes: TemporalRecord[], recentWindow = 5000): 'low' | 'medium' | 'high' {
     if (notes.length === 0) return 'low';
 
     const now = Date.now();
@@ -633,8 +693,8 @@ class ActivityDetector {
 
     const oldestRecent = recent[0];
     const newestRecent = recent[recent.length - 1];
-    const oldestTime = oldestRecent.timestamp || oldestRecent.elapsed || now;
-    const newestTime = newestRecent.timestamp || newestRecent.elapsed || now;
+    const oldestTime = oldestRecent?.timestamp || oldestRecent?.elapsed || now;
+    const newestTime = newestRecent?.timestamp || newestRecent?.elapsed || now;
     const timeSpan = Math.max(100, newestTime - oldestTime);
     const noteRate = recent.length / (timeSpan / 1000);
 
@@ -643,7 +703,7 @@ class ActivityDetector {
     return 'low';
   }
 
-  hasUserInteraction(notes, recentWindow = 2000) {
+  hasUserInteraction(notes: TemporalRecord[], recentWindow = 2000): boolean {
     if (notes.length === 0) return false;
 
     const now = Date.now();
@@ -663,7 +723,7 @@ class ActivityDetector {
     );
   }
 
-  isStableState(notes, window = 2000) {
+  isStableState(notes: TemporalRecord[], window = 2000): boolean {
     if (notes.length < 3) return true;
 
     const now = Date.now();
@@ -693,7 +753,14 @@ class ActivityDetector {
  * Temporal Preprocessing Manager
  */
 export class TemporalPreprocessingManager {
-  constructor(options = {}) {
+  activityDetector: ActivityDetector;
+  preprocessedCache: PreprocessCache;
+  preprocessInterval: number;
+  cacheMaxAge: number;
+  preprocessingInProgress: boolean;
+  preprocessQueue: TemporalRecord[][];
+
+  constructor(options: TemporalOptions = {}) {
     this.activityDetector = new ActivityDetector();
     this.preprocessedCache = {
       aggregated: null,
@@ -712,18 +779,18 @@ export class TemporalPreprocessingManager {
     this.preprocessQueue = [];
   }
 
-  async getFastAggregation(notes, options = {}) {
+  async getFastAggregation(notes: TemporalRecord[], options: TemporalOptions = {}): Promise<AggregatedTemporalNotes> {
     const activity = this.activityDetector.detectActivityLevel(notes);
 
     if (activity === 'high' && this.isCacheValid(notes, options)) {
       log('[Preprocessor] Using cached aggregation (high activity)');
-      return this.preprocessedCache.aggregated;
+      return this.preprocessedCache.aggregated!;
     }
 
     return await aggregateTemporalNotes(notes, options);
   }
 
-  async preprocessInBackground(notes, options = {}) {
+  async preprocessInBackground(notes: TemporalRecord[], options: TemporalOptions = {}): Promise<void> {
     if (this.preprocessingInProgress) {
       return;
     }
@@ -756,7 +823,7 @@ export class TemporalPreprocessingManager {
         minWeight: options.minWeight || 0.1
       });
 
-      const topWeighted = selectTopWeightedNotes(notes, {
+      const topWeighted = selectTopWeightedNotes!(notes, {
         maxNotes: options.maxNotes || 20
       });
 
@@ -777,13 +844,13 @@ export class TemporalPreprocessingManager {
 
       log(`[Preprocessor] Background preprocessing complete (${notes.length} notes, activity: ${activity})`);
     } catch (error) {
-      warn(`[Preprocessor] Background preprocessing failed: ${error.message}`);
+      warn(`[Preprocessor] Background preprocessing failed: ${errorMessage(error)}`);
     } finally {
       this.preprocessingInProgress = false;
     }
   }
 
-  isCacheValid(notes, options = {}) {
+  isCacheValid(notes: TemporalRecord[], options: TemporalOptions = {}): boolean {
     if (!this.preprocessedCache.aggregated) return false;
 
     const age = Date.now() - this.preprocessedCache.lastPreprocessTime;
@@ -799,16 +866,16 @@ export class TemporalPreprocessingManager {
     return true;
   }
 
-  _getNotesFingerprint(notes) {
+  _getNotesFingerprint(notes: TemporalRecord[]): string | null {
     try {
       return serializeTemporalCacheValue(notes);
     } catch (error) {
-      warn(`[Preprocessor] Unable to fingerprint notes for cache reuse: ${error.message}`);
+      warn(`[Preprocessor] Unable to fingerprint notes for cache reuse: ${errorMessage(error)}`);
       return null;
     }
   }
 
-  _getOptionsFingerprint(options) {
+  _getOptionsFingerprint(options: TemporalOptions): string {
     return JSON.stringify({
       windowSize: options.windowSize || 10000,
       decayFactor: options.decayFactor || 0.9,
@@ -817,7 +884,7 @@ export class TemporalPreprocessingManager {
     });
   }
 
-  _identifyPatterns(notes) {
+  _identifyPatterns(notes: TemporalRecord[]): { trends: Pattern[]; conflicts: Pattern[] } {
     if (notes.length < 3) {
       return { trends: [], conflicts: [] };
     }
@@ -827,8 +894,8 @@ export class TemporalPreprocessingManager {
 
     const scores = notes.map(n => n.score ?? n.gameState?.score ?? 0);
     if (scores.length >= 3) {
-      const first = scores[0];
-      const last = scores[scores.length - 1];
+      const first = scores[0]!;
+      const last = scores[scores.length - 1]!;
       if (last > first * 1.1) {
         trends.push({ type: 'increasing', metric: 'score', magnitude: (last - first) / first });
       } else if (last < first * 0.9) {
@@ -852,7 +919,7 @@ export class TemporalPreprocessingManager {
     return { trends, conflicts };
   }
 
-  getFastMultiScale(notes, options = {}) {
+  getFastMultiScale(notes: TemporalRecord[], options: TemporalOptions = {}): unknown {
     if (this.isCacheValid(notes, options) && this.preprocessedCache.multiScale) {
       return this.preprocessedCache.multiScale;
     }
@@ -866,7 +933,7 @@ export class TemporalPreprocessingManager {
     return { scales: {}, summary: 'Not yet loaded', coherence: {} };
   }
 
-  getFastPrunedNotes(notes, options = {}) {
+  getFastPrunedNotes(notes: TemporalRecord[], options: TemporalOptions = {}): TemporalRecord[] {
     if (this.isCacheValid(notes, options) && this.preprocessedCache.prunedNotes) {
       return this.preprocessedCache.prunedNotes;
     }
@@ -910,12 +977,15 @@ export class TemporalPreprocessingManager {
  * Adaptive Temporal Processor
  */
 export class AdaptiveTemporalProcessor {
-  constructor(options = {}) {
+  preprocessor: TemporalPreprocessingManager;
+  activityDetector: ActivityDetector;
+
+  constructor(options: TemporalOptions = {}) {
     this.preprocessor = new TemporalPreprocessingManager(options);
     this.activityDetector = new ActivityDetector();
   }
 
-  async processNotes(notes, options = {}) {
+  async processNotes(notes: TemporalRecord[], options: TemporalOptions = {}) {
     const aggregateMultiScale = await getMultiScaleImports();
     const { pruneTemporalNotes } = await getPrunerImports();
     const activity = this.activityDetector.detectActivityLevel(notes);
@@ -995,14 +1065,14 @@ export class AdaptiveTemporalProcessor {
 /**
  * Create a temporal preprocessing manager with default options
  */
-export function createTemporalPreprocessingManager(options = {}) {
+export function createTemporalPreprocessingManager(options: TemporalOptions = {}): TemporalPreprocessingManager {
   return new TemporalPreprocessingManager(options);
 }
 
 /**
  * Create an adaptive temporal processor with default options
  */
-export function createAdaptiveTemporalProcessor(options = {}) {
+export function createAdaptiveTemporalProcessor(options: TemporalOptions = {}): AdaptiveTemporalProcessor {
   return new AdaptiveTemporalProcessor(options);
 }
 
@@ -1014,8 +1084,17 @@ export function createAdaptiveTemporalProcessor(options = {}) {
  * Temporal Batch Optimizer
  * Extends BatchOptimizer with temporal awareness
  */
-export class TemporalBatchOptimizer extends BatchOptimizer {
-  constructor(options = {}) {
+export class TemporalBatchOptimizer extends BatchOptimizerBase {
+  temporalDependencies: Map<string, Dependency>;
+  completedTemporalRequests: Map<string, number>;
+  failedTemporalRequests: Map<string, { requestId: number; error: unknown }>;
+  nextTemporalRequestId: number;
+  sequentialContext: SequentialContext | null;
+  adaptiveBatching: boolean;
+  declare queue: QueueRequest[];
+  declare cache: Map<string, ValidationResult> | null;
+
+  constructor(options: TemporalOptions = {}) {
     super(options);
     this.temporalDependencies = new Map();
     this.completedTemporalRequests = new Map();
@@ -1025,7 +1104,7 @@ export class TemporalBatchOptimizer extends BatchOptimizer {
     this.adaptiveBatching = options.adaptiveBatching !== false;
   }
 
-  async addTemporalRequest(imagePath, prompt, context, dependencies = []) {
+  async addTemporalRequest(imagePath: string, prompt: string, context: Record<string, unknown>, dependencies: string[] = []): Promise<ValidationResult> {
     const requestId = ++this.nextTemporalRequestId;
     this.temporalDependencies.set(imagePath, {
       dependencies,
@@ -1037,19 +1116,20 @@ export class TemporalBatchOptimizer extends BatchOptimizer {
     return this._queueTemporalRequest(imagePath, prompt, context, null, requestId);
   }
 
-  _queueTemporalRequest(imagePath, prompt, context, validateFn = null, requestId = undefined) {
+  _queueTemporalRequest(imagePath: string, prompt: string, context: Record<string, unknown>, validateFn: ValidateFn = null, requestId?: number): Promise<ValidationResult> {
     // Temporal requests must always traverse this scheduler: the inherited fast path
     // would otherwise execute a dependent request before its prerequisite completes.
     const activeRequests = this.activeRequests;
     const cache = this.cache;
     this.activeRequests = this.maxConcurrency;
     this.cache = null;
-    let pending;
+    let pending: Promise<ValidationResult>;
     try {
-      pending = super._queueRequest(imagePath, prompt, context, validateFn);
+      const parentQueueRequest = BatchOptimizer.prototype._queueRequest as (imagePath: string, prompt: string, context: Record<string, unknown>, validateFn: ValidateFn) => Promise<ValidationResult>;
+      pending = parentQueueRequest.call(this, imagePath, prompt, context, validateFn);
       const queuedRequest = this.queue[this.queue.length - 1];
       if (queuedRequest?.imagePath === imagePath) {
-        queuedRequest.temporalRequestId = requestId;
+        if (requestId !== undefined) queuedRequest.temporalRequestId = requestId;
       }
     } finally {
       this.activeRequests = activeRequests;
@@ -1059,7 +1139,7 @@ export class TemporalBatchOptimizer extends BatchOptimizer {
     return pending;
   }
 
-  calculatePriority(dependencies, context) {
+  calculatePriority(dependencies: string[], context: Record<string, unknown>): number {
     let priority = 0;
 
     if (dependencies.length === 0) {
@@ -1068,7 +1148,7 @@ export class TemporalBatchOptimizer extends BatchOptimizer {
       priority -= dependencies.length * 10;
     }
 
-    if (context.timestamp) {
+    if (typeof context.timestamp === 'number') {
       const age = Date.now() - context.timestamp;
       if (age < 60000) {
         priority += Math.max(0, 30 - age / 1000);
@@ -1082,7 +1162,7 @@ export class TemporalBatchOptimizer extends BatchOptimizer {
     return priority;
   }
 
-  async _processQueue() {
+  async _processQueue(): Promise<void> {
     if (this.processing || this.queue.length === 0) {
       return;
     }
@@ -1107,13 +1187,13 @@ export class TemporalBatchOptimizer extends BatchOptimizer {
           if (index >= 0) this.queue.splice(index, 1);
         });
 
-        const promises = batch.map(async ({ imagePath, prompt, context, validateFn, resolve, reject, temporalRequestId }) => {
+        const promises = batch.map(async ({ imagePath, prompt, context, validateFn, resolve, reject, temporalRequestId }: QueueRequest) => {
           try {
             if (this.cache) {
               const cacheKey = this._getCacheKey(imagePath, prompt, context);
               if (this.cache.has(cacheKey)) {
                 this._markTemporalRequestCompleted(imagePath, temporalRequestId);
-                resolve(this.cache.get(cacheKey));
+                resolve(this.cache.get(cacheKey)!);
                 return;
               }
             }
@@ -1125,7 +1205,7 @@ export class TemporalBatchOptimizer extends BatchOptimizer {
               };
             }
 
-            const result = await this._processRequest(imagePath, prompt, context, validateFn);
+            const result = await this._processRequest(imagePath, prompt, context, validateFn) as ValidationResult;
 
             this._markTemporalRequestCompleted(imagePath, temporalRequestId);
 
@@ -1152,7 +1232,7 @@ export class TemporalBatchOptimizer extends BatchOptimizer {
     }
   }
 
-  sortByTemporalDependencies(queue) {
+  sortByTemporalDependencies(queue: QueueRequest[]): QueueRequest[] {
     return queue.sort((a, b) => {
       const depsA = this.temporalDependencies.get(a.imagePath);
       const depsB = this.temporalDependencies.get(b.imagePath);
@@ -1161,11 +1241,11 @@ export class TemporalBatchOptimizer extends BatchOptimizer {
       if (depsA && !depsB) return 1;
       if (!depsA && !depsB) return 0;
 
-      return depsB.priority - depsA.priority;
+      return depsB!.priority - depsA!.priority;
     });
   }
 
-  selectTemporalBatch(sortedQueue) {
+  selectTemporalBatch(sortedQueue: QueueRequest[]): QueueRequest[] {
     if (!this.adaptiveBatching) {
       return sortedQueue.splice(0, this.batchSize);
     }
@@ -1188,21 +1268,21 @@ export class TemporalBatchOptimizer extends BatchOptimizer {
     return batch;
   }
 
-  _markTemporalRequestCompleted(imagePath, requestId) {
+  _markTemporalRequestCompleted(imagePath: string, requestId: number | undefined): void {
     const request = this.temporalDependencies.get(imagePath);
     if (request && request.requestId === requestId) {
       this.completedTemporalRequests.set(imagePath, requestId);
     }
   }
 
-  _markTemporalRequestFailed(imagePath, requestId, error) {
+  _markTemporalRequestFailed(imagePath: string, requestId: number | undefined, error: unknown): void {
     const request = this.temporalDependencies.get(imagePath);
     if (request && request.requestId === requestId) {
       this.failedTemporalRequests.set(imagePath, { requestId, error });
     }
   }
 
-  _rejectUnsatisfiableRequests(queue) {
+  _rejectUnsatisfiableRequests(queue: QueueRequest[]): number {
     let rejected = 0;
     for (const item of queue) {
       const error = this._getDependencyError(item.imagePath);
@@ -1216,7 +1296,7 @@ export class TemporalBatchOptimizer extends BatchOptimizer {
     return rejected;
   }
 
-  _getDependencyError(imagePath, ancestry = new Set()) {
+  _getDependencyError(imagePath: string, ancestry: Set<string> = new Set()): TemporalBatchError | null {
     const request = this.temporalDependencies.get(imagePath);
     if (!request) return null;
 
@@ -1236,7 +1316,7 @@ export class TemporalBatchOptimizer extends BatchOptimizer {
         return new TemporalBatchError(`Temporal dependency failed: ${dependencyPath}`, {
           imagePath,
           dependencyPath,
-          cause: failed.error.message
+          cause: errorMessage(failed.error)
         });
       }
 

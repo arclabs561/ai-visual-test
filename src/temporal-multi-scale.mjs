@@ -20,8 +20,8 @@ import {
   CONTENT_THRESHOLDS,
   aggregateTemporalNotes
 } from '#temporal-core';
-import { validateAndSortNotes, validateTimeScales, validateAction, validatePerceptionContext, validateSequentialContextOptions } from './temporal-orchestration.mjs';
-import { MultiScaleError, PerceptionTimeError } from './temporal-orchestration.mjs';
+import { validateAndSortNotes, validateTimeScales, validateAction, validatePerceptionContext, validateSequentialContextOptions } from '#temporal-orchestration';
+import { MultiScaleError, PerceptionTimeError } from '#temporal-orchestration';
 import { warn, log } from './logger.mjs';
 
 // ============================================================================

@@ -11,7 +11,7 @@ import {
   AdaptiveTemporalProcessor,
   createTemporalPreprocessingManager,
   createAdaptiveTemporalProcessor
-} from '../../src/temporal-orchestration.mjs';
+} from '#temporal-orchestration';
 
 describe('Temporal Preprocessing Manager', () => {
   test('ActivityDetector - detects high activity', () => {

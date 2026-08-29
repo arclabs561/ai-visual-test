@@ -25,7 +25,7 @@ const SRC_DIR = join(STAGE_DIR, 'src');
 
 // Files to obfuscate (Tier 1: Core proprietary algorithms only)
 const OBFUSCATE_FILES = [
-  'src/temporal-orchestration.mjs',
+  'src/temporal-orchestration.js',
   'src/cost-optimization.mjs',
   'src/model-tier-selector.mjs'
 ];

@@ -73,7 +73,7 @@ export {
   SequentialContextError,
   MultiScaleError,
   TemporalBatchError
-} from '../temporal-orchestration.mjs';
+} from '#temporal-orchestration';
 
 // Temporal screenshots
 export { captureTemporalScreenshots } from '#temporal-capture';

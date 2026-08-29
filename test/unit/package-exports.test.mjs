@@ -26,7 +26,9 @@ function declaredValueExports(source) {
     .map(match => match[1]);
   const reexports = [...source.matchAll(/^export\s*\{([\s\S]*?)\}\s*from\s+['"][^'"]+['"];?/gm)]
     .flatMap(match => match[1].split(','))
-    .map(name => name.trim().replace(/\s+as\s+\w+$/, ''))
+    .map(name => name.trim())
+    .filter(name => !name.startsWith('type '))
+    .map(name => name.replace(/\s+as\s+\w+$/, ''))
     .filter(Boolean);
   return [...new Set([...declarations, ...reexports])];
 }
@@ -36,7 +38,9 @@ function namedValueReexports(source) {
     .map(match => ({
       source: match[2],
       values: match[1].split(',')
-        .map(name => name.trim().replace(/\s+as\s+\w+$/, ''))
+        .map(name => name.trim())
+        .filter(name => !name.startsWith('type '))
+        .map(name => name.replace(/\s+as\s+\w+$/, ''))
         .filter(Boolean),
     }));
 }

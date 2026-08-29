@@ -174,7 +174,13 @@ schema-capable OpenRouter requests use native JSON Schema, malformed output
 receives one bounded diagnostic-only repair attempt, and partial provider or
 ledger failures remain observable without turning malformed data into success.
 The source, staged, and packed `/perception` routes are exercised by runtime
-and strict external type consumers. The ensemble correctness repair landed
+and strict external type consumers. Video now uses provider-owned multimodal
+serialization, native review schemas, one deadline-bounded diagnostic repair,
+aggregate payload limits, and deterministic cleanup; its generated declaration
+preserves inherited screenshot review. The CLI now has a typed, injectable core
+and a compiled launcher that is the sole process-exit authority. Canonical
+provider/env resolution, JSON errors, help, version, and no-network preflight
+are exercised through the installed packed executable. The ensemble correctness repair landed
 before its source conversion:
 voting ignores failed or invalid scores, reports availability explicitly, and
 makes ties and zero-effective-weight outcomes deterministic. Temporal graph
@@ -193,12 +199,11 @@ bias mitigation, and research-validation helpers. The route does not count as
 fully generated until those helpers migrate and the overlay is deleted. Strict
 packed consumer compilation and runtime/type export parity remain mandatory.
 
-**Execution order:** the complete temporal, game, and perception public
-boundaries have no declaration overlays. Video and CLI integrations are next
-and remain last because they couple provider,
-process, filesystem, and packaging behavior. Each slice keeps existing package
-subpath names and replaces its handwritten declaration overlay only after the
-generated declaration and clean packed install agree.
+**Execution order:** the temporal, game, perception, video, and CLI boundaries
+are complete and have no declaration overlays. The remaining Phase 4 debt is
+the single ADR-governed ensemble composition overlay. Retire it by converting
+its still-JavaScript bias/research helpers, then re-evaluate the root judge
+boundary before Phase 5 surface narrowing.
 
 Human labels do not block these mechanical conversions. They continue to block
 changes that claim calibrated ensemble weights, confidence, or learned
@@ -250,6 +255,6 @@ made until real independently reviewed labels exist.
 
 ## Review trigger
 
-Re-run this roadmap after the video and CLI boundaries land, when the ensemble
-overlay is retired or a second overlay is proposed, or when a consumer survey
-changes the supported-surface assumptions.
+Re-run this roadmap when the ensemble overlay is retired, before migrating the
+root judge boundary, or when a consumer survey changes the supported-surface
+assumptions.

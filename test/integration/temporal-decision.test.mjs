@@ -12,6 +12,7 @@ import {
   SequentialDecisionContext,
   humanPerceptionTime
 } from '#temporal-multi-scale';
+import { TIME_SCALES } from '#temporal-core';
 
 describe('SequentialDecisionContext', () => {
   test('constructor with default options', () => {
@@ -156,6 +157,17 @@ describe('SequentialDecisionContext', () => {
 });
 
 describe('humanPerceptionTime', () => {
+  test('exports the documented time-scale constants', () => {
+    assert.deepStrictEqual(TIME_SCALES, {
+      VISUAL_DECISION: 50,
+      INSTANT: 100,
+      QUICK: 1000,
+      NORMAL: 3000,
+      EXTENDED: 10000,
+      LONG: 60000,
+    });
+  });
+
   test('reading - calculates based on content length', () => {
     const time = humanPerceptionTime('reading', { contentLength: 500 });
     

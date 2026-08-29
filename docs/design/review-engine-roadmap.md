@@ -203,13 +203,16 @@ The root judge implementation is now strict TypeScript behind the private
 bounded diagnostic repair, and its cache identity separates strict structured
 calls from legacy-fallback calls. Cache hits also release their request timer,
 so cached validation does not keep test or application processes alive.
+The public root is also generated from `src/index.ts`; its 27 runtime values and
+formerly supported root-only video/extractor types are checked from a clean
+packed install, and the handwritten `index.d.ts` is retired.
 
 **Execution order:** the temporal, game, perception, video, and CLI boundaries
 are complete and have no declaration overlays. The ensemble composition overlay
-is also retired. Root public/JSDoc contracts are decoupled from the handwritten
-root declaration and the judge implementation is compiled. The next migration
-boundary is the generated public root barrel, after which Phase 5 surface
-narrowing can begin.
+is also retired. Root contracts, implementation, and public barrel are compiled
+with no root declaration overlay. Phase 5 now begins with the smallest legacy
+leaf declarations (`extractors`, `errors`, then validators/persona/multi-modal/
+utils) before any semver-sensitive root alias removal.
 
 Human labels do not block these mechanical conversions. They continue to block
 changes that claim calibrated ensemble weights, confidence, or learned

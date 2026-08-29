@@ -127,7 +127,7 @@ export function createMatchers(expect: PlaywrightExpect): void {
     },
 
     async toBeAccessibleHybrid(page, minContrast = 4.5, options = {}) {
-      const { validateAccessibilityHybrid } = await import('../validators/index.mjs');
+      const { validateAccessibilityHybrid } = await import('../validators/index.js');
       const screenshotPath = join(tmpdir(), `a11y-check-${Date.now()}-${randomUUID()}.png`);
       let result: AccessibilityResult;
       try {

@@ -11,7 +11,7 @@ import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { loadDataset } from '../../evaluation/utils/dataset-adapters.mjs';
 import { validateScreenshot } from '../../src/index.js';
-import { StateValidator, AccessibilityValidator } from '../../src/validators/index.mjs';
+import { StateValidator, AccessibilityValidator } from '../../src/validators/index.js';
 
 // Note: We use adapters now, not converted JSON files
 

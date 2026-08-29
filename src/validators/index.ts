@@ -27,29 +27,30 @@
  * when the check can be expressed as a deterministic rule.
  */
 
-// Re-export everything from validators
-export { StateValidator } from './state-validator.mjs';
-export { AccessibilityValidator } from './accessibility-validator.mjs';
-export { PromptBuilder } from './prompt-builder.mjs';
-export { validateWithRubric } from './rubric.mjs';
-export { BatchValidator } from './batch-validator.mjs';
-
-// Programmatic validators (fast, deterministic)
+export { StateValidator } from './state-validator.js';
+export { AccessibilityValidator } from './accessibility-validator.js';
+export { PromptBuilder } from './prompt-builder.js';
+export { validateWithRubric } from './rubric.js';
+export { BatchValidator } from './batch-validator.js';
 export {
   getContrastRatio,
   checkElementContrast,
   checkAllTextContrast,
-  checkKeyboardNavigation
-} from './accessibility-programmatic.mjs';
-
+  checkKeyboardNavigation,
+} from './accessibility-programmatic.js';
+export type {
+  ContrastCheckResult,
+  KeyboardNavigationResult,
+  TextContrastResult,
+  ValidatorPage,
+} from './accessibility-programmatic.js';
 export {
   validateStateProgrammatic,
-  validateElementPosition
-} from './state-programmatic.mjs';
-
-// Hybrid validators (programmatic + VLLM)
+  validateElementPosition,
+} from './state-programmatic.js';
 export {
   validateAccessibilityHybrid,
   validateStateHybrid,
-  validateWithProgrammaticContext
-} from './hybrid-validator.mjs';
+  validateWithProgrammaticContext,
+} from './hybrid-validator.js';
+export type { HybridContextResult } from './hybrid-validator.js';

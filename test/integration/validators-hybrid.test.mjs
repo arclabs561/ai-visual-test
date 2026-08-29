@@ -10,11 +10,11 @@ import {
   validateAccessibilityHybrid,
   validateStateHybrid,
   validateWithProgrammaticContext
-} from '../../src/validators/index.mjs';
+} from '../../src/validators/index.js';
 import {
   _injectValidateScreenshot,
   _resetValidateScreenshot
-} from '../../src/validators/hybrid-validator.mjs';
+} from '../../src/validators/hybrid-validator.js';
 import { ValidationError } from '../../src/errors.js';
 
 // Mock Playwright page object

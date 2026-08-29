@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { AccessibilityValidator } from '../../src/validators/accessibility-validator.mjs';
+import { AccessibilityValidator } from '../../src/validators/accessibility-validator.js';
 
 test('AccessibilityValidator.validateHybrid combines programmatic and semantic', async function() {
   let browser, page;
@@ -85,4 +85,3 @@ test('AccessibilityValidator.validateHybrid combines programmatic and semantic',
     }
   }
 });
-

@@ -12,7 +12,7 @@ import {
   PromptBuilder,
   validateWithRubric,
   BatchValidator
-} from '../../src/validators/index.mjs';
+} from '../../src/validators/index.js';
 import { ValidationError } from '../../src/errors.js';
 
 test('StateValidator - throws on null screenshotPath', async () => {

@@ -12,12 +12,45 @@
 
 import { buildRubricPrompt } from '../rubrics.mjs';
 import { ValidationError } from '#errors';
+import type { Rubric as PublicRubric } from '#public-contract';
+
+type TemplateVariables = Record<string, unknown>;
+type Template = string | ((variables: TemplateVariables) => string);
+type Templates = Record<string, Template>;
+
+interface RubricCriterion {
+  id: string;
+  zeroTolerance?: boolean;
+  [key: string]: unknown;
+}
+
+type PromptRubric = PublicRubric & { criteria?: RubricCriterion[] };
+
+export interface PromptBuilderOptions {
+  templates?: Templates;
+  rubric?: PromptRubric | null;
+  defaultContext?: Record<string, unknown>;
+}
+
+export interface PromptOptions {
+  rubric?: PromptRubric | null;
+  includeZeroTolerance?: boolean;
+  includeScoring?: boolean;
+  enforceZeroTolerance?: boolean;
+  context?: Record<string, unknown>;
+  skipRubric?: boolean;
+  [key: string]: unknown;
+}
 
 /**
  * Generic prompt builder with template support
  */
 export class PromptBuilder {
-  constructor(options = {}) {
+  templates: Templates;
+  rubric: PromptRubric | null;
+  defaultContext: Record<string, unknown>;
+
+  constructor(options: PromptBuilderOptions = {}) {
     // Validate templates
     if (options.templates !== undefined) {
       if (typeof options.templates !== 'object' || options.templates === null || Array.isArray(options.templates)) {
@@ -26,7 +59,7 @@ export class PromptBuilder {
           { received: typeof options.templates }
         );
       }
-      this.templates = options.templates;
+      this.templates = options.templates as Templates;
     } else {
       this.templates = {};
     }
@@ -41,7 +74,7 @@ export class PromptBuilder {
           { received: typeof options.defaultContext }
         );
       }
-      this.defaultContext = options.defaultContext;
+      this.defaultContext = options.defaultContext as Record<string, unknown>;
     } else {
       this.defaultContext = {};
     }
@@ -50,16 +83,16 @@ export class PromptBuilder {
   /**
    * Build prompt with optional rubric
    */
-  buildPrompt(basePrompt, options = {}) {
+  buildPrompt(basePrompt: string, options: PromptOptions = {}): string {
     let prompt = basePrompt;
     
     // Add rubric if provided
-    if (options.rubric || this.rubric) {
-      const rubric = options.rubric || this.rubric;
-      const rubricPrompt = buildRubricPrompt(rubric, {
-        includeZeroTolerance: options.includeZeroTolerance !== false,
-        includeScoring: options.includeScoring !== false
-      });
+    const rubric = options.rubric || this.rubric;
+    if (rubric) {
+      // `buildRubricPrompt` takes its rubric as the first argument and the
+      // dimensions switch as the second. The legacy option object was truthy,
+      // so passing `true` preserves its emitted prompt exactly.
+      const rubricPrompt = buildRubricPrompt(rubric, true);
       prompt = `${prompt}\n\n${rubricPrompt}`;
       
       // Add zero tolerance enforcement if applicable
@@ -91,7 +124,7 @@ ${JSON.stringify(context, null, 2)}`;
    * - Loops: {{#each items}}...{{/each}}
    * - Nested templates: {{>templateName}}
    */
-  buildFromTemplate(templateName, variables = {}, options = {}) {
+  buildFromTemplate(templateName: string, variables: TemplateVariables = {}, options: PromptOptions = {}): string {
     const template = this.templates[templateName];
     if (!template) {
       throw new ValidationError(
@@ -101,12 +134,12 @@ ${JSON.stringify(context, null, 2)}`;
     }
     
     // Get template string
-    let templateStr = typeof template === 'function' 
+    let templateStr: string = typeof template === 'function'
       ? template(variables)
       : template;
     
     // Process nested templates (partials) first: {{>templateName}}
-    templateStr = templateStr.replace(/\{\{>([^}]+)\}\}/g, (match, partialName) => {
+    templateStr = templateStr.replace(/\{\{>([^}]+)\}\}/g, (match: string, partialName: string) => {
       const trimmedName = partialName.trim();
       if (this.templates[trimmedName]) {
         return this.buildFromTemplate(trimmedName, variables, { ...options, skipRubric: true });
@@ -116,12 +149,12 @@ ${JSON.stringify(context, null, 2)}`;
     
     // Process loops: {{#each items}}...{{/each}}
     // Need to process nested conditionals inside loops, so we need to handle this carefully
-    templateStr = templateStr.replace(/\{\{#each\s+([^}]+)\}\}([\s\S]*?)\{\{\/each\}\}/g, (match, arrayKey, loopBody) => {
+    templateStr = templateStr.replace(/\{\{#each\s+([^}]+)\}\}([\s\S]*?)\{\{\/each\}\}/g, (match: string, arrayKey: string, loopBody: string) => {
       const trimmedKey = arrayKey.trim();
       const array = variables[trimmedKey];
       if (Array.isArray(array)) {
-        return array.map((item, index) => {
-          const itemVars = { 
+        return array.map((item: unknown, index: number) => {
+          const itemVars: TemplateVariables = {
             ...variables, 
             '@index': index, 
             '@first': index === 0, 
@@ -136,7 +169,7 @@ ${JSON.stringify(context, null, 2)}`;
           // Process the loop body with item variables, including nested conditionals
           let processedBody = loopBody;
           // Process nested conditionals in loop body
-          processedBody = processedBody.replace(/\{\{#if\s+([^}]+)\}\}([\s\S]*?)\{\{\/if\}\}/g, (m, condKey, body) => {
+          processedBody = processedBody.replace(/\{\{#if\s+([^}]+)\}\}([\s\S]*?)\{\{\/if\}\}/g, (_match: string, condKey: string, body: string) => {
             const trimmedCond = condKey.trim();
             const condValue = itemVars[trimmedCond];
             const isTruthy = condValue !== undefined && condValue !== null && condValue !== false && condValue !== '';
@@ -149,7 +182,7 @@ ${JSON.stringify(context, null, 2)}`;
     });
     
     // Process conditionals: {{#if condition}}...{{else}}...{{/if}} and {{#unless condition}}...{{/unless}}
-    templateStr = templateStr.replace(/\{\{#if\s+([^}]+)\}\}([\s\S]*?)\{\{\/if\}\}/g, (match, conditionKey, body) => {
+    templateStr = templateStr.replace(/\{\{#if\s+([^}]+)\}\}([\s\S]*?)\{\{\/if\}\}/g, (_match: string, conditionKey: string, body: string) => {
       const trimmedKey = conditionKey.trim();
       const value = variables[trimmedKey];
       const isTruthy = value !== undefined && value !== null && value !== false && value !== '';
@@ -157,8 +190,8 @@ ${JSON.stringify(context, null, 2)}`;
       // Check for {{else}} block
       const elseMatch = body.match(/^([\s\S]*?)\{\{else\}\}([\s\S]*)$/);
       if (elseMatch) {
-        const trueBody = elseMatch[1];
-        const falseBody = elseMatch[2];
+        const trueBody = elseMatch[1] ?? '';
+        const falseBody = elseMatch[2] ?? '';
         return isTruthy 
           ? this._processTemplate(trueBody, variables)
           : this._processTemplate(falseBody, variables);
@@ -167,7 +200,7 @@ ${JSON.stringify(context, null, 2)}`;
       return isTruthy ? this._processTemplate(body, variables) : '';
     });
     
-    templateStr = templateStr.replace(/\{\{#unless\s+([^}]+)\}\}([\s\S]*?)\{\{\/unless\}\}/g, (match, conditionKey, body) => {
+    templateStr = templateStr.replace(/\{\{#unless\s+([^}]+)\}\}([\s\S]*?)\{\{\/unless\}\}/g, (_match: string, conditionKey: string, body: string) => {
       const trimmedKey = conditionKey.trim();
       const value = variables[trimmedKey];
       const isFalsy = value === undefined || value === null || value === false || value === '';
@@ -188,16 +221,16 @@ ${JSON.stringify(context, null, 2)}`;
    * Internal method to process template variables
    * @private
    */
-  _processTemplate(templateStr, variables) {
-    return templateStr.replace(/\{\{([^}]+)\}\}/g, (match, key) => {
+  _processTemplate(templateStr: string, variables: TemplateVariables): string {
+    return templateStr.replace(/\{\{([^}]+)\}\}/g, (match: string, key: string) => {
       const trimmedKey = key.trim();
       // Support dot notation: {{object.property}}
       if (trimmedKey.includes('.')) {
         const parts = trimmedKey.split('.');
-        let value = variables;
+        let value: unknown = variables;
         for (const part of parts) {
           if (value && typeof value === 'object' && part in value) {
-            value = value[part];
+            value = (value as Record<string, unknown>)[part];
           } else {
             return match; // Return original if path not found
           }
@@ -211,7 +244,7 @@ ${JSON.stringify(context, null, 2)}`;
   /**
    * Register a template
    */
-  registerTemplate(name, template) {
+  registerTemplate(name: string, template: Template): void {
     this.templates[name] = template;
   }
 }

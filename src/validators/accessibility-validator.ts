@@ -13,12 +13,88 @@
 import { validateScreenshot } from '#judge';
 import { ValidationError } from '#errors';
 import { assertString } from '../type-guards.mjs';
+import type { ValidationContext, ValidationResult } from '#public-contract';
+
+interface BrowserElement {
+  tagName: string;
+  tabIndex: number;
+  textContent: string | null;
+  alt: string;
+  src: string;
+  hasAttribute(name: string): boolean;
+  getAttribute(name: string): string | null;
+}
+
+interface BrowserDocument {
+  querySelectorAll(selector: string): Iterable<BrowserElement>;
+}
+
+interface ComputedStyle {
+  color: string;
+}
+
+interface BrowserWindow {
+  getComputedStyle(element: BrowserElement): ComputedStyle;
+}
+
+declare const document: BrowserDocument;
+declare const window: BrowserWindow;
+
+export interface AccessibilityOptions extends ValidationContext {
+  minContrast?: number | undefined;
+  standards?: string[] | undefined;
+  zeroTolerance?: boolean | undefined;
+  customPrompt?: string | undefined;
+  validateScreenshot?: ScreenshotValidator | undefined;
+  useCache?: unknown;
+  timeout?: unknown;
+}
+
+export interface ValidatorPage {
+  evaluate<T, Argument = undefined>(callback: (argument: Argument) => T | Promise<T>, argument?: Argument): Promise<T>;
+}
+
+type ScreenshotValidator = (
+  screenshotPath: string | string[],
+  prompt: string,
+  options: ValidationContext,
+) => Promise<ValidationResult>;
+
+type ViolationSummary = {
+  zeroTolerance: string[];
+  critical: string[];
+  warnings: string[];
+};
+
+type ProgrammaticCheck = { passed: boolean; violations: string[] };
+type ProgrammaticChecks = Record<'contrast' | 'keyboard' | 'altText', ProgrammaticCheck>;
+
+export type AccessibilityValidationResult = ValidationResult & {
+  violations: ViolationSummary;
+  passes: boolean;
+  contrastCheck: { ratios: string[]; minRatio: number | null; meetsRequirement: boolean | null };
+  standards: string[];
+};
+
+export type HybridAccessibilityResult = {
+  passed: boolean;
+  programmatic: { passed: boolean; violations: string[]; checks: ProgrammaticChecks };
+  semantic: AccessibilityValidationResult;
+  method: 'hybrid';
+  issues: unknown[];
+  uniqueIssues: unknown[];
+};
 
 /**
  * Accessibility validator with configurable standards
  */
 export class AccessibilityValidator {
-  constructor(options = {}) {
+  minContrast: number;
+  standards: string[];
+  zeroTolerance: boolean;
+  validateScreenshot: ScreenshotValidator;
+
+  constructor(options: AccessibilityOptions = {}) {
     // Validate minContrast
     if (options.minContrast !== undefined) {
       if (typeof options.minContrast !== 'number' || options.minContrast < 1 || isNaN(options.minContrast)) {
@@ -56,7 +132,7 @@ export class AccessibilityValidator {
    * @param {object} options - Validation options (minContrast, standards, etc.)
    * @returns {Promise<object>} Validation result with violations and contrast info
    */
-  static async validate(screenshotPath, options = {}) {
+  static async validate(screenshotPath: string, options: AccessibilityOptions = {}): Promise<AccessibilityValidationResult> {
     const validator = new AccessibilityValidator(options);
     return validator.validateAccessibility(screenshotPath, options);
   }
@@ -67,13 +143,13 @@ export class AccessibilityValidator {
    * @param {string | string[]} screenshotPath - Path to screenshot(s) - supports multi-image for comparison
    * @param {object} options - Validation options
    */
-  async validateAccessibility(screenshotPath, options = {}) {
+  async validateAccessibility(screenshotPath: string | string[], options: AccessibilityOptions = {}): Promise<AccessibilityValidationResult> {
     // Input validation - support both single and array
     const isArray = Array.isArray(screenshotPath);
     if (!isArray) {
       assertString(screenshotPath, 'screenshotPath');
     } else {
-      screenshotPath.forEach((path, i) => {
+      screenshotPath.forEach((path: string, i: number) => {
         assertString(path, `screenshotPath[${i}]`);
       });
     }
@@ -102,7 +178,7 @@ export class AccessibilityValidator {
         viewport: options.viewport
       };
       
-      const result = await this.validateScreenshot(screenshotPath, prompt, screenshotOptions);
+      const result = await this.validateScreenshot(screenshotPath, prompt, screenshotOptions as ValidationContext);
 
       // Check for violations
       const violations = this.detectViolations(result);
@@ -119,14 +195,14 @@ export class AccessibilityValidator {
         contrastCheck: this.extractContrastInfo(result),
         standards: this.standards
       };
-    } catch (error) {
+    } catch (error: unknown) {
       // Re-throw ValidationError as-is, wrap others
       if (error instanceof ValidationError) {
         throw error;
       }
       throw new ValidationError(
-        `Accessibility validation failed: ${error.message}`,
-        { screenshotPath, standards: this.standards, originalError: error.message }
+        `Accessibility validation failed: ${error instanceof Error ? error.message : String(error)}`,
+        { screenshotPath, standards: this.standards, originalError: error instanceof Error ? error.message : String(error) }
       );
     }
   }
@@ -134,7 +210,7 @@ export class AccessibilityValidator {
   /**
    * Build accessibility validation prompt
    */
-  buildAccessibilityPrompt(options = {}) {
+  buildAccessibilityPrompt(options: AccessibilityOptions = {}): string {
     const failText = this.zeroTolerance 
       ? `ZERO TOLERANCE (AUTOMATIC FAIL):
 - Contrast <${this.minContrast}:1 for ANY critical text = INSTANT FAIL
@@ -171,10 +247,10 @@ Return detailed assessment with:
   /**
    * Detect accessibility violations
    */
-  detectViolations(result) {
-    const zeroTolerance = [];
-    const critical = [];
-    const warnings = [];
+  detectViolations(result: ValidationResult): ViolationSummary {
+    const zeroTolerance: string[] = [];
+    const critical: string[] = [];
+    const warnings: string[] = [];
     
     const text = (result.reasoning || result.assessment || '').toLowerCase();
     
@@ -199,7 +275,7 @@ Return detailed assessment with:
   /**
    * Extract contrast information from result
    */
-  extractContrastInfo(result) {
+  extractContrastInfo(result: ValidationResult): AccessibilityValidationResult['contrastCheck'] {
     const text = result.reasoning || result.assessment || '';
     const contrastMatches = text.match(/(\d+(?:\.\d+)?):1/g);
     
@@ -229,7 +305,7 @@ Return detailed assessment with:
    * @param {Object} options - Validation options
    * @returns {Promise<Object>} Combined validation result
    */
-  async validateHybrid(page, screenshotPath, options = {}) {
+  async validateHybrid(page: ValidatorPage, screenshotPath: string, options: AccessibilityOptions = {}): Promise<HybridAccessibilityResult> {
     if (!page) {
       throw new ValidationError('validateHybrid: page is required');
     }
@@ -248,10 +324,10 @@ Return detailed assessment with:
 
     // Combine results
     const combined = {
-      passed: programmaticChecks.passed && semanticEvaluation.score >= 7,
+      passed: programmaticChecks.passed && typeof semanticEvaluation.score === 'number' && semanticEvaluation.score >= 7,
       programmatic: programmaticChecks,
       semantic: semanticEvaluation,
-      method: 'hybrid',
+      method: 'hybrid' as const,
       issues: [
         ...programmaticChecks.violations || [],
         ...semanticEvaluation.issues || []
@@ -269,8 +345,8 @@ Return detailed assessment with:
   /**
    * Run programmatic accessibility checks
    */
-  async _runProgrammaticChecks(page, options = {}) {
-    const checks = {
+  async _runProgrammaticChecks(page: ValidatorPage, options: AccessibilityOptions = {}): Promise<{ passed: boolean; violations: string[]; checks: ProgrammaticChecks }> {
+    const checks: ProgrammaticChecks = {
       contrast: { passed: true, violations: [] },
       keyboard: { passed: true, violations: [] },
       altText: { passed: true, violations: [] }
@@ -292,8 +368,8 @@ Return detailed assessment with:
       }, this.minContrast);
 
       checks.contrast = contrastResult;
-    } catch (err) {
-      checks.contrast = { passed: false, violations: [`Contrast check failed: ${err.message}`] };
+    } catch (err: unknown) {
+      checks.contrast = { passed: false, violations: [`Contrast check failed: ${err instanceof Error ? err.message : String(err)}`] };
     }
 
     try {
@@ -312,8 +388,8 @@ Return detailed assessment with:
       });
 
       checks.keyboard = keyboardResult;
-    } catch (err) {
-      checks.keyboard = { passed: false, violations: [`Keyboard check failed: ${err.message}`] };
+    } catch (err: unknown) {
+      checks.keyboard = { passed: false, violations: [`Keyboard check failed: ${err instanceof Error ? err.message : String(err)}`] };
     }
 
     try {
@@ -332,8 +408,8 @@ Return detailed assessment with:
       });
 
       checks.altText = altTextResult;
-    } catch (err) {
-      checks.altText = { passed: false, violations: [`Alt text check failed: ${err.message}`] };
+    } catch (err: unknown) {
+      checks.altText = { passed: false, violations: [`Alt text check failed: ${err instanceof Error ? err.message : String(err)}`] };
     }
 
     const allViolations = [
@@ -352,9 +428,9 @@ Return detailed assessment with:
   /**
    * Deduplicate issues
    */
-  _deduplicateIssues(issues) {
-    const seen = new Set();
-    return issues.filter(issue => {
+  _deduplicateIssues(issues: unknown[]): unknown[] {
+    const seen = new Set<string>();
+    return issues.filter((issue: unknown) => {
       const key = typeof issue === 'string' ? issue : JSON.stringify(issue);
       if (seen.has(key)) {
         return false;

@@ -13,7 +13,7 @@ import {
   checkKeyboardNavigation,
   validateStateProgrammatic,
   validateElementPosition
-} from '../../src/validators/index.mjs';
+} from '../../src/validators/index.js';
 import { ValidationError } from '../../src/errors.js';
 
 test('getContrastRatio - black on white', () => {
@@ -127,6 +127,28 @@ test('validateStateProgrammatic - invalid tolerance', async () => {
     () => validateStateProgrammatic(mockPage, { test: 'value' }, { tolerance: -1 }),
     ValidationError
   );
+});
+
+test('validateStateProgrammatic compares nested arrays by value with tolerance', async () => {
+  const mockPage = {
+    evaluate: async () => ({})
+  };
+
+  const matching = await validateStateProgrammatic(
+    mockPage,
+    { points: [10, 20] },
+    { tolerance: 1, stateExtractor: async () => ({ points: [10.5, 19.5] }) }
+  );
+  assert.equal(matching.matches, true);
+
+  const mismatch = await validateStateProgrammatic(
+    mockPage,
+    { points: [10, 20] },
+    { tolerance: 1, stateExtractor: async () => ({ points: [10, 24, 30] }) }
+  );
+  assert.equal(mismatch.matches, false);
+  assert.ok(mismatch.discrepancies.some((entry) => entry.includes('Array length mismatch')));
+  assert.ok(mismatch.discrepancies.some((entry) => entry.includes('points[1]')));
 });
 
 test('validateElementPosition - invalid page', async () => {

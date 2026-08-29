@@ -160,12 +160,14 @@ release after the deprecation window.
 
 **Status:** the shared public-result normalizer, private
 `position-counterbalance` policy, Vitest/Jest adapter, page-validation adapter,
-Playwright adapter, and ensemble judge boundary are now typed compiled slices.
-The ensemble correctness repair landed before its source conversion: voting
-ignores failed or invalid scores, reports availability explicitly, and makes
-ties and zero-effective-weight outcomes deterministic. The public `./ensemble`
-route preserves its scalar helpers while the judge contract is generated from
-TypeScript.
+Playwright adapter, ensemble judge boundary, temporal core, and temporal
+capture are now typed compiled slices. The ensemble correctness repair landed
+before its source conversion: voting ignores failed or invalid scores, reports
+availability explicitly, and makes ties and zero-effective-weight outcomes
+deterministic. Temporal graph traversal now preserves caller graph inputs;
+prompt selection, multi-scale coordinate handling, and scheduler/cache behavior
+have dedicated correctness repairs. The public `./ensemble` route preserves its
+scalar helpers while the judge contract is generated from TypeScript.
 
 **ADR 0001 review resolved:** [ADR 0003](../adr/0003-temporary-declaration-composition-overlays.md)
 accepts one temporary composition overlay with an enforced expiry condition.
@@ -175,13 +177,13 @@ bias mitigation, and research-validation helpers. The route does not count as
 fully generated until those helpers migrate and the overlay is deleted. Strict
 packed consumer compilation and runtime/type export parity remain mandatory.
 
-**Execution order:** with counterbalance, Vitest/Jest, page validation,
-Playwright, ensemble correctness, and the typed ensemble boundary complete,
-migrate temporal core next. Then take temporal orchestration, multi-scale, and
-formatting together only where their contracts require it; follow with game,
-perception pure kernels and sampler, then the video and CLI integrations.
-Video and CLI remain last because they couple provider, process, filesystem,
-and packaging behavior. Each slice keeps existing package subpath names and
+**Execution order:** temporal core and capture are complete. Temporal
+orchestration TypeScript is the next in-progress slice. It is followed by
+multi-scale, formatting, and the temporal barrel, with public temporal types
+remaining handwritten until that group is complete. Then take game, perception
+pure kernels and sampler, and finally the video and CLI integrations. Video and
+CLI remain last because they couple provider, process, filesystem, and
+packaging behavior. Each slice keeps existing package subpath names and
 replaces its handwritten declaration overlay only after the generated
 declaration and clean packed install agree.
 
@@ -227,11 +229,14 @@ made until real independently reviewed labels exist.
 ## Explicitly parked
 
 - Prediction-powered perception auditing and learned judge aggregation remain governed by `docs/judge-graph.md`; they require a gold set and are not pulled into core hardening.
+- Temporal coalescing and adaptive-sampling execution are parked design and
+  correctness work. Their present abstractions and tests are not evidence that
+  either execution strategy is implemented or ready for a product claim.
 - Utility-barrel narrowing and session-cost tracking disposition wait for consumer evidence.
 - Aesthetic auto-fix and autonomous remediation remain out of scope.
 
 ## Review trigger
 
-Re-run this roadmap after temporal core lands, when the ensemble overlay is
-retired or a second overlay is proposed, or when a consumer survey changes the
-supported-surface assumptions.
+Re-run this roadmap after temporal orchestration lands, when the ensemble
+overlay is retired or a second overlay is proposed, or when a consumer survey
+changes the supported-surface assumptions.

@@ -13,7 +13,7 @@
  */
 
 import { warn } from './logger.mjs';
-import { ValidationError } from './errors.mjs';
+import { ValidationError } from '#errors';
 
 /**
  * Default calibration profiles per provider.

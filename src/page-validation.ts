@@ -2,7 +2,7 @@
 
 import { validateScreenshot } from '#judge';
 import { extractRenderedCode } from './multi-modal.mjs';
-import { ValidationError } from './errors.mjs';
+import { ValidationError } from './errors.js';
 import { validatePrompt } from './validation.mjs';
 import { log } from './logger.mjs';
 import { captureStableScreenshot } from './stable-capture.mjs';

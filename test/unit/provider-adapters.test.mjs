@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import { getProviderAdapter } from '#provider-adapters';
-import { ProviderError } from '../../src/errors.mjs';
+import { ProviderError } from '../../src/errors.js';
 
 const SCHEMA = { type: 'object' };
 

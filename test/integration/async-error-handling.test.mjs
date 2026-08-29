@@ -10,7 +10,7 @@ import assert from 'node:assert';
 import { validateScreenshot } from '#judge';
 import { getCached, setCached } from '../../src/cache.mjs';
 import { BatchOptimizer } from '../../src/batch-optimizer.mjs';
-import { ValidationError } from '../../src/errors.mjs';
+import { ValidationError } from '../../src/errors.js';
 
 describe('Async Error Handling', () => {
   describe('Unhandled Promise Rejections', () => {

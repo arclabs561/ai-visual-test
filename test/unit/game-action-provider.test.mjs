@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { judgeGameAction } from '#judge';
-import { ProviderError, TimeoutError } from '../../src/errors.mjs';
+import { ProviderError, TimeoutError } from '../../src/errors.js';
 
 const PNG_1X1 = Buffer.from(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=',

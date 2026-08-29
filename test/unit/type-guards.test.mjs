@@ -29,7 +29,7 @@ import {
   pick,
   getProperty
 } from '../../src/type-guards.mjs';
-import { ValidationError } from '../../src/errors.mjs';
+import { ValidationError } from '../../src/errors.js';
 
 describe('Type Guards', () => {
   describe('isObject', () => {
@@ -479,4 +479,3 @@ describe('Utility Functions', () => {
     });
   });
 });
-

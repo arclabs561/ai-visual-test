@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { validateScreenshot } from '#judge';
-import { ConfigError } from '../errors.mjs';
+import { ConfigError } from '../errors.js';
 import { captureStableScreenshot as captureStable } from '../stable-capture.mjs';
 import { validatePage } from '#page-validation';
 import type { PageLike, PageValidationOptions, ScreenshotPage } from '#page-validation';

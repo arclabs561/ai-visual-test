@@ -2,7 +2,7 @@
 
 import { validateScreenshot } from '#judge';
 import { validateComparison } from '#page-validation';
-import { ConfigError } from '../errors.mjs';
+import { ConfigError } from '../errors.js';
 
 export interface MatcherResult {
   message(): string;

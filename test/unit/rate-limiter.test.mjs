@@ -10,7 +10,7 @@ import {
   getRateLimiter,
   resetRateLimiter
 } from '../../src/utils/rate-limiter.mjs';
-import { ValidationError } from '../../src/errors.mjs';
+import { ValidationError } from '../../src/errors.js';
 
 describe('Rate Limiter', () => {
   let limiter;
@@ -137,4 +137,3 @@ describe('Rate Limiter', () => {
     });
   });
 });
-

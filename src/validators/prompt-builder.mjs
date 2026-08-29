@@ -11,7 +11,7 @@
  */
 
 import { buildRubricPrompt } from '../rubrics.mjs';
-import { ValidationError } from '../errors.mjs';
+import { ValidationError } from '#errors';
 
 /**
  * Generic prompt builder with template support
@@ -215,4 +215,3 @@ ${JSON.stringify(context, null, 2)}`;
     this.templates[name] = template;
   }
 }
-

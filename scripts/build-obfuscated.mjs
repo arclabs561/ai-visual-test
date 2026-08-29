@@ -37,7 +37,7 @@ const KEEP_READABLE = [
   'src/cache.mjs',           // Cache system
   'src/validators/',         // Validators directory
   'src/utils/',              // Utilities directory
-  'src/errors.mjs',          // Error handling
+  'src/errors.js',           // Error handling
   'src/config.mjs',          // Configuration
 ];
 

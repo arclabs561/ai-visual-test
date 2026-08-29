@@ -11,7 +11,7 @@ import {
   multiPerspectiveEvaluation,
   multiModalValidation
 } from '../../src/multi-modal.mjs';
-import { ValidationError } from '../../src/errors.mjs';
+import { ValidationError } from '../../src/errors.js';
 import { createMockPage } from '../helpers/mock-page.mjs';
 import { validateScreenshot } from '#judge';
 

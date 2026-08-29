@@ -5,7 +5,7 @@ import { spawnSync } from 'node:child_process';
 import { basename, extname, join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { VLLMJudge } from '#judge';
-import { FileError, ProviderError, TimeoutError, ValidationError } from './errors.mjs';
+import { FileError, ProviderError, TimeoutError, ValidationError } from './errors.js';
 import { createReviewTask, type ReviewOutcome } from '#review-contract';
 import { resolveTaskStructuredOutput } from '#structured-output';
 import { executeStructuredTask } from '#structured-task';

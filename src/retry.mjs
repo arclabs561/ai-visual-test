@@ -5,7 +5,7 @@
  * configurable retry counts, and error classification.
  */
 
-import { ProviderError, TimeoutError } from './errors.mjs';
+import { ProviderError, TimeoutError } from '#errors';
 import { log, warn } from './logger.mjs';
 import { RETRY_CONSTANTS } from './constants.mjs';
 
@@ -163,4 +163,3 @@ export function enhanceErrorMessage(error, attempts, operation) {
   
   return `${baseMessage} (${context.join(', ')})`;
 }
-

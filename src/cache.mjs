@@ -23,7 +23,7 @@ import { join, dirname, normalize, resolve } from 'path';
 import { createHash } from 'crypto';
 import { fileURLToPath } from 'url';
 import { Mutex } from 'async-mutex';
-import { CacheError, FileError } from './errors.mjs';
+import { CacheError, FileError } from '#errors';
 import { warn, log } from './logger.mjs';
 
 const __filename = fileURLToPath(import.meta.url);

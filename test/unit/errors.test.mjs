@@ -10,7 +10,7 @@ import {
   FileError,
   isAIBrowserTestError,
   isErrorType
-} from '../../src/errors/index.mjs';
+} from '../../src/errors/index.js';
 
 test('AIBrowserTestError - basic functionality', () => {
   const error = new AIBrowserTestError('Test error', 'TEST_ERROR', { detail: 'test' });
@@ -123,5 +123,15 @@ test('Error inheritance', () => {
   assert(error instanceof Error);
 });
 
+test('root and errors subpath share error class identity', async () => {
+  const packageName = '@arclabs561/ai-visual-test';
+  const root = await import(packageName);
+  const errors = await import(`${packageName}/errors`);
 
+  assert.strictEqual(root.ValidationError, errors.ValidationError);
+  assert.strictEqual(root.ConfigError, errors.ConfigError);
+  assert.strictEqual(root.ProviderError, errors.ProviderError);
+  assert.strictEqual(root.FileError, errors.FileError);
+  assert(new root.ValidationError('shared identity') instanceof errors.ValidationError);
+});
 

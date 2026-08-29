@@ -8,7 +8,7 @@
  */
 
 import { validateScreenshot } from '#judge';
-import { ValidationError } from '../errors.mjs';
+import { ValidationError } from '#errors';
 import { assertString, assertObject } from '../type-guards.mjs';
 import {
   checkAllTextContrast,

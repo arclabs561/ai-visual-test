@@ -70,6 +70,12 @@ try {
     cwd: consumer,
     stdio: 'inherit',
   });
+
+  const errorsProgram = `const packageName = ${JSON.stringify(installedManifest.name)}; const root = await import(packageName); const errors = await import(packageName + '/errors'); for (const name of ['AIBrowserTestError', 'ValidationError', 'CacheError', 'ConfigError', 'ProviderError', 'TimeoutError', 'FileError', 'StateMismatchError', 'isAIBrowserTestError', 'isErrorType', 'retryWithBackoff', 'isRetryableError', 'calculateBackoff', 'enhanceErrorMessage', 'initErrorHandlers']) { if (!(name in errors)) throw new Error('Missing packed errors export: ' + name); } for (const name of ['ValidationError', 'ConfigError', 'ProviderError', 'FileError']) { if (root[name] !== errors[name]) throw new Error('Root/errors class identity failed for ' + name); } const provider = new root.ProviderError('packed provider failure', 'packed'); if (!errors.isErrorType(provider, errors.ProviderError) || provider.provider !== 'packed') throw new Error('Packed errors narrowing contract failed');`;
+  execFileSync(process.execPath, ['--input-type=module', '--eval', errorsProgram], {
+    cwd: consumer,
+    stdio: 'inherit',
+  });
   const ensembleTypeConsumer = `import type { ValidationResult } from ${JSON.stringify(installedManifest.name)}; import { EnsembleJudge, type Availability, type BiasDetection, type Disagreement, type EnsembleResult, type JudgeLike, evaluateWithCounterBalance, mitigateBias } from ${JSON.stringify(`${installedManifest.name}/ensemble`)}; const judges: JudgeLike[] = [{ provider: 'packed-types', async judgeScreenshot() { return { score: 8, issues: [], reasoning: 'typed' }; } }]; const result: EnsembleResult = await new EnsembleJudge({ judges }).evaluate('packed.png', 'typed package route'); const availability: Availability = result.availability; const disagreement: Disagreement = result.disagreement; const compatibleBias: BiasDetection = { hasBias: true, biases: [{ type: 'verbosity', score: 0.5 }], severity: 'medium', recommendations: [] }; const validation: ValidationResult = { enabled: true, score: 8, issues: [], recommendations: [], reasoning: 'typed' }; const mitigated = mitigateBias(validation, compatibleBias); const counterBalanced = await evaluateWithCounterBalance(async () => ({ enabled: true, score: 8, issues: [], recommendations: [], reasoning: 'typed' }), 'packed.png', 'typed package route', { baseline: 'baseline.png' }, { baselinePath: 'baseline.png' }); const status = counterBalanced.counterBalance?.status; void availability; void disagreement; void mitigated; void status;`;
   const typeConsumerPath = join(consumer, 'ensemble-consumer.ts');
   writeFileSync(typeConsumerPath, ensembleTypeConsumer);
@@ -114,6 +120,14 @@ try {
   const extractorConsumerPath = join(consumer, 'extractor-consumer.ts');
   writeFileSync(extractorConsumerPath, extractorTypeConsumer);
   execFileSync(process.execPath, [join(ROOT, 'node_modules', 'typescript', 'bin', 'tsc'), '--noEmit', '--strict', '--target', 'ES2022', '--module', 'NodeNext', '--moduleResolution', 'NodeNext', '--skipLibCheck', 'false', extractorConsumerPath], {
+    cwd: consumer,
+    stdio: 'inherit',
+  });
+
+  const errorsTypeConsumer = `import { ProviderError, TimeoutError, isErrorType } from ${JSON.stringify(`${installedManifest.name}/errors`)}; function consume(error: unknown): string { if (isErrorType(error, ProviderError)) { const provider: string = error.provider; return provider; } if (isErrorType(error, TimeoutError)) { const timeout: number = error.timeout; return String(timeout); } return 'other'; } void consume;`;
+  const errorsConsumerPath = join(consumer, 'errors-consumer.ts');
+  writeFileSync(errorsConsumerPath, errorsTypeConsumer);
+  execFileSync(process.execPath, [join(ROOT, 'node_modules', 'typescript', 'bin', 'tsc'), '--noEmit', '--strict', '--target', 'ES2022', '--module', 'NodeNext', '--moduleResolution', 'NodeNext', '--skipLibCheck', 'false', errorsConsumerPath], {
     cwd: consumer,
     stdio: 'inherit',
   });

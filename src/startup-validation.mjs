@@ -5,7 +5,7 @@
  * Provides clear error messages if required configuration is missing.
  */
 
-import { ConfigError } from './errors.mjs';
+import { ConfigError } from '#errors';
 import { getConfig } from './config.mjs';
 import { warn, error } from './logger.mjs';
 import { PROVIDER_NAMES, canonicalizeProviderName } from './provider-data.mjs';

@@ -5,7 +5,7 @@
  * Supports both request-based and cost-based limiting.
  */
 
-import { ValidationError } from '../errors.mjs';
+import { ValidationError } from '#errors';
 
 /**
  * Rate Limiter Class
@@ -141,4 +141,3 @@ export function getRateLimiter(options = {}) {
 export function resetRateLimiter() {
   globalRateLimiter = null;
 }
-

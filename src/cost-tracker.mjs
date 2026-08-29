@@ -8,7 +8,7 @@
 import { getCached, setCached } from './cache.mjs';
 import { warn, log } from './logger.mjs';
 import { PROVIDER_CONFIGS, MODEL_TIERS } from './provider-data.mjs';
-import { ConfigError } from './errors.mjs';
+import { ConfigError } from '#errors';
 
 /**
  * Cost Tracker Class
@@ -448,4 +448,3 @@ export function estimateCost(provider, options = {}) {
     currency: 'USD'
   };
 }
-

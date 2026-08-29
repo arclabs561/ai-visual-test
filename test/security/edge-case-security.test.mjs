@@ -10,7 +10,7 @@ import assert from 'node:assert';
 import { validateFilePath } from '../../src/validation.mjs';
 import { sanitizePrompt, detectPromptInjection } from '../../src/utils/prompt-sanitizer.mjs';
 import { sanitizeForLogging } from '../../src/utils/log-sanitizer.mjs';
-import { ValidationError } from '../../src/errors.mjs';
+import { ValidationError } from '../../src/errors.js';
 
 describe('Security Edge Cases', () => {
   describe('Path Traversal Attacks', () => {
@@ -261,4 +261,3 @@ describe('Security Edge Cases', () => {
     });
   });
 });
-

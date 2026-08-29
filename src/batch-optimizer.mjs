@@ -29,7 +29,7 @@ import { createHash } from 'crypto';
  * @class BatchOptimizer
  */
 import { API_CONSTANTS, BATCH_OPTIMIZER_CONSTANTS } from './constants.mjs';
-import { TimeoutError, ValidationError } from './errors.mjs';
+import { TimeoutError, ValidationError } from '#errors';
 import { warn } from './logger.mjs';
 
 export class BatchOptimizer {

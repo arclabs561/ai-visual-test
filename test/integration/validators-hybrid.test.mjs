@@ -15,7 +15,7 @@ import {
   _injectValidateScreenshot,
   _resetValidateScreenshot
 } from '../../src/validators/hybrid-validator.mjs';
-import { ValidationError } from '../../src/errors.mjs';
+import { ValidationError } from '../../src/errors.js';
 
 // Mock Playwright page object
 function createMockPage() {
@@ -304,4 +304,3 @@ test('validateWithProgrammaticContext - builds enhanced prompt', async () => {
     _resetValidateScreenshot();
   }
 });
-

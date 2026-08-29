@@ -10,7 +10,7 @@
  */
 
 import { validateScreenshot } from '#judge';
-import { ValidationError, StateMismatchError } from '../errors.mjs';
+import { ValidationError, StateMismatchError } from '#errors';
 import { assertString, assertObject } from '../type-guards.mjs';
 
 /**

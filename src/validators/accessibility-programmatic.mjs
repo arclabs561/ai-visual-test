@@ -9,7 +9,7 @@
  * Based on WCAG 2.1 contrast ratio algorithm: https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html
  */
 
-import { ValidationError } from '../errors.mjs';
+import { ValidationError } from '#errors';
 import { assertString, assertNumber } from '../type-guards.mjs';
 
 /**
@@ -342,4 +342,3 @@ export async function checkKeyboardNavigation(page) {
   
   return result;
 }
-

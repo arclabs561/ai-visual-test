@@ -5,7 +5,7 @@
  * These functions enable better static analysis and runtime safety.
  */
 
-import { ValidationError } from './errors.mjs';
+import { ValidationError } from '#errors';
 
 /**
  * Type guard: Check if value is a non-null object

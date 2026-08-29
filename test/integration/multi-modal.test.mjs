@@ -1,5 +1,5 @@
 /**
- * Tests for multi-modal.mjs
+ * Tests for the multi-modal API.
  * Requires mocking Playwright Page objects
  */
 
@@ -10,7 +10,7 @@ import {
   captureTemporalScreenshots,
   multiPerspectiveEvaluation,
   multiModalValidation
-} from '../../src/multi-modal.mjs';
+} from '../../src/multi-modal.js';
 import { ValidationError } from '../../src/errors.js';
 import { createMockPage } from '../helpers/mock-page.mjs';
 import { validateScreenshot } from '#judge';
@@ -28,6 +28,9 @@ describe('extractRenderedCode', () => {
     assert.ok('criticalCSS' in result);
     assert.ok('domStructure' in result);
     assert.ok('timestamp' in result);
+    assert.deepEqual(result.viewport, { width: 1280, height: 720 });
+    assert.equal(result.stylesheets[0].rules[0].selectorText, 'body');
+    assert.equal(result.stylesheets[0].rules[0].cssText, 'body { color: black; }');
   });
 
   it('should throw ValidationError for invalid page object', async () => {
@@ -200,6 +203,16 @@ describe('multiPerspectiveEvaluation', () => {
     
     assert.ok(Array.isArray(result));
     assert.ok(result.length >= 3); // At least 3 default personas
+  });
+
+  it('supports persona evaluation when rendered-code capture is intentionally disabled', async () => {
+    const result = await multiPerspectiveEvaluation(
+      async () => ({ enabled: true, score: 7, issues: [], recommendations: [] }),
+      'test-screenshot.png',
+      null,
+    );
+
+    assert.ok(result.length >= 3);
   });
 
   it('should throw ValidationError for invalid validate function', async () => {

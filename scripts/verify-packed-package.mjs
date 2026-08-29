@@ -40,6 +40,11 @@ try {
     cwd: consumer,
     stdio: 'inherit',
   });
+  const multiModalProgram = `const multiModal = await import(${JSON.stringify(`${installedManifest.name}/multi-modal`)}); const expected = ['captureTemporalScreenshots', 'checkCrossModalConsistency', 'composeComparisonPrompt', 'composeMultiModalPrompt', 'composeSingleImagePrompt', 'extractRenderedCode', 'multiModalValidation', 'multiPerspectiveEvaluation', 'validateExperienceConsistency']; const actual = Object.keys(multiModal).sort(); if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error('Unexpected packed multi-modal exports: ' + actual.join(','));`;
+  execFileSync(process.execPath, ['--input-type=module', '--eval', multiModalProgram], {
+    cwd: consumer,
+    stdio: 'inherit',
+  });
   const matcherProgram = `for (const route of ['vitest', 'jest']) { const integration = await import(${JSON.stringify(installedManifest.name)} + '/' + route); const registered = {}; integration.createMatchers({ extend(matchers) { Object.assign(registered, matchers); } }); for (const name of ['toPassVisualCheck', 'toHaveVisualScore', 'toMatchVisually']) { if (typeof registered[name] !== 'function') throw new Error('Missing ' + route + ' matcher: ' + name); } const outcome = await registered.toPassVisualCheck(123, 'type check'); if (outcome.pass !== false || !outcome.message().includes('string')) throw new Error('Unexpected ' + route + ' matcher outcome'); }`;
   execFileSync(process.execPath, ['--input-type=module', '--eval', matcherProgram], {
     cwd: consumer,
@@ -142,6 +147,14 @@ try {
   const temporalCaptureConsumerPath = join(consumer, 'temporal-capture-consumer.ts');
   writeFileSync(temporalCaptureConsumerPath, temporalCaptureTypeConsumer);
   execFileSync(process.execPath, [join(ROOT, 'node_modules', 'typescript', 'bin', 'tsc'), '--noEmit', '--strict', '--target', 'ES2022', '--module', 'NodeNext', '--moduleResolution', 'NodeNext', '--skipLibCheck', 'false', temporalCaptureConsumerPath], {
+    cwd: consumer,
+    stdio: 'inherit',
+  });
+
+  const multiModalTypeConsumer = `import { extractRenderedCode, multiModalValidation, type MultiModalPage, type MultiModalValidationResult, type RenderedCode } from ${JSON.stringify(`${installedManifest.name}/multi-modal`)}; import type { ValidationResult } from ${JSON.stringify(installedManifest.name)}; declare const page: MultiModalPage; const validate = async (): Promise<ValidationResult> => ({ enabled: true, score: 8, issues: [], recommendations: [] }); async function consume(): Promise<void> { const rendered: RenderedCode = await extractRenderedCode(page, { selectors: ['main'], htmlLimit: 2000 }); const result: MultiModalValidationResult = await multiModalValidation(validate, page, 'packed-types', { captureCode: false }); if (result.renderedCode !== null) { const width: number = result.renderedCode.viewport.width; void width; } const html: string = rendered.html; void html; } void consume;`;
+  const multiModalConsumerPath = join(consumer, 'multi-modal-consumer.ts');
+  writeFileSync(multiModalConsumerPath, multiModalTypeConsumer);
+  execFileSync(process.execPath, [join(ROOT, 'node_modules', 'typescript', 'bin', 'tsc'), '--noEmit', '--strict', '--target', 'ES2022', '--module', 'NodeNext', '--moduleResolution', 'NodeNext', '--skipLibCheck', 'false', multiModalConsumerPath], {
     cwd: consumer,
     stdio: 'inherit',
   });

@@ -1,7 +1,7 @@
 /** Page-validation convenience functions with no Playwright dependency. */
 
 import { validateScreenshot } from '#judge';
-import { extractRenderedCode } from './multi-modal.mjs';
+import { extractRenderedCode } from './multi-modal.js';
 import { ValidationError } from './errors.js';
 import { validatePrompt } from './validation.mjs';
 import { log } from './logger.mjs';

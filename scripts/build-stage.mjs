@@ -50,7 +50,7 @@ copyTestAssets(join(ROOT, 'test'), join(STAGE, 'test'));
 
 const packageJson = JSON.parse(readFileSync(join(STAGE, 'package.json'), 'utf8'));
 packageJson.private = true;
-for (const subpath of ['.', './validators', './temporal', './ensemble', './game', './perception', './video', './extractors', './errors', './playwright', './vitest', './jest']) {
+for (const subpath of ['.', './validators', './temporal', './multi-modal', './ensemble', './game', './perception', './video', './extractors', './errors', './playwright', './vitest', './jest']) {
   const route = packageJson.exports?.[subpath];
   if (!route || typeof route !== 'object') {
     throw new Error(`Missing staged package route: ${subpath}`);
@@ -66,6 +66,9 @@ for (const subpath of ['.', './validators', './temporal', './ensemble', './game'
   } else if (subpath === './temporal') {
     route.import = './src/temporal/index.js';
     route.types = './src/temporal/index.d.ts';
+  } else if (subpath === './multi-modal') {
+    route.import = './src/multi-modal/index.js';
+    route.types = './src/multi-modal/index.d.ts';
   } else if (subpath === './game') {
     route.import = './src/game/index.js';
     route.types = './src/game/index.d.ts';

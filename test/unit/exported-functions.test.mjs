@@ -11,7 +11,7 @@ import {
 import {
   checkCrossModalConsistency,
   validateExperienceConsistency
-} from '../../src/multi-modal/index.mjs';
+} from '../../src/multi-modal/index.js';
 
 describe('Exported Functions Tests', () => {
 

@@ -538,8 +538,8 @@ async function simulatePersonaInteraction(page, persona, goal) {
  * Extract rendered code (re-export from multi-modal)
  */
 async function extractRenderedCode(page) {
-  // Re-export from multi-modal.mjs
-  const { extractRenderedCode } = await import('./multi-modal.mjs');
+  // Re-export from the generated multi-modal module.
+  const { extractRenderedCode } = await import('./multi-modal.js');
   return extractRenderedCode(page);
 }
 

@@ -6,7 +6,7 @@
 
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { calculateCostComparison, optimizeCost } from '../../src/cost-optimization.mjs';
+import { calculateCostComparison, optimizeCost } from '../../src/cost-optimization.js';
 
 describe('Cost Optimization', () => {
   describe('calculateCostComparison', () => {

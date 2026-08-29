@@ -2,7 +2,7 @@
  * Adaptive batching that honors latency requirements for reactive validation.
  */
 
-import { BatchOptimizer as BatchOptimizerImplementation } from './batch-optimizer.mjs';
+import { BatchOptimizer as BatchOptimizerImplementation } from './batch-optimizer.js';
 import type { BatchValidationResult, ValidationContext, ValidationResult } from './public-contract.js';
 
 export interface LatencyAwareBatchOptimizerOptions extends ValidationContext {

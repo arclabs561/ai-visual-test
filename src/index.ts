@@ -33,9 +33,9 @@ export function extractSemanticInfo(judgment: unknown): SemanticInfo {
 }
 
 export { createConfig, getConfig } from './config.js';
-export { validateStartup } from './startup-validation.mjs';
+export { validateStartup } from './startup-validation.js';
 export { getCached, setCached, clearCache, getCacheStats } from './cache.js';
-export { estimateCost } from './cost-tracker.mjs';
+export { estimateCost } from './cost-tracker.js';
 export { ValidationError, ConfigError, ProviderError, FileError } from './errors.js';
 export { createMatchers } from '#playwright-integration';
 export { VideoJudge, judgeVideo } from '#video';

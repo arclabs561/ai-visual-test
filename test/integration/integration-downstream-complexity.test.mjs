@@ -18,7 +18,7 @@ import {
   validateScreenshot,
   createConfig
 } from '../../src/index.js';
-import { BatchOptimizer } from '../../src/batch-optimizer.mjs';
+import { BatchOptimizer } from '../../src/batch-optimizer.js';
 import { experiencePageAsPersona, experiencePageWithPersonas } from '../../src/persona-experience.js';
 import { captureTemporalScreenshots, extractRenderedCode, multiModalValidation, multiPerspectiveEvaluation } from '../../src/multi-modal.js';
 import { aggregateTemporalNotes, formatNotesForPrompt } from '#temporal-core';

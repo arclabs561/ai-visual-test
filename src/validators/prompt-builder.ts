@@ -10,7 +10,7 @@
  * - Variable substitution
  */
 
-import { buildRubricPrompt } from '../rubrics.mjs';
+import { buildRubricPrompt } from '../rubrics.js';
 import { ValidationError } from '#errors';
 import type { Rubric as PublicRubric } from '#public-contract';
 

@@ -20,4 +20,4 @@ export {
   enhanceErrorMessage,
 } from '../retry.js';
 
-export { initErrorHandlers } from '../error-handler.mjs';
+export { initErrorHandlers } from '../error-handler.js';

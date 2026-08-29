@@ -6,10 +6,21 @@
  * and reduce bias from superficial features (LLMs-as-Judges Survey, arXiv:2412.05579).
  */
 
+import type { Rubric } from './public-contract.js';
+
+/** Options that control supplemental calibration instructions in a rubric prompt. */
+export interface RubricPromptOptions {
+  /** Score-level labels whose images the caller attaches separately. */
+  referenceImages?: Readonly<Record<number, string>>;
+}
+
 /**
- * Default scoring rubric for screenshot validation
+ * Default scoring rubric for screenshot validation.
+ *
+ * This is intentionally a regular object rather than frozen data: legacy callers
+ * may customize a returned rubric before passing it back to `buildRubricPrompt`.
  */
-export const DEFAULT_RUBRIC = {
+export const DEFAULT_RUBRIC: Rubric = {
   score: {
     description: 'Overall quality score from 0-10',
     criteria: {
@@ -83,9 +94,13 @@ export const DEFAULT_RUBRIC = {
  *   this function only generates the text prompt referencing them.
  * @returns {string} Formatted rubric prompt text
  */
-export function buildRubricPrompt(rubric = null, includeDimensions = true, options = {}) {
+export function buildRubricPrompt(
+  rubric: Rubric | null = null,
+  includeDimensions = true,
+  options: RubricPromptOptions = {},
+): string {
   const { referenceImages = null } = options;
-  const rubricToUse = rubric || DEFAULT_RUBRIC;
+  const rubricToUse = rubric ?? DEFAULT_RUBRIC;
   let prompt = `## EVALUATION RUBRIC
 
 ### Scoring Scale (0-10):
@@ -122,7 +137,7 @@ JSON: {"score": 3, "assessment": "fail", "issues": ["broken layout", "critical c
 8. Provide reasoning for your score`;
 
   // Visual anchoring: reference images for score levels (Prometheus-Vision, arXiv:2401.06591)
-  if (referenceImages && typeof referenceImages === 'object') {
+  if (referenceImages) {
     const levels = Object.keys(referenceImages).map(Number).sort((a, b) => b - a);
     if (levels.length > 0) {
       prompt += `\n\n### Visual Reference Anchors:
@@ -198,8 +213,8 @@ Provide your evaluation as JSON:
  * @param {string} testType - Test type identifier (e.g., 'payment-screen', 'gameplay', 'form')
  * @returns {import('#public-contract').Rubric} Rubric configured for the test type
  */
-export function getRubricForTestType(testType) {
-  const testTypeRubrics = {
+export function getRubricForTestType(testType: string): Rubric {
+  const testTypeRubrics: Readonly<Record<string, Rubric>> = {
     'payment-screen': {
       ...DEFAULT_RUBRIC,
       dimensions: {

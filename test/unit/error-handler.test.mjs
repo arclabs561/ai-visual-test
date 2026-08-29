@@ -1,11 +1,11 @@
 /**
- * Tests for error-handler.mjs
+ * Tests for error-handler.js
  */
 
 import '../test-setup.mjs';
 import { describe, it, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert';
-import { initErrorHandlers } from '../../src/error-handler.mjs';
+import { initErrorHandlers } from '../../src/error-handler.js';
 
 describe('Error Handler', () => {
   let originalListeners;
@@ -90,5 +90,57 @@ describe('Error Handler', () => {
       initErrorHandlers();
     });
   });
-});
 
+  it('serializes Error rejection reasons without exposing the Error object', () => {
+    const messages = [];
+    const originalError = console.error;
+    console.error = (...args) => messages.push(args);
+    try {
+      initErrorHandlers();
+      const listener = process.listeners('unhandledRejection').at(-1);
+      assert.ok(listener, 'Should register an unhandledRejection listener');
+      const rejection = new Error('network unavailable');
+      listener(rejection, Promise.resolve());
+
+      assert.strictEqual(messages.length, 1);
+      const [label, details] = messages[0];
+      assert.strictEqual(label, '[Unhandled Rejection]');
+      assert.deepStrictEqual(details.reason.message, 'network unavailable');
+      assert.strictEqual(details.reason.name, 'Error');
+      assert.ok(typeof details.reason.stack === 'string');
+      assert.strictEqual(details.promise, '[object Promise]');
+    } finally {
+      console.error = originalError;
+    }
+  });
+
+  it('preserves non-Error rejection reasons and process warning details', () => {
+    const messages = [];
+    const originalError = console.error;
+    console.error = (...args) => messages.push(args);
+    try {
+      initErrorHandlers();
+      const rejectionListener = process.listeners('unhandledRejection').at(-1);
+      const warningListener = process.listeners('warning').at(-1);
+      assert.ok(rejectionListener, 'Should register an unhandledRejection listener');
+      assert.ok(warningListener, 'Should register a warning listener');
+
+      rejectionListener({ code: 'UNAVAILABLE' }, Promise.resolve());
+      const warning = new Error('deprecated option');
+      warning.name = 'DeprecationWarning';
+      warningListener(warning);
+
+      assert.strictEqual(messages.length, 2);
+      assert.deepStrictEqual(messages[0], [
+        '[Unhandled Rejection]', { reason: { code: 'UNAVAILABLE' }, promise: '[object Promise]' }
+      ]);
+      const [label, details] = messages[1];
+      assert.strictEqual(label, '[Process Warning]');
+      assert.strictEqual(details.name, 'DeprecationWarning');
+      assert.strictEqual(details.message, 'deprecated option');
+      assert.ok(typeof details.stack === 'string');
+    } finally {
+      console.error = originalError;
+    }
+  });
+});

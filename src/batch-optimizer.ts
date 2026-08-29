@@ -31,8 +31,81 @@ import { createHash } from 'crypto';
 import { API_CONSTANTS, BATCH_OPTIMIZER_CONSTANTS } from './constants.js';
 import { TimeoutError, ValidationError } from '#errors';
 import { warn } from './logger.js';
+import type { BatchValidationResult, ValidationContext, ValidationResult } from '#public-contract';
+
+export interface BatchOptimizerOptions {
+  maxConcurrency?: number;
+  batchSize?: number;
+  cacheEnabled?: boolean;
+  maxQueueSize?: number;
+  requestTimeout?: number;
+}
+
+export type BatchValidateFunction = (
+  imagePath: string,
+  prompt: string,
+  context: ValidationContext,
+) => Promise<ValidationResult> | ValidationResult;
+
+export interface BatchQueueEntry {
+  imagePath: string;
+  prompt: string;
+  context: ValidationContext;
+  validateFn: BatchValidateFunction | null;
+  queueStartTime: number;
+  resolve(value: ValidationResult): void;
+  reject(error: unknown): void;
+}
+
+export interface BatchOptimizerMetrics {
+  queueRejections: number;
+  timeouts: number;
+  totalQueued: number;
+  totalProcessed: number;
+  averageWaitTime: number;
+  waitTimes: number[];
+}
+
+export interface BatchCacheStats {
+  cacheSize: number;
+  queueLength: number;
+  activeRequests: number;
+}
+
+export interface BatchPerformanceMetrics {
+  queue: {
+    currentLength: number;
+    maxSize: number;
+    rejections: number;
+    totalQueued: number;
+    totalProcessed: number;
+    averageWaitTime: number;
+    timeouts: number;
+    timeoutRate: number;
+    rejectionRate: number;
+  };
+  concurrency: {
+    active: number;
+    max: number;
+    utilization: number;
+  };
+  cache: BatchCacheStats;
+}
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
 
 export class BatchOptimizer {
+  queue: BatchQueueEntry[];
+  processing: boolean;
+  cache: Map<string, ValidationResult> | null;
+  batchSize: number;
+  maxConcurrency: number;
+  activeRequests: number;
+  maxQueueSize: number;
+  requestTimeout: number;
+  metrics: BatchOptimizerMetrics;
   /**
    * @param {{
    *   maxConcurrency?: number;
@@ -42,7 +115,7 @@ export class BatchOptimizer {
    *   requestTimeout?: number;
    * }} [options={}] - Optimizer options
    */
-  constructor(options = {}) {
+  constructor(options: BatchOptimizerOptions = {}) {
     const {
       maxConcurrency = API_CONSTANTS.DEFAULT_MAX_CONCURRENCY,
       batchSize = 3,
@@ -99,7 +172,7 @@ export class BatchOptimizer {
    * - Cryptographically secure (collisions are extremely unlikely)
    * - Consistent with VLLM cache approach
    */
-  _getCacheKey(imagePath, prompt, context) {
+  _getCacheKey(imagePath: string, prompt: string, context: ValidationContext | null | undefined): string {
     const keyData = {
       imagePath,
       prompt: prompt || '',
@@ -119,7 +192,11 @@ export class BatchOptimizer {
    * Array results for `BatchOptimizer`; an enriched report when dispatched to
    * a `BatchValidator` subclass.
    */
-  async batchValidate(imagePaths, prompt, context = {}) {
+  async batchValidate(
+    imagePaths: string | string[],
+    prompt: string,
+    context: ValidationContext = {},
+  ): Promise<ValidationResult[] | BatchValidationResult> {
     if (!Array.isArray(imagePaths)) {
       imagePaths = [imagePaths];
     }
@@ -142,12 +219,18 @@ export class BatchOptimizer {
    * 
    * SECURITY: Queue size limit prevents memory leaks from unbounded queue growth
    */
-  async _queueRequest(imagePath, prompt, context, validateFn = null) {
+  async _queueRequest(
+    imagePath: string,
+    prompt: string,
+    context: ValidationContext,
+    validateFn: BatchValidateFunction | null = null,
+  ): Promise<ValidationResult> {
     // Check cache first
     if (this.cache) {
       const cacheKey = this._getCacheKey(imagePath, prompt, context);
-      if (this.cache.has(cacheKey)) {
-        return this.cache.get(cacheKey);
+      const cached = this.cache.get(cacheKey);
+      if (cached !== undefined) {
+        return cached;
       }
     }
     
@@ -160,7 +243,7 @@ export class BatchOptimizer {
         // Note: totalProcessed will be incremented when request completes (in resolve handler for queued, or we could add it here)
         // For now, we track it in the resolve handler for consistency
       } catch (metricsError) {
-        warn(`[BatchOptimizer] Error updating metrics: ${metricsError.message}`);
+        warn(`[BatchOptimizer] Error updating metrics: ${errorMessage(metricsError)}`);
       }
       // Track start time for immediate processing (for consistency with queued requests)
       const startTime = Date.now();
@@ -184,7 +267,7 @@ export class BatchOptimizer {
             this.metrics.averageWaitTime = this.metrics.averageWaitTime + (waitTime - this.metrics.averageWaitTime) / count;
           }
         } catch (metricsError) {
-          warn(`[BatchOptimizer] Error updating metrics: ${metricsError.message}`);
+          warn(`[BatchOptimizer] Error updating metrics: ${errorMessage(metricsError)}`);
         }
         return result;
       } catch (error) {
@@ -195,7 +278,7 @@ export class BatchOptimizer {
           this.metrics.totalProcessed++; // Count failed attempts too
           // Note: We could add a separate totalFailed counter, but for now we count all attempts
         } catch (metricsError) {
-          warn(`[BatchOptimizer] Error updating failure metrics: ${metricsError.message}`);
+          warn(`[BatchOptimizer] Error updating failure metrics: ${errorMessage(metricsError)}`);
         }
         // Re-throw error so caller can handle it
         throw error;
@@ -211,14 +294,14 @@ export class BatchOptimizer {
       this.metrics.totalQueued++;
     } catch (metricsError) {
       // Metrics are best-effort, don't let them crash the application
-      warn(`[BatchOptimizer] Error updating metrics: ${metricsError.message}`);
+      warn(`[BatchOptimizer] Error updating metrics: ${errorMessage(metricsError)}`);
     }
     
     if (this.queue.length >= this.maxQueueSize) {
       try {
         this.metrics.queueRejections++;
       } catch (metricsError) {
-        warn(`[BatchOptimizer] Error updating rejection metrics: ${metricsError.message}`);
+        warn(`[BatchOptimizer] Error updating rejection metrics: ${errorMessage(metricsError)}`);
       }
       
       // Log batch optimizer rejection (weighted: rejections are critical)
@@ -234,9 +317,9 @@ export class BatchOptimizer {
             reason: 'Queue full - preventing memory leak'
           });
         })
-        .catch((importError) => {
+        .catch((importError: unknown) => {
           // Log to console if performance logger unavailable (better than silent failure)
-          warn(`[BatchOptimizer] Performance logger unavailable: ${importError.message}`);
+          warn(`[BatchOptimizer] Performance logger unavailable: ${errorMessage(importError)}`);
         });
       
       warn(`[BatchOptimizer] Queue is full (${this.queue.length}/${this.maxQueueSize}). Rejecting request to prevent memory leak. Total rejections: ${this.metrics.queueRejections}`);
@@ -249,11 +332,11 @@ export class BatchOptimizer {
     // Otherwise, queue for later with timeout
     // VERIFIABLE: Track queue time and timeouts to verify "prevents indefinite waiting" claim
     
-    return new Promise((resolve, reject) => {
+    return new Promise<ValidationResult>((resolve, reject) => {
       // Set timeout for queued request (prevents indefinite waiting)
       // NOTE: Use a flag to prevent double-counting if request completes just before timeout
       let timeoutFired = false;
-      let queueEntry = null; // Store reference to queue entry for timeout callback
+      let queueEntry: BatchQueueEntry | null = null; // Store reference to queue entry for timeout callback
       
       const timeoutId = setTimeout(() => {
         timeoutFired = true;
@@ -272,9 +355,9 @@ export class BatchOptimizer {
               reason: 'Request timeout - queue wait exceeded limit'
             });
           })
-          .catch((importError) => {
+          .catch((importError: unknown) => {
             // Log to console if performance logger unavailable (better than silent failure)
-            warn(`[BatchOptimizer] Performance logger unavailable: ${importError.message}`);
+            warn(`[BatchOptimizer] Performance logger unavailable: ${errorMessage(importError)}`);
           });
         
         // Remove from queue if still waiting
@@ -290,13 +373,14 @@ export class BatchOptimizer {
             try {
               this.metrics.timeouts++;
             } catch (metricsError) {
-              warn(`[BatchOptimizer] Error updating timeout metrics: ${metricsError.message}`);
+              warn(`[BatchOptimizer] Error updating timeout metrics: ${errorMessage(metricsError)}`);
             }
             const waitTime = Date.now() - queueStartTime;
             warn(`[BatchOptimizer] Request timed out after ${waitTime}ms in queue (limit: ${this.requestTimeout}ms). Total timeouts: ${this.metrics.timeouts}`);
             reject(new TimeoutError(
               `Request timed out after ${this.requestTimeout}ms in queue`,
-              { timeout: this.requestTimeout, queuePosition: index, waitTime }
+              this.requestTimeout,
+              { queuePosition: index, waitTime }
             ));
           }
         }
@@ -310,7 +394,7 @@ export class BatchOptimizer {
         context,
         validateFn,
         queueStartTime, // Track when queued for wait time calculation
-        resolve: (value) => {
+        resolve: (value: ValidationResult) => {
           clearTimeout(timeoutId);
           // CRITICAL FIX: Check if timeout already fired to prevent double-counting
           if (!timeoutFired) {
@@ -334,12 +418,12 @@ export class BatchOptimizer {
               }
             } catch (metricsError) {
               // Metrics are best-effort, don't let them crash the application
-              warn(`[BatchOptimizer] Error updating metrics: ${metricsError.message}`);
+              warn(`[BatchOptimizer] Error updating metrics: ${errorMessage(metricsError)}`);
             }
           }
           resolve(value);
         },
-        reject: (error) => {
+        reject: (error: unknown) => {
           clearTimeout(timeoutId);
           reject(error);
         }
@@ -353,11 +437,16 @@ export class BatchOptimizer {
   /**
    * Process a single request
    */
-  async _processRequest(imagePath, prompt, context, validateFn) {
+  async _processRequest(
+    imagePath: string,
+    prompt: string,
+    context: ValidationContext,
+    validateFn: BatchValidateFunction | null = null,
+  ): Promise<ValidationResult> {
     if (!validateFn) {
       // Import validateScreenshot if not provided
       const { validateScreenshot } = await import('#judge');
-      validateFn = validateScreenshot;
+      validateFn = validateScreenshot as BatchValidateFunction;
     }
     
     this.activeRequests++;
@@ -381,7 +470,7 @@ export class BatchOptimizer {
   /**
    * Process queued requests
    */
-  async _processQueue() {
+  async _processQueue(): Promise<void> {
     if (this.processing || this.queue.length === 0 || this.activeRequests >= this.maxConcurrency) {
       return;
     }
@@ -398,8 +487,9 @@ export class BatchOptimizer {
             // Check cache again (might have been added by another request)
             if (this.cache) {
               const cacheKey = this._getCacheKey(imagePath, prompt, context);
-              if (this.cache.has(cacheKey)) {
-                resolve(this.cache.get(cacheKey));
+              const cached = this.cache.get(cacheKey);
+              if (cached !== undefined) {
+                resolve(cached);
                 return;
               }
             }
@@ -435,7 +525,7 @@ export class BatchOptimizer {
    * 
    * @returns {{ cacheSize: number; queueLength: number; activeRequests: number }} Cache statistics
    */
-  getCacheStats() {
+  getCacheStats(): BatchCacheStats {
     return {
       cacheSize: this.cache ? this.cache.size : 0,
       queueLength: this.queue.length,
@@ -450,20 +540,7 @@ export class BatchOptimizer {
    * 
    * @returns {Object} Performance metrics including queue rejections and timeouts
    */
-  getPerformanceMetrics() {
-    // NOTE: Metrics are initialized in constructor, but keep this check for safety
-    // for defensive programming (in case constructor wasn't called properly)
-    if (!this.metrics) {
-      this.metrics = {
-        queueRejections: 0,
-        timeouts: 0,
-        totalQueued: 0,
-        totalProcessed: 0,
-        averageWaitTime: 0,
-        waitTimes: []
-      };
-    }
-    
+  getPerformanceMetrics(): BatchPerformanceMetrics {
     return {
       queue: {
         currentLength: this.queue.length,

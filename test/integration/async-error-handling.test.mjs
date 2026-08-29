@@ -9,7 +9,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import { validateScreenshot } from '#judge';
 import { getCached, setCached } from '../../src/cache.js';
-import { BatchOptimizer } from '../../src/batch-optimizer.mjs';
+import { BatchOptimizer } from '../../src/batch-optimizer.js';
 import { ValidationError } from '../../src/errors.js';
 
 describe('Async Error Handling', () => {

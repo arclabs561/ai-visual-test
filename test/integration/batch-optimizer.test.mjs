@@ -4,7 +4,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { BatchOptimizer } from '../../src/batch-optimizer.mjs';
+import { BatchOptimizer } from '../../src/batch-optimizer.js';
 
 test('BatchOptimizer - constructor with default options', () => {
   const optimizer = new BatchOptimizer();
@@ -199,4 +199,3 @@ test('BatchOptimizer - getCacheStats with many entries', () => {
   assert.strictEqual(typeof stats.queueLength, 'number');
   assert.strictEqual(typeof stats.activeRequests, 'number');
 });
-

@@ -99,7 +99,7 @@ describe('Library Best Practices', () => {
   
   describe('No process.exit() Calls', () => {
     it('should not call process.exit() in error handler', async () => {
-      const { initErrorHandlers } = await import('../../src/error-handler.mjs');
+      const { initErrorHandlers } = await import('../../src/error-handler.js');
       
       // Mock process.exit to detect if it's called
       let exitCalled = false;
@@ -176,7 +176,7 @@ describe('Library Best Practices', () => {
       
       const __filename = fileURLToPath(import.meta.url);
       const __dirname = dirname(__filename);
-      const errorHandlerPath = join(__dirname, '..', '..', 'src', 'error-handler.mjs');
+      const errorHandlerPath = join(__dirname, '..', '..', 'src', 'error-handler.js');
       
       const content = readFileSync(errorHandlerPath, 'utf-8');
       
@@ -261,7 +261,7 @@ describe('Library Best Practices', () => {
       
       const __filename = fileURLToPath(import.meta.url);
       const __dirname = dirname(__filename);
-      const dataExtractorPath = join(__dirname, '..', '..', 'src', 'data-extractor.mjs');
+      const dataExtractorPath = join(__dirname, '..', '..', 'src', 'data-extractor.js');
       
       const content = readFileSync(dataExtractorPath, 'utf-8');
       
@@ -270,7 +270,7 @@ describe('Library Best Practices', () => {
       assert.ok(content.includes('@arclabs561/llm-utils'), 'Should reference optional dependency');
       
       // Should not throw on missing dependency (tested by import not failing)
-      const module = await import('../../src/data-extractor.mjs');
+      const module = await import('../../src/data-extractor.js');
       assert.ok(module, 'Module should load even if optional dependency is missing');
     });
     
@@ -327,7 +327,7 @@ describe('Library Best Practices', () => {
   
   describe('Error Handler Behavior', () => {
     it('should log errors but not exit process', async () => {
-      const { initErrorHandlers } = await import('../../src/error-handler.mjs');
+      const { initErrorHandlers } = await import('../../src/error-handler.js');
       
       // Track if process.exit would be called
       let exitWouldBeCalled = false;
@@ -430,7 +430,7 @@ describe('Library Best Practices', () => {
       
       // Files that use dynamic imports
       const filesWithDynamicImports = [
-        'src/data-extractor.mjs',
+        'src/data-extractor.js',
         'src/prompt-composer.mjs',
         'src/persona-experience.js'
       ];
@@ -474,7 +474,7 @@ describe('Library Best Practices', () => {
       const __filename = fileURLToPath(import.meta.url);
       const __dirname = dirname(__filename);
       
-      const dataExtractorPath = join(__dirname, '..', '..', 'src', 'data-extractor.mjs');
+      const dataExtractorPath = join(__dirname, '..', '..', 'src', 'data-extractor.js');
       const content = readFileSync(dataExtractorPath, 'utf-8');
       
       // Should have error handling for @arclabs561/llm-utils

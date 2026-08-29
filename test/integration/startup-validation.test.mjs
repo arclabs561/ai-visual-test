@@ -5,7 +5,7 @@
 import '../test-setup.mjs';
 import { describe, it, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert';
-import { validateStartup, validateStartupSoft } from '../../src/startup-validation.mjs';
+import { validateStartup, validateStartupSoft } from '../../src/startup-validation.js';
 import { setConfig } from '../../src/config.js';
 
 describe('Startup Validation', () => {

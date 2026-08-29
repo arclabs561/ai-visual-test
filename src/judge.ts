@@ -21,7 +21,7 @@ import { createHash } from 'crypto';
 import { FileError, ProviderError, TimeoutError, ValidationError } from './errors.js';
 import { log, warn } from './logger.js';
 import { evaluateTemporalDecision } from '#temporal-prompt-formatting';
-import { recordCost } from './cost-tracker.mjs';
+import { recordCost } from './cost-tracker.js';
 import { normalizeValidationResult } from '#validation-result-normalizer';
 import { validateImagePath, validatePrompt } from './validation.mjs';
 import { sanitizePrompt, validatePromptSecurity } from './utils/prompt-sanitizer.mjs';
@@ -1277,7 +1277,7 @@ export async function validateScreenshot(imagePath: ImagePath, prompt: string, c
   // Auto-select tier if requested (cost optimization)
   if (context.autoSelectTier) {
     try {
-      const { selectModelTier } = await import('./model-tier-selector.mjs');
+      const { selectModelTier } = await import('./model-tier-selector.js');
       const tier = selectModelTier(context);
       // Merge tier into context for config creation
       context = {
@@ -1298,7 +1298,7 @@ export async function validateScreenshot(imagePath: ImagePath, prompt: string, c
   // Auto-select provider if requested (cost optimization)
   if (context.autoSelectProvider) {
     try {
-      const { selectProvider } = await import('./model-tier-selector.mjs');
+      const { selectProvider } = await import('./model-tier-selector.js');
       const provider = selectProvider({
         speed: context.speed,
         quality: context.quality,
@@ -1346,7 +1346,7 @@ export async function validateScreenshot(imagePath: ImagePath, prompt: string, c
   // Enhance result with cost comparison if requested
   if (context.includeCostComparison && result.estimatedCost) {
     try {
-      const { calculateCostComparison } = await import('./cost-optimization.mjs');
+      const { calculateCostComparison } = await import('./cost-optimization.js');
       result.costComparison = calculateCostComparison(context, result);
     } catch (error: any) {
       // Silently fail - cost comparison is optional

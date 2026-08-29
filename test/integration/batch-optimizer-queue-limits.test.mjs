@@ -6,7 +6,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { BatchOptimizer } from '../../src/batch-optimizer.mjs';
+import { BatchOptimizer } from '../../src/batch-optimizer.js';
 import { TimeoutError, ValidationError } from '../../src/errors.js';
 import { BATCH_OPTIMIZER_CONSTANTS } from '../../src/constants.js';
 

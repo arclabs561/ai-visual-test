@@ -101,7 +101,7 @@ describe('Consumer API', () => {
 
   describe('validateStartup', () => {
     it('should return valid:false in non-strict mode when no keys set', async () => {
-      const { validateStartup } = await import('../../src/startup-validation.mjs');
+      const { validateStartup } = await import('../../src/startup-validation.js');
       // Since tests run with API keys, this tests the function signature
       const result = validateStartup({ strict: false });
       assert.ok(typeof result.valid === 'boolean');

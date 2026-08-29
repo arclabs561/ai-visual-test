@@ -9,7 +9,7 @@ import {
   selectModelTier,
   selectProvider,
   selectModelTierAndProvider
-} from '../../src/model-tier-selector.mjs';
+} from '../../src/model-tier-selector.js';
 
 describe('Model Tier Selector', () => {
   describe('selectModelTier', () => {

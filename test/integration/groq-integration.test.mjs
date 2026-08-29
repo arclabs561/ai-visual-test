@@ -9,7 +9,7 @@ import '../test-setup.mjs';
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import { validateScreenshot, createConfig } from '../../src/index.js';
-import { selectProvider } from '../../src/model-tier-selector.mjs';
+import { selectProvider } from '../../src/model-tier-selector.js';
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 

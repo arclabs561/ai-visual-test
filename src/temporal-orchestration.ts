@@ -14,7 +14,7 @@
 
 import { aggregateTemporalNotes, type AggregatedTemporalNotes, type TemporalAggregationOptions, type TemporalNote } from '#temporal-core';
 import { log, warn } from './logger.js';
-import { BatchOptimizer } from './batch-optimizer.mjs';
+import { BatchOptimizer } from './batch-optimizer.js';
 
 type TemporalRecord = TemporalNote & Record<string, unknown>;
 type TemporalOptions = TemporalAggregationOptions & {

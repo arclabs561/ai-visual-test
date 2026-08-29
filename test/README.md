@@ -36,24 +36,16 @@ Tests are organized into subdirectories by type:
 
 ### E2E Tests (`test/e2e/`) - Full Workflows
 - `game-playing.test.mjs` - Complete game testing workflow
-- `evaluation-adapter-integration.test.mjs` - Evaluation system
 - `playwright-setup.test.mjs` - Playwright integration
 - `validation-human-ground-truth.test.mjs` - Human validation
 
 ### Security Tests (`test/security/`) - Security-Focused
-- `path-security.test.mjs` - Path traversal protection
 - `red-team-security.test.mjs` - Security testing
 - `cache-race-conditions.test.mjs` - Race condition testing
 
 ### Performance Tests (`test/performance/`) - Performance
 - `performance-latency.test.mjs` - Latency testing
 - `high-frequency-features.test.mjs` - High-frequency validation
-
-### Dataset Tests (`test/datasets/`) - Dataset Validation
-- `dataset-adapters-comprehensive.test.mjs` - Adapter testing
-- `dataset-integration.test.mjs` - Dataset integration
-- `dataset-webui.test.mjs` - WebUI dataset
-- `dataset-wcag.test.mjs` - WCAG dataset
 
 ### Test Utilities
 - `test-setup.mjs` - Auto-loads .env (shared by all tests)
@@ -73,7 +65,6 @@ npm run test:integration   # Integration tests
 npm run test:e2e          # End-to-end tests
 npm run test:security     # Security tests
 npm run test:performance  # Performance tests
-npm run test:datasets     # Dataset tests
 
 # Run specific test
 node --test test/integration/judge.test.mjs
@@ -121,7 +112,6 @@ Tests are organized into a pyramid structure:
 - **E2E tests** (`test/e2e/`) - Full workflows
 - **Security tests** (`test/security/`) - Security-focused
 - **Performance tests** (`test/performance/`) - Performance validation
-- **Dataset tests** (`test/datasets/`) - Dataset validation
 
 All tests import shared utilities from `test/` root:
 - `test-setup.mjs` - Auto-loads .env

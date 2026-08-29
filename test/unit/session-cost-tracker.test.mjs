@@ -21,6 +21,7 @@ import { mkdirSync, existsSync, rmdirSync, unlinkSync } from 'fs';
 import { initCache, clearCache } from '../../src/cache.js';
 
 const TEST_CACHE_DIR = join(tmpdir(), 'ai-visual-test-session-cost-test');
+const TEST_END_OPTIONS = { saveReport: false, verbose: false };
 
 describe('Session Cost Tracker', () => {
   beforeEach(() => {
@@ -96,7 +97,7 @@ describe('Session Cost Tracker', () => {
         outputTokens: 50
       });
       
-      const summary = endSession(sessionId);
+      const summary = endSession(sessionId, TEST_END_OPTIONS);
       
       assert.ok(summary);
       assert.strictEqual(summary.sessionId, sessionId);
@@ -113,7 +114,7 @@ describe('Session Cost Tracker', () => {
       recordSessionCacheHit(sessionId);
       recordSessionCacheMiss(sessionId);
       
-      const summary = endSession(sessionId);
+      const summary = endSession(sessionId, TEST_END_OPTIONS);
       
       // cacheHitRate is in costs object
       assert.ok(summary.costs.cacheHitRate);
@@ -126,7 +127,7 @@ describe('Session Cost Tracker', () => {
       recordSessionCost(sessionId, { provider: 'gemini', cost: 0.001 });
       recordSessionCost(sessionId, { provider: 'openai', cost: 0.002 });
       
-      const summary = endSession(sessionId);
+      const summary = endSession(sessionId, TEST_END_OPTIONS);
       
       assert.ok(summary.costs.byProvider.gemini);
       assert.ok(summary.costs.byProvider.openai);
@@ -147,7 +148,7 @@ describe('Session Cost Tracker', () => {
         testName: 'test2'
       });
       
-      const summary = endSession(sessionId);
+      const summary = endSession(sessionId, TEST_END_OPTIONS);
       
       assert.ok(summary.costs.byTest.test1);
       assert.ok(summary.costs.byTest.test2);
@@ -162,7 +163,7 @@ describe('Session Cost Tracker', () => {
         outputTokens: 50
       });
       
-      const summary = endSession(sessionId);
+      const summary = endSession(sessionId, TEST_END_OPTIONS);
       
       assert.strictEqual(summary.costs.tokens.input, 100);
       assert.strictEqual(summary.costs.tokens.output, 50);
@@ -247,7 +248,7 @@ describe('Session Cost Tracker', () => {
     it('should not include ended sessions', () => {
       const id1 = startSession('session1');
       const id2 = startSession('session2');
-      endSession(id1);
+      endSession(id1, TEST_END_OPTIONS);
       
       const sessions = getActiveSessions();
       
@@ -261,7 +262,7 @@ describe('Session Cost Tracker', () => {
     it('should return global cost statistics', () => {
       const sessionId = startSession('test');
       recordSessionCost(sessionId, { provider: 'gemini', cost: 0.001 });
-      endSession(sessionId);
+      endSession(sessionId, TEST_END_OPTIONS);
       
       const stats = getGlobalCostStats();
       

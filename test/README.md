@@ -42,10 +42,6 @@ Tests are organized into subdirectories by type:
 - `red-team-security.test.mjs` - Security testing
 - `cache-race-conditions.test.mjs` - Race condition testing
 
-### Performance Tests (`test/performance/`) - Performance
-- `performance-latency.test.mjs` - Latency testing
-- `high-frequency-features.test.mjs` - High-frequency validation
-
 ### Test Utilities
 - `test-setup.mjs` - Auto-loads .env (shared by all tests)
 - `test-image-utils.mjs` - Image test utilities
@@ -63,7 +59,6 @@ npm run test:unit          # Fast unit tests
 npm run test:integration   # Integration tests
 npm run test:e2e          # End-to-end tests
 npm run test:security     # Security tests
-npm run test:performance  # Performance tests
 
 # Run specific test
 node --test test/integration/judge.test.mjs
@@ -110,7 +105,6 @@ Tests are organized into a pyramid structure:
 - **Integration tests** (`test/integration/`) - Component interactions
 - **E2E tests** (`test/e2e/`) - Full workflows
 - **Security tests** (`test/security/`) - Security-focused
-- **Performance tests** (`test/performance/`) - Performance validation
 
 All tests import shared utilities from `test/` root:
 - `test-setup.mjs` - Auto-loads .env

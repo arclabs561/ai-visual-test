@@ -36,12 +36,14 @@ if (typeof process !== 'undefined') {
 
 // Only import Playwright if we passed the check above
 // Use dynamic import to handle potential errors gracefully
-let test, expect, createMatchers, hasAnyApiKey;
+let test, expect, createMatchers, hasAnyApiKey, hasBrowser;
 
 try {
   const playwrightModule = await import('@playwright/test');
   test = playwrightModule.test;
   expect = playwrightModule.expect;
+  const { existsSync } = await import('node:fs');
+  hasBrowser = existsSync(playwrightModule.chromium.executablePath());
   
   const integrationsModule = await import('@arclabs561/ai-visual-test/playwright');
   createMatchers = integrationsModule.createMatchers;
@@ -65,9 +67,13 @@ try {
 }
 
 test.describe('Playwright Integration', () => {
-  test('toHaveVisualScore - should work with page object', async ({ page }) => {
-    // Skip if no API keys
-    test.skip(!hasAnyApiKey(), 'No API keys available');
+  test.describe('provider-backed matchers', () => {
+    test.skip(
+      process.env.AI_VISUAL_TEST_LIVE !== '1' || !hasAnyApiKey() || !hasBrowser,
+      'Live provider checks require AI_VISUAL_TEST_LIVE=1, credentials, and Chromium',
+    );
+
+    test('toHaveVisualScore - should work with page object', async ({ page }) => {
 
     const html = `
       <!DOCTYPE html>
@@ -92,11 +98,9 @@ test.describe('Playwright Integration', () => {
 
     // Use custom matcher
     await expect(page).toHaveVisualScore(6, 'Check for visual quality and readability');
-  });
+    });
 
-  test('toHaveVisualScore - should work with screenshot path', async ({ page }) => {
-    // Skip if no API keys
-    test.skip(!hasAnyApiKey(), 'No API keys available');
+    test('toHaveVisualScore - should work with screenshot path', async ({ page }) => {
 
     const html = `
       <!DOCTYPE html>
@@ -143,11 +147,9 @@ test.describe('Playwright Integration', () => {
         fs.unlinkSync(screenshotPath);
       }
     }
-  });
+    });
 
-  test('toBeAccessibleHybrid - should validate accessibility', async ({ page }) => {
-    // Skip if no API keys
-    test.skip(!hasAnyApiKey(), 'No API keys available');
+    test('toBeAccessibleHybrid - should validate accessibility', async ({ page }) => {
 
     const html = `
       <!DOCTYPE html>
@@ -213,6 +215,7 @@ test.describe('Playwright Integration', () => {
         fs.unlinkSync(screenshotPath);
       }
     }
+    });
   });
 
   test('createMatchers - should extend expect without errors', () => {

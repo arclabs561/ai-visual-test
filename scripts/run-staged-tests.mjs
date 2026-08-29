@@ -19,7 +19,7 @@ function collect(directory, predicate) {
   return files;
 }
 
-const directoryModes = new Set(['unit', 'integration', 'e2e', 'security', 'performance', 'datasets']);
+const directoryModes = new Set(['unit', 'integration', 'e2e', 'security']);
 const testDirectory = directoryModes.has(mode) ? join(STAGE, 'test', mode) : join(STAGE, 'test');
 const files = collect(
   testDirectory,

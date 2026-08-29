@@ -110,6 +110,33 @@ describe('Latency-Aware Batch Optimizer', () => {
       
       assert.ok(!optimizer.criticalRequests.has('critical.png'));
     });
+
+    it('should preserve a zero latency budget and clear critical tracking', async () => {
+      let receivedContext;
+      optimizer._processRequest = async (_imagePath, _prompt, context) => {
+        receivedContext = context;
+        return { score: 8.0, issues: [] };
+      };
+
+      await optimizer.addRequest('zero-budget.png', 'Test prompt', {}, 0);
+
+      assert.strictEqual(receivedContext.maxLatency, 0);
+      assert.strictEqual(receivedContext.critical, true);
+      assert.strictEqual(optimizer.getLatencyStats().criticalRequests, 0);
+    });
+
+    it('should clear critical request tracking when direct processing rejects', async () => {
+      optimizer._processRequest = async () => {
+        throw new Error('validator failed');
+      };
+
+      await assert.rejects(
+        optimizer.addRequest('failed-critical.png', 'Test prompt', {}, 0),
+        /validator failed/,
+      );
+
+      assert.strictEqual(optimizer.getLatencyStats().criticalRequests, 0);
+    });
   });
 
   describe('latency-aware queue processing', () => {

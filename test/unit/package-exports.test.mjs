@@ -22,8 +22,10 @@ function exportRoute(entry) {
 }
 
 function declaredValueExports(source) {
-  return [...source.matchAll(/^export\s+(?:declare\s+)?(?:class|function|const)\s+(\w+)/gm)]
-    .map(match => match[1]);
+  return [...new Set(
+    [...source.matchAll(/^export\s+(?:declare\s+)?(?:class|function|const)\s+(\w+)/gm)]
+      .map(match => match[1]),
+  )];
 }
 
 describe('package export/type contract', () => {

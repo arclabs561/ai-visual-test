@@ -654,5 +654,5 @@ export async function validateWithGoals(screenshotPath, options = {}) {
   };
 }
 
-// validatePage and validateComparison moved to page-validation.mjs
+// validatePage and validateComparison moved to page-validation.ts
 // to avoid pulling game/persona deps into the main entry.

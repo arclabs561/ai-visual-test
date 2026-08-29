@@ -100,6 +100,33 @@ test('selectRepresentativeScreenshots diversity strategy maximizes variance', ()
   assert.ok(scoreVariance > 0, 'Should select screenshots with diverse scores');
 });
 
+test('selectRepresentativeScreenshots maps diversity evaluations to their original screenshots', () => {
+  const screenshots = Array.from({ length: 6 }, (_, i) => ({
+    path: `${i}.png`,
+    timestamp: i * 1000
+  }));
+  const evaluations = [
+    { score: 5 },
+    { score: 10 },
+    { score: 5 },
+    { score: 0 },
+    { score: 5 },
+    { score: 5 }
+  ];
+
+  const selected = selectRepresentativeScreenshots(screenshots, evaluations, {
+    maxScreenshots: 4,
+    strategy: 'diversity'
+  });
+
+  assert.deepStrictEqual(
+    selected.map(screenshot => screenshot.path),
+    ['0.png', '1.png', '3.png', '5.png'],
+    'interior evaluation indexes should select the screenshot at the same original index'
+  );
+  assert.strictEqual(new Set(selected).size, selected.length, 'selection should not duplicate screenshots');
+});
+
 test('selectRepresentativeScreenshots handles missing evaluations gracefully', () => {
   const screenshots = Array.from({ length: 20 }, (_, i) => ({
     path: `${i}.png`,
@@ -153,10 +180,29 @@ test('selectRepresentativeScreenshots respects maxScreenshots limit strictly', (
   }
 });
 
+test('selectRepresentativeScreenshots rejects invalid numeric inputs at the boundary', () => {
+  const screenshots = Array.from({ length: 3 }, (_, i) => ({ path: `${i}.png`, timestamp: i }));
+
+  for (const maxScreenshots of [0, -1, 1.5, Number.NaN, Number.POSITIVE_INFINITY]) {
+    assert.throws(
+      () => selectRepresentativeScreenshots(screenshots, [], { maxScreenshots }),
+      RangeError,
+      `maxScreenshots=${maxScreenshots} should be rejected`
+    );
+  }
+
+  for (const score of [Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY]) {
+    assert.throws(
+      () => selectRepresentativeScreenshots(screenshots, [{ score }, { score: 5 }, { score: 5 }]),
+      RangeError,
+      `score=${score} should be rejected`
+    );
+  }
+});
+
 function calculateVariance(values) {
   if (values.length === 0) return 0;
   const mean = values.reduce((a, b) => a + b, 0) / values.length;
   const squaredDiffs = values.map(v => Math.pow(v - mean, 2));
   return squaredDiffs.reduce((a, b) => a + b, 0) / values.length;
 }
-

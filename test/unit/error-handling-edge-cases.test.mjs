@@ -6,7 +6,7 @@
 
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { ValidationError, ProviderError, TimeoutError } from '../../src/errors.mjs';
+import { ValidationError, ProviderError, TimeoutError } from '../../src/errors.js';
 import { validateScreenshot } from '#judge';
 import { getCached, setCached } from '../../src/cache.mjs';
 

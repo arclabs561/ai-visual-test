@@ -14,7 +14,7 @@ import {
   validateStateProgrammatic,
   validateElementPosition
 } from '../../src/validators/index.mjs';
-import { ValidationError } from '../../src/errors.mjs';
+import { ValidationError } from '../../src/errors.js';
 
 test('getContrastRatio - black on white', () => {
   const ratio = getContrastRatio('rgb(0, 0, 0)', 'rgb(255, 255, 255)');
@@ -168,4 +168,3 @@ test('validateElementPosition - invalid tolerance', async () => {
     ValidationError
   );
 });
-

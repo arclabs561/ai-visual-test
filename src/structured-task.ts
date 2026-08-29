@@ -1,4 +1,4 @@
-import { ProviderError } from './errors.mjs';
+import { ProviderError } from './errors.js';
 import { retryWithBackoff, isRetryableError } from './retry.mjs';
 import type {
   ParsedProviderResponse,

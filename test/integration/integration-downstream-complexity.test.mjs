@@ -22,7 +22,7 @@ import { BatchOptimizer } from '../../src/batch-optimizer.mjs';
 import { experiencePageAsPersona, experiencePageWithPersonas } from '../../src/persona-experience.mjs';
 import { captureTemporalScreenshots, extractRenderedCode, multiModalValidation, multiPerspectiveEvaluation } from '../../src/multi-modal.mjs';
 import { aggregateTemporalNotes, formatNotesForPrompt } from '#temporal-core';
-import { FileError } from '../../src/errors.mjs';
+import { FileError } from '../../src/errors.js';
 import { createMockPage } from '../helpers/mock-page.mjs';
 import { createTestImage } from '../test-image-utils.mjs';
 import { skipIfNoApiKey } from '../helpers/api-key-check.mjs';

@@ -18,7 +18,7 @@ import { dirname, basename, resolve } from 'path';
 import { createConfig, getConfig } from './config.mjs';
 import { getCached, setCached } from './cache.mjs';
 import { createHash } from 'crypto';
-import { FileError, ProviderError, TimeoutError, ValidationError } from './errors.mjs';
+import { FileError, ProviderError, TimeoutError, ValidationError } from './errors.js';
 import { log, warn } from './logger.mjs';
 import { evaluateTemporalDecision } from '#temporal-prompt-formatting';
 import { recordCost } from './cost-tracker.mjs';

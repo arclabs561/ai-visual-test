@@ -16,7 +16,7 @@ import { aggregateMultiScale } from '#temporal-multi-scale';
 import { generateGamePrompt } from './game-goal-prompts.js';
 import { checkCrossModalConsistency } from './cross-modal-consistency.mjs';
 import { trackPropagation } from './experience-propagation.mjs';
-import { ValidationError } from './errors.mjs';
+import { ValidationError } from './errors.js';
 import { log, warn } from './logger.mjs';
 import { TEMPORAL_CONSTANTS } from './constants.mjs';
 import type { playGame as playGameImplementation } from './game-player.js';

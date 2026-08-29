@@ -11,7 +11,7 @@
  */
 
 import { validateScreenshot } from '#judge';
-import { ValidationError } from '../errors.mjs';
+import { ValidationError } from '#errors';
 import { assertString } from '../type-guards.mjs';
 
 /**

@@ -1,12 +1,5 @@
-/**
- * Errors Sub-Module
- *
- * All error types, error utilities, and error handling infrastructure.
- *
- * Import from '@arclabs561/ai-visual-test/errors'
- */
+/** Error types, retry helpers, and process-level error handlers. */
 
-// Error classes
 export {
   AIBrowserTestError,
   ValidationError,
@@ -17,16 +10,14 @@ export {
   FileError,
   StateMismatchError,
   isAIBrowserTestError,
-  isErrorType
-} from '../errors.mjs';
+  isErrorType,
+} from '../errors.js';
 
-// Retry utilities
 export {
   retryWithBackoff,
   isRetryableError,
   calculateBackoff,
-  enhanceErrorMessage
+  enhanceErrorMessage,
 } from '../retry.mjs';
 
-// Error handlers
 export { initErrorHandlers } from '../error-handler.mjs';

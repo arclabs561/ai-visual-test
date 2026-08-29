@@ -6,7 +6,7 @@ import { join } from 'node:path';
 
 import { VLLMJudge } from '#judge';
 import { generateCacheKey } from '../../src/cache.mjs';
-import { ProviderError } from '../../src/errors.mjs';
+import { ProviderError } from '../../src/errors.js';
 
 const PNG_1X1 = Buffer.from(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=',

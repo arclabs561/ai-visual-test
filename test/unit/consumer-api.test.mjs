@@ -47,7 +47,7 @@ describe('Consumer API', () => {
       { path: '../../src/persona/index.mjs', minExports: 3 },
       { path: '../../src/utils/index.mjs', minExports: 20 },
       { path: '../../src/game/index.js', minExports: 5 },
-      { path: '../../src/errors/index.mjs', minExports: 5 },
+      { path: '../../src/errors/index.js', minExports: 5 },
       { path: '../../src/multi-modal/index.mjs', minExports: 5 },
     ];
 
@@ -111,7 +111,7 @@ describe('Consumer API', () => {
 
   describe('Error types', () => {
     it('should be catchable by type', async () => {
-      const { ValidationError, ConfigError, ProviderError, FileError } = await import('../../src/errors.mjs');
+      const { ValidationError, ConfigError, ProviderError, FileError } = await import('../../src/errors.js');
 
       const ve = new ValidationError('test', { field: 'x' });
       assert.ok(ve instanceof ValidationError);

@@ -5,7 +5,7 @@
  * security vulnerabilities and improve error messages.
  */
 
-import { ValidationError } from './errors.mjs';
+import { ValidationError } from '#errors';
 import { existsSync } from 'fs';
 import { normalize, resolve } from 'path';
 import { VALIDATION_CONSTANTS } from './constants.mjs';
@@ -290,4 +290,3 @@ export function validateFilePath(filePath, options = {}) {
   
   return resolved;
 }
-

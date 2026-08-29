@@ -13,7 +13,7 @@ import {
   validateWithRubric,
   BatchValidator
 } from '../../src/validators/index.mjs';
-import { ValidationError } from '../../src/errors.mjs';
+import { ValidationError } from '../../src/errors.js';
 
 test('StateValidator - throws on null screenshotPath', async () => {
   const validator = new StateValidator();
@@ -233,4 +233,3 @@ test('BatchValidator - handles single screenshot (not array)', async () => {
 });
 
 console.log('✅ All edge case tests passed');
-

@@ -12,7 +12,7 @@
 import { createConfig } from './config.mjs';
 import { loadEnv } from './load-env.mjs';
 import { warn } from './logger.mjs';
-import { ValidationError } from './errors.mjs';
+import { ValidationError } from '#errors';
 // Load env before LLM utils
 loadEnv();
 // Use shared LLM utility library for text-only calls (optional dependency)
@@ -245,4 +245,3 @@ function validateSchema(data, schema) {
   
   return true;
 }
-

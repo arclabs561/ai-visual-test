@@ -7,7 +7,7 @@
  * For state extraction from screenshots (when you don't have direct state access), use StateValidator (VLLM-based).
  */
 
-import { ValidationError } from '../errors.mjs';
+import { ValidationError } from '#errors';
 import { assertString, assertObject, assertNumber } from '../type-guards.mjs';
 
 /**
@@ -257,4 +257,3 @@ function compareObjects(extracted, expected, path, discrepancies, tolerance, dep
     discrepancies.push(`${path}: Value mismatch (expected ${expected}, got ${extracted})`);
   }
 }
-

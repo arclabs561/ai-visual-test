@@ -10,7 +10,7 @@ import {
   detectPromptInjection,
   validatePromptSecurity
 } from '../../src/utils/prompt-sanitizer.mjs';
-import { ValidationError } from '../../src/errors.mjs';
+import { ValidationError } from '../../src/errors.js';
 
 describe('Prompt Sanitizer', () => {
   describe('sanitizePrompt', () => {
@@ -171,4 +171,3 @@ describe('Prompt Sanitizer', () => {
     });
   });
 });
-

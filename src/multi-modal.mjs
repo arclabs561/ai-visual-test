@@ -10,7 +10,7 @@
  * It's designed to work with @playwright/test but doesn't require it as a hard dependency.
  */
 
-import { ValidationError } from './errors.mjs';
+import { ValidationError } from '#errors';
 import { warn } from './logger.mjs';
 export { captureTemporalScreenshots } from '#temporal-capture';
 import { captureTemporalScreenshots } from '#temporal-capture';

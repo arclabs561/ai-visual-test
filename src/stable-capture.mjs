@@ -6,7 +6,7 @@
  */
 
 import { Buffer } from 'node:buffer';
-import { ValidationError } from './errors.mjs';
+import { ValidationError } from '#errors';
 
 function messageOf(error) {
   return error instanceof Error ? error.message : String(error);

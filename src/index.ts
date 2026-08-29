@@ -36,7 +36,7 @@ export { createConfig, getConfig } from './config.mjs';
 export { validateStartup } from './startup-validation.mjs';
 export { getCached, setCached, clearCache, getCacheStats } from './cache.mjs';
 export { estimateCost } from './cost-tracker.mjs';
-export { ValidationError, ConfigError, ProviderError, FileError } from './errors.mjs';
+export { ValidationError, ConfigError, ProviderError, FileError } from './errors.js';
 export { createMatchers } from '#playwright-integration';
 export { VideoJudge, judgeVideo } from '#video';
 export type {

@@ -42,7 +42,7 @@ export {
   StateMismatchError,
   isAIBrowserTestError,
   isErrorType
-} from '../errors.mjs';
+} from '#errors';
 
 // Retry
 export {

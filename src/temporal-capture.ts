@@ -1,4 +1,4 @@
-import { ValidationError } from './errors.mjs';
+import { ValidationError } from './errors.js';
 import { warn } from './logger.mjs';
 import { randomUUID } from 'node:crypto';
 

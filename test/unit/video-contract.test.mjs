@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { VideoJudge } from '../../src/video.js';
-import { ProviderError, ValidationError } from '../../src/errors.mjs';
+import { ProviderError, ValidationError } from '../../src/errors.js';
 
 function fixture(bytes = Buffer.from('small-video')) {
   const directory = mkdtempSync(join(tmpdir(), 'aivt-video-contract-'));

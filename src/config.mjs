@@ -5,7 +5,7 @@
  * Designed to be flexible and extensible.
  */
 
-import { ConfigError } from './errors.mjs';
+import { ConfigError } from '#errors';
 import { loadEnv } from './load-env.mjs';
 import { API_CONSTANTS } from './constants.mjs';
 import { MODEL_TIERS, PROVIDER_CONFIGS, canonicalizeProviderName } from './provider-data.mjs';

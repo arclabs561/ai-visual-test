@@ -34,6 +34,18 @@ const consensus: extractors.ConsensusCluster[] = extractors.findConsensus({
 });
 void consensus;
 
+export function consumeTypedError(error: unknown): string {
+  if (errors.isErrorType(error, errors.ProviderError)) {
+    const provider: string = error.provider;
+    return provider;
+  }
+  if (errors.isErrorType(error, errors.TimeoutError)) {
+    const timeout: number = error.timeout;
+    return String(timeout);
+  }
+  return 'not-provider';
+}
+
 export const publicModules = {
   root, validators, temporal, multiModal, ensemble, video, extractors,
   persona, utils, game, errors, playwright, vitest, jest, perception,

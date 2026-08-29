@@ -7,7 +7,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import { validateFilePath } from '../../src/validation.mjs';
-import { ValidationError } from '../../src/errors.mjs';
+import { ValidationError } from '../../src/errors.js';
 
 describe('Windows Path Validation', () => {
   it('should prevent Windows backslash traversal', () => {
@@ -86,4 +86,3 @@ describe('Windows Path Validation', () => {
     }
   });
 });
-

@@ -7,7 +7,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
 import { BatchOptimizer } from '../../src/batch-optimizer.mjs';
-import { TimeoutError, ValidationError } from '../../src/errors.mjs';
+import { TimeoutError, ValidationError } from '../../src/errors.js';
 import { BATCH_OPTIMIZER_CONSTANTS } from '../../src/constants.mjs';
 
 test('BatchOptimizer - rejects requests when queue is full', async () => {
@@ -159,4 +159,3 @@ test('BatchOptimizer - uses default constants when not specified', () => {
   assert.strictEqual(optimizer.maxQueueSize, BATCH_OPTIMIZER_CONSTANTS.MAX_QUEUE_SIZE);
   assert.strictEqual(optimizer.requestTimeout, BATCH_OPTIMIZER_CONSTANTS.REQUEST_TIMEOUT_MS);
 });
-

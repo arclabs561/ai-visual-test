@@ -11,7 +11,7 @@
 
 import { validateWithResearchEnhancements } from '#research-enhanced-validation';
 import { PromptBuilder } from './prompt-builder.mjs';
-import { ValidationError } from '../errors.mjs';
+import { ValidationError } from '#errors';
 import { assertString, assertObject } from '../type-guards.mjs';
 
 /**

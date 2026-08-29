@@ -11,7 +11,7 @@ import {
   retryWithBackoff,
   enhanceErrorMessage
 } from '../../src/retry.mjs';
-import { ProviderError, TimeoutError, ValidationError } from '../../src/errors.mjs';
+import { ProviderError, TimeoutError, ValidationError } from '../../src/errors.js';
 import { RETRY_CONSTANTS } from '../../src/constants.mjs';
 
 describe('Retry Utilities', () => {
@@ -287,4 +287,3 @@ describe('Retry Utilities', () => {
     });
   });
 });
-

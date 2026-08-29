@@ -5,7 +5,7 @@
  * All user-provided prompts should be sanitized before being sent to LLM APIs.
  */
 
-import { ValidationError } from '../errors.mjs';
+import { ValidationError } from '#errors';
 
 /**
  * Common prompt injection patterns to detect
@@ -210,4 +210,3 @@ export function validatePromptSecurity(userPrompt, strict = true) {
   
   return detection;
 }
-

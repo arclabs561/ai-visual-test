@@ -1,5 +1,5 @@
 import { API_CONSTANTS } from './constants.mjs';
-import { ProviderError } from './errors.mjs';
+import { ProviderError } from './errors.js';
 
 export type ProviderName = 'gemini' | 'openai' | 'groq' | 'openrouter' | 'claude';
 export type StructuredOutputMode = 'json-schema' | 'json-object' | 'prompt-only';

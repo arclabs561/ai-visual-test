@@ -17,9 +17,11 @@
  * 2. `GameGym` - External iterator (advanced API for power users, RL integration, parallel games)
  */
 
-import { validateScreenshot } from './judge.mjs';
+import { validateScreenshot, judgeGameAction } from './judge.mjs';
 import { TemporalDecisionManager } from '#temporal-orchestration';
+import { parseGameActionOutcome } from '#game-action-contract';
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
+import { randomUUID } from 'crypto';
 import { join } from 'path';
 import { log, warn } from './logger.mjs';
 
@@ -33,21 +35,16 @@ import { log, warn } from './logger.mjs';
  * @param {Array} history - Previous actions and results
  * @returns {Promise<Object>} Action to take { type: 'keyboard', key: 'ArrowRight', ... }
  */
-export async function decideGameAction(gameState, goal, history = []) {
+export async function decideGameAction(gameState, goal, history = [], services = {}) {
   const recentHistory = history.slice(-5); // Last 5 steps for context
-  
-  // Use VLLM to understand current state
-  const stateEvaluation = await validateScreenshot(
+  const reviewState = services.reviewState || validateScreenshot;
+  const selectAction = services.selectAction || judgeGameAction;
+  // A game-loop caller owns review scheduling and passes its evaluation here.
+  // The standalone compatibility call retains the previous one-review behavior.
+  const stateEvaluation = gameState.evaluation || await reviewState(
     gameState.screenshot,
     `Evaluate current game state. Goal: ${goal}. Recent history: ${recentHistory.length} steps.`,
-    {
-      testType: 'gameplay-state',
-      temporalNotes: recentHistory.map(h => ({
-        step: h.step,
-        action: h.action,
-        result: h.result?.score
-      }))
-    }
+    { testType: 'gameplay-state', temporalNotes: recentHistory.map(h => ({ step: h.step, action: h.action, result: h.result?.score })) }
   );
   
   // Enhanced Prompt with Reflexion and Chain of Thought
@@ -90,32 +87,17 @@ export async function decideGameAction(gameState, goal, history = []) {
     - click: { "type": "click", "selector": "#button" }
     - wait: { "type": "wait", "duration": 100 }`;
   
-  const actionResult = await validateScreenshot(
-    gameState.screenshot,
-    actionPrompt,
-    { 
-      extractStructured: true, 
-      testType: 'gameplay-decision',
-      goal: goal,
-      temperature: 0.2 // Lower temperature for more deterministic gameplay
-    }
-  );
-  
-  // Parse action from reasoning (VLLM returns reasoning, we extract JSON)
-  const actionMatch = actionResult.reasoning?.match(/\{[\s\S]*"type"[\s\S]*\}/);
-  if (actionMatch) {
-    try {
-      const parsed = JSON.parse(actionMatch[0]);
-      if (parsed.type && (parsed.key || parsed.selector || parsed.duration !== undefined)) {
-        // Log thought process for debugging/transparency
-        if (parsed.thought_process) {
-          log(`[GamePlayer] Agent Thought: ${parsed.thought_process}`);
-        }
-        return parsed;
-      }
-    } catch (e) {
-      // Fall through to heuristic
-    }
+  try {
+    const actionResult = await selectAction(gameState.screenshot, actionPrompt, {
+      testType: 'gameplay-decision', goal, temperature: 0.2, temporalNotes: [],
+      useTemporalDecision: false,
+    });
+    services.onActionAttempts?.(actionResult.attempts ?? 1);
+    return actionResult.action || actionResult;
+  } catch (error) {
+    services.onActionAttempts?.(error?.details?.failureKind === 'disabled' ? 0 : error?.details?.attempts ?? 1);
+    if (!isHeuristicFallbackError(error)) throw error;
+    log(`[GamePlayer] Falling back after action contract/provider disable: ${error.message}`);
   }
   
   // Fallback: simple heuristic based on score
@@ -132,32 +114,63 @@ export async function decideGameAction(gameState, goal, history = []) {
   return { type: 'keyboard', key: 'ArrowRight' };
 }
 
+function isHeuristicFallbackError(error) {
+  const kind = error?.failureKind || error?.details?.failureKind;
+  return kind === 'output_contract' || kind === 'disabled';
+}
+
+function validateGameOptions({ maxSteps, fps }) {
+  if (!Number.isInteger(maxSteps) || maxSteps <= 0) {
+    throw new RangeError(`maxSteps must be a positive integer, got: ${maxSteps}`);
+  }
+  if (!Number.isFinite(fps) || fps <= 0) {
+    throw new RangeError(`fps must be a positive finite number, got: ${fps}`);
+  }
+}
+
+function hasTerminalEvidence(evaluation, gameState, isTerminal) {
+  if (typeof isTerminal === 'function') return Boolean(isTerminal({ evaluation, gameState }));
+  if (gameState?.gameActive === false) return true;
+  return evaluation?.issues?.some(issue => /game over|game ended|you lost/i.test(String(issue))) === true;
+}
+
+function isScopedCssSelector(selector) {
+  return typeof selector === 'string'
+    && !/^\s*(?:xpath=|text=|role=|id=|data-testid=|\/|\.\.\/)/i.test(selector);
+}
+
 /**
  * Executes a game action via Playwright
  * 
  * @param {import('playwright').Page} page - Playwright page object
  * @param {Object} action - Action to execute
  */
-export async function executeGameAction(page, action) {
+export async function executeGameAction(page, action, { gameSelector = null } = {}) {
   let executionResult = { success: false, error: null };
   
   try {
-    switch (action.type) {
+    const parsedAction = parseGameActionOutcome(action, { allowLegacy: false }).outcome;
+    switch (parsedAction.type) {
       case 'keyboard':
-        await page.keyboard.press(action.key);
+        await page.keyboard.press(parsedAction.key);
         executionResult.success = true;
         break;
       case 'click':
-        if (action.selector) {
+        if (parsedAction.selector) {
+          if (gameSelector && !isScopedCssSelector(parsedAction.selector)) {
+            executionResult.error = `Game selector only permits CSS click selectors: ${parsedAction.selector}`;
+            return executionResult;
+          }
           // Verify element exists before clicking
-          const exists = await page.locator(action.selector).count() > 0;
+          const target = gameSelector ? page.locator(gameSelector).locator(parsedAction.selector) : page.locator(parsedAction.selector);
+          const exists = await target.count() > 0;
           if (!exists) {
             executionResult.success = false;
-            executionResult.error = `Element not found: ${action.selector}`;
+            executionResult.error = `Element not found: ${parsedAction.selector}`;
             return executionResult;
           }
           
-          await page.click(action.selector);
+          await target.click();
           executionResult.success = true;
         } else {
           warn('[GamePlayer] Click action missing selector');
@@ -165,13 +178,9 @@ export async function executeGameAction(page, action) {
         }
         break;
       case 'wait':
-        await page.waitForTimeout(action.duration || 100);
+        await page.waitForTimeout(parsedAction.duration);
         executionResult.success = true;
         break;
-      default:
-        warn(`[GamePlayer] Unknown action type: ${action.type}, defaulting to wait`);
-        await page.waitForTimeout(100);
-        executionResult.success = true;
     }
   } catch (error) {
     executionResult.success = false;
@@ -207,8 +216,30 @@ export async function playGame(page, options = {}) {
     fps = 2, // 2 FPS for decision-making (not 60 FPS - AI needs time to think)
     gameSelector = null,
     gameActivationKey = null,
-    tempDir = null
+    tempDir = null,
+    services = {},
+    isTerminal = null,
   } = options;
+  validateGameOptions({ maxSteps, fps });
+  const reviewState = services.reviewState || validateScreenshot;
+  const decideAction = services.decideAction || decideGameAction;
+  const executeAction = services.executeAction || executeGameAction;
+  const decisionManager = services.decisionManager || new TemporalDecisionManager({
+    minNotesForPrompt: 2,
+    coherenceThreshold: 0.5,
+  });
+  const providerCalls = { visualReviews: 0, actionSelections: 0 };
+  const runId = randomUUID();
+  const invokeReview = async (...args) => {
+    try {
+      const result = await reviewState(...args);
+      providerCalls.visualReviews += result.attempts ?? 1;
+      return result;
+    } catch (error) {
+      providerCalls.visualReviews += error?.details?.attempts ?? 1;
+      throw error;
+    }
+  };
   
   log('[GamePlayer] Starting game play:', { goal, maxSteps, fps, gameActivationKey });
   
@@ -235,16 +266,12 @@ export async function playGame(page, options = {}) {
   
   const history = [];
   let currentState = null;
-  const decisionManager = new TemporalDecisionManager({
-    minNotesForPrompt: 2,
-    coherenceThreshold: 0.5
-  });
   
   for (let step = 0; step < maxSteps; step++) {
     try {
       // 1. Capture current state (screenshot)
       const screenshot = await page.screenshot();
-      const screenshotPath = join(screenshotDir, `gameplay-step-${step}.png`);
+      const screenshotPath = join(screenshotDir, `gameplay-${runId}-step-${step}.png`);
       writeFileSync(screenshotPath, screenshot);
       
       // 2. Extract game state from page (if available)
@@ -298,20 +325,25 @@ export async function playGame(page, options = {}) {
       if (step > 0 && history.length > 0) {
         // Keep one manager for the whole run so warm-start and prompt timing
         // describe this game, rather than a fresh manager on every frame.
+        const temporalCurrentState = {
+          score: null,
+          step,
+          timestamp: Date.now(),
+        };
+        const previousState = history[history.length - 1]?.result || null;
+        let decision;
         try {
-          const currentState = { 
-            score: null, 
-            step,
-            timestamp: Date.now()
-          };
-          const previousState = history[history.length - 1]?.result || null;
-          
-          const decision = await decisionManager.shouldPrompt(currentState, previousState, temporalNotes, {
+          decision = await decisionManager.shouldPrompt(temporalCurrentState, previousState, temporalNotes, {
             stage: 'gameplay',
             testType: 'gameplay'
           });
           
-          if (!decision.shouldPrompt && decision.urgency !== 'high' && previousState) {
+        } catch (error) {
+          // Scheduler failure means review normally; it does not retry a
+          // provider review that itself has failed.
+          decision = { shouldPrompt: true, urgency: 'high', reason: 'scheduler unavailable' };
+        }
+        if (!decision.shouldPrompt && decision.urgency !== 'high' && previousState) {
             // Don't prompt yet - reuse previous result
             stateEvaluation = {
               ...previousState,
@@ -319,37 +351,25 @@ export async function playGame(page, options = {}) {
               skipReason: decision.reason,
               urgency: decision.urgency
             };
-          } else {
-            // Prompt now (decision point or high urgency)
-            stateEvaluation = await validateScreenshot(
+        } else {
+          // Prompt now (decision point or high urgency)
+          stateEvaluation = await invokeReview(
               screenshotPath,
               `Evaluate current game state. Goal: ${goal}`,
               {
                 testType: 'gameplay',
                 temporalNotes,
                 sequenceIndex: step,
-                useTemporalDecision: true,
-                currentState,
+                useTemporalDecision: false,
+                currentState: temporalCurrentState,
                 previousState,
                 previousResult: previousState
               }
-            );
-          }
-        } catch (error) {
-          // If TemporalDecisionManager fails, proceed with normal validation
-          stateEvaluation = await validateScreenshot(
-            screenshotPath,
-            `Evaluate current game state. Goal: ${goal}`,
-            {
-              testType: 'gameplay',
-              temporalNotes,
-              sequenceIndex: step
-            }
           );
         }
       } else {
-        // First step - always validate
-        stateEvaluation = await validateScreenshot(
+        // First step always establishes the canonical evaluation.
+        stateEvaluation = await invokeReview(
           screenshotPath,
           `Evaluate current game state. Goal: ${goal}`,
           {
@@ -363,14 +383,20 @@ export async function playGame(page, options = {}) {
       currentState.evaluation = stateEvaluation;
       
       // 3. Decide what action to take (decision-making)
-      let action = await decideGameAction(
+      let action = await decideAction(
         currentState,
         goal,
-        history
+        history,
+        {
+          reviewState,
+          selectAction: services.selectAction || judgeGameAction,
+          onActionAttempts: attempts => { providerCalls.actionSelections += attempts; },
+        }
       );
       
       // Try action, with simple retry on failure
       let actionExecuted = false;
+      let executionResult = null;
       let retries = 0;
       const maxRetries = 2;
       
@@ -378,7 +404,7 @@ export async function playGame(page, options = {}) {
         log(`[GamePlayer] Step ${step}: score=${stateEvaluation.score}, action=${action.type}:${action.key || action.selector || ''}`);
         
         // 4. Execute action (Playwright)
-        const executionResult = await executeGameAction(page, action);
+        executionResult = await executeAction(page, action, { gameSelector });
         
         if (executionResult.success) {
           actionExecuted = true;
@@ -388,6 +414,17 @@ export async function playGame(page, options = {}) {
           retries++;
           if (retries < maxRetries) await page.waitForTimeout(500);
         }
+      }
+
+      if (!actionExecuted) {
+        history.push({
+          step,
+          state: currentState,
+          action,
+          executionResult,
+          error: executionResult?.error || 'Game action failed after retries',
+        });
+        continue;
       }
       
       // 5. Wait for next frame
@@ -402,9 +439,7 @@ export async function playGame(page, options = {}) {
       });
       
       // 7. Check if game is over (optional)
-      if (stateEvaluation.score === 0 || 
-          stateEvaluation.issues?.some(i => i.toLowerCase().includes('game over')) ||
-          stateEvaluation.issues?.some(i => i.toLowerCase().includes('game ended'))) {
+      if (hasTerminalEvidence(stateEvaluation, gameState, isTerminal)) {
         log(`[GamePlayer] Game over detected at step ${step}`);
         break;
       }
@@ -424,7 +459,8 @@ export async function playGame(page, options = {}) {
     finalState: currentState,
     totalSteps: history.length,
     goal,
-    success: currentState?.evaluation?.score !== null
+    success: currentState?.evaluation?.score !== null,
+    providerCalls,
   };
 }
 
@@ -465,6 +501,9 @@ export class GameGym {
       tempDir: null,
       ...options
     };
+    validateGameOptions(this.options);
+    this.services = this.options.services || {};
+    this.runId = randomUUID();
     
     this.currentState = null;
     this.done = false;
@@ -510,10 +549,11 @@ export class GameGym {
     
     // Capture initial state
     const screenshot = await this.page.screenshot();
-    const screenshotPath = join(this.screenshotDir, `gameplay-reset-${Date.now()}.png`);
+    const screenshotPath = join(this.screenshotDir, `gameplay-${this.runId}-reset-${Date.now()}.png`);
     writeFileSync(screenshotPath, screenshot);
     
-    const evaluation = await validateScreenshot(
+    const reviewState = this.services.reviewState || validateScreenshot;
+    const evaluation = await reviewState(
       screenshotPath,
       `Evaluate initial game state. Goal: ${this.options.goal}`,
       {
@@ -530,7 +570,7 @@ export class GameGym {
         timestamp: Date.now()
       },
       reward: 0,
-      done: false,
+      done: hasTerminalEvidence(evaluation, evaluation.gameState, this.options.isTerminal),
       info: {
         score: evaluation.score,
         issues: evaluation.issues || [],
@@ -538,7 +578,7 @@ export class GameGym {
       }
     };
     
-    this.done = false;
+    this.done = this.currentState.done;
     this.stepCount = 0;
     this.history = [];
     
@@ -559,18 +599,40 @@ export class GameGym {
       return this.currentState;
     }
     
-    // Execute action
-    await executeGameAction(this.page, action);
+    // Validate and execute before advancing. A failed action leaves the prior
+    // observation intact so callers can choose how to recover.
+    const executeAction = this.services.executeAction || executeGameAction;
+    const executionResult = await executeAction(this.page, action, {
+      gameSelector: this.options.gameSelector,
+    });
+    if (!executionResult.success) {
+      this.history.push({
+        step: this.stepCount,
+        action,
+        executionResult,
+        error: executionResult.error || 'Game action failed',
+      });
+      this.currentState = {
+        ...this.currentState,
+        info: {
+          ...this.currentState?.info,
+          actionFailed: true,
+          executionResult,
+        },
+      };
+      return this.currentState;
+    }
     
     // Wait for next frame
     await this.page.waitForTimeout(1000 / this.options.fps);
     
     // Capture new state
     const screenshot = await this.page.screenshot();
-    const screenshotPath = join(this.screenshotDir, `gameplay-step-${this.stepCount + 1}.png`);
+    const screenshotPath = join(this.screenshotDir, `gameplay-${this.runId}-step-${this.stepCount + 1}.png`);
     writeFileSync(screenshotPath, screenshot);
     
-    const evaluation = await validateScreenshot(
+    const reviewState = this.services.reviewState || validateScreenshot;
+    const evaluation = await reviewState(
       screenshotPath,
       `Evaluate game state after action. Goal: ${this.options.goal}`,
       {
@@ -605,7 +667,8 @@ export class GameGym {
         scoreDelta: currentScore - previousScore,
         issues: evaluation.issues || [],
         goal: this.options.goal,
-        step: this.stepCount
+        step: this.stepCount,
+        executionResult,
       }
     };
     
@@ -655,15 +718,7 @@ export class GameGym {
    */
   isDone(evaluation) {
     // Game over conditions
-    if (evaluation.score === 0) {
-      return true;
-    }
-    
-    if (evaluation.issues?.some(i => 
-      i.toLowerCase().includes('game over') || 
-      i.toLowerCase().includes('game ended') ||
-      i.toLowerCase().includes('you lost')
-    )) {
+    if (hasTerminalEvidence(evaluation, evaluation.gameState, this.options.isTerminal)) {
       return true;
     }
     

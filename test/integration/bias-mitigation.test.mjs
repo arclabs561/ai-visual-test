@@ -9,8 +9,8 @@ import {
   mitigateBias,
   mitigatePositionBias,
   applyBiasMitigation
-} from '../../src/bias-mitigation.mjs';
-import { detectBias } from '../../src/bias-detector.mjs';
+} from '../../src/bias-mitigation.js';
+import { detectBias } from '../../src/bias-detector.js';
 
 describe('Bias Mitigation', () => {
   describe('mitigateBias', () => {
@@ -211,6 +211,12 @@ describe('Bias Mitigation', () => {
         }
       });
     });
+
+    it('preserves the public randomizeOrder option without reordering completed judgments', () => {
+      const judgments = [{ score: 9, issues: [] }, { score: 5, issues: [] }, { score: 5, issues: [] }];
+      const mitigated = mitigatePositionBias(judgments, { randomizeOrder: true, adjustScores: false });
+      assert.deepStrictEqual(mitigated.map(({ score }) => score), [9, 5, 5]);
+    });
   });
 
   describe('applyBiasMitigation', () => {
@@ -284,4 +290,3 @@ describe('Bias Mitigation', () => {
     });
   });
 });
-

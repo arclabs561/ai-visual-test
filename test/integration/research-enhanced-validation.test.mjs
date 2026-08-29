@@ -36,3 +36,13 @@ test('validateWithExplicitRubric accepts options', () => {
 test('validateWithAllResearchEnhancements accepts options', () => {
   assert.ok(validateWithAllResearchEnhancements.length >= 2);
 });
+
+test('validateWithAllResearchEnhancements preserves the user prompt while building the default rubric', async () => {
+  const result = await validateWithAllResearchEnhancements('/tmp/research-rubric-regression.png', 'Evaluate layout contrast', {
+    apiKey: null,
+    enableBiasDetection: false,
+    enableBiasMitigation: false,
+  });
+  assert.strictEqual(result.enabled, false);
+  assert.strictEqual(result.score, null);
+});

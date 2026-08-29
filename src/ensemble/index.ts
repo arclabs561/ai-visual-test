@@ -27,14 +27,25 @@ export type {
 export {
   detectBias,
   detectPositionBias
-} from '../bias-detector.mjs';
+} from '../bias-detector.js';
+export type {
+  BiasDetection,
+  BiasDetectionOptions,
+  BiasSeverity,
+  BiasType,
+  DetectedBias,
+  PositionBiasOptions,
+  PositionBiasResult,
+  PositionJudgment,
+} from '../bias-detector.js';
 
 // Bias mitigation
 export {
   applyBiasMitigation,
   mitigateBias,
   mitigatePositionBias
-} from '../bias-mitigation.mjs';
+} from '../bias-mitigation.js';
+export type { BiasMitigationOptions } from '../bias-mitigation.js';
 
 // Position counter-balance
 export {
@@ -49,4 +60,5 @@ export {
   validateWithLengthAlignment,
   validateWithExplicitRubric,
   validateWithAllResearchEnhancements
-} from '../research-enhanced-validation.mjs';
+} from '../research-enhanced-validation.js';
+export type { PositionAnalysisResult, ResearchOptions } from '../research-enhanced-validation.js';

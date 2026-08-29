@@ -74,12 +74,20 @@ describe('API Sub-Modules', () => {
   describe('ensemble sub-module', () => {
     it('should export ensemble functions', async () => {
       const ensemble = await import('../../src/ensemble/index.js');
-      
-      assert.ok(ensemble.EnsembleJudge, 'Should export EnsembleJudge');
-      assert.ok(typeof ensemble.detectBias === 'function', 'Should export detectBias');
-      assert.ok(typeof ensemble.detectPositionBias === 'function', 'Should export detectPositionBias');
-      assert.ok(typeof ensemble.evaluateWithCounterBalance === 'function', 'Should export evaluateWithCounterBalance');
-      assert.ok(typeof ensemble.shouldUseCounterBalance === 'function', 'Should export shouldUseCounterBalance');
+
+      const expectedExports = [
+        'EnsembleJudge', 'createEnsembleJudge', 'detectBias', 'detectPositionBias',
+        'applyBiasMitigation', 'mitigateBias', 'mitigatePositionBias',
+        'evaluateWithCounterBalance', 'shouldUseCounterBalance',
+        'validateWithResearchEnhancements', 'validateMultipleWithPositionAnalysis',
+        'validateWithLengthAlignment', 'validateWithExplicitRubric',
+        'validateWithAllResearchEnhancements',
+      ];
+      assert.deepStrictEqual(
+        Object.keys(ensemble).sort(),
+        expectedExports.sort(),
+        'the generated ensemble barrel must preserve the public runtime surface',
+      );
     });
   });
   

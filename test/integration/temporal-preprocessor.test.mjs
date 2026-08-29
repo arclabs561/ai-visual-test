@@ -344,16 +344,9 @@ describe('Temporal Preprocessing Manager', () => {
     assert.strictEqual(manager.preprocessedCache.noteCount, 0);
   });
   
-  // CRITICAL LIMITATION TESTS (2025-01)
-  
-  test('TemporalPreprocessingManager - cache validity only checks count, not content', async () => {
-    // CRITICAL LIMITATION: isCacheValid() only checks note count, not note content
-    // This is a known limitation: cache might be used when notes changed but count didn't
-    // 
-    // The problem:
-    // - Validates cache if note count changed <20%
-    // - But doesn't check if notes actually changed
-    // - Example: 10 notes, replace 2 with different notes = same count = cache valid (WRONG!)
+  // CACHE IDENTITY REGRESSIONS
+
+  test('TemporalPreprocessingManager - cache invalidates when same-count note content changes', async () => {
     
     const manager = new TemporalPreprocessingManager({
       cacheMaxAge: 10000
@@ -376,10 +369,24 @@ describe('Temporal Preprocessing Manager', () => {
       observation: `Different note ${i}` // Different observations!
     }));
     
-    // CRITICAL: Cache is considered valid even though content changed!
-    // This is the documented limitation - it only checks count, not content
-    assert.strictEqual(manager.isCacheValid(notes2), true,
-      'Cache validity only checks count, not content (known limitation)');
+    assert.strictEqual(manager.isCacheValid(notes2), false,
+      'A cache computed from different notes must never be reused just because its count matches');
+  });
+
+  test('TemporalPreprocessingManager - cache invalidates when output options change', async () => {
+    const manager = new TemporalPreprocessingManager({ cacheMaxAge: 10000 });
+    const now = Date.now();
+    const notes = Array.from({ length: 5 }, (_, i) => ({
+      timestamp: now - (5 - i) * 2000,
+      score: 7,
+      observation: `Note ${i}`
+    }));
+
+    await manager.preprocessInBackground(notes, { windowSize: 5000, maxNotes: 3 });
+
+    assert.ok(manager.isCacheValid(notes, { windowSize: 5000, maxNotes: 3 }));
+    assert.strictEqual(manager.isCacheValid(notes, { windowSize: 10000, maxNotes: 3 }), false);
+    assert.strictEqual(manager.isCacheValid(notes, { windowSize: 5000, maxNotes: 4 }), false);
   });
   
   test('TemporalPreprocessingManager - incremental aggregation is a lie', async () => {
@@ -528,15 +535,9 @@ describe('Temporal Preprocessing Manager', () => {
       observation: `Note ${i}`
     }));
     
-    // CRITICAL: Exactly 20% change should invalidate cache (>20% invalidates)
-    // 2/10 = 0.2 = 20%, but the check is >20%, so exactly 20% should be valid
     const isValid = manager.isCacheValid(notes2);
-    // The check is: noteCountDiff > notes.length * 0.2
-    // For 12 notes: |12 - 10| = 2, 12 * 0.2 = 2.4, so 2 > 2.4 = false (valid)
-    // Actually, let's check: noteCountDiff = 2, threshold = 12 * 0.2 = 2.4
-    // 2 > 2.4 = false, so cache is valid (exactly 20% is valid, >20% invalidates)
-    assert.strictEqual(isValid, true,
-      'Exactly 20% change should keep cache valid (>20% invalidates)');
+    assert.strictEqual(isValid, false,
+      'A different note set must invalidate the cache even when its count change is small');
     
     // 21% change: 10 notes -> 13 notes (3/10 = 30%, 3/13 = 23%)
     const notes3 = Array.from({ length: 13 }, (_, i) => ({

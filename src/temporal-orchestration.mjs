@@ -16,6 +16,32 @@ import { aggregateTemporalNotes } from '#temporal-core';
 import { log, warn } from './logger.mjs';
 import { BatchOptimizer } from './batch-optimizer.mjs';
 
+function serializeTemporalCacheValue(value, seen = new WeakSet()) {
+  if (value === null || typeof value !== 'object') {
+    if (typeof value === 'number' && !Number.isFinite(value)) return `number:${value}`;
+    if (typeof value === 'undefined') return 'undefined';
+    if (typeof value === 'bigint') return `bigint:${value}`;
+    return JSON.stringify(value);
+  }
+
+  if (seen.has(value)) {
+    throw new TypeError('Temporal notes must not contain circular data when cached');
+  }
+  seen.add(value);
+
+  if (Array.isArray(value)) {
+    const serialized = `[${value.map(item => serializeTemporalCacheValue(item, seen)).join(',')}]`;
+    seen.delete(value);
+    return serialized;
+  }
+
+  const serialized = `{${Object.keys(value).sort().map(key =>
+    `${JSON.stringify(key)}:${serializeTemporalCacheValue(value[key], seen)}`
+  ).join(',')}}`;
+  seen.delete(value);
+  return serialized;
+}
+
 // ============================================================================
 // TEMPORAL ERROR TYPES (from temporal-errors.mjs)
 // ============================================================================
@@ -676,7 +702,9 @@ export class TemporalPreprocessingManager {
       prunedNotes: null,
       patterns: null,
       lastPreprocessTime: 0,
-      noteCount: 0
+      noteCount: 0,
+      notesFingerprint: null,
+      optionsFingerprint: null
     };
     this.preprocessInterval = options.preprocessInterval || 2000;
     this.cacheMaxAge = options.cacheMaxAge || 5000;
@@ -687,7 +715,7 @@ export class TemporalPreprocessingManager {
   async getFastAggregation(notes, options = {}) {
     const activity = this.activityDetector.detectActivityLevel(notes);
 
-    if (activity === 'high' && this.isCacheValid(notes)) {
+    if (activity === 'high' && this.isCacheValid(notes, options)) {
       log('[Preprocessor] Using cached aggregation (high activity)');
       return this.preprocessedCache.aggregated;
     }
@@ -742,7 +770,9 @@ export class TemporalPreprocessingManager {
         topWeighted,
         patterns,
         lastPreprocessTime: Date.now(),
-        noteCount: notes.length
+      noteCount: notes.length,
+      notesFingerprint: this._getNotesFingerprint(notes),
+      optionsFingerprint: this._getOptionsFingerprint(options)
       };
 
       log(`[Preprocessor] Background preprocessing complete (${notes.length} notes, activity: ${activity})`);
@@ -753,7 +783,7 @@ export class TemporalPreprocessingManager {
     }
   }
 
-  isCacheValid(notes) {
+  isCacheValid(notes, options = {}) {
     if (!this.preprocessedCache.aggregated) return false;
 
     const age = Date.now() - this.preprocessedCache.lastPreprocessTime;
@@ -762,7 +792,29 @@ export class TemporalPreprocessingManager {
     const noteCountDiff = Math.abs(notes.length - this.preprocessedCache.noteCount);
     if (noteCountDiff > notes.length * 0.2) return false;
 
+    const notesFingerprint = this._getNotesFingerprint(notes);
+    if (notesFingerprint === null || notesFingerprint !== this.preprocessedCache.notesFingerprint) return false;
+    if (this._getOptionsFingerprint(options) !== this.preprocessedCache.optionsFingerprint) return false;
+
     return true;
+  }
+
+  _getNotesFingerprint(notes) {
+    try {
+      return serializeTemporalCacheValue(notes);
+    } catch (error) {
+      warn(`[Preprocessor] Unable to fingerprint notes for cache reuse: ${error.message}`);
+      return null;
+    }
+  }
+
+  _getOptionsFingerprint(options) {
+    return JSON.stringify({
+      windowSize: options.windowSize || 10000,
+      decayFactor: options.decayFactor || 0.9,
+      maxNotes: options.maxNotes || 20,
+      minWeight: options.minWeight || 0.1
+    });
   }
 
   _identifyPatterns(notes) {
@@ -800,8 +852,8 @@ export class TemporalPreprocessingManager {
     return { trends, conflicts };
   }
 
-  getFastMultiScale(notes) {
-    if (this.isCacheValid(notes) && this.preprocessedCache.multiScale) {
+  getFastMultiScale(notes, options = {}) {
+    if (this.isCacheValid(notes, options) && this.preprocessedCache.multiScale) {
       return this.preprocessedCache.multiScale;
     }
 
@@ -815,7 +867,7 @@ export class TemporalPreprocessingManager {
   }
 
   getFastPrunedNotes(notes, options = {}) {
-    if (this.isCacheValid(notes) && this.preprocessedCache.prunedNotes) {
+    if (this.isCacheValid(notes, options) && this.preprocessedCache.prunedNotes) {
       return this.preprocessedCache.prunedNotes;
     }
 
@@ -847,7 +899,9 @@ export class TemporalPreprocessingManager {
       prunedNotes: null,
       patterns: null,
       lastPreprocessTime: 0,
-      noteCount: 0
+      noteCount: 0,
+      notesFingerprint: null,
+      optionsFingerprint: null
     };
   }
 }
@@ -872,7 +926,7 @@ export class AdaptiveTemporalProcessor {
       const aggregated = await this.preprocessor.getFastAggregation(notes, options);
       return {
         aggregated,
-        multiScale: this.preprocessor.getFastMultiScale(notes),
+        multiScale: this.preprocessor.getFastMultiScale(notes, options),
         prunedNotes: this.preprocessor.getFastPrunedNotes(notes, options),
         source: 'cache',
         latency: '<10ms',
@@ -903,10 +957,10 @@ export class AdaptiveTemporalProcessor {
       };
     }
 
-    if (this.preprocessor.isCacheValid(notes)) {
+    if (this.preprocessor.isCacheValid(notes, options)) {
       return {
         aggregated: await this.preprocessor.getFastAggregation(notes, options),
-        multiScale: this.preprocessor.getFastMultiScale(notes),
+        multiScale: this.preprocessor.getFastMultiScale(notes, options),
         prunedNotes: this.preprocessor.getFastPrunedNotes(notes, options),
         source: 'cache',
         latency: '<10ms',
@@ -964,18 +1018,45 @@ export class TemporalBatchOptimizer extends BatchOptimizer {
   constructor(options = {}) {
     super(options);
     this.temporalDependencies = new Map();
+    this.completedTemporalRequests = new Map();
+    this.failedTemporalRequests = new Map();
+    this.nextTemporalRequestId = 0;
     this.sequentialContext = options.sequentialContext || null;
     this.adaptiveBatching = options.adaptiveBatching !== false;
   }
 
   async addTemporalRequest(imagePath, prompt, context, dependencies = []) {
+    const requestId = ++this.nextTemporalRequestId;
     this.temporalDependencies.set(imagePath, {
       dependencies,
       timestamp: Date.now(),
-      priority: this.calculatePriority(dependencies, context)
+      priority: this.calculatePriority(dependencies, context),
+      requestId
     });
 
-    return this._queueRequest(imagePath, prompt, context);
+    return this._queueTemporalRequest(imagePath, prompt, context, null, requestId);
+  }
+
+  _queueTemporalRequest(imagePath, prompt, context, validateFn = null, requestId = undefined) {
+    // Temporal requests must always traverse this scheduler: the inherited fast path
+    // would otherwise execute a dependent request before its prerequisite completes.
+    const activeRequests = this.activeRequests;
+    const cache = this.cache;
+    this.activeRequests = this.maxConcurrency;
+    this.cache = null;
+    let pending;
+    try {
+      pending = super._queueRequest(imagePath, prompt, context, validateFn);
+      const queuedRequest = this.queue[this.queue.length - 1];
+      if (queuedRequest?.imagePath === imagePath) {
+        queuedRequest.temporalRequestId = requestId;
+      }
+    } finally {
+      this.activeRequests = activeRequests;
+      this.cache = cache;
+    }
+    this._processQueue();
+    return pending;
   }
 
   calculatePriority(dependencies, context) {
@@ -1009,21 +1090,29 @@ export class TemporalBatchOptimizer extends BatchOptimizer {
     this.processing = true;
 
     try {
-      const sortedQueue = this.sortByTemporalDependencies([...this.queue]);
+      while (this.queue.length > 0 && this.activeRequests < this.maxConcurrency) {
+        const sortedQueue = this.sortByTemporalDependencies([...this.queue]);
+        if (this._rejectUnsatisfiableRequests(sortedQueue) > 0) {
+          continue;
+        }
 
-      while (sortedQueue.length > 0 && this.activeRequests < this.maxConcurrency) {
         const batch = this.selectTemporalBatch(sortedQueue);
 
+        if (batch.length === 0) {
+          break;
+        }
+
         batch.forEach(item => {
-          const index = this.queue.findIndex(q => q.imagePath === item.imagePath);
+          const index = this.queue.indexOf(item);
           if (index >= 0) this.queue.splice(index, 1);
         });
 
-        const promises = batch.map(async ({ imagePath, prompt, context, validateFn, resolve, reject }) => {
+        const promises = batch.map(async ({ imagePath, prompt, context, validateFn, resolve, reject, temporalRequestId }) => {
           try {
             if (this.cache) {
               const cacheKey = this._getCacheKey(imagePath, prompt, context);
               if (this.cache.has(cacheKey)) {
+                this._markTemporalRequestCompleted(imagePath, temporalRequestId);
                 resolve(this.cache.get(cacheKey));
                 return;
               }
@@ -1038,6 +1127,8 @@ export class TemporalBatchOptimizer extends BatchOptimizer {
 
             const result = await this._processRequest(imagePath, prompt, context, validateFn);
 
+            this._markTemporalRequestCompleted(imagePath, temporalRequestId);
+
             if (this.sequentialContext && result.score !== null) {
               this.sequentialContext.addDecision({
                 score: result.score,
@@ -1049,6 +1140,7 @@ export class TemporalBatchOptimizer extends BatchOptimizer {
 
             resolve(result);
           } catch (error) {
+            this._markTemporalRequestFailed(imagePath, temporalRequestId, error);
             reject(error);
           }
         });
@@ -1079,21 +1171,89 @@ export class TemporalBatchOptimizer extends BatchOptimizer {
     }
 
     const batch = [];
-    const processed = new Set();
-
     for (const item of sortedQueue) {
       if (batch.length >= this.batchSize) break;
-      if (processed.has(item.imagePath)) continue;
 
       const deps = this.temporalDependencies.get(item.imagePath);
 
-      if (!deps || deps.dependencies.every(dep => processed.has(dep))) {
+      if (!deps || deps.dependencies.every(dep => {
+        const dependency = this.temporalDependencies.get(dep);
+        return dependency && this.completedTemporalRequests.has(dep) &&
+          this.completedTemporalRequests.get(dep) === dependency.requestId;
+      })) {
         batch.push(item);
-        processed.add(item.imagePath);
       }
     }
 
     return batch;
+  }
+
+  _markTemporalRequestCompleted(imagePath, requestId) {
+    const request = this.temporalDependencies.get(imagePath);
+    if (request && request.requestId === requestId) {
+      this.completedTemporalRequests.set(imagePath, requestId);
+    }
+  }
+
+  _markTemporalRequestFailed(imagePath, requestId, error) {
+    const request = this.temporalDependencies.get(imagePath);
+    if (request && request.requestId === requestId) {
+      this.failedTemporalRequests.set(imagePath, { requestId, error });
+    }
+  }
+
+  _rejectUnsatisfiableRequests(queue) {
+    let rejected = 0;
+    for (const item of queue) {
+      const error = this._getDependencyError(item.imagePath);
+      if (!error) continue;
+
+      const index = this.queue.indexOf(item);
+      if (index >= 0) this.queue.splice(index, 1);
+      item.reject(error);
+      rejected++;
+    }
+    return rejected;
+  }
+
+  _getDependencyError(imagePath, ancestry = new Set()) {
+    const request = this.temporalDependencies.get(imagePath);
+    if (!request) return null;
+
+    const nextAncestry = new Set(ancestry);
+    nextAncestry.add(imagePath);
+    for (const dependencyPath of request.dependencies) {
+      const dependency = this.temporalDependencies.get(dependencyPath);
+      if (!dependency) {
+        return new TemporalBatchError(`Unknown temporal dependency: ${dependencyPath}`, {
+          imagePath,
+          dependencyPath
+        });
+      }
+
+      const failed = this.failedTemporalRequests.get(dependencyPath);
+      if (failed && failed.requestId === dependency.requestId) {
+        return new TemporalBatchError(`Temporal dependency failed: ${dependencyPath}`, {
+          imagePath,
+          dependencyPath,
+          cause: failed.error.message
+        });
+      }
+
+      if (nextAncestry.has(dependencyPath)) {
+        return new TemporalBatchError(`Cyclic temporal dependency: ${dependencyPath}`, {
+          imagePath,
+          dependencyPath
+        });
+      }
+
+      if (!this.completedTemporalRequests.has(dependencyPath) ||
+        this.completedTemporalRequests.get(dependencyPath) !== dependency.requestId) {
+        const nestedError = this._getDependencyError(dependencyPath, nextAncestry);
+        if (nestedError) return nestedError;
+      }
+    }
+    return null;
   }
 
   getTemporalStats() {

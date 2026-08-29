@@ -32,7 +32,6 @@ Tests are organized into subdirectories by type:
 - `temporal-*.test.mjs` - Temporal features
 - `ensemble-*.test.mjs` - Ensemble judge
 - `validators-*.test.mjs` - Validator tests
-- `public-index-styling.test.mjs` - Public API page styling, accessibility, and visual tests
 - And 50+ more integration tests
 
 ### E2E Tests (`test/e2e/`) - Full Workflows
@@ -129,4 +128,3 @@ All tests import shared utilities from `test/` root:
 - `test-image-utils.mjs` - Image utilities
 - `test-logger.mjs` - Logging utilities
 - `helpers/` - Mock utilities
-

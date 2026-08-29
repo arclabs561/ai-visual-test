@@ -86,10 +86,10 @@ export function selectProvider(requirements: ProviderRequirements = {}): Provide
   return 'gemini';
 }
 
-/** Select a tier and provider together, using the process environment for key discovery. */
+/** Select a tier and provider together, using supplied provider credentials when present. */
 export function selectModelTierAndProvider(context: ModelTierAndProviderContext = {}): ModelTierAndProvider {
   const { requirements = {}, ...tierContext } = context;
   const tier = selectModelTier(tierContext);
-  const provider = selectProvider({ ...requirements, env: process.env });
+  const provider = selectProvider({ ...requirements, env: requirements.env ?? process.env });
   return { tier, provider, reason: `Selected ${provider} ${tier} tier based on context` };
 }

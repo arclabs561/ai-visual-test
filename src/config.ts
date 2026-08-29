@@ -92,7 +92,7 @@ export function createConfig(options: ConfigOptions = {}): Config {
     apiKey = null,
     env = process.env,
     cacheDir = null,
-    cacheEnabled = process.env.DISABLE_LLM_CACHE !== 'true',
+    cacheEnabled,
     maxConcurrency = API_CONSTANTS.DEFAULT_MAX_CONCURRENCY,
     timeout = API_CONSTANTS.DEFAULT_TIMEOUT_MS,
     verbose = false,
@@ -100,6 +100,7 @@ export function createConfig(options: ConfigOptions = {}): Config {
     model = null,     // Explicit model override
     anchors = null    // Domain visual anchors: { domain?, positive?: string[], negative?: string[] }
   } = options;
+  const resolvedCacheEnabled = cacheEnabled ?? env.DISABLE_LLM_CACHE !== 'true';
 
   // Auto-detect provider if not specified
   const selectedProvider = canonicalProviderName(provider || detectProvider(env));
@@ -179,7 +180,7 @@ export function createConfig(options: ConfigOptions = {}): Config {
     enabled,
     anchors: normalizedAnchors,
     cache: {
-      enabled: cacheEnabled,
+      enabled: resolvedCacheEnabled,
       dir: cacheDir
     },
     performance: {

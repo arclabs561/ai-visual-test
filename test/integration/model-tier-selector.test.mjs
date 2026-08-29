@@ -143,6 +143,15 @@ describe('Model Tier Selector', () => {
       // Provider may vary based on API key availability
       assert.ok(['groq', 'gemini', 'openai', 'claude'].includes(result.provider));
     });
+
+    it('should preserve the supplied environment for provider selection', () => {
+      const result = selectModelTierAndProvider({
+        requirements: {
+          env: { OPENAI_API_KEY: 'synthetic-openai-key' }
+        }
+      });
+
+      assert.strictEqual(result.provider, 'openai');
+    });
   });
 });
-

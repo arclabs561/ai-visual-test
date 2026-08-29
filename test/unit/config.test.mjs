@@ -53,6 +53,23 @@ test('createConfig - cache configuration', () => {
   assert.strictEqual(config.cache.enabled, false);
 });
 
+test('createConfig - cache setting uses the supplied environment', () => {
+  const config = createConfig({
+    env: { DISABLE_LLM_CACHE: 'true' }
+  });
+
+  assert.strictEqual(config.cache.enabled, false);
+});
+
+test('createConfig - explicit cache setting overrides the supplied environment', () => {
+  const config = createConfig({
+    env: { DISABLE_LLM_CACHE: 'true' },
+    cacheEnabled: true
+  });
+
+  assert.strictEqual(config.cache.enabled, true);
+});
+
 test('createConfig - performance configuration', () => {
   const config = createConfig({ 
     maxConcurrency: 10,

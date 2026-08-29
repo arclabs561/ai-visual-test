@@ -116,3 +116,51 @@ export async function consumeEnsembleCounterBalance(): Promise<void> {
   void counterBalanced;
   void shouldCounterBalance;
 }
+
+export async function consumeTypedEnsemble(): Promise<void> {
+  const judges: ensemble.JudgeLike[] = [
+    {
+      provider: 'first',
+      async judgeScreenshot() {
+        return { score: 8, assessment: 'pass', issues: [], reasoning: 'stable' };
+      },
+    },
+    {
+      provider: 'second',
+      async judgeScreenshot() {
+        return { score: 4, assessment: 'fail', issues: ['contrast'], reasoning: 'visible regression' };
+      },
+    },
+  ];
+  const review = new ensemble.EnsembleJudge({ judges, votingMethod: 'majority' });
+  const result: ensemble.EnsembleResult = await review.evaluate('candidate.png', 'Review checkout');
+  const availability: ensemble.Availability = result.availability;
+  const disagreement: ensemble.Disagreement = result.disagreement;
+  const agreement: ensemble.Agreement = result.agreement;
+  void availability.availableJudges;
+  void disagreement.hasDisagreement;
+  void agreement.score;
+}
+
+export function consumeEnsembleHelperContracts(): void {
+  const result: root.ValidationResult = {
+    enabled: true,
+    score: 8,
+    issues: [],
+    recommendations: [],
+    reasoning: 'stable layout',
+  };
+  const bias = ensemble.detectBias('The response is very very very verbose.', { checkVerbosity: true });
+  const mitigated: root.ValidationResult = ensemble.mitigateBias(result, bias, { minAdjustment: -1 });
+  const applied: root.ValidationResult = ensemble.applyBiasMitigation(result, 'stable layout', { adjustScores: false });
+  const positioned: root.ValidationResult[] = ensemble.mitigatePositionBias([result], { adjustScores: true });
+  const analysis: Promise<ensemble.PositionAnalysisResult> = ensemble.validateMultipleWithPositionAnalysis(
+    ['first.png', 'second.png'],
+    'Compare the layout',
+    { calculateMetrics: true, qualityGap: 0.5 },
+  );
+  void mitigated;
+  void applied;
+  void positioned;
+  void analysis;
+}

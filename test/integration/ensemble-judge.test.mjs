@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { EnsembleJudge, createEnsembleJudge } from '../../src/ensemble-judge.mjs';
+import { EnsembleJudge, createEnsembleJudge } from '#ensemble-judge';
 import { VLLMJudge } from '../../src/judge.mjs';
 
 test('EnsembleJudge aggregates results with weighted average', async () => {
@@ -118,6 +118,5 @@ test('createEnsembleJudge creates judge with multiple providers', () => {
   assert.strictEqual(ensemble.judges[0].provider, 'gemini');
   assert.strictEqual(ensemble.judges[1].provider, 'openai');
 });
-
 
 

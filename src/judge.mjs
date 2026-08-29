@@ -1184,7 +1184,7 @@ export async function validateScreenshot(imagePath, prompt, context = {}) {
   // Research: arXiv:2510.01499 - Optimal ensemble weighting improves accuracy by 10-20%
   if (context.useEnsemble) {
     try {
-      const { createEnsembleJudge } = await import('./ensemble-judge.mjs');
+      const { createEnsembleJudge } = await import('#ensemble-judge');
       const providers = context.ensembleProviders || ['gemini', 'openai'];
       const ensemble = createEnsembleJudge(providers, context.ensembleOptions || {});
       const startTime = Date.now();

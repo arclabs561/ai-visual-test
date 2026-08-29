@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { EnsembleJudge } from '../../src/ensemble-judge.mjs';
+import { EnsembleJudge } from '#ensemble-judge';
 
 // Helper: create an EnsembleJudge with N dummy judges (no real providers)
 function createJudge(options = {}) {

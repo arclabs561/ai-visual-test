@@ -22,10 +22,13 @@ function exportRoute(entry) {
 }
 
 function declaredValueExports(source) {
-  return [...new Set(
-    [...source.matchAll(/^export\s+(?:declare\s+)?(?:class|function|const)\s+(\w+)/gm)]
-      .map(match => match[1]),
-  )];
+  const declarations = [...source.matchAll(/^export\s+(?:declare\s+)?(?:class|function|const)\s+(\w+)/gm)]
+    .map(match => match[1]);
+  const reexports = [...source.matchAll(/^export\s*\{([\s\S]*?)\}\s*from\s+['"][^'"]+['"];?/gm)]
+    .flatMap(match => match[1].split(','))
+    .map(name => name.trim().replace(/\s+as\s+\w+$/, ''))
+    .filter(Boolean);
+  return [...new Set([...declarations, ...reexports])];
 }
 
 describe('package export/type contract', () => {

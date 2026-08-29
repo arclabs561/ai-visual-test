@@ -6,7 +6,7 @@ import {
   validateWithLengthAlignment,
   validateWithExplicitRubric,
   validateWithAllResearchEnhancements
-} from '../../src/ensemble/index.mjs';
+} from '../../src/ensemble/index.js';
 
 test('research-enhanced functions are exported', () => {
   assert.ok(typeof validateWithResearchEnhancements === 'function');
@@ -36,4 +36,3 @@ test('validateWithExplicitRubric accepts options', () => {
 test('validateWithAllResearchEnhancements accepts options', () => {
   assert.ok(validateWithAllResearchEnhancements.length >= 2);
 });
-

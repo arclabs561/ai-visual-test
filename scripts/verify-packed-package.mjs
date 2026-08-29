@@ -50,8 +50,15 @@ try {
     cwd: consumer,
     stdio: 'inherit',
   });
-  const ensembleProgram = `const ensemble = await import(${JSON.stringify(`${installedManifest.name}/ensemble`)}); for (const name of ['evaluateWithCounterBalance', 'shouldUseCounterBalance']) { if (typeof ensemble[name] !== 'function') throw new Error('Missing packed ensemble helper: ' + name); }`;
+  const ensembleProgram = `const ensemble = await import(${JSON.stringify(`${installedManifest.name}/ensemble`)}); for (const name of ['evaluateWithCounterBalance', 'shouldUseCounterBalance']) { if (typeof ensemble[name] !== 'function') throw new Error('Missing packed ensemble helper: ' + name); } const judge = new ensemble.EnsembleJudge({ judges: [{ provider: 'packed', async judgeScreenshot() { return { score: 8, assessment: 'pass', issues: [], reasoning: 'packed route' }; } }] }); const result = await judge.evaluate('packed.png', 'verify package route'); if (result.score !== 8 || result.availability.availableJudges !== 1 || result.disagreement.type !== 'insufficient_scores') throw new Error('Packed ensemble constructor route failed');`;
   execFileSync(process.execPath, ['--input-type=module', '--eval', ensembleProgram], {
+    cwd: consumer,
+    stdio: 'inherit',
+  });
+  const ensembleTypeConsumer = `import { EnsembleJudge, type Availability, type Disagreement, type EnsembleResult, type JudgeLike, evaluateWithCounterBalance } from ${JSON.stringify(`${installedManifest.name}/ensemble`)}; const judges: JudgeLike[] = [{ provider: 'packed-types', async judgeScreenshot() { return { score: 8, issues: [], reasoning: 'typed' }; } }]; const result: EnsembleResult = await new EnsembleJudge({ judges }).evaluate('packed.png', 'typed package route'); const availability: Availability = result.availability; const disagreement: Disagreement = result.disagreement; const counterBalanced = await evaluateWithCounterBalance(async () => ({ enabled: true, score: 8, issues: [], recommendations: [], reasoning: 'typed' }), 'packed.png', 'typed package route', { baseline: 'baseline.png' }, { baselinePath: 'baseline.png' }); const status = counterBalanced.counterBalance?.status; void availability; void disagreement; void status;`;
+  const typeConsumerPath = join(consumer, 'ensemble-consumer.ts');
+  writeFileSync(typeConsumerPath, ensembleTypeConsumer);
+  execFileSync(process.execPath, [join(ROOT, 'node_modules', 'typescript', 'bin', 'tsc'), '--noEmit', '--strict', '--target', 'ES2022', '--module', 'NodeNext', '--moduleResolution', 'NodeNext', '--skipLibCheck', 'false', typeConsumerPath], {
     cwd: consumer,
     stdio: 'inherit',
   });

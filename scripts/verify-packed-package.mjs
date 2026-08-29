@@ -65,6 +65,11 @@ try {
     cwd: consumer,
     stdio: 'inherit',
   });
+  const videoProgram = `const packageName = ${JSON.stringify(installedManifest.name)}; const root = await import(packageName); const video = await import(packageName + '/video'); if (root.VideoJudge !== video.VideoJudge || root.judgeVideo !== video.judgeVideo) throw new Error('Packed root/video exports are not identical'); const judge = new video.VideoJudge({ enabled: false, provider: 'gemini' }); if (!(judge instanceof video.VideoJudge)) throw new Error('Packed VideoJudge constructor failed');`;
+  execFileSync(process.execPath, ['--input-type=module', '--eval', videoProgram], {
+    cwd: consumer,
+    stdio: 'inherit',
+  });
   const ensembleTypeConsumer = `import { EnsembleJudge, type Availability, type Disagreement, type EnsembleResult, type JudgeLike, evaluateWithCounterBalance } from ${JSON.stringify(`${installedManifest.name}/ensemble`)}; const judges: JudgeLike[] = [{ provider: 'packed-types', async judgeScreenshot() { return { score: 8, issues: [], reasoning: 'typed' }; } }]; const result: EnsembleResult = await new EnsembleJudge({ judges }).evaluate('packed.png', 'typed package route'); const availability: Availability = result.availability; const disagreement: Disagreement = result.disagreement; const counterBalanced = await evaluateWithCounterBalance(async () => ({ enabled: true, score: 8, issues: [], recommendations: [], reasoning: 'typed' }), 'packed.png', 'typed package route', { baseline: 'baseline.png' }, { baselinePath: 'baseline.png' }); const status = counterBalanced.counterBalance?.status; void availability; void disagreement; void status;`;
   const typeConsumerPath = join(consumer, 'ensemble-consumer.ts');
   writeFileSync(typeConsumerPath, ensembleTypeConsumer);
@@ -85,6 +90,14 @@ try {
   const perceptionConsumerPath = join(consumer, 'perception-consumer.ts');
   writeFileSync(perceptionConsumerPath, perceptionTypeConsumer);
   execFileSync(process.execPath, [join(ROOT, 'node_modules', 'typescript', 'bin', 'tsc'), '--noEmit', '--strict', '--target', 'ES2022', '--module', 'NodeNext', '--moduleResolution', 'NodeNext', '--skipLibCheck', 'false', perceptionConsumerPath], {
+    cwd: consumer,
+    stdio: 'inherit',
+  });
+
+  const videoTypeConsumer = `import { VideoJudge, judgeVideo, type VideoContext, type VideoInput, type VideoJudgeOptions } from ${JSON.stringify(`${installedManifest.name}/video`)}; const input: VideoInput = [{ path: 'clip.mp4', label: 'checkout flow', mime: 'video/mp4' }]; const options: VideoJudgeOptions = { enabled: false, provider: 'gemini', maxMB: 12, maxTotalMB: 20 }; const context: VideoContext = { maxTokens: 512, attempts: 2, timeout: 5000 }; const judge: VideoJudge = new VideoJudge(options); const result = judgeVideo(input, 'Review checkout', { ...options, ...context }); const screenshot = judge.judgeScreenshot('checkout.png', 'Review screenshot'); void result; void screenshot;`;
+  const videoConsumerPath = join(consumer, 'video-consumer.ts');
+  writeFileSync(videoConsumerPath, videoTypeConsumer);
+  execFileSync(process.execPath, [join(ROOT, 'node_modules', 'typescript', 'bin', 'tsc'), '--noEmit', '--strict', '--target', 'ES2022', '--module', 'NodeNext', '--moduleResolution', 'NodeNext', '--skipLibCheck', 'false', videoConsumerPath], {
     cwd: consumer,
     stdio: 'inherit',
   });

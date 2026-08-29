@@ -19,11 +19,15 @@ export interface ProviderConfig {
 }
 
 export interface ProviderCall {
-  images: ProviderImage[];
+  /** Legacy image input. Prefer provider-neutral content for new modalities. */
+  images?: ProviderImage[];
+  /** Provider-owned serialization of text, image, and video payloads. */
+  content?: ProviderContent[];
   prompt: string;
   signal: AbortSignal;
   apiKey: string;
   config: ProviderConfig;
+  maxOutputTokens?: number;
   structuredOutput?: StructuredOutputSpec | null;
 }
 
@@ -31,6 +35,14 @@ export interface ProviderImage {
   data: string;
   mime: 'image/png' | 'image/jpeg' | 'image/gif' | 'image/webp';
 }
+
+export type ProviderImageMime = ProviderImage['mime'];
+export type ProviderVideoMime = 'video/mp4' | 'video/webm' | 'video/quicktime';
+
+export type ProviderContent =
+  | { type: 'text'; text: string }
+  | { type: 'image'; data: string; mime: ProviderImageMime }
+  | { type: 'video'; data: string; mime: ProviderVideoMime };
 
 export interface ParsedProviderResponse {
   judgment: string;
@@ -66,6 +78,11 @@ function array(value: unknown): unknown[] {
 
 function number(value: unknown): number {
   return typeof value === 'number' && Number.isFinite(value) ? value : 0;
+}
+
+function contentFromCall({ images, content }: ProviderCall): ProviderContent[] {
+  if (content) return content;
+  return (images ?? []).map(image => ({ type: 'image' as const, ...image }));
 }
 
 function schemaSpec(
@@ -161,9 +178,13 @@ function geminiAdapter(): ProviderAdapter {
   return {
     provider,
     resolveStructuredOutput: input => schemaSpec(provider, input),
-    call({ images, prompt, signal, apiKey, config, structuredOutput }) {
+    call(input) {
+      const { prompt, signal, apiKey, config, structuredOutput, maxOutputTokens } = input;
       const parts: Record<string, unknown>[] = [{ text: prompt }];
-      for (const image of images) parts.push({ inline_data: { mime_type: image.mime, data: image.data } });
+      for (const item of contentFromCall(input)) {
+        if (item.type === 'text') parts.push({ text: item.text });
+        else parts.push({ inline_data: { mime_type: item.mime, data: item.data } });
+      }
       return fetch(`${config.apiUrl}/models/${config.model}:generateContent`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
@@ -172,7 +193,7 @@ function geminiAdapter(): ProviderAdapter {
           contents: [{ parts }],
           generationConfig: {
             temperature: API_CONSTANTS.DEFAULT_TEMPERATURE,
-            maxOutputTokens: API_CONSTANTS.DEFAULT_MAX_OUTPUT_TOKENS,
+            maxOutputTokens: maxOutputTokens ?? API_CONSTANTS.DEFAULT_MAX_OUTPUT_TOKENS,
             topP: API_CONSTANTS.DEFAULT_TOP_P,
             topK: 40,
             ...(structuredOutput?.generationConfig || {}),
@@ -203,15 +224,21 @@ function openAICompatibleAdapter(provider: 'openai' | 'groq' | 'openrouter'): Pr
   return {
     provider,
     resolveStructuredOutput: input => schemaSpec(provider, input),
-    call({ images, prompt, signal, apiKey, config, structuredOutput }) {
+    call(input) {
+      const { prompt, signal, apiKey, config, structuredOutput, maxOutputTokens: requestedMaxOutputTokens } = input;
       const content: Record<string, unknown>[] = [{ type: 'text', text: prompt }];
-      for (const image of images) {
-        content.push({ type: 'image_url', image_url: { url: `data:${image.mime};base64,${image.data}` } });
+      for (const item of contentFromCall(input)) {
+        if (item.type === 'text') content.push({ type: 'text', text: item.text });
+        else if (item.type === 'image') {
+          content.push({ type: 'image_url', image_url: { url: `data:${item.mime};base64,${item.data}` } });
+        } else {
+          content.push({ type: 'video_url', video_url: { url: `data:${item.mime};base64,${item.data}` } });
+        }
       }
       const responseFormat = openAIResponseFormat(structuredOutput);
       const maxOutputTokens = provider === 'groq' && /^qwen\/qwen3\.6-/.test(config.model)
         ? 1024
-        : API_CONSTANTS.DEFAULT_MAX_OUTPUT_TOKENS;
+        : requestedMaxOutputTokens ?? API_CONSTANTS.DEFAULT_MAX_OUTPUT_TOKENS;
       return fetch(`${config.apiUrl}/chat/completions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
@@ -255,10 +282,16 @@ function anthropicAdapter(): ProviderAdapter {
   return {
     provider,
     resolveStructuredOutput: input => schemaSpec(provider, input),
-    call({ images, prompt, signal, apiKey, config }) {
+    call(input) {
+      const { prompt, signal, apiKey, config, maxOutputTokens } = input;
       const content: Record<string, unknown>[] = [{ type: 'text', text: prompt }];
-      for (const image of images) {
-        content.push({ type: 'image', source: { type: 'base64', media_type: image.mime, data: image.data } });
+      for (const item of contentFromCall(input)) {
+        if (item.type === 'text') content.push({ type: 'text', text: item.text });
+        else if (item.type === 'image') {
+          content.push({ type: 'image', source: { type: 'base64', media_type: item.mime, data: item.data } });
+        } else {
+          throw new ProviderError('Video content is not supported by the Claude adapter', provider, { retryable: false });
+        }
       }
       return fetch(`${config.apiUrl}/messages`, {
         method: 'POST',
@@ -270,7 +303,7 @@ function anthropicAdapter(): ProviderAdapter {
         signal,
         body: JSON.stringify({
           model: config.model,
-          max_tokens: API_CONSTANTS.DEFAULT_MAX_OUTPUT_TOKENS,
+          max_tokens: maxOutputTokens ?? API_CONSTANTS.DEFAULT_MAX_OUTPUT_TOKENS,
           messages: [{ role: 'user', content }],
         }),
       });

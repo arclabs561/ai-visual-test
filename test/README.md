@@ -37,7 +37,6 @@ Tests are organized into subdirectories by type:
 ### E2E Tests (`test/e2e/`) - Full Workflows
 - `game-playing.test.mjs` - Complete game testing workflow
 - `playwright-setup.test.mjs` - Playwright integration
-- `validation-human-ground-truth.test.mjs` - Human validation
 
 ### Security Tests (`test/security/`) - Security-Focused
 - `red-team-security.test.mjs` - Security testing

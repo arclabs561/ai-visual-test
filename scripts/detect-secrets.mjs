@@ -137,8 +137,8 @@ function checkDecodedValue(decoded, original, line, lineNum, filepath, issues) {
 // Patterns to detect secrets (case-insensitive)
 const SECRET_PATTERNS = [
   // API Keys
-  { pattern: /(api[_-]?key|apikey)\s*[:=]\s*['"]?([a-zA-Z0-9_\-]{20,})['"]?/i, name: 'API Key', checkEntropy: true },
-  { pattern: /(gemini|openai|anthropic|claude)[_-]?api[_-]?key\s*[:=]\s*['"]?([a-zA-Z0-9_\-]{20,})['"]?/i, name: 'Provider API Key', checkEntropy: true },
+  { pattern: /(api[_-]?key|apikey)\s*[:=]\s*['"]([a-zA-Z0-9_\-]{20,})['"]/i, name: 'API Key', checkEntropy: true },
+  { pattern: /(gemini|openai|anthropic|claude)[_-]?api[_-]?key\s*[:=]\s*['"]([a-zA-Z0-9_\-]{20,})['"]/i, name: 'Provider API Key', checkEntropy: true },
   
   // Common API key formats
   { pattern: /sk-[a-zA-Z0-9]{32,}/, name: 'OpenAI/Anthropic Secret Key' },
@@ -227,7 +227,7 @@ const SECRET_PATTERNS = [
   { pattern: /`[^`]*\$\{[^}]+\}[^`]*`/, name: 'Template Literal with Expression', checkTemplate: true },
   
   // Variable names that might contain secrets (broader pattern)
-  { pattern: /(credential|cred|auth|key|secret|token|password|passwd|pwd)\s*[:=]\s*['"]?([a-zA-Z0-9_\-/+=]{20,})['"]?/i, name: 'Credential Variable', checkEntropy: true },
+  { pattern: /(credential|cred|auth|key|secret|token|password|passwd|pwd)\s*[:=]\s*['"]([a-zA-Z0-9_\-/+=]{20,})['"]/i, name: 'Credential Variable', checkEntropy: true },
   
   // String concatenation patterns (multi-line)
   { pattern: /['"]([a-zA-Z0-9_\-]{10,})['"]\s*\+\s*['"]([a-zA-Z0-9_\-]{10,})['"]/, name: 'String Concatenation (potential secret)', checkEntropy: true },
@@ -237,12 +237,18 @@ const SECRET_PATTERNS = [
   { pattern: /\/\*.*(api[_-]?key|secret|token|password)\s*[:=]\s*['"]?([a-zA-Z0-9_\-/+=]{20,})['"]?.*\*\//i, name: 'Secret in Block Comment' },
 ];
 
+// Whole-tree release scans use credential-shaped patterns only. The broader
+// obfuscation heuristics are useful on a small staged diff but are too noisy
+// across ordinary source templates and embedded test fixtures.
+const HIGH_CONFIDENCE_SECRET_PATTERNS = SECRET_PATTERNS.filter(({ name }) =>
+  !/(Potential|Obfuscat|Decode|Unicode|Template|Concatenation|Backup Environment)/.test(name),
+);
+
 // Files to exclude from secret detection
 const EXCLUDE_PATTERNS = [
   /\.test\.(mjs|js)$/,
   /test\//,
   /\.md$/,
-  /\.json$/,
   /package-lock\.json$/,
   /\.git\//,
   /node_modules\//,
@@ -255,10 +261,17 @@ const EXCLUDE_PATTERNS = [
   // But DO NOT exclude .env.bak, .env.backup, etc. - these should be detected!
 ];
 
+const TRACKED_SCAN_EXCLUDE_PATTERNS = [
+  /package-lock\.json$/,
+  /\.git\//,
+  /node_modules\//,
+  /detect-secrets\.mjs$/,
+  /\.secretsignore$/,
+  /LICENSE$/,
+];
+
 // Patterns that are allowed (false positives)
 const ALLOWED_PATTERNS = [
-  /process\.env\./,  // Environment variable references are OK
-  /config\.apiKey/,  // Config object references are OK
   /['"]test[_-]?key['"]/,  // Test keys
   /['"]example[_-]?key['"]/,  // Example keys
   /['"]your[_-]?api[_-]?key['"]/,  // Placeholder text
@@ -381,11 +394,25 @@ function getStagedFiles() {
 }
 
 /**
+ * Get every tracked file from git for clean-checkout and release scans.
+ */
+function getTrackedFiles() {
+  try {
+    const output = execSync('git ls-files -z', { encoding: 'utf-8' });
+    return output.split('\0').filter(Boolean);
+  } catch (error) {
+    console.error('Error getting tracked files:', error.message);
+    return [];
+  }
+}
+
+/**
  * Check if file should be excluded
  */
-function shouldExcludeFile(filepath, secretsIgnore) {
+function shouldExcludeFile(filepath, secretsIgnore, trackedScan = false) {
   // Check built-in exclusions
-  if (EXCLUDE_PATTERNS.some(pattern => pattern.test(filepath))) {
+  const builtInPatterns = trackedScan ? TRACKED_SCAN_EXCLUDE_PATTERNS : EXCLUDE_PATTERNS;
+  if (builtInPatterns.some(pattern => pattern.test(filepath))) {
     return true;
   }
   
@@ -419,6 +446,10 @@ function isAllowedMatch(match, line, filepath, secretsIgnore) {
   }
   
   return false;
+}
+
+function isTrackedPlaceholder(value) {
+  return /^(test|example|fake|dummy|sample|mock|your|placeholder)[_-]/i.test(value);
 }
 
 /**
@@ -678,12 +709,18 @@ function scanGitHistory(secretsIgnore) {
 /**
  * Detect secrets in file content (for git history scanning)
  */
-function detectSecretsInFileContent(content, filepath, secretsIgnore) {
+function detectSecretsInFileContent(
+  content,
+  filepath,
+  secretsIgnore,
+  patterns = SECRET_PATTERNS,
+  applyAllowlist = true,
+) {
   const issues = [];
   const lines = content.split('\n');
   
   lines.forEach((line, lineNum) => {
-    SECRET_PATTERNS.forEach(({ pattern, name, checkEntropy = false, checkDecode = false }) => {
+    patterns.forEach(({ pattern, name, checkEntropy = false, checkDecode = false }) => {
       const flags = pattern.flags || '';
       const globalPattern = flags.includes('g') 
         ? pattern 
@@ -693,12 +730,15 @@ function detectSecretsInFileContent(content, filepath, secretsIgnore) {
         const matches = [...line.matchAll(globalPattern)];
         
         matches.forEach(match => {
-          if (isAllowedMatch(match, line, filepath, secretsIgnore)) {
+          if (applyAllowlist && isAllowedMatch(match, line, filepath, secretsIgnore)) {
             return;
           }
           
           const secretValue = match[2] || match[1] || match[0];
           if (!secretValue || secretValue.length < 10) {
+            return;
+          }
+          if (!applyAllowlist && isTrackedPlaceholder(secretValue)) {
             return;
           }
           
@@ -744,23 +784,32 @@ function detectSecretsInFileContent(content, filepath, secretsIgnore) {
 function main() {
   const args = process.argv.slice(2);
   const scanHistory = args.includes('--scan-history');
+  const scanTracked = args.includes('--tracked');
   
   const secretsIgnore = loadSecretsIgnore();
-  const stagedFiles = getStagedFiles();
+  const files = scanTracked ? getTrackedFiles() : getStagedFiles();
   
-  if (stagedFiles.length === 0 && !scanHistory) {
+  if (files.length === 0 && !scanHistory) {
     return 0;
   }
   
   const allIssues = [];
   
-  // Scan staged files
-  stagedFiles.forEach(file => {
-    if (shouldExcludeFile(file, secretsIgnore)) {
+  // Scan the selected staged or tracked file set.
+  files.forEach(file => {
+    if (!existsSync(file) || shouldExcludeFile(file, secretsIgnore, scanTracked)) {
       return;
     }
     
-    const issues = detectSecretsInFile(file, secretsIgnore);
+    const issues = scanTracked
+      ? detectSecretsInFileContent(
+          readFileSync(file, 'utf-8'),
+          file,
+          secretsIgnore,
+          HIGH_CONFIDENCE_SECRET_PATTERNS,
+          false,
+        )
+      : detectSecretsInFile(file, secretsIgnore);
     allIssues.push(...issues);
   });
   

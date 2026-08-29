@@ -17,7 +17,11 @@ The immediate failures were contract failures rather than missing features: comp
 
 ## Context
 
-The package is currently native ESM JavaScript (`.mjs`) with a strict declaration check and hand-maintained `.d.ts` files. It publishes a root entry and multiple feature subpaths. Playwright, Vitest/Jest, the CLI, video, game, temporal review, ensembles, and perception all consume or extend parts of the review behavior.
+The package now uses staged TypeScript source for its public and core boundaries,
+emits native ESM JavaScript plus generated declarations, and retains a small set
+of private `.mjs` implementation leaves. It publishes a root entry and multiple
+feature subpaths. Playwright, Vitest/Jest, the CLI, video, game, temporal review,
+ensembles, and perception all consume or extend parts of the review behavior.
 
 External evidence and the repository's own probes favor pairwise comparison over absolute scoring for regressions, strict structured output where a model supports it, explicit disagreement rather than hidden averaging, and deterministic canned provider fixtures in CI. They do not justify treating model confidence or ensemble weights as calibrated truth without screenshot-specific human labels.
 

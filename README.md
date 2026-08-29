@@ -188,7 +188,8 @@ console.log(estimate.estimatedCost);
 | `@arclabs561/ai-visual-test/game` | Playwright-backed game agent |
 | `@arclabs561/ai-visual-test/utils` | Cache, cost, and calibration helpers |
 
-The perception sampler is documented in [`docs/judge-graph.md`](docs/judge-graph.md).
+The perception sampler is documented in the
+[judge graph](https://github.com/arclabs561/ai-visual-test/blob/main/docs/judge-graph.md).
 
 ## Limits
 

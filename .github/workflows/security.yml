@@ -30,17 +30,6 @@ jobs:
       
       - name: Run npm audit
         run: npm audit --audit-level=moderate
-        continue-on-error: true
-      
-      - name: Check for vulnerabilities
-        run: |
-          if npm audit --audit-level=moderate 2>&1 | grep -q "found [1-9]"; then
-            echo "⚠️ Vulnerabilities found. Review and update dependencies."
-            npm audit --audit-level=moderate
-            exit 1
-          else
-            echo "✅ No moderate or high severity vulnerabilities found"
-          fi
 
   code-scan:
     name: Code Security Scan
@@ -59,7 +48,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
         # Install devDependencies (async-mutex, etc.) for security tests
+
+      - name: Scan tracked files for secrets
+        run: node scripts/detect-secrets.mjs --tracked
       
       - name: Run security tests
-        run: npm run test:security || echo "Security tests completed"
-        continue-on-error: true
+        run: npm run test:security

@@ -20,7 +20,7 @@ review_trigger: Revisit if a supported provider rejects TypeBox-emitted schema c
 
 ## Context
 
-`src/review-contract.mjs` currently defines JSON Schema objects and separately
+`src/review-contract.ts` defines JSON Schema objects and
 implements manual checks that return canonical scalar or comparison outcomes.
 Those schemas are sent to capable providers, while the checks drive diagnostics
 and the bounded repair loop. TypeScript declarations represent the shapes a

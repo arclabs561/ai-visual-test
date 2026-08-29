@@ -45,6 +45,9 @@ export function formatTemporalForPrompt(temporalNotes, options = {}) {
   }
 
   if (temporalNotes.scales && !temporalNotes.windows) {
+    if (!includeMultiScale) {
+      return '';
+    }
     return formatMultiScaleForPrompt(temporalNotes, { naturalLanguage });
   }
 
@@ -376,6 +379,8 @@ export function selectRepresentativeScreenshots(screenshots, evaluations = [], o
     strategy = 'diversity'
   } = options;
 
+  validateScreenshotSelectionInputs(evaluations, maxScreenshots);
+
   if (screenshots.length <= maxScreenshots) {
     return screenshots;
   }
@@ -389,6 +394,19 @@ export function selectRepresentativeScreenshots(screenshots, evaluations = [], o
     default:
       return selectByDiversity(screenshots, evaluations, maxScreenshots);
   }
+}
+
+function validateScreenshotSelectionInputs(evaluations, maxScreenshots) {
+  if (!Number.isInteger(maxScreenshots) || maxScreenshots < 1) {
+    throw new RangeError(`maxScreenshots must be a positive integer, got: ${maxScreenshots}`);
+  }
+
+  evaluations.forEach((evaluation, index) => {
+    const score = evaluation?.score;
+    if (typeof score === 'number' && !Number.isFinite(score)) {
+      throw new RangeError(`evaluations[${index}].score must be a finite number, got: ${score}`);
+    }
+  });
 }
 
 function selectKeyframes(screenshots, evaluations, maxScreenshots) {
@@ -415,22 +433,31 @@ function selectKeyframes(screenshots, evaluations, maxScreenshots) {
 
 function selectByDiversity(screenshots, evaluations, maxScreenshots) {
   const selected = [screenshots[0]];
-  const remaining = screenshots.slice(1, -1);
   const last = screenshots[screenshots.length - 1];
 
-  const scores = evaluations.map(e => e.score ?? 0).filter(s => s !== null);
-  if (scores.length === 0) {
+  const evaluatedInterior = [];
+  const lastInteriorIndex = Math.min(evaluations.length, screenshots.length - 1);
+  for (let index = 1; index < lastInteriorIndex; index++) {
+    const score = evaluations[index]?.score;
+    if (typeof score === 'number') {
+      evaluatedInterior.push({ index, score });
+    }
+  }
+
+  if (evaluatedInterior.length === 0) {
     return selectUniform(screenshots, maxScreenshots);
   }
 
+  const scores = evaluatedInterior.map(({ score }) => score);
   const mean = scores.reduce((a, b) => a + b, 0) / scores.length;
-  const variance = scores.map(s => Math.abs(s - mean));
-
-  const indexed = variance.map((v, i) => ({ index: i, variance: v }));
+  const indexed = evaluatedInterior.map(({ index, score }) => ({
+    index,
+    variance: Math.abs(score - mean)
+  }));
   indexed.sort((a, b) => b.variance - a.variance);
 
   const diverseIndices = indexed.slice(0, maxScreenshots - 2).map(item => item.index);
-  selected.push(...diverseIndices.map(i => remaining[i]).filter(Boolean));
+  selected.push(...diverseIndices.map(index => screenshots[index]));
   selected.push(last);
 
   return selected.slice(0, maxScreenshots);

@@ -330,7 +330,8 @@ describe('Temporal Context', () => {
       const result2 = formatTemporalForPrompt(multiScale, { includeMultiScale: false });
       
       assert.ok(typeof result1 === 'string');
-      assert.ok(typeof result2 === 'string');
+      assert.ok(result1.length > 0, 'multi-scale context should be included when enabled');
+      assert.strictEqual(result2, '', 'multi-scale context should be suppressed when disabled');
     });
 
     it('should handle aggregation with conflicts', () => {

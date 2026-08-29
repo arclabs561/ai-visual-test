@@ -4,6 +4,35 @@ All notable changes to ai-visual-test will be documented in this file.
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-08-29
+
+### Added
+- Generated TypeScript declarations for the package root, CLI, and all public
+  subpaths.
+- Structured task contracts, counterbalanced screenshot comparison, stable page
+  capture, and typed game actions.
+- Revision-pinned dataset adapters, metrics, and a bounded DiffSpot fetch/eval
+  runner whose data and results remain outside Git.
+
+### Changed
+- The package now ships compiled JavaScript with matching declarations instead
+  of runtime source modules.
+- Review, temporal, perception, video, validator, game, and integration surfaces
+  now use strict TypeScript contracts.
+- Tests and package verification exercise the staged build and installed package
+  surface.
+
+### Fixed
+- Hardened provider media handling, structured-output retries, and injected
+  environment selection.
+- Corrected temporal coordinate, prompt-selection, formatting, caching, and
+  scheduler behavior.
+- Removed duplicate game review calls and tightened action/click execution.
+
+### Removed
+- Retired stale evaluation and test lanes, unowned deployment-page coverage,
+  obsolete compatibility surfaces, and unused dependencies.
+
 ## [0.12.0] - 2026-06-14
 
 ### Added
@@ -606,4 +635,3 @@ All notable changes to ai-visual-test will be documented in this file.
 - Package is now standalone and general-purpose
 - Can be used in any project requiring visual testing with AI validation
 - Vercel API allows remote validation without local installation
-

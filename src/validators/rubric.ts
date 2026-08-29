@@ -10,14 +10,30 @@
  */
 
 import { validateWithResearchEnhancements } from '#research-enhanced-validation';
-import { PromptBuilder } from './prompt-builder.mjs';
+import { PromptBuilder } from './prompt-builder.js';
 import { ValidationError } from '#errors';
 import { assertString, assertObject } from '../type-guards.mjs';
+import type { Rubric, ValidationContext, ValidationResult } from '#public-contract';
+
+interface RubricCriterion {
+  id: string;
+  zeroTolerance?: boolean;
+  [key: string]: unknown;
+}
+
+type ValidationRubric = Rubric & { criteria?: RubricCriterion[] };
+type RubricOptions = ValidationContext & { enforceZeroTolerance?: boolean };
 
 /**
  * Validate with rubric (generic, not project-specific)
  */
-export async function validateWithRubric(screenshotPath, prompt, rubric, context = {}, options = {}) {
+export async function validateWithRubric(
+  screenshotPath: string,
+  prompt: string,
+  rubric: ValidationRubric,
+  context: ValidationContext = {},
+  options: RubricOptions = {},
+): Promise<ValidationResult & { zeroToleranceViolation?: boolean }> {
   // Input validation
   assertString(screenshotPath, 'screenshotPath');
   assertString(prompt, 'prompt');
@@ -48,15 +64,15 @@ export async function validateWithRubric(screenshotPath, prompt, rubric, context
     );
   
     // Check for zero tolerance violations if rubric has them
-    const hasZeroTolerance = rubric?.criteria?.some(c => c.zeroTolerance) || false;
+    const hasZeroTolerance = rubric.criteria?.some((criterion) => criterion.zeroTolerance) || false;
     if (hasZeroTolerance && options.enforceZeroTolerance !== false) {
       // Ensure issues is an array before calling .some()
       const issues = Array.isArray(result.issues) ? result.issues : [];
-      const hasZeroToleranceViolation = issues.some(issue => 
+      const hasZeroToleranceViolation = issues.some((issue) =>
         typeof issue === 'string' && (
           issue.toLowerCase().includes('zero tolerance') ||
           issue.toLowerCase().includes('instant fail') ||
-          rubric.criteria.some(c => c.zeroTolerance && issue.includes(c.id))
+          rubric.criteria?.some((criterion) => criterion.zeroTolerance && issue.includes(criterion.id))
         )
       );
       
@@ -71,14 +87,18 @@ export async function validateWithRubric(screenshotPath, prompt, rubric, context
     }
     
     return result;
-  } catch (error) {
+  } catch (error: unknown) {
     // Re-throw ValidationError as-is, wrap others
     if (error instanceof ValidationError) {
       throw error;
     }
     throw new ValidationError(
-      `Rubric validation failed: ${error.message}`,
-      { screenshotPath, rubricName: rubric.name, originalError: error.message }
+      `Rubric validation failed: ${error instanceof Error ? error.message : String(error)}`,
+      {
+        screenshotPath,
+        rubricName: typeof rubric.name === 'string' ? rubric.name : undefined,
+        originalError: error instanceof Error ? error.message : String(error),
+      }
     );
   }
 }

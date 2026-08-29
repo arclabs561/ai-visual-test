@@ -173,7 +173,7 @@ test.describe('Playwright Integration', () => {
     // Use hybrid accessibility matcher
     // Note: This may fail if AI finds semantic issues, but programmatic checks should pass
     // We'll manually check the result to verify programmatic checks pass
-    const { validateAccessibilityHybrid } = await import('../../src/validators/index.mjs');
+    const { validateAccessibilityHybrid } = await import('../../src/validators/index.js');
     const fs = await import('fs');
     const path = await import('path');
     const os = await import('os');

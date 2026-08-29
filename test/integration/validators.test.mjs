@@ -12,7 +12,7 @@ import {
   PromptBuilder,
   validateWithRubric,
   BatchValidator
-} from '../../src/validators/index.mjs';
+} from '../../src/validators/index.js';
 
 test('StateValidator - constructor with default options', () => {
   const validator = new StateValidator();
@@ -210,4 +210,3 @@ test('BatchValidator - resetStats', () => {
 });
 
 console.log('✅ All validator tests passed');
-

@@ -4,7 +4,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { PromptBuilder } from '../../src/validators/prompt-builder.mjs';
+import { PromptBuilder } from '../../src/validators/prompt-builder.js';
 
 test('PromptBuilder - conditionals (#if)', () => {
   const builder = new PromptBuilder({
@@ -106,4 +106,3 @@ test('PromptBuilder - loop helpers (@first, @last, @index)', () => {
   assert.ok(result.includes('First: a'));
   assert.ok(result.includes('Last: c'));
 });
-

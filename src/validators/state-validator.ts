@@ -12,13 +12,36 @@
 import { validateScreenshot } from '#judge';
 import { ValidationError, StateMismatchError } from '#errors';
 import { assertString, assertObject } from '../type-guards.mjs';
+import type { ValidationContext, ValidationResult } from '#public-contract';
+
+type StateRecord = Record<string, unknown>;
+type ScreenshotPath = string | string[];
+type StateComparison = { matches: boolean; discrepancies: string[] };
+type ScreenshotValidator = (screenshotPath: ScreenshotPath, prompt: string, context?: ValidationContext) => Promise<ValidationResult>;
+
+interface StateValidatorOptions extends ValidationContext {
+  tolerance?: number;
+  validateScreenshot?: ScreenshotValidator;
+  stateExtractor?: (result: ValidationResult, expectedState: StateRecord) => unknown;
+  stateComparator?: (extracted: unknown, expected: unknown, options?: StateValidatorOptions) => StateComparison;
+  promptBuilder?: (expectedState: StateRecord, options: StateValidatorOptions) => string;
+  context?: ValidationContext;
+  stateDescription?: string;
+  extractionTasks?: string[];
+  throwOnMismatch?: boolean;
+}
 
 /**
  * Generic state validator for any structured state validation
  * Works with game state, UI state, form state, etc.
  */
 export class StateValidator {
-  constructor(options = {}) {
+  tolerance: number;
+  validateScreenshot: ScreenshotValidator;
+  stateExtractor: (result: ValidationResult, expectedState: StateRecord) => unknown;
+  stateComparator: (extracted: unknown, expected: unknown, options?: StateValidatorOptions) => StateComparison;
+
+  constructor(options: StateValidatorOptions = {}) {
     // Validate tolerance
     if (options.tolerance !== undefined) {
       if (typeof options.tolerance !== 'number' || options.tolerance < 0 || isNaN(options.tolerance)) {
@@ -45,7 +68,7 @@ export class StateValidator {
    * @param {object} options - Validation options (tolerance, testType, etc.)
    * @returns {Promise<object>} Validation result with extracted state and comparison
    */
-  static async validate(screenshotPath, expectedState, options = {}) {
+  static async validate(screenshotPath: ScreenshotPath, expectedState: StateRecord, options: StateValidatorOptions = {}) {
     const validator = new StateValidator(options);
     return validator.validateState(screenshotPath, expectedState, options);
   }
@@ -60,7 +83,7 @@ export class StateValidator {
    * @param {object} options.context - Additional context for validation
    * @returns {Promise<object>} Validation result with extracted state and comparison
    */
-  async validateState(screenshotPath, expectedState, options = {}) {
+  async validateState(screenshotPath: ScreenshotPath, expectedState: StateRecord, options: StateValidatorOptions = {}) {
     // Input validation - support both single and array
     const isArray = Array.isArray(screenshotPath);
     if (!isArray) {
@@ -85,15 +108,15 @@ export class StateValidator {
 
     try {
       // Pass through all validateScreenshot options (useCache, timeout, provider, viewport, etc.)
-      const screenshotOptions = {
+      const screenshotOptions: ValidationContext = {
         testType: options.testType || 'state-validation',
         expectedState,
         ...options.context,
         // Explicitly pass through common options
-        useCache: options.useCache !== undefined ? options.useCache : options.context?.useCache,
-        timeout: options.timeout || options.context?.timeout,
-        provider: options.provider || options.context?.provider,
-        viewport: options.viewport || options.context?.viewport
+        ...optionalContextValue('useCache', options.useCache !== undefined ? options.useCache : options.context?.useCache),
+        ...optionalContextValue('timeout', options.timeout || options.context?.timeout),
+        ...optionalContextValue('provider', options.provider || options.context?.provider),
+        ...optionalContextValue('viewport', options.viewport || options.context?.viewport),
       };
 
       // Support multi-image (array of screenshots) for comparison
@@ -132,8 +155,8 @@ export class StateValidator {
         throw error;
       }
       throw new ValidationError(
-        `State validation failed: ${error.message}`,
-        { screenshotPath, expectedState, originalError: error.message }
+        `State validation failed: ${errorMessage(error)}`,
+        { screenshotPath, expectedState, originalError: errorMessage(error) }
       );
     }
   }
@@ -141,7 +164,7 @@ export class StateValidator {
   /**
    * Build generic state validation prompt
    */
-  buildStatePrompt(expectedState, options = {}) {
+  buildStatePrompt(expectedState: StateRecord, options: StateValidatorOptions = {}): string {
     const stateDescription = options.stateDescription || 'current state';
     const extractionTasks = options.extractionTasks || [
       'Extract current state from screenshot',
@@ -168,7 +191,7 @@ Return structured data with extracted state and validation results.`;
   /**
    * Default state extractor - tries to extract from structured data or parse from text
    */
-  defaultStateExtractor(result, expectedState) {
+  defaultStateExtractor(result: ValidationResult, _expectedState: StateRecord): unknown {
     // Try structured data first
     if (result.structuredData) {
       // Validate that structuredData is an object
@@ -201,7 +224,7 @@ Return structured data with extracted state and validation results.`;
   /**
    * Default state comparator - deep comparison with tolerance for numeric values
    */
-  defaultStateComparator(extracted, expected, options = {}) {
+  defaultStateComparator(extracted: unknown, expected: unknown, options: StateValidatorOptions = {}): StateComparison {
     if (!extracted || !expected) {
       return {
         matches: false,
@@ -209,7 +232,7 @@ Return structured data with extracted state and validation results.`;
       };
     }
 
-    const discrepancies = [];
+    const discrepancies: string[] = [];
     const tolerance = options.tolerance || this.tolerance;
 
     // Recursive comparison
@@ -225,7 +248,7 @@ Return structured data with extracted state and validation results.`;
    * Recursive object comparison helper
    * @param {number} depth - Current recursion depth (prevents stack overflow)
    */
-  compareObjects(extracted, expected, path, discrepancies, tolerance, depth = 0) {
+  compareObjects(extracted: unknown, expected: unknown, path: string, discrepancies: string[], tolerance: number, depth = 0): void {
     // Prevent stack overflow on deeply nested objects
     if (depth > 100) {
       discrepancies.push(`${path}: Maximum comparison depth (100) exceeded - possible circular reference or extremely deep nesting`);
@@ -237,31 +260,29 @@ Return structured data with extracted state and validation results.`;
       return;
     }
 
-    if (typeof expected === 'object' && expected !== null && extracted !== null) {
-      if (Array.isArray(expected)) {
-        if (!Array.isArray(extracted)) {
-          discrepancies.push(`${path}: Expected array, got ${typeof extracted}`);
-          return;
-        }
-        if (expected.length !== extracted.length) {
-          discrepancies.push(`${path}: Array length mismatch (expected ${expected.length}, got ${extracted.length})`);
-        }
-        expected.forEach((item, i) => {
-          this.compareObjects(extracted[i], item, `${path}[${i}]`, discrepancies, tolerance, depth + 1);
-        });
-      } else {
-        const allKeys = new Set([...Object.keys(expected), ...Object.keys(extracted)]);
-        allKeys.forEach(key => {
-          const newPath = path ? `${path}.${key}` : key;
-          if (!(key in expected)) {
-            discrepancies.push(`${newPath}: Unexpected key in extracted state`);
-          } else if (!(key in extracted)) {
-            discrepancies.push(`${newPath}: Missing key in extracted state`);
-          } else {
-            this.compareObjects(extracted[key], expected[key], newPath, discrepancies, tolerance, depth + 1);
-          }
-        });
+    if (Array.isArray(expected)) {
+      if (!Array.isArray(extracted)) {
+        discrepancies.push(`${path}: Expected array, got ${typeof extracted}`);
+        return;
       }
+      if (expected.length !== extracted.length) {
+        discrepancies.push(`${path}: Array length mismatch (expected ${expected.length}, got ${extracted.length})`);
+      }
+      expected.forEach((item, i) => {
+        this.compareObjects(extracted[i], item, `${path}[${i}]`, discrepancies, tolerance, depth + 1);
+      });
+    } else if (isRecord(expected) && isRecord(extracted)) {
+      const allKeys = new Set([...Object.keys(expected), ...Object.keys(extracted)]);
+      allKeys.forEach(key => {
+        const newPath = path ? `${path}.${key}` : key;
+        if (!(key in expected)) {
+          discrepancies.push(`${newPath}: Unexpected key in extracted state`);
+        } else if (!(key in extracted)) {
+          discrepancies.push(`${newPath}: Missing key in extracted state`);
+        } else {
+          this.compareObjects(extracted[key], expected[key], newPath, discrepancies, tolerance, depth + 1);
+        }
+      });
     } else if (typeof expected === 'number' && typeof extracted === 'number') {
       // Handle NaN values
       if (isNaN(expected) || isNaN(extracted)) {
@@ -287,4 +308,16 @@ Return structured data with extracted state and validation results.`;
       discrepancies.push(`${path}: Value mismatch (expected ${expected}, got ${extracted})`);
     }
   }
+}
+
+function isRecord(value: unknown): value is StateRecord {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+function optionalContextValue(key: string, value: unknown): Record<string, unknown> {
+  return value === undefined ? {} : { [key]: value };
 }

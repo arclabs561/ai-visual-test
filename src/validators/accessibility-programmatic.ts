@@ -12,6 +12,73 @@
 import { ValidationError } from '#errors';
 import { assertString, assertNumber } from '../type-guards.mjs';
 
+type Rgb = [number, number, number];
+
+interface ComputedStyle {
+  color: string;
+  backgroundColor: string;
+  visibility: string;
+  display: string;
+}
+
+interface BrowserElement {
+  parentElement: BrowserElement | null;
+  tagName: string;
+  id: string;
+  className: string;
+  textContent: string | null;
+  tabIndex: number;
+  hasAttribute(name: string): boolean;
+}
+
+interface BrowserDocument {
+  body: BrowserElement | null;
+  querySelector(selector: string): BrowserElement | null;
+  querySelectorAll(selector: string): Iterable<BrowserElement>;
+}
+
+interface BrowserWindow {
+  getComputedStyle(element: BrowserElement, pseudoElement?: string): ComputedStyle;
+}
+
+declare const document: BrowserDocument;
+declare const window: BrowserWindow;
+
+export interface ValidatorPage {
+  evaluate<T, Argument = undefined>(callback: (argument: Argument) => T | Promise<T>, argument?: Argument): Promise<T>;
+}
+
+export interface ContrastCheckResult {
+  ratio: number;
+  passes: boolean;
+  foreground: string;
+  background: string;
+  foregroundRgb?: Rgb;
+  backgroundRgb?: Rgb;
+  error?: string;
+  selector?: string;
+}
+
+export interface TextContrastResult {
+  total: number;
+  passing: number;
+  failing: number;
+  violations: Array<{ element: string; ratio: string; required: number; foreground: string; background: string }>;
+  elements: Array<{ tag: string; id: string; className: string; ratio: number; passes: boolean; foreground: string; background: string }>;
+}
+
+export interface KeyboardNavigationResult {
+  keyboardAccessible: boolean;
+  focusableElements: number;
+  violations: Array<{ element: string; issue: string }>;
+  focusableSelectors: string[];
+  [key: string]: unknown;
+}
+
+function isValidatorPage(page: unknown): page is ValidatorPage {
+  return typeof page === 'object' && page !== null && 'evaluate' in page && typeof page.evaluate === 'function';
+}
+
 /**
  * Parse RGB color string to [r, g, b] array
  * Supports rgb(r, g, b), rgba(r, g, b, a), and hex (#rrggbb or #rgb) formats
@@ -19,7 +86,7 @@ import { assertString, assertNumber } from '../type-guards.mjs';
  * @param {string} rgb - Color string
  * @returns {number[]} [r, g, b] array (0-255)
  */
-function parseRgb(rgb) {
+function parseRgb(rgb: string): Rgb {
   if (!rgb || typeof rgb !== 'string') {
     return [255, 255, 255]; // Default to white
   }
@@ -27,14 +94,14 @@ function parseRgb(rgb) {
   // Handle rgb(r, g, b) or rgba(r, g, b, a) format
   const match = rgb.match(/\d+/g);
   if (match && match.length >= 3) {
-    return match.slice(0, 3).map(Number);
+    return match.slice(0, 3).map(Number) as Rgb;
   }
   
   // Handle hex format (#rrggbb or #rgb)
   if (rgb.startsWith('#')) {
     const hex = rgb.slice(1);
     if (hex.length === 3) {
-      return hex.split('').map(c => parseInt(c + c, 16));
+      return hex.split('').map(c => parseInt(c + c, 16)) as Rgb;
     }
     if (hex.length === 6) {
       return [
@@ -54,8 +121,8 @@ function parseRgb(rgb) {
  * @param {number[]} rgb - [r, g, b] array (0-255)
  * @returns {number} Relative luminance (0-1)
  */
-function getLuminance(rgb) {
-  const [r, g, b] = rgb.map(val => {
+function getLuminance(rgb: Rgb): number {
+  const [r = 0, g = 0, b = 0] = rgb.map(val => {
     val = val / 255;
     return val <= 0.03928 ? val / 12.92 : Math.pow((val + 0.055) / 1.055, 2.4);
   });
@@ -69,7 +136,7 @@ function getLuminance(rgb) {
  * @param {string} color2 - Second color (rgb, rgba, or hex)
  * @returns {number} Contrast ratio (1.0 to 21.0+)
  */
-export function getContrastRatio(color1, color2) {
+export function getContrastRatio(color1: string, color2: string): number {
   const rgb1 = parseRgb(color1);
   const rgb2 = parseRgb(color2);
   
@@ -91,12 +158,12 @@ export function getContrastRatio(color1, color2) {
  * @returns {Promise<{ratio: number, passes: boolean, foreground: string, background: string, foregroundRgb?: number[], backgroundRgb?: number[], error?: string}>}
  * @throws {ValidationError} If page is not a valid Playwright Page object
  */
-export async function checkElementContrast(page, selector, minRatio = 4.5) {
+export async function checkElementContrast(page: ValidatorPage | unknown, selector: string, minRatio = 4.5): Promise<ContrastCheckResult> {
   // Validate inputs
-  if (!page || typeof page.evaluate !== 'function') {
+  if (!isValidatorPage(page)) {
     throw new ValidationError('checkElementContrast requires a Playwright Page object', {
       received: typeof page,
-      hasEvaluate: typeof page?.evaluate === 'function'
+      hasEvaluate: false
     });
   }
   
@@ -107,7 +174,7 @@ export async function checkElementContrast(page, selector, minRatio = 4.5) {
     throw new ValidationError('minRatio must be between 1 and 21', { received: minRatio });
   }
   
-  const result = await page.evaluate(({ sel, min }) => {
+  const result = await page.evaluate(({ sel, min }: { sel: string; min: number }) => {
     const element = document.querySelector(sel);
     if (!element) {
       return { error: 'Element not found', selector: sel };
@@ -142,18 +209,18 @@ export async function checkElementContrast(page, selector, minRatio = 4.5) {
     }
     
     // Parse RGB values
-    const parseRgb = (rgb) => {
+    const parseRgb = (rgb: string): Rgb => {
       if (!rgb || typeof rgb !== 'string') return [255, 255, 255];
       const match = rgb.match(/\d+/g);
-      return match && match.length >= 3 ? match.slice(0, 3).map(Number) : [255, 255, 255];
+      return match && match.length >= 3 ? match.slice(0, 3).map(Number) as Rgb : [255, 255, 255];
     };
     
     const fg = parseRgb(color);
     const bg = parseRgb(effectiveBg);
     
     // Calculate relative luminance (WCAG algorithm)
-    const getLuminance = (rgb) => {
-      const [r, g, b] = rgb.map(val => {
+    const getLuminance = (rgb: Rgb): number => {
+      const [r = 0, g = 0, b = 0] = rgb.map(val => {
         val = val / 255;
         return val <= 0.03928 ? val / 12.92 : Math.pow((val + 0.055) / 1.055, 2.4);
       });
@@ -174,7 +241,7 @@ export async function checkElementContrast(page, selector, minRatio = 4.5) {
     };
   }, { sel: selector, min: minRatio });
   
-  return result;
+  return result as ContrastCheckResult;
 }
 
 /**
@@ -185,12 +252,12 @@ export async function checkElementContrast(page, selector, minRatio = 4.5) {
  * @returns {Promise<{total: number, passing: number, failing: number, violations: Array<{element: string, ratio: string, required: number, foreground: string, background: string}>, elements?: Array}>}
  * @throws {ValidationError} If page is not a valid Playwright Page object
  */
-export async function checkAllTextContrast(page, minRatio = 4.5) {
+export async function checkAllTextContrast(page: ValidatorPage | unknown, minRatio = 4.5): Promise<TextContrastResult> {
   // Validate inputs
-  if (!page || typeof page.evaluate !== 'function') {
+  if (!isValidatorPage(page)) {
     throw new ValidationError('checkAllTextContrast requires a Playwright Page object', {
       received: typeof page,
-      hasEvaluate: typeof page?.evaluate === 'function'
+      hasEvaluate: false
     });
   }
   
@@ -200,19 +267,19 @@ export async function checkAllTextContrast(page, minRatio = 4.5) {
     throw new ValidationError('minRatio must be between 1 and 21', { received: minRatio });
   }
   
-  const result = await page.evaluate((min) => {
+  const result = await page.evaluate((min: number) => {
     const all = document.querySelectorAll('*');
     const textElements = [];
     const violations = [];
     
-    const parseRgb = (rgb) => {
+    const parseRgb = (rgb: string): Rgb => {
       if (!rgb || typeof rgb !== 'string') return [255, 255, 255];
       const match = rgb.match(/\d+/g);
-      return match && match.length >= 3 ? match.slice(0, 3).map(Number) : [255, 255, 255];
+      return match && match.length >= 3 ? match.slice(0, 3).map(Number) as Rgb : [255, 255, 255];
     };
     
-    const getLuminance = (rgb) => {
-      const [r, g, b] = rgb.map(val => {
+    const getLuminance = (rgb: Rgb): number => {
+      const [r = 0, g = 0, b = 0] = rgb.map(val => {
         val = val / 255;
         return val <= 0.03928 ? val / 12.92 : Math.pow((val + 0.055) / 1.055, 2.4);
       });
@@ -303,12 +370,12 @@ export async function checkAllTextContrast(page, minRatio = 4.5) {
  * @returns {Promise<{keyboardAccessible: boolean, focusableElements: number, violations: Array<{element: string, issue: string}>, focusableSelectors: string[]}>}
  * @throws {ValidationError} If page is not a valid Playwright Page object
  */
-export async function checkKeyboardNavigation(page) {
+export async function checkKeyboardNavigation(page: ValidatorPage | unknown): Promise<KeyboardNavigationResult> {
   // Validate inputs
-  if (!page || typeof page.evaluate !== 'function') {
+  if (!isValidatorPage(page)) {
     throw new ValidationError('checkKeyboardNavigation requires a Playwright Page object', {
       received: typeof page,
-      hasEvaluate: typeof page?.evaluate === 'function'
+      hasEvaluate: false
     });
   }
   
@@ -323,7 +390,7 @@ export async function checkKeyboardNavigation(page) {
     ];
     
     const focusableElements = Array.from(document.querySelectorAll(focusableSelectors.join(', ')));
-    const violations = [];
+    const violations: KeyboardNavigationResult['violations'] = [];
     
     // Check for missing focus indicators
     focusableElements.forEach(el => {

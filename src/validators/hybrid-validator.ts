@@ -9,24 +9,66 @@
 
 import { validateScreenshot } from '#judge';
 import { ValidationError } from '#errors';
+import type { HybridValidationResult, ValidationContext, ValidationResult } from '#public-contract';
 import { assertString, assertObject } from '../type-guards.mjs';
 import {
   checkAllTextContrast,
   checkKeyboardNavigation
-} from './accessibility-programmatic.mjs';
+} from './accessibility-programmatic.js';
 import {
   validateStateProgrammatic
-} from './state-programmatic.mjs';
+} from './state-programmatic.js';
 
-// Allow dependency injection for testing
-let injectedValidateScreenshot = null;
+type HybridOptions = ValidationContext & {
+  selectors?: Record<string, string>;
+  tolerance?: number;
+};
+
+type HybridPage = {
+  evaluate<T, Argument = undefined>(callback: (argument: Argument) => T | Promise<T>, argument?: Argument): Promise<T>;
+};
+
+type ContrastViolation = {
+  element: string;
+  ratio: string;
+  required: number;
+  foreground: string;
+  background: string;
+};
+
+type KeyboardViolation = { element: string; issue: string };
+
+type AccessibilityProgrammaticData = Record<string, unknown> & {
+  contrast: {
+    total: number;
+    passing: number;
+    failing: number;
+    violations: ContrastViolation[];
+  };
+  keyboard: {
+    focusableElements: number;
+    violations: KeyboardViolation[];
+  };
+};
+
+type StateProgrammaticData = Record<string, unknown> & {
+  gameState: unknown;
+  visualState: Record<string, unknown>;
+  discrepancies: string[];
+  matches: boolean;
+};
+
+type InjectedValidateScreenshot = typeof validateScreenshot;
+
+// Allow dependency injection for testing.
+let injectedValidateScreenshot: InjectedValidateScreenshot | null = null;
 
 /**
  * Inject validateScreenshot function for testing
  * @internal
  * @param {Function} fn - Mock validateScreenshot function
  */
-export function _injectValidateScreenshot(fn) {
+export function _injectValidateScreenshot(fn: InjectedValidateScreenshot): void {
   injectedValidateScreenshot = fn;
 }
 
@@ -34,16 +76,16 @@ export function _injectValidateScreenshot(fn) {
  * Reset injected function
  * @internal
  */
-export function _resetValidateScreenshot() {
+export function _resetValidateScreenshot(): void {
   injectedValidateScreenshot = null;
 }
 
-function getValidateScreenshot() {
+function getValidateScreenshot(): InjectedValidateScreenshot {
   return injectedValidateScreenshot || validateScreenshot;
 }
 
-function deduplicateIssues(issues) {
-  const seen = new Set();
+function deduplicateIssues(issues: unknown[]): unknown[] {
+  const seen = new Set<string>();
   return issues.filter(issue => {
     const key = typeof issue === 'string' ? issue : JSON.stringify(issue);
     if (seen.has(key)) {
@@ -53,6 +95,28 @@ function deduplicateIssues(issues) {
     return true;
   });
 }
+
+function formatIssue(issue: unknown): string {
+  if (typeof issue === 'string') return issue;
+  if (typeof issue === 'object' && issue !== null) {
+    const record = issue as Record<string, unknown>;
+    if (typeof record.description === 'string') return record.description;
+    if (typeof record.element === 'string' && typeof record.issue === 'string') {
+      return `${record.element}: ${record.issue}`;
+    }
+    if (record.ratio !== undefined && record.required !== undefined) {
+      return `Contrast ${String(record.ratio)}:1 (required: ${String(record.required)}:1)`;
+    }
+    if (typeof record.message === 'string') return record.message;
+    return JSON.stringify(record);
+  }
+  return String(issue);
+}
+
+export type HybridContextResult = ValidationResult & {
+  programmaticData: Record<string, unknown>;
+  method: 'hybrid';
+};
 
 /**
  * Hybrid accessibility validation
@@ -68,11 +132,11 @@ function deduplicateIssues(issues) {
  * @throws {ValidationError} If inputs are invalid
  */
 export async function validateAccessibilityHybrid(
-  page,
-  screenshotPath,
+  page: HybridPage | null | undefined,
+  screenshotPath: string,
   minContrast = 4.5,
-  options = {}
-) {
+  options: HybridOptions = {}
+): Promise<HybridValidationResult> {
   // Validate inputs
   if (!page || typeof page.evaluate !== 'function') {
     throw new ValidationError('validateAccessibilityHybrid requires a Playwright Page object', {
@@ -90,9 +154,9 @@ export async function validateAccessibilityHybrid(
   }
   
   // Extract programmatic data
-  const programmaticData = {
-    contrast: await checkAllTextContrast(page, minContrast),
-    keyboard: await checkKeyboardNavigation(page)
+  const programmaticData: AccessibilityProgrammaticData = {
+    contrast: await checkAllTextContrast(page, minContrast) as AccessibilityProgrammaticData['contrast'],
+    keyboard: await checkKeyboardNavigation(page) as AccessibilityProgrammaticData['keyboard']
   };
   
   // Build prompt with programmatic context
@@ -137,7 +201,7 @@ Provide actionable recommendations based on both programmatic and semantic analy
                              (programmaticData.keyboard.violations.length === 0);
 
   // Combine results
-  return {
+  const combined: HybridValidationResult = {
     ...result,
     passed: programmaticPassed && (result.score === null || result.score >= 6),
     programmaticData, // Required by tests/consumers
@@ -153,19 +217,9 @@ Provide actionable recommendations based on both programmatic and semantic analy
       ...(programmaticData.contrast.violations || []),
       ...(programmaticData.keyboard.violations || []),
       ...(result.issues || [])
-    ]).map(issue => {
-      // Normalize to strings for consistent formatting
-      if (typeof issue === 'string') return issue;
-      if (typeof issue === 'object' && issue !== null) {
-        if (issue.description) return issue.description;
-        if (issue.element && issue.issue) return `${issue.element}: ${issue.issue}`;
-        if (issue.ratio && issue.required) return `Contrast ${issue.ratio}:1 (required: ${issue.required}:1)`;
-        if (issue.message) return issue.message;
-        return JSON.stringify(issue);
-      }
-      return String(issue);
-    })
+    ]).map(formatIssue)
   };
+  return combined;
 }
 
 /**
@@ -184,11 +238,11 @@ Provide actionable recommendations based on both programmatic and semantic analy
  * @throws {ValidationError} If inputs are invalid
  */
 export async function validateStateHybrid(
-  page,
-  screenshotPath,
-  expectedState,
-  options = {}
-) {
+  page: HybridPage | null | undefined,
+  screenshotPath: string,
+  expectedState: Record<string, unknown>,
+  options: HybridOptions = {}
+): Promise<HybridContextResult> {
   // Validate inputs
   if (!page || typeof page.evaluate !== 'function') {
     throw new ValidationError('validateStateHybrid requires a Playwright Page object', {
@@ -206,7 +260,7 @@ export async function validateStateHybrid(
   // Extract programmatic state
   // Note: validateStateProgrammatic will extract gameState internally if available
   // We also extract it separately for the prompt
-  const gameState = await page.evaluate(() => window.gameState || null);
+  const gameState = await page.evaluate(() => (globalThis as typeof globalThis & { gameState?: unknown }).gameState || null);
   
   // validateStateProgrammatic doesn't throw by default, it returns matches: false
   const visualState = await validateStateProgrammatic(
@@ -217,7 +271,7 @@ export async function validateStateHybrid(
   
   // visualState already includes gameState if extracted, but we want it in programmaticData too
   
-  const programmaticData = {
+  const programmaticData: StateProgrammaticData = {
     gameState,
     visualState: visualState.visualState,
     discrepancies: visualState.discrepancies,
@@ -275,11 +329,11 @@ Provide actionable recommendations based on both programmatic and semantic analy
  * @returns {Promise<import('#public-contract').HybridValidationResult>}
  */
 export async function validateWithProgrammaticContext(
-  screenshotPath,
-  prompt,
-  programmaticData,
-  options = {}
-) {
+  screenshotPath: string,
+  prompt: string,
+  programmaticData: Record<string, unknown>,
+  options: HybridOptions = {}
+): Promise<HybridContextResult> {
   assertString(screenshotPath, 'screenshotPath');
   assertString(prompt, 'prompt');
   assertObject(programmaticData, 'programmaticData');

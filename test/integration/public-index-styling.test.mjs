@@ -22,7 +22,7 @@ import {
   getContrastRatio,
   checkAllTextContrast,
   checkKeyboardNavigation
-} from '../../src/validators/index.mjs';
+} from '../../src/validators/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

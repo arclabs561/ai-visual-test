@@ -25,7 +25,7 @@ export type {
   ScreenshotPage,
   ScreenshotPageValidationOptions,
 } from '#page-validation';
-export { validateWithRubric } from './validators/index.mjs';
+export { validateWithRubric } from './validators/index.js';
 
 /** Extract normalized semantic fields from a VLLM judgment. */
 export function extractSemanticInfo(judgment: unknown): SemanticInfo {

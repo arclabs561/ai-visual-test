@@ -10,6 +10,43 @@
 import { ValidationError } from '#errors';
 import { assertString, assertObject, assertNumber } from '../type-guards.mjs';
 
+type StateRecord = Record<string, unknown>;
+
+interface BrowserRect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+interface BrowserElement {
+  getBoundingClientRect(): BrowserRect;
+}
+
+interface VisualStateEntry extends BrowserRect {
+  visible: boolean;
+}
+
+type VisualState = Record<string, VisualStateEntry | null>;
+
+interface ProgrammaticPage {
+  evaluate<T, Argument = undefined>(callback: (argument: Argument) => T | Promise<T>, argument?: Argument): Promise<T>;
+}
+
+interface ProgrammaticStateOptions {
+  [key: string]: unknown;
+  selectors?: Record<string, string>;
+  tolerance?: number;
+  stateExtractor?: (page: ProgrammaticPage) => unknown | Promise<unknown>;
+}
+
+interface ElementPosition {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 /**
  * Validate state matches visual representation
  * 
@@ -22,7 +59,11 @@ import { assertString, assertObject, assertNumber } from '../type-guards.mjs';
  * @returns {Promise<{matches: boolean, discrepancies: string[], visualState: object, expectedState: object}>}
  * @throws {ValidationError} If page is not a valid Playwright Page object or inputs are invalid
  */
-export async function validateStateProgrammatic(page, expectedState, options = {}) {
+export async function validateStateProgrammatic(
+  page: ProgrammaticPage | null | undefined,
+  expectedState: StateRecord,
+  options: ProgrammaticStateOptions = {},
+) {
   // Validate inputs
   if (!page || typeof page.evaluate !== 'function') {
     throw new ValidationError('validateStateProgrammatic requires a Playwright Page object', {
@@ -35,7 +76,9 @@ export async function validateStateProgrammatic(page, expectedState, options = {
   
   const selectors = options.selectors || {};
   const tolerance = options.tolerance || 5;
-  const stateExtractor = options.stateExtractor || ((page) => page.evaluate(() => window.gameState || null));
+  const stateExtractor = options.stateExtractor || ((targetPage: ProgrammaticPage) => targetPage.evaluate(() => (
+    (globalThis as { gameState?: unknown }).gameState || null
+  )));
   
   if (typeof tolerance !== 'number' || tolerance < 0 || isNaN(tolerance)) {
     throw new ValidationError('tolerance must be a non-negative number', { received: tolerance });
@@ -46,18 +89,22 @@ export async function validateStateProgrammatic(page, expectedState, options = {
   if (typeof stateExtractor === 'function') {
     gameState = await stateExtractor(page);
   } else {
-    gameState = await page.evaluate(() => window.gameState || null);
+    gameState = await page.evaluate(() => (globalThis as { gameState?: unknown }).gameState || null);
   }
   
   // Extract visual state from DOM
-  const visualState = await page.evaluate(({ selectors }) => {
-    const state = {};
+  const visualState = await page.evaluate<VisualState, { selectors: Record<string, string> }>(({ selectors }) => {
+    const state: VisualState = {};
+    const browser = globalThis as unknown as {
+      document: { querySelector(selector: string): BrowserElement | null };
+      getComputedStyle(element: BrowserElement): { visibility: string; display: string };
+    };
     
     for (const [key, selector] of Object.entries(selectors)) {
-      const element = document.querySelector(selector);
+      const element = browser.document.querySelector(selector);
       if (element) {
         const rect = element.getBoundingClientRect();
-        const style = window.getComputedStyle(element);
+        const style = browser.getComputedStyle(element);
         state[key] = {
           x: rect.x,
           y: rect.y,
@@ -74,7 +121,7 @@ export async function validateStateProgrammatic(page, expectedState, options = {
   }, { selectors });
   
   // Compare gameState with expectedState
-  const discrepancies = [];
+  const discrepancies: string[] = [];
   
   // If we have gameState, compare it with expectedState
   if (gameState && typeof gameState === 'object') {
@@ -96,14 +143,14 @@ export async function validateStateProgrammatic(page, expectedState, options = {
           continue;
         }
         
-        if (expected.x !== undefined && typeof expected.x === 'number') {
+        if (isRecord(expected) && typeof expected.x === 'number') {
           const diff = Math.abs(actual.x - expected.x);
           if (diff > tolerance) {
             discrepancies.push(`${key}.x: Expected ${expected.x}, got ${actual.x} (diff: ${diff}px, tolerance: ${tolerance}px)`);
           }
         }
         
-        if (expected.y !== undefined && typeof expected.y === 'number') {
+        if (isRecord(expected) && typeof expected.y === 'number') {
           const diff = Math.abs(actual.y - expected.y);
           if (diff > tolerance) {
             discrepancies.push(`${key}.y: Expected ${expected.y}, got ${actual.y} (diff: ${diff}px, tolerance: ${tolerance}px)`);
@@ -132,7 +179,12 @@ export async function validateStateProgrammatic(page, expectedState, options = {
  * @returns {Promise<{matches: boolean, actual: object, expected: object, diff: object, error?: string}>}
  * @throws {ValidationError} If page is not a valid Playwright Page object or inputs are invalid
  */
-export async function validateElementPosition(page, selector, expectedPosition, tolerance = 5) {
+export async function validateElementPosition(
+  page: ProgrammaticPage | null | undefined,
+  selector: string,
+  expectedPosition: StateRecord,
+  tolerance = 5,
+) {
   // Validate inputs
   if (!page || typeof page.evaluate !== 'function') {
     throw new ValidationError('validateElementPosition requires a Playwright Page object', {
@@ -149,8 +201,11 @@ export async function validateElementPosition(page, selector, expectedPosition, 
     throw new ValidationError('tolerance must be a non-negative number', { received: tolerance });
   }
   
-  const actual = await page.evaluate((sel) => {
-    const element = document.querySelector(sel);
+  const actual = await page.evaluate<ElementPosition | null, string>((sel) => {
+    const browser = globalThis as unknown as {
+      document: { querySelector(selector: string): BrowserElement | null };
+    };
+    const element = browser.document.querySelector(sel);
     if (!element) return null;
     const rect = element.getBoundingClientRect();
     return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
@@ -160,21 +215,21 @@ export async function validateElementPosition(page, selector, expectedPosition, 
     return { matches: false, error: 'Element not found', selector, expected: expectedPosition };
   }
   
-  const diff = {
-    x: Math.abs(actual.x - (expectedPosition.x || 0)),
-    y: Math.abs(actual.y - (expectedPosition.y || 0))
+  const diff: { x: number; y: number; width?: number; height?: number } = {
+    x: Math.abs(actual.x - (typeof expectedPosition.x === 'number' ? expectedPosition.x : 0)),
+    y: Math.abs(actual.y - (typeof expectedPosition.y === 'number' ? expectedPosition.y : 0)),
   };
   
-  if (expectedPosition.width !== undefined) {
+  if (typeof expectedPosition.width === 'number') {
     diff.width = Math.abs(actual.width - expectedPosition.width);
   }
-  if (expectedPosition.height !== undefined) {
+  if (typeof expectedPosition.height === 'number') {
     diff.height = Math.abs(actual.height - expectedPosition.height);
   }
   
   const matches = diff.x <= tolerance && diff.y <= tolerance &&
-    (expectedPosition.width === undefined || (diff.width !== undefined && diff.width <= tolerance)) &&
-    (expectedPosition.height === undefined || (diff.height !== undefined && diff.height <= tolerance));
+    (typeof expectedPosition.width !== 'number' || (diff.width !== undefined && diff.width <= tolerance)) &&
+    (typeof expectedPosition.height !== 'number' || (diff.height !== undefined && diff.height <= tolerance));
   
   return {
     matches,
@@ -195,7 +250,7 @@ export async function validateElementPosition(page, selector, expectedPosition, 
  * @param {number} tolerance - Pixel tolerance for numeric comparisons
  * @param {number} depth - Current recursion depth (prevents stack overflow)
  */
-function compareObjects(extracted, expected, path, discrepancies, tolerance, depth = 0) {
+function compareObjects(extracted: unknown, expected: unknown, path: string, discrepancies: string[], tolerance: number, depth = 0): void {
   // Prevent stack overflow on deeply nested objects
   if (depth > 100) {
     discrepancies.push(`${path}: Maximum comparison depth (100) exceeded - possible circular reference or extremely deep nesting`);
@@ -207,31 +262,29 @@ function compareObjects(extracted, expected, path, discrepancies, tolerance, dep
     return;
   }
   
-  if (typeof expected === 'object' && expected !== null && extracted !== null) {
-    if (Array.isArray(expected)) {
-      if (!Array.isArray(extracted)) {
-        discrepancies.push(`${path}: Expected array, got ${typeof extracted}`);
-        return;
-      }
-      if (expected.length !== extracted.length) {
-        discrepancies.push(`${path}: Array length mismatch (expected ${expected.length}, got ${extracted.length})`);
-      }
-      expected.forEach((item, i) => {
-        compareObjects(extracted[i], item, `${path}[${i}]`, discrepancies, tolerance, depth + 1);
-      });
-    } else {
-      const allKeys = new Set([...Object.keys(expected), ...Object.keys(extracted)]);
-      allKeys.forEach(key => {
-        const newPath = path ? `${path}.${key}` : key;
-        if (!(key in expected)) {
-          discrepancies.push(`${newPath}: Unexpected key in extracted state`);
-        } else if (!(key in extracted)) {
-          discrepancies.push(`${newPath}: Missing key in extracted state`);
-        } else {
-          compareObjects(extracted[key], expected[key], newPath, discrepancies, tolerance, depth + 1);
-        }
-      });
+  if (Array.isArray(expected)) {
+    if (!Array.isArray(extracted)) {
+      discrepancies.push(`${path}: Expected array, got ${typeof extracted}`);
+      return;
     }
+    if (expected.length !== extracted.length) {
+      discrepancies.push(`${path}: Array length mismatch (expected ${expected.length}, got ${extracted.length})`);
+    }
+    expected.forEach((item, i) => {
+      compareObjects(extracted[i], item, `${path}[${i}]`, discrepancies, tolerance, depth + 1);
+    });
+  } else if (isRecord(expected) && isRecord(extracted)) {
+    const allKeys = new Set([...Object.keys(expected), ...Object.keys(extracted)]);
+    allKeys.forEach(key => {
+      const newPath = path ? `${path}.${key}` : key;
+      if (!(key in expected)) {
+        discrepancies.push(`${newPath}: Unexpected key in extracted state`);
+      } else if (!(key in extracted)) {
+        discrepancies.push(`${newPath}: Missing key in extracted state`);
+      } else {
+        compareObjects(extracted[key], expected[key], newPath, discrepancies, tolerance, depth + 1);
+      }
+    });
   } else if (typeof expected === 'number' && typeof extracted === 'number') {
     // Handle NaN values
     if (isNaN(expected) || isNaN(extracted)) {
@@ -256,4 +309,8 @@ function compareObjects(extracted, expected, path, discrepancies, tolerance, dep
   } else if (extracted !== expected) {
     discrepancies.push(`${path}: Value mismatch (expected ${expected}, got ${extracted})`);
   }
+}
+
+function isRecord(value: unknown): value is StateRecord {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }

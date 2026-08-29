@@ -11,7 +11,7 @@ describe('API Sub-Modules', () => {
   
   describe('validators sub-module', () => {
     it('should export validators', async () => {
-      const validators = await import('../../src/validators/index.mjs');
+      const validators = await import('../../src/validators/index.js');
       
       assert.ok(validators.StateValidator, 'Should export StateValidator');
       assert.ok(validators.AccessibilityValidator, 'Should export AccessibilityValidator');

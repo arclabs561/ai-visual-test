@@ -45,6 +45,11 @@ try {
     cwd: consumer,
     stdio: 'inherit',
   });
+  const personaProgram = `const persona = await import(${JSON.stringify(`${installedManifest.name}/persona`)}); const expected = ['ExperiencePropagationTracker', 'calculatePersonaConsistency', 'calculatePersonaDiversity', 'createEnhancedPersona', 'experiencePageAsPersona', 'experiencePageWithEnhancedPersona', 'experiencePageWithPersonas', 'getPropagationTracker', 'trackPropagation']; const actual = Object.keys(persona).sort(); if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error('Unexpected packed persona exports: ' + actual.join(',')); const enhanced = persona.createEnhancedPersona({ name: 'packed', goals: ['read'] }); if (!(new persona.ExperiencePropagationTracker() instanceof persona.ExperiencePropagationTracker) || enhanced.workflows.primary.length !== 0 || persona.calculatePersonaConsistency([]).overall !== 1) throw new Error('Packed persona contract failed');`;
+  execFileSync(process.execPath, ['--input-type=module', '--eval', personaProgram], {
+    cwd: consumer,
+    stdio: 'inherit',
+  });
   const matcherProgram = `for (const route of ['vitest', 'jest']) { const integration = await import(${JSON.stringify(installedManifest.name)} + '/' + route); const registered = {}; integration.createMatchers({ extend(matchers) { Object.assign(registered, matchers); } }); for (const name of ['toPassVisualCheck', 'toHaveVisualScore', 'toMatchVisually']) { if (typeof registered[name] !== 'function') throw new Error('Missing ' + route + ' matcher: ' + name); } const outcome = await registered.toPassVisualCheck(123, 'type check'); if (outcome.pass !== false || !outcome.message().includes('string')) throw new Error('Unexpected ' + route + ' matcher outcome'); }`;
   execFileSync(process.execPath, ['--input-type=module', '--eval', matcherProgram], {
     cwd: consumer,
@@ -139,6 +144,14 @@ try {
   const errorsConsumerPath = join(consumer, 'errors-consumer.ts');
   writeFileSync(errorsConsumerPath, errorsTypeConsumer);
   execFileSync(process.execPath, [join(ROOT, 'node_modules', 'typescript', 'bin', 'tsc'), '--noEmit', '--strict', '--target', 'ES2022', '--module', 'NodeNext', '--moduleResolution', 'NodeNext', '--skipLibCheck', 'false', errorsConsumerPath], {
+    cwd: consumer,
+    stdio: 'inherit',
+  });
+
+  const personaTypeConsumer = `import { createEnhancedPersona, experiencePageAsPersona, type EnhancedPersona, type PersonaExperienceResult, type PersonaInput, type PersonaPage } from ${JSON.stringify(`${installedManifest.name}/persona`)}; const page: PersonaPage = { async setViewportSize() {}, async goto() {}, async screenshot() { return new Uint8Array(); }, async waitForTimeout() {}, viewportSize() { return null; }, async evaluate<Result>(fn: (argument?: unknown) => Result) { return fn(); }, locator() { return {}; } }; const input: PersonaInput = { name: 'packed persona', goals: [] }; const enhanced: EnhancedPersona = createEnhancedPersona(input); const result: Promise<PersonaExperienceResult> = experiencePageAsPersona(page, input, { captureCode: false, captureScreenshots: false, timeScale: 'mechanical' }); void enhanced; void result;`;
+  const personaConsumerPath = join(consumer, 'persona-consumer.ts');
+  writeFileSync(personaConsumerPath, personaTypeConsumer);
+  execFileSync(process.execPath, [join(ROOT, 'node_modules', 'typescript', 'bin', 'tsc'), '--noEmit', '--strict', '--target', 'ES2022', '--module', 'NodeNext', '--moduleResolution', 'NodeNext', '--skipLibCheck', 'false', personaConsumerPath], {
     cwd: consumer,
     stdio: 'inherit',
   });

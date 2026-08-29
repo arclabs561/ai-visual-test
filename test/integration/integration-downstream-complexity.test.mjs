@@ -19,7 +19,7 @@ import {
   createConfig
 } from '../../src/index.js';
 import { BatchOptimizer } from '../../src/batch-optimizer.mjs';
-import { experiencePageAsPersona, experiencePageWithPersonas } from '../../src/persona-experience.mjs';
+import { experiencePageAsPersona, experiencePageWithPersonas } from '../../src/persona-experience.js';
 import { captureTemporalScreenshots, extractRenderedCode, multiModalValidation, multiPerspectiveEvaluation } from '../../src/multi-modal.js';
 import { aggregateTemporalNotes, formatNotesForPrompt } from '#temporal-core';
 import { FileError } from '../../src/errors.js';

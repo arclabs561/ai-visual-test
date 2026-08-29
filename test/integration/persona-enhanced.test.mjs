@@ -9,7 +9,7 @@ import {
   createEnhancedPersona,
   calculatePersonaConsistency,
   calculatePersonaDiversity
-} from '../../src/persona-enhanced.mjs';
+} from '../../src/persona-enhanced.js';
 
 describe('Persona Enhanced', () => {
   describe('createEnhancedPersona', () => {
@@ -191,4 +191,3 @@ describe('Persona Enhanced', () => {
     });
   });
 });
-

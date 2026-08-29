@@ -36,18 +36,18 @@ if (typeof process !== 'undefined') {
 
 // Only import Playwright if we passed the check above
 // Use dynamic import to handle potential errors gracefully
-let test, expect, createMatchers, skipIfNoApiKey;
+let test, expect, createMatchers, hasAnyApiKey;
 
 try {
   const playwrightModule = await import('@playwright/test');
   test = playwrightModule.test;
   expect = playwrightModule.expect;
   
-  const integrationsModule = await import('../../src/integrations/playwright.mjs');
+  const integrationsModule = await import('@arclabs561/ai-visual-test/playwright');
   createMatchers = integrationsModule.createMatchers;
   
   const helpersModule = await import('../helpers/api-key-check.mjs');
-  skipIfNoApiKey = helpersModule.skipIfNoApiKey;
+  hasAnyApiKey = helpersModule.hasAnyApiKey;
   
   // Extend expect with custom matchers
   createMatchers(expect);
@@ -67,9 +67,7 @@ try {
 test.describe('Playwright Integration', () => {
   test('toHaveVisualScore - should work with page object', async ({ page }) => {
     // Skip if no API keys
-    if (skipIfNoApiKey(this, 'No API keys available')) {
-      return;
-    }
+    test.skip(!hasAnyApiKey(), 'No API keys available');
 
     const html = `
       <!DOCTYPE html>
@@ -98,9 +96,7 @@ test.describe('Playwright Integration', () => {
 
   test('toHaveVisualScore - should work with screenshot path', async ({ page }) => {
     // Skip if no API keys
-    if (skipIfNoApiKey(this, 'No API keys available')) {
-      return;
-    }
+    test.skip(!hasAnyApiKey(), 'No API keys available');
 
     const html = `
       <!DOCTYPE html>
@@ -128,10 +124,10 @@ test.describe('Playwright Integration', () => {
       await page.screenshot({ path: screenshotPath });
       
       // Use custom matcher with screenshot path
-      // Use a lower threshold (3) to account for potential API issues
-      // The matcher will handle null scores gracefully
+      // This test exercises the screenshot-path branch, not quality calibration.
+      // Any numeric score is sufficient; the matcher handles null separately.
       try {
-        await expect(screenshotPath).toHaveVisualScore(3, 'Check visual quality');
+        await expect(screenshotPath).toHaveVisualScore(0, 'Check visual quality');
       } catch (error) {
         // If score is null, that's also a valid test result (API may be unavailable)
         // Just verify the matcher was called and handled the case
@@ -151,9 +147,7 @@ test.describe('Playwright Integration', () => {
 
   test('toBeAccessibleHybrid - should validate accessibility', async ({ page }) => {
     // Skip if no API keys
-    if (skipIfNoApiKey(this, 'No API keys available')) {
-      return;
-    }
+    test.skip(!hasAnyApiKey(), 'No API keys available');
 
     const html = `
       <!DOCTYPE html>

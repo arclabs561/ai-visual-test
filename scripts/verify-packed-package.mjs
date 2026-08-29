@@ -45,6 +45,11 @@ try {
     cwd: consumer,
     stdio: 'inherit',
   });
+  const playwrightProgram = `const packageName = ${JSON.stringify(installedManifest.name)}; const root = await import(packageName); const integration = await import(packageName + '/playwright'); if (root.createMatchers !== integration.createMatchers) throw new Error('Root createMatchers is not the Playwright adapter export'); const registered = {}; integration.createMatchers({ extend(matchers) { Object.assign(registered, matchers); } }); for (const name of ['toHaveVisualScore', 'toBeAccessibleHybrid']) { if (typeof registered[name] !== 'function') throw new Error('Missing packed Playwright matcher: ' + name); }`;
+  execFileSync(process.execPath, ['--input-type=module', '--eval', playwrightProgram], {
+    cwd: consumer,
+    stdio: 'inherit',
+  });
   const ensembleProgram = `const ensemble = await import(${JSON.stringify(`${installedManifest.name}/ensemble`)}); for (const name of ['evaluateWithCounterBalance', 'shouldUseCounterBalance']) { if (typeof ensemble[name] !== 'function') throw new Error('Missing packed ensemble helper: ' + name); }`;
   execFileSync(process.execPath, ['--input-type=module', '--eval', ensembleProgram], {
     cwd: consumer,

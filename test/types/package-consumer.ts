@@ -31,6 +31,33 @@ const extendableExpect = {
   },
 };
 
+const playwrightExpect: playwright.PlaywrightExpect = extendableExpect;
+playwright.createMatchers(playwrightExpect);
+const playwrightMatchers: playwright.PlaywrightMatchers = {
+  async toHaveVisualScore() { return { pass: true, message: () => 'ok' }; },
+  async toBeAccessibleHybrid() { return { pass: true, message: () => 'ok' }; },
+};
+const playwrightMatcherResult: Promise<playwright.MatcherResult> = playwrightMatchers.toHaveVisualScore(
+  'checkout.png',
+  7,
+);
+void playwrightMatcherResult;
+const screenshotOnlyPlaywrightPage = {
+  async screenshot(_options: Record<string, unknown>) { return new Uint8Array(); },
+};
+playwright.captureStableScreenshot(screenshotOnlyPlaywrightPage, { path: 'capture.png' });
+// @ts-expect-error default Playwright matcher capture needs the full page contract.
+playwrightMatchers.toHaveVisualScore(screenshotOnlyPlaywrightPage, 7);
+const fullPlaywrightPage: playwright.PlaywrightPage = {
+  ...screenshotOnlyPlaywrightPage,
+  async content() { return '<main>checkout</main>'; },
+  url() { return 'https://example.test/checkout'; },
+  viewportSize() { return { width: 1280, height: 720 }; },
+  async evaluate(callback: (arg?: unknown) => unknown, arg?: unknown) { return await callback(arg); },
+};
+playwrightMatchers.toHaveVisualScore(fullPlaywrightPage, 7);
+playwrightMatchers.toBeAccessibleHybrid(fullPlaywrightPage);
+
 // Both public aliases expose the same generated, framework-neutral contract.
 vitest.createMatchers(extendableExpect);
 jest.createMatchers(extendableExpect);

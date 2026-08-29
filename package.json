@@ -54,8 +54,8 @@
       "import": "./src/errors/index.mjs"
     },
     "./playwright": {
-      "types": "./types/playwright.d.ts",
-      "import": "./src/integrations/playwright.mjs"
+      "types": "./build/src/integrations/playwright.d.ts",
+      "import": "./build/src/integrations/playwright.js"
     },
     "./vitest": {
       "types": "./build/src/integrations/vitest-jest.d.ts",
@@ -76,6 +76,7 @@
     "#dataset-evaluation-metrics": "./build/src/dataset-evaluation-metrics.js",
     "#pairwise-fixture-metrics": "./build/src/pairwise-fixture-metrics.js",
     "#page-validation": "./build/src/page-validation.js",
+    "#playwright-integration": "./build/src/integrations/playwright.js",
     "#position-counterbalance": "./build/src/position-counterbalance.js",
     "#public-contract": "./build/src/public-contract.js",
     "#review-contract": "./build/src/review-contract.js",
@@ -102,7 +103,8 @@
     "test:datasets": "npm run build:stage && node scripts/run-staged-tests.mjs datasets",
     "test:validation": "npm run build:stage && node scripts/run-staged-tests.mjs validation",
     "test:playwright": "playwright test test/**/playwright-*.test.mjs",
-    "test:playwright-integration": "playwright test test/integration/playwright-integration.pwtest.mjs",
+    "pretest:playwright-integration": "npm run build:stage",
+    "test:playwright-integration": "playwright test --config test/integration/playwright.config.mjs",
     "test:types": "npm run build:stage && tsc -p tsconfig.declarations.json",
     "test:package": "npm run build:skip-obfuscation && node scripts/verify-packed-package.mjs",
     "test:intelligence": "node scripts/verify-intelligence.mjs",

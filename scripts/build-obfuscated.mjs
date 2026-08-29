@@ -248,7 +248,7 @@ async function buildSourceFiles(skipObfuscation = false) {
 
   // Keep every published entry point and declaration route present in dist.
   // The publish manifest below is deliberately inherited from package.json.
-  for (const directory of ['bin', 'types']) {
+  for (const directory of ['bin']) {
     const srcPath = join(STAGE_DIR, directory);
     if (existsSync(srcPath)) {
       await copyDir(srcPath, join(DIST_DIR, directory));
@@ -301,7 +301,6 @@ function updatePackageJson() {
   publishPackageJson.files = [
     'bin/',
     'src/',
-    'types/',
     'README.md',
     'CHANGELOG.md',
     'SECURITY.md',

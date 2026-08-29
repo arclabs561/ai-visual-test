@@ -4,8 +4,6 @@ on:
   push:
     tags:
       - 'v*'
-  release:
-    types: [created]
   workflow_dispatch:
     inputs:
       version:
@@ -39,27 +37,30 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
           package-manager-cache: false
       
-      # Ensure npm 11.5.1 or later is installed (required for OIDC)
+      # npm 11.5.1 or later is required for OIDC trusted publishing.
       - name: Update npm
-        run: npm install -g npm@latest
+        run: npm install -g npm@11.5.1
       
       - name: Install dependencies
         run: npm ci
       
       - name: Run tests
         run: npm run test:unit
-        continue-on-error: false
+
+      - name: Check public declarations
+        run: npm run test:types
       
       - name: Run security audit
         run: npm audit --audit-level=high --omit=dev
-        continue-on-error: false
       
       - name: Check for secrets
-        run: node scripts/detect-secrets.mjs || echo "Secret check completed"
+        run: node scripts/detect-secrets.mjs --tracked
       
       - name: Build obfuscated package
         run: npm run build
-        continue-on-error: false
+
+      - name: Verify publish artifact
+        run: node scripts/verify-packed-package.mjs
       
       - name: Publish to npm
         # OIDC trusted publishing: no NODE_AUTH_TOKEN needed if configured on npmjs.com
@@ -67,7 +68,7 @@ jobs:
         # Publishing from dist/ directory with obfuscated code
         working-directory: dist
         run: |
-          if [ "${{ github.event_name }}" = "release" ] || [ "${{ github.event_name }}" = "push" ]; then
+          if [ "${{ github.event_name }}" = "push" ]; then
             npm publish --access public
           else
             npm version "${GITHUB_EVENT_INPUTS_VERSION}" --no-git-tag-version
@@ -78,4 +79,3 @@ jobs:
           # For installing private dependencies, use read-only token
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_EVENT_INPUTS_VERSION: ${{ github.event.inputs.version }}
-

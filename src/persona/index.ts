@@ -38,7 +38,7 @@ export type {
   PersonaObservation,
 } from '../persona-enhanced.js';
 
-// Experience propagation (used by convenience.mjs and persona-experience.mjs)
+// Experience propagation (used by game-convenience.ts and persona-experience.ts)
 export {
   ExperiencePropagationTracker,
   getPropagationTracker,

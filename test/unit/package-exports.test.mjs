@@ -8,7 +8,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { access, readFile, readdir } from 'node:fs/promises';
-import { constants } from 'node:fs';
+import { constants, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import * as root from '../../src/index.js';
 
@@ -79,7 +79,7 @@ describe('package export/type contract', () => {
   });
 
   it('keeps one composition overlay and does not redeclare private-alias values', async () => {
-    const overlays = (await readdir('types'))
+    const overlays = (existsSync('types') ? await readdir('types') : [])
       .filter(name => name.endsWith('-barrel.d.ts'))
       .sort();
     const ensembleRoute = exportRoute(packageJson.exports['./ensemble']);

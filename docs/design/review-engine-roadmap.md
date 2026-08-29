@@ -160,14 +160,17 @@ release after the deprecation window.
 
 **Status:** the shared public-result normalizer, private
 `position-counterbalance` policy, Vitest/Jest adapter, page-validation adapter,
-Playwright adapter, ensemble judge boundary, temporal core, and temporal
-capture are now typed compiled slices. The ensemble correctness repair landed
-before its source conversion: voting ignores failed or invalid scores, reports
-availability explicitly, and makes ties and zero-effective-weight outcomes
-deterministic. Temporal graph traversal now preserves caller graph inputs;
-prompt selection, multi-scale coordinate handling, and scheduler/cache behavior
-have dedicated correctness repairs. The public `./ensemble` route preserves its
-scalar helpers while the judge contract is generated from TypeScript.
+Playwright adapter, ensemble judge boundary, temporal core, capture,
+orchestration, multi-scale, formatting, and public barrel are now typed compiled
+slices. The ensemble correctness repair landed before its source conversion:
+voting ignores failed or invalid scores, reports availability explicitly, and
+makes ties and zero-effective-weight outcomes deterministic. Temporal graph
+traversal now preserves caller graph inputs; prompt selection, multi-scale
+coordinate handling, scheduler/cache behavior, and formatting semantics have
+dedicated correctness repairs. The handwritten `types/temporal.d.ts` contract
+is retired: `./temporal` now resolves directly to generated public declarations
+with no temporal declaration overlay. The public `./ensemble` route preserves
+its scalar helpers while the judge contract is generated from TypeScript.
 
 **ADR 0001 review resolved:** [ADR 0003](../adr/0003-temporary-declaration-composition-overlays.md)
 accepts one temporary composition overlay with an enforced expiry condition.
@@ -177,15 +180,12 @@ bias mitigation, and research-validation helpers. The route does not count as
 fully generated until those helpers migrate and the overlay is deleted. Strict
 packed consumer compilation and runtime/type export parity remain mandatory.
 
-**Execution order:** temporal core and capture are complete. Temporal
-orchestration TypeScript is the next in-progress slice. It is followed by
-multi-scale, formatting, and the temporal barrel, with public temporal types
-remaining handwritten until that group is complete. Then take game, perception
-pure kernels and sampler, and finally the video and CLI integrations. Video and
-CLI remain last because they couple provider, process, filesystem, and
-packaging behavior. Each slice keeps existing package subpath names and
-replaces its handwritten declaration overlay only after the generated
-declaration and clean packed install agree.
+**Execution order:** the complete temporal public boundary has no declaration
+overlay. The next mechanical area is game, followed by perception, video, and
+CLI integrations. Video and CLI remain last because they couple provider,
+process, filesystem, and packaging behavior. Each slice keeps existing package
+subpath names and replaces its handwritten declaration overlay only after the
+generated declaration and clean packed install agree.
 
 Human labels do not block these mechanical conversions. They continue to block
 changes that claim calibrated ensemble weights, confidence, or learned
@@ -237,6 +237,6 @@ made until real independently reviewed labels exist.
 
 ## Review trigger
 
-Re-run this roadmap after temporal orchestration lands, when the ensemble
-overlay is retired or a second overlay is proposed, or when a consumer survey
-changes the supported-surface assumptions.
+Re-run this roadmap after the game boundary lands, when the ensemble overlay is
+retired or a second overlay is proposed, or when a consumer survey changes the
+supported-surface assumptions.

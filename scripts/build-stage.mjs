@@ -72,6 +72,7 @@ packageJson.imports = {
   '#provider-adapters': './src/provider-adapters.js',
   '#dataset-evaluation-metrics': './src/dataset-evaluation-metrics.js',
   '#ensemble-judge': './src/ensemble-judge.js',
+  '#game-action-contract': './src/game-action-contract.js',
   '#pairwise-fixture-metrics': './src/pairwise-fixture-metrics.js',
   '#page-validation': './src/page-validation.js',
   '#playwright-integration': './src/integrations/playwright.js',

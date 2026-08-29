@@ -79,6 +79,7 @@ packageJson.imports = {
   '#public-contract': './src/public-contract.js',
   '#review-contract': './src/review-contract.js',
   '#structured-output': './src/structured-output.js',
+  '#structured-task': './src/structured-task.js',
   '#temporal-capture': './src/temporal-capture.js',
   '#temporal-core': './src/temporal-core.js',
   '#temporal-multi-scale': './src/temporal-multi-scale.js',

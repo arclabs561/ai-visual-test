@@ -11,6 +11,26 @@ export interface StructuredOutputInput {
   enabled?: boolean;
 }
 
+export interface TaskStructuredOutputInput {
+  provider?: string;
+  model?: string;
+  taskName: string;
+  schema: object;
+  enabled?: boolean;
+}
+
+export function resolveTaskStructuredOutput({
+  provider,
+  model = '',
+  taskName,
+  schema,
+  enabled = true,
+}: TaskStructuredOutputInput): StructuredOutputSpec {
+  return resolveProviderStructuredOutput({
+    provider: provider ?? '', model, taskName, enabled, schema,
+  });
+}
+
 /**
  * Negotiate the strongest structured-output mode that is safe for a provider
  * and model. Arbitrary model overrides deliberately fall back to JSON object
@@ -22,6 +42,11 @@ export function resolveStructuredOutput({
   reviewMode = 'scalar',
   enabled = true,
 }: StructuredOutputInput = {}): StructuredOutputSpec {
-  const schema = getReviewSchema(reviewMode);
-  return resolveProviderStructuredOutput({ provider: provider ?? '', model, reviewMode, enabled, schema });
+  return resolveTaskStructuredOutput({
+    provider: provider ?? '',
+    model,
+    taskName: reviewMode === 'comparison' ? 'visual_comparison' : 'visual_review',
+    schema: getReviewSchema(reviewMode),
+    enabled,
+  });
 }

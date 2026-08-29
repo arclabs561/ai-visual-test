@@ -8,6 +8,11 @@
 
 import Type, { type Static } from 'typebox';
 import * as Value from 'typebox/value';
+import {
+  StructuredTaskContractError,
+  type StructuredTaskDefinition,
+  type StructuredTaskParseResult,
+} from '#structured-task';
 
 const StringList = Type.Array(Type.String());
 
@@ -43,13 +48,10 @@ export type ComparisonReviewOutcome = Static<typeof COMPARISON_REVIEW_SCHEMA>;
 export type ReviewOutcome = ScalarReviewOutcome | ComparisonReviewOutcome;
 export type ReviewMode = 'scalar' | 'comparison';
 
-export class ReviewContractError extends Error {
-  diagnostics: string[];
-
+export class ReviewContractError extends StructuredTaskContractError {
   constructor(diagnostics: string[]) {
-    super(`Provider output did not satisfy the review contract: ${diagnostics.join(', ')}`);
+    super(`Provider output did not satisfy the review contract: ${diagnostics.join(', ')}`, diagnostics);
     this.name = 'ReviewContractError';
-    this.diagnostics = diagnostics;
   }
 }
 
@@ -247,4 +249,21 @@ export function buildRepairInstruction(diagnostics: string[], mode: ReviewMode =
     `Diagnostic codes: ${unique.join(', ') || 'invalid_output'}.`,
     `Return only one JSON object matching the ${mode} review schema. Do not include markdown.`
   ].join('\n');
+}
+
+export function createReviewTask(
+  mode: ReviewMode,
+  allowLegacy: boolean,
+): StructuredTaskDefinition<ReviewOutcome> {
+  return {
+    name: mode === 'comparison' ? 'visual_comparison' : 'visual_review',
+    schema: getReviewSchema(mode),
+    invalidOutputDescription: `${mode} review`,
+    parse(input): StructuredTaskParseResult<ReviewOutcome> {
+      return parseReviewOutcome(input, { mode, allowLegacy });
+    },
+    buildRepairInstruction(diagnostics): string {
+      return buildRepairInstruction(diagnostics, mode);
+    },
+  };
 }

@@ -20,19 +20,49 @@ test('provider capability negotiation is model-aware and explicit', () => {
 
   for (const [provider, model, mode, diagnostic, strict] of cases) {
     const result = getProviderAdapter(provider).resolveStructuredOutput({
-      model, reviewMode: 'scalar', enabled: true, schema: SCHEMA,
+      model, taskName: 'visual_review', enabled: true, schema: SCHEMA,
     });
     assert.equal(result.mode, mode, `${provider}/${model}`);
+    assert.equal(result.name, 'visual_review', `${provider}/${model}`);
     assert.equal(result.diagnostic, diagnostic, `${provider}/${model}`);
     assert.equal(result.strict, strict, `${provider}/${model}`);
   }
 
   const disabled = getProviderAdapter('openai').resolveStructuredOutput({
-    model: 'gpt-4o', reviewMode: 'comparison', enabled: false, schema: SCHEMA,
+    model: 'gpt-4o', taskName: 'visual_comparison', enabled: false, schema: SCHEMA,
   });
   assert.equal(disabled.mode, 'prompt-only');
   assert.equal(disabled.name, 'visual_comparison');
   assert.equal(disabled.diagnostic, 'structured_output_disabled');
+});
+
+test('native structured output carries arbitrary task names and schemas', async t => {
+  const originalFetch = globalThis.fetch;
+  t.after(() => { globalThis.fetch = originalFetch; });
+  const requests = [];
+  globalThis.fetch = async (_url, init) => {
+    requests.push(JSON.parse(init.body));
+    return new Response('{}', { headers: { 'content-type': 'application/json' } });
+  };
+  const schema = { type: 'object', properties: { action: { type: 'string' } } };
+  const common = {
+    images: [], prompt: 'choose', signal: new AbortController().signal, apiKey: 'test-key',
+  };
+  const openai = getProviderAdapter('openai').resolveStructuredOutput({
+    model: 'gpt-4o', taskName: 'game_action', enabled: true, schema,
+  });
+  await getProviderAdapter('openai').call({
+    ...common, config: { apiUrl: 'https://provider.invalid/v1', model: 'gpt-4o' }, structuredOutput: openai,
+  });
+  const gemini = getProviderAdapter('gemini').resolveStructuredOutput({
+    model: 'gemini-2.5-flash', taskName: 'game_action', enabled: true, schema,
+  });
+  await getProviderAdapter('gemini').call({
+    ...common, config: { apiUrl: 'https://provider.invalid/v1', model: 'gemini-2.5-flash' }, structuredOutput: gemini,
+  });
+  assert.equal(requests[0].response_format.json_schema.name, 'game_action');
+  assert.deepEqual(requests[0].response_format.json_schema.schema, schema);
+  assert.deepEqual(requests[1].generationConfig.responseJsonSchema, schema);
 });
 
 test('wire adapters preserve image order, signal, and header-only credentials', async t => {

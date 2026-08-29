@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { GameGym, decideGameAction, executeGameAction, playGame } from '../../src/game-player.mjs';
+import { GameGym, decideGameAction, executeGameAction, playGame } from '../../src/game-player.js';
 
 function gamePage(gameStates = [{ gameActive: true }]) {
   let stateIndex = 0;

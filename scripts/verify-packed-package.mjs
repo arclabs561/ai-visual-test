@@ -55,10 +55,23 @@ try {
     cwd: consumer,
     stdio: 'inherit',
   });
+  const gameProgram = `const game = await import(${JSON.stringify(`${installedManifest.name}/game`)}); for (const name of ['playGame', 'GameGym', 'decideGameAction', 'executeGameAction', 'generateGamePrompt', 'createGameGoal', 'createGameGoals', 'testGameplay', 'testBrowserExperience', 'validateWithGoals']) { if (typeof game[name] !== 'function') throw new Error('Missing packed game export: ' + name); } const goal = game.createGameGoal('fun'); if (!goal.description || !Array.isArray(goal.criteria)) throw new Error('Packed game goal contract failed');`;
+  execFileSync(process.execPath, ['--input-type=module', '--eval', gameProgram], {
+    cwd: consumer,
+    stdio: 'inherit',
+  });
   const ensembleTypeConsumer = `import { EnsembleJudge, type Availability, type Disagreement, type EnsembleResult, type JudgeLike, evaluateWithCounterBalance } from ${JSON.stringify(`${installedManifest.name}/ensemble`)}; const judges: JudgeLike[] = [{ provider: 'packed-types', async judgeScreenshot() { return { score: 8, issues: [], reasoning: 'typed' }; } }]; const result: EnsembleResult = await new EnsembleJudge({ judges }).evaluate('packed.png', 'typed package route'); const availability: Availability = result.availability; const disagreement: Disagreement = result.disagreement; const counterBalanced = await evaluateWithCounterBalance(async () => ({ enabled: true, score: 8, issues: [], recommendations: [], reasoning: 'typed' }), 'packed.png', 'typed package route', { baseline: 'baseline.png' }, { baselinePath: 'baseline.png' }); const status = counterBalanced.counterBalance?.status; void availability; void disagreement; void status;`;
   const typeConsumerPath = join(consumer, 'ensemble-consumer.ts');
   writeFileSync(typeConsumerPath, ensembleTypeConsumer);
   execFileSync(process.execPath, [join(ROOT, 'node_modules', 'typescript', 'bin', 'tsc'), '--noEmit', '--strict', '--target', 'ES2022', '--module', 'NodeNext', '--moduleResolution', 'NodeNext', '--skipLibCheck', 'false', typeConsumerPath], {
+    cwd: consumer,
+    stdio: 'inherit',
+  });
+
+  const gameTypeConsumer = `import { GameGym, createGameGoal, executeGameAction, generateGamePrompt, type GameActionExecutionResult, type GameGoal, type GameOptions, type GamePage } from ${JSON.stringify(`${installedManifest.name}/game`)}; const locator = { async count() { return 1; }, async click() {}, locator() { return locator; } }; const page: GamePage = { keyboard: { async press() {} }, async screenshot() { return new Uint8Array(); }, locator() { return locator; }, async waitForTimeout() {}, async waitForSelector() {}, async evaluate() { return {}; }, async goto() {}, async waitForLoadState() {} }; const options: GameOptions = { goal: 'reach the exit', maxSteps: 2 }; const result: Promise<GameActionExecutionResult> = executeGameAction(page, { type: 'wait', duration: 1 }); const goal: GameGoal = createGameGoal('fun'); const prompt: string = generateGamePrompt(goal, { gameState: { score: 0 } }); const gym = new GameGym(page, options); void result; void prompt; void gym;`;
+  const gameConsumerPath = join(consumer, 'game-consumer.ts');
+  writeFileSync(gameConsumerPath, gameTypeConsumer);
+  execFileSync(process.execPath, [join(ROOT, 'node_modules', 'typescript', 'bin', 'tsc'), '--noEmit', '--strict', '--target', 'ES2022', '--module', 'NodeNext', '--moduleResolution', 'NodeNext', '--skipLibCheck', 'false', gameConsumerPath], {
     cwd: consumer,
     stdio: 'inherit',
   });

@@ -19,6 +19,30 @@ export const publicModules = {
   persona, utils, game, errors, playwright, vitest, jest, perception,
 };
 
+const gameLocator: game.GameLocator = {
+  async count() { return 1; },
+  async click() {},
+  locator() { return gameLocator; },
+};
+const gamePage: game.GamePage = {
+  keyboard: { async press() {} },
+  async screenshot() { return new Uint8Array(); },
+  locator() { return gameLocator; },
+  async waitForTimeout() {},
+  async waitForSelector() {},
+  async evaluate() { return {}; },
+  async goto() {},
+  async waitForLoadState() {},
+};
+const gameOptions: game.GameOptions = { goal: 'reach the exit', maxSteps: 2 };
+const gameGoal: game.GameGoal = game.createGameGoal('fun');
+export const gamePrompt: string = game.generateGamePrompt(gameGoal, { gameState: { score: 0 } });
+export const gameExecution: Promise<game.GameActionExecutionResult> = game.executeGameAction(
+  gamePage,
+  { type: 'wait', duration: 1 },
+);
+export const gameGym: game.GameGym = new game.GameGym(gamePage, gameOptions);
+
 // Scalar counter-balance helpers remain part of the supported ensemble route.
 export const ensembleScalarHelpers = [
   ensemble.evaluateWithCounterBalance,

@@ -50,7 +50,7 @@ copyTestAssets(join(ROOT, 'test'), join(STAGE, 'test'));
 
 const packageJson = JSON.parse(readFileSync(join(STAGE, 'package.json'), 'utf8'));
 packageJson.private = true;
-for (const subpath of ['./temporal', './ensemble', './playwright', './vitest', './jest']) {
+for (const subpath of ['./temporal', './ensemble', './game', './playwright', './vitest', './jest']) {
   const route = packageJson.exports?.[subpath];
   if (!route || typeof route !== 'object') {
     throw new Error(`Missing staged package route: ${subpath}`);
@@ -58,6 +58,9 @@ for (const subpath of ['./temporal', './ensemble', './playwright', './vitest', '
   if (subpath === './temporal') {
     route.import = './src/temporal/index.js';
     route.types = './src/temporal/index.d.ts';
+  } else if (subpath === './game') {
+    route.import = './src/game/index.js';
+    route.types = './src/game/index.d.ts';
   } else if (subpath === './ensemble') {
     route.import = './src/ensemble/index.js';
     route.types = './types/ensemble-barrel.d.ts';
@@ -73,6 +76,9 @@ packageJson.imports = {
   '#dataset-evaluation-metrics': './src/dataset-evaluation-metrics.js',
   '#ensemble-judge': './src/ensemble-judge.js',
   '#game-action-contract': './src/game-action-contract.js',
+  '#game-convenience': './src/game-convenience.js',
+  '#game-goal-prompts': './src/game-goal-prompts.js',
+  '#game-player': './src/game-player.js',
   '#pairwise-fixture-metrics': './src/pairwise-fixture-metrics.js',
   '#page-validation': './src/page-validation.js',
   '#playwright-integration': './src/integrations/playwright.js',
@@ -92,7 +98,7 @@ writeFileSync(join(STAGE, 'package.json'), `${JSON.stringify(packageJson, null, 
 
 // The source manifest intentionally references build/ for migrated modules.
 // Prove Node can self-import each public alias after this mandatory stage.
-const sourceMatcherProgram = `const packageName = ${JSON.stringify(packageJson.name)}; for (const route of ['vitest', 'jest']) { const integration = await import(packageName + '/' + route); const registered = {}; integration.createMatchers({ extend(matchers) { Object.assign(registered, matchers); } }); for (const name of ['toPassVisualCheck', 'toHaveVisualScore', 'toMatchVisually']) { if (typeof registered[name] !== 'function') throw new Error('Missing source ' + route + ' matcher: ' + name); } const outcome = await registered.toPassVisualCheck(123, 'source package check'); if (outcome.pass !== false || !outcome.message().includes('string')) throw new Error('Unexpected source ' + route + ' matcher outcome'); } const temporal = await import(packageName + '/temporal'); if (typeof temporal.aggregateTemporalNotes !== 'function' || typeof temporal.buildTemporalGraph !== 'function' || typeof temporal.captureTemporalScreenshots !== 'function') throw new Error('Missing source temporal exports'); const multiModal = await import(packageName + '/multi-modal'); if (multiModal.captureTemporalScreenshots !== temporal.captureTemporalScreenshots) throw new Error('Temporal capture exports are not identical'); const ensemble = await import(packageName + '/ensemble'); if (typeof ensemble.EnsembleJudge !== 'function' || typeof ensemble.createEnsembleJudge !== 'function') throw new Error('Missing source ensemble constructor exports'); const root = await import(packageName); const playwright = await import(packageName + '/playwright'); if (root.createMatchers !== playwright.createMatchers) throw new Error('Root createMatchers is not the source Playwright adapter export'); const registered = {}; playwright.createMatchers({ extend(matchers) { Object.assign(registered, matchers); } }); for (const name of ['toHaveVisualScore', 'toBeAccessibleHybrid']) { if (typeof registered[name] !== 'function') throw new Error('Missing source Playwright matcher: ' + name); }`;
+const sourceMatcherProgram = `const packageName = ${JSON.stringify(packageJson.name)}; for (const route of ['vitest', 'jest']) { const integration = await import(packageName + '/' + route); const registered = {}; integration.createMatchers({ extend(matchers) { Object.assign(registered, matchers); } }); for (const name of ['toPassVisualCheck', 'toHaveVisualScore', 'toMatchVisually']) { if (typeof registered[name] !== 'function') throw new Error('Missing source ' + route + ' matcher: ' + name); } const outcome = await registered.toPassVisualCheck(123, 'source package check'); if (outcome.pass !== false || !outcome.message().includes('string')) throw new Error('Unexpected source ' + route + ' matcher outcome'); } const temporal = await import(packageName + '/temporal'); if (typeof temporal.aggregateTemporalNotes !== 'function' || typeof temporal.buildTemporalGraph !== 'function' || typeof temporal.captureTemporalScreenshots !== 'function') throw new Error('Missing source temporal exports'); const multiModal = await import(packageName + '/multi-modal'); if (multiModal.captureTemporalScreenshots !== temporal.captureTemporalScreenshots) throw new Error('Temporal capture exports are not identical'); const ensemble = await import(packageName + '/ensemble'); if (typeof ensemble.EnsembleJudge !== 'function' || typeof ensemble.createEnsembleJudge !== 'function') throw new Error('Missing source ensemble constructor exports'); const game = await import(packageName + '/game'); for (const name of ['playGame', 'GameGym', 'generateGamePrompt', 'testGameplay']) { if (typeof game[name] !== 'function') throw new Error('Missing source game export: ' + name); } const root = await import(packageName); const playwright = await import(packageName + '/playwright'); if (root.createMatchers !== playwright.createMatchers) throw new Error('Root createMatchers is not the source Playwright adapter export'); const registered = {}; playwright.createMatchers({ extend(matchers) { Object.assign(registered, matchers); } }); for (const name of ['toHaveVisualScore', 'toBeAccessibleHybrid']) { if (typeof registered[name] !== 'function') throw new Error('Missing source Playwright matcher: ' + name); }`;
 execFileSync(process.execPath, ['--input-type=module', '--eval', sourceMatcherProgram], {
   cwd: ROOT,
   stdio: 'inherit',

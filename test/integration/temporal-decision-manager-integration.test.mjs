@@ -188,7 +188,7 @@ test('TemporalDecisionManager integration in game-player reduces calls', async f
       </html>
     `);
 
-    const { playGame } = await import('../../src/game-player.mjs');
+    const { playGame } = await import('../../src/game-player.js');
     
     // Play game with TemporalDecisionManager (should reduce LLM calls)
     const result = await playGame(page, {

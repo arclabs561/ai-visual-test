@@ -11,7 +11,7 @@
 import '../test-setup.mjs'; // Auto-load .env (must be first)
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { playGame, GameGym } from '../../src/game/index.mjs';
+import { playGame, GameGym } from '../../src/game/index.js';
 import { skipIfNoApiKey } from '../helpers/api-key-check.mjs';
 
 test('playGame - simple game', async function() {
@@ -150,7 +150,7 @@ test('testGameplay with play option', async function() {
       });
       await page.waitForTimeout(1000);
       
-      const { testGameplay } = await import('../src/convenience.mjs');
+      const { testGameplay } = await import('#game-convenience');
       const result = await testGameplay(page, {
         url: 'https://play2048.co/',
         play: true, // Actually play

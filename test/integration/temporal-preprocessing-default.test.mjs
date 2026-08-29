@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { testGameplay } from '../../src/convenience.mjs';
+import { testGameplay } from '#game-convenience';
 
 test('testGameplay uses temporal preprocessing by default', async function() {
   let browser, page;
@@ -172,4 +172,3 @@ test('testGameplay temporal preprocessing handles low activity', async function(
     }
   }
 });
-

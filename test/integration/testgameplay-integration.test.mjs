@@ -1,7 +1,7 @@
 import '../test-setup.mjs'; // Auto-load .env
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { testGameplay } from '../../src/convenience.mjs';
+import { testGameplay } from '#game-convenience';
 
 test('testGameplay integrates temporal graph building', async function() {
   let browser, page;
@@ -170,4 +170,3 @@ test('testGameplay tracks calibration during gameplay', async function() {
     }
   }
 });
-

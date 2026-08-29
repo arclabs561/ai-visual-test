@@ -10,7 +10,7 @@ import {
   validateWithGoals,
   generateGamePrompt,
   createGameGoal
-} from '../../src/game/index.mjs';
+} from '../../src/game/index.js';
 import { createMockPage } from '../helpers/mock-page.mjs';
 import { createTestImage } from '../test-image-utils.mjs';
 import { skipIfNoApiKey } from '../helpers/api-key-check.mjs';

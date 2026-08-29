@@ -21,7 +21,7 @@ let generateGamePrompt = null;
 async function getGenerateGamePrompt() {
   if (!generateGamePrompt) {
     try {
-      const module = await import('./game-goal-prompts.mjs');
+      const module = await import('#game-goal-prompts');
       generateGamePrompt = module.generateGamePrompt;
     } catch (error) {
       return null;

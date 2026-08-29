@@ -46,7 +46,7 @@ describe('Consumer API', () => {
       { path: '../../src/ensemble/index.js', minExports: 5 },
       { path: '../../src/persona/index.mjs', minExports: 3 },
       { path: '../../src/utils/index.mjs', minExports: 20 },
-      { path: '../../src/game/index.mjs', minExports: 5 },
+      { path: '../../src/game/index.js', minExports: 5 },
       { path: '../../src/errors/index.mjs', minExports: 5 },
       { path: '../../src/multi-modal/index.mjs', minExports: 5 },
     ];

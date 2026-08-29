@@ -17,7 +17,44 @@
  * multiple goal formats (string, object, array, function) and context-aware generation.
  */
 
-import { log, warn } from './logger.mjs';
+import { warn } from './logger.mjs';
+
+export type GameState = Record<string, unknown> & {
+  gameActive?: boolean;
+  score?: number;
+  level?: number | string;
+  lives?: number;
+  bricks?: number | unknown[];
+  ball?: boolean;
+  paddle?: boolean;
+};
+
+export type GamePersona = {
+  name?: string;
+  perspective?: string;
+  goals?: string[];
+};
+
+export type GameGoal = {
+  description?: string;
+  criteria?: string[];
+  focus?: string[];
+  questions?: string[];
+  minScore?: number | null;
+  maxScore?: number | null;
+};
+
+export type GoalOptions = GameGoal & Record<string, unknown>;
+
+export type GamePromptContext = {
+  gameState?: GameState;
+  previousState?: GameState | null;
+  renderedCode?: unknown;
+  persona?: GamePersona | null;
+  stage?: string;
+};
+
+export type GamePromptInput = string | GameGoal | Array<string | GameGoal> | ((context: GamePromptContext) => string) | null | undefined;
 
 /**
  * Generate game prompt from variable goal/prompt
@@ -37,7 +74,7 @@ import { log, warn } from './logger.mjs';
  * @param {string} [context.stage] - Current stage
  * @returns {string} Generated prompt
  */
-export function generateGamePrompt(goalOrPrompt, context = {}) {
+export function generateGamePrompt(goalOrPrompt: GamePromptInput, context: GamePromptContext = {}): string {
   const {
     gameState = {},
     previousState = null,
@@ -69,7 +106,7 @@ export function generateGamePrompt(goalOrPrompt, context = {}) {
 /**
  * Build prompt from string (with context interpolation)
  */
-function buildPromptFromString(promptString, context) {
+function buildPromptFromString(promptString: string, context: GamePromptContext): string {
   const { gameState = {}, previousState = null, persona = null } = context;
   
   // Interpolate context variables
@@ -103,7 +140,7 @@ function buildPromptFromString(promptString, context) {
 /**
  * Build prompt from goal object
  */
-function buildPromptFromGoal(goal, context) {
+function buildPromptFromGoal(goal: GameGoal, context: GamePromptContext): string {
   const {
     description,
     criteria = [],
@@ -115,7 +152,7 @@ function buildPromptFromGoal(goal, context) {
   
   const { gameState = {}, previousState = null, persona = null } = context;
   
-  const parts = [];
+  const parts: string[] = [];
   
   // Goal description
   if (description) {
@@ -171,7 +208,7 @@ function buildPromptFromGoal(goal, context) {
 /**
  * Build prompt from array of goals
  */
-function buildPromptFromGoals(goals, context) {
+function buildPromptFromGoals(goals: Array<string | GameGoal>, context: GamePromptContext): string {
   if (goals.length === 0) {
     return buildDefaultGameplayPrompt(context);
   }
@@ -181,7 +218,7 @@ function buildPromptFromGoals(goals, context) {
   }
   
   // Multiple goals - evaluate all
-  const parts = ['EVALUATE THE FOLLOWING GOALS:'];
+  const parts: string[] = ['EVALUATE THE FOLLOWING GOALS:'];
   
   goals.forEach((goal, i) => {
     if (typeof goal === 'string') {
@@ -217,7 +254,7 @@ function buildPromptFromGoals(goals, context) {
 /**
  * Build default gameplay prompt (fallback)
  */
-function buildDefaultGameplayPrompt(context) {
+function buildDefaultGameplayPrompt(context: GamePromptContext): string {
   const { gameState = {}, previousState = null, persona = null } = context;
   
   const parts = [
@@ -250,12 +287,12 @@ function buildDefaultGameplayPrompt(context) {
 /**
  * Format game state for prompt
  */
-function formatGameState(gameState) {
+function formatGameState(gameState: GameState): string {
   if (!gameState || Object.keys(gameState).length === 0) {
     return 'No game state available';
   }
   
-  const lines = [];
+  const lines: string[] = [];
   
   // Common game state fields
   if (gameState.gameActive !== undefined) {
@@ -300,10 +337,10 @@ function formatGameState(gameState) {
 /**
  * Format state changes between previous and current
  */
-function formatStateChanges(previousState, currentState) {
+function formatStateChanges(previousState: GameState | null, currentState: GameState): string {
   if (!previousState || !currentState) return 'No previous state';
   
-  const changes = [];
+  const changes: string[] = [];
   
   // Score change
   if (previousState.score !== undefined && currentState.score !== undefined) {
@@ -354,8 +391,8 @@ function formatStateChanges(previousState, currentState) {
  * @param {Object} [options={}] - Goal options
  * @returns {Object} Goal object
  */
-export function createGameGoal(goalType, options = {}) {
-  const goalTemplates = {
+export function createGameGoal(goalType: string, options: GoalOptions = {}): GoalOptions {
+  const goalTemplates: Record<string, Required<Pick<GameGoal, 'description' | 'criteria' | 'focus' | 'questions'>>> = {
     fun: {
       description: 'Evaluate if the game is fun and engaging',
       criteria: [
@@ -472,7 +509,6 @@ export function createGameGoal(goalType, options = {}) {
  * @param {Object} [options={}] - Options for all goals
  * @returns {Object[]} Array of goal objects
  */
-export function createGameGoals(goalTypes, options = {}) {
+export function createGameGoals(goalTypes: string[], options: GoalOptions = {}): GoalOptions[] {
   return goalTypes.map(type => createGameGoal(type, options));
 }
-

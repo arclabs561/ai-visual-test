@@ -13,7 +13,7 @@ import {
   generateGamePrompt,
   createGameGoal,
   createGameGoals
-} from '../../src/game-goal-prompts.mjs';
+} from '#game-goal-prompts';
 
 describe('generateGamePrompt', () => {
   describe('string input', () => {

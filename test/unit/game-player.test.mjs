@@ -11,7 +11,7 @@ import {
   decideGameAction,
   executeGameAction,
   GameGym
-} from '../../src/game-player.mjs';
+} from '../../src/game-player.js';
 import { createMockPage } from '../helpers/mock-page.mjs';
 
 describe('Game Player', () => {

@@ -9,7 +9,7 @@ import {
   generateGamePrompt,
   createGameGoal,
   createGameGoals
-} from '../../src/game-goal-prompts.mjs';
+} from '#game-goal-prompts';
 
 describe('Game Goal Prompts', () => {
   describe('generateGamePrompt', () => {
@@ -80,4 +80,3 @@ describe('Game Goal Prompts', () => {
     });
   });
 });
-

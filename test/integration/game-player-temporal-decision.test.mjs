@@ -1,7 +1,7 @@
 import '../test-setup.mjs'; // Auto-load .env
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { playGame } from '../../src/game-player.mjs';
+import { playGame } from '../../src/game-player.js';
 
 test('playGame records temporal evaluation metadata for every step', async function() {
   let browser, page;

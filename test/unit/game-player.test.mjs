@@ -26,85 +26,19 @@ describe('Game Player', () => {
       assert.strictEqual(typeof decideGameAction, 'function');
     });
 
-    it('should return action object with type', async () => {
-      const gameState = {
-        screenshot: '/tmp/test.png'
-      };
-      const goal = 'maximize score';
-      const history = [];
-      
-      // This will try to call validateScreenshot which may fail without API keys
-      // But we can test the function structure
-      try {
-        const action = await decideGameAction(gameState, goal, history);
-        assert.ok(action);
-        assert.strictEqual(typeof action.type, 'string');
-        assert.ok(['keyboard', 'click', 'wait'].includes(action.type));
-      } catch (error) {
-        // Expected if API keys not available - function still exists
-        assert.ok(error.message.includes('API') || error.message.includes('key') || true);
-      }
-    });
-
-    it('should use recent history for context', async () => {
-      const gameState = {
-        screenshot: '/tmp/test.png'
-      };
-      const goal = 'maximize score';
-      const history = [
-        { step: 1, action: { type: 'keyboard', key: 'ArrowLeft' }, result: { score: 10 } },
-        { step: 2, action: { type: 'keyboard', key: 'ArrowRight' }, result: { score: 20 } },
-        { step: 3, action: { type: 'keyboard', key: 'ArrowUp' }, result: { score: 15 } },
-        { step: 4, action: { type: 'keyboard', key: 'ArrowDown' }, result: { score: 25 } },
-        { step: 5, action: { type: 'keyboard', key: 'Space' }, result: { score: 30 } },
-        { step: 6, action: { type: 'keyboard', key: 'Enter' }, result: { score: 35 } }
-      ];
-      
-      try {
-        const action = await decideGameAction(gameState, goal, history);
-        // Should use last 5 steps (steps 2-6)
-        assert.ok(action);
-      } catch (error) {
-        // Expected if API keys not available
-        assert.ok(true);
-      }
-    });
-
-    it('should fallback to heuristic when VLLM fails', async () => {
-      const gameState = {
-        screenshot: '/tmp/test.png'
-      };
-      const goal = 'maximize score';
-      const history = [
-        { step: 1, action: { type: 'keyboard', key: 'ArrowRight' }, result: { score: 20 } },
-        { step: 2, action: { type: 'keyboard', key: 'ArrowRight' }, result: { score: 15 } } // Score decreased
-      ];
-      
-      try {
-        const action = await decideGameAction(gameState, goal, history);
-        // Should try different direction when score decreases
-        assert.ok(action);
-        // May return ArrowLeft or ArrowRight depending on fallback logic
-      } catch (error) {
-        // Expected if API keys not available
-        assert.ok(true);
-      }
-    });
-
-    it('should handle empty history', async () => {
-      const gameState = {
-        screenshot: '/tmp/test.png'
-      };
-      const goal = 'maximize score';
-      
-      try {
-        const action = await decideGameAction(gameState, goal, []);
-        assert.ok(action);
-        assert.strictEqual(typeof action.type, 'string');
-      } catch (error) {
-        // Expected if API keys not available
-        assert.ok(true);
-      }
+    it('returns the injected structured action without a second visual review', async () => {
+      let reviews = 0;
+      const action = await decideGameAction(
+        { screenshot: '/tmp/test.png', evaluation: { score: 4 } },
+        'maximize score',
+        [],
+        {
+          reviewState: async () => { reviews++; return { score: 0 }; },
+          selectAction: async () => ({ action: { type: 'keyboard', key: 'ArrowLeft' } }),
+        },
+      );
+      assert.deepStrictEqual(action, { type: 'keyboard', key: 'ArrowLeft' });
+      assert.strictEqual(reviews, 0);
     });
   });
 
@@ -153,9 +87,9 @@ describe('Game Player', () => {
       const action = { type: 'unknown' };
       const result = await executeGameAction(mockPage, action);
       
-      // executeGameAction defaults unknown actions to wait, which succeeds
       assert.ok(result);
-      assert.strictEqual(result.success, true);
+      assert.strictEqual(result.success, false);
+      assert.match(result.error, /game action contract/i);
     });
 
     it('should return error when element not found', async () => {
@@ -213,4 +147,3 @@ describe('Game Player', () => {
     });
   });
 });
-

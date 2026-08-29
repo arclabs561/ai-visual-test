@@ -52,7 +52,7 @@ describe('API Sub-Modules', () => {
       assert.ok(temporal.TemporalDecisionManager, 'Should export TemporalDecisionManager');
       assert.ok(temporal.TemporalPreprocessingManager, 'Should export TemporalPreprocessingManager');
       assert.ok(typeof temporal.captureTemporalScreenshots === 'function', 'Should export captureTemporalScreenshots');
-      const multiModal = await import('../../src/multi-modal.mjs');
+      const multiModal = await import('../../src/multi-modal.js');
       assert.strictEqual(
         temporal.captureTemporalScreenshots,
         multiModal.captureTemporalScreenshots,
@@ -63,7 +63,18 @@ describe('API Sub-Modules', () => {
   
   describe('multi-modal sub-module', () => {
     it('should export multi-modal functions', async () => {
-      const multiModal = await import('../../src/multi-modal/index.mjs');
+      const multiModal = await import('../../src/multi-modal/index.js');
+      const expectedExports = [
+        'captureTemporalScreenshots', 'checkCrossModalConsistency',
+        'composeComparisonPrompt', 'composeMultiModalPrompt', 'composeSingleImagePrompt',
+        'extractRenderedCode', 'multiModalValidation', 'multiPerspectiveEvaluation',
+        'validateExperienceConsistency',
+      ];
+      assert.deepStrictEqual(
+        Object.keys(multiModal).sort(),
+        expectedExports.sort(),
+        'the generated multi-modal barrel must preserve its nine runtime exports',
+      );
       
       assert.ok(typeof multiModal.multiModalValidation === 'function', 'Should export multiModalValidation');
       assert.ok(typeof multiModal.extractRenderedCode === 'function', 'Should export extractRenderedCode');

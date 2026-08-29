@@ -51,6 +51,32 @@ export const publicModules = {
   persona, utils, game, errors, playwright, vitest, jest, perception,
 };
 
+declare const multiModalPage: multiModal.MultiModalPage;
+const multiModalValidator = async (): Promise<root.ValidationResult> => ({
+  enabled: true,
+  score: 8,
+  issues: [],
+  recommendations: [],
+});
+export async function consumeTypedMultiModal(): Promise<void> {
+  const rendered: multiModal.RenderedCode = await multiModal.extractRenderedCode(multiModalPage, {
+    htmlLimit: 2_000,
+    selectors: ['main'],
+  });
+  const result: multiModal.MultiModalValidationResult = await multiModal.multiModalValidation(
+    multiModalValidator,
+    multiModalPage,
+    'typed-package-consumer',
+    { captureCode: false, multiPerspective: true },
+  );
+  if (result.renderedCode !== null) {
+    const width: number = result.renderedCode.viewport.width;
+    void width;
+  }
+  const html: string = rendered.html;
+  void html;
+}
+
 const videoInput: VideoInput = [{ path: 'clip.mp4', label: 'checkout flow', mime: 'video/mp4' }];
 const videoOptions: VideoJudgeOptions = { enabled: false, provider: 'gemini', maxMB: 12, maxTotalMB: 20 };
 const videoContext: VideoContext = { maxTokens: 512, attempts: 2, timeout: 5_000 };

@@ -48,7 +48,7 @@ describe('Consumer API', () => {
       { path: '../../src/utils/index.mjs', minExports: 20 },
       { path: '../../src/game/index.js', minExports: 5 },
       { path: '../../src/errors/index.js', minExports: 5 },
-      { path: '../../src/multi-modal/index.mjs', minExports: 5 },
+      { path: '../../src/multi-modal/index.js', minExports: 5 },
     ];
 
     for (const { path, minExports } of subpaths) {

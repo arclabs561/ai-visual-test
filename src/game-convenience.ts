@@ -10,7 +10,7 @@
 import { validateScreenshot } from '#judge';
 import { normalizeValidationResult } from '#validation-result-normalizer';
 import { experiencePageAsPersona, experiencePageWithPersonas } from './persona-experience.mjs';
-import { extractRenderedCode, captureTemporalScreenshots } from './multi-modal.mjs';
+import { extractRenderedCode, captureTemporalScreenshots } from './multi-modal.js';
 import { aggregateTemporalNotes } from '#temporal-core';
 import { aggregateMultiScale } from '#temporal-multi-scale';
 import { generateGamePrompt } from './game-goal-prompts.js';
@@ -26,6 +26,7 @@ import type { TemporalScreenshot as PromptScreenshot } from '#temporal-prompt-fo
 import type { Persona } from '#public-contract';
 
 export interface GameConveniencePage {
+  content(): Promise<string>;
   locator(selector: string): GameConvenienceLocator;
   goto(url: string, options?: Record<string, unknown>): Promise<unknown>;
   waitForLoadState(state?: string): Promise<unknown>;
@@ -33,6 +34,7 @@ export interface GameConveniencePage {
   waitForTimeout(timeout: number): Promise<void>;
   screenshot(options?: Record<string, unknown>): Promise<Uint8Array>;
   evaluate<T>(callback: (...args: never[]) => T | Promise<T>, arg?: unknown): Promise<T>;
+  url(): string;
   viewportSize(): { width: number; height: number } | null;
   keyboard: { press(key: string): Promise<void> };
 }

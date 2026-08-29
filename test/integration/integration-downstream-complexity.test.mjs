@@ -20,7 +20,7 @@ import {
 } from '../../src/index.js';
 import { BatchOptimizer } from '../../src/batch-optimizer.mjs';
 import { experiencePageAsPersona, experiencePageWithPersonas } from '../../src/persona-experience.mjs';
-import { captureTemporalScreenshots, extractRenderedCode, multiModalValidation, multiPerspectiveEvaluation } from '../../src/multi-modal.mjs';
+import { captureTemporalScreenshots, extractRenderedCode, multiModalValidation, multiPerspectiveEvaluation } from '../../src/multi-modal.js';
 import { aggregateTemporalNotes, formatNotesForPrompt } from '#temporal-core';
 import { FileError } from '../../src/errors.js';
 import { createMockPage } from '../helpers/mock-page.mjs';

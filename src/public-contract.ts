@@ -37,6 +37,8 @@ export interface ValidationResult {
 
 export interface ValidationContext {
   provider?: string;
+  /** Optional environment used for provider selection and configuration. */
+  env?: Record<string, string | undefined>;
   model?: string;
   modelTier?: 'fast' | 'balanced' | 'best';
   testType?: string;

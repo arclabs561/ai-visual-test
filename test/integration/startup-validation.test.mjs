@@ -33,6 +33,30 @@ describe('Startup Validation', () => {
   });
   
   describe('validateStartupSoft', () => {
+    it('uses an injected environment consistently without changing process.env', () => {
+      const environment = {
+        VLM_PROVIDER: 'openai',
+        OPENAI_API_KEY: 'test-only-openai-key',
+      };
+
+      const result = validateStartupSoft({ env: environment });
+
+      assert.deepStrictEqual(result, { valid: true, warnings: [] });
+      assert.strictEqual(process.env.OPENAI_API_KEY, undefined);
+    });
+
+    it('checks the injected environment rather than a process API key', () => {
+      process.env.GEMINI_API_KEY = 'process-only-key';
+
+      const result = validateStartupSoft({
+        provider: 'gemini',
+        env: { VLM_PROVIDER: 'gemini' },
+      });
+
+      assert.strictEqual(result.valid, false);
+      assert.ok(result.warnings.some((warning) => warning.includes('GEMINI_API_KEY')));
+    });
+
     it('should return valid if provider and API key are set', () => {
       process.env.GEMINI_API_KEY = 'test-key';
       process.env.VLM_PROVIDER = 'gemini';

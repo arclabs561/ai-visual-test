@@ -155,4 +155,19 @@ describe('validateScreenshot', () => {
     assert.ok('enabled' in result, 'result should have enabled field');
     assert.ok('provider' in result, 'result should have provider field');
   });
+
+  it('uses the injected environment for automatic provider selection', async () => {
+    const result = await validateScreenshot(
+      screenshotPath,
+      'Test prompt',
+      {
+        autoSelectProvider: true,
+        env: { OPENAI_API_KEY: 'test-only-openai-key' },
+        apiKey: null,
+      },
+    );
+
+    assert.strictEqual(result.enabled, false);
+    assert.strictEqual(result.provider, 'openai');
+  });
 });

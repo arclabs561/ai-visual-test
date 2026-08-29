@@ -9,7 +9,6 @@ governs:
   - src/**
   - bin/**
   - test/**
-  - index.d.ts
   - types/**
 why: Runtime review contracts and handwritten declarations have already drifted, while the package must keep working on Node 18 throughout migration.
 rejected:

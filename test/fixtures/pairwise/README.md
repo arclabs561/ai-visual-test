@@ -1,15 +1,16 @@
 # Pairwise fixture protocol
 
-This directory contains a versioned template, not evidence and not a benchmark.
-Do not add generated screenshots, invented human winners, or model-quality claims.
-Manifest version 2 requires the provenance block described below.
+This directory contains a versioned template, not evidence or a benchmark.
+Do not commit generated screenshots, invented human winners, or model-quality
+claims. Manifest version 2 requires the provenance block described below.
 
 When real review material is available, each fixture needs `before` and `after`
 assets beneath this directory, each pinned with its lowercase SHA-256 digest.
 Use paths relative to the manifest; absolute and parent-traversal paths are
 rejected. Record the exact prompt, rubric version, stable-capture environment,
-and a rationale from each of at least two distinct human reviewers. A fixture contributes a
-human label only when all reviewers choose the same `A`, `B`, or `tie` winner.
+and a rationale from each of at least two distinct human reviewers. A fixture
+contributes a human label only when all reviewers choose the same `A`, `B`, or
+`tie` winner.
 An `indeterminate` review is an abstention; fewer than two reviews and
 disagreement are reported but excluded from agreement calculations.
 
@@ -18,7 +19,8 @@ record and URL, license/redistribution policy, evidence lane, split, and a
 group ID. Keep all variants of the same application, prompt, or template in one
 split so visually related pairs cannot leak across calibration and evaluation.
 
-Recorded evaluation inputs are offline order outcomes, never API credentials:
+Recorded evaluation inputs are offline order outcomes, never API credentials.
+Their schema version is independent of the manifest version:
 
 ```json
 {

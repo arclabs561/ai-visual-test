@@ -7,10 +7,9 @@ governs:
   - package.json
   - scripts/*.mjs
   - src/**/index.ts
-  - types/*-barrel.d.ts
   - test/types/**
   - test/unit/package-exports.test.mjs
-why: A partially migrated public subpath may need to compose generated declarations for converted TypeScript values with explicit declarations for unchanged JavaScript exports.
+why: Generated public declarations now resolve directly; any future handwritten composition overlay needs a fresh, explicit decision.
 rejected:
   - Converting every export behind a public subpath in one commit couples unrelated policy changes and removes the module-sized rollback boundary required by ADR 0001.
   - Generating declarations from unchecked JavaScript makes inferred legacy shapes authoritative without proving that they match runtime behavior.
@@ -104,3 +103,10 @@ Before release, revert the module-sized TypeScript conversion and restore the
 previous subpath declaration. After release, preserve the public names while
 either migrating the remaining JavaScript exports and deleting the overlay, or
 restoring the last compatible implementation behind the same subpath.
+
+## Update (2026-08-29)
+
+The only overlay was removed after its remaining JavaScript exports migrated.
+`./ensemble` now routes directly to generated declarations and the packed
+runtime/type parity gate remains required. This temporary exception is
+fulfilled; a future overlay requires a fresh ADR.

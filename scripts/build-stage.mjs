@@ -50,12 +50,15 @@ copyTestAssets(join(ROOT, 'test'), join(STAGE, 'test'));
 
 const packageJson = JSON.parse(readFileSync(join(STAGE, 'package.json'), 'utf8'));
 packageJson.private = true;
-for (const subpath of ['./ensemble', './playwright', './vitest', './jest']) {
+for (const subpath of ['./temporal', './ensemble', './playwright', './vitest', './jest']) {
   const route = packageJson.exports?.[subpath];
   if (!route || typeof route !== 'object') {
     throw new Error(`Missing staged package route: ${subpath}`);
   }
-  if (subpath === './ensemble') {
+  if (subpath === './temporal') {
+    route.import = './src/temporal/index.mjs';
+    route.types = './types/temporal.d.ts';
+  } else if (subpath === './ensemble') {
     route.import = './src/ensemble/index.js';
     route.types = './types/ensemble-barrel.d.ts';
   } else {
@@ -76,13 +79,14 @@ packageJson.imports = {
   '#public-contract': './src/public-contract.js',
   '#review-contract': './src/review-contract.js',
   '#structured-output': './src/structured-output.js',
+  '#temporal-core': './src/temporal-core.js',
   '#validation-result-normalizer': './src/validation-result-normalizer.js',
 };
 writeFileSync(join(STAGE, 'package.json'), `${JSON.stringify(packageJson, null, 2)}\n`);
 
 // The source manifest intentionally references build/ for migrated modules.
 // Prove Node can self-import each public alias after this mandatory stage.
-const sourceMatcherProgram = `const packageName = ${JSON.stringify(packageJson.name)}; for (const route of ['vitest', 'jest']) { const integration = await import(packageName + '/' + route); const registered = {}; integration.createMatchers({ extend(matchers) { Object.assign(registered, matchers); } }); for (const name of ['toPassVisualCheck', 'toHaveVisualScore', 'toMatchVisually']) { if (typeof registered[name] !== 'function') throw new Error('Missing source ' + route + ' matcher: ' + name); } const outcome = await registered.toPassVisualCheck(123, 'source package check'); if (outcome.pass !== false || !outcome.message().includes('string')) throw new Error('Unexpected source ' + route + ' matcher outcome'); } const ensemble = await import(packageName + '/ensemble'); if (typeof ensemble.EnsembleJudge !== 'function' || typeof ensemble.createEnsembleJudge !== 'function') throw new Error('Missing source ensemble constructor exports'); const root = await import(packageName); const playwright = await import(packageName + '/playwright'); if (root.createMatchers !== playwright.createMatchers) throw new Error('Root createMatchers is not the source Playwright adapter export'); const registered = {}; playwright.createMatchers({ extend(matchers) { Object.assign(registered, matchers); } }); for (const name of ['toHaveVisualScore', 'toBeAccessibleHybrid']) { if (typeof registered[name] !== 'function') throw new Error('Missing source Playwright matcher: ' + name); }`;
+const sourceMatcherProgram = `const packageName = ${JSON.stringify(packageJson.name)}; for (const route of ['vitest', 'jest']) { const integration = await import(packageName + '/' + route); const registered = {}; integration.createMatchers({ extend(matchers) { Object.assign(registered, matchers); } }); for (const name of ['toPassVisualCheck', 'toHaveVisualScore', 'toMatchVisually']) { if (typeof registered[name] !== 'function') throw new Error('Missing source ' + route + ' matcher: ' + name); } const outcome = await registered.toPassVisualCheck(123, 'source package check'); if (outcome.pass !== false || !outcome.message().includes('string')) throw new Error('Unexpected source ' + route + ' matcher outcome'); } const temporal = await import(packageName + '/temporal'); if (typeof temporal.aggregateTemporalNotes !== 'function' || typeof temporal.buildTemporalGraph !== 'function') throw new Error('Missing source temporal core exports'); const ensemble = await import(packageName + '/ensemble'); if (typeof ensemble.EnsembleJudge !== 'function' || typeof ensemble.createEnsembleJudge !== 'function') throw new Error('Missing source ensemble constructor exports'); const root = await import(packageName); const playwright = await import(packageName + '/playwright'); if (root.createMatchers !== playwright.createMatchers) throw new Error('Root createMatchers is not the source Playwright adapter export'); const registered = {}; playwright.createMatchers({ extend(matchers) { Object.assign(registered, matchers); } }); for (const name of ['toHaveVisualScore', 'toBeAccessibleHybrid']) { if (typeof registered[name] !== 'function') throw new Error('Missing source Playwright matcher: ' + name); }`;
 execFileSync(process.execPath, ['--input-type=module', '--eval', sourceMatcherProgram], {
   cwd: ROOT,
   stdio: 'inherit',

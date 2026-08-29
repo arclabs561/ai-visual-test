@@ -360,7 +360,7 @@ export async function experiencePageAsPersona(page, persona, options = {}) {
   let aggregatedMultiScale = null;
   if (experienceNotes.length > 0) {
     try {
-      const { aggregateTemporalNotes } = await import('./temporal-core.mjs');
+      const { aggregateTemporalNotes } = await import('#temporal-core');
       const { aggregateMultiScale } = await import('./temporal-multi-scale.mjs');
       
       // Standard temporal aggregation
@@ -569,4 +569,3 @@ export async function experiencePageWithPersonas(page, personas, options = {}) {
 
   return experiences;
 }
-

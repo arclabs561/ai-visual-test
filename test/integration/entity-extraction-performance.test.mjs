@@ -10,7 +10,7 @@
 import '../test-setup.mjs'; // Auto-load .env (must be first)
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { buildTemporalGraph } from '../../src/temporal-core.mjs';
+import { buildTemporalGraph } from '#temporal-core';
 import { testLog } from '../test-logger.mjs';
 
 test('Keyword extraction is fast enough for 60Hz (<1ms)', async () => {
@@ -171,4 +171,3 @@ test('Keyword extraction handles large note arrays efficiently', async () => {
   assert.ok(durationMs < 5000, `buildTemporalGraph with 1000 notes took ${durationMs}ms, should be <5s with auto-disabled embeddings`);
   testLog.success(`Keyword extraction scales well: ${(notes.length / durationMs).toFixed(0)} notes/ms`);
 });
-

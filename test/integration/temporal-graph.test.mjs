@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { buildTemporalGraph } from '../../src/temporal-core.mjs';
+import { buildTemporalGraph } from '#temporal-core';
 
 // Structured test logging utility
 const testLog = {
@@ -132,4 +132,3 @@ test('buildTemporalGraph calculates state continuity', async () => {
   }
   testLog.success('State continuity calculated correctly');
 });
-

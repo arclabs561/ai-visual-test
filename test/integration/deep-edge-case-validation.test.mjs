@@ -14,7 +14,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { aggregateTemporalNotes } from '../../src/temporal-core.mjs';
+import { aggregateTemporalNotes } from '#temporal-core';
 import { TemporalDecisionManager } from '../../src/temporal-orchestration.mjs';
 
 test('Temporal Aggregation - Extreme Window Sizes', async () => {
@@ -415,4 +415,3 @@ test('Temporal Aggregation - Result Validation', async () => {
 });
 
 console.log('\n🔍 Running deep edge case validation tests...\n');
-

@@ -413,7 +413,7 @@ describe('Temporal Preprocessing Manager', () => {
     const incrementalResult = await manager.getFastAggregation(notes);
     
     // Do full recomputation for comparison
-    const { aggregateTemporalNotes } = await import('../../src/temporal-core.mjs');
+    const { aggregateTemporalNotes } = await import('#temporal-core');
     const fullResult = await aggregateTemporalNotes(notes);
     
     // CRITICAL: "Incremental" produces same result as full recomputation
@@ -605,4 +605,3 @@ describe('Temporal Preprocessing Manager', () => {
     assert.deepStrictEqual(result.aggregated.windows, []);
   });
 });
-

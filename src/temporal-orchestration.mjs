@@ -12,7 +12,7 @@
  * so those must be defined without importing from temporal-multi-scale.mjs.
  */
 
-import { aggregateTemporalNotes } from './temporal-core.mjs';
+import { aggregateTemporalNotes } from '#temporal-core';
 import { log, warn } from './logger.mjs';
 import { BatchOptimizer } from './batch-optimizer.mjs';
 

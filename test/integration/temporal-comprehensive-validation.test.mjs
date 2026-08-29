@@ -13,7 +13,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { aggregateTemporalNotes } from '../../src/temporal-core.mjs';
+import { aggregateTemporalNotes } from '#temporal-core';
 import { TemporalDecisionManager } from '../../src/temporal-orchestration.mjs';
 import { loadDataset } from '../../evaluation/utils/dataset-adapters.mjs';
 
@@ -321,5 +321,3 @@ test('Coherence - Observation Consistency with Embeddings', async () => {
   // Without embeddings, might have lower coherence (keyword mismatch)
   console.log(`✅ Semantic observations: coherence=${result.coherence.toFixed(3)}`);
 });
-
-

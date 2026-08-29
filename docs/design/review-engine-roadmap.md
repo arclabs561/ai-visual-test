@@ -192,18 +192,18 @@ with no temporal declaration overlay. The public `./ensemble` route preserves
 its scalar helpers while the judge contract is generated from TypeScript.
 
 **ADR 0001 review resolved:** [ADR 0003](../adr/0003-temporary-declaration-composition-overlays.md)
-accepts one temporary composition overlay with an enforced expiry condition.
-The live `types/ensemble-barrel.d.ts` overlay re-exports the generated judge and
-counterbalance contracts; it declares only the still-JavaScript bias detection,
-bias mitigation, and research-validation helpers. The route does not count as
-fully generated until those helpers migrate and the overlay is deleted. Strict
-packed consumer compilation and runtime/type export parity remain mandatory.
+accepted one temporary composition overlay with an enforced expiry condition.
+That condition is now satisfied: bias detection, bias mitigation, and research
+validation are typed compiled modules; `./ensemble` exposes all 14 values from
+one generated barrel; and `types/ensemble-barrel.d.ts` is deleted. Strict packed
+consumer compilation and runtime/type export parity remain mandatory.
 
 **Execution order:** the temporal, game, perception, video, and CLI boundaries
-are complete and have no declaration overlays. The remaining Phase 4 debt is
-the single ADR-governed ensemble composition overlay. Retire it by converting
-its still-JavaScript bias/research helpers, then re-evaluate the root judge
-boundary before Phase 5 surface narrowing.
+are complete and have no declaration overlays. The ensemble composition overlay
+is also retired. The next migration boundary is the root judge: first move its
+public/JSDoc contracts away from the handwritten root declaration, then convert
+the judge implementation, and only then generate the public root barrel before
+Phase 5 surface narrowing.
 
 Human labels do not block these mechanical conversions. They continue to block
 changes that claim calibrated ensemble weights, confidence, or learned
@@ -255,6 +255,5 @@ made until real independently reviewed labels exist.
 
 ## Review trigger
 
-Re-run this roadmap when the ensemble overlay is retired, before migrating the
-root judge boundary, or when a consumer survey changes the supported-surface
-assumptions.
+Re-run this roadmap after the root judge boundary lands or when a consumer
+survey changes the supported-surface assumptions.

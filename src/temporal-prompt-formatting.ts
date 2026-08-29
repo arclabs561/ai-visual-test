@@ -9,10 +9,104 @@
  * Depends on: temporal-core.mjs, temporal-multi-scale.mjs
  */
 
-import { formatNotesForPrompt } from '#temporal-core';
-import { calculateAttentionWeight } from '#temporal-multi-scale';
+import {
+  formatNotesForPrompt,
+  type AggregatedTemporalNotes,
+  type TemporalNote,
+} from '#temporal-core';
+import {
+  calculateAttentionWeight,
+  type MultiScaleAggregation,
+} from '#temporal-multi-scale';
 import { log } from './logger.mjs';
 import { safeLogTemporalDecision } from './safe-logger.mjs';
+
+export interface TemporalPromptFormattingOptions {
+  includeMultiScale?: boolean;
+  naturalLanguage?: boolean;
+}
+
+export interface TemporalPruningOptions {
+  maxNotes?: number;
+  minWeight?: number;
+  currentTime?: number;
+  windowSize?: number;
+}
+
+export interface TemporalPropagationOptions {
+  currentTime?: number;
+  relevanceThreshold?: number;
+}
+
+export interface TopWeightedNotesOptions {
+  topN?: number;
+}
+
+export interface TemporalScreenshot {
+  path: string;
+  timestamp: number;
+  elapsed?: number;
+  [key: string]: unknown;
+}
+
+export interface ScreenshotEvaluation {
+  score?: number;
+  [key: string]: unknown;
+}
+
+export interface ScreenshotSelectionOptions {
+  maxScreenshots?: number;
+  strategy?: 'diversity' | 'keyframes' | 'uniform';
+}
+
+export interface PropagatedTemporalNote extends TemporalNote {
+  weight: number;
+  relevance: number;
+  propagated: true;
+}
+
+export interface TemporalDecisionContext extends Record<string, unknown> {
+  useTemporalDecision?: boolean;
+  temporalNotes?: TemporalNote[];
+  temporalDecisionOptions?: Record<string, unknown>;
+  currentState?: Record<string, unknown>;
+  previousState?: Record<string, unknown> | null;
+  previousResult?: Record<string, unknown>;
+}
+
+export interface TemporalDecisionConfig {
+  debug?: { verbose?: boolean };
+}
+
+type TemporalDecisionManagerRuntime = {
+  shouldPrompt(
+    currentState: Record<string, unknown>,
+    previousState: Record<string, unknown> | null,
+    notes: TemporalNote[],
+    context: TemporalDecisionContext,
+  ): Promise<{ shouldPrompt: boolean; reason: string; urgency: 'low' | 'medium' | 'high' }>;
+  calculateStateChange(currentState: Record<string, unknown>, previousState: Record<string, unknown> | null): unknown;
+  isDecisionPoint(currentState: Record<string, unknown>, context: TemporalDecisionContext): unknown;
+  hasRecentUserAction(notes: TemporalNote[], context: TemporalDecisionContext): unknown;
+};
+
+type TemporalDecisionManagerConstructor = new (
+  options: Record<string, unknown>,
+) => TemporalDecisionManagerRuntime;
+
+function isMultiScaleAggregation(value: object): value is MultiScaleAggregation {
+  return 'scales' in value && !('windows' in value);
+}
+
+function isAggregatedTemporalNotes(value: object): value is AggregatedTemporalNotes {
+  return 'windows' in value;
+}
+
+export interface SkippedTemporalDecisionResult extends Record<string, unknown> {
+  skipped: true;
+  skipReason: string;
+  urgency: 'low' | 'medium' | 'high';
+}
 
 // ============================================================================
 // TEMPORAL PROMPT FORMATTER (from temporal-prompt-formatter.mjs)
@@ -30,7 +124,10 @@ import { safeLogTemporalDecision } from './safe-logger.mjs';
  * @param {boolean} [options.naturalLanguage=true] - Use natural language formatting
  * @returns {string} Formatted temporal context for prompt
  */
-export function formatTemporalForPrompt(temporalNotes, options = {}) {
+export function formatTemporalForPrompt(
+  temporalNotes: AggregatedTemporalNotes | MultiScaleAggregation | readonly unknown[] | null | undefined,
+  options: TemporalPromptFormattingOptions = {},
+): string {
   const {
     includeMultiScale = true,
     naturalLanguage = true
@@ -44,14 +141,14 @@ export function formatTemporalForPrompt(temporalNotes, options = {}) {
     return '';
   }
 
-  if (temporalNotes.scales && !temporalNotes.windows) {
+  if (typeof temporalNotes === 'object' && isMultiScaleAggregation(temporalNotes)) {
     if (!includeMultiScale) {
       return '';
     }
     return formatMultiScaleForPrompt(temporalNotes, { naturalLanguage });
   }
 
-  if (temporalNotes.windows) {
+  if (typeof temporalNotes === 'object' && isAggregatedTemporalNotes(temporalNotes)) {
     return formatSingleScaleForPrompt(temporalNotes, { naturalLanguage });
   }
 
@@ -61,7 +158,10 @@ export function formatTemporalForPrompt(temporalNotes, options = {}) {
 /**
  * Format single-scale aggregated notes for prompt
  */
-export function formatSingleScaleForPrompt(aggregated, options = {}) {
+export function formatSingleScaleForPrompt(
+  aggregated: AggregatedTemporalNotes,
+  options: TemporalPromptFormattingOptions = {},
+): string {
   const { naturalLanguage = true } = options;
 
   if (naturalLanguage) {
@@ -104,7 +204,10 @@ export function formatSingleScaleForPrompt(aggregated, options = {}) {
 /**
  * Format multi-scale aggregation for prompt
  */
-export function formatMultiScaleForPrompt(multiScale, options = {}) {
+export function formatMultiScaleForPrompt(
+  multiScale: MultiScaleAggregation,
+  options: TemporalPromptFormattingOptions = {},
+): string {
   const { naturalLanguage = true } = options;
 
   if (!multiScale.scales || Object.keys(multiScale.scales).length === 0) {
@@ -119,12 +222,12 @@ export function formatMultiScaleForPrompt(multiScale, options = {}) {
     parts.push('');
 
     const scaleOrder = ['immediate', 'short', 'medium', 'long'];
-    const orderedScales = scaleOrder
+    const orderedScales: Array<[string, NonNullable<MultiScaleAggregation['scales'][string]>]> = scaleOrder
       .filter(scale => multiScale.scales[scale])
-      .map(scale => [scale, multiScale.scales[scale]]);
+      .map(scale => [scale, multiScale.scales[scale]!]);
 
     orderedScales.forEach(([scaleName, scaleData]) => {
-      const scaleDescriptions = {
+    const scaleDescriptions: Record<string, string> = {
         immediate: 'Instant perception (0.1s) - visual feedback, animations',
         short: 'Quick interaction (1s) - button responses, immediate feedback',
         medium: 'Short task (5s) - form filling, quick actions',
@@ -196,7 +299,10 @@ export function formatMultiScaleForPrompt(multiScale, options = {}) {
  * @param {Object} options - Formatting options
  * @returns {string} Formatted temporal context
  */
-export function formatTemporalContext(temporalNotes, options = {}) {
+export function formatTemporalContext(
+  temporalNotes: AggregatedTemporalNotes | MultiScaleAggregation | readonly unknown[] | null | undefined,
+  options: TemporalPromptFormattingOptions = {},
+): string {
   const { includeMultiScale = true } = options;
 
   if (!temporalNotes) {
@@ -207,14 +313,14 @@ export function formatTemporalContext(temporalNotes, options = {}) {
     return '';
   }
 
-  if (temporalNotes.scales && !temporalNotes.windows) {
+  if (typeof temporalNotes === 'object' && isMultiScaleAggregation(temporalNotes)) {
     if (!includeMultiScale) {
       return '';
     }
     return formatMultiScaleForPrompt(temporalNotes, options);
   }
 
-  if (temporalNotes.windows) {
+  if (typeof temporalNotes === 'object' && isAggregatedTemporalNotes(temporalNotes)) {
     return formatSingleScaleForPrompt(temporalNotes, options);
   }
 
@@ -236,7 +342,10 @@ export function formatTemporalContext(temporalNotes, options = {}) {
  * @param {number} [options.windowSize=10000] - Window size for weight calculation
  * @returns {import('./index.mjs').TemporalNote[]} Pruned notes
  */
-export function pruneTemporalNotes(notes, options = {}) {
+export function pruneTemporalNotes(
+  notes: TemporalNote[],
+  options: TemporalPruningOptions = {},
+): TemporalNote[] {
   const {
     maxNotes = 10,
     minWeight = 0.1,
@@ -246,10 +355,10 @@ export function pruneTemporalNotes(notes, options = {}) {
 
   if (notes.length === 0) return [];
 
-  const startTime = notes[0].timestamp ?? currentTime;
+  const startTime = notes[0]!.timestamp ?? currentTime;
 
   const weightedNotes = notes.map(note => {
-    const elapsed = note.elapsed ?? (note.timestamp - startTime);
+    const elapsed = note.elapsed ?? ((note.timestamp ?? startTime) - startTime);
     const weight = calculateAttentionWeight(note, {
       elapsed,
       windowSize,
@@ -273,7 +382,7 @@ export function pruneTemporalNotes(notes, options = {}) {
 /**
  * Calculate relevance score for a note
  */
-function calculateRelevance(note, currentTime, startTime) {
+function calculateRelevance(note: TemporalNote, currentTime: number, startTime: number): number {
   let relevance = 1.0;
 
   const age = currentTime - (note.timestamp ?? startTime);
@@ -309,7 +418,10 @@ function calculateRelevance(note, currentTime, startTime) {
  * @param {number} [options.relevanceThreshold=0.2] - Minimum relevance to keep
  * @returns {import('./index.mjs').TemporalNote[]} Propagated notes with updated weights
  */
-export function propagateNotes(notes, options = {}) {
+export function propagateNotes(
+  notes: TemporalNote[],
+  options: TemporalPropagationOptions = {},
+): PropagatedTemporalNote[] {
   const {
     currentTime = Date.now(),
     relevanceThreshold = 0.2
@@ -317,7 +429,7 @@ export function propagateNotes(notes, options = {}) {
 
   if (notes.length === 0) return [];
 
-  const startTime = notes[0].timestamp ?? currentTime;
+  const startTime = notes[0]!.timestamp ?? currentTime;
 
   return notes
     .map(note => {
@@ -328,7 +440,7 @@ export function propagateNotes(notes, options = {}) {
         ...note,
         weight,
         relevance,
-        propagated: true
+      propagated: true as const
       };
     })
     .filter(note => note.relevance >= relevanceThreshold)
@@ -343,16 +455,19 @@ export function propagateNotes(notes, options = {}) {
  * @param {number} [options.topN=5] - Number of top notes to select
  * @returns {import('./index.mjs').TemporalNote[]} Top-weighted notes
  */
-export function selectTopWeightedNotes(notes, options = {}) {
+export function selectTopWeightedNotes(
+  notes: TemporalNote[],
+  options: TopWeightedNotesOptions = {},
+): TemporalNote[] {
   const { topN = 5 } = options;
 
   if (notes.length === 0) return [];
 
   const currentTime = Date.now();
-  const startTime = notes[0].timestamp ?? currentTime;
+  const startTime = notes[0]!.timestamp ?? currentTime;
 
   const weighted = notes.map(note => {
-    const elapsed = note.elapsed ?? (note.timestamp - startTime);
+    const elapsed = note.elapsed ?? ((note.timestamp ?? startTime) - startTime);
     const weight = calculateAttentionWeight(note, {
       elapsed,
       windowSize: 10000,
@@ -378,7 +493,11 @@ export function selectTopWeightedNotes(notes, options = {}) {
  * @param {string} [options.strategy='diversity'] - 'diversity', 'keyframes', 'uniform'
  * @returns {Array} Selected screenshots
  */
-export function selectRepresentativeScreenshots(screenshots, evaluations = [], options = {}) {
+export function selectRepresentativeScreenshots(
+  screenshots: TemporalScreenshot[],
+  evaluations: ScreenshotEvaluation[] = [],
+  options: ScreenshotSelectionOptions = {},
+): TemporalScreenshot[] {
   const {
     maxScreenshots = 10,
     strategy = 'diversity'
@@ -401,7 +520,7 @@ export function selectRepresentativeScreenshots(screenshots, evaluations = [], o
   }
 }
 
-function validateScreenshotSelectionInputs(evaluations, maxScreenshots) {
+function validateScreenshotSelectionInputs(evaluations: ScreenshotEvaluation[], maxScreenshots: number): void {
   if (!Number.isInteger(maxScreenshots) || maxScreenshots < 1) {
     throw new RangeError(`maxScreenshots must be a positive integer, got: ${maxScreenshots}`);
   }
@@ -414,8 +533,12 @@ function validateScreenshotSelectionInputs(evaluations, maxScreenshots) {
   });
 }
 
-function selectKeyframes(screenshots, evaluations, maxScreenshots) {
-  const keyframes = [screenshots[0]];
+function selectKeyframes(
+  screenshots: TemporalScreenshot[],
+  evaluations: ScreenshotEvaluation[],
+  maxScreenshots: number,
+): TemporalScreenshot[] {
+  const keyframes = [screenshots[0]!];
 
   for (let i = 1; i < evaluations.length; i++) {
     const prevScore = evaluations[i-1]?.score ?? 0;
@@ -423,11 +546,12 @@ function selectKeyframes(screenshots, evaluations, maxScreenshots) {
     const scoreChange = Math.abs(currScore - prevScore);
 
     if (scoreChange > 2.0) {
-      keyframes.push(screenshots[i]);
+      const screenshot = screenshots[i];
+      if (screenshot) keyframes.push(screenshot);
     }
   }
 
-  keyframes.push(screenshots[screenshots.length - 1]);
+  keyframes.push(screenshots[screenshots.length - 1]!);
 
   if (keyframes.length > maxScreenshots) {
     return sampleUniform(keyframes, maxScreenshots);
@@ -436,9 +560,13 @@ function selectKeyframes(screenshots, evaluations, maxScreenshots) {
   return keyframes;
 }
 
-function selectByDiversity(screenshots, evaluations, maxScreenshots) {
-  const selected = [screenshots[0]];
-  const last = screenshots[screenshots.length - 1];
+function selectByDiversity(
+  screenshots: TemporalScreenshot[],
+  evaluations: ScreenshotEvaluation[],
+  maxScreenshots: number,
+): TemporalScreenshot[] {
+  const selected = [screenshots[0]!];
+  const last = screenshots[screenshots.length - 1]!;
 
   const evaluatedInterior = [];
   const lastInteriorIndex = Math.min(evaluations.length, screenshots.length - 1);
@@ -462,33 +590,37 @@ function selectByDiversity(screenshots, evaluations, maxScreenshots) {
   indexed.sort((a, b) => b.variance - a.variance);
 
   const diverseIndices = indexed.slice(0, maxScreenshots - 2).map(item => item.index);
-  selected.push(...diverseIndices.map(index => screenshots[index]));
+  selected.push(...diverseIndices.map(index => screenshots[index]).filter(
+    (screenshot): screenshot is TemporalScreenshot => screenshot !== undefined,
+  ));
   selected.push(last);
 
   return selected.slice(0, maxScreenshots);
 }
 
-function selectUniform(screenshots, maxScreenshots) {
+function selectUniform(screenshots: TemporalScreenshot[], maxScreenshots: number): TemporalScreenshot[] {
   const step = Math.floor(screenshots.length / maxScreenshots);
   const selected = [];
 
   for (let i = 0; i < screenshots.length; i += step) {
-    selected.push(screenshots[i]);
+    const screenshot = screenshots[i];
+    if (screenshot) selected.push(screenshot);
     if (selected.length >= maxScreenshots) break;
   }
 
   if (selected[selected.length - 1] !== screenshots[screenshots.length - 1]) {
-    selected[selected.length - 1] = screenshots[screenshots.length - 1];
+    selected[selected.length - 1] = screenshots[screenshots.length - 1]!;
   }
 
   return selected;
 }
 
-function sampleUniform(array, count) {
+function sampleUniform<T>(array: T[], count: number): T[] {
   const step = Math.floor(array.length / count);
   const sampled = [];
   for (let i = 0; i < array.length; i += step) {
-    sampled.push(array[i]);
+    const item = array[i];
+    if (item !== undefined) sampled.push(item);
     if (sampled.length >= count) break;
   }
   return sampled;
@@ -505,7 +637,10 @@ function sampleUniform(array, count) {
  * @param {Object} config - Judge configuration
  * @returns {Promise<Object|null>} Result if decision is to skip, null if we should proceed
  */
-export async function evaluateTemporalDecision(context, config) {
+export async function evaluateTemporalDecision(
+  context: TemporalDecisionContext,
+  config: TemporalDecisionConfig,
+): Promise<SkippedTemporalDecisionResult | null> {
   if (!context.useTemporalDecision || !context.temporalNotes || context.temporalNotes.length === 0) {
     return null;
   }
@@ -514,7 +649,8 @@ export async function evaluateTemporalDecision(context, config) {
     const { TemporalDecisionManager } = await import('#temporal-orchestration');
     const { aggregateTemporalNotes } = await import('#temporal-core');
 
-    const decisionManager = new TemporalDecisionManager(context.temporalDecisionOptions || {});
+    const TemporalDecisionManagerRuntime = TemporalDecisionManager as unknown as TemporalDecisionManagerConstructor;
+    const decisionManager = new TemporalDecisionManagerRuntime(context.temporalDecisionOptions || {});
     const currentState = { score: null, issues: [], ...context.currentState };
     const previousState = context.previousState || null;
 
@@ -556,7 +692,7 @@ export async function evaluateTemporalDecision(context, config) {
 
   } catch (error) {
     if (config.debug?.verbose) {
-      log(`[VLLM] TemporalDecisionManager error: ${error.message}`);
+      log(`[VLLM] TemporalDecisionManager error: ${error instanceof Error ? error.message : String(error)}`);
     }
     return null;
   }

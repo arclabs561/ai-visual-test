@@ -668,7 +668,7 @@ async function getMultiScaleImports() {
 
 async function getPrunerImports() {
   if (!_pruneTemporalNotes) {
-    const mod = await import('./temporal-prompt-formatting.mjs');
+    const mod = await import('#temporal-prompt-formatting');
     _pruneTemporalNotes = mod.pruneTemporalNotes as NotePruner;
     _selectTopWeightedNotes = mod.selectTopWeightedNotes as NotePruner;
   }

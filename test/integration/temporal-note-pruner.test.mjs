@@ -10,7 +10,7 @@ import {
   propagateNotes,
   selectTopWeightedNotes,
   selectRepresentativeScreenshots
-} from '../../src/temporal-prompt-formatting.mjs';
+} from '#temporal-prompt-formatting';
 
 describe('Temporal Note Pruner', () => {
   describe('pruneTemporalNotes', () => {

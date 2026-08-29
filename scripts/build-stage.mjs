@@ -83,6 +83,7 @@ packageJson.imports = {
   '#temporal-core': './src/temporal-core.js',
   '#temporal-multi-scale': './src/temporal-multi-scale.js',
   '#temporal-orchestration': './src/temporal-orchestration.js',
+  '#temporal-prompt-formatting': './src/temporal-prompt-formatting.js',
   '#validation-result-normalizer': './src/validation-result-normalizer.js',
 };
 writeFileSync(join(STAGE, 'package.json'), `${JSON.stringify(packageJson, null, 2)}\n`);

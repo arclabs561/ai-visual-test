@@ -12,7 +12,7 @@ import {
 import {
   formatTemporalContext,
   formatTemporalForPrompt
-} from '../../src/temporal-prompt-formatting.mjs';
+} from '#temporal-prompt-formatting';
 
 describe('Temporal Context', () => {
   describe('createTemporalContext', () => {

@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert';
 import { playGame } from '../../src/game-player.mjs';
 
-test('playGame uses TemporalDecisionManager to reduce LLM calls', async function() {
+test('playGame records temporal evaluation metadata for every step', async function() {
   let browser, page;
   try {
     const { chromium } = await import('playwright');
@@ -40,14 +40,14 @@ test('playGame uses TemporalDecisionManager to reduce LLM calls', async function
     assert.ok(result.history, 'Should have history');
     assert.ok(result.totalSteps > 0, 'Should have steps');
     
-    // Check for skipped evaluations (TemporalDecisionManager working)
+    // A run may skip visual review on some steps, depending on the sequence and
+    // temporal policy. This integration test verifies metadata shape, not a
+    // reduction rate.
     const skippedEvaluations = result.history.filter(h => h.result?.skipped === true);
-    const promptedEvaluations = result.history.filter(h => !h.result?.skipped);
+    const reviewedEvaluations = result.history.filter(h => h.result && h.result.skipped !== true);
     
-    // With TemporalDecisionManager, we should have some skipped evaluations
-    // (reduces LLM calls by ~98.5% according to research)
-    assert.ok(skippedEvaluations.length + promptedEvaluations.length === result.history.length,
-      'All evaluations should be either skipped or prompted');
+    assert.equal(skippedEvaluations.length + reviewedEvaluations.length, result.history.length,
+      'Every history entry should be classified as skipped or reviewed');
     
     // Verify skipped evaluations have proper metadata
     for (const entry of skippedEvaluations) {
@@ -155,5 +155,3 @@ test('playGame tracks calibration with sequenceIndex', async function() {
     }
   }
 });
-
-

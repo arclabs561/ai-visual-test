@@ -18,12 +18,12 @@ import {
   aggregateTemporalNotes,
   formatNotesForPrompt,
   calculateCoherenceExported as calculateCoherence
-} from '../../src/temporal-core.mjs';
+} from '#temporal-core';
 import {
   aggregateMultiScale,
   humanPerceptionTime
 } from '../../src/temporal-multi-scale.mjs';
-import { TIME_SCALES } from '../../src/temporal-core.mjs';
+import { TIME_SCALES } from '#temporal-core';
 
 test.describe('Gameplay Temporal Experience Validation', () => {
   
@@ -254,4 +254,3 @@ test.describe('Gameplay Temporal Experience Validation', () => {
     assert.strictEqual(aggregated.coherence, 1.0, 'Single note should have perfect coherence');
   });
 });
-

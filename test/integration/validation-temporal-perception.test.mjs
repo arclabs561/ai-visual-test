@@ -14,7 +14,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
 import { humanPerceptionTime } from '../../src/temporal-multi-scale.mjs';
-import { TIME_SCALES } from '../../src/temporal-core.mjs';
+import { TIME_SCALES } from '#temporal-core';
 
 test.describe('Temporal Perception Validation', () => {
   
@@ -238,4 +238,3 @@ test.describe('Temporal Perception Validation', () => {
     assert.strictEqual(time2, time3, 'Same inputs should produce same output');
   });
 });
-

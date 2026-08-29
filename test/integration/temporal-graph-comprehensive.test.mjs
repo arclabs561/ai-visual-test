@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { buildTemporalGraph } from '../../src/temporal-core.mjs';
+import { buildTemporalGraph } from '#temporal-core';
 
 test('buildTemporalGraph handles empty notes', async () => {
   const graph = await buildTemporalGraph([], { useLLM: false });
@@ -57,6 +57,34 @@ test('buildTemporalGraph preserves aggregate timing and weighted source notes', 
   assert.strictEqual(result.graph.edges.length, 1);
   assert.strictEqual(result.graph.edges[0].timeDelta, 1_000);
   assert.ok(Number.isFinite(result.graph.edges[0].timeDelta));
+});
+
+test('buildTemporalGraph rejects non-string structured entities before graph tracking', async () => {
+  const previousKey = process.env.GEMINI_API_KEY;
+  const previousProvider = process.env.VLM_PROVIDER;
+  process.env.GEMINI_API_KEY = 'test-only-structured-entity-key';
+  process.env.VLM_PROVIDER = 'gemini';
+  try {
+    const graph = await buildTemporalGraph([
+      {
+        timestamp: 1_700_000_100_000,
+        elapsed: 0,
+        score: 8,
+        observation: '{"entities":["xwidget",42,null,{"name":"ignored"}]}'
+      }
+    ], { useLLM: true });
+
+    assert.deepStrictEqual(
+      Object.keys(graph.graph.entities),
+      ['xwidget'],
+      'structured string entities must survive while non-string values are rejected',
+    );
+  } finally {
+    if (previousKey === undefined) delete process.env.GEMINI_API_KEY;
+    else process.env.GEMINI_API_KEY = previousKey;
+    if (previousProvider === undefined) delete process.env.VLM_PROVIDER;
+    else process.env.VLM_PROVIDER = previousProvider;
+  }
 });
 
 test('buildTemporalGraph handles single note', async () => {

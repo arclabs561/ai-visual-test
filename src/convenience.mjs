@@ -11,7 +11,7 @@ import { validateScreenshot } from './judge.mjs';
 import { normalizeValidationResult } from '#validation-result-normalizer';
 import { experiencePageAsPersona, experiencePageWithPersonas } from './persona-experience.mjs';
 import { extractRenderedCode, captureTemporalScreenshots, multiPerspectiveEvaluation } from './multi-modal.mjs';
-import { aggregateTemporalNotes, formatNotesForPrompt } from './temporal-core.mjs';
+import { aggregateTemporalNotes, formatNotesForPrompt } from '#temporal-core';
 import { aggregateMultiScale } from './temporal-multi-scale.mjs';
 import { generateGamePrompt, createGameGoal, createGameGoals } from './game-goal-prompts.mjs';
 import { checkCrossModalConsistency, validateExperienceConsistency } from './cross-modal-consistency.mjs';
@@ -277,7 +277,7 @@ export async function testGameplay(page, options = {}) {
       
       // IMPROVEMENT: Build temporal graph for better coherence understanding
       try {
-        const { buildTemporalGraph } = await import('./temporal-core.mjs');
+        const { buildTemporalGraph } = await import('#temporal-core');
         const temporalGraph = await buildTemporalGraph(allNotes, {
           windowSize: 5000,
           decayFactor: 0.9,

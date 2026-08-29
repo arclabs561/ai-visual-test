@@ -25,7 +25,7 @@ export {
   createTemporalContext,
   mergeTemporalContext,
   extractTemporalContext
-} from '../temporal-core.mjs';
+} from '#temporal-core';
 
 // Multi-scale aggregation, attention, perception, adaptive
 export {

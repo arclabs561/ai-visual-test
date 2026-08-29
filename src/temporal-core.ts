@@ -16,6 +16,148 @@
 
 import { TEMPORAL_CONSTANTS } from './constants.mjs';
 
+/** A timestamped observation used by aggregation and graph construction. */
+export interface TemporalNote {
+  timestamp?: number;
+  elapsed?: number;
+  score?: number;
+  observation?: string;
+  assessment?: string;
+  reasoning?: string;
+  step?: string;
+  issues?: unknown[];
+  gameState?: { score?: number; [key: string]: unknown } | null;
+  [key: string]: unknown;
+}
+
+export interface WeightedTemporalNote extends TemporalNote {
+  weight: number;
+}
+
+export interface TemporalWindowSummary {
+  window: number;
+  startTime: number;
+  endTime: number;
+  notes: WeightedTemporalNote[];
+  timeRange: string;
+  noteCount: number;
+  avgScore: number;
+  observations: string;
+  weightedAvg: number;
+}
+
+export interface TemporalConflict {
+  window: number;
+  type: 'mixed_sentiment' | 'score_decrease';
+  observation?: string;
+  previousScore?: number;
+  currentScore?: number;
+}
+
+export interface AggregatedTemporalNotes {
+  windows: TemporalWindowSummary[];
+  summary: string;
+  coherence: number;
+  conflicts: TemporalConflict[];
+  totalNotes: number;
+  timeSpan: number;
+}
+
+export interface TemporalAggregationOptions {
+  windowSize?: number;
+  decayFactor?: number;
+  coherenceThreshold?: number;
+  decayMethod?: 'exponential' | 'logarithmic';
+  temporalReference?: number;
+  totalNoteCount?: number;
+  [key: string]: unknown;
+}
+
+export interface TemporalContextOptions {
+  sequentialContext?: unknown;
+  viewport?: unknown;
+  testType?: unknown;
+  enableBiasMitigation?: boolean;
+  attentionLevel?: string;
+  actionComplexity?: string;
+  persona?: unknown;
+  contentLength?: number;
+  [key: string]: unknown;
+}
+
+/** The normalized shape created by createTemporalContext. */
+export interface TemporalContext {
+  [key: string]: unknown;
+  sequentialContext: unknown | null | undefined;
+  viewport: unknown | null | undefined;
+  testType: unknown | null | undefined;
+  enableBiasMitigation: boolean | undefined;
+  attentionLevel: string | undefined;
+  actionComplexity: string | undefined;
+  persona: unknown | null | undefined;
+  contentLength: number | undefined;
+}
+
+export interface ExtractedTemporalContext {
+  sequentialContext: unknown | undefined;
+  attentionLevel: string | undefined;
+  actionComplexity: string | undefined;
+  persona: unknown | undefined;
+  contentLength: number | undefined;
+}
+
+export interface TemporalGraphOptions extends TemporalAggregationOptions {
+  useLLM?: boolean;
+  frequency?: number;
+  maxLatency?: number;
+}
+
+export interface TemporalState {
+  avgScore: number;
+  scoreVariance: number;
+  issues: unknown[];
+}
+
+export interface TemporalGraphNode {
+  id: string;
+  index: number;
+  startTime: number;
+  endTime: number;
+  avgScore: number;
+  notes: WeightedTemporalNote[];
+  entities: string[];
+  state: TemporalState;
+}
+
+export interface TemporalGraphEdge {
+  from: string;
+  to: string;
+  timeDelta: number;
+  stateContinuity: number;
+  entityContinuity: number;
+  coherence: number;
+}
+
+export interface EntityTracking {
+  firstSeen: number;
+  lastSeen: number;
+  appearances: number[];
+  continuity: number;
+}
+
+export interface TemporalGraph {
+  nodes: TemporalGraphNode[];
+  edges: TemporalGraphEdge[];
+  entities: Record<string, EntityTracking>;
+  averageCoherence: number;
+  lowCoherenceEdges: number;
+}
+
+export interface TemporalGraphResult extends AggregatedTemporalNotes {
+  graph: TemporalGraph;
+  recommendations: string[];
+}
+
 // ============================================================================
 // TEMPORAL CONSTANTS (from temporal-constants.mjs)
 // ============================================================================
@@ -89,7 +231,7 @@ export const CONTENT_THRESHOLDS = {
 /**
  * Create standardized temporal context
  */
-export function createTemporalContext(options = {}) {
+export function createTemporalContext(options: TemporalContextOptions = {}): TemporalContext {
   return {
     sequentialContext: options.sequentialContext || null,
     viewport: options.viewport || null,
@@ -106,7 +248,10 @@ export function createTemporalContext(options = {}) {
 /**
  * Merge temporal contexts
  */
-export function mergeTemporalContext(base, additional) {
+export function mergeTemporalContext(
+  base: TemporalContextOptions,
+  additional: TemporalContextOptions,
+): TemporalContextOptions {
   return {
     ...base,
     ...additional,
@@ -120,7 +265,7 @@ export function mergeTemporalContext(base, additional) {
 /**
  * Extract temporal context from options
  */
-export function extractTemporalContext(options) {
+export function extractTemporalContext(options: TemporalContextOptions): ExtractedTemporalContext {
   return {
     sequentialContext: options.sequentialContext,
     attentionLevel: options.attentionLevel,
@@ -145,7 +290,10 @@ export function extractTemporalContext(options) {
  * }} [options={}] - Aggregation options
  * @returns {import('./index.mjs').AggregatedTemporalNotes} Aggregated temporal notes with windows and coherence
  */
-export async function aggregateTemporalNotes(notes, options = {}) {
+export async function aggregateTemporalNotes(
+  notes: TemporalNote[],
+  options: TemporalAggregationOptions = {},
+): Promise<AggregatedTemporalNotes> {
   // Input validation
   if (!Array.isArray(notes)) {
     throw new TypeError('Notes must be an array');
@@ -201,12 +349,19 @@ export async function aggregateTemporalNotes(notes, options = {}) {
   }
 
   // Group notes into temporal windows
-  const windows = [];
-  const startTime = gameplayNotes[0].timestamp ?? Date.now();
+  const windows: Array<{
+    index: number;
+    startTime: number;
+    endTime: number;
+    notes: WeightedTemporalNote[];
+    weightedScore: number;
+    totalWeight: number;
+  } | undefined> = [];
+  const startTime = gameplayNotes[0]!.timestamp ?? Date.now();
 
   for (let i = 0; i < gameplayNotes.length; i++) {
-    const note = gameplayNotes[i];
-    const elapsed = note.elapsed || (note.timestamp - startTime);
+    const note = gameplayNotes[i]!;
+    const elapsed = note.elapsed || (note.timestamp! - startTime);
     const windowIndex = Math.floor(elapsed / windowSize);
 
     if (!windows[windowIndex]) {
@@ -236,18 +391,20 @@ export async function aggregateTemporalNotes(notes, options = {}) {
       weight = Math.pow(decayFactor, age / windowSize);
     }
 
-    windows[windowIndex].notes.push({
+    const window = windows[windowIndex]!;
+
+    window.notes.push({
       ...note,
       weight
     });
 
     const score = note.gameState?.score ?? note.score ?? 0;
-    windows[windowIndex].weightedScore += score * weight;
-    windows[windowIndex].totalWeight += weight;
+    window.weightedScore += score * weight;
+    window.totalWeight += weight;
   }
 
   // Calculate window summaries
-  const definedWindows = windows.filter(w => w !== undefined && w !== null);
+  const definedWindows = windows.filter((window): window is NonNullable<typeof window> => window !== undefined);
   const windowSummaries = definedWindows.map(window => {
     const avgScore = window.totalWeight > 0 && isFinite(window.totalWeight)
       ? window.weightedScore / window.totalWeight
@@ -304,7 +461,10 @@ export async function aggregateTemporalNotes(notes, options = {}) {
 /**
  * Calculate coherence score (0-1)
  */
-async function calculateCoherence(windows, options = {}) {
+async function calculateCoherence(
+  windows: Array<Pick<TemporalWindowSummary, 'avgScore' | 'observations'>>,
+  options: Record<string, unknown> | null = {},
+): Promise<number> {
   if (!Array.isArray(windows)) {
     throw new TypeError('windows must be an array');
   }
@@ -320,7 +480,7 @@ async function calculateCoherence(windows, options = {}) {
 
   const trends = [];
   for (let i = 1; i < scores.length; i++) {
-    const change = scores[i] - scores[i - 1];
+    const change = scores[i]! - scores[i - 1]!;
     trends.push(change >= 0 ? 1 : -1);
   }
 
@@ -409,8 +569,8 @@ async function calculateCoherence(windows, options = {}) {
 /**
  * Detect conflicting opinions
  */
-function detectConflicts(windows) {
-  const conflicts = [];
+function detectConflicts(windows: TemporalWindowSummary[]): TemporalConflict[] {
+  const conflicts: TemporalConflict[] = [];
 
   const observations = windows.map(w => (w.observations || '').toLowerCase());
 
@@ -423,23 +583,25 @@ function detectConflicts(windows) {
     const hasNegative = negativeWords.some(w => obs.includes(w));
 
     if (hasPositive && hasNegative) {
+      const window = windows[i]!;
       conflicts.push({
-        window: windows[i].window,
+        window: window.window,
         type: 'mixed_sentiment',
-        observation: windows[i].observations
+        observation: window.observations
       });
     }
   }
 
   for (let i = 1; i < windows.length; i++) {
-    if (windows[i] && windows[i - 1] &&
-        windows[i].avgScore !== undefined && windows[i - 1].avgScore !== undefined &&
-        windows[i].avgScore < windows[i - 1].avgScore) {
+    const current = windows[i]!;
+    const previous = windows[i - 1]!;
+    if (current.avgScore !== undefined && previous.avgScore !== undefined &&
+        current.avgScore < previous.avgScore) {
       conflicts.push({
-        window: windows[i].window,
+        window: current.window,
         type: 'score_decrease',
-        previousScore: windows[i - 1].avgScore,
-        currentScore: windows[i].avgScore
+        previousScore: previous.avgScore,
+        currentScore: current.avgScore
       });
     }
   }
@@ -450,8 +612,12 @@ function detectConflicts(windows) {
 /**
  * Generate human-readable summary
  */
-function generateSummary(windows, coherence, conflicts) {
-  const parts = [];
+function generateSummary(
+  windows: TemporalWindowSummary[],
+  coherence: number,
+  conflicts: TemporalConflict[],
+): string {
+  const parts: string[] = [];
 
   parts.push(`Aggregated ${windows.length} temporal windows from gameplay notes.`);
 
@@ -478,8 +644,8 @@ function generateSummary(windows, coherence, conflicts) {
  * @param {import('./index.mjs').AggregatedTemporalNotes} aggregated - Aggregated temporal notes
  * @returns {string} Formatted string for prompt inclusion
  */
-export function formatNotesForPrompt(aggregated) {
-  const parts = [];
+export function formatNotesForPrompt(aggregated: AggregatedTemporalNotes): string {
+  const parts: string[] = [];
 
   parts.push('TEMPORAL AGGREGATION ANALYSIS:');
   parts.push(aggregated.summary);
@@ -515,7 +681,9 @@ export function formatNotesForPrompt(aggregated) {
  * @param {import('./index.mjs').TemporalWindow[]} windows - Array of temporal windows
  * @returns {number} Coherence score (0-1)
  */
-export async function calculateCoherenceExported(windows) {
+export async function calculateCoherenceExported(
+  windows: Array<Pick<TemporalWindowSummary, 'avgScore' | 'observations'>>,
+): Promise<number> {
   return await calculateCoherence(windows);
 }
 
@@ -530,7 +698,10 @@ export async function calculateCoherenceExported(windows) {
  * @param {Object} options - Graph options
  * @returns {Object} Temporal graph with nodes, edges, entities
  */
-export async function buildTemporalGraph(notes, options = {}) {
+export async function buildTemporalGraph(
+  notes: TemporalNote[],
+  options: TemporalGraphOptions = {},
+): Promise<TemporalGraphResult> {
   const aggregated = await aggregateTemporalNotes(notes, options);
 
   const nodes = await Promise.all(aggregated.windows.map(async (window, index) => ({
@@ -544,10 +715,10 @@ export async function buildTemporalGraph(notes, options = {}) {
     state: extractState(window.notes)
   })));
 
-  const edges = [];
+  const edges: TemporalGraphEdge[] = [];
   for (let i = 1; i < nodes.length; i++) {
-    const from = nodes[i - 1];
-    const to = nodes[i];
+    const from = nodes[i - 1]!;
+    const to = nodes[i]!;
 
     const stateContinuity = calculateStateContinuity(from.state, to.state);
     const entityContinuity = calculateEntityContinuity(from.entities, to.entities);
@@ -580,10 +751,10 @@ export async function buildTemporalGraph(notes, options = {}) {
 }
 
 // Simple in-memory cache for LLM entity extraction results
-const entityExtractionCache = new Map();
+const entityExtractionCache = new Map<string, { entities: string[]; timestamp: number }>();
 const ENTITY_CACHE_TTL = 3600000; // 1 hour
 
-async function extractEntities(notes, options = {}) {
+async function extractEntities(notes: WeightedTemporalNote[], options: TemporalGraphOptions = {}): Promise<string[]> {
   if (!notes || !Array.isArray(notes)) {
     return [];
   }
@@ -591,7 +762,7 @@ async function extractEntities(notes, options = {}) {
   const { useLLM, frequency, maxLatency } = options;
   const shouldUseLLM = useLLM !== undefined
     ? useLLM
-    : !(frequency >= 10 || (maxLatency && maxLatency < 200));
+    : !((frequency ?? 0) >= 10 || (maxLatency && maxLatency < 200));
 
   if (!shouldUseLLM) {
     return extractEntitiesKeyword(notes);
@@ -633,33 +804,35 @@ async function extractEntities(notes, options = {}) {
     const extracted = await extractStructuredData(combinedText, schema, {
       fallback: 'auto',
       provider: config.provider
-    });
+    }) as { entities?: unknown[] } | null;
 
     if (extracted && Array.isArray(extracted.entities) && extracted.entities.length > 0) {
-      const entities = [...new Set(extracted.entities)];
-      entityExtractionCache.set(cacheKey, {
-        entities,
-        timestamp: Date.now()
-      });
-      if (entityExtractionCache.size > 1000) {
-        const now = Date.now();
-        for (const [key, value] of entityExtractionCache.entries()) {
-          if (now - value.timestamp > ENTITY_CACHE_TTL) {
-            entityExtractionCache.delete(key);
+      const entities = [...new Set(extracted.entities.filter((entity): entity is string => typeof entity === 'string'))];
+      if (entities.length > 0) {
+        entityExtractionCache.set(cacheKey, {
+          entities,
+          timestamp: Date.now()
+        });
+        if (entityExtractionCache.size > 1000) {
+          const now = Date.now();
+          for (const [key, value] of entityExtractionCache.entries()) {
+            if (now - value.timestamp > ENTITY_CACHE_TTL) {
+              entityExtractionCache.delete(key);
+            }
           }
         }
+        return entities;
       }
-      return entities;
     }
-  } catch (error) {
+  } catch {
     // Circuit breaker: Fallback to keyword matching on any LLM error
   }
 
   return extractEntitiesKeyword(notes);
 }
 
-function extractEntitiesKeyword(notes) {
-  const entities = new Set();
+function extractEntitiesKeyword(notes: WeightedTemporalNote[]): string[] {
+  const entities = new Set<string>();
   const keywordPattern = /\b(button|link|image|form|input|score|level|board|tile|page|element|player|enemy|obstacle|powerup|collectible|ui|menu|dialog|modal|overlay)\b/g;
 
   for (const note of notes) {
@@ -668,14 +841,14 @@ function extractEntitiesKeyword(notes) {
     keywordPattern.lastIndex = 0;
     let match;
     while ((match = keywordPattern.exec(text)) !== null) {
-      entities.add(match[0]);
+      entities.add(match[0]!);
     }
   }
 
   return Array.from(entities);
 }
 
-function extractState(notes) {
+function extractState(notes: WeightedTemporalNote[]): TemporalState {
   if (!notes || !Array.isArray(notes)) {
     return {
       avgScore: 0,
@@ -692,7 +865,7 @@ function extractState(notes) {
   };
 }
 
-function calculateStateContinuity(state1, state2) {
+function calculateStateContinuity(state1: TemporalState, state2: TemporalState): number {
   const scoreDiff = Math.abs(state1.avgScore - state2.avgScore);
   const scoreContinuity = 1.0 - Math.min(1.0, scoreDiff / 10.0);
 
@@ -705,7 +878,7 @@ function calculateStateContinuity(state1, state2) {
   return (scoreContinuity + issueContinuity) / 2;
 }
 
-function calculateEntityContinuity(entities1, entities2) {
+function calculateEntityContinuity(entities1: string[], entities2: string[]): number {
   if (entities1.length === 0 && entities2.length === 0) return 1.0;
   if (entities1.length === 0 || entities2.length === 0) return 0.0;
 
@@ -717,8 +890,8 @@ function calculateEntityContinuity(entities1, entities2) {
   return union.size > 0 ? intersection.size / union.size : 0.0;
 }
 
-function trackEntities(nodes) {
-  const entityMap = new Map();
+function trackEntities(nodes: TemporalGraphNode[]): Record<string, EntityTracking> {
+  const entityMap = new Map<string, EntityTracking>();
 
   for (const node of nodes) {
     for (const entity of node.entities) {
@@ -726,10 +899,12 @@ function trackEntities(nodes) {
         entityMap.set(entity, {
           firstSeen: node.index,
           lastSeen: node.index,
-          appearances: [node.index]
+          appearances: [node.index],
+          continuity: 1.0,
         });
       } else {
         const tracking = entityMap.get(entity);
+        if (!tracking) continue;
         tracking.lastSeen = node.index;
         tracking.appearances.push(node.index);
       }
@@ -739,7 +914,7 @@ function trackEntities(nodes) {
   for (const [entity, tracking] of entityMap.entries()) {
     const gaps = [];
     for (let i = 1; i < tracking.appearances.length; i++) {
-      gaps.push(tracking.appearances[i] - tracking.appearances[i-1]);
+      gaps.push(tracking.appearances[i]! - tracking.appearances[i - 1]!);
     }
     const avgGap = gaps.length > 0 ? gaps.reduce((a, b) => a + b, 0) / gaps.length : 1;
     tracking.continuity = avgGap === 1 ? 1.0 : Math.max(0, 1.0 - (avgGap - 1) * 0.2);
@@ -748,8 +923,11 @@ function trackEntities(nodes) {
   return Object.fromEntries(entityMap);
 }
 
-function generateGraphRecommendations(edges, entities) {
-  const recommendations = [];
+function generateGraphRecommendations(
+  edges: TemporalGraphEdge[],
+  _entities: Record<string, EntityTracking>,
+): string[] {
+  const recommendations: string[] = [];
   const avgCoherence = edges.length > 0
     ? edges.reduce((sum, e) => sum + e.coherence, 0) / edges.length
     : 1.0;
@@ -766,7 +944,7 @@ function generateGraphRecommendations(edges, entities) {
   return recommendations;
 }
 
-function calculateVarianceForState(values) {
+function calculateVarianceForState(values: number[]): number {
   if (values.length === 0) return 0;
   const mean = values.reduce((a, b) => a + b, 0) / values.length;
   const squaredDiffs = values.map(v => Math.pow(v - mean, 2));

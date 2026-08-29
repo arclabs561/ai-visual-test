@@ -19,7 +19,7 @@ import {
   TIME_BOUNDS,
   CONTENT_THRESHOLDS,
   aggregateTemporalNotes
-} from './temporal-core.mjs';
+} from '#temporal-core';
 import { validateAndSortNotes, validateTimeScales, validateAction, validatePerceptionContext, validateSequentialContextOptions } from './temporal-orchestration.mjs';
 import { MultiScaleError, PerceptionTimeError } from './temporal-orchestration.mjs';
 import { warn, log } from './logger.mjs';

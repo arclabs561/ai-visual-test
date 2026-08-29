@@ -12,7 +12,7 @@
  */
 
 import { buildRubricPrompt, DEFAULT_RUBRIC } from './rubrics.mjs';
-import { formatNotesForPrompt, aggregateTemporalNotes } from './temporal-core.mjs';
+import { formatNotesForPrompt, aggregateTemporalNotes } from '#temporal-core';
 import { formatTemporalContext } from './temporal-prompt-formatting.mjs';
 import { selectTopWeightedNotes } from './temporal-prompt-formatting.mjs';
 import { warn } from './logger.mjs';

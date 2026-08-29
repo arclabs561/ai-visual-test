@@ -9,7 +9,7 @@
  * Depends on: temporal-core.mjs, temporal-multi-scale.mjs
  */
 
-import { formatNotesForPrompt } from './temporal-core.mjs';
+import { formatNotesForPrompt } from '#temporal-core';
 import { calculateAttentionWeight } from './temporal-multi-scale.mjs';
 import { log } from './logger.mjs';
 import { safeLogTemporalDecision } from './safe-logger.mjs';
@@ -480,7 +480,7 @@ export async function evaluateTemporalDecision(context, config) {
 
   try {
     const { TemporalDecisionManager } = await import('./temporal-orchestration.mjs');
-    const { aggregateTemporalNotes } = await import('./temporal-core.mjs');
+    const { aggregateTemporalNotes } = await import('#temporal-core');
 
     const decisionManager = new TemporalDecisionManager(context.temporalDecisionOptions || {});
     const currentState = { score: null, issues: [], ...context.currentState };

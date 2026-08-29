@@ -21,7 +21,7 @@ import {
 import { BatchOptimizer } from '../../src/batch-optimizer.mjs';
 import { experiencePageAsPersona, experiencePageWithPersonas } from '../../src/persona-experience.mjs';
 import { captureTemporalScreenshots, extractRenderedCode, multiModalValidation, multiPerspectiveEvaluation } from '../../src/multi-modal.mjs';
-import { aggregateTemporalNotes, formatNotesForPrompt } from '../../src/temporal-core.mjs';
+import { aggregateTemporalNotes, formatNotesForPrompt } from '#temporal-core';
 import { FileError } from '../../src/errors.mjs';
 import { createMockPage } from '../helpers/mock-page.mjs';
 import { createTestImage } from '../test-image-utils.mjs';

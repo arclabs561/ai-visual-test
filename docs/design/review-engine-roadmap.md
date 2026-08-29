@@ -6,7 +6,7 @@ grounded-in:
   - docs/design/dataset-evaluation-protocol.md
   - docs/judge-graph.md
   - .claude/reports/scrutinize-2026-08-28.md
-review-trigger: after the Phase 5 public-surface decision or new downstream consumer evidence
+review-trigger: before 1.0, another deliberately breaking release, or materially different downstream consumer evidence
 ---
 
 # Roadmap: Review engine modernization
@@ -249,8 +249,8 @@ aliases; they are compatibility debt, but the surface ADR must decide whether
 to add supported aliases or migrate those callers. Public or private consumers
 outside the surveyed workspace remain unverified.
 
-The remaining structural fork is deliberate and must not be hidden inside a
-source conversion:
+The structural fork was deliberate and was not hidden inside a source
+conversion:
 
 - **Option A — retain the current subpaths in core:** lowest migration risk and
   consistent with the consumers found, but preserves a broad supported surface.
@@ -261,25 +261,27 @@ source conversion:
   narrowest product, but breaks the documented game and utility workflows and
   abandons their current package consumers.
 
-**Recommended proposal:** retain `./game`, `./utils`, and their root aliases for
-the current major; keep session-cost tracking private until its `judge.ts`
-callers have an explicit replacement; resolve stale evaluation/research imports
-according to the chosen compatibility policy; and record the intended
-next-major surface in a new ADR before removing or moving any export. This is a
-proposal, not authorization for an API change.
+**Decision:** [ADR 0004](../adr/0004-retain-game-and-utils-in-core.md)
+selects Option A for the current 0.x line. Retain `./game`, `./utils`, and their
+supported root overlaps in core; keep session-cost tracking private until its
+`judge.ts` callers have an explicit replacement; and resolve stale
+evaluation/research imports according to the supported compatibility surface.
+Retention does not freeze internals: stale documentation, dead code, invalid
+deep imports, obsolete shims, and unneeded tracked artifacts should still be
+pruned when consumer evidence and boundary tests make removal safe.
 
-The ADR fork should govern `package.json`, `src/index.ts`, public subpath
-barrels, examples, and migration notes. It must decide whether the next major
-keeps the broad core (A), creates a companion package (B), or makes advanced
-features research-only (C). Human-labeled screenshot evidence remains a
-separate gate for calibration, confidence, or learned-perception claims.
+Moving these surfaces in a later breaking release requires a superseding ADR,
+fresh consumer evidence, and migration notes. Human-labeled screenshot evidence
+remains a separate gate for calibration, confidence, or learned-perception
+claims.
 
 **Reversibility:** one-way for removed public APIs.
 
-**Gate:** do not narrow a public route until the surface ADR is accepted, every
-listed local/sibling consumer has a migration path, clean packed compatibility
-tests cover the chosen route, and a deliberate major version is approved.
-Held-out human evidence is additionally required for calibration claims.
+**Gate:** ADR 0004 preserves the current routes. Do not narrow them before a
+superseding ADR, a fresh consumer inventory, migration paths for every listed
+consumer, clean packed compatibility tests, and a deliberately breaking
+release. Held-out human evidence is additionally required for calibration
+claims.
 
 ## Parallel evidence work
 
@@ -299,12 +301,13 @@ made until real independently reviewed labels exist.
 - Temporal coalescing and adaptive-sampling execution are parked design and
   correctness work. Their present abstractions and tests are not evidence that
   either execution strategy is implemented or ready for a product claim.
-- Public utility/game narrowing and session-cost tracking disposition wait for
-  the Phase 5 surface ADR; the first consumer inventory argues against removal
-  in the current major.
+- Public utility/game narrowing is deferred by ADR 0004 until a deliberately
+  breaking release with fresh consumer evidence. Session-cost tracking remains
+  private and may be pruned only after its `judge.ts` attribution callers have
+  an explicit replacement.
 - Aesthetic auto-fix and autonomous remediation remain out of scope.
 
 ## Review trigger
 
-Re-run this roadmap after the Phase 5 surface ADR is accepted, or when new
-downstream consumer evidence changes the supported-surface assumptions.
+Re-run this roadmap before 1.0 or another deliberately breaking release, or
+when new downstream consumer evidence changes the supported-surface assumptions.

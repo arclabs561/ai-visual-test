@@ -1103,7 +1103,7 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
  * Creates a judge instance and validates a screenshot.
  * 
  * Optional enhancements:
- * - `useTemporalDecision: true` - Use TemporalDecisionManager to reduce LLM calls by 98.5%
+ * - `useTemporalDecision: true` - Use TemporalDecisionManager to conditionally skip visual reviews
  * - `useEnsemble: true` - Use EnsembleJudge for 10-20% accuracy improvement
  * - `autoSelectTier: true` - Select model tier based on context (cost optimization)
  * - `autoSelectProvider: true` - Select cheapest provider (cost optimization)

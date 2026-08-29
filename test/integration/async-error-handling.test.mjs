@@ -7,7 +7,7 @@
 import '../test-setup.mjs'; // Auto-load .env (must be first)
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { validateScreenshot } from '../../src/judge.mjs';
+import { validateScreenshot } from '#judge';
 import { getCached, setCached } from '../../src/cache.mjs';
 import { BatchOptimizer } from '../../src/batch-optimizer.mjs';
 import { ValidationError } from '../../src/errors.mjs';
@@ -120,4 +120,3 @@ describe('Async Error Handling', () => {
     });
   });
 });
-

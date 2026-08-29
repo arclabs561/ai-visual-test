@@ -10,7 +10,7 @@
  * - Extensible via plugins
  */
 
-import { validateScreenshot } from '../judge.mjs';
+import { validateScreenshot } from '#judge';
 import { ValidationError } from '../errors.mjs';
 import { assertString } from '../type-guards.mjs';
 
@@ -364,4 +364,3 @@ Return detailed assessment with:
     });
   }
 }
-

@@ -7,7 +7,7 @@
  * Based on common visual testing workflows and usage patterns.
  */
 
-import { validateScreenshot } from './judge.mjs';
+import { validateScreenshot } from '#judge';
 import { normalizeValidationResult } from '#validation-result-normalizer';
 import { experiencePageAsPersona, experiencePageWithPersonas } from './persona-experience.mjs';
 import { extractRenderedCode, captureTemporalScreenshots } from './multi-modal.mjs';

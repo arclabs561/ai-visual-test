@@ -7,7 +7,7 @@
  * This follows the PROVE framework pattern: programmatic verification + LLM evaluation.
  */
 
-import { validateScreenshot } from '../judge.mjs';
+import { validateScreenshot } from '#judge';
 import { ValidationError } from '../errors.mjs';
 import { assertString, assertObject } from '../type-guards.mjs';
 import {

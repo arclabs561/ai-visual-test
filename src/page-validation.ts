@@ -1,6 +1,6 @@
 /** Page-validation convenience functions with no Playwright dependency. */
 
-import { validateScreenshot } from './judge.mjs';
+import { validateScreenshot } from '#judge';
 import { extractRenderedCode } from './multi-modal.mjs';
 import { ValidationError } from './errors.mjs';
 import { validatePrompt } from './validation.mjs';
@@ -24,9 +24,8 @@ type StableCapture = { metadata: Record<string, unknown> };
 type StableScreenshotCapture = (page: ScreenshotPage, options: StableCaptureOptions) => Promise<StableCapture>;
 type RenderedCodeExtractor = (page: PageLike) => Promise<unknown>;
 
-// judge.mjs is still JavaScript and its legacy JSDoc narrows the image input
-// and rendered-code page to Playwright. The runtime accepts both image forms;
-// keep that legacy annotation from leaking into this framework-neutral module.
+// Keep the root judge's broader image/context contract from leaking into this
+// framework-neutral page adapter's narrower callable seam.
 const validate = validateScreenshot as unknown as ScreenshotValidator;
 const captureStable = captureStableScreenshot as unknown as StableScreenshotCapture;
 const extractCode = extractRenderedCode as unknown as RenderedCodeExtractor;

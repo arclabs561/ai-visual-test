@@ -35,9 +35,40 @@ import { createGameActionTask } from '#game-action-contract';
 import { getProviderAdapter } from '#provider-adapters';
 import { resolveTaskStructuredOutput } from '#structured-output';
 import { executeStructuredTask } from '#structured-task';
+import type { ConfigOptions, ValidationContext, ValidationResult } from '#public-contract';
+import type { ProviderAdapter, ProviderConfig, ProviderImage, StructuredOutputSpec } from '#provider-adapters';
+import type { ReviewOutcome } from '#review-contract';
+import type { GameAction } from '#game-action-contract';
+
+type AnyRecord = Record<string, any>;
+type JudgeContext = ValidationContext & AnyRecord;
+type ImagePath = string | string[];
+type ProviderInput = { data: string; mime: ProviderImage['mime'] };
+type ReviewBuildInput = {
+  judgment: string;
+  data: AnyRecord | null;
+  logprobs: unknown;
+  attempts: number;
+  responseTime: number;
+  imagePath: ImagePath;
+  context: JudgeContext;
+  reviewOutcome?: ReviewOutcome | null;
+  outputFormat?: string | null;
+  structuredOutput?: StructuredOutputSpec | null;
+};
+
+export interface GameActionResult {
+  action: GameAction;
+  outputFormat: string;
+  diagnostics: string[];
+  attempts: number;
+  provider: string;
+  model: string;
+  structuredOutput: { mode: StructuredOutputSpec['mode']; diagnostic: string | null };
+}
 
 /** Clamp a score to [0, 10] or null. */
-function _clampScore(raw) {
+function _clampScore(raw: unknown): number | null {
   if (raw == null || typeof raw !== 'number' || isNaN(raw)) return null;
   return Math.max(0, Math.min(10, raw));
 }
@@ -48,7 +79,15 @@ function _clampScore(raw) {
  * Handles screenshot validation using Vision Language Models.
  */
 export class VLLMJudge {
-  constructor(options = {}) {
+  config: AnyRecord;
+  provider: string;
+  apiKey: string;
+  providerConfig: ProviderConfig & AnyRecord;
+  providerAdapter: ProviderAdapter;
+  enabled: boolean;
+  _cacheInitialized: boolean;
+
+  constructor(options: ConfigOptions & AnyRecord = {}) {
     this.config = createConfig(options);
     this.provider = this.config.provider;
     this.apiKey = this.config.apiKey;
@@ -77,27 +116,27 @@ export class VLLMJudge {
    * SECURITY: Validates image path to prevent path traversal attacks
    * SECURITY: Validates image format using magic bytes to prevent format spoofing
    */
-  imageToBase64(imagePath) {
+  imageToBase64(imagePath: string): string {
     return this.imageToProviderInput(imagePath).data;
   }
 
   /**
    * Read an image once and preserve the MIME detected from its magic bytes.
    */
-  imageToProviderInput(imagePath) {
+  imageToProviderInput(imagePath: string): ProviderInput {
     // Validate and resolve path before file operations
     // Note: imagePath may already be validated/resolved from judgeScreenshot
-    let validatedPath;
+    let validatedPath: string;
     try {
       // All paths go through validateImagePath for traversal + extension checks.
       // Absolute paths use their own directory as baseDir so the "within base"
       // check passes, while still validating extension and normalizing.
       if (imagePath.startsWith('/')) {
-        validatedPath = validateImagePath(basename(imagePath), { baseDir: dirname(resolve(imagePath)) });
+        validatedPath = validateImagePath(basename(imagePath), { baseDir: dirname(resolve(imagePath)) }) as unknown as string;
       } else {
-        validatedPath = validateImagePath(imagePath);
+        validatedPath = validateImagePath(imagePath) as unknown as string;
       }
-    } catch (validationError) {
+    } catch (validationError: any) {
       throw new FileError(`Invalid image path: ${validationError.message}`, basename(imagePath));
     }
     
@@ -108,9 +147,10 @@ export class VLLMJudge {
       const imageBuffer = readFileSync(validatedPath);
 
       // Enforce size limit to prevent OOM from oversized images
-      if (imageBuffer.length > API_CONSTANTS.MAX_IMAGE_SIZE) {
+      const maxImageSize = (API_CONSTANTS as AnyRecord).MAX_IMAGE_SIZE as number;
+      if (imageBuffer.length > maxImageSize) {
         const sizeMB = (imageBuffer.length / (1024 * 1024)).toFixed(1);
-        const limitMB = (API_CONSTANTS.MAX_IMAGE_SIZE / (1024 * 1024)).toFixed(0);
+        const limitMB = (maxImageSize / (1024 * 1024)).toFixed(0);
         throw new FileError(`Image too large: ${sizeMB}MB (limit: ${limitMB}MB)`, basename(validatedPath));
       }
 
@@ -118,7 +158,7 @@ export class VLLMJudge {
       const mime = this._validateImageFormat(imageBuffer, validatedPath);
 
       return { data: imageBuffer.toString('base64'), mime };
-    } catch (error) {
+    } catch (error: any) {
       // Sanitize error message - don't leak full path
       throw new FileError(`Failed to read screenshot: ${error.message}`, basename(validatedPath), { originalError: error.message });
     }
@@ -131,9 +171,9 @@ export class VLLMJudge {
    * @param {string} filePath - File path (for error messages)
    * @throws {ValidationError} If image format is invalid
    */
-  _validateImageFormat(buffer, filePath) {
+  _validateImageFormat(buffer: Buffer, filePath: string): ProviderImage['mime'] {
     if (!Buffer.isBuffer(buffer) || buffer.length < 4) {
-      throw new ValidationError('Invalid image file: file too small or not a buffer', basename(filePath));
+      throw new ValidationError('Invalid image file: file too small or not a buffer', basename(filePath) as any);
     }
 
     // PNG signature: 89 50 4E 47 0D 0A 1A 0A
@@ -159,12 +199,12 @@ export class VLLMJudge {
     }
 
     // No valid signature found
-    throw new ValidationError(
+    throw new (ValidationError as any)(
       'Invalid image format: file signature does not match supported formats (PNG, JPEG, GIF, WebP)',
       basename(filePath),
       {
         detectedSignature: Array.from(buffer.slice(0, 4)).map(b => `0x${b.toString(16).padStart(2, '0')}`).join(' ')
-      }
+      } as AnyRecord
     );
   }
 
@@ -178,18 +218,18 @@ export class VLLMJudge {
    *   - A data URI ("data:image/png;base64,...") -- base64 extracted directly
    *   - A raw base64 string (no path separators, length > 100)
    *
-   * @param {import('./index.mjs').ValidationContext} context
+   * @param {import('#public-contract').ValidationContext} context
    * @returns {{ images: Array<{data:string,mime:string}>, count: { positive: number, negative: number } }}
    */
-  _resolveAnchorImages(context) {
+  _resolveAnchorImages(context: JudgeContext): { images: ProviderInput[]; count: { positive: number; negative: number } } {
     const configAnchors = this.config.anchors || {};
     const ctxAnchors = context.anchors || {};
 
     // Extract image refs from AnchorEntry arrays (mixed string + object entries)
-    const extractImageRefs = (entries) => {
+    const extractImageRefs = (entries: unknown): string[] => {
       if (!Array.isArray(entries)) return [];
       return entries
-        .filter(e => typeof e === 'object' && e !== null && e.image)
+        .filter((e: any): e is { image: string } => typeof e === 'object' && e !== null && typeof e.image === 'string')
         .map(e => e.image);
     };
 
@@ -206,17 +246,17 @@ export class VLLMJudge {
       return { images: [], count: { positive: 0, negative: 0 } };
     }
 
-    const images = [];
+    const images: ProviderInput[] = [];
     let positiveCount = 0;
     let negativeCount = 0;
 
-    const resolveImage = (ref) => {
+    const resolveImage = (ref: string): ProviderInput => {
       // Data URI: extract base64 payload
       if (ref.startsWith('data:image/')) {
         const commaIdx = ref.indexOf(',');
         const mime = ref.slice(5, ref.indexOf(';'));
         if (commaIdx > 0 && ['image/png', 'image/jpeg', 'image/gif', 'image/webp'].includes(mime)) {
-          return { data: ref.slice(commaIdx + 1), mime };
+          return { data: ref.slice(commaIdx + 1), mime: mime as ProviderImage['mime'] };
         }
       }
       // Looks like raw base64 (no path separators, long enough)
@@ -231,7 +271,7 @@ export class VLLMJudge {
       try {
         images.push(resolveImage(ref));
         positiveCount++;
-      } catch (err) {
+      } catch (err: any) {
         warn(`[VLLM] Skipping positive anchor image ${ref.slice(0, 80)}: ${err.message}`);
       }
     }
@@ -240,7 +280,7 @@ export class VLLMJudge {
       try {
         images.push(resolveImage(ref));
         negativeCount++;
-      } catch (err) {
+      } catch (err: any) {
         warn(`[VLLM] Skipping negative anchor image ${ref.slice(0, 80)}: ${err.message}`);
       }
     }
@@ -253,10 +293,10 @@ export class VLLMJudge {
    *
    * @param {string | string[]} imagePath - Single image path or array of image paths for comparison
    * @param {string} prompt - Evaluation prompt
-   * @param {import('./index.mjs').ValidationContext} [context={}] - Validation context
-   * @returns {Promise<import('./index.mjs').ValidationResult>} Validation result
+   * @param {import('#public-contract').ValidationContext} [context={}] - Validation context
+   * @returns {Promise<import('#public-contract').ValidationResult>} Validation result
    */
-  async judgeScreenshot(imagePath, prompt, context = {}) {
+  async judgeScreenshot(imagePath: ImagePath, prompt: string, context: JudgeContext = {}): Promise<ValidationResult> {
     prompt = this._validateAndSanitizePrompt(prompt, context);
     const imagePaths = Array.isArray(imagePath) ? imagePath : [imagePath];
     this._validateImagePaths(imagePaths);
@@ -280,7 +320,7 @@ export class VLLMJudge {
     // Logic extracted to evaluateTemporalDecision for testability and simplicity
     const temporalResult = await evaluateTemporalDecision(context, this.config);
     if (temporalResult) {
-      return temporalResult;
+      return temporalResult as unknown as ValidationResult;
     }
 
     // Initialize cache if needed
@@ -311,7 +351,7 @@ export class VLLMJudge {
             ? (1000 / 1_000_000) * this.providerConfig.pricing.input // Rough estimate: 1k tokens
             : 0;
           rateLimiter.checkLimit(estimatedCost);
-        } catch (rateLimitError) {
+        } catch (rateLimitError: any) {
           throw new ValidationError(`Rate limit exceeded: ${rateLimitError.message}`);
         }
       }
@@ -348,12 +388,13 @@ export class VLLMJudge {
         structuredOutputMode: structuredOutput.mode,
         anchorDigest
       };
-      const cacheKey = isMultiImage ? imagePaths.join('|') : imagePaths[0];
+      const cacheKey = isMultiImage ? imagePaths.join('|') : imagePaths[0]!;
 
       if (useCache) {
         const cached = getCached(cacheKey, fullPrompt, cacheContext);
         this._logCacheResult(cached ? 'hit' : 'miss', context, cacheKey);
         if (cached) {
+          clearTimeout(timeoutId);
           return normalizeValidationResult({ ...cached, cached: true }, 'judgeScreenshot-cache');
         }
       }
@@ -380,7 +421,7 @@ export class VLLMJudge {
       const validationResult = await this._buildResult(
         {
           judgment, data, logprobs, attempts, responseTime, imagePath, context,
-          reviewOutcome: apiResult.outcome,
+          reviewOutcome: apiResult.outcome as ReviewOutcome,
           outputFormat: apiResult.format,
           structuredOutput
         }
@@ -393,7 +434,7 @@ export class VLLMJudge {
       }
 
       return normalizedResult;
-    } catch (err) {
+    } catch (err: any) {
       clearTimeout(timeoutId);
       error = err;
       responseTime = Date.now() - startTime;
@@ -457,11 +498,11 @@ export class VLLMJudge {
    * goals throughout the system.
    * 
    * @param {string} prompt - Base prompt (or ignored if context.goal is provided)
-   * @param {import('./index.mjs').ValidationContext} context - Validation context
+   * @param {import('#public-contract').ValidationContext} context - Validation context
    * @param {boolean} [isMultiImage=false] - Whether this is a multi-image comparison
    * @returns {string} Full prompt with context
    */
-  async buildPrompt(prompt, context = {}, isMultiImage = false) {
+  async buildPrompt(prompt: string, context: JudgeContext = {}, isMultiImage = false): Promise<string> {
     // If custom prompt builder provided, use it
     if (context.promptBuilder && typeof context.promptBuilder === 'function') {
       return context.promptBuilder(prompt, context);
@@ -477,15 +518,15 @@ export class VLLMJudge {
         return await composeComparisonPrompt(prompt, context, {
           includeRubric: context.includeRubric !== false, // Default true (research-backed)
           anchors: composerAnchors
-        });
+        } as any);
       } else {
         return await composeSingleImagePrompt(prompt, context, {
           includeRubric: context.includeRubric !== false, // Default true (research-backed)
           temporalNotes: context.temporalNotes || null,
           anchors: composerAnchors
-        });
+        } as any);
       }
-    } catch (error) {
+    } catch (error: any) {
       // Fallback to basic prompt building if composition fails
       if (this.config.debug.verbose) {
         warn(`[VLLM] Prompt composition failed, using fallback: ${error.message}`);
@@ -498,7 +539,8 @@ export class VLLMJudge {
         contextParts.push(`Test Type: ${context.testType}`);
       }
       if (context.viewport) {
-        contextParts.push(`Viewport: ${context.viewport.width}x${context.viewport.height}`);
+        const viewport = context.viewport as AnyRecord;
+        contextParts.push(`Viewport: ${viewport.width}x${viewport.height}`);
       }
       if (context.gameState) {
         contextParts.push(`Game State: ${JSON.stringify(context.gameState)}`);
@@ -526,14 +568,15 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
   /**
    * Extract semantic information from judgment text
    */
-  extractSemanticInfo(judgment) {
+  extractSemanticInfo(judgment: unknown): AnyRecord {
     // Handle case where judgment is already an object
     if (typeof judgment === 'object' && judgment !== null && !Array.isArray(judgment)) {
+      const record = judgment as AnyRecord;
       // Normalize issues: handle both array of strings and array of objects
-      let issues = judgment.issues || [];
+      let issues = record.issues || [];
       if (issues.length > 0 && typeof issues[0] === 'string') {
         // Convert string array to object array for consistency
-        issues = issues.map(desc => ({
+        issues = issues.map((desc: unknown) => ({
           description: desc,
           importance: 'medium',
           annoyance: 'medium',
@@ -542,21 +585,21 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
       }
       
       // Normalize recommendations: handle both array of strings and array of objects
-      const richRecommendations = this._normalizeRichRecommendations(judgment.recommendations);
+      const richRecommendations = this._normalizeRichRecommendations(record.recommendations);
       const recommendations = richRecommendations.map(recommendation => recommendation.suggestion);
       
       return {
-        score: _clampScore(judgment.score),
+        score: _clampScore(record.score),
         issues: issues,
-        assessment: judgment.assessment || null,
-        reasoning: judgment.reasoning || null,
-        strengths: judgment.strengths || [],
+        assessment: record.assessment || null,
+        reasoning: record.reasoning || null,
+        strengths: record.strengths || [],
         recommendations: recommendations,
         richRecommendations,
-        evidence: judgment.evidence || null,
-        dimensionScores: judgment.dimensionScores || null,
-        brutalistViolations: judgment.brutalistViolations || [],
-        zeroToleranceViolations: judgment.zeroToleranceViolations || []
+        evidence: record.evidence || null,
+        dimensionScores: record.dimensionScores || null,
+        brutalistViolations: record.brutalistViolations || [],
+        zeroToleranceViolations: record.zeroToleranceViolations || []
       };
     }
 
@@ -570,7 +613,7 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
         // Normalize issues and recommendations
         let issues = parsed.issues || [];
         if (issues.length > 0 && typeof issues[0] === 'string') {
-          issues = issues.map(desc => ({
+          issues = issues.map((desc: unknown) => ({
             description: desc,
             importance: 'medium',
             annoyance: 'medium',
@@ -595,7 +638,7 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
           zeroToleranceViolations: parsed.zeroToleranceViolations || []
         };
       }
-    } catch (e) {
+    } catch (_error) {
       // Fall through to regex extraction
     }
 
@@ -612,9 +655,9 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
     };
   }
 
-  _normalizeRichRecommendations(recommendations) {
+  _normalizeRichRecommendations(recommendations: unknown): Array<AnyRecord & { suggestion: string }> {
     if (!Array.isArray(recommendations)) return [];
-    return recommendations.map(recommendation => {
+    return recommendations.map((recommendation: unknown) => {
       if (typeof recommendation === 'string') {
         return {
           priority: 'medium',
@@ -623,13 +666,14 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
         };
       }
       if (recommendation && typeof recommendation === 'object') {
+        const record = recommendation as AnyRecord;
         return {
           ...recommendation,
           suggestion: String(
-            recommendation.suggestion
-              ?? recommendation.description
-              ?? recommendation.text
-              ?? JSON.stringify(recommendation)
+            record.suggestion
+              ?? record.description
+              ?? record.text
+              ?? JSON.stringify(record)
           )
         };
       }
@@ -646,7 +690,7 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
    * Matches patterns like "GAME AUTHENTICITY: 8/10" or "game_authenticity: 8"
    * or JSON-like "game_authenticity": 8.
    */
-  extractDimensionScores(text) {
+  extractDimensionScores(text: unknown): Record<string, number> | null {
     if (!text || typeof text !== 'string') return null;
 
     // Try embedded JSON first: "dimensionScores": { ... }
@@ -658,12 +702,12 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
     }
 
     // Regex: "DIMENSION_NAME: N/10" or "dimension_name: N"
-    const scores = {};
+    const scores: Record<string, number> = {};
     // Match "WORD WORD: N/10" or "word_word: N/10" patterns
     const pattern = /(?:^|\n)\s*(?:\d+\.\s*)?[*]*([A-Z][A-Z_ &]+)[*]*\s*:\s*(\d+)\s*(?:\/\s*10)?/gm;
     for (const match of text.matchAll(pattern)) {
-      const name = match[1].trim().toLowerCase().replace(/[& ]+/g, '_');
-      const value = parseInt(match[2], 10);
+      const name = match[1]!.trim().toLowerCase().replace(/[& ]+/g, '_');
+      const value = parseInt(match[2]!, 10);
       if (value >= 0 && value <= 10) {
         scores[name] = value;
       }
@@ -675,7 +719,7 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
   /**
    * Extract score from judgment text
    */
-  extractScore(judgment) {
+  extractScore(judgment: unknown): number | null {
     if (!judgment || typeof judgment !== 'string') return null;
     
     const patterns = [
@@ -710,7 +754,7 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
     for (const pattern of patterns) {
       const match = judgment.match(pattern);
       if (match) {
-        const score = parseInt(match[1]);
+        const score = parseInt(match[1]!, 10);
         if (score >= 0 && score <= 10) {
           return score;
         }
@@ -744,18 +788,18 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
   /**
    * Extract issues from judgment text
    */
-  extractIssues(judgment) {
+  extractIssues(judgment: string): unknown[] {
     try {
       const jsonMatch = judgment.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         const parsed = JSON.parse(jsonMatch[0]);
         return parsed.issues || [];
       }
-    } catch (e) {
+    } catch (_error) {
       // Fall through to regex
     }
 
-    const issues = [];
+    const issues: string[] = [];
     const lines = judgment.split('\n');
     for (const line of lines) {
       if (line.match(/[-*]\s*(.+)/i) || line.match(/\d+\.\s*(.+)/i)) {
@@ -769,14 +813,14 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
   /**
    * Extract assessment from judgment text
    */
-  extractAssessment(judgment) {
+  extractAssessment(judgment: string): string | null {
     try {
       const jsonMatch = judgment.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         const parsed = JSON.parse(jsonMatch[0]);
         return parsed.assessment || null;
       }
-    } catch (e) {
+    } catch (_error) {
       // Fall through to regex
     }
 
@@ -795,7 +839,7 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
    * Build the validation result from API response data.
    * Handles semantic extraction, uncertainty, and cost recording.
    */
-  async _buildResult({ judgment, data, logprobs, attempts, responseTime, imagePath, context, reviewOutcome = null, outputFormat = null, structuredOutput = null }) {
+  async _buildResult({ judgment, data, logprobs, attempts, responseTime, imagePath, context, reviewOutcome = null, outputFormat = null, structuredOutput = null }: ReviewBuildInput): Promise<ValidationResult> {
     const isComparison = reviewOutcome?.kind === 'comparison';
     const semanticInfo = isComparison
       ? this.extractSemanticInfo({
@@ -825,12 +869,13 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
           enableHallucinationCheck: context.enableHallucinationCheck !== false,
           adaptiveSelfConsistency: context.adaptiveSelfConsistency !== false
         }, context);
-        uncertainty = enhanced.uncertainty;
-        confidence = enhanced.confidence;
-        selfConsistencyRecommended = enhanced.selfConsistencyRecommended || false;
-        selfConsistencyN = enhanced.selfConsistencyN || 0;
-        selfConsistencyReason = enhanced.selfConsistencyReason || '';
-      } catch (err) {
+        const enhancedRecord = enhanced as AnyRecord;
+        uncertainty = enhancedRecord.uncertainty;
+        confidence = enhancedRecord.confidence;
+        selfConsistencyRecommended = enhancedRecord.selfConsistencyRecommended || false;
+        selfConsistencyN = enhancedRecord.selfConsistencyN || 0;
+        selfConsistencyReason = enhancedRecord.selfConsistencyReason || '';
+      } catch (err: any) {
         if (this.config.debug.verbose) warn(`[VLLM] Uncertainty reduction failed: ${err.message}`);
       }
     }
@@ -885,7 +930,7 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
       selfConsistencyRecommended,
       selfConsistencyN,
       selfConsistencyReason,
-      outputFormat,
+      outputFormat: outputFormat as ValidationResult['outputFormat'],
       structuredOutput: structuredOutput ? {
         mode: structuredOutput.mode,
         diagnostic: structuredOutput.diagnostic
@@ -896,16 +941,16 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
         scores: reviewOutcome.scores,
         comparisonConfidence: reviewOutcome.confidence
       } : {})
-    };
+    } as ValidationResult;
   }
 
   /**
    * Validate prompt length and security. Returns sanitized prompt.
    */
-  _validateAndSanitizePrompt(prompt, context) {
+  _validateAndSanitizePrompt(prompt: string, context: JudgeContext): string {
     try {
       validatePrompt(prompt);
-    } catch (err) {
+    } catch (err: any) {
       throw new ValidationError(`Invalid prompt: ${err.message}`);
     }
 
@@ -918,7 +963,7 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
           systemPrefix: 'You are a UI evaluation assistant. User request:'
         });
       }
-    } catch (err) {
+    } catch (err: any) {
       throw new ValidationError(`Prompt security violation: ${err.message}`);
     }
     return prompt;
@@ -927,19 +972,19 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
   /**
    * Validate and resolve image paths. Throws on invalid paths.
    */
-  _validateImagePaths(imagePaths) {
+  _validateImagePaths(imagePaths: string[]): void {
     const validExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.webp'];
     for (const path of imagePaths) {
       try {
         if (path.startsWith('/') || path.startsWith(process.cwd())) {
           const resolved = resolve(path);
           if (!validExtensions.some(ext => resolved.toLowerCase().endsWith(ext))) {
-            throw new ValidationError('Invalid image format. Supported: png, jpg, jpeg, gif, webp', path);
+            throw new ValidationError('Invalid image format. Supported: png, jpg, jpeg, gif, webp', path as any);
           }
         } else {
           validateImagePath(path);
         }
-      } catch (err) {
+      } catch (err: any) {
         throw new FileError(`Invalid image path: ${err.message}`, basename(path));
       }
     }
@@ -950,20 +995,20 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
    * @param {Object} payload - Data to log
    * @param {string} method - Logger method name ('logAPICallPerformance' or 'logErrorPattern')
    */
-  _logPerf(payload, method) {
+  _logPerf(payload: AnyRecord, method: string): void {
     import('./utils/performance-logger.mjs')
-      .then(m => m[method](payload))
+      .then(m => (m as AnyRecord)[method](payload))
       .catch(() => {});
   }
 
   /**
    * Log cache hit/miss with optional session tracking. Fire-and-forget.
    */
-  _logCacheResult(operation, context, cacheKey) {
+  _logCacheResult(operation: 'hit' | 'miss', context: JudgeContext, cacheKey: string): void {
     const isHit = operation === 'hit';
-    import('./cache.mjs').then(({ getCache }) => {
+    import('./cache.mjs').then((module: any) => {
       try {
-        safeLogCacheOperation({ operation, hit: isHit, latency: 0, cacheSize: getCache().size, maxSize: 1000 });
+        safeLogCacheOperation({ operation, hit: isHit, latency: 0, cacheSize: module.getCache().size, maxSize: 1000 });
       } catch { /* ignore */ }
     }).catch(() => {});
 
@@ -973,14 +1018,14 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
 
     if (context.sessionId) {
       const method = isHit ? 'recordSessionCacheHit' : 'recordSessionCacheMiss';
-      import('./session-cost-tracker.mjs').then(m => m[method](context.sessionId)).catch(() => {});
+      import('./session-cost-tracker.mjs').then((m: any) => m[method](context.sessionId)).catch(() => {});
     }
   }
 
   /**
    * Route to the correct provider API method.
    */
-  async _callProviderAPI(providerImages, prompt, signal, isMultiImage, structuredOutput = null) {
+  async _callProviderAPI(providerImages: ProviderInput | ProviderInput[], prompt: string, signal: AbortSignal, _isMultiImage: boolean, structuredOutput: StructuredOutputSpec | null = null): Promise<Response> {
     const images = Array.isArray(providerImages) ? providerImages : [providerImages];
     return this.providerAdapter.call({
       images,
@@ -998,7 +1043,7 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
    * @deprecated Internal compatibility wrapper. Provider parsing now belongs
    * to the selected adapter.
    */
-  _parseProviderResponse(apiResponse) {
+  _parseProviderResponse(apiResponse: Response) {
     return this.providerAdapter.parseResponse(apiResponse);
   }
 
@@ -1012,9 +1057,9 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
    * @param {boolean} [isMultiImage=false] - Whether this is a multi-image request
    * @returns {Promise<Response>} API response
    */
-  async callGeminiAPI(base64Images, prompt, signal, isMultiImage = false, structuredOutput = null) {
+  async callGeminiAPI(base64Images: string | ProviderInput | Array<string | ProviderInput>, prompt: string, signal: AbortSignal, _isMultiImage = false, structuredOutput: StructuredOutputSpec | null = null): Promise<Response> {
     const inputs = Array.isArray(base64Images) ? base64Images : [base64Images];
-    const images = inputs.map(input => typeof input === 'string' ? { data: input, mime: 'image/png' } : input);
+    const images: ProviderInput[] = inputs.map(input => typeof input === 'string' ? { data: input, mime: 'image/png' as const } : input);
     return getProviderAdapter('gemini').call({
       images, prompt, signal, apiKey: this.apiKey,
       config: this.providerConfig, structuredOutput,
@@ -1031,9 +1076,9 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
    * @param {boolean} [isMultiImage=false] - Whether this is a multi-image request
    * @returns {Promise<Response>} API response
    */
-  async callOpenAIAPI(base64Images, prompt, signal, isMultiImage = false, structuredOutput = null) {
+  async callOpenAIAPI(base64Images: string | ProviderInput | Array<string | ProviderInput>, prompt: string, signal: AbortSignal, _isMultiImage = false, structuredOutput: StructuredOutputSpec | null = null): Promise<Response> {
     const inputs = Array.isArray(base64Images) ? base64Images : [base64Images];
-    const images = inputs.map(input => typeof input === 'string' ? { data: input, mime: 'image/png' } : input);
+    const images: ProviderInput[] = inputs.map(input => typeof input === 'string' ? { data: input, mime: 'image/png' as const } : input);
     const provider = ['openai', 'groq', 'openrouter'].includes(this.provider) ? this.provider : 'openai';
     return getProviderAdapter(provider).call({
       images, prompt, signal, apiKey: this.apiKey,
@@ -1051,9 +1096,9 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
    * @param {boolean} [isMultiImage=false] - Whether this is a multi-image request
    * @returns {Promise<Response>} API response
    */
-  async callClaudeAPI(base64Images, prompt, signal, isMultiImage = false) {
+  async callClaudeAPI(base64Images: string | ProviderInput | Array<string | ProviderInput>, prompt: string, signal: AbortSignal, _isMultiImage = false): Promise<Response> {
     const inputs = Array.isArray(base64Images) ? base64Images : [base64Images];
-    const images = inputs.map(input => typeof input === 'string' ? { data: input, mime: 'image/png' } : input);
+    const images: ProviderInput[] = inputs.map(input => typeof input === 'string' ? { data: input, mime: 'image/png' as const } : input);
     return getProviderAdapter('claude').call({
       images, prompt, signal, apiKey: this.apiKey,
       config: this.providerConfig, structuredOutput: null,
@@ -1063,7 +1108,7 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
   /**
    * Estimate cost based on token usage
    */
-  estimateCost(data, provider) {
+  estimateCost(data: AnyRecord, provider: string): AnyRecord | null {
     if (!this.providerConfig.pricing || this.providerConfig.pricing.input === 0) {
       return null; // Free or self-hosted
     }
@@ -1086,7 +1131,18 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
 }
 
 /** Execute the common provider call for an image-backed structured task. */
-async function executeStructuredImageTask({ judge, images, prompt, task, structuredOutput, context, signal, onAttempt }) {
+async function executeStructuredImageTask({
+  judge, images, prompt, task, structuredOutput, context, signal, onAttempt,
+}: {
+  judge: VLLMJudge;
+  images: ProviderInput[];
+  prompt: string;
+  task: any;
+  structuredOutput: StructuredOutputSpec;
+  context: JudgeContext;
+  signal: AbortSignal;
+  onAttempt?: (attempt: number) => void;
+}) {
   const maxRetries = context.maxRetries ?? 3;
   return executeStructuredTask({
     adapter: judge.providerAdapter,
@@ -1102,7 +1158,7 @@ async function executeStructuredImageTask({ judge, images, prompt, task, structu
     maxRetries,
     baseDelay: context.retryBaseDelay ?? RETRY_CONSTANTS.DEFAULT_BASE_DELAY_MS,
     maxDelay: context.retryMaxDelay ?? RETRY_CONSTANTS.DEFAULT_MAX_DELAY_MS,
-    onAttempt,
+    ...(onAttempt ? { onAttempt } : {}),
     onRetry: (err, attempt, delay) => {
       judge._logPerf({ error: err, context: `API retry (${judge.provider})`, recovery: 'exponential_backoff', retryCount: attempt }, 'logErrorPattern');
       if (judge.config.debug.verbose) {
@@ -1112,7 +1168,7 @@ async function executeStructuredImageTask({ judge, images, prompt, task, structu
   });
 }
 
-function checkImageTaskRateLimit(judge, context) {
+function checkImageTaskRateLimit(judge: VLLMJudge, context: JudgeContext): void {
   if (context.enableRateLimit === false) return;
   try {
     const rateLimiter = getRateLimiter(context.rateLimitOptions || {});
@@ -1120,12 +1176,12 @@ function checkImageTaskRateLimit(judge, context) {
       ? (1000 / 1_000_000) * judge.providerConfig.pricing.input
       : 0;
     rateLimiter.checkLimit(estimatedCost);
-  } catch (rateLimitError) {
+  } catch (rateLimitError: any) {
     throw new ValidationError(`Rate limit exceeded: ${rateLimitError.message}`);
   }
 }
 
-async function runGameAction(judge, imagePath, prompt, context) {
+async function runGameAction(judge: VLLMJudge, imagePath: string, prompt: string, context: JudgeContext): Promise<GameActionResult> {
   prompt = judge._validateAndSanitizePrompt(prompt, context);
   judge._validateImagePaths([imagePath]);
   if (!judge.enabled) {
@@ -1160,7 +1216,7 @@ async function runGameAction(judge, imagePath, prompt, context) {
     });
     attempts = result.attempts;
     return {
-      action: result.outcome,
+      action: result.outcome as GameAction,
       outputFormat: result.format,
       diagnostics: result.diagnostics,
       attempts,
@@ -1168,7 +1224,7 @@ async function runGameAction(judge, imagePath, prompt, context) {
       model: judge.providerConfig.model,
       structuredOutput: { mode: result.structuredOutput.mode, diagnostic: result.structuredOutput.diagnostic },
     };
-  } catch (error) {
+  } catch (error: any) {
     const responseTime = Date.now() - startTime;
     judge._logPerf({ provider: judge.provider, latency: responseTime, retries: attempts - 1, success: false, error, testName: context.testType || context.step || 'game-action' }, 'logAPICallPerformance');
     judge._logPerf({ error, context: `API call (${judge.provider})`, recovery: 'retry_with_backoff', retryCount: attempts - 1, recovered: false }, 'logErrorPattern');
@@ -1206,15 +1262,15 @@ async function runGameAction(judge, imagePath, prompt, context) {
  * 
  * @param {string} imagePath - Path to screenshot
  * @param {string} prompt - Evaluation prompt
- * @param {import('./index.mjs').ValidationContext} [context={}] - Validation context
+ * @param {import('#public-contract').ValidationContext} [context={}] - Validation context
  * @param {boolean} [context.useTemporalDecision] - Use TemporalDecisionManager (reduces LLM calls)
  * @param {boolean} [context.useEnsemble] - Use EnsembleJudge (improves accuracy)
  * @param {boolean} [context.autoSelectTier] - Select model tier
  * @param {boolean} [context.autoSelectProvider] - Auto-select cheapest provider
  * @param {boolean} [context.includeCostComparison] - Include cost comparison in result
- * @returns {Promise<import('./index.mjs').ValidationResult>} Validation result
+ * @returns {Promise<import('#public-contract').ValidationResult>} Validation result
  */
-export async function validateScreenshot(imagePath, prompt, context = {}) {
+export async function validateScreenshot(imagePath: ImagePath, prompt: string, context: JudgeContext = {}): Promise<ValidationResult> {
   // Auto-select tier if requested (cost optimization)
   if (context.autoSelectTier) {
     try {
@@ -1223,12 +1279,12 @@ export async function validateScreenshot(imagePath, prompt, context = {}) {
       // Merge tier into context for config creation
       context = {
         ...context,
-        modelTier: tier
-      };
+        modelTier: tier as NonNullable<ValidationContext['modelTier']>
+      } as JudgeContext;
       if (context.debug?.verbose) {
         log(`[VLLM] Auto-selected tier: ${tier} based on context`);
       }
-    } catch (error) {
+    } catch (error: any) {
       // Silently fail - auto-select is optional enhancement
       if (context.debug?.verbose) {
         warn(`[VLLM] Auto-tier selection failed: ${error.message}`);
@@ -1253,7 +1309,7 @@ export async function validateScreenshot(imagePath, prompt, context = {}) {
       if (context.debug?.verbose) {
         log(`[VLLM] Auto-selected provider: ${provider}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       // Silently fail - auto-select is optional enhancement
       if (context.debug?.verbose) {
         warn(`[VLLM] Auto-provider selection failed: ${error.message}`);
@@ -1269,11 +1325,11 @@ export async function validateScreenshot(imagePath, prompt, context = {}) {
       const providers = context.ensembleProviders || ['gemini', 'openai'];
       const ensemble = createEnsembleJudge(providers, context.ensembleOptions || {});
       const startTime = Date.now();
-      const result = await ensemble.evaluate(imagePath, prompt, context);
+      const result = await ensemble.evaluate(imagePath as string, prompt, context);
       const latency = Date.now() - startTime;
       
-      return result;
-    } catch (error) {
+      return result as unknown as ValidationResult;
+    } catch (error: any) {
       // If EnsembleJudge fails, fall back to single judge (graceful degradation)
       if (context.debug?.verbose) {
         log(`[VLLM] EnsembleJudge error: ${error.message}, falling back to single judge`);
@@ -1289,7 +1345,7 @@ export async function validateScreenshot(imagePath, prompt, context = {}) {
     try {
       const { calculateCostComparison } = await import('./cost-optimization.mjs');
       result.costComparison = calculateCostComparison(context, result);
-    } catch (error) {
+    } catch (error: any) {
       // Silently fail - cost comparison is optional
       if (context.debug?.verbose) {
         warn(`[VLLM] Cost comparison failed: ${error.message}`);
@@ -1304,6 +1360,6 @@ export async function validateScreenshot(imagePath, prompt, context = {}) {
  * Internal game-action entry point. It is intentionally not re-exported from
  * the package root or game route while that public API is still legacy JS.
  */
-export async function judgeGameAction(imagePath, prompt, context = {}) {
+export async function judgeGameAction(imagePath: string, prompt: string, context: JudgeContext = {}): Promise<GameActionResult> {
   return runGameAction(new VLLMJudge(context), imagePath, prompt, context);
 }

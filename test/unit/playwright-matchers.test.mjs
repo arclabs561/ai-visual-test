@@ -4,7 +4,7 @@ import { existsSync, unlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { VLLMJudge } from '../../src/judge.mjs';
+import { VLLMJudge } from '#judge';
 import { createMatchers } from '../../src/integrations/playwright.js';
 
 function registeredMatchers() {

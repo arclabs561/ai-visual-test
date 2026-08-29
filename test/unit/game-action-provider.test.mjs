@@ -4,7 +4,7 @@ import { mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { judgeGameAction } from '../../src/judge.mjs';
+import { judgeGameAction } from '#judge';
 import { ProviderError, TimeoutError } from '../../src/errors.mjs';
 
 const PNG_1X1 = Buffer.from(

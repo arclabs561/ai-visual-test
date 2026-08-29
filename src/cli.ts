@@ -228,7 +228,7 @@ async function defaultResolveConfig(input: { provider: string | null; model: str
 }
 
 async function defaultValidateScreenshot(imagePath: string, prompt: string, context: ValidationContext): Promise<ValidationResult> {
-  const { validateScreenshot } = await import('./judge.mjs');
+  const { validateScreenshot } = await import('#judge');
   return validateScreenshot(imagePath, prompt, context) as Promise<ValidationResult>;
 }
 

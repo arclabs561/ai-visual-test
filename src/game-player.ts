@@ -17,7 +17,7 @@
  * 2. `GameGym` - External iterator (advanced API for power users, RL integration, parallel games)
  */
 
-import { validateScreenshot, judgeGameAction } from './judge.mjs';
+import { validateScreenshot, judgeGameAction } from '#judge';
 import { TemporalDecisionManager } from '#temporal-orchestration';
 import { parseGameActionOutcome, type GameAction } from '#game-action-contract';
 import { writeFileSync, mkdirSync, existsSync } from 'fs';

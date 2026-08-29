@@ -75,7 +75,7 @@ describe('Vitest/Jest Matchers', () => {
   });
 
   it('toMatchVisually uses the counterbalanced candidate score', async (t) => {
-    const { VLLMJudge } = await import('../../src/judge.mjs');
+    const { VLLMJudge } = await import('#judge');
     const originalJudge = VLLMJudge.prototype.judgeScreenshot;
     t.after(() => { VLLMJudge.prototype.judgeScreenshot = originalJudge; });
 
@@ -109,7 +109,7 @@ describe('Vitest/Jest Matchers', () => {
   });
 
   it('toMatchVisually fails when image order changes the winner', async (t) => {
-    const { VLLMJudge } = await import('../../src/judge.mjs');
+    const { VLLMJudge } = await import('#judge');
     const originalJudge = VLLMJudge.prototype.judgeScreenshot;
     t.after(() => { VLLMJudge.prototype.judgeScreenshot = originalJudge; });
 

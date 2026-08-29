@@ -15,7 +15,7 @@ import '../test-setup.mjs';
 import { test, describe } from 'node:test';
 import assert from 'node:assert';
 import { validateScreenshot, createConfig } from '../../src/index.js';
-import { LatencyAwareBatchOptimizer } from '../../src/latency-aware-batch-optimizer.mjs';
+import { LatencyAwareBatchOptimizer } from '../../src/latency-aware-batch-optimizer.js';
 import { getCacheStats, clearCache } from '../../src/cache.mjs';
 import { getCostStats } from '../../src/cost-tracker.mjs';
 import { existsSync, readFileSync } from 'fs';
@@ -304,4 +304,3 @@ describe('Optimization Claims Validation', () => {
     });
   });
 });
-

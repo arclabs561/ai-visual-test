@@ -6,7 +6,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { LatencyAwareBatchOptimizer } from '../../src/latency-aware-batch-optimizer.mjs';
+import { LatencyAwareBatchOptimizer } from '../../src/latency-aware-batch-optimizer.js';
 import { selectModelTier, selectProvider } from '../../src/model-tier-selector.mjs';
 
 test('LatencyAwareBatchOptimizer should process <100ms requests quickly', async () => {
@@ -93,4 +93,3 @@ test('LatencyAwareBatchOptimizer should prioritize critical requests', async () 
   assert.ok(processOrder.length >= 1, 'Should process at least one request');
   // Note: Due to async nature, we can't guarantee exact order, but critical should be prioritized
 });
-

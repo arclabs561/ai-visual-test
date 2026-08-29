@@ -14,18 +14,23 @@
 /**
  * Calculate Spearman's rank correlation coefficient
  * 
- * @param {Array<number>} x - First set of values
- * @param {Array<number>} y - Second set of values
- * @returns {number | null} Spearman's ρ (rho), or null if insufficient data
+ * @param x - First set of values.
+ * @param y - Second set of values.
+ * @returns Spearman's ρ (rho), or null if insufficient data.
  */
-export function spearmanCorrelation(x, y) {
+export function spearmanCorrelation(
+  x: readonly (number | null | undefined)[],
+  y: readonly (number | null | undefined)[],
+): number | null {
   if (x.length !== y.length || x.length < 2) {
     return null;
   }
   
   // Remove pairs with null/undefined values
-  const pairs = x.map((xi, i) => [xi, y[i]])
-    .filter(([xi, yi]) => xi != null && yi != null);
+  const pairs: Array<readonly [number, number]> = x.flatMap((xi, index) => {
+    const yi = y[index];
+    return xi != null && yi != null ? [[xi, yi] as const] : [];
+  });
   
   if (pairs.length < 2) {
     return null;
@@ -45,11 +50,11 @@ export function spearmanCorrelation(x, y) {
 /**
  * Calculate Pearson's correlation coefficient
  * 
- * @param {Array<number>} x - First set of values
- * @param {Array<number>} y - Second set of values
- * @returns {number | null} Pearson's r, or null if insufficient data
+ * @param x - First set of values.
+ * @param y - Second set of values.
+ * @returns Pearson's r, or null if insufficient data.
  */
-export function pearsonCorrelation(x, y) {
+export function pearsonCorrelation(x: readonly number[], y: readonly number[]): number | null {
   if (x.length !== y.length || x.length < 2) {
     return null;
   }
@@ -63,8 +68,8 @@ export function pearsonCorrelation(x, y) {
   let yVariance = 0;
   
   for (let i = 0; i < n; i++) {
-    const xDiff = x[i] - xMean;
-    const yDiff = y[i] - yMean;
+    const xDiff = x[i]! - xMean;
+    const yDiff = y[i]! - yMean;
     numerator += xDiff * yDiff;
     xVariance += xDiff * xDiff;
     yVariance += yDiff * yDiff;
@@ -82,14 +87,14 @@ export function pearsonCorrelation(x, y) {
 /**
  * Rank values (handle ties by averaging)
  * 
- * @param {Array<number>} values - Values to rank
- * @returns {Array<number>} Ranks (1-indexed)
+ * @param values - Values to rank.
+ * @returns Ranks (1-indexed).
  */
-function rank(values) {
+function rank(values: readonly number[]): number[] {
   const indexed = values.map((v, i) => ({ value: v, index: i }));
   indexed.sort((a, b) => a.value - b.value);
   
-  const ranks = new Array(values.length);
+  const ranks: number[] = new Array(values.length);
   let currentRank = 1;
   
   for (let i = 0; i < indexed.length; i++) {
@@ -98,7 +103,7 @@ function rank(values) {
     let tieSum = currentRank;
     
     while (i + tieCount < indexed.length && 
-           indexed[i].value === indexed[i + tieCount].value) {
+           indexed[i]!.value === indexed[i + tieCount]!.value) {
       tieSum += currentRank + tieCount;
       tieCount++;
     }
@@ -107,7 +112,7 @@ function rank(values) {
     const avgRank = tieSum / tieCount;
     
     for (let j = 0; j < tieCount; j++) {
-      ranks[indexed[i + j].index] = avgRank;
+      ranks[indexed[i + j]!.index] = avgRank;
     }
     
     i += tieCount - 1;
@@ -120,17 +125,14 @@ function rank(values) {
 /**
  * Calculate agreement between two rankings
  * 
- * @param {Array<number>} ranking1 - First ranking (indices or scores)
- * @param {Array<number>} ranking2 - Second ranking (indices or scores)
- * @returns {{
- *   spearman: number | null;
- *   pearson: number | null;
- *   kendall: number | null;
- *   exactMatches: number;
- *   totalItems: number;
- * }} Agreement metrics
+ * @param ranking1 - First ranking (indices or scores).
+ * @param ranking2 - Second ranking (indices or scores).
+ * @returns Agreement metrics. The agreement rate is null when there are no items.
  */
-export function calculateRankAgreement(ranking1, ranking2) {
+export function calculateRankAgreement(
+  ranking1: readonly number[],
+  ranking2: readonly number[],
+): RankAgreement {
   const spearman = spearmanCorrelation(ranking1, ranking2);
   const pearson = pearsonCorrelation(ranking1, ranking2);
   const kendall = kendallTau(ranking1, ranking2);
@@ -144,18 +146,30 @@ export function calculateRankAgreement(ranking1, ranking2) {
     kendall,
     exactMatches,
     totalItems: ranking1.length,
-    agreementRate: exactMatches / ranking1.length
+    agreementRate: ranking1.length > 0 ? exactMatches / ranking1.length : null
   };
+}
+
+export interface RankAgreement {
+  spearman: number | null;
+  pearson: number | null;
+  kendall: number | null;
+  exactMatches: number;
+  totalItems: number;
+  agreementRate: number | null;
 }
 
 /**
  * Calculate Kendall's tau (rank correlation)
  * 
- * @param {Array<number>} x - First ranking
- * @param {Array<number>} y - Second ranking
- * @returns {number | null} Kendall's τ, or null if insufficient data
+ * @param x - First ranking.
+ * @param y - Second ranking.
+ * @returns Kendall's τ, or null if insufficient data.
  */
-function kendallTau(x, y) {
+function kendallTau(
+  x: readonly number[],
+  y: readonly number[],
+): number | null {
   if (x.length !== y.length || x.length < 2) {
     return null;
   }
@@ -165,8 +179,13 @@ function kendallTau(x, y) {
   
   for (let i = 0; i < x.length; i++) {
     for (let j = i + 1; j < x.length; j++) {
-      const xOrder = x[i] - x[j];
-      const yOrder = y[i] - y[j];
+      const xFirst = x[i];
+      const xSecond = x[j];
+      const yFirst = y[i];
+      const ySecond = y[j];
+      if (xFirst == null || xSecond == null || yFirst == null || ySecond == null) continue;
+      const xOrder = xFirst - xSecond;
+      const yOrder = yFirst - ySecond;
       
       if (xOrder * yOrder > 0) {
         concordant++;
@@ -184,4 +203,3 @@ function kendallTau(x, y) {
   
   return (concordant - discordant) / total;
 }
-

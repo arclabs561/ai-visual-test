@@ -4,7 +4,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { aggregateFeedback, generateRecommendations } from '../../src/feedback-aggregator.mjs';
+import { aggregateFeedback, generateRecommendations } from '../../src/feedback-aggregator.js';
 
 test('aggregateFeedback - empty results', () => {
   const result = aggregateFeedback([]);
@@ -120,3 +120,18 @@ test('generateRecommendations - with actionable items', () => {
   assert.ok(actionable.items.length > 0);
 });
 
+test('generateRecommendations - returns structured recommendation objects', () => {
+  const [recommendation] = generateRecommendations({
+    priority: { critical: ['fix checkout'], high: [], medium: [], low: [] },
+    categories: {},
+    actionableItems: {},
+    scores: [], issues: {}, recommendations: {}, strengths: {}, weaknesses: {}, trends: {},
+  });
+
+  assert.deepStrictEqual(recommendation, {
+    priority: 'critical',
+    category: 'all',
+    items: ['fix checkout'],
+    description: 'Critical issues that must be addressed immediately',
+  });
+});

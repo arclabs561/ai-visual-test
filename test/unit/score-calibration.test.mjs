@@ -7,7 +7,7 @@ import {
   resetCalibrationProfiles,
   deriveCalibrationProfile,
   analyzeScoreDistribution
-} from '../../src/score-calibration.mjs';
+} from '../../src/score-calibration.js';
 
 describe('Score Calibration', () => {
   beforeEach(() => {

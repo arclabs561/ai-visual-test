@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
 import { BatchOptimizer } from '../../src/batch-optimizer.mjs';
-import { LatencyAwareBatchOptimizer } from '../../src/latency-aware-batch-optimizer.mjs';
+import { LatencyAwareBatchOptimizer } from '../../src/latency-aware-batch-optimizer.js';
 
 // -- BatchOptimizer --
 

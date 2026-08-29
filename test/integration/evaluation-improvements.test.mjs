@@ -9,7 +9,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import { evaluateWithCounterBalance } from '../../src/position-counterbalance.js';
-import { spearmanCorrelation, calculateRankAgreement } from '../../src/metrics.mjs';
+import { spearmanCorrelation, calculateRankAgreement } from '../../src/metrics.js';
 
 describe('Improvement Validation', () => {
   describe('Position Counter-Balancing Reduces Bias', () => {

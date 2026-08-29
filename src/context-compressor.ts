@@ -1,3 +1,46 @@
+import type { TemporalNote } from '#temporal-core';
+
+type StateRecord = Record<string, unknown>;
+type ContextNote = TemporalNote & {
+  severity?: string;
+  reflection?: { score?: unknown; [key: string]: unknown } | null;
+  state?: StateRecord | null;
+};
+
+export interface ContextCompressionOptions {
+  maxTokens?: number;
+  maxNotes?: number;
+  includeRecent?: boolean;
+  includeKeyEvents?: boolean;
+  aggregationStrategy?: 'temporal' | 'semantic' | 'importance';
+}
+
+export interface ContextCompressionResult {
+  compressed: ContextNote[];
+  summary: string;
+  tokenEstimate: number;
+  compressionRatio: number;
+  originalCount?: number;
+  compressedCount?: number;
+}
+
+export interface StateHistoryCompressionOptions {
+  maxStates?: number;
+  includeFirst?: boolean;
+  includeLast?: boolean;
+  includeKeyTransitions?: boolean;
+}
+
+export interface StateHistoryCompressionResult {
+  compressed: StateRecord[];
+  summary: string;
+  tokenEstimate: number;
+  compressionRatio?: number;
+  originalCount?: number;
+  compressedCount?: number;
+  originalTokenEstimate?: number;
+}
+
 /**
  * Context Compressor
  *
@@ -9,17 +52,11 @@
 /**
  * Compress context by aggregating notes and extracting key insights
  *
- * @param {import('#temporal-core').TemporalNote[]} notes - Array of temporal notes to compress
- * @param {{
- *   maxTokens?: number;
- *   maxNotes?: number;
- *   includeRecent?: boolean;
- *   includeKeyEvents?: boolean;
- *   aggregationStrategy?: 'temporal' | 'semantic' | 'importance';
- * }} [options={}] - Compression options
- * @returns {import('#temporal-core').TemporalNote[]} Compressed array of notes
+ * @param notes - Array of temporal notes to compress.
+ * @param options - Compression options.
+ * @returns A compression report, including the selected notes and token estimates.
  */
-export function compressContext(notes, options = {}) {
+export function compressContext(notes: readonly ContextNote[] | null | undefined, options: ContextCompressionOptions = {}): ContextCompressionResult {
   const {
     maxTokens = 500, // Target token count
     maxNotes = 10, // Maximum notes to include
@@ -50,7 +87,7 @@ export function compressContext(notes, options = {}) {
   );
 
   // Select notes based on strategy
-  let selectedNotes = [];
+  let selectedNotes: ContextNote[] = [];
 
   if (aggregationStrategy === 'temporal') {
     // Temporal: Include most recent + key events
@@ -61,7 +98,7 @@ export function compressContext(notes, options = {}) {
     const combined = [...recentNotes, ...keyEventNotes];
     const seen = new Set();
     selectedNotes = combined.filter(note => {
-      const id = note.step + (note.timestamp || 0);
+      const id = (note.step ?? '') + (note.timestamp || 0);
       if (seen.has(id)) return false;
       seen.add(id);
       return true;
@@ -95,30 +132,31 @@ export function compressContext(notes, options = {}) {
 /**
  * Select semantic representatives (group similar notes, pick one from each group)
  */
-function selectSemanticRepresentatives(notes, maxNotes, keyEvents) {
+function selectSemanticRepresentatives(notes: ContextNote[], maxNotes: number, keyEvents: ContextNote[]): ContextNote[] {
   // Simple semantic grouping by step type
-  const groups = new Map();
+  const groups = new Map<string, ContextNote[]>();
 
   notes.forEach(note => {
     const groupKey = note.step?.split('_')[0] || 'other';
     if (!groups.has(groupKey)) {
       groups.set(groupKey, []);
     }
-    groups.get(groupKey).push(note);
+    groups.get(groupKey)?.push(note);
   });
 
   // Select most recent from each group
-  const representatives = [];
+  const representatives: ContextNote[] = [];
   for (const [groupKey, groupNotes] of groups.entries()) {
     const sorted = groupNotes.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-    representatives.push(sorted[0]);
+    const representative = sorted[0];
+    if (representative) representatives.push(representative);
   }
 
   // Always include key events
   const combined = [...representatives, ...keyEvents];
   const seen = new Set();
   return combined.filter(note => {
-    const id = note.step + (note.timestamp || 0);
+    const id = (note.step ?? '') + (note.timestamp || 0);
     if (seen.has(id)) return false;
     seen.add(id);
     return true;
@@ -128,7 +166,7 @@ function selectSemanticRepresentatives(notes, maxNotes, keyEvents) {
 /**
  * Select notes by importance score
  */
-function selectByImportance(notes, maxNotes, keyEvents) {
+function selectByImportance(notes: ContextNote[], maxNotes: number, keyEvents: ContextNote[]): ContextNote[] {
   // Score notes by importance
   const scored = notes.map(note => {
     let score = 0;
@@ -162,7 +200,7 @@ function selectByImportance(notes, maxNotes, keyEvents) {
 /**
  * Generate summary from selected notes
  */
-function generateSummary(selectedNotes, allNotes) {
+function generateSummary(selectedNotes: readonly ContextNote[], allNotes: readonly ContextNote[]): string {
   if (selectedNotes.length === 0) {
     return 'No notes available';
   }
@@ -170,12 +208,6 @@ function generateSummary(selectedNotes, allNotes) {
   const parts = [];
 
   // Count by type
-  const typeCounts = {};
-  selectedNotes.forEach(note => {
-    const type = note.step?.split('_')[0] || 'other';
-    typeCounts[type] = (typeCounts[type] || 0) + 1;
-  });
-
   parts.push(`Summary: ${selectedNotes.length} key observations from ${allNotes.length} total notes.`);
 
   // Key statistics
@@ -189,8 +221,8 @@ function generateSummary(selectedNotes, allNotes) {
 
   // Time span
   if (selectedNotes.length > 1) {
-    const first = selectedNotes[selectedNotes.length - 1].timestamp || 0;
-    const last = selectedNotes[0].timestamp || 0;
+    const first = selectedNotes[selectedNotes.length - 1]?.timestamp || 0;
+    const last = selectedNotes[0]?.timestamp || 0;
     const span = Math.round((last - first) / 1000);
     if (span > 0) parts.push(`Time span: ${span}s`);
   }
@@ -201,7 +233,7 @@ function generateSummary(selectedNotes, allNotes) {
 /**
  * Estimate token count for notes
  */
-function estimateTokens(notes, summary = '') {
+function estimateTokens(notes: readonly ContextNote[], summary = ''): number {
   // Rough estimate: 1 token ≈ 4 characters
   const noteText = notes.map(n =>
     `${n.step || ''} ${n.observation || ''} ${JSON.stringify(n.gameState || n.state || {})}`
@@ -213,14 +245,14 @@ function estimateTokens(notes, summary = '') {
 /**
  * Compress state history by keeping important transitions
  *
- * @param {Array<Record<string, unknown>>} stateHistory - Array of state objects
- * @param {{
- *   maxLength?: number;
- *   preserveImportant?: boolean;
- * }} [options={}] - Compression options
- * @returns {Array<Record<string, unknown>>} Compressed state history
+ * @param stateHistory - State objects to compress; a single object is accepted for compatibility.
+ * @param options - State selection options.
+ * @returns A compression report, including selected states and token estimates.
  */
-export function compressStateHistory(stateHistory, options = {}) {
+export function compressStateHistory(
+  stateHistory: readonly StateRecord[] | StateRecord | null | undefined,
+  options: StateHistoryCompressionOptions = {},
+): StateHistoryCompressionResult {
   const {
     maxStates = 3, // Maximum states to include
     includeFirst = true, // Always include first state
@@ -236,17 +268,19 @@ export function compressStateHistory(stateHistory, options = {}) {
     };
   }
 
-  const states = Array.isArray(stateHistory) ? stateHistory : [stateHistory];
+  const states: StateRecord[] = Array.isArray(stateHistory) ? [...stateHistory] : [stateHistory];
 
   // Select key states
-  let selectedStates = [];
+  const selectedStates: StateRecord[] = [];
 
   if (includeFirst && states.length > 0) {
-    selectedStates.push(states[0]);
+    const firstState = states[0];
+    if (firstState) selectedStates.push(firstState);
   }
 
   if (includeLast && states.length > 1 && states[states.length - 1] !== states[0]) {
-    selectedStates.push(states[states.length - 1]);
+    const lastState = states[states.length - 1];
+    if (lastState) selectedStates.push(lastState);
   }
 
   // Find key transitions (significant changes)
@@ -286,12 +320,13 @@ export function compressStateHistory(stateHistory, options = {}) {
 /**
  * Find key transitions (states with significant changes)
  */
-function findKeyTransitions(states) {
-  const transitions = [];
+function findKeyTransitions(states: readonly StateRecord[]): StateRecord[] {
+  const transitions: StateRecord[] = [];
 
   for (let i = 1; i < states.length; i++) {
     const prev = states[i - 1];
     const curr = states[i];
+    if (!prev || !curr) continue;
 
     // Check for significant changes (general-purpose, not game-specific)
     const hasSignificantChange = Object.keys(curr).some(key => {
@@ -318,7 +353,7 @@ function findKeyTransitions(states) {
 /**
  * Generate summary for state history
  */
-function generateStateSummary(selectedStates, allStates) {
+function generateStateSummary(selectedStates: readonly StateRecord[], allStates: readonly StateRecord[]): string {
   if (selectedStates.length === 0) {
     return 'No state history';
   }
@@ -329,6 +364,7 @@ function generateStateSummary(selectedStates, allStates) {
   if (selectedStates.length > 1) {
     const first = selectedStates[0];
     const last = selectedStates[selectedStates.length - 1];
+    if (!first || !last) return parts.join(', ');
 
     // Check for any changes (general-purpose)
     const hasChanges = Object.keys(last).some(key => first[key] !== last[key]);
@@ -342,7 +378,7 @@ function generateStateSummary(selectedStates, allStates) {
 /**
  * Estimate tokens for state history
  */
-function estimateStateTokens(states, summary = '') {
+function estimateStateTokens(states: readonly StateRecord[], summary = ''): number {
   const stateText = states.map(s => JSON.stringify(s)).join(' ');
   const totalText = stateText + ' ' + summary;
   return Math.ceil(totalText.length / 4);

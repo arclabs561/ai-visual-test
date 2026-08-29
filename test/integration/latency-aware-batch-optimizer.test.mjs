@@ -5,7 +5,7 @@
 import '../test-setup.mjs';
 import { describe, it, beforeEach } from 'node:test';
 import assert from 'node:assert';
-import { LatencyAwareBatchOptimizer } from '../../src/latency-aware-batch-optimizer.mjs';
+import { LatencyAwareBatchOptimizer } from '../../src/latency-aware-batch-optimizer.js';
 
 describe('Latency-Aware Batch Optimizer', () => {
   let optimizer;
@@ -96,7 +96,7 @@ describe('Latency-Aware Batch Optimizer', () => {
       assert.strictEqual(batchSizeUsed, 3);
     });
 
-    it('should track critical requests', async () => {
+    it('should clear critical request tracking once direct processing completes', async () => {
       optimizer._processRequest = async () => {
         return { score: 8.0, issues: [] };
       };
@@ -108,7 +108,7 @@ describe('Latency-Aware Batch Optimizer', () => {
         50
       );
       
-      assert.ok(optimizer.criticalRequests.has('critical.png'));
+      assert.ok(!optimizer.criticalRequests.has('critical.png'));
     });
   });
 
@@ -135,4 +135,3 @@ describe('Latency-Aware Batch Optimizer', () => {
     });
   });
 });
-

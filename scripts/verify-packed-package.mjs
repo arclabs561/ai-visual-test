@@ -116,14 +116,39 @@ try {
     'base64',
   ));
   const [binTarget] = Object.values(installedManifest.bin);
-  const cli = join(installedRoot, binTarget);
-  const cliResult = spawnSync(process.execPath, [cli, 'check', image, 'check package wiring'], {
+  if (typeof binTarget !== 'string' || !binTarget.endsWith('/ai-visual-test.js')) {
+    throw new Error(`Unexpected packed CLI target: ${String(binTarget)}`);
+  }
+  const cli = join(consumer, 'node_modules', '.bin', 'ai-visual-test');
+  const cliHelp = spawnSync(cli, ['--help'], {
     cwd: consumer,
-    env: { PATH: process.env.PATH || '' },
+    env: { PATH: process.env.PATH || '', AI_VISUAL_TEST_DISABLE_ENV_FILE: '1' },
     encoding: 'utf8',
   });
-  if (cliResult.status === 0 || !cliResult.stderr.includes('No provider detected')) {
-    throw new Error(`Packed CLI check path failed unexpectedly: ${cliResult.stderr.trim()}`);
+  if (cliHelp.status !== 0 || !cliHelp.stdout.includes('USAGE')) {
+    throw new Error(`Packed CLI help failed: ${cliHelp.error?.message || cliHelp.stderr.trim()}`);
+  }
+  const cliVersion = spawnSync(cli, ['--version'], {
+    cwd: consumer,
+    env: { PATH: process.env.PATH || '', AI_VISUAL_TEST_DISABLE_ENV_FILE: '1' },
+    encoding: 'utf8',
+  });
+  if (cliVersion.status !== 0 || cliVersion.stdout.trim() !== installedManifest.version) {
+    throw new Error(`Packed CLI version failed: ${cliVersion.stdout.trim()}`);
+  }
+  const cliResult = spawnSync(cli, ['check', image, 'check package wiring', '--json'], {
+    cwd: consumer,
+    env: { PATH: process.env.PATH || '', AI_VISUAL_TEST_DISABLE_ENV_FILE: '1' },
+    encoding: 'utf8',
+  });
+  let cliError;
+  try {
+    cliError = JSON.parse(cliResult.stdout);
+  } catch {
+    throw new Error(`Packed CLI JSON failure was not JSON: ${cliResult.stdout.trim()}`);
+  }
+  if (cliResult.status === 0 || cliError.code !== 'provider_not_configured' || typeof cliError.error !== 'string') {
+    throw new Error(`Packed CLI check path failed unexpectedly: ${cliResult.stdout.trim()}`);
   }
 
   process.stdout.write(`Packed package verified: ${specifiers.length} runtime routes and CLI check path\n`);

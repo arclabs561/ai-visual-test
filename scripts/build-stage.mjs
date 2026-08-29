@@ -50,19 +50,25 @@ copyTestAssets(join(ROOT, 'test'), join(STAGE, 'test'));
 
 const packageJson = JSON.parse(readFileSync(join(STAGE, 'package.json'), 'utf8'));
 packageJson.private = true;
-for (const subpath of ['./playwright', './vitest', './jest']) {
+for (const subpath of ['./ensemble', './playwright', './vitest', './jest']) {
   const route = packageJson.exports?.[subpath];
   if (!route || typeof route !== 'object') {
     throw new Error(`Missing staged package route: ${subpath}`);
   }
-  const integration = subpath === './playwright' ? 'playwright' : 'vitest-jest';
-  route.import = `./src/integrations/${integration}.js`;
-  route.types = `./src/integrations/${integration}.d.ts`;
+  if (subpath === './ensemble') {
+    route.import = './src/ensemble/index.js';
+    route.types = './types/ensemble-barrel.d.ts';
+  } else {
+    const integration = subpath === './playwright' ? 'playwright' : 'vitest-jest';
+    route.import = `./src/integrations/${integration}.js`;
+    route.types = `./src/integrations/${integration}.d.ts`;
+  }
 }
 packageJson.imports = {
   ...(packageJson.imports || {}),
   '#provider-adapters': './src/provider-adapters.js',
   '#dataset-evaluation-metrics': './src/dataset-evaluation-metrics.js',
+  '#ensemble-judge': './src/ensemble-judge.js',
   '#pairwise-fixture-metrics': './src/pairwise-fixture-metrics.js',
   '#page-validation': './src/page-validation.js',
   '#playwright-integration': './src/integrations/playwright.js',
@@ -76,7 +82,7 @@ writeFileSync(join(STAGE, 'package.json'), `${JSON.stringify(packageJson, null, 
 
 // The source manifest intentionally references build/ for migrated modules.
 // Prove Node can self-import each public alias after this mandatory stage.
-const sourceMatcherProgram = `const packageName = ${JSON.stringify(packageJson.name)}; for (const route of ['vitest', 'jest']) { const integration = await import(packageName + '/' + route); const registered = {}; integration.createMatchers({ extend(matchers) { Object.assign(registered, matchers); } }); for (const name of ['toPassVisualCheck', 'toHaveVisualScore', 'toMatchVisually']) { if (typeof registered[name] !== 'function') throw new Error('Missing source ' + route + ' matcher: ' + name); } const outcome = await registered.toPassVisualCheck(123, 'source package check'); if (outcome.pass !== false || !outcome.message().includes('string')) throw new Error('Unexpected source ' + route + ' matcher outcome'); } const root = await import(packageName); const playwright = await import(packageName + '/playwright'); if (root.createMatchers !== playwright.createMatchers) throw new Error('Root createMatchers is not the source Playwright adapter export'); const registered = {}; playwright.createMatchers({ extend(matchers) { Object.assign(registered, matchers); } }); for (const name of ['toHaveVisualScore', 'toBeAccessibleHybrid']) { if (typeof registered[name] !== 'function') throw new Error('Missing source Playwright matcher: ' + name); }`;
+const sourceMatcherProgram = `const packageName = ${JSON.stringify(packageJson.name)}; for (const route of ['vitest', 'jest']) { const integration = await import(packageName + '/' + route); const registered = {}; integration.createMatchers({ extend(matchers) { Object.assign(registered, matchers); } }); for (const name of ['toPassVisualCheck', 'toHaveVisualScore', 'toMatchVisually']) { if (typeof registered[name] !== 'function') throw new Error('Missing source ' + route + ' matcher: ' + name); } const outcome = await registered.toPassVisualCheck(123, 'source package check'); if (outcome.pass !== false || !outcome.message().includes('string')) throw new Error('Unexpected source ' + route + ' matcher outcome'); } const ensemble = await import(packageName + '/ensemble'); if (typeof ensemble.EnsembleJudge !== 'function' || typeof ensemble.createEnsembleJudge !== 'function') throw new Error('Missing source ensemble constructor exports'); const root = await import(packageName); const playwright = await import(packageName + '/playwright'); if (root.createMatchers !== playwright.createMatchers) throw new Error('Root createMatchers is not the source Playwright adapter export'); const registered = {}; playwright.createMatchers({ extend(matchers) { Object.assign(registered, matchers); } }); for (const name of ['toHaveVisualScore', 'toBeAccessibleHybrid']) { if (typeof registered[name] !== 'function') throw new Error('Missing source Playwright matcher: ' + name); }`;
 execFileSync(process.execPath, ['--input-type=module', '--eval', sourceMatcherProgram], {
   cwd: ROOT,
   stdio: 'inherit',

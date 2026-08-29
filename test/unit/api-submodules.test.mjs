@@ -45,7 +45,7 @@ describe('API Sub-Modules', () => {
   
   describe('ensemble sub-module', () => {
     it('should export ensemble functions', async () => {
-      const ensemble = await import('../../src/ensemble/index.mjs');
+      const ensemble = await import('../../src/ensemble/index.js');
       
       assert.ok(ensemble.EnsembleJudge, 'Should export EnsembleJudge');
       assert.ok(typeof ensemble.detectBias === 'function', 'Should export detectBias');

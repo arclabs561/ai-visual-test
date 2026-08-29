@@ -13,7 +13,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import { VLLMJudge } from '../../src/judge.mjs';
 import { validateComparison } from '../../src/page-validation.js';
-import { EnsembleJudge } from '../../src/ensemble-judge.mjs';
+import { EnsembleJudge } from '#ensemble-judge';
 import { detectHallucination } from '../../src/hallucination-detector.mjs';
 import { composeSingleImagePrompt, composeComparisonPrompt } from '../../src/prompt-composer.mjs';
 import { createConfig } from '../../src/config.mjs';

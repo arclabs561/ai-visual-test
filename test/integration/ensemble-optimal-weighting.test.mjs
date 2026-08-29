@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { EnsembleJudge } from '../../src/ensemble-judge.mjs';
+import { EnsembleJudge } from '#ensemble-judge';
 import { VLLMJudge } from '../../src/judge.mjs';
 
 describe('Ensemble Optimal Weighting', () => {
@@ -44,5 +44,4 @@ describe('Ensemble Optimal Weighting', () => {
     assert.strictEqual(judge.weights[1], 1.0);
   });
 });
-
 

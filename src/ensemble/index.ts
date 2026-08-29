@@ -9,8 +9,19 @@
 // Ensemble judging
 export {
   EnsembleJudge,
-  createEnsembleJudge
-} from '../ensemble-judge.mjs';
+  createEnsembleJudge,
+} from '#ensemble-judge';
+export type {
+  Agreement,
+  Availability,
+  Disagreement,
+  EnsembleJudgeOptions,
+  EnsembleResult,
+  IndividualJudgment,
+  JudgeLike,
+  JudgeResponse,
+  VotingMethod,
+} from '#ensemble-judge';
 
 // Bias detection
 export {

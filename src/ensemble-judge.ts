@@ -14,18 +14,102 @@
 import { VLLMJudge } from './judge.mjs';
 import { detectBias, detectPositionBias } from './bias-detector.mjs';
 
-const DEFAULT_ASSESSMENT = (score) => (
+export type VotingMethod = 'weighted_average' | 'majority' | 'consensus' | 'optimal';
+
+/** The minimal judge protocol used by an ensemble. */
+export interface JudgeLike {
+  provider?: string;
+  judgeScreenshot(imagePath: string, prompt: string, context?: Record<string, unknown>): Promise<JudgeResponse>;
+}
+
+/** A provider response before ensemble normalization. */
+export interface JudgeResponse {
+  score: number | null;
+  assessment?: string | null | undefined;
+  issues?: string[] | undefined;
+  reasoning?: string | null | undefined;
+  provider?: string | undefined;
+  error?: string | null | undefined;
+  [key: string]: unknown;
+}
+
+/** A provider response annotated with its stable ensemble position. */
+export interface IndividualJudgment extends JudgeResponse {
+  judgeIndex: number;
+  issues: string[];
+  raw: JudgeResponse;
+}
+
+export interface EnsembleJudgeOptions {
+  judges?: JudgeLike[];
+  votingMethod?: VotingMethod;
+  weights?: number[] | null;
+  /** Operator-supplied measured accuracies, not calibrated by this package. */
+  judgeAccuracies?: number[] | null;
+  minAgreement?: number;
+  enableBiasDetection?: boolean;
+}
+
+export interface Availability {
+  totalJudges: number;
+  availableJudges: number;
+  unavailableJudges: number;
+  failures: Array<{ judgeIndex: number; provider?: string | undefined; reason: string }>;
+}
+
+export type Agreement =
+  | { score: 0; type: 'all_failed' }
+  | { score: 1; type: 'single_judge' }
+  | {
+    score: number;
+    scoreAgreement: number;
+    assessmentAgreement: number;
+    mean: number;
+    stdDev: number;
+    scores: number[];
+  };
+
+export interface Disagreement {
+  hasDisagreement: boolean;
+  type?: 'all_failed' | 'insufficient_scores';
+  scoreRange: number | null;
+  assessmentDisagreement: boolean;
+  uniqueAssessments: string[];
+  maxScore: number | null;
+  minScore: number | null;
+}
+
+export interface EnsembleResult {
+  score: number | null;
+  assessment: string;
+  issues: string[];
+  reasoning: string;
+  confidence: number;
+  availability: Availability;
+  agreement: Agreement;
+  disagreement: Disagreement;
+  individualJudgments: IndividualJudgment[];
+  judgeCount: number;
+  votingMethod: VotingMethod;
+  type?: 'no_effective_weight';
+  biasDetection?: { individual: unknown[]; position: unknown };
+}
+
+type AggregateResult = Omit<EnsembleResult, 'agreement' | 'disagreement' | 'individualJudgments' | 'judgeCount' | 'votingMethod'>;
+
+const DEFAULT_ASSESSMENT = (score: number) => (
   score >= 7 ? 'pass' : score >= 5 ? 'needs-improvement' : 'fail'
 );
 
-const isValidJudgment = (result) => (
+const isValidJudgment = (result: IndividualJudgment): result is IndividualJudgment & { score: number } => (
   !result?.error && Number.isFinite(result?.score)
 );
 
-const normalizeRejectionReason = (error) => {
+const normalizeRejectionReason = (error: unknown): string => {
   if (error instanceof Error && error.message.trim()) return error.message;
   if (typeof error === 'string' && error.trim()) return error;
-  if (error && typeof error.message === 'string' && error.message.trim()) return error.message;
+  if (error && typeof error === 'object' && 'message' in error
+    && typeof error.message === 'string' && error.message.trim()) return error.message;
   return 'unknown_rejection';
 };
 
@@ -37,10 +121,18 @@ const normalizeRejectionReason = (error) => {
  * @class EnsembleJudge
  */
 export class EnsembleJudge {
+  judges: JudgeLike[];
+  votingMethod: VotingMethod;
+  judgeAccuracies: number[] | null;
+  weights: number[];
+  minAgreement: number;
+  enableBiasDetection: boolean;
+  normalizedWeights: number[];
+
   /**
    * @param {import('./index.mjs').EnsembleJudgeOptions} [options={}] - Ensemble configuration
    */
-  constructor(options = {}) {
+  constructor(options: EnsembleJudgeOptions = {}) {
     const {
       judges = [],
       votingMethod = 'weighted_average', // 'weighted_average', 'majority', 'consensus', 'optimal'
@@ -54,7 +146,7 @@ export class EnsembleJudge {
       throw new TypeError('judges must be an array');
     }
 
-    this.judges = judges.length > 0 ? judges : [new VLLMJudge()];
+    this.judges = judges.length > 0 ? judges : [new VLLMJudge() as unknown as JudgeLike];
     this.votingMethod = votingMethod;
     this.judgeAccuracies = judgeAccuracies; // For optimal weighting (arXiv:2510.01499)
     this.weights = weights ?? this.judges.map(() => 1.0);
@@ -80,7 +172,7 @@ export class EnsembleJudge {
     this.normalizedWeights = scaledWeights.map(weight => weight / scaledWeightSum);
   }
 
-  validateWeights(weights) {
+  validateWeights(weights: number[]): void {
     if (!Array.isArray(weights) || weights.length !== this.judges.length) {
       throw new RangeError(`weights must contain one finite nonnegative value for each of ${this.judges.length} judges`);
     }
@@ -89,7 +181,7 @@ export class EnsembleJudge {
     }
   }
 
-  validateAccuracies(accuracies) {
+  validateAccuracies(accuracies: number[]): void {
     if (!Array.isArray(accuracies) || accuracies.length !== this.judges.length) {
       throw new RangeError(`judgeAccuracies must contain one value for each of ${this.judges.length} judges`);
     }
@@ -98,11 +190,11 @@ export class EnsembleJudge {
     }
   }
 
-  validResults(results) {
+  validResults(results: IndividualJudgment[]): Array<IndividualJudgment & { score: number }> {
     return results.filter(isValidJudgment);
   }
 
-  availability(results) {
+  availability(results: IndividualJudgment[]): Availability {
     const available = this.validResults(results);
     const unavailable = results.filter(result => !isValidJudgment(result));
     return {
@@ -127,7 +219,7 @@ export class EnsembleJudge {
    * @param {number[]} accuracies - Array of accuracy scores (0-1) for each judge
    * @returns {number[]} Optimal weights
    */
-  calculateOptimalWeights(accuracies) {
+  calculateOptimalWeights(accuracies: number[]): number[] {
     const K = accuracies.length; // Number of models
     
     // Edge case: single judge gets weight 1.0
@@ -169,7 +261,11 @@ export class EnsembleJudge {
    * @param {import('./index.mjs').ValidationContext} [context={}] - Validation context
    * @returns {Promise<import('./index.mjs').EnsembleResult>} Ensemble evaluation result
    */
-  async evaluate(imagePath, prompt, context = {}) {
+  async evaluate(
+    imagePath: string,
+    prompt: string,
+    context: Record<string, unknown> = {},
+  ): Promise<EnsembleResult> {
     // Run all judges in parallel
     const judgments = await Promise.all(
       this.judges.map((judge, index) => 
@@ -177,17 +273,17 @@ export class EnsembleJudge {
           ...context,
           judgeIndex: index,
           judgeCount: this.judges.length
-        }).catch(error => ({
+        }).catch((error): JudgeResponse => ({
           error: normalizeRejectionReason(error),
           judgeIndex: index,
           score: null,
-          provider: judge.provider
+          provider: judge.provider,
         }))
       )
     );
     
     // Extract scores and results
-    const results = judgments.map((judgment, index) => ({
+    const results: IndividualJudgment[] = judgments.map((judgment, index) => ({
       judgeIndex: index,
       score: judgment.score,
       assessment: judgment.assessment,
@@ -210,11 +306,13 @@ export class EnsembleJudge {
     }
     
     // Calculate agreement
-    aggregated.agreement = this.calculateAgreement(results);
-    aggregated.disagreement = this.analyzeDisagreement(results);
+    const agreement = this.calculateAgreement(results);
+    const disagreement = this.analyzeDisagreement(results);
     
     return {
       ...aggregated,
+      agreement,
+      disagreement,
       individualJudgments: results,
       judgeCount: this.judges.length,
       votingMethod: this.votingMethod
@@ -224,7 +322,7 @@ export class EnsembleJudge {
   /**
    * Aggregate results based on voting method
    */
-  aggregateResults(results) {
+  aggregateResults(results: IndividualJudgment[]): AggregateResult {
     const validResults = this.validResults(results);
     const availability = this.availability(results);
     
@@ -239,7 +337,7 @@ export class EnsembleJudge {
       };
     }
 
-    let aggregate;
+    let aggregate: Omit<AggregateResult, 'availability'>;
     switch (this.votingMethod) {
       case 'weighted_average':
       case 'optimal':
@@ -260,14 +358,14 @@ export class EnsembleJudge {
   /**
    * Weighted average voting
    */
-  weightedAverage(results) {
+  weightedAverage(results: IndividualJudgment[]): Omit<AggregateResult, 'availability'> {
     const validResults = this.validResults(results);
     if (validResults.length === 0) return this.aggregateResults([]);
 
     const scores = validResults.map(r => ({
       score: r.score,
       weight: Number.isFinite(this.normalizedWeights[r.judgeIndex])
-        ? this.normalizedWeights[r.judgeIndex]
+        ? this.normalizedWeights[r.judgeIndex] ?? (1.0 / validResults.length)
         : 1.0 / validResults.length
     }));
     
@@ -286,7 +384,7 @@ export class EnsembleJudge {
     const avgScore = weightedSum / totalWeight;
     
     // Aggregate issues (union)
-    const allIssues = new Set();
+    const allIssues = new Set<string>();
     validResults.forEach(r => {
       if (r.issues) r.issues.forEach(issue => allIssues.add(issue));
     });
@@ -311,12 +409,12 @@ export class EnsembleJudge {
   /**
    * Majority vote
    */
-  majorityVote(results) {
+  majorityVote(results: IndividualJudgment[]): Omit<AggregateResult, 'availability'> {
     const validResults = this.validResults(results);
     if (validResults.length === 0) return this.aggregateResults([]);
 
     const assessments = validResults.map(r => r.assessment || DEFAULT_ASSESSMENT(r.score));
-    const assessmentCounts = Object.create(null);
+    const assessmentCounts: Record<string, number> = Object.create(null) as Record<string, number>;
     assessments.forEach(a => {
       assessmentCounts[a] = (assessmentCounts[a] || 0) + 1;
     });
@@ -327,7 +425,7 @@ export class EnsembleJudge {
     // A tie is resolved by the higher mean score, then by code-unit label order. Both rules
     // are independent of the judges' response order.
     const majorityAssessment = tiedAssessments.sort((left, right) => {
-      const mean = (assessment) => {
+      const mean = (assessment: string) => {
         const scores = validResults
           .filter((result, index) => assessments[index] === assessment)
           .map(result => result.score);
@@ -336,7 +434,7 @@ export class EnsembleJudge {
       const meanDifference = mean(right) - mean(left);
       if (meanDifference !== 0) return meanDifference;
       return left === right ? 0 : left < right ? -1 : 1;
-    })[0];
+    })[0] ?? 'error';
     
     // Average score of majority
     const majorityResults = validResults.filter((r, i) => assessments[i] === majorityAssessment);
@@ -347,14 +445,14 @@ export class EnsembleJudge {
       assessment: majorityAssessment,
       issues: Array.from(new Set(majorityResults.flatMap(r => r.issues || []))),
       reasoning: `Majority vote: ${majorityAssessment} (${assessmentCounts[majorityAssessment]}/${validResults.length} judges)${tiedAssessments.length > 1 ? '; tie resolved by mean score then assessment label code units' : ''}`,
-      confidence: assessmentCounts[majorityAssessment] / validResults.length
+      confidence: (assessmentCounts[majorityAssessment] ?? 0) / validResults.length
     };
   }
   
   /**
    * Consensus vote (requires high agreement)
    */
-  consensusVote(results) {
+  consensusVote(results: IndividualJudgment[]): Omit<AggregateResult, 'availability'> {
     const agreement = this.calculateAgreement(results);
     const avg = this.weightedAverage(results);
 
@@ -377,7 +475,7 @@ export class EnsembleJudge {
   /**
    * Calculate agreement between judges
    */
-  calculateAgreement(results) {
+  calculateAgreement(results: IndividualJudgment[]): Agreement {
     const validResults = this.validResults(results);
     if (validResults.length === 0) {
       return { score: 0, type: 'all_failed' };
@@ -416,7 +514,7 @@ export class EnsembleJudge {
   /**
    * Analyze disagreement between judges
    */
-  analyzeDisagreement(results) {
+  analyzeDisagreement(results: IndividualJudgment[]): Disagreement {
     const validResults = this.validResults(results);
     if (validResults.length === 0) {
       return {
@@ -435,9 +533,9 @@ export class EnsembleJudge {
         type: 'insufficient_scores',
         scoreRange: null,
         assessmentDisagreement: false,
-        uniqueAssessments: [validResults[0].assessment || DEFAULT_ASSESSMENT(validResults[0].score)],
-        maxScore: validResults[0].score,
-        minScore: validResults[0].score
+        uniqueAssessments: [(validResults[0]?.assessment) || DEFAULT_ASSESSMENT(validResults[0]?.score ?? 0)],
+        maxScore: validResults[0]?.score ?? null,
+        minScore: validResults[0]?.score ?? null
       };
     }
 
@@ -460,7 +558,7 @@ export class EnsembleJudge {
   /**
    * Calculate confidence in aggregated result
    */
-  calculateConfidence(results, avgScore) {
+  calculateConfidence(results: IndividualJudgment[], _avgScore: number): number {
     const agreement = this.calculateAgreement(results);
     const disagreement = this.analyzeDisagreement(results);
     
@@ -480,7 +578,10 @@ export class EnsembleJudge {
  * @param {import('./index.mjs').EnsembleJudgeOptions} [options={}] - Ensemble configuration
  * @returns {EnsembleJudge} Configured ensemble judge
  */
-export function createEnsembleJudge(providers = ['gemini', 'openai'], options = {}) {
+export function createEnsembleJudge(
+  providers: string[] = ['gemini', 'openai'],
+  options: Omit<EnsembleJudgeOptions, 'judges'> = {},
+): EnsembleJudge {
   const judges = providers.map(provider => {
     const judge = new VLLMJudge({ provider });
     return judge;

@@ -299,7 +299,7 @@ export async function testGameplay(page, options = {}) {
       // IMPROVEMENT: Select representative screenshots for context window management
       if (result.temporalScreenshots && result.temporalScreenshots.length > 10) {
         try {
-          const { selectRepresentativeScreenshots } = await import('./temporal-prompt-formatting.mjs');
+          const { selectRepresentativeScreenshots } = await import('#temporal-prompt-formatting');
           const evaluations = allNotes.map(n => ({ score: n.score ?? 0 }));
           const selectedScreenshots = selectRepresentativeScreenshots(
             result.temporalScreenshots,

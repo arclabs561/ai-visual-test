@@ -49,7 +49,7 @@ export {
   selectTopWeightedNotes,
   selectRepresentativeScreenshots,
   evaluateTemporalDecision
-} from '../temporal-prompt-formatting.mjs';
+} from '#temporal-prompt-formatting';
 
 // Orchestration: decision manager, preprocessing, batch optimizer, validation, errors
 export {

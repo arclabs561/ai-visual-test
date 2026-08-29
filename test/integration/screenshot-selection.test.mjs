@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { selectRepresentativeScreenshots } from '../../src/temporal-prompt-formatting.mjs';
+import { selectRepresentativeScreenshots } from '#temporal-prompt-formatting';
 
 test('selectRepresentativeScreenshots returns all if under limit', () => {
   const screenshots = [
@@ -89,4 +89,3 @@ test('selectRepresentativeScreenshots selects by diversity', () => {
   assert.ok(selected[0] === screenshots[0], 'Should include first screenshot');
   assert.ok(selected[selected.length - 1] === screenshots[screenshots.length - 1], 'Should include last screenshot');
 });
-

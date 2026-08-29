@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { selectRepresentativeScreenshots } from '../../src/temporal-prompt-formatting.mjs';
+import { selectRepresentativeScreenshots } from '#temporal-prompt-formatting';
 
 test('selectRepresentativeScreenshots handles empty array', () => {
   const selected = selectRepresentativeScreenshots([], [], { maxScreenshots: 10 });

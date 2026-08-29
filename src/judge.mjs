@@ -20,7 +20,7 @@ import { getCached, setCached } from './cache.mjs';
 import { createHash } from 'crypto';
 import { FileError, ProviderError, TimeoutError, ValidationError } from './errors.mjs';
 import { log, warn } from './logger.mjs';
-import { evaluateTemporalDecision } from './temporal-prompt-formatting.mjs';
+import { evaluateTemporalDecision } from '#temporal-prompt-formatting';
 import { recordCost } from './cost-tracker.mjs';
 import { normalizeValidationResult } from '#validation-result-normalizer';
 import { validateImagePath, validatePrompt } from './validation.mjs';

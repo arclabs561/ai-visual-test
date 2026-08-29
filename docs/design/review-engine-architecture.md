@@ -4,7 +4,6 @@ scope: review engine, provider boundary, package architecture, source modernizat
 grounded-in:
   - README.md
   - docs/judge-graph.md
-  - .claude/reports/scrutinize-2026-08-28.md
 ---
 
 # Design: Review engine architecture

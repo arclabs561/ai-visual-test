@@ -5,7 +5,6 @@ grounded-in:
   - docs/design/review-engine-architecture.md
   - docs/design/dataset-evaluation-protocol.md
   - docs/judge-graph.md
-  - .claude/reports/scrutinize-2026-08-28.md
 review-trigger: before 1.0, another deliberately breaking release, or materially different downstream consumer evidence
 ---
 

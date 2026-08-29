@@ -6,7 +6,7 @@ grounded-in:
   - docs/design/dataset-evaluation-protocol.md
   - docs/judge-graph.md
   - .claude/reports/scrutinize-2026-08-28.md
-review-trigger: after the current contract-hardening release or before any source-language migration
+review-trigger: after the Phase 5 public-surface decision or new downstream consumer evidence
 ---
 
 # Roadmap: Review engine modernization
@@ -210,14 +210,15 @@ packed install, and the handwritten `index.d.ts` is retired.
 **Execution order:** the temporal, game, perception, video, and CLI boundaries
 are complete and have no declaration overlays. The ensemble composition overlay
 is also retired. Root contracts, implementation, and public barrel are compiled
-with no root declaration overlay. Phase 5 has begun with the smallest legacy
-leaf declarations. Extractors, errors, validators, multi-modal, and persona are
-now strict TypeScript with generated public declarations; their handwritten
-overlays are retired and their root/subpath runtime identities are checked from
-the packed package. Utilities remain last because its 89-value barrel still
-composes legacy leaves; those leaves must migrate before the public utility
-declaration can become generated. This boundary lands before any
-semver-sensitive root alias removal.
+with no root declaration overlay. Extractors, errors, validators, multi-modal,
+persona, and every value owner exported by `./utils` are now strict TypeScript
+with generated public declarations. The generated `./utils` barrel exposes the
+same 89 runtime values, its handwritten declaration is retired, and strict
+source, staged, and packed consumers exercise both primitive and service
+contracts. Private session attribution remains a legacy MJS implementation and
+is explicitly part of the Phase 5 disposition below, not the completed public
+utility-barrel trigger. No public declaration overlay remains; further
+public-surface work is the semver-sensitive Phase 5 decision below.
 
 Human labels do not block these mechanical conversions. They continue to block
 changes that claim calibrated ensemble weights, confidence, or learned
@@ -237,14 +238,48 @@ counterbalancing and the `./ensemble` scalar helper exports.
 
 **Consumer:** maintainers and actual downstream users, not hypothetical callers.
 
-- Survey external and sibling consumers before changing any public subpath.
-- Decide whether game, broad utilities, session-cost tracking, and research/evaluation machinery belong in the core package, an optional package, or the research harness.
-- Remove compatibility aliases only in a deliberate major version.
-- Use human-labeled screenshot data to decide which confidence, ensemble, and calibration features deserve supported status.
+**Status:** the first consumer-impact inventory is complete. It found two live
+in-repository `./game` consumers, direct `./utils` examples and type consumers,
+and sibling repositories that depend on utility-backed root aliases such as
+`createConfig` and cache accessors. Removing session-cost
+tracking before rewiring `judge.ts` would silently drop per-session cost and
+cache attribution because those dynamic failures are intentionally swallowed.
+Several evaluation and sibling research imports already target unsupported root
+aliases; they are compatibility debt, but the surface ADR must decide whether
+to add supported aliases or migrate those callers. Public or private consumers
+outside the surveyed workspace remain unverified.
+
+The remaining structural fork is deliberate and must not be hidden inside a
+source conversion:
+
+- **Option A — retain the current subpaths in core:** lowest migration risk and
+  consistent with the consumers found, but preserves a broad supported surface.
+- **Option B — move advanced subpaths to an optional companion package:** gives
+  the kernel a clearer boundary, but creates package/version coordination and a
+  migration for every `./game` and `./utils` caller.
+- **Option C — move advanced features into the research harness:** produces the
+  narrowest product, but breaks the documented game and utility workflows and
+  abandons their current package consumers.
+
+**Recommended proposal:** retain `./game`, `./utils`, and their root aliases for
+the current major; keep session-cost tracking private until its `judge.ts`
+callers have an explicit replacement; resolve stale evaluation/research imports
+according to the chosen compatibility policy; and record the intended
+next-major surface in a new ADR before removing or moving any export. This is a
+proposal, not authorization for an API change.
+
+The ADR fork should govern `package.json`, `src/index.ts`, public subpath
+barrels, examples, and migration notes. It must decide whether the next major
+keeps the broad core (A), creates a companion package (B), or makes advanced
+features research-only (C). Human-labeled screenshot evidence remains a
+separate gate for calibration, confidence, or learned-perception claims.
 
 **Reversibility:** one-way for removed public APIs.
 
-**Gate:** consumer-impact inventory, migration notes, major-version decision, and held-out evidence for any calibration claims.
+**Gate:** do not narrow a public route until the surface ADR is accepted, every
+listed local/sibling consumer has a migration path, clean packed compatibility
+tests cover the chosen route, and a deliberate major version is approved.
+Held-out human evidence is additionally required for calibration claims.
 
 ## Parallel evidence work
 
@@ -264,10 +299,12 @@ made until real independently reviewed labels exist.
 - Temporal coalescing and adaptive-sampling execution are parked design and
   correctness work. Their present abstractions and tests are not evidence that
   either execution strategy is implemented or ready for a product claim.
-- Utility-barrel narrowing and session-cost tracking disposition wait for consumer evidence.
+- Public utility/game narrowing and session-cost tracking disposition wait for
+  the Phase 5 surface ADR; the first consumer inventory argues against removal
+  in the current major.
 - Aesthetic auto-fix and autonomous remediation remain out of scope.
 
 ## Review trigger
 
-Re-run this roadmap after the remaining Phase 5 leaf declarations are retired
-or when a consumer survey changes the supported-surface assumptions.
+Re-run this roadmap after the Phase 5 surface ADR is accepted, or when new
+downstream consumer evidence changes the supported-surface assumptions.

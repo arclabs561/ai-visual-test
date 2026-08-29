@@ -46,15 +46,11 @@ export type {
   VideoJudgeOptions,
   VideoTranscodeOptions,
 } from '#video';
-export interface ExtractedIssue {
-  severity: string;
-  timestamp: string;
-  desc: string;
-}
+export type { ExtractedIssue } from './extractors.js';
 export {
   extractIssues,
   extractFixedTimestamps,
   findConsensus,
   detectSpirals,
   timestampToSeconds,
-} from './extractors.mjs';
+} from './extractors.js';

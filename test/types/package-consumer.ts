@@ -28,6 +28,11 @@ void rootVideoEntry;
 void rootVideoOptions;
 void rootTranscodeOptions;
 void rootExtractedIssue;
+const extractedIssue: extractors.ExtractedIssue = rootExtractedIssue;
+const consensus: extractors.ConsensusCluster[] = extractors.findConsensus({
+  flash: [extractedIssue],
+});
+void consensus;
 
 export const publicModules = {
   root, validators, temporal, multiModal, ensemble, video, extractors,

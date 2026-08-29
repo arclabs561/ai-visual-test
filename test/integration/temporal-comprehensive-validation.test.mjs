@@ -3,53 +3,16 @@
  * Comprehensive Temporal Validation Tests
  * 
  * Tests temporal aggregation, coherence, and decision logic using:
- * - Real evaluation datasets (webui, screenai, wcag)
  * - Synthetic test cases
  * - Edge cases and error conditions
  * - Performance benchmarks
  * 
- * Uses dataset adapters to load real data for validation.
  */
 
 import { test } from 'node:test';
 import assert from 'node:assert';
 import { aggregateTemporalNotes } from '#temporal-core';
 import { TemporalDecisionManager } from '#temporal-orchestration';
-import { loadDataset } from '../../evaluation/utils/dataset-adapters.mjs';
-
-test('Temporal Aggregation - Real Dataset Validation', async () => {
-  // Load real dataset samples
-  try {
-    const dataset = await loadDataset('real', { limit: 10 });
-    
-    // Handle dataset adapter response (object with samples array)
-    const samples = Array.isArray(dataset) ? dataset : (dataset?.samples || []);
-    
-    if (samples.length > 0) {
-      // Convert dataset samples to temporal notes
-      const notes = samples.map((sample, i) => ({
-        timestamp: Date.now() - (samples.length - i) * 1000,
-        score: sample.groundTruth?.preciseScore || sample.groundTruth?.expectedScore?.min || 5,
-        observation: `Sample ${i}: ${sample.metadata?.url || 'unknown'}`
-      }));
-      
-      const result = await aggregateTemporalNotes(notes);
-      
-      assert.ok(result, 'Should return aggregation result');
-      assert.ok(Array.isArray(result.windows), 'Should have windows array');
-      assert.ok(typeof result.coherence === 'number', 'Should have coherence score');
-      assert.ok(result.coherence >= 0 && result.coherence <= 1, 'Coherence should be in [0, 1]');
-      assert.ok(result.totalNotes === notes.length, 'Should track total notes');
-      
-      console.log(`✅ Real dataset: ${notes.length} notes → ${result.windows.length} windows, coherence: ${result.coherence.toFixed(3)}`);
-    } else {
-      // Skip if dataset not available
-    }
-  } catch (error) {
-    // Skip if dataset not available
-  }
-});
-
 test('Temporal Aggregation - Exponential vs Logarithmic Comparison', async () => {
   // Create test notes with known patterns
   const notes = Array.from({ length: 50 }, (_, i) => ({

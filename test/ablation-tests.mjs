@@ -11,7 +11,7 @@
 
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { validateScreenshot, createConfig } from '../src/index.mjs';
+import { validateScreenshot, createConfig } from '../src/index.js';
 import { evaluateWithCounterBalance } from '../src/position-counterbalance.js';
 import { buildRubricPrompt, getRubricForTestType } from '../src/rubrics.mjs';
 

@@ -10,7 +10,7 @@ import assert from 'node:assert/strict';
 import { access, readFile, readdir } from 'node:fs/promises';
 import { constants } from 'node:fs';
 import { resolve } from 'node:path';
-import * as root from '../../src/index.mjs';
+import * as root from '../../src/index.js';
 
 const packageJson = JSON.parse(await readFile('package.json', 'utf8'));
 
@@ -24,7 +24,7 @@ function exportRoute(entry) {
 function declaredValueExports(source) {
   const declarations = [...source.matchAll(/^export\s+(?:declare\s+)?(?:class|function|const)\s+(\w+)/gm)]
     .map(match => match[1]);
-  const reexports = [...source.matchAll(/^export\s*\{([^}]*)\}\s*from\s+['"][^'"]+['"];?/gm)]
+  const reexports = [...source.matchAll(/^export\s*\{([^}]*)\}(?:\s*from\s+['"][^'"]+['"])?;?/gm)]
     .flatMap(match => match[1].split(','))
     .map(name => name.trim())
     .filter(name => !name.startsWith('type '))
@@ -47,7 +47,7 @@ function namedValueReexports(source) {
 
 describe('package export/type contract', () => {
   it('maps every executable export to existing runtime and declaration files', async () => {
-    assert.equal(packageJson.types, './index.d.ts');
+    assert.equal(packageJson.types, packageJson.exports['.'].types);
 
     for (const [subpath, entry] of Object.entries(packageJson.exports)) {
       if (subpath === './package.json') continue;
@@ -58,9 +58,8 @@ describe('package export/type contract', () => {
   });
 
   it('keeps the root declaration value exports aligned with runtime', async () => {
-    const declarations = await readFile('index.d.ts', 'utf8');
+    const declarations = await readFile(resolve(packageJson.types), 'utf8');
     const declaredValues = declaredValueExports(declarations);
-    declaredValues.push('_validateScreenshot');
 
     assert.deepEqual(declaredValues.sort(), Object.keys(root).sort());
   });

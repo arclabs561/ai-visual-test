@@ -15,6 +15,20 @@ import * as jest from '@arclabs561/ai-visual-test/jest';
 import * as perception from '@arclabs561/ai-visual-test/perception';
 import { VideoJudge, judgeVideo, type VideoContext, type VideoInput, type VideoJudgeOptions } from '@arclabs561/ai-visual-test/video';
 
+const rootVideoContext: root.VideoContext = { maxTokens: 256 };
+const rootVideoInput: root.VideoInput = [{ path: 'clip.mp4', mime: 'video/mp4' }];
+const rootVideoEntry: root.VideoInputEntry = rootVideoInput[0]!;
+const rootVideoOptions: root.VideoJudgeOptions = { enabled: false, maxMB: 8 };
+const rootTranscodeOptions: root.VideoTranscodeOptions = { scale: '1280:-2', fps: 2, crf: 28 };
+const rootExtractedIssue: root.ExtractedIssue = {
+  severity: 'major', timestamp: '00:01', desc: 'Checkout total shifts',
+};
+void rootVideoContext;
+void rootVideoEntry;
+void rootVideoOptions;
+void rootTranscodeOptions;
+void rootExtractedIssue;
+
 export const publicModules = {
   root, validators, temporal, multiModal, ensemble, video, extractors,
   persona, utils, game, errors, playwright, vitest, jest, perception,

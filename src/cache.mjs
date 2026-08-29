@@ -157,7 +157,7 @@ export function generateCacheKey(imagePath, prompt, context = {}) {
  *   temperature?: number;
  *   maxTokens?: number;
  *   tier?: string;
- * }} [options={}] - LLM call options
+ * }} options - LLM call options
  * @returns {string} SHA-256 hash of cache key
  */
 export function generateTextLLMCacheKey(prompt, provider, options = {}) {
@@ -544,7 +544,7 @@ export function clearCache() {
  *   temperature?: number;
  *   maxTokens?: number;
  *   tier?: string;
- * }} [options={}] - LLM call options
+ * } | undefined} options - LLM call options; pass undefined to use defaults
  * @returns {string | null} Cached response or null if not found
  */
 export function getCachedTextLLM(prompt, provider, options = {}) {
@@ -607,7 +607,7 @@ export function getCachedTextLLM(prompt, provider, options = {}) {
  *   temperature?: number;
  *   maxTokens?: number;
  *   tier?: string;
- * }} [options={}] - LLM call options
+ * }} options - LLM call options
  * @param {string} response - LLM response to cache
  * @returns {void}
  */

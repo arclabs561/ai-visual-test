@@ -12,7 +12,7 @@
 import '../test-setup.mjs'; // Auto-load .env (must be first)
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { validateScreenshot, createConfig } from '../../src/index.mjs';
+import { validateScreenshot, createConfig } from '../../src/index.js';
 import { createTestImage } from '../test-image-utils.mjs';
 import { skipIfNoApiKey } from '../helpers/api-key-check.mjs';
 import { unlinkSync, existsSync, readFileSync } from 'fs';

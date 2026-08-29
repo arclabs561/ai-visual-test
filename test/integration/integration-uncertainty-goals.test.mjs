@@ -9,7 +9,7 @@
 import '../test-setup.mjs'; // Auto-load .env
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { validateScreenshot } from '../../src/index.mjs';
+import { validateScreenshot } from '../../src/index.js';
 import { skipIfNoApiKey } from '../helpers/api-key-check.mjs';
 import { existsSync, unlinkSync } from 'fs';
 import { createTestImage } from '../test-image-utils.mjs';

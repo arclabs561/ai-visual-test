@@ -14,7 +14,7 @@
 import '../test-setup.mjs';
 import { test, describe } from 'node:test';
 import assert from 'node:assert';
-import { validateScreenshot, createConfig } from '../../src/index.mjs';
+import { validateScreenshot, createConfig } from '../../src/index.js';
 import { LatencyAwareBatchOptimizer } from '../../src/latency-aware-batch-optimizer.mjs';
 import { getCacheStats, clearCache } from '../../src/cache.mjs';
 import { getCostStats } from '../../src/cost-tracker.mjs';

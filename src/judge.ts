@@ -35,7 +35,7 @@ import { createGameActionTask } from '#game-action-contract';
 import { getProviderAdapter } from '#provider-adapters';
 import { resolveTaskStructuredOutput } from '#structured-output';
 import { executeStructuredTask } from '#structured-task';
-import type { ConfigOptions, ValidationContext, ValidationResult } from '#public-contract';
+import type { ConfigOptions, SemanticInfo, ValidationContext, ValidationResult } from '#public-contract';
 import type { ProviderAdapter, ProviderConfig, ProviderImage, StructuredOutputSpec } from '#provider-adapters';
 import type { ReviewOutcome } from '#review-contract';
 import type { GameAction } from '#game-action-contract';
@@ -171,7 +171,7 @@ export class VLLMJudge {
    * @param {string} filePath - File path (for error messages)
    * @throws {ValidationError} If image format is invalid
    */
-  _validateImageFormat(buffer: Buffer, filePath: string): ProviderImage['mime'] {
+  private _validateImageFormat(buffer: Buffer, filePath: string): ProviderImage['mime'] {
     if (!Buffer.isBuffer(buffer) || buffer.length < 4) {
       throw new ValidationError('Invalid image file: file too small or not a buffer', basename(filePath) as any);
     }
@@ -568,12 +568,12 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
   /**
    * Extract semantic information from judgment text
    */
-  extractSemanticInfo(judgment: unknown): AnyRecord {
+  extractSemanticInfo(judgment: unknown): SemanticInfo {
     // Handle case where judgment is already an object
     if (typeof judgment === 'object' && judgment !== null && !Array.isArray(judgment)) {
       const record = judgment as AnyRecord;
       // Normalize issues: handle both array of strings and array of objects
-      let issues = record.issues || [];
+      let issues = Array.isArray(record.issues) ? record.issues : [];
       if (issues.length > 0 && typeof issues[0] === 'string') {
         // Convert string array to object array for consistency
         issues = issues.map((desc: unknown) => ({
@@ -593,7 +593,7 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
         issues: issues,
         assessment: record.assessment || null,
         reasoning: record.reasoning || null,
-        strengths: record.strengths || [],
+        strengths: Array.isArray(record.strengths) ? record.strengths : [],
         recommendations: recommendations,
         richRecommendations,
         evidence: record.evidence || null,
@@ -611,7 +611,7 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
       if (jsonMatch) {
         const parsed = JSON.parse(jsonMatch[0]);
         // Normalize issues and recommendations
-        let issues = parsed.issues || [];
+        let issues = Array.isArray(parsed.issues) ? parsed.issues : [];
         if (issues.length > 0 && typeof issues[0] === 'string') {
           issues = issues.map((desc: unknown) => ({
             description: desc,
@@ -629,7 +629,7 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
           issues: issues,
           assessment: parsed.assessment || null,
           reasoning: parsed.reasoning || null,
-          strengths: parsed.strengths || [],
+          strengths: Array.isArray(parsed.strengths) ? parsed.strengths : [],
           recommendations: recommendations,
           richRecommendations,
           evidence: parsed.evidence || null,
@@ -651,6 +651,9 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
       issues: this.extractIssues(judgmentText),
       assessment: this.extractAssessment(judgmentText),
       reasoning: judgmentText.substring(0, 500),
+      recommendations: [],
+      richRecommendations: [],
+      strengths: [],
       dimensionScores: this.extractDimensionScores(judgmentText),
     };
   }

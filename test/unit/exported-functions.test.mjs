@@ -7,7 +7,7 @@ import assert from 'node:assert';
 import {
   LatencyAwareBatchOptimizer,
   normalizeValidationResult
-} from '../../src/utils/index.mjs';
+} from '../../src/utils/index.js';
 import {
   checkCrossModalConsistency,
   validateExperienceConsistency

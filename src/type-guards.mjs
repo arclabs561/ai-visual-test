@@ -275,7 +275,7 @@ export function assertFunction(value, name = 'value') {
  * Narrow type to specific keys of an object
  * 
  * @template T
- * @template K
+ * @template {keyof T} K
  * @param {T} obj - Object to narrow
  * @param {K[]} keys - Keys to pick
  * @returns {Pick<T, K>} Object with only specified keys

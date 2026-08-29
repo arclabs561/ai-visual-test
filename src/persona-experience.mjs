@@ -361,7 +361,7 @@ export async function experiencePageAsPersona(page, persona, options = {}) {
   if (experienceNotes.length > 0) {
     try {
       const { aggregateTemporalNotes } = await import('#temporal-core');
-      const { aggregateMultiScale } = await import('./temporal-multi-scale.mjs');
+      const { aggregateMultiScale } = await import('#temporal-multi-scale');
       
       // Standard temporal aggregation
       aggregated = await aggregateTemporalNotes(experienceNotes, {
@@ -451,7 +451,7 @@ async function humanTimeScale(action, options = {}) {
 
   // Use research-aligned humanPerceptionTime if available
   try {
-    const { humanPerceptionTime } = await import('./temporal-multi-scale.mjs');
+    const { humanPerceptionTime } = await import('#temporal-multi-scale');
     
     // Map action types
     let perceptionAction = action;

@@ -660,7 +660,7 @@ let _selectTopWeightedNotes: NotePruner | null = null;
 
 async function getMultiScaleImports() {
   if (!_aggregateMultiScale) {
-    const mod = await import('./temporal-multi-scale.mjs');
+    const mod = await import('#temporal-multi-scale');
     _aggregateMultiScale = mod.aggregateMultiScale as MultiScaleAggregate;
   }
   return _aggregateMultiScale;

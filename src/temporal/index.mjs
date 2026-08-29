@@ -36,7 +36,7 @@ export {
   aggregateTemporalNotesAdaptive,
   calculateOptimalWindowSize,
   detectActivityPattern
-} from '../temporal-multi-scale.mjs';
+} from '#temporal-multi-scale';
 
 // Temporal formatting, pruning, logic
 export {

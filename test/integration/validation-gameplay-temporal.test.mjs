@@ -22,7 +22,7 @@ import {
 import {
   aggregateMultiScale,
   humanPerceptionTime
-} from '../../src/temporal-multi-scale.mjs';
+} from '#temporal-multi-scale';
 import { TIME_SCALES } from '#temporal-core';
 
 test.describe('Gameplay Temporal Experience Validation', () => {

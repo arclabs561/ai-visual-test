@@ -10,7 +10,7 @@
  */
 
 import { formatNotesForPrompt } from '#temporal-core';
-import { calculateAttentionWeight } from './temporal-multi-scale.mjs';
+import { calculateAttentionWeight } from '#temporal-multi-scale';
 import { log } from './logger.mjs';
 import { safeLogTemporalDecision } from './safe-logger.mjs';
 

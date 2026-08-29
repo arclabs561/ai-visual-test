@@ -110,6 +110,14 @@ try {
     stdio: 'inherit',
   });
 
+  const extractorTypeConsumer = `import { detectSpirals, extractIssues, findConsensus, type ConsensusCluster, type ExtractedIssue, type SpiralWarning } from ${JSON.stringify(`${installedManifest.name}/extractors`)}; const issue: ExtractedIssue = { severity: 'MAJOR', timestamp: '00:01', desc: 'Checkout shifted' }; const parsed: ExtractedIssue[] = extractIssues('[MAJOR] 00:01 — Checkout shifted'); const clusters: ConsensusCluster[] = findConsensus({ flash: [issue], pro: [issue] }); const spirals: SpiralWarning[] = detectSpirals({ flash: [issue] }, new Set([1])); void parsed; void clusters; void spirals;`;
+  const extractorConsumerPath = join(consumer, 'extractor-consumer.ts');
+  writeFileSync(extractorConsumerPath, extractorTypeConsumer);
+  execFileSync(process.execPath, [join(ROOT, 'node_modules', 'typescript', 'bin', 'tsc'), '--noEmit', '--strict', '--target', 'ES2022', '--module', 'NodeNext', '--moduleResolution', 'NodeNext', '--skipLibCheck', 'false', extractorConsumerPath], {
+    cwd: consumer,
+    stdio: 'inherit',
+  });
+
   const temporalCaptureTypeConsumer = `import { aggregateMultiScale, aggregateTemporalNotes, captureTemporalScreenshots as temporalCapture, formatTemporalForPrompt, type AggregatedTemporalNotes, type MultiScaleAggregation, type Page as TemporalPage, type TemporalNote, type TemporalPromptScreenshot, type TemporalScreenshot as TemporalScreenshot } from ${JSON.stringify(`${installedManifest.name}/temporal`)}; import { captureTemporalScreenshots as multiModalCapture, type Page as MultiModalPage, type TemporalScreenshot as MultiModalScreenshot } from ${JSON.stringify(`${installedManifest.name}/multi-modal`)}; const notes: TemporalNote[] = [{ timestamp: 0, score: 8, observation: 'initial' }]; const aggregate: Promise<AggregatedTemporalNotes> = aggregateTemporalNotes(notes, { temporalReference: 0 }); const multiScale: MultiScaleAggregation = aggregateMultiScale(notes); const prompt: string = formatTemporalForPrompt(multiScale, { includeMultiScale: true }); const promptScreenshot: TemporalPromptScreenshot = { path: 'prompt.png', timestamp: 0 }; const page = { async screenshot(_options: { type: 'png'; path: string }) { return new Uint8Array(); } }; const temporalPage: TemporalPage = page; const multiModalPage: MultiModalPage = page; const temporalScreenshots: Promise<TemporalScreenshot[]> = temporalCapture(temporalPage, { fps: 2, duration: 1000 }); const multiModalScreenshots: Promise<MultiModalScreenshot[]> = multiModalCapture(multiModalPage, 2, 1000, { outputDir: 'typed-results' }); void aggregate; void prompt; void promptScreenshot; void temporalScreenshots; void multiModalScreenshots;`;
   const temporalCaptureConsumerPath = join(consumer, 'temporal-capture-consumer.ts');
   writeFileSync(temporalCaptureConsumerPath, temporalCaptureTypeConsumer);

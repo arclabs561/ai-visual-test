@@ -12,7 +12,7 @@ import { normalizeValidationResult } from '#validation-result-normalizer';
 import { experiencePageAsPersona, experiencePageWithPersonas } from './persona-experience.mjs';
 import { extractRenderedCode, captureTemporalScreenshots, multiPerspectiveEvaluation } from './multi-modal.mjs';
 import { aggregateTemporalNotes, formatNotesForPrompt } from '#temporal-core';
-import { aggregateMultiScale } from './temporal-multi-scale.mjs';
+import { aggregateMultiScale } from '#temporal-multi-scale';
 import { generateGamePrompt, createGameGoal, createGameGoals } from './game-goal-prompts.mjs';
 import { checkCrossModalConsistency, validateExperienceConsistency } from './cross-modal-consistency.mjs';
 import { trackPropagation } from './experience-propagation.mjs';
@@ -253,7 +253,7 @@ export async function testGameplay(page, options = {}) {
       // Also use multi-scale aggregation for richer analysis
       // Always return multi-scale result (even if empty) for consistency
       try {
-        const { aggregateMultiScale } = await import('./temporal-multi-scale.mjs');
+        const { aggregateMultiScale } = await import('#temporal-multi-scale');
         const aggregatedMultiScale = aggregateMultiScale(allNotes, {
           attentionWeights: true
         });

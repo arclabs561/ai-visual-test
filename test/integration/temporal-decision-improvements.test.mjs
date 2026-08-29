@@ -7,7 +7,7 @@ import assert from 'node:assert';
 import {
   SequentialDecisionContext,
   humanPerceptionTime
-} from '../../src/temporal-multi-scale.mjs';
+} from '#temporal-multi-scale';
 
 describe('Iterative Improvements', () => {
   describe('Adaptive Confidence Thresholds', () => {
@@ -113,4 +113,3 @@ describe('Iterative Improvements', () => {
     });
   });
 });
-

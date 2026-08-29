@@ -81,6 +81,7 @@ packageJson.imports = {
   '#structured-output': './src/structured-output.js',
   '#temporal-capture': './src/temporal-capture.js',
   '#temporal-core': './src/temporal-core.js',
+  '#temporal-multi-scale': './src/temporal-multi-scale.js',
   '#temporal-orchestration': './src/temporal-orchestration.js',
   '#validation-result-normalizer': './src/validation-result-normalizer.js',
 };

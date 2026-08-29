@@ -11,7 +11,7 @@ import {
   calculateAttentionWeight,
   SequentialDecisionContext,
   humanPerceptionTime
-} from '../../src/temporal-multi-scale.mjs';
+} from '#temporal-multi-scale';
 
 describe('SequentialDecisionContext', () => {
   test('constructor with default options', () => {

@@ -20,9 +20,30 @@ import {
   CONTENT_THRESHOLDS,
   aggregateTemporalNotes
 } from '#temporal-core';
+import type { AggregatedTemporalNotes, TemporalNote } from '#temporal-core';
 import { validateAndSortNotes, validateTimeScales, validateAction, validatePerceptionContext, validateSequentialContextOptions } from '#temporal-orchestration';
 import { MultiScaleError, PerceptionTimeError } from '#temporal-orchestration';
 import { warn, log } from './logger.mjs';
+
+export type TemporalRecord = TemporalNote & Record<string, unknown>;
+type CoordinateMode = 'timestamp' | 'elapsed';
+type TimeScales = Record<string, number>;
+type MultiScaleWindow = {
+  index: number; startTime: number; endTime: number; notes: Array<TemporalRecord & { weight: number }>;
+  weightedScore: number; totalWeight: number;
+};
+export interface MultiScaleWindowSummary { window: number; timeRange: string; avgScore: number; noteCount: number; }
+export interface MultiScaleScale { windowSize: number; windows: MultiScaleWindowSummary[]; coherence: number; }
+export interface MultiScaleAggregation { scales: Record<string, MultiScaleScale>; summary: string; coherence: Record<string, number>; }
+export interface MultiScaleOptions { timeScales?: TimeScales; attentionWeights?: boolean; }
+export interface AttentionContext { elapsed: number; windowSize: number; scaleName: string; }
+export interface SequentialDecision { score?: number | null; issues?: string[]; [key: string]: unknown; }
+export interface SequentialContextOptions { maxHistory?: number; adaptationEnabled?: boolean; varianceTracking?: boolean; }
+export interface SequentialPatterns { trend?: 'improving' | 'declining' | 'stable'; commonIssues?: string[]; isConsistent?: boolean; scoreVariance?: number; recentScores?: number[]; }
+export interface VarianceIncreaseEvent { timestamp: number; baselineVariance: number; currentVariance: number; increasePercent: number; historyLength: number; type?: 'decrease'; }
+export interface PerceptionContext { persona?: { name?: string } | null; attentionLevel?: keyof typeof ATTENTION_MULTIPLIERS; actionComplexity?: keyof typeof COMPLEXITY_MULTIPLIERS; contentLength?: number; }
+export interface WindowSizeOptions { minWindow?: number; maxWindow?: number; defaultWindow?: number; }
+export interface AdaptiveAggregationOptions { adaptive?: boolean; windowSize?: number | null; decayFactor?: number; coherenceThreshold?: number; }
 
 // ============================================================================
 // MULTI-SCALE TEMPORAL AGGREGATION (from temporal-decision.mjs)
@@ -32,7 +53,7 @@ import { warn, log } from './logger.mjs';
  * Multi-scale temporal aggregation
  * Uses multiple time scales to capture different aspects of human perception
  */
-export function aggregateMultiScale(notes, options = {}) {
+export function aggregateMultiScale(notes: TemporalRecord[], options: MultiScaleOptions = {}): MultiScaleAggregation {
   // Validate and sort inputs
   const sortedNotes = validateAndSortNotes(notes);
 
@@ -56,12 +77,12 @@ export function aggregateMultiScale(notes, options = {}) {
   const coordinateMode = resolveTemporalCoordinateMode(sortedNotes);
   const startTime = coordinateMode === 'elapsed'
     ? 0
-    : getTemporalCoordinate(sortedNotes[0], coordinateMode);
-  const scales = {};
+    : getTemporalCoordinate(sortedNotes[0]!, coordinateMode);
+  const scales: Record<string, MultiScaleScale> = {};
 
   // Aggregate at each time scale
   for (const [scaleName, windowSize] of Object.entries(timeScales)) {
-    const windowsByIndex = new Map();
+    const windowsByIndex = new Map<number, MultiScaleWindow>();
 
     for (const note of sortedNotes) {
       const elapsed = getElapsedTime(note, startTime, coordinateMode);
@@ -83,7 +104,7 @@ export function aggregateMultiScale(notes, options = {}) {
         ? calculateAttentionWeight(note, { elapsed, windowSize, scaleName })
         : 1.0;
 
-      const window = windowsByIndex.get(windowIndex);
+      const window = windowsByIndex.get(windowIndex)!;
       window.notes.push({ ...note, weight });
 
       const score = note.gameState?.score ?? note.score ?? 0;
@@ -122,7 +143,7 @@ export function aggregateMultiScale(notes, options = {}) {
  * @param {Object} context - Context with elapsed, windowSize, scaleName
  * @returns {number} Attention weight
  */
-export function calculateAttentionWeight(note, context) {
+export function calculateAttentionWeight(note: TemporalRecord, context: AttentionContext): number {
   const { elapsed, windowSize, scaleName } = context;
 
   // Base recency weight (exponential decay)
@@ -147,7 +168,7 @@ export function calculateAttentionWeight(note, context) {
 /**
  * Calculate salience (importance) of a note
  */
-function calculateSalience(note) {
+function calculateSalience(note: TemporalRecord): number {
   let salience = 1.0;
 
   const score = note.score ?? note.gameState?.score ?? 5;
@@ -171,7 +192,7 @@ function calculateSalience(note) {
 /**
  * Calculate coherence for a specific time scale
  */
-function calculateCoherenceForScale(windows) {
+function calculateCoherenceForScale(windows: MultiScaleWindow[]): number {
   if (windows.length < 2) return 1.0;
 
   const scores = windows.map(w =>
@@ -182,7 +203,7 @@ function calculateCoherenceForScale(windows) {
 
   const trends = [];
   for (let i = 1; i < scores.length; i++) {
-    const change = scores[i] - scores[i - 1];
+    const change = scores[i]! - scores[i - 1]!;
     trends.push(change >= 0 ? 1 : -1);
   }
 
@@ -217,7 +238,7 @@ function calculateCoherenceForScale(windows) {
 /**
  * Generate summary across multiple time scales
  */
-function generateMultiScaleSummary(scales) {
+function generateMultiScaleSummary(scales: Record<string, MultiScaleScale>): string {
   const parts = [];
 
   for (const [scaleName, scale] of Object.entries(scales)) {
@@ -248,7 +269,16 @@ function generateMultiScaleSummary(scales) {
  * Maintains context across LLM calls for better sequential decision-making
  */
 export class SequentialDecisionContext {
-  constructor(options = {}) {
+  history: SequentialDecision[];
+  currentState: SequentialDecision | null;
+  adaptations: Record<string, unknown>;
+  maxHistory: number;
+  adaptationEnabled: boolean;
+  varianceTracking: boolean;
+  baselineVariance: number | null;
+  varianceIncreaseEvents?: VarianceIncreaseEvent[];
+
+  constructor(options: SequentialContextOptions = {}) {
     validateSequentialContextOptions(options);
 
     this.history = [];
@@ -260,7 +290,7 @@ export class SequentialDecisionContext {
     this.baselineVariance = null;
   }
 
-  addDecision(decision) {
+  addDecision(decision: SequentialDecision): void {
     this.history.push({
       ...decision,
       timestamp: Date.now(),
@@ -274,14 +304,14 @@ export class SequentialDecisionContext {
     this.currentState = decision;
 
     if (this.varianceTracking && this.history.length >= 3 && this.baselineVariance === null) {
-      const scores = this.history.map(d => d.score).filter(s => s !== null);
+      const scores = this.history.map(d => d.score).filter((s): s is number => typeof s === 'number');
       if (scores.length >= 3) {
         this.baselineVariance = calculateVariance(scores);
       }
     }
   }
 
-  adaptPrompt(basePrompt, currentContext) {
+  adaptPrompt(basePrompt: string, currentContext: unknown): string {
     if (!this.adaptationEnabled || this.history.length === 0) {
       return basePrompt;
     }
@@ -331,17 +361,17 @@ ${historyContext}
 ${this.buildAdaptationInstructions(patterns, currentContext)}`;
   }
 
-  identifyPatterns() {
+  identifyPatterns(): SequentialPatterns {
     if (this.history.length < 2) return {};
 
-    const scores = this.history.map(d => d.score).filter(s => s !== null);
+    const scores = this.history.map(d => d.score).filter((s): s is number => typeof s === 'number');
     const issues = this.history.flatMap(d => d.issues || []);
 
     const trend = scores.length >= 2
-      ? scores[scores.length - 1] > scores[scores.length - 2] ? 'improving' : 'declining'
+      ? scores[scores.length - 1]! > scores[scores.length - 2]! ? 'improving' : 'declining'
       : 'stable';
 
-    const issueCounts = {};
+    const issueCounts: Record<string, number> = {};
     issues.forEach(issue => {
       issueCounts[issue] = (issueCounts[issue] || 0) + 1;
     });
@@ -363,7 +393,7 @@ ${this.buildAdaptationInstructions(patterns, currentContext)}`;
     };
   }
 
-  buildHistoryContext(patterns) {
+  buildHistoryContext(patterns: SequentialPatterns): string {
     const parts = [];
 
     if (this.history.length > 0) {
@@ -378,22 +408,22 @@ ${this.buildAdaptationInstructions(patterns, currentContext)}`;
       parts.push(`Trend: ${patterns.trend}`);
     }
 
-    if (patterns.commonIssues.length > 0) {
-      parts.push(`Recurring issues: ${patterns.commonIssues.join(', ')}`);
+    if ((patterns.commonIssues?.length ?? 0) > 0) {
+      parts.push(`Recurring issues: ${patterns.commonIssues!.join(', ')}`);
     }
 
-    if (!patterns.isConsistent) {
-      parts.push(`Warning: Inconsistent scores detected (variance: ${patterns.scoreVariance.toFixed(2)})`);
+    if (patterns.isConsistent === false) {
+      parts.push(`Warning: Inconsistent scores detected (variance: ${patterns.scoreVariance!.toFixed(2)})`);
     }
 
     return parts.join('\n');
   }
 
-  buildAdaptationInstructions(patterns, currentContext) {
+  buildAdaptationInstructions(patterns: SequentialPatterns, _currentContext: unknown): string {
     const instructions = [];
 
     const variance = patterns.scoreVariance || 0;
-    const hasStrongPatterns = patterns.commonIssues.length > 0;
+    const hasStrongPatterns = (patterns.commonIssues?.length ?? 0) > 0;
     const confidence = variance < CONFIDENCE_THRESHOLDS.HIGH_VARIANCE && hasStrongPatterns ? 'high' :
                       variance < CONFIDENCE_THRESHOLDS.MEDIUM_VARIANCE || hasStrongPatterns ? 'medium' : 'low';
 
@@ -403,20 +433,21 @@ ${this.buildAdaptationInstructions(patterns, currentContext)}`;
       instructions.push('Previous evaluations showed a slight decline. Consider checking for issues.');
     }
 
-    if (patterns.commonIssues.length > 0) {
+    if ((patterns.commonIssues?.length ?? 0) > 0) {
       if (confidence === 'high') {
-        instructions.push(`Look for these recurring issues: ${patterns.commonIssues.join(', ')}`);
+        instructions.push(`Look for these recurring issues: ${patterns.commonIssues!.join(', ')}`);
       } else if (confidence === 'medium') {
-        instructions.push(`These issues appeared in previous evaluations: ${patterns.commonIssues.join(', ')}. Consider checking for them.`);
+        instructions.push(`These issues appeared in previous evaluations: ${patterns.commonIssues!.join(', ')}. Consider checking for them.`);
       }
     }
 
-    if (!patterns.isConsistent) {
+    if (patterns.isConsistent === false) {
       instructions.push('Previous evaluations were inconsistent. Be especially careful and thorough.');
     }
 
-    if (patterns.recentScores.length > 0) {
-      const avgRecent = patterns.recentScores.reduce((a, b) => a + b, 0) / patterns.recentScores.length;
+    if ((patterns.recentScores?.length ?? 0) > 0) {
+      const recentScores = patterns.recentScores!;
+      const avgRecent = recentScores.reduce((a, b) => a + b, 0) / recentScores.length;
       if (confidence === 'high') {
         instructions.push(`Recent average score: ${avgRecent.toFixed(1)}/10. Use this as context but evaluate independently.`);
       } else {
@@ -429,7 +460,7 @@ ${this.buildAdaptationInstructions(patterns, currentContext)}`;
       : 'Evaluate independently, but consider previous context for consistency.';
   }
 
-  getContext() {
+  getContext(): Record<string, unknown> {
     const patterns = this.identifyPatterns();
     return {
       historyLength: this.history.length,
@@ -450,7 +481,7 @@ ${this.buildAdaptationInstructions(patterns, currentContext)}`;
     };
   }
 
-  getVarianceStats() {
+  getVarianceStats(): Record<string, unknown> {
     if (!this.varianceTracking) {
       return { trackingEnabled: false };
     }
@@ -479,7 +510,7 @@ ${this.buildAdaptationInstructions(patterns, currentContext)}`;
  * Human Perception Time Modeling
  * Models human perception at different time scales
  */
-export function humanPerceptionTime(action, context = {}) {
+export function humanPerceptionTime(action: string, context: PerceptionContext = {}): number {
   validateAction(action);
   validatePerceptionContext(context);
 
@@ -514,7 +545,7 @@ export function humanPerceptionTime(action, context = {}) {
     return Math.max(TIME_SCALES.VISUAL_DECISION, Math.min(200, time));
   }
 
-  let time = actionTimes[action] || baseTimes.normal;
+  let time = actionTimes[action as keyof typeof actionTimes] || baseTimes.normal;
 
   time *= ATTENTION_MULTIPLIERS[attentionLevel] || 1.0;
   time *= COMPLEXITY_MULTIPLIERS[actionComplexity] || 1.0;
@@ -532,7 +563,7 @@ export function humanPerceptionTime(action, context = {}) {
   return Math.max(TIME_BOUNDS.MIN_PERCEPTION, Math.round(time));
 }
 
-function calculateReadingTime(contentLength) {
+function calculateReadingTime(contentLength: number): number {
   const words = contentLength / 5;
 
   const readingSpeed = words < CONTENT_THRESHOLDS.SHORT / 5
@@ -554,7 +585,7 @@ function calculateReadingTime(contentLength) {
   return Math.max(minTime, Math.min(maxTime, milliseconds));
 }
 
-function calculateVariance(values) {
+function calculateVariance(values: number[]): number {
   if (values.length === 0) return 0;
   const mean = values.reduce((a, b) => a + b, 0) / values.length;
   const variance = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length;
@@ -576,7 +607,7 @@ function calculateVariance(values) {
  * }} [options={}] - Options
  * @returns {number} Optimal window size in milliseconds
  */
-export function calculateOptimalWindowSize(notes, options = {}) {
+export function calculateOptimalWindowSize(notes: TemporalRecord[], options: WindowSizeOptions = {}): number {
   const {
     minWindow = 5000,
     maxWindow = 30000,
@@ -592,7 +623,7 @@ export function calculateOptimalWindowSize(notes, options = {}) {
   }
 
   const coordinateMode = resolveTemporalCoordinateMode(notes);
-  const timeSpan = getTemporalCoordinate(notes[notes.length - 1], coordinateMode) - getTemporalCoordinate(notes[0], coordinateMode);
+  const timeSpan = getTemporalCoordinate(notes[notes.length - 1]!, coordinateMode) - getTemporalCoordinate(notes[0]!, coordinateMode);
   if (timeSpan <= 0) {
     return defaultWindow;
   }
@@ -614,13 +645,13 @@ export function calculateOptimalWindowSize(notes, options = {}) {
  * @param {import('./index.mjs').TemporalNote[]} notes - Temporal notes
  * @returns {'fastChange' | 'slowChange' | 'consistent' | 'erratic'} Activity pattern
  */
-export function detectActivityPattern(notes) {
+export function detectActivityPattern(notes: TemporalRecord[]): 'fastChange' | 'slowChange' | 'consistent' | 'erratic' {
   if (notes.length < 3) {
     return 'consistent';
   }
 
   const coordinateMode = resolveTemporalCoordinateMode(notes);
-  const timeSpan = getTemporalCoordinate(notes[notes.length - 1], coordinateMode) - getTemporalCoordinate(notes[0], coordinateMode);
+  const timeSpan = getTemporalCoordinate(notes[notes.length - 1]!, coordinateMode) - getTemporalCoordinate(notes[0]!, coordinateMode);
   const avgTimeBetween = timeSpan / (notes.length - 1);
 
   const scores = notes
@@ -636,10 +667,11 @@ export function detectActivityPattern(notes) {
 
   let directionChanges = 0;
   for (let i = 1; i < scores.length; i++) {
-    const prev = scores[i - 1];
-    const curr = scores[i];
-    if ((prev < curr && i > 1 && scores[i - 2] > prev) ||
-        (prev > curr && i > 1 && scores[i - 2] < prev)) {
+    const prev = scores[i - 1]!;
+    const curr = scores[i]!;
+    const prior = i > 1 ? scores[i - 2]! : undefined;
+    if ((prev < curr && prior !== undefined && prior > prev) ||
+        (prev > curr && prior !== undefined && prior < prev)) {
       directionChanges++;
     }
   }
@@ -667,7 +699,7 @@ export function detectActivityPattern(notes) {
  * }} [options={}] - Aggregation options
  * @returns {import('./index.mjs').AggregatedTemporalNotes} Aggregated temporal notes
  */
-export async function aggregateTemporalNotesAdaptive(notes, options = {}) {
+export async function aggregateTemporalNotesAdaptive(notes: TemporalRecord[], options: AdaptiveAggregationOptions = {}): Promise<AggregatedTemporalNotes> {
   const {
     adaptive = true,
     windowSize,
@@ -701,7 +733,7 @@ export async function aggregateTemporalNotesAdaptive(notes, options = {}) {
   });
 }
 
-function validateFiniteTimeScales(timeScales) {
+function validateFiniteTimeScales(timeScales: TimeScales): void {
   for (const [name, value] of Object.entries(timeScales)) {
     if (!Number.isFinite(value) || value <= 0) {
       throw new MultiScaleError(`Invalid time scale ${name}: ${value}`, {
@@ -713,7 +745,7 @@ function validateFiniteTimeScales(timeScales) {
   }
 }
 
-function validateWindowOption(name, value) {
+function validateWindowOption(name: string, value: number): void {
   if (!Number.isFinite(value) || value <= 0) {
     throw new MultiScaleError(`${name} must be a finite positive number`, {
       name,
@@ -722,7 +754,7 @@ function validateWindowOption(name, value) {
   }
 }
 
-function resolveTemporalCoordinateMode(notes) {
+function resolveTemporalCoordinateMode(notes: TemporalRecord[]): CoordinateMode {
   if (notes.every(note => Number.isFinite(note.timestamp))) {
     return 'timestamp';
   }
@@ -736,12 +768,12 @@ function resolveTemporalCoordinateMode(notes) {
   });
 }
 
-function getTemporalCoordinate(note, coordinateMode) {
+function getTemporalCoordinate(note: TemporalRecord, coordinateMode: CoordinateMode): number {
   if (coordinateMode === 'elapsed' && Number.isFinite(note.elapsed)) {
-    return note.elapsed;
+    return note.elapsed!;
   }
   if (coordinateMode === 'timestamp' && Number.isFinite(note.timestamp)) {
-    return note.timestamp;
+    return note.timestamp!;
   }
 
   throw new MultiScaleError(`Temporal note is missing a finite ${coordinateMode} coordinate`, {
@@ -750,6 +782,6 @@ function getTemporalCoordinate(note, coordinateMode) {
   });
 }
 
-function getElapsedTime(note, startTime, coordinateMode) {
+function getElapsedTime(note: TemporalRecord, startTime: number, coordinateMode: CoordinateMode): number {
   return getTemporalCoordinate(note, coordinateMode) - startTime;
 }

@@ -7,7 +7,7 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert';
 import { TemporalBatchOptimizer } from '#temporal-orchestration';
-import { SequentialDecisionContext } from '../../src/temporal-multi-scale.mjs';
+import { SequentialDecisionContext } from '#temporal-multi-scale';
 
 describe('TemporalBatchOptimizer', () => {
   test('constructor extends BatchOptimizer', () => {

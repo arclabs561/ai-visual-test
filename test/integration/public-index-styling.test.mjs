@@ -16,7 +16,7 @@ import { strict as assert } from 'node:assert';
 import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { validateScreenshot } from '../../src/index.mjs';
+import { validateScreenshot } from '../../src/index.js';
 import {
   validateAccessibilityHybrid,
   getContrastRatio,

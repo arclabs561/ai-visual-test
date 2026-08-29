@@ -6,7 +6,7 @@
 
 import { test, describe } from 'node:test';
 import assert from 'node:assert';
-import { validateScreenshot } from '../../src/index.mjs';
+import { validateScreenshot } from '../../src/index.js';
 import {
   SequentialDecisionContext,
   TemporalBatchOptimizer,

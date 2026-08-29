@@ -20,7 +20,7 @@ import {
   collectHumanJudgment,
   loadHumanJudgment
 } from '../../evaluation/human-validation/human-validation.mjs';
-import { validateScreenshot, createConfig } from '../../src/index.mjs';
+import { validateScreenshot, createConfig } from '../../src/index.js';
 
 const VALIDATION_DIR = join(process.cwd(), 'evaluation', 'human-validation');
 

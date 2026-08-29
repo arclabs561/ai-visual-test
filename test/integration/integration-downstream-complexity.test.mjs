@@ -17,7 +17,7 @@ import assert from 'node:assert';
 import { 
   validateScreenshot,
   createConfig
-} from '../../src/index.mjs';
+} from '../../src/index.js';
 import { BatchOptimizer } from '../../src/batch-optimizer.mjs';
 import { experiencePageAsPersona, experiencePageWithPersonas } from '../../src/persona-experience.mjs';
 import { captureTemporalScreenshots, extractRenderedCode, multiModalValidation, multiPerspectiveEvaluation } from '../../src/multi-modal.mjs';

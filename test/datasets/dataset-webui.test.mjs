@@ -10,7 +10,7 @@ import assert from 'node:assert';
 import { existsSync, readFileSync, statSync, createReadStream } from 'fs';
 import { join } from 'path';
 import { loadDataset } from '../../evaluation/utils/dataset-adapters.mjs';
-import { validateScreenshot } from '../../src/index.mjs';
+import { validateScreenshot } from '../../src/index.js';
 
 // Note: We use adapters now, not converted JSON files
 

@@ -10,7 +10,7 @@
 
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { validateScreenshot } from '../../src/index.mjs';
+import { validateScreenshot } from '../../src/index.js';
 import { validateWithGoals, createGameGoal, generateGamePrompt } from '../../src/game/index.js';
 import { composeSingleImagePrompt } from '../../src/prompt-composer.mjs';
 import { createTestImage } from '../test-image-utils.mjs';

@@ -4,7 +4,7 @@ import assert from 'node:assert';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { TemporalDecisionManager } from '#temporal-orchestration';
-import { validateScreenshot } from '../../src/index.mjs';
+import { validateScreenshot } from '../../src/index.js';
 
 test('TemporalDecisionManager shouldPrompt logic', async () => {
   const manager = new TemporalDecisionManager({

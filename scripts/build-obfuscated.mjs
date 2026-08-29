@@ -32,7 +32,7 @@ const OBFUSCATE_FILES = [
 
 // Files to keep readable (API surface, validators, utilities)
 const KEEP_READABLE = [
-  'src/index.mjs',           // API surface
+  'src/index.js',            // API surface
   'src/judge.js',            // API wrapper
   'src/cache.mjs',           // Cache system
   'src/validators/',         // Validators directory
@@ -207,7 +207,6 @@ async function buildSourceFiles(skipObfuscation = false) {
 
   // Copy other files that should be published
   const filesToCopy = [
-    'index.d.ts',
     'README.md',
     'CHANGELOG.md',
     'CONTRIBUTING.md',
@@ -302,7 +301,6 @@ function updatePackageJson() {
   publishPackageJson.files = [
     'bin/',
     'src/',
-    'index.d.ts',
     'types/',
     'README.md',
     'CHANGELOG.md',

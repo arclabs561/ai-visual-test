@@ -43,7 +43,7 @@ describe('Library Best Practices', () => {
                              process.listenerCount('warning');
       
       // Import the library (in test mode, graceful shutdown should not initialize)
-      await import('../../src/index.mjs');
+      await import('../../src/index.js');
       
       // Wait a bit for any async initialization (graceful shutdown is async)
       await new Promise(resolve => setTimeout(resolve, 100));
@@ -276,7 +276,7 @@ describe('Library Best Practices', () => {
     
     it('should export functions that work without optional peer dependencies', async () => {
       // Test that core functionality works without optional dependencies
-      const { validateScreenshot } = await import('../../src/index.mjs');
+      const { validateScreenshot } = await import('../../src/index.js');
       
       // Should be able to create a validateScreenshot function
       assert.strictEqual(typeof validateScreenshot, 'function',
@@ -288,7 +288,7 @@ describe('Library Best Practices', () => {
     it('should not modify global object', async () => {
       const globalKeysBefore = Object.keys(global);
       
-      await import('../../src/index.mjs');
+      await import('../../src/index.js');
       
       const globalKeysAfter = Object.keys(global);
       
@@ -307,9 +307,9 @@ describe('Library Best Practices', () => {
   describe('Module Import Isolation', () => {
     it('should allow multiple imports without side effects', async () => {
       // Import multiple times
-      const module1 = await import('../../src/index.mjs');
-      const module2 = await import('../../src/index.mjs');
-      const module3 = await import('../../src/index.mjs');
+      const module1 = await import('../../src/index.js');
+      const module2 = await import('../../src/index.js');
+      const module3 = await import('../../src/index.js');
       
       // Should get same module (ES modules are cached)
       assert.strictEqual(module1, module2);

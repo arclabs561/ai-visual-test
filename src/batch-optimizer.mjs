@@ -115,7 +115,9 @@ export class BatchOptimizer {
    * @param {string | string[]} imagePaths - Single image path or array of image paths
    * @param {string} prompt - Validation prompt
    * @param {import('#public-contract').ValidationContext} [context={}] - Validation context
-   * @returns {Promise<import('#public-contract').ValidationResult[]>} Array of validation results
+   * @returns {Promise<import('#public-contract').ValidationResult[] | import('#public-contract').BatchValidationResult>}
+   * Array results for `BatchOptimizer`; an enriched report when dispatched to
+   * a `BatchValidator` subclass.
    */
   async batchValidate(imagePaths, prompt, context = {}) {
     if (!Array.isArray(imagePaths)) {

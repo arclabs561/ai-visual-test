@@ -8,7 +8,7 @@
  */
 
 import { chromium } from 'playwright';
-import { validateScreenshot } from '../src/index.mjs';
+import { validateScreenshot } from '../src/index.js';
 import { writeFileSync, mkdirSync, existsSync, rmSync } from 'fs';
 import { join } from 'path';
 import { loadEnv } from '../src/load-env.mjs';

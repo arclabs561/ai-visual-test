@@ -12,7 +12,7 @@ import assert from 'node:assert';
 describe('Consumer API', () => {
   describe('Core imports', () => {
     it('should export all 18 core symbols from main entry', async () => {
-      const mod = await import('../../src/index.mjs');
+      const mod = await import('../../src/index.js');
       const expected = [
         'validateScreenshot', '_validateScreenshot', 'VLLMJudge',
         'validatePage', 'validateWithRubric', 'extractSemanticInfo',
@@ -27,7 +27,7 @@ describe('Consumer API', () => {
     });
 
     it('should not export internal symbols from main entry', async () => {
-      const mod = await import('../../src/index.mjs');
+      const mod = await import('../../src/index.js');
       const internals = [
         'TemporalDecisionManager', 'aggregateTemporalNotes',
         'playGame', 'GameGym', 'detectBias', 'EnsembleJudge',
@@ -131,7 +131,7 @@ describe('Consumer API', () => {
 
   describe('extractSemanticInfo', () => {
     it('should parse JSON judgment objects', async () => {
-      const { extractSemanticInfo } = await import('../../src/index.mjs');
+      const { extractSemanticInfo } = await import('../../src/index.js');
       const result = extractSemanticInfo({
         score: 7,
         issues: ['Low contrast'],
@@ -144,13 +144,13 @@ describe('Consumer API', () => {
     });
 
     it('should parse JSON from string judgment', async () => {
-      const { extractSemanticInfo } = await import('../../src/index.mjs');
+      const { extractSemanticInfo } = await import('../../src/index.js');
       const result = extractSemanticInfo('Some text {"score": 5, "issues": ["Bad"]} more text');
       assert.strictEqual(result.score, 5);
     });
 
     it('should handle null/undefined gracefully', async () => {
-      const { extractSemanticInfo } = await import('../../src/index.mjs');
+      const { extractSemanticInfo } = await import('../../src/index.js');
       const result = extractSemanticInfo(null);
       assert.strictEqual(result.score, null);
     });

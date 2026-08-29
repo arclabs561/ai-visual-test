@@ -45,6 +45,41 @@ export interface ValidationContext {
   [key: string]: unknown;
 }
 
+/** Cost accounting captured for a completed batch validation. */
+export interface BatchCostStats {
+  total: number;
+  count: number;
+  average: number;
+  byProvider: Record<string, { total: number; count: number; average: number }>;
+  byDate: Record<string, { total: number; count: number }>;
+  recent: Array<{ provider: string; cost: number; timestamp: number }>;
+}
+
+/** Process-lifetime performance accounting captured for a completed batch. */
+export interface BatchPerformanceStats {
+  totalRequests: number;
+  avgDuration: number;
+  minDuration: number;
+  maxDuration: number;
+  successRate: number;
+}
+
+/** Optional accounting accompanying a `BatchValidator` result. */
+export interface BatchValidationStats {
+  total: number;
+  passed: number;
+  failed: number;
+  duration: number;
+  costStats: BatchCostStats | null;
+  performance: BatchPerformanceStats | null;
+}
+
+/** The enriched response returned by `BatchValidator.batchValidate`. */
+export interface BatchValidationResult {
+  results: ValidationResult[];
+  stats: BatchValidationStats | null;
+}
+
 export interface ConfigOptions extends ValidationContext {
   apiKey?: string | null;
   enabled?: boolean;
@@ -58,12 +93,12 @@ export interface Config extends ConfigOptions {
 
 export interface SemanticInfo {
   score: number | null;
-  issues: string[];
+  issues: unknown[];
   assessment: string | null;
   reasoning: string | null;
   recommendations: string[];
   richRecommendations?: Array<Record<string, unknown> & { suggestion: string }>;
-  strengths?: string[];
+  strengths?: unknown[];
   [key: string]: unknown;
 }
 

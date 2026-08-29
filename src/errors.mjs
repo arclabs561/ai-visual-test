@@ -8,6 +8,17 @@
  */
 
 /**
+ * Serializable representation of an ai-visual-test error.
+ *
+ * @typedef {object} SerializedAIBrowserTestError
+ * @property {string} name
+ * @property {string} code
+ * @property {string} message
+ * @property {Record<string, unknown>} details
+ * @property {string | undefined} [stack]
+ */
+
+/**
  * Base error class for all ai-visual-test errors
  * 
  * @class AIBrowserTestError
@@ -34,7 +45,7 @@ export class AIBrowserTestError extends Error {
   /**
    * Convert error to JSON for serialization
    * 
-   * @returns {ReturnType<AIBrowserTestError['toJSON']>} JSON representation
+   * @returns {SerializedAIBrowserTestError} JSON representation
    */
   toJSON() {
     return {
@@ -166,5 +177,4 @@ export function isAIBrowserTestError(error) {
 export function isErrorType(error, errorClass) {
   return error instanceof errorClass;
 }
-
 

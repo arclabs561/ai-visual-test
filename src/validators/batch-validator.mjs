@@ -40,6 +40,12 @@ export class BatchValidator extends BatchOptimizer {
   /**
    * Validate multiple screenshots with cost tracking
    */
+  /**
+   * @param {string | string[]} screenshots
+   * @param {string} prompt
+   * @param {import('#public-contract').ValidationContext} [context={}]
+   * @returns {Promise<import('#public-contract').BatchValidationResult>}
+   */
   async batchValidate(screenshots, prompt, context = {}) {
     const startTime = Date.now();
     
@@ -140,4 +146,3 @@ export class BatchValidator extends BatchOptimizer {
     };
   }
 }
-

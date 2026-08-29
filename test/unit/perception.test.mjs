@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { aggregate, parseJsonObject, MODE_SPEC, matchesDisposition, makePanel, calibrateJudges, decayDispositions, mergeFindings, selectForReview, samplePerceptions, UX_HEURISTICS } from "../../src/perception/index.mjs";
+import { aggregate, parseJsonObject, MODE_SPEC, matchesDisposition, makePanel, calibrateJudges, decayDispositions, mergeFindings, selectForReview, samplePerceptions, UX_HEURISTICS } from "../../src/perception/index.js";
 
 test("aggregate groups by (category,target) and ranks by role-weighted confidence mass", () => {
   const samples = [
@@ -199,7 +199,7 @@ test("samplePerceptions seeds the generic UX heuristics into the judge prompt by
 
 test("samplePerceptions UX heuristics are disablable (heuristics: []) and overridable by domain principles", async () => {
   let seenSys = "";
-  const vision = async (sys) => { seenSys = sys; return { headline: "h", category: "major", target: "t", confidence: 0.5 }; };
+  const vision = async (sys) => { seenSys = sys; return { headline: "h", category: "major", target: "t", why: "w", suggestion: "s", confidence: 0.5 }; };
   await samplePerceptions({ vision, heuristics: [], principles: ["density is intended"], modes: ["problem"], personas: [{ id: "o", who: "op", weight: 1 }], contexts: [{ id: "m", ctx: "c" }], n: 1, verify: false });
   assert.ok(!seenSys.includes("UI/UX HEURISTICS"), "heuristics:[] disables the block");
   assert.ok(seenSys.includes("density is intended"), "domain principles still seeded as the override");
@@ -207,7 +207,7 @@ test("samplePerceptions UX heuristics are disablable (heuristics: []) and overri
 
 test("samplePerceptions reports partial sampling failures without dropping successful findings", async () => {
   const panel = [
-    { id: "working", vision: async () => ({ headline: "h", category: "major", target: "t", confidence: 0.5 }) },
+    { id: "working", vision: async () => ({ headline: "h", category: "major", target: "t", why: "w", suggestion: "s", confidence: 0.5 }) },
     { id: "failing", vision: async () => { throw new Error("provider unavailable"); } },
   ];
   const result = await samplePerceptions({ panel, modes: ["problem"], personas: [{ id: "o", who: "op" }], contexts: [{ id: "m", ctx: "c" }], n: 1, verify: false });
@@ -218,7 +218,7 @@ test("samplePerceptions reports partial sampling failures without dropping succe
   assert.deepEqual(result.diagnostics.failures, [{ phase: "sampling", judge: "failing", mode: "problem", role: "o", context: "m", message: "provider unavailable" }]);
 });
 
-test("samplePerceptions distinguishes a total provider outage from an empty finding response", async () => {
+test("samplePerceptions distinguishes transport and output-contract failures", async () => {
   const vision = async () => { throw new Error("provider unavailable"); };
   const common = { modes: ["problem"], personas: [{ id: "o", who: "op" }], contexts: [{ id: "m", ctx: "c" }], n: 1, verify: false };
   const result = await samplePerceptions({ vision, ...common });
@@ -229,8 +229,9 @@ test("samplePerceptions distinguishes a total provider outage from an empty find
   assert.deepEqual(result.diagnostics.sampling, { attempted: 1, completed: 0, accepted: 0, failed: 1 });
   assert.equal(result.diagnostics.failures[0].phase, "sampling");
   assert.deepEqual(noFindings.samples, []);
-  assert.equal(noFindings.diagnostics.status, "ok");
-  assert.deepEqual(noFindings.diagnostics.sampling, { attempted: 1, completed: 1, accepted: 0, failed: 0 });
+  assert.equal(noFindings.diagnostics.status, "unavailable");
+  assert.deepEqual(noFindings.diagnostics.sampling, { attempted: 1, completed: 0, accepted: 0, failed: 1 });
+  assert.equal(noFindings.diagnostics.failures[0].diagnostic, "invalid_finding");
 });
 
 test("samplePerceptions exposes merge and verification provider failures", async () => {
@@ -238,7 +239,7 @@ test("samplePerceptions exposes merge and verification provider failures", async
   const vision = async () => {
     calls++;
     if (calls > 2) throw new Error("verifier unavailable");
-    return { headline: `h${calls}`, category: "major", target: `t${calls}`, confidence: 0.5 };
+    return { headline: `h${calls}`, category: "major", target: `t${calls}`, why: `w${calls}`, suggestion: `s${calls}`, confidence: 0.5 };
   };
   const complete = async () => { throw new Error("merge unavailable"); };
   const result = await samplePerceptions({ vision, complete, modes: ["problem"], personas: [{ id: "o", who: "op" }], contexts: [{ id: "m", ctx: "c" }], n: 2, topK: 2 });

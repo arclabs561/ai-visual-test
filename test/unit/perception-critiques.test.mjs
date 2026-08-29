@@ -3,7 +3,7 @@ import assert from "node:assert";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { appendCritique, readLedger, ledgerToDispositions } from "../../src/perception/index.mjs";
+import { appendCritique, readLedger, ledgerToDispositions } from "../../src/perception/index.js";
 
 test("appendCritique + readLedger round-trips, anchored to the version key", () => {
   const dir = mkdtempSync(join(tmpdir(), "crit-"));

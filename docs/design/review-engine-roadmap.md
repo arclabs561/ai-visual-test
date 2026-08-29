@@ -198,12 +198,18 @@ validation are typed compiled modules; `./ensemble` exposes all 14 values from
 one generated barrel; and `types/ensemble-barrel.d.ts` is deleted. Strict packed
 consumer compilation and runtime/type export parity remain mandatory.
 
+The root judge implementation is now strict TypeScript behind the private
+`#judge` route. Its review and game tasks retain native schema negotiation plus
+bounded diagnostic repair, and its cache identity separates strict structured
+calls from legacy-fallback calls. Cache hits also release their request timer,
+so cached validation does not keep test or application processes alive.
+
 **Execution order:** the temporal, game, perception, video, and CLI boundaries
 are complete and have no declaration overlays. The ensemble composition overlay
-is also retired. The next migration boundary is the root judge: first move its
-public/JSDoc contracts away from the handwritten root declaration, then convert
-the judge implementation, and only then generate the public root barrel before
-Phase 5 surface narrowing.
+is also retired. Root public/JSDoc contracts are decoupled from the handwritten
+root declaration and the judge implementation is compiled. The next migration
+boundary is the generated public root barrel, after which Phase 5 surface
+narrowing can begin.
 
 Human labels do not block these mechanical conversions. They continue to block
 changes that claim calibrated ensemble weights, confidence, or learned

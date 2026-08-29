@@ -2,7 +2,6 @@ import { API_CONSTANTS } from './constants.mjs';
 import { ProviderError } from './errors.mjs';
 
 export type ProviderName = 'gemini' | 'openai' | 'groq' | 'openrouter' | 'claude';
-export type ReviewMode = 'scalar' | 'comparison';
 export type StructuredOutputMode = 'json-schema' | 'json-object' | 'prompt-only';
 
 export interface StructuredOutputSpec {
@@ -48,7 +47,7 @@ export interface ProviderAdapter {
   readonly provider: ProviderName;
   resolveStructuredOutput(input: {
     model: string;
-    reviewMode: ReviewMode;
+    taskName: string;
     enabled: boolean;
     schema: object;
   }): StructuredOutputSpec;
@@ -71,14 +70,14 @@ function number(value: unknown): number {
 
 function schemaSpec(
   provider: ProviderName,
-  { model, reviewMode, enabled, schema }: {
+  { model, taskName, enabled, schema }: {
     model: string;
-    reviewMode: ReviewMode;
+    taskName: string;
     enabled: boolean;
     schema: object;
   },
 ): StructuredOutputSpec {
-  const name = reviewMode === 'comparison' ? 'visual_comparison' : 'visual_review';
+  const name = taskName;
   if (!enabled) return { mode: 'prompt-only', schema, name, diagnostic: 'structured_output_disabled' };
   if (provider === 'gemini') {
     return {
@@ -311,7 +310,7 @@ export function getProviderAdapter(provider: string): ProviderAdapter {
 export function resolveProviderStructuredOutput(input: {
   provider: string;
   model: string;
-  reviewMode: ReviewMode;
+  taskName: string;
   enabled: boolean;
   schema: object;
 }): StructuredOutputSpec {

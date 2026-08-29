@@ -143,6 +143,84 @@ test('repairs malformed structured output using diagnostics and retries', async 
   assert.equal(result.score, 7);
 });
 
+test('repairs malformed comparison output with the comparison task name', async t => {
+  const originalFetch = globalThis.fetch;
+  t.after(() => { globalThis.fetch = originalFetch; });
+  const requests = [];
+  let calls = 0;
+  globalThis.fetch = async (_url, init) => {
+    requests.push(JSON.parse(init.body));
+    calls++;
+    const content = calls === 1
+      ? '{"winner":"maybe"}'
+      : JSON.stringify({
+          kind: 'comparison', winner: 'B', confidence: 0.8, reasoning: 'B is clearer',
+          differences: [], scores: { A: 4, B: 8 }
+        });
+    return new Response(JSON.stringify({ choices: [{ message: { content } }] }), {
+      headers: { 'content-type': 'application/json' },
+    });
+  };
+  const image = fixtureImage();
+  const result = await judge().judgeScreenshot([image, image], 'Compare before and after', {
+    useCache: false, maxRetries: 1, retryBaseDelay: 0, retryMaxDelay: 0, enableUncertaintyReduction: false,
+  });
+  assert.equal(calls, 2);
+  assert.equal(requests[0].response_format.json_schema.name, 'visual_comparison');
+  assert.equal(requests[1].response_format.json_schema.name, 'visual_comparison');
+  assert.match(requests[1].messages[0].content[0].text, /invalid_winner/);
+  assert.equal(result.winner, 'B');
+});
+
+test('scalar legacy sectioned output remains a prompt-only one-call fallback', async t => {
+  const originalFetch = globalThis.fetch;
+  t.after(() => { globalThis.fetch = originalFetch; });
+  let calls = 0;
+  let request;
+  globalThis.fetch = async (_url, init) => {
+    calls++;
+    request = JSON.parse(init.body);
+    return new Response(JSON.stringify({ choices: [{ message: { content: `
+Score: 7/10
+Assessment: needs-improvement
+## Findings
+- Contrast is too dim
+## Recommendations
+- Raise contrast
+## Strengths
+- Clear CTA
+## Reasoning
+The CTA remains discoverable.
+` } }] }), { headers: { 'content-type': 'application/json' } });
+  };
+  const result = await judge().judgeScreenshot(fixtureImage(), 'Review this interface', {
+    useCache: false, structuredOutput: false, enableUncertaintyReduction: false,
+  });
+  assert.equal(calls, 1);
+  assert.equal(request.response_format, undefined);
+  assert.equal(result.outputFormat, 'legacy-text');
+  assert.deepEqual(result.issues, ['Contrast is too dim']);
+});
+
+test('transport failures are never converted into output-contract repairs', async t => {
+  const originalFetch = globalThis.fetch;
+  t.after(() => { globalThis.fetch = originalFetch; });
+  for (const response of [
+    () => new Response(JSON.stringify({ detail: 'unauthorized' }), { status: 401, headers: { 'content-type': 'application/json' } }),
+    () => new Response('gateway failure', { status: 502, headers: { 'content-type': 'text/plain' } }),
+  ]) {
+    let calls = 0;
+    globalThis.fetch = async () => { calls++; return response(); };
+    await assert.rejects(
+      judge().judgeScreenshot(fixtureImage(), 'Review this interface', {
+        useCache: false, maxRetries: 2, retryBaseDelay: 0, retryMaxDelay: 0, enableUncertaintyReduction: false,
+      }),
+      error => error instanceof ProviderError && error.details.failureKind !== 'output_contract',
+    );
+    assert.equal(calls, response().status === 401 ? 1 : 3);
+  }
+});
+
 test('cache identity changes with provider, model, structured mode, and anchors', () => {
   const image = fixtureImage();
   const base = generateCacheKey(image, 'effective prompt', {

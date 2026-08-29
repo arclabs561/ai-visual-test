@@ -27,12 +27,13 @@ import { validateImagePath, validatePrompt } from './validation.mjs';
 import { sanitizePrompt, validatePromptSecurity } from './utils/prompt-sanitizer.mjs';
 import { getRateLimiter } from './utils/rate-limiter.mjs';
 import { RETRY_CONSTANTS, API_CONSTANTS } from './constants.mjs';
-import { retryWithBackoff, enhanceErrorMessage, isRetryableError } from './retry.mjs';
+import { enhanceErrorMessage } from './retry.mjs';
 import { safeLogCacheOperation } from './safe-logger.mjs';
 import { composeSingleImagePrompt, composeComparisonPrompt } from './prompt-composer.mjs';
-import { buildRepairInstruction, parseReviewOutcome } from '#review-contract';
+import { createReviewTask } from '#review-contract';
 import { getProviderAdapter } from '#provider-adapters';
-import { resolveStructuredOutput } from '#structured-output';
+import { resolveTaskStructuredOutput } from '#structured-output';
+import { executeStructuredTask } from '#structured-task';
 
 /** Clamp a score to [0, 10] or null. */
 function _clampScore(raw) {
@@ -326,10 +327,12 @@ export class VLLMJudge {
       }, isMultiImage);
 
       const reviewMode = isMultiImage || context.reviewMode === 'comparison' ? 'comparison' : 'scalar';
-      const structuredOutput = resolveStructuredOutput({
+      const reviewTask = createReviewTask(reviewMode, context.legacyOutputFallback !== false);
+      const structuredOutput = resolveTaskStructuredOutput({
         provider: this.provider,
         model: this.providerConfig.model,
-        reviewMode,
+        taskName: reviewTask.name,
+        schema: reviewTask.schema,
         enabled: context.structuredOutput !== false
       });
       const fullPrompt = `${composedPrompt}\n\nOUTPUT CONTRACT\nReturn only JSON matching this schema:\n${JSON.stringify(structuredOutput.schema)}`;
@@ -354,47 +357,30 @@ export class VLLMJudge {
         }
       }
 
-      let effectivePrompt = fullPrompt;
-      
-      // Retry API calls with exponential backoff
       const maxRetries = context.maxRetries ?? 3;
-      const apiResult = await retryWithBackoff(async () => {
-        attempts++;
-        const apiResponse = await this._callProviderAPI(
-          providerImages,
-          effectivePrompt,
-          abortController.signal,
-          isMultiImage,
-          structuredOutput
-        );
-        const parsedResponse = await this.providerAdapter.parseResponse(apiResponse);
-        try {
-          const parsedReview = parseReviewOutcome(parsedResponse.judgment, {
-            mode: reviewMode,
-            allowLegacy: context.legacyOutputFallback !== false
-          });
-          return { ...parsedResponse, ...parsedReview };
-        } catch (contractError) {
-          const diagnostics = contractError.diagnostics || ['invalid_output'];
-          effectivePrompt = `${fullPrompt}\n\n${buildRepairInstruction(diagnostics, reviewMode)}`;
-          throw new ProviderError(
-            `${this.provider} returned an invalid ${reviewMode} review`,
-            this.provider,
-            { retryable: true, diagnostics, failureKind: 'output_contract' }
-          );
-        }
-      }, {
+      const apiResult = await executeStructuredTask({
+        adapter: this.providerAdapter,
+        call: {
+          images: providerImages,
+          signal: abortController.signal,
+          apiKey: this.apiKey,
+          config: this.providerConfig,
+        },
+        prompt: fullPrompt,
+        task: reviewTask,
+        structuredOutput,
         maxRetries,
         baseDelay: context.retryBaseDelay ?? RETRY_CONSTANTS.DEFAULT_BASE_DELAY_MS,
         maxDelay: context.retryMaxDelay ?? RETRY_CONSTANTS.DEFAULT_MAX_DELAY_MS,
+        onAttempt: attempt => { attempts = attempt; },
         onRetry: (err, attempt, delay) => {
           this._logPerf({ error: err, context: `API retry (${this.provider})`, recovery: 'exponential_backoff', retryCount: attempt }, 'logErrorPattern');
           if (this.config.debug.verbose) {
             warn(`[VLLM] Retry ${attempt}/${maxRetries} for ${this.provider} API: ${err.message} (waiting ${delay}ms)`);
           }
-        },
-        retryable: err => err?.details?.retryable === true || isRetryableError(err)
+        }
       });
+      attempts = apiResult.attempts;
 
       clearTimeout(timeoutId);
 

@@ -9,7 +9,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { LatencyAwareBatchOptimizer } from '../../src/latency-aware-batch-optimizer.mjs';
+import { LatencyAwareBatchOptimizer } from '../../src/latency-aware-batch-optimizer.js';
 import { selectModelTier, selectProvider } from '../../src/model-tier-selector.mjs';
 
 test('LatencyAwareBatchOptimizer should bypass batching for <100ms requests', async () => {
@@ -24,6 +24,7 @@ test('LatencyAwareBatchOptimizer should bypass batching for <100ms requests', as
   const originalProcess = optimizer._processRequest.bind(optimizer);
   optimizer._processRequest = async (imagePath, prompt, context, validateFn) => {
     directProcessCalled = true;
+    assert.strictEqual(validateFn, undefined, 'public direct path must use the inherited default validator');
     // Return a mock result
     return {
       score: 8,
@@ -47,6 +48,36 @@ test('LatencyAwareBatchOptimizer should bypass batching for <100ms requests', as
   
   // Restore original method
   optimizer._processRequest = originalProcess;
+});
+
+test('LatencyAwareBatchOptimizer treats a zero latency budget as a direct critical request', async () => {
+  const optimizer = new LatencyAwareBatchOptimizer({ cacheEnabled: false });
+  let receivedContext;
+  optimizer._processRequest = async (_imagePath, _prompt, context) => {
+    receivedContext = context;
+    return { score: 8, issues: [], reasoning: 'Mock result', critical: context.critical };
+  };
+
+  const result = await optimizer.addRequest('zero-budget.png', 'Test prompt', {}, 0);
+
+  assert.strictEqual(receivedContext.maxLatency, 0);
+  assert.strictEqual(receivedContext.critical, true);
+  assert.strictEqual(result.critical, true);
+  assert.strictEqual(optimizer.getLatencyStats().criticalRequests, 0);
+});
+
+test('LatencyAwareBatchOptimizer clears direct critical tracking after failure', async () => {
+  const optimizer = new LatencyAwareBatchOptimizer({ cacheEnabled: false });
+  optimizer._processRequest = async () => {
+    throw new Error('validator failed');
+  };
+
+  await assert.rejects(
+    optimizer.addRequest('failed-critical.png', 'Test prompt', {}, 0),
+    /validator failed/,
+  );
+
+  assert.strictEqual(optimizer.getLatencyStats().criticalRequests, 0);
 });
 
 test('LatencyAwareBatchOptimizer should use adaptive batch size for 100-200ms requests', async () => {
@@ -193,4 +224,3 @@ test('selectProvider should fallback to gemini if no keys available', () => {
   });
   assert.strictEqual(provider, 'gemini', 'Should fallback to gemini');
 });
-

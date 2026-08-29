@@ -1,5 +1,5 @@
 /**
- * Tests for score-tracker.mjs
+ * Tests for score-tracker.ts
  */
 
 import { test } from 'node:test';
@@ -7,7 +7,7 @@ import assert from 'node:assert';
 import { readFileSync, writeFileSync, existsSync, mkdirSync, unlinkSync, rmdirSync } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
-import { ScoreTracker } from '../../src/score-tracker.mjs';
+import { ScoreTracker } from '../../src/score-tracker.js';
 
 const TEST_BASELINE_DIR = join(tmpdir(), 'ai-visual-test-baseline-test');
 
@@ -117,6 +117,15 @@ test('ScoreTracker - compare returns unknown for new test', () => {
   
   assert.strictEqual(comparison.hasBaseline, false);
   assert.strictEqual(comparison.trend, 'unknown');
+  assert.deepStrictEqual(comparison, {
+    hasBaseline: false,
+    baseline: null,
+    current: 8,
+    delta: null,
+    regression: false,
+    improvement: false,
+    trend: 'unknown'
+  });
 });
 
 test('ScoreTracker - updateBaseline', () => {
@@ -178,3 +187,44 @@ test('ScoreTracker - persistence across instances', () => {
   assert.strictEqual(baseline, 8);
 });
 
+test('ScoreTracker - ignores malformed persisted entries while keeping valid baselines', () => {
+  const baselineFile = join(TEST_BASELINE_DIR, 'scores.json');
+  writeFileSync(baselineFile, JSON.stringify({
+    valid: {
+      history: [],
+      current: 4,
+      baseline: 4,
+      firstRecorded: '2026-01-01T00:00:00.000Z',
+      lastUpdated: '2026-01-01T00:00:00.000Z'
+    },
+    partial: { baseline: 8 },
+    malformedHistory: {
+      history: [{ score: 8, timestamp: '2026-01-01T00:00:00.000Z', metadata: [] }],
+      current: 8,
+      baseline: 8,
+      firstRecorded: '2026-01-01T00:00:00.000Z',
+      lastUpdated: '2026-01-01T00:00:00.000Z'
+    }
+  }), 'utf8');
+
+  const tracker = new ScoreTracker({ baselineDir: TEST_BASELINE_DIR });
+  assert.strictEqual(tracker.getBaseline('valid'), 4);
+  assert.deepStrictEqual(tracker.compare('partial', 8), {
+    hasBaseline: false,
+    baseline: null,
+    current: 8,
+    delta: null,
+    regression: false,
+    improvement: false,
+    trend: 'unknown'
+  });
+  assert.strictEqual(tracker.getBaseline('malformedHistory'), null);
+});
+
+test('ScoreTracker - safely falls back for a valid JSON value with an invalid root shape', () => {
+  writeFileSync(join(TEST_BASELINE_DIR, 'scores.json'), JSON.stringify([{ baseline: 8 }]), 'utf8');
+
+  const tracker = new ScoreTracker({ baselineDir: TEST_BASELINE_DIR });
+  assert.deepStrictEqual(tracker.getAll(), {});
+  assert.strictEqual(tracker.getStats().totalTests, 0);
+});

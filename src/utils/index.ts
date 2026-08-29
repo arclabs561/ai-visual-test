@@ -63,27 +63,27 @@ export {
 } from '../cost-tracker.mjs';
 
 // Score tracking
-export { ScoreTracker } from '../score-tracker.mjs';
+export { ScoreTracker } from '../score-tracker.js';
 
 // Batch optimization
 export { BatchOptimizer } from '../batch-optimizer.mjs';
-export { LatencyAwareBatchOptimizer } from '../latency-aware-batch-optimizer.mjs';
+export { LatencyAwareBatchOptimizer } from '../latency-aware-batch-optimizer.js';
 
 // Data extraction
 export { extractStructuredData } from '../data-extractor.mjs';
 
 // Feedback aggregation
-export { aggregateFeedback, generateRecommendations } from '../feedback-aggregator.mjs';
+export { aggregateFeedback, generateRecommendations } from '../feedback-aggregator.js';
 
 // Context compression
-export { compressContext, compressStateHistory } from '../context-compressor.mjs';
+export { compressContext, compressStateHistory } from '../context-compressor.js';
 
 // Metrics
 export {
   spearmanCorrelation,
   pearsonCorrelation,
   calculateRankAgreement,
-} from '../metrics.mjs';
+} from '../metrics.js';
 
 // Type guards
 export {
@@ -153,4 +153,4 @@ export {
   resetCalibrationProfiles,
   deriveCalibrationProfile,
   analyzeScoreDistribution,
-} from '../score-calibration.mjs';
+} from '../score-calibration.js';

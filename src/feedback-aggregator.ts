@@ -1,3 +1,28 @@
+import type { AggregatedFeedback, AggregatedFeedbackAccumulator, AggregatedFeedbackStats } from '#public-contract';
+
+export interface SemanticFeedback {
+  issues?: string[];
+  recommendations?: string[];
+  strengths?: string[];
+  weaknesses?: string[];
+  actionableItems?: string[];
+  semanticCategories?: Record<string, string[]>;
+  priority?: Record<string, string[]>;
+}
+
+export interface FeedbackInput {
+  score?: number | null;
+  semantic?: SemanticFeedback | null;
+}
+
+/** A grouped, actionable recommendation synthesized from repeated feedback. */
+export interface FeedbackRecommendation {
+  priority: 'critical' | 'high' | 'medium';
+  category: string;
+  items: string[];
+  description: string;
+}
+
 /**
  * Feedback Aggregator
  * 
@@ -9,17 +34,12 @@
 /**
  * Aggregate judge feedback from multiple test runs
  * 
- * @param {import('#public-contract').ValidationResult[]} judgeResults - Array of validation results
- * @returns {import('#public-contract').AggregatedFeedback} Aggregated feedback with statistics and recommendations
+ * @param judgeResults - Array of validation results or their feedback projection.
+ * @returns Aggregated feedback with statistics and recommendations.
  */
-export function aggregateFeedback(judgeResults) {
-  const aggregated = {
-    scores: [],
-    issues: {},
-    recommendations: {},
-    strengths: {},
-    weaknesses: {},
-    actionableItems: {},
+export function aggregateFeedback(judgeResults: readonly FeedbackInput[]): AggregatedFeedback {
+  const aggregated: AggregatedFeedbackAccumulator = {
+    scores: [], issues: {}, recommendations: {}, strengths: {}, weaknesses: {}, actionableItems: {},
     categories: {
       visual: [],
       functional: [],
@@ -110,7 +130,7 @@ export function aggregateFeedback(judgeResults) {
   });
 
   // Calculate statistics
-  const stats = {
+  const stats: AggregatedFeedbackStats = {
     totalJudgments: judgeResults.length,
     averageScore: aggregated.scores.length > 0 
       ? aggregated.scores.reduce((a, b) => a + b, 0) / aggregated.scores.length 
@@ -143,7 +163,7 @@ export function aggregateFeedback(judgeResults) {
     priorityCounts: Object.entries(aggregated.priority)
       .map(([level, items]) => ({ level, count: items.length }))
       .sort((a, b) => {
-        const order = { critical: 0, high: 1, medium: 2, low: 3 };
+        const order: Record<string, number> = { critical: 0, high: 1, medium: 2, low: 3 };
         return (order[a.level] || 99) - (order[b.level] || 99);
       })
   };
@@ -158,8 +178,8 @@ export function aggregateFeedback(judgeResults) {
 /**
  * Generate human-readable summary
  */
-function generateSummary(aggregated, stats) {
-  const parts = [];
+function generateSummary(aggregated: AggregatedFeedbackAccumulator, stats: AggregatedFeedbackStats): string {
+  const parts: string[] = [];
 
   parts.push(`Aggregated ${stats.totalJudgments} judge results.`);
 
@@ -188,11 +208,11 @@ function generateSummary(aggregated, stats) {
 /**
  * Generate recommendations from aggregated feedback
  * 
- * @param {import('#public-contract').AggregatedFeedbackAccumulator} aggregated - Aggregated feedback accumulator
- * @returns {string[]} Array of recommendation strings
+ * @param aggregated - Aggregated feedback accumulator.
+ * @returns Structured, actionable recommendations.
  */
-export function generateRecommendations(aggregated) {
-  const recommendations = [];
+export function generateRecommendations(aggregated: AggregatedFeedbackAccumulator): FeedbackRecommendation[] {
+  const recommendations: FeedbackRecommendation[] = [];
 
   // Critical priority items
   if (aggregated.priority.critical && aggregated.priority.critical.length > 0) {

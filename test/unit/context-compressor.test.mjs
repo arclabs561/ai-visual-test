@@ -4,7 +4,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { compressContext, compressStateHistory } from '../../src/context-compressor.mjs';
+import { compressContext, compressStateHistory } from '../../src/context-compressor.js';
 
 test('compressContext - empty notes', () => {
   const result = compressContext([]);
@@ -83,6 +83,8 @@ test('compressStateHistory - empty history', () => {
   assert.ok(result);
   assert.deepStrictEqual(result.compressed, []);
   assert.strictEqual(result.tokenEstimate, 0);
+  assert.strictEqual(result.summary, 'No state history');
+  assert.deepStrictEqual(Object.keys(result).sort(), ['compressed', 'summary', 'tokenEstimate']);
 });
 
 test('compressStateHistory - single state', () => {
@@ -143,4 +145,3 @@ test('compressStateHistory - finds key transitions', () => {
   assert.ok(result);
   assert.ok(result.compressed.length > 0);
 });
-

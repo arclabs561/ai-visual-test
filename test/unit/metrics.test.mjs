@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { spearmanCorrelation, pearsonCorrelation, calculateRankAgreement } from '../../src/metrics.mjs';
+import { spearmanCorrelation, pearsonCorrelation, calculateRankAgreement } from '../../src/metrics.js';
 
 describe('Metrics', () => {
   describe('Spearman Correlation', () => {
@@ -83,6 +83,13 @@ describe('Metrics', () => {
       assert.ok(agreement.spearman < 0);
       assert.strictEqual(agreement.exactMatches, 1); // Only middle matches
     });
+
+    it('returns null rather than NaN for an empty agreement rate', () => {
+      const agreement = calculateRankAgreement([], []);
+
+      assert.strictEqual(agreement.totalItems, 0);
+      assert.strictEqual(agreement.exactMatches, 0);
+      assert.strictEqual(agreement.agreementRate, null);
+    });
   });
 });
-

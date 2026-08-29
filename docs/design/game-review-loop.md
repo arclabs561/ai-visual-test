@@ -67,6 +67,8 @@ Adaptive sampling is explicit and injectable. A sampler may suppress only ordina
 
 Termination no longer treats score `0` as game over. `playGame` and `GameGym` use an explicit termination policy based on declared game state, terminal issue evidence, or a caller callback. Capture output is owned by a run-scoped output policy that produces collision-safe paths and defines retention. `GameGym.step()` surfaces failed action execution rather than advancing as if the action succeeded.
 
+Action validation is enforced again at execution time for caller-supplied actions. Unknown or malformed actions fail instead of becoming an implicit wait. When a game root is configured, click selectors resolve within that root and cannot target unrelated page controls.
+
 ## Tradeoffs
 
 The session owner becomes more explicit, so callers that want custom scheduling need an injected manager or policy rather than a loose context flag. Structured actions add a schema and one bounded repair path. Extracting game convenience leaves a compatibility delegation layer in `convenience.mjs` until the broader module is migrated.
@@ -92,6 +94,7 @@ In return, provider work becomes countable, action results become discriminated 
 - Every action variant must round-trip through the runtime schema and generated public type; malformed output must be diagnostic or error, never implicit success.
 - The generic task executor must preserve the existing scalar/comparison request, retry, diagnostic, and result behavior before game uses it.
 - Score `0` must not terminate a game without separate terminal evidence.
+- Unknown actions must fail, and a configured game root must contain every click target.
 - Concurrent runs must produce distinct artifact paths and explicit retention behavior.
 - The final `./game` route must have exact runtime/type export parity and pass a strict TypeScript consumer from a clean packed install.
 

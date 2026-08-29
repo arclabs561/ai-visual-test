@@ -210,9 +210,12 @@ packed install, and the handwritten `index.d.ts` is retired.
 **Execution order:** the temporal, game, perception, video, and CLI boundaries
 are complete and have no declaration overlays. The ensemble composition overlay
 is also retired. Root contracts, implementation, and public barrel are compiled
-with no root declaration overlay. Phase 5 now begins with the smallest legacy
-leaf declarations (`extractors`, `errors`, then validators/persona/multi-modal/
-utils) before any semver-sensitive root alias removal.
+with no root declaration overlay. Phase 5 has begun with the smallest legacy
+leaf declarations. The extractor and error hierarchies are now strict
+TypeScript with generated public declarations; their handwritten overlays are
+retired and their root/subpath runtime identities are checked from the packed
+package. Validators, persona, multi-modal, and utilities remain the next leaf
+boundaries before any semver-sensitive root alias removal.
 
 Human labels do not block these mechanical conversions. They continue to block
 changes that claim calibrated ensemble weights, confidence, or learned
@@ -264,5 +267,5 @@ made until real independently reviewed labels exist.
 
 ## Review trigger
 
-Re-run this roadmap after the root judge boundary lands or when a consumer
-survey changes the supported-surface assumptions.
+Re-run this roadmap after the remaining Phase 5 leaf declarations are retired
+or when a consumer survey changes the supported-surface assumptions.

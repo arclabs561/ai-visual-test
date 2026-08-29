@@ -105,6 +105,32 @@ test('majorityVote returns fail when majority fails', () => {
   assert.strictEqual(out.assessment, 'fail');
 });
 
+test('majorityVote resolves a tie independently of judge response order', () => {
+  const ej = createJudge({ judgeCount: 2, votingMethod: 'majority' });
+  const tied = [
+    mockResult({ score: 8, assessment: 'pass', judgeIndex: 0 }),
+    mockResult({ score: 3, assessment: 'fail', judgeIndex: 1 })
+  ];
+  const forward = ej.majorityVote(tied);
+  const reversed = ej.majorityVote([...tied].reverse());
+
+  assert.strictEqual(forward.assessment, 'pass');
+  assert.strictEqual(reversed.assessment, 'pass');
+  assert.strictEqual(forward.score, reversed.score);
+  assert.ok(forward.reasoning.includes('tie resolved'));
+});
+
+test('majorityVote resolves an equal-mean tie by code-unit label order', () => {
+  const ej = createJudge({ judgeCount: 2, votingMethod: 'majority' });
+  const tied = [
+    mockResult({ score: 6, assessment: 'zeta', judgeIndex: 0 }),
+    mockResult({ score: 6, assessment: 'alpha', judgeIndex: 1 })
+  ];
+
+  assert.strictEqual(ej.majorityVote(tied).assessment, 'alpha');
+  assert.strictEqual(ej.majorityVote([...tied].reverse()).assessment, 'alpha');
+});
+
 // --- consensusVote ---
 
 test('consensusVote with full consensus returns weighted average result', () => {
@@ -196,6 +222,56 @@ test('analyzeDisagreement reports no disagreement for aligned results', () => {
   assert.strictEqual(out.scoreRange, 1);
 });
 
+test('invalid scores are excluded from aggregation, agreement, and disagreement', () => {
+  const ej = createJudge({ judgeCount: 3 });
+  const results = [
+    mockResult({ score: 8, judgeIndex: 0 }),
+    mockResult({ score: undefined, judgeIndex: 1 }),
+    mockResult({ score: Number.NaN, judgeIndex: 2 })
+  ];
+
+  const aggregate = ej.aggregateResults(results);
+  assert.strictEqual(aggregate.score, 8);
+  assert.deepStrictEqual(aggregate.availability, {
+    totalJudges: 3,
+    availableJudges: 1,
+    unavailableJudges: 2,
+    failures: [
+      { judgeIndex: 1, provider: 'gemini', reason: 'invalid_score' },
+      { judgeIndex: 2, provider: 'gemini', reason: 'invalid_score' }
+    ]
+  });
+  assert.strictEqual(ej.calculateAgreement(results).type, 'single_judge');
+  assert.deepStrictEqual(ej.analyzeDisagreement(results), {
+    hasDisagreement: false,
+    type: 'insufficient_scores',
+    scoreRange: null,
+    assessmentDisagreement: false,
+    uniqueAssessments: ['pass'],
+    maxScore: 8,
+    minScore: 8
+  });
+});
+
+test('all invalid results expose an explicit all-failed disagreement shape', () => {
+  const ej = createJudge({ judgeCount: 2 });
+  const results = [
+    mockResult({ score: undefined, judgeIndex: 0 }),
+    mockResult({ score: Infinity, judgeIndex: 1 })
+  ];
+
+  assert.strictEqual(ej.aggregateResults(results).assessment, 'error');
+  assert.deepStrictEqual(ej.analyzeDisagreement(results), {
+    hasDisagreement: false,
+    type: 'all_failed',
+    scoreRange: null,
+    assessmentDisagreement: false,
+    uniqueAssessments: [],
+    maxScore: null,
+    minScore: null
+  });
+});
+
 // --- calculateConfidence ---
 
 test('calculateConfidence is high for tightly clustered scores', () => {
@@ -239,6 +315,81 @@ test('calculateOptimalWeights returns [1.0] for single judge', () => {
   const ej = createJudge({ judgeCount: 1 });
   const weights = ej.calculateOptimalWeights([0.8]);
   assert.deepStrictEqual(weights, [1.0]);
+});
+
+test('constructor rejects mismatched, all-zero, and non-finite weights', () => {
+  assert.throws(() => createJudge({ judgeCount: 2, weights: [1] }), /weights/);
+  assert.throws(() => createJudge({ judgeCount: 2, weights: [0, 0] }), /weights/);
+  assert.throws(() => createJudge({ judgeCount: 2, weights: [1, Number.NaN] }), /weights/);
+  assert.throws(() => createJudge({ judgeCount: 2, votingMethod: 'optimal', weights: [1] }), /weights/);
+  assert.throws(() => createJudge({ judgeCount: 2, votingMethod: 'optimal', judgeAccuracies: [0.8] }), /judgeAccuracies/);
+  assert.throws(() => createJudge({ judgeCount: 2, votingMethod: 'optimal', judgeAccuracies: false }), /judgeAccuracies/);
+});
+
+test('constructor permits a zero weight without silently restoring its vote', () => {
+  const ej = createJudge({ judgeCount: 2, weights: [0, 1] });
+  const result = ej.weightedAverage([
+    mockResult({ score: 10, judgeIndex: 0 }),
+    mockResult({ score: 4, judgeIndex: 1 })
+  ]);
+  assert.deepStrictEqual(ej.normalizedWeights, [0, 1]);
+  assert.strictEqual(result.score, 4);
+});
+
+test('constructor normalizes very large finite weights without overflow', () => {
+  const ej = createJudge({ judgeCount: 2, weights: [Number.MAX_VALUE, Number.MAX_VALUE] });
+  const result = ej.weightedAverage([
+    mockResult({ score: 8, judgeIndex: 0 }),
+    mockResult({ score: 6, judgeIndex: 1 })
+  ]);
+
+  assert.deepStrictEqual(ej.normalizedWeights, [0.5, 0.5]);
+  assert.strictEqual(result.score, 7);
+});
+
+test('weighted aggregation reports no effective weight when only zero-weight judges are available', () => {
+  const ej = createJudge({ judgeCount: 2, weights: [0, 1] });
+  const result = ej.aggregateResults([
+    mockResult({ score: 8, judgeIndex: 0 }),
+    mockResult({ score: null, error: 'timeout', judgeIndex: 1 })
+  ]);
+
+  assert.strictEqual(result.type, 'no_effective_weight');
+  assert.strictEqual(result.score, null);
+  assert.strictEqual(result.assessment, 'error');
+  assert.strictEqual(result.confidence, 0);
+  assert.deepStrictEqual(result.availability, {
+    totalJudges: 2,
+    availableJudges: 1,
+    unavailableJudges: 1,
+    failures: [{ judgeIndex: 1, provider: 'gemini', reason: 'timeout' }]
+  });
+});
+
+test('consensus preserves no-effective-weight when divergent zero-weight judges are the only successes', () => {
+  const ej = createJudge({
+    judgeCount: 3,
+    votingMethod: 'consensus',
+    minAgreement: 0.9,
+    weights: [0, 0, 1]
+  });
+  const result = ej.aggregateResults([
+    mockResult({ score: 9, assessment: 'pass', judgeIndex: 0 }),
+    mockResult({ score: 3, assessment: 'fail', judgeIndex: 1 }),
+    mockResult({ score: null, error: 'timeout', judgeIndex: 2 })
+  ]);
+
+  assert.strictEqual(result.type, 'no_effective_weight');
+  assert.strictEqual(result.score, null);
+  assert.strictEqual(result.assessment, 'error');
+  assert.strictEqual(result.confidence, 0);
+  assert.ok(!result.reasoning.includes('No consensus'));
+  assert.deepStrictEqual(result.availability, {
+    totalJudges: 3,
+    availableJudges: 2,
+    unavailableJudges: 1,
+    failures: [{ judgeIndex: 2, provider: 'gemini', reason: 'timeout' }]
+  });
 });
 
 // --- aggregateResults uses configured strategy ---

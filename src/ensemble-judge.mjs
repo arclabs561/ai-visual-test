@@ -14,6 +14,21 @@
 import { VLLMJudge } from './judge.mjs';
 import { detectBias, detectPositionBias } from './bias-detector.mjs';
 
+const DEFAULT_ASSESSMENT = (score) => (
+  score >= 7 ? 'pass' : score >= 5 ? 'needs-improvement' : 'fail'
+);
+
+const isValidJudgment = (result) => (
+  !result?.error && Number.isFinite(result?.score)
+);
+
+const normalizeRejectionReason = (error) => {
+  if (error instanceof Error && error.message.trim()) return error.message;
+  if (typeof error === 'string' && error.trim()) return error;
+  if (error && typeof error.message === 'string' && error.message.trim()) return error.message;
+  return 'unknown_rejection';
+};
+
 /**
  * Ensemble Judge Class
  * 
@@ -35,21 +50,71 @@ export class EnsembleJudge {
       enableBiasDetection = true
     } = options;
     
+    if (!Array.isArray(judges)) {
+      throw new TypeError('judges must be an array');
+    }
+
     this.judges = judges.length > 0 ? judges : [new VLLMJudge()];
     this.votingMethod = votingMethod;
     this.judgeAccuracies = judgeAccuracies; // For optimal weighting (arXiv:2510.01499)
-    this.weights = weights || this.judges.map(() => 1.0);
+    this.weights = weights ?? this.judges.map(() => 1.0);
     this.minAgreement = minAgreement;
     this.enableBiasDetection = enableBiasDetection;
+
+    // Reject a bad explicit configuration even when optimal weighting will later
+    // replace it; silently accepting it makes configuration mistakes invisible.
+    if (weights !== null) this.validateWeights(weights);
     
     // Calculate weights based on method
-    if (votingMethod === 'optimal' && this.judgeAccuracies) {
+    if (votingMethod === 'optimal' && this.judgeAccuracies !== null && this.judgeAccuracies !== undefined) {
+      this.validateAccuracies(this.judgeAccuracies);
       this.weights = this.calculateOptimalWeights(this.judgeAccuracies);
     }
-    
-    // Normalize weights
-    const weightSum = this.weights.reduce((a, b) => a + b, 0);
-    this.normalizedWeights = this.weights.map(w => w / weightSum);
+
+    this.validateWeights(this.weights);
+
+    // Scale first so finite, very large weights cannot overflow their sum.
+    const maxWeight = Math.max(...this.weights);
+    const scaledWeights = this.weights.map(weight => weight / maxWeight);
+    const scaledWeightSum = scaledWeights.reduce((sum, weight) => sum + weight, 0);
+    this.normalizedWeights = scaledWeights.map(weight => weight / scaledWeightSum);
+  }
+
+  validateWeights(weights) {
+    if (!Array.isArray(weights) || weights.length !== this.judges.length) {
+      throw new RangeError(`weights must contain one finite nonnegative value for each of ${this.judges.length} judges`);
+    }
+    if (weights.some(weight => !Number.isFinite(weight) || weight < 0) || !weights.some(weight => weight > 0)) {
+      throw new RangeError('weights must contain finite nonnegative values with at least one positive value');
+    }
+  }
+
+  validateAccuracies(accuracies) {
+    if (!Array.isArray(accuracies) || accuracies.length !== this.judges.length) {
+      throw new RangeError(`judgeAccuracies must contain one value for each of ${this.judges.length} judges`);
+    }
+    if (accuracies.some(accuracy => !Number.isFinite(accuracy) || accuracy < 0 || accuracy > 1)) {
+      throw new RangeError('judgeAccuracies must contain finite values between 0 and 1');
+    }
+  }
+
+  validResults(results) {
+    return results.filter(isValidJudgment);
+  }
+
+  availability(results) {
+    const available = this.validResults(results);
+    const unavailable = results.filter(result => !isValidJudgment(result));
+    return {
+      totalJudges: results.length,
+      availableJudges: available.length,
+      unavailableJudges: unavailable.length,
+      failures: unavailable.map(result => ({
+        judgeIndex: result.judgeIndex,
+        provider: result.provider,
+        reason: result.error || 'invalid_score'
+      }))
+    };
   }
   
   /**
@@ -113,9 +178,10 @@ export class EnsembleJudge {
           judgeIndex: index,
           judgeCount: this.judges.length
         }).catch(error => ({
-          error: error.message,
+          error: normalizeRejectionReason(error),
           judgeIndex: index,
-          score: null
+          score: null,
+          provider: judge.provider
         }))
       )
     );
@@ -139,7 +205,7 @@ export class EnsembleJudge {
     if (this.enableBiasDetection) {
       aggregated.biasDetection = {
         individual: results.map(r => detectBias(r.reasoning || '')),
-        position: detectPositionBias(results)
+        position: detectPositionBias(this.validResults(results))
       };
     }
     
@@ -159,64 +225,86 @@ export class EnsembleJudge {
    * Aggregate results based on voting method
    */
   aggregateResults(results) {
-    const validResults = results.filter(r => r.score !== null && !r.error);
+    const validResults = this.validResults(results);
+    const availability = this.availability(results);
     
     if (validResults.length === 0) {
       return {
         score: null,
         assessment: 'error',
         issues: ['All judges failed'],
-        reasoning: 'All judges encountered errors',
-        confidence: 0
+        reasoning: 'No valid judge scores were available',
+        confidence: 0,
+        availability
       };
     }
-    
+
+    let aggregate;
     switch (this.votingMethod) {
       case 'weighted_average':
       case 'optimal':
-        return this.weightedAverage(validResults);
+        aggregate = this.weightedAverage(validResults);
+        break;
       case 'majority':
-        return this.majorityVote(validResults);
+        aggregate = this.majorityVote(validResults);
+        break;
       case 'consensus':
-        return this.consensusVote(validResults);
+        aggregate = this.consensusVote(validResults);
+        break;
       default:
-        return this.weightedAverage(validResults);
+        aggregate = this.weightedAverage(validResults);
     }
+    return { ...aggregate, availability };
   }
   
   /**
    * Weighted average voting
    */
   weightedAverage(results) {
-    const scores = results.map((r, i) => ({
+    const validResults = this.validResults(results);
+    if (validResults.length === 0) return this.aggregateResults([]);
+
+    const scores = validResults.map(r => ({
       score: r.score,
-      weight: this.normalizedWeights[r.judgeIndex] || 1.0 / results.length
+      weight: Number.isFinite(this.normalizedWeights[r.judgeIndex])
+        ? this.normalizedWeights[r.judgeIndex]
+        : 1.0 / validResults.length
     }));
     
     const weightedSum = scores.reduce((sum, s) => sum + (s.score * s.weight), 0);
     const totalWeight = scores.reduce((sum, s) => sum + s.weight, 0);
-    const avgScore = totalWeight > 0 ? weightedSum / totalWeight : null;
+    if (totalWeight === 0) {
+      return {
+        type: 'no_effective_weight',
+        score: null,
+        assessment: 'error',
+        issues: ['No available judge has an effective weight'],
+        reasoning: 'The available judge results all have configured weight zero',
+        confidence: 0
+      };
+    }
+    const avgScore = weightedSum / totalWeight;
     
     // Aggregate issues (union)
     const allIssues = new Set();
-    results.forEach(r => {
+    validResults.forEach(r => {
       if (r.issues) r.issues.forEach(issue => allIssues.add(issue));
     });
     
     // Aggregate reasoning
-    const reasoning = results
+    const reasoning = validResults
       .map((r, i) => `Judge ${i + 1} (${r.provider}): ${r.reasoning || 'No reasoning'}`)
       .join('\n\n');
     
     // Determine assessment
-    const assessment = avgScore >= 7 ? 'pass' : avgScore >= 5 ? 'needs-improvement' : 'fail';
+    const assessment = DEFAULT_ASSESSMENT(avgScore);
     
     return {
       score: Math.round(avgScore * 10) / 10, // Round to 1 decimal
       assessment,
       issues: Array.from(allIssues),
       reasoning: `Ensemble judgment (weighted average):\n${reasoning}`,
-      confidence: this.calculateConfidence(results, avgScore)
+      confidence: this.calculateConfidence(validResults, avgScore)
     };
   }
   
@@ -224,25 +312,42 @@ export class EnsembleJudge {
    * Majority vote
    */
   majorityVote(results) {
-    const assessments = results.map(r => r.assessment || (r.score >= 7 ? 'pass' : r.score >= 5 ? 'needs-improvement' : 'fail'));
-    const assessmentCounts = {};
+    const validResults = this.validResults(results);
+    if (validResults.length === 0) return this.aggregateResults([]);
+
+    const assessments = validResults.map(r => r.assessment || DEFAULT_ASSESSMENT(r.score));
+    const assessmentCounts = Object.create(null);
     assessments.forEach(a => {
       assessmentCounts[a] = (assessmentCounts[a] || 0) + 1;
     });
     
-    const majorityAssessment = Object.entries(assessmentCounts)
-      .sort((a, b) => b[1] - a[1])[0][0];
+    const highestCount = Math.max(...Object.values(assessmentCounts));
+    const tiedAssessments = Object.keys(assessmentCounts)
+      .filter(assessment => assessmentCounts[assessment] === highestCount);
+    // A tie is resolved by the higher mean score, then by code-unit label order. Both rules
+    // are independent of the judges' response order.
+    const majorityAssessment = tiedAssessments.sort((left, right) => {
+      const mean = (assessment) => {
+        const scores = validResults
+          .filter((result, index) => assessments[index] === assessment)
+          .map(result => result.score);
+        return scores.reduce((sum, score) => sum + score, 0) / scores.length;
+      };
+      const meanDifference = mean(right) - mean(left);
+      if (meanDifference !== 0) return meanDifference;
+      return left === right ? 0 : left < right ? -1 : 1;
+    })[0];
     
     // Average score of majority
-    const majorityResults = results.filter((r, i) => assessments[i] === majorityAssessment);
+    const majorityResults = validResults.filter((r, i) => assessments[i] === majorityAssessment);
     const avgScore = majorityResults.reduce((sum, r) => sum + r.score, 0) / majorityResults.length;
     
     return {
       score: Math.round(avgScore * 10) / 10,
       assessment: majorityAssessment,
       issues: Array.from(new Set(majorityResults.flatMap(r => r.issues || []))),
-      reasoning: `Majority vote: ${majorityAssessment} (${assessmentCounts[majorityAssessment]}/${results.length} judges)`,
-      confidence: assessmentCounts[majorityAssessment] / results.length
+      reasoning: `Majority vote: ${majorityAssessment} (${assessmentCounts[majorityAssessment]}/${validResults.length} judges)${tiedAssessments.length > 1 ? '; tie resolved by mean score then assessment label code units' : ''}`,
+      confidence: assessmentCounts[majorityAssessment] / validResults.length
     };
   }
   
@@ -251,10 +356,12 @@ export class EnsembleJudge {
    */
   consensusVote(results) {
     const agreement = this.calculateAgreement(results);
+    const avg = this.weightedAverage(results);
+
+    if (avg.type === 'no_effective_weight') return avg;
     
     if (agreement.score < this.minAgreement) {
       // No consensus - return weighted average with low confidence
-      const avg = this.weightedAverage(results);
       return {
         ...avg,
         assessment: 'no-consensus',
@@ -264,21 +371,22 @@ export class EnsembleJudge {
     }
     
     // Consensus reached - return weighted average
-    return this.weightedAverage(results);
+    return avg;
   }
   
   /**
    * Calculate agreement between judges
    */
   calculateAgreement(results) {
-    if (results.length < 2) {
+    const validResults = this.validResults(results);
+    if (validResults.length === 0) {
+      return { score: 0, type: 'all_failed' };
+    }
+    if (validResults.length === 1) {
       return { score: 1.0, type: 'single_judge' };
     }
     
-    const scores = results.map(r => r.score).filter(s => s !== null);
-    if (scores.length < 2) {
-      return { score: 0, type: 'insufficient_scores' };
-    }
+    const scores = validResults.map(r => r.score);
     
     // Calculate variance
     const mean = scores.reduce((a, b) => a + b, 0) / scores.length;
@@ -291,7 +399,7 @@ export class EnsembleJudge {
     const agreement = Math.max(0, 1 - normalizedStdDev);
     
     // Check assessment agreement
-    const assessments = results.map(r => r.assessment || (r.score >= 7 ? 'pass' : 'fail'));
+    const assessments = validResults.map(r => r.assessment || DEFAULT_ASSESSMENT(r.score));
     const uniqueAssessments = new Set(assessments);
     const assessmentAgreement = uniqueAssessments.size === 1 ? 1.0 : 0.5;
     
@@ -309,12 +417,32 @@ export class EnsembleJudge {
    * Analyze disagreement between judges
    */
   analyzeDisagreement(results) {
-    if (results.length < 2) {
-      return { hasDisagreement: false };
+    const validResults = this.validResults(results);
+    if (validResults.length === 0) {
+      return {
+        hasDisagreement: false,
+        type: 'all_failed',
+        scoreRange: null,
+        assessmentDisagreement: false,
+        uniqueAssessments: [],
+        maxScore: null,
+        minScore: null
+      };
     }
-    
-    const scores = results.map(r => r.score).filter(s => s !== null);
-    const assessments = results.map(r => r.assessment || (r.score >= 7 ? 'pass' : 'fail'));
+    if (validResults.length === 1) {
+      return {
+        hasDisagreement: false,
+        type: 'insufficient_scores',
+        scoreRange: null,
+        assessmentDisagreement: false,
+        uniqueAssessments: [validResults[0].assessment || DEFAULT_ASSESSMENT(validResults[0].score)],
+        maxScore: validResults[0].score,
+        minScore: validResults[0].score
+      };
+    }
+
+    const scores = validResults.map(r => r.score);
+    const assessments = validResults.map(r => r.assessment || DEFAULT_ASSESSMENT(r.score));
     
     const scoreRange = Math.max(...scores) - Math.min(...scores);
     const uniqueAssessments = new Set(assessments);
@@ -363,4 +491,3 @@ export function createEnsembleJudge(providers = ['gemini', 'openai'], options = 
     judges
   });
 }
-

@@ -76,6 +76,7 @@ for (const subpath of ['./temporal', './ensemble', './game', './perception', './
     route.types = `./src/integrations/${integration}.d.ts`;
   }
 }
+packageJson.bin = { 'ai-visual-test': './bin/ai-visual-test.js' };
 packageJson.imports = {
   ...(packageJson.imports || {}),
   '#provider-adapters': './src/provider-adapters.js',

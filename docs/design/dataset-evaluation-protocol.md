@@ -24,9 +24,11 @@ replace first-party screenshots reviewed by people.
 
 ## Data policy
 
-Dataset pixels, normalized rows, provider results, and reports stay outside Git
-under `evaluation/` or another operator-selected cache. Commit only acquisition
-and evaluation code, schemas, empty templates, and documentation.
+Dataset pixels, normalized rows, provider results, confirmations, and reports
+stay outside Git under ignored `evaluation/` or another operator-selected
+cache. Commit only acquisition/evaluation code, schemas, empty templates, and
+documentation. Acquisition commands do not import provider code; evaluation is
+a separate, explicit step.
 
 Every acquisition must record:
 
@@ -70,6 +72,45 @@ AI_VISUAL_TEST_LIVE=1 VLM_PROVIDER=openrouter \
 
 The runner accepts at most 20 rows, fetches both changed and no-change controls,
 hashes all artifacts, and writes only to ignored storage by default.
+
+UICrit acquisition fetches only the public annotation CSV by default:
+
+```bash
+npm run evaluate:uicrit -- --fetch-only --limit 5
+npm run evaluate:uicrit -- --fetch-only --limit 5 --rico-root /private/path/rico
+```
+
+Supplying a local RICO directory may add selected local PNGs to that private
+receipt. A live run must consume that pixel-bearing receipt and separately bind
+the exact provider and model in a private upload confirmation:
+
+```bash
+AI_VISUAL_TEST_LIVE=1 npm run evaluate:uicrit -- \
+  --evaluate-existing evaluation/results/uicrit/<acquisition> \
+  --cache-dir evaluation/cache/uicrit --output-dir evaluation/results/uicrit \
+  --upload-confirmation /private/path/uicrit-upload-confirmation.json
+```
+
+Vibe Design and Landing Page Arena use the same split. The operator must first
+have accepted the host terms and have working access; the tool never accepts
+terms on their behalf:
+
+```bash
+# requires HF_TOKEN in the environment
+npm run evaluate:vibe -- --dataset design --fetch-only --limit 5
+npm run evaluate:vibe -- --dataset landing --fetch-only --limit 5
+```
+
+Then evaluate a prior acquisition with explicit cache/output paths and a
+private confirmation that binds provider and model:
+
+```bash
+AI_VISUAL_TEST_LIVE=1 npm run evaluate:vibe -- --dataset design \
+  --evaluate-existing evaluation/results/vibe-design/<acquisition> \
+  --cache-dir evaluation/cache/vibe-design --output-dir evaluation/results/vibe-design/<run> \
+  --upload-confirmation /private/path/vibe-upload-confirmation.json
+```
+
 `evaluate:dataset` independently scores compatible examples/results documents
 supplied by the operator.
 
@@ -97,9 +138,11 @@ local evidence; rerun the command to regenerate them.
 | Source | Revision | Status |
 | --- | --- | --- |
 | DiffSpot | `c6dd79d5e1c0cbb4e7ca234c9f53c418a75e30ce` | Fetch/evaluation runner exercised on a bounded external sample |
-| UICrit | `adc92136cdaecf6a5c8bb85af08594dd9271eb00` | Adapter and schema tests only |
-| Vibe Design Arena | `ee85ae467e14b1f454036544eb37eec0e2ab6368` | Gated; requires accepted access and authentication |
-| Vibe Landing Page Arena | `94d584034e81336fe440dcb3f62fe8d53a65f7f0` | Gated; requires accepted access and authentication |
+| UICrit | `adc92136cdaecf6a5c8bb85af08594dd9271eb00` | Public annotations fetched only; no local RICO pixels or provider run |
+| Vibe Design Arena | `ee85ae467e14b1f454036544eb37eec0e2ab6368` | Gated; current local access returned 401; terms were not accepted automatically |
+| Vibe Landing Page Arena | `94d584034e81336fe440dcb3f62fe8d53a65f7f0` | Gated; current local access returned 401; terms were not accepted automatically |
+| Apple RLDF | `be0d7f816ded6fa5111035f34f69b077072ba9a3` | Provider upload denied: noncommercial, external-only corpus |
+| UIClip BetterApp | `5e087dedcd48c74fffb0802e8035006995b57e36` | Provider upload and release gating blocked while licence is unknown |
 
 ## Claim gates
 

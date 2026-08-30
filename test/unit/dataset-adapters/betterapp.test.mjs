@@ -53,10 +53,10 @@ test('counterbalances the good image and captions without losing original source
   assert.deepEqual(positionB.sourceGroups, positionA.sourceGroups);
 });
 
-test('marks the single expert-derived label as external-only, non-release-gate evidence', () => {
+test('marks the one-human-designer label as external-only, non-release-gate evidence', () => {
   const example = normalizeBetterAppRow(row(), provenance, { chosenPosition: 'A' });
   assert.deepEqual(example.evidence, {
-    strength: 'single-expert-derived-label',
+    strength: 'one-human-designer-label',
     voteDistribution: 'unavailable',
     releaseGateEligible: false,
   });

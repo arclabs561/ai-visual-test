@@ -4,8 +4,10 @@ import { describe, it } from 'node:test';
 import {
   DATASET_REGISTRY,
   DatasetRegistryError,
+  assertDatasetProviderUpload,
   assertDatasetUsage,
   createDatasetProvenance,
+  preflightDatasetProviderUpload,
 } from '../../src/dataset-adapters/registry.js';
 
 describe('external dataset registry', () => {
@@ -55,5 +57,183 @@ describe('external dataset registry', () => {
     assert.throws(() => assertDatasetUsage('uicrit', 'bundle-pixels'), /unknown/);
     assert.throws(() => assertDatasetUsage('apple-rldf', 'bundle-pixels'), /external-only/);
     assert.doesNotThrow(() => assertDatasetUsage('apple-rldf', 'evaluate-externally'));
+  });
+
+  it('allows provider upload only where the recorded source policy allows it', () => {
+    assert.deepEqual(assertDatasetProviderUpload('diffspot', { provider: 'example-provider', model: 'example-model' }), {
+      key: 'diffspot',
+      dataset: 'tencent/DiffSpot',
+      provider: 'example-provider',
+      model: 'example-model',
+      policy: 'allowed',
+      rightsGrant: false,
+    });
+    assert.throws(
+      () => assertDatasetProviderUpload('apple-rldf', { provider: 'example-provider', model: 'example-model' }),
+      /noncommercial and external-only/,
+    );
+    assert.throws(
+      () => assertDatasetProviderUpload('uiclip-betterapp', { provider: 'example-provider', model: 'example-model' }),
+      /licence remains unknown/,
+    );
+  });
+
+  it('requires and retains operator confirmations without treating them as rights grants', () => {
+    const uicritConfirmation = {
+      provider: 'example-provider',
+      model: 'example-model',
+      confirmedBy: 'evaluation operator',
+      confirmedAt: '2026-08-30T12:00:00.000Z',
+      acknowledgements: ['local-pixel-rights-manifest-reviewed', 'provider-upload-permitted'],
+      localPixelManifest: 'evaluation/rights/uicrit-pixels.json',
+    };
+    const uicrit = assertDatasetProviderUpload('uicrit', {
+      provider: 'example-provider',
+      model: 'example-model',
+      confirmation: uicritConfirmation,
+    });
+    assert.deepEqual(uicrit.confirmation, uicritConfirmation);
+    assert.equal(uicrit.rightsGrant, false);
+    assert.throws(
+      () => assertDatasetProviderUpload('uicrit', { provider: 'example-provider', model: 'example-model' }),
+      /separately authorized local pixel manifest/,
+    );
+    assert.throws(
+      () => assertDatasetProviderUpload('uicrit', {
+        provider: 'example-provider',
+        model: 'example-model',
+        confirmation: { ...uicritConfirmation, localPixelManifest: ' ' },
+      }),
+      /localPixelManifest/,
+    );
+    assert.throws(
+      () => assertDatasetProviderUpload('uicrit', {
+        provider: 'example-provider',
+        model: 'example-model',
+        confirmation: {
+          ...uicritConfirmation,
+          acknowledgements: ['local-pixel-rights-manifest-reviewed'],
+        },
+      }),
+      /provider-upload-permitted/,
+    );
+
+    const vibeConfirmation = {
+      provider: 'example-provider',
+      model: 'example-model',
+      confirmedBy: 'evaluation operator',
+      confirmedAt: '2026-08-30T12:00:00.000Z',
+      acknowledgements: ['gated-dataset-terms-accepted', 'provider-upload-permitted'],
+    };
+    assert.equal(
+      assertDatasetProviderUpload('vibe-design-arena', {
+        provider: 'example-provider',
+        model: 'example-model',
+        confirmation: vibeConfirmation,
+      }).policy,
+      'requires-gated-terms-confirmation',
+    );
+    assert.throws(
+      () => assertDatasetProviderUpload('vibe-landing-page-arena', {
+        provider: 'example-provider',
+        model: 'example-model',
+        confirmation: { ...vibeConfirmation, acknowledgements: ['gated-dataset-terms-accepted'] },
+      }),
+      /provider-upload-permitted/,
+    );
+    assert.throws(
+      () => assertDatasetProviderUpload('vibe-design-arena', {
+        provider: 'different-provider',
+        model: 'example-model',
+        confirmation: vibeConfirmation,
+      }),
+      /provider and model must match the request/,
+    );
+    assert.throws(
+      () => assertDatasetProviderUpload('vibe-design-arena', {
+        provider: 'example-provider',
+        model: 'different-model',
+        confirmation: vibeConfirmation,
+      }),
+      /provider and model must match the request/,
+    );
+  });
+
+  it('rejects malformed runtime JSON confirmation shapes with DatasetRegistryError', () => {
+    const validVibeConfirmation = {
+      provider: 'example-provider',
+      model: 'example-model',
+      confirmedBy: 'evaluation operator',
+      confirmedAt: '2026-08-30T12:00:00.000Z',
+      acknowledgements: ['gated-dataset-terms-accepted', 'provider-upload-permitted'],
+    };
+    const malformed = [
+      null,
+      [],
+      {},
+      { provider: 7, model: 'example-model' },
+      { provider: 'example-provider' },
+      { provider: 'example-provider', model: 'example-model', confirmation: null },
+      { provider: 'example-provider', model: 'example-model', confirmation: [] },
+      { provider: 'example-provider', model: 'example-model', confirmation: { ...validVibeConfirmation, confirmedAt: '2026-08-30T12:00:00+01:00' } },
+      { provider: 'example-provider', model: 'example-model', confirmation: { ...validVibeConfirmation, acknowledgements: 'gated-dataset-terms-accepted' } },
+      { provider: 'example-provider', model: 'example-model', confirmation: { ...validVibeConfirmation, acknowledgements: ['provider-upload-permitted', 'provider-upload-permitted'] } },
+      { provider: 'example-provider', model: 'example-model', confirmation: { ...validVibeConfirmation, acknowledgements: ['gated-dataset-terms-accepted', 'not-a-policy-value'] } },
+      { provider: 'example-provider', model: 'example-model', confirmation: { ...validVibeConfirmation, unexpected: true } },
+    ];
+    for (const request of malformed) {
+      assert.throws(
+        () => assertDatasetProviderUpload('vibe-design-arena', request),
+        DatasetRegistryError,
+      );
+    }
+    assert.throws(
+      () => assertDatasetProviderUpload('uicrit', {
+        provider: 'example-provider',
+        model: 'example-model',
+        confirmation: {
+          provider: 'example-provider',
+          model: 'example-model',
+          confirmedBy: 'evaluation operator',
+          confirmedAt: '2026-08-30T12:00:00Z',
+          acknowledgements: ['local-pixel-rights-manifest-reviewed', 'provider-upload-permitted'],
+          localPixelManifest: 'https://example.test/rights.json',
+        },
+      }),
+      /must be a local reference/,
+    );
+  });
+
+  it('preflights the exact canonical provider/model tuple without credentials or network access', () => {
+    assert.deepEqual(
+      preflightDatasetProviderUpload('diffspot', { provider: ' Anthropic ', model: 'claude-sonnet-4-5' }),
+      {
+        key: 'diffspot',
+        dataset: 'tencent/DiffSpot',
+        provider: 'claude',
+        model: 'claude-sonnet-4-5',
+        policy: 'allowed',
+        rightsGrant: false,
+      },
+    );
+    assert.throws(
+      () => preflightDatasetProviderUpload('diffspot', { provider: 'unknown-provider', model: 'model' }),
+      /not supported/,
+    );
+    const confirmation = {
+      provider: 'anthropic',
+      model: 'claude-sonnet-4-5',
+      confirmedBy: 'evaluation operator',
+      confirmedAt: '2026-08-30T12:00:00.000Z',
+      acknowledgements: ['gated-dataset-terms-accepted', 'provider-upload-permitted'],
+    };
+    assert.throws(
+      () => preflightDatasetProviderUpload('vibe-design-arena', {
+        provider: 'anthropic',
+        model: 'claude-sonnet-4-5',
+        confirmation,
+      }),
+      /canonical selected provider name/,
+    );
   });
 });

@@ -5,18 +5,19 @@ import { tmpdir } from 'node:os';
 import test from 'node:test';
 import { createHash } from 'node:crypto';
 
-import { computeGroundingMetrics, evaluateExistingPublicGroundingRun, evaluateLocalModelPublicGroundingRun, main, parseArguments } from '../../scripts/evaluate-public-grounding.mjs';
+import { computeGroundingMetrics, evaluateExistingPublicGroundingRun, evaluateLocalModelPublicGroundingRun, evaluateOpenRouterPublicGroundingRun, main, parseArguments } from '../../scripts/evaluate-public-grounding.mjs';
 
 const hash = value => createHash('sha256').update(value).digest('hex');
 const json = value => `${JSON.stringify(value, null, 2)}\n`;
-function fixture(directory) {
+function fixture(directory, { imageSize = [100, 50], bbox = [0, 0, 1, 1] } = {}) {
   const cache = join(directory, 'cache'); const input = join(directory, 'input'); const output = join(directory, 'output'); mkdirSync(cache); mkdirSync(input); mkdirSync(output); mkdirSync(join(cache, 'annotations')); mkdirSync(join(cache, 'images'));
-  const record = { image_path: 'element_grounding/a.png', image_size: [100, 50], prompt_to_evaluate: 'target', bbox: [0, 0, 1, 1], platform: 'test' };
+  const record = { image_path: 'element_grounding/a.png', image_size: imageSize, prompt_to_evaluate: 'target', bbox, platform: 'test' };
   const annotationBytes = Buffer.from(JSON.stringify([record])); const annotationPath = 'annotations/a.json'; writeFileSync(join(cache, annotationPath), annotationBytes);
   const id = `ui-vision:${hash(`${record.image_path}\0${record.prompt_to_evaluate}`).slice(0, 24)}`; const imagePath = `images/${hash(id).slice(0, 32)}.png`; const bytes = Buffer.from('89504e470d0a1a0a', 'hex'); writeFileSync(join(cache, imagePath), bytes);
   const acquisition = { version: 1, key: 'ui-vision', provenance: { revision: '766c66aeffef16608d4916525902d9fb2598d7ce' }, status: 'available', artifacts: [{ path: annotationPath, bytes: annotationBytes.length, sha256: hash(annotationBytes) }, { path: imagePath, bytes: bytes.length, sha256: hash(bytes) }] };
-  const normalized = [{ id, imagePath: record.image_path, instruction: 'target', bbox: { left: 0, top: 0, right: 1, bottom: 1 }, imageSize: { width: 100, height: 50 }, groupId: 'test' }];
-  const examples = [{ id, groupId: 'test', imageArtifact: imagePath, instruction: 'target', bbox: { left: 0, top: 0, right: 1, bottom: 1 }, imageSize: { width: 100, height: 50 } }];
+  const box = { left: bbox[0], top: bbox[1], right: bbox[2], bottom: bbox[3] }; const size = { width: imageSize[0], height: imageSize[1] };
+  const normalized = [{ id, imagePath: record.image_path, instruction: 'target', bbox: box, imageSize: size, groupId: 'test' }];
+  const examples = [{ id, groupId: 'test', imageArtifact: imagePath, instruction: 'target', bbox: box, imageSize: size }];
   writeFileSync(join(input, 'grounding-acquisition-v1.json'), JSON.stringify(acquisition));
   writeFileSync(join(input, 'grounding-examples-v1.json'), JSON.stringify({ dataset: 'ui-vision', acquisitionSha256: hash(json(acquisition)), selection: { seed: 'ui-vision-766c66aeffef16608d4916525902d9fb2598d7ce', normalizedRecordsSha256: hash(json(normalized)), normalizedRecords: normalized }, examples }));
   return { cache, input, output, acquisition, examples };
@@ -26,8 +27,37 @@ test('parses only bounded public datasets and mutually exclusive modes', () => {
   assert.equal(parseArguments(['--dataset', 'ui-vision', '--fetch-only', '--limit', '20']).limit, 20);
   assert.throws(() => parseArguments(['--dataset', 'vibe', '--fetch-only']), /ui-vision or screenspot-pro/);
   assert.throws(() => parseArguments(['--dataset', 'ui-vision', '--fetch-only', '--evaluate-existing', 'x']), /choose exactly one/);
-  assert.throws(() => parseArguments(['--dataset', 'ui-vision', '--evaluate-existing', 'x']), /requires --local-model/);
+  assert.throws(() => parseArguments(['--dataset', 'ui-vision', '--evaluate-existing', 'x']), /requires --local-model or --openrouter-model/);
+  assert.throws(() => parseArguments(['--dataset', 'ui-vision', '--evaluate-existing', 'x', '--openrouter-model', 'm']), /requires --openrouter-provider/);
+  assert.throws(() => parseArguments(['--dataset', 'ui-vision', '--fetch-only', '--openrouter-provider', 'p']), /model\/provider selection/);
+  assert.throws(() => parseArguments(['--dataset', 'ui-vision', '--evaluate-existing', 'x', '--local-model', 'a', '--openrouter-model', 'b']), /cannot be combined/);
   assert.throws(() => parseArguments(['--dataset', 'ui-vision', '--fetch-only', '--limit', '21']), /1 to 20/);
+});
+
+test('OpenRouter grounding preflights policy before any evaluator call and records bounded aggregates', async () => {
+  const directory = mkdtempSync(join(tmpdir(), 'public-grounding-')); const { cache, input, output, acquisition } = fixture(directory); const calls = [];
+  try {
+    const completed = await evaluateOpenRouterPublicGroundingRun({ dataset: { key: 'ui-vision', revision: acquisition.provenance.revision }, inputDirectory: input, cacheDirectory: cache, outputDirectory: output, model: 'vision-test', providerSlug: 'provider-test', preflight: (key, request) => ({ key, provider: request.provider, model: request.model, policy: 'allowed', rightsGrant: false }), evaluate: async request => { calls.push(request); return { outcome: { kind: 'grounding', x: 0, y: 0 }, model: 'vision-test', provider: 'route-a', nativeModel: 'native-test', requestConfig: { maximumOutputTokens: 256, providerRouting: { only: ['provider-test'], allow_fallbacks: false, require_parameters: true, data_collection: 'deny' }, reasoning: { effort: 'minimal', exclude: true } }, usage: { promptTokens: 10, completionTokens: 2, totalTokens: 12, cost: 0.001 } }; } });
+    assert.equal(completed.metrics.hits, 1); assert.equal(calls.length, 1); assert.equal(calls[0].responseKind, 'grounding'); assert.equal(calls[0].providerSlug, 'provider-test');
+    const receipt = JSON.parse(readFileSync(join(output, 'grounding-results-v1.json'), 'utf8')); assert.deepEqual(receipt.run.usage, { calls: 1, promptTokens: 10, completionTokens: 2, totalTokens: 12, cost: { status: 'complete', reportedCalls: 1, missingCalls: 0, reportedCost: 0.001 } }); assert.deepEqual(receipt.run.requestConfig, { maximumOutputTokens: 256, providerRouting: { only: ['provider-test'], allow_fallbacks: false, require_parameters: true, data_collection: 'deny' }, reasoning: { effort: 'minimal', exclude: true } }); assert.deepEqual(receipt.run.models, ['vision-test']); assert.deepEqual(receipt.run.nativeModels, ['native-test']); assert.match(receipt.run.acquisitionSha256, /^[a-f0-9]{64}$/); assert.match(receipt.run.examplesSha256, /^[a-f0-9]{64}$/);
+  } finally { rmSync(directory, { recursive: true, force: true }); }
+});
+
+test('OpenRouter policy denial and tampered examples make no remote evaluator call', async () => {
+  const directory = mkdtempSync(join(tmpdir(), 'public-grounding-')); const { cache, input, output, acquisition } = fixture(directory); let calls = 0;
+  try {
+    await assert.rejects(evaluateOpenRouterPublicGroundingRun({ dataset: { key: 'ui-vision', revision: acquisition.provenance.revision }, inputDirectory: input, cacheDirectory: cache, outputDirectory: output, model: 'vision-test', providerSlug: 'provider-test', preflight: () => { throw new Error('denied'); }, evaluate: async () => { calls += 1; return {}; } }), /denied/); assert.equal(calls, 0);
+    const examplesPath = join(input, 'grounding-examples-v1.json'); const examples = JSON.parse(readFileSync(examplesPath, 'utf8')); examples.examples[0].bbox.right = 99; writeFileSync(examplesPath, JSON.stringify(examples));
+    await assert.rejects(evaluateOpenRouterPublicGroundingRun({ dataset: { key: 'ui-vision', revision: acquisition.provenance.revision }, inputDirectory: input, cacheDirectory: cache, outputDirectory: output, model: 'vision-test', providerSlug: 'provider-test', preflight: (key, request) => ({ key, provider: request.provider, model: request.model, policy: 'allowed', rightsGrant: false }), evaluate: async () => { calls += 1; return {}; } }), /split was modified/); assert.equal(calls, 0);
+  } finally { rmSync(directory, { recursive: true, force: true }); }
+});
+
+test('OpenRouter response model mismatch cannot produce a result receipt', async () => {
+  const directory = mkdtempSync(join(tmpdir(), 'public-grounding-')); const { cache, input, output, acquisition } = fixture(directory);
+  try {
+    await assert.rejects(evaluateOpenRouterPublicGroundingRun({ dataset: { key: 'ui-vision', revision: acquisition.provenance.revision }, inputDirectory: input, cacheDirectory: cache, outputDirectory: output, model: 'vision-test', providerSlug: 'provider-test', preflight: (key, request) => ({ key, provider: request.provider, model: request.model, policy: 'allowed', rightsGrant: false }), evaluate: async () => ({ outcome: { kind: 'grounding', x: 0, y: 0 }, model: 'other-model', requestConfig: { maximumOutputTokens: 256, providerRouting: { only: ['provider-test'], allow_fallbacks: false, require_parameters: true, data_collection: 'deny' }, reasoning: { effort: 'minimal', exclude: true } }, usage: { promptTokens: 1, completionTokens: 1, totalTokens: 2 } }) }), /response model did not match/);
+    assert.throws(() => readFileSync(join(output, 'grounding-results-v1.json'), 'utf8'), /ENOENT/);
+  } finally { rmSync(directory, { recursive: true, force: true }); }
 });
 
 test('local model runner uses the grounding-only local evaluator seam', async () => {
@@ -59,6 +89,19 @@ test('writes local evaluator results only after verified artifacts', async () =>
     const result = await evaluateExistingPublicGroundingRun({ dataset: { key: 'ui-vision', revision: acquisition.provenance.revision }, inputDirectory: input, cacheDirectory: cache, outputDirectory: output, evaluator: async () => ({ x: 0.5, y: 0.5 }) });
     const receipt = JSON.parse(readFileSync(join(output, 'grounding-results-v1.json'), 'utf8')); assert.equal(result.metrics.pointInBboxRate, 1); assert.equal(receipt.results.length, 1); assert.match(receipt.examplesSha256, /^[a-f0-9]{64}$/);
   } finally { rmSync(directory, { recursive: true, force: true }); }
+});
+
+test('converts normalized 0..1000 points to original pixels before bbox scoring', async () => {
+  const directory = mkdtempSync(join(tmpdir(), 'public-grounding-')); const { cache, input, output, acquisition } = fixture(directory, { imageSize: [1920, 1080], bbox: [900, 500, 1000, 600] });
+  try {
+    const result = await evaluateExistingPublicGroundingRun({ dataset: { key: 'ui-vision', revision: acquisition.provenance.revision }, inputDirectory: input, cacheDirectory: cache, outputDirectory: output, evaluator: async () => ({ x: 500, y: 500 }) });
+    const receipt = JSON.parse(readFileSync(join(output, 'grounding-results-v1.json'), 'utf8')); assert.equal(result.metrics.hits, 1); assert.deepEqual(receipt.results[0], { id: receipt.results[0].id, normalizedPoint: { x: 500, y: 500 }, point: { x: 960, y: 540 } });
+  } finally { rmSync(directory, { recursive: true, force: true }); }
+});
+
+test('rejects out-of-range normalized coordinates before emitting a result receipt', async () => {
+  const directory = mkdtempSync(join(tmpdir(), 'public-grounding-')); const { cache, input, output, acquisition } = fixture(directory); let calls = 0;
+  try { await assert.rejects(evaluateExistingPublicGroundingRun({ dataset: { key: 'ui-vision', revision: acquisition.provenance.revision }, inputDirectory: input, cacheDirectory: cache, outputDirectory: output, evaluator: async () => { calls += 1; return { x: 1001, y: 0 }; } }), /normalized x and y coordinates/); assert.equal(calls, 1); } finally { rmSync(directory, { recursive: true, force: true }); }
 });
 
 test('rejects a tampered instruction before the evaluator is called', async () => {

@@ -10,17 +10,24 @@ import {
   mkdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync,
 } from 'node:fs';
 import { basename, dirname, relative, resolve, sep } from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-import {
-  normalizeDiffSpotRows,
-  selectDiffSpotExamples,
-} from '../build/src/dataset-adapters/diffspot.js';
-import { createDatasetProvenance } from '../build/src/dataset-adapters/registry.js';
-import { computeRegressionMetrics } from '../build/src/dataset-evaluation-metrics.js';
-import { validateComparison } from '../build/src/page-validation.js';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+// Source scripts load staged modules from build/src.  The staged copy lives
+// under build/scripts, where its sibling modules are instead build/src.
+const MODULE_ROOT = basename(ROOT) === 'build' ? resolve(ROOT, 'src') : resolve(ROOT, 'build/src');
+const moduleImport = name => import(pathToFileURL(resolve(MODULE_ROOT, name)).href);
+const [diffspotModule, registryModule, metricsModule, openRouterModule] = await Promise.all([
+  moduleImport('dataset-adapters/diffspot.js'),
+  moduleImport('dataset-adapters/registry.js'),
+  moduleImport('dataset-evaluation-metrics.js'),
+  moduleImport('openrouter-vision-evaluator.js'),
+]);
+const { normalizeDiffSpotRows, selectDiffSpotExamples } = diffspotModule;
+const { createDatasetProvenance, preflightDatasetProviderUpload } = registryModule;
+const { computeRegressionMetrics } = metricsModule;
+const { aggregateOpenRouterUsage, evaluateOpenRouterVision } = openRouterModule;
+
 const DATASET = 'tencent/DiffSpot';
 const REVISION = 'c6dd79d5e1c0cbb4e7ca234c9f53c418a75e30ce';
 const DEFAULT_CACHE = resolve(ROOT, 'evaluation/cache/diffspot');
@@ -40,9 +47,10 @@ class DiffSpotEvaluationError extends Error {
 function usage() {
   return [
     'Usage: node scripts/evaluate-diffspot.mjs [--limit <1..20>] [--cache-dir <directory>] [--output-dir <directory>] [--fetch-only]',
+    '   or: node scripts/evaluate-diffspot.mjs --openrouter-model <model> --openrouter-provider <endpoint-slug> [--limit <1..20>] [--cache-dir <directory>] [--output-dir <directory>]',
     '',
     'Fetches a bounded sample from revision-pinned tencent/DiffSpot. Dataset pixels and JSON evidence are written only below ignored evaluation/.',
-    'Set AI_VISUAL_TEST_LIVE=1 plus provider credentials before normal evaluation; --fetch-only never calls a provider.',
+    'Set AI_VISUAL_TEST_LIVE=1, OPENROUTER_API_KEY, an explicit --openrouter-model, and --openrouter-provider endpoint slug before hosted evaluation; --fetch-only never calls a provider.',
   ].join('\n');
 }
 
@@ -56,7 +64,7 @@ function optionValue(argumentsList, name) {
 }
 
 function parseArguments(argumentsList) {
-  const known = new Set(['--help', '--fetch-only', '--limit', '--cache-dir', '--output-dir']);
+  const known = new Set(['--help', '--fetch-only', '--limit', '--cache-dir', '--output-dir', '--openrouter-model', '--openrouter-provider']);
   for (const argument of argumentsList) {
     if (argument.startsWith('--') && !known.has(argument)) throw new DiffSpotEvaluationError(`unknown option: ${argument}`);
   }
@@ -65,12 +73,23 @@ function parseArguments(argumentsList) {
   if (!Number.isSafeInteger(limit) || limit < 1 || limit > MAX_LIMIT) {
     throw new DiffSpotEvaluationError(`--limit must be a whole number from 1 to ${MAX_LIMIT}`);
   }
+  const help = argumentsList.includes('--help');
+  const fetchOnly = argumentsList.includes('--fetch-only');
+  const openRouterModel = optionValue(argumentsList, '--openrouter-model');
+  const openRouterProvider = optionValue(argumentsList, '--openrouter-provider');
+  const cacheDirectory = safeCacheDirectory(optionValue(argumentsList, '--cache-dir') ?? DEFAULT_CACHE);
+  const outputDirectory = safeCacheDirectory(optionValue(argumentsList, '--output-dir') ?? DEFAULT_RESULT_DIRECTORY);
+  if (!help && fetchOnly && (openRouterModel !== null || openRouterProvider !== null)) throw new DiffSpotEvaluationError('--fetch-only does not accept OpenRouter evaluator options');
+  if (!help && !fetchOnly && openRouterModel === null) throw new DiffSpotEvaluationError('normal DiffSpot evaluation requires an explicit --openrouter-model');
+  if (!help && !fetchOnly && openRouterProvider === null) throw new DiffSpotEvaluationError('normal DiffSpot evaluation requires an explicit --openrouter-provider');
   return {
-    help: argumentsList.includes('--help'),
-    fetchOnly: argumentsList.includes('--fetch-only'),
+    help,
+    fetchOnly,
+    openRouterModel,
+    openRouterProvider,
     limit,
-    cacheDirectory: safeCacheDirectory(optionValue(argumentsList, '--cache-dir') ?? DEFAULT_CACHE),
-    outputDirectory: safeCacheDirectory(optionValue(argumentsList, '--output-dir') ?? DEFAULT_RESULT_DIRECTORY),
+    cacheDirectory,
+    outputDirectory,
   };
 }
 
@@ -281,31 +300,115 @@ function examplesDocument(acquisition, localExamples, selection) {
   };
 }
 
-async function evaluate(localExamples) {
-  const prompt = 'Determine whether there are any visual differences between the before and after images. If the images are identical, report no differences and return an empty differences list. Do not infer changes that are not visible.';
+function verifyBoundArtifacts(localExamples, cacheDirectory, artifacts) {
+  const expected = new Map(artifacts.map(artifact => [artifact.path, artifact]));
+  for (const { beforePath, afterPath } of localExamples) {
+    for (const path of [beforePath, afterPath]) {
+      const artifactPath = relativeArtifact(cacheDirectory, path);
+      const artifact = expected.get(artifactPath);
+      if (!artifact) throw new DiffSpotEvaluationError('DiffSpot evaluator image was not bound to the acquisition receipt');
+      let metadata;
+      try { metadata = statSync(path); } catch { throw new DiffSpotEvaluationError('DiffSpot evaluator image was unavailable after acquisition'); }
+      if (!metadata.isFile()) throw new DiffSpotEvaluationError('DiffSpot evaluator image must be a regular file');
+      const bytes = readFileSync(path);
+      if (bytes.length !== artifact.bytes || createHash('sha256').update(bytes).digest('hex') !== artifact.sha256) {
+        throw new DiffSpotEvaluationError('DiffSpot evaluator image did not match its acquisition receipt');
+      }
+    }
+  }
+}
+
+const OPENROUTER_PROMPT = 'Compare image A (before) with image B (after). Return {"value":true} if any visible visual difference exists. Return {"value":false} only if they are visually identical. Do not infer changes that are not visible.';
+
+function requestConfig(value, providerSlug) {
+  if (value === null || typeof value !== 'object' || Array.isArray(value) ||
+    Object.keys(value).length !== 3 || !Object.hasOwn(value, 'maximumOutputTokens') || !Object.hasOwn(value, 'reasoning') || !Object.hasOwn(value, 'providerRouting')) {
+    throw new DiffSpotEvaluationError('a DiffSpot OpenRouter outcome lacked a storage-safe request configuration');
+  }
+  if (!Number.isSafeInteger(value.maximumOutputTokens) || value.maximumOutputTokens < 1 || value.maximumOutputTokens > 4_096 ||
+    value.reasoning === null || typeof value.reasoning !== 'object' || Array.isArray(value.reasoning) ||
+    Object.keys(value.reasoning).length !== 2 || value.reasoning.effort !== 'minimal' || value.reasoning.exclude !== true ||
+    value.providerRouting === null || typeof value.providerRouting !== 'object' || Array.isArray(value.providerRouting) ||
+    Object.keys(value.providerRouting).length !== 4 || !Array.isArray(value.providerRouting.only) || value.providerRouting.only.length !== 1 ||
+    value.providerRouting.only[0] !== providerSlug || value.providerRouting.allow_fallbacks !== false ||
+    value.providerRouting.require_parameters !== true || value.providerRouting.data_collection !== 'deny') {
+    throw new DiffSpotEvaluationError('a DiffSpot OpenRouter outcome had an unsafe request configuration');
+  }
+  return {
+    maximumOutputTokens: value.maximumOutputTokens,
+    reasoning: { effort: 'minimal', exclude: true },
+    providerRouting: { only: [providerSlug], allow_fallbacks: false, require_parameters: true, data_collection: 'deny' },
+  };
+}
+
+/**
+ * Hosted evaluation seam.  The caller supplies only verified local images and
+ * may inject a no-network evaluator for unit tests; production uses the
+ * canonical OpenRouter implementation.
+ */
+export async function evaluateDiffSpotExamples(localExamples, {
+  model,
+  providerSlug,
+  cacheDirectory,
+  artifacts,
+  evaluateRemote = evaluateOpenRouterVision,
+  preflight = preflightDatasetProviderUpload,
+} = {}) {
+  if (typeof model !== 'string' || model.trim() === '') throw new DiffSpotEvaluationError('DiffSpot OpenRouter model must be non-empty');
+  if (typeof providerSlug !== 'string' || providerSlug.trim() === '') throw new DiffSpotEvaluationError('DiffSpot OpenRouter provider slug must be non-empty');
+  if (typeof evaluateRemote !== 'function' || typeof preflight !== 'function') throw new DiffSpotEvaluationError('DiffSpot evaluation dependencies must be functions');
+  if (!Array.isArray(localExamples) || localExamples.length === 0) throw new DiffSpotEvaluationError('DiffSpot evaluation requires at least one acquired example');
+  if (!Array.isArray(artifacts) || typeof cacheDirectory !== 'string') throw new DiffSpotEvaluationError('DiffSpot evaluation requires a verified acquisition receipt');
+  verifyBoundArtifacts(localExamples, cacheDirectory, artifacts);
+  // This gate runs after every artifact binding check and immediately before
+  // the first possible provider call, so a receipt or policy failure cannot
+  // send pixels remotely.
+  const uploadDecision = preflight('diffspot', { provider: 'openrouter', model: model.trim() });
+  if (uploadDecision.provider !== 'openrouter' || uploadDecision.model !== model.trim()) {
+    throw new DiffSpotEvaluationError('DiffSpot provider upload decision did not match the selected OpenRouter model');
+  }
   const results = [];
   const evidence = [];
-  const identities = new Set();
+  const nativeModels = new Set();
+  const routedProviders = new Set();
+  const requestConfigs = new Set();
+  const usages = [];
   for (const { example, beforePath, afterPath } of localExamples) {
-    const outcome = await validateComparison(beforePath, afterPath, prompt, { testType: 'diffspot-regression' });
-    if (outcome.enabled === false || typeof outcome.provider !== 'string' || outcome.provider.length === 0 ||
-      typeof outcome.model !== 'string' || outcome.model.length === 0) {
-      throw new DiffSpotEvaluationError('a DiffSpot provider outcome lacked a successful provider/model identity');
+    const remote = await evaluateRemote({
+      imagePaths: [beforePath, afterPath],
+      prompt: OPENROUTER_PROMPT,
+      model: uploadDecision.model,
+      providerSlug: providerSlug.trim(),
+      responseKind: 'binary',
+    });
+    if (!remote || remote.outcome?.kind !== 'binary' || typeof remote.outcome.value !== 'boolean' ||
+      typeof remote.model !== 'string' || remote.model !== uploadDecision.model || !remote.usage || remote.requestConfig === undefined) {
+      throw new DiffSpotEvaluationError('a DiffSpot OpenRouter outcome lacked the selected model, binary decision, usage receipt, or request configuration');
     }
-    identities.add(JSON.stringify({ provider: outcome.provider, model: outcome.model }));
-    const differences = Array.isArray(outcome.differences) ? outcome.differences.filter(value => typeof value === 'string' && value.trim() !== '') : [];
-    results.push({ id: example.id, changed: differences.length > 0 });
-    // Store only the derived decision, never a provider response or dataset URLs.
-    evidence.push({ id: example.id, changed: differences.length > 0, differenceCount: differences.length });
+    requestConfigs.add(JSON.stringify(requestConfig(remote.requestConfig, providerSlug.trim())));
+    if (remote.nativeModel !== undefined) nativeModels.add(remote.nativeModel);
+    if (remote.provider !== undefined) routedProviders.add(remote.provider);
+    usages.push(remote.usage);
+    results.push({ id: example.id, changed: remote.outcome.value });
+    // Store only the derived decision, never raw provider content or dataset URLs.
+    evidence.push({ id: example.id, changed: remote.outcome.value });
   }
-  if (identities.size !== 1) throw new DiffSpotEvaluationError('DiffSpot evaluation produced mixed provider/model identities');
+  if (nativeModels.size > 1 || routedProviders.size > 1) throw new DiffSpotEvaluationError('DiffSpot evaluation produced mixed routed provider identities');
+  if (requestConfigs.size !== 1) throw new DiffSpotEvaluationError('DiffSpot evaluation produced mixed request configurations');
+  const usage = aggregateOpenRouterUsage(usages);
   return {
     results,
     evidence,
     run: {
-      evaluator: 'validateComparison',
-      promptVersion: 'diffspot-empty-differences-v1',
-      provider: JSON.parse([...identities][0]),
+      evaluator: 'openrouter-vision-evaluator',
+      promptVersion: 'diffspot-binary-visible-change-v1',
+      provider: uploadDecision.provider,
+      model: uploadDecision.model,
+      ...(nativeModels.size === 0 ? {} : { nativeModel: [...nativeModels][0] }),
+      ...(routedProviders.size === 0 ? {} : { routedProvider: [...routedProviders][0] }),
+      requestConfig: JSON.parse([...requestConfigs][0]),
+      usage,
+      uploadDecision,
     },
   };
 }
@@ -354,7 +457,12 @@ async function main() {
   if (process.env.AI_VISUAL_TEST_LIVE !== '1') {
     throw new DiffSpotEvaluationError('normal DiffSpot evaluation requires AI_VISUAL_TEST_LIVE=1; use --fetch-only to acquire without provider calls');
   }
-  const { results, evidence, run } = await evaluate(localExamples);
+  const { results, evidence, run } = await evaluateDiffSpotExamples(localExamples, {
+    model: options.openRouterModel,
+    providerSlug: options.openRouterProvider,
+    cacheDirectory: options.cacheDirectory,
+    artifacts,
+  });
   const metrics = computeRegressionMetrics(
     examples.splits[0].examples,
     results,
@@ -372,7 +480,9 @@ async function main() {
   process.stdout.write(`${JSON.stringify({ version: 2, mode: 'evaluated', selected: selected.length, revision: REVISION, metrics }, null, 2)}\n`);
 }
 
-main().catch(error => {
-  process.stderr.write(`${safeError(error)}\n`);
-  process.exitCode = 1;
-});
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main().catch(error => {
+    process.stderr.write(`${safeError(error)}\n`);
+    process.exitCode = 1;
+  });
+}

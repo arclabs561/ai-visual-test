@@ -68,7 +68,7 @@ function usage() {
   return [
     'Usage: node scripts/evaluate-uicrit.mjs --fetch-only [--limit <1..20>] [--cache-dir <directory>] [--output-dir <directory>] [--rico-root <directory> | --download-rico]',
     '       [--evaluate-local <acquisition-output-dir> (--local-results <private-results.json> | --local-model <ollama-model>) --cache-dir <directory> --output-dir <new-directory>]',
-    '       [--evaluate-existing <acquisition-output-dir> --cache-dir <directory> --output-dir <new-directory> --upload-confirmation <private-confirmation.json>]',
+    '       [--evaluate-existing <acquisition-output-dir> --openrouter-provider <endpoint-slug> --cache-dir <directory> --output-dir <new-directory> --upload-confirmation <private-confirmation.json>]',
     '',
     'Fetch-only never imports provider code. --download-rico streams the official public archive into the private cache and selectively extracts only the chosen screenshots. Local scoring uses loopback Ollama; hosted scoring requires AI_VISUAL_TEST_LIVE=1 plus an operator pixel-upload confirmation.',
   ].join('\n');
@@ -84,7 +84,7 @@ function optionValue(args, name) {
 }
 
 function parseArguments(args) {
-  const known = new Set(['--help', '--fetch-only', '--limit', '--cache-dir', '--output-dir', '--rico-root', '--download-rico', '--upload-confirmation', '--evaluate-existing', '--evaluate-local', '--local-results', '--local-model']);
+  const known = new Set(['--help', '--fetch-only', '--limit', '--cache-dir', '--output-dir', '--rico-root', '--download-rico', '--upload-confirmation', '--evaluate-existing', '--evaluate-local', '--local-results', '--local-model', '--openrouter-provider']);
   for (const value of args) if (value.startsWith('--') && !known.has(value)) fail(`unknown option: ${value}`);
   const help = args.includes('--help');
   const limitRaw = optionValue(args, '--limit');
@@ -98,6 +98,7 @@ function parseArguments(args) {
   const localExisting = optionValue(args, '--evaluate-local');
   const localResults = optionValue(args, '--local-results');
   const localModel = optionValue(args, '--local-model');
+  const openRouterProvider = optionValue(args, '--openrouter-provider');
   const modes = Number(fetchOnly) + Number(existing !== null) + Number(localExisting !== null);
   if (!help && modes !== 1) fail('choose exactly one of --fetch-only, --evaluate-local, or --evaluate-existing');
   if (!help && fetchOnly && confirmation !== null) fail('--fetch-only does not accept a provider upload confirmation');
@@ -105,9 +106,10 @@ function parseArguments(args) {
   if (!help && localExisting !== null && (localResults === null) === (localModel === null)) fail('--evaluate-local requires exactly one of --local-results or --local-model');
   if (!help && localExisting === null && (localResults !== null || localModel !== null)) fail('--local-results and --local-model are only valid with --evaluate-local');
   if (!help && localExisting !== null && (confirmation !== null || ricoRoot !== null || downloadRico)) fail('--evaluate-local accepts neither provider confirmation nor acquisition options');
-  if (!help && existing !== null && (ricoRoot !== null || downloadRico || confirmation === null)) fail('live UICrit evaluation requires --evaluate-existing and --upload-confirmation, not acquisition options');
+  if (!help && existing !== null && (ricoRoot !== null || downloadRico || confirmation === null || openRouterProvider === null)) fail('live UICrit evaluation requires --evaluate-existing, --upload-confirmation, and --openrouter-provider, not acquisition options');
+  if (!help && existing === null && openRouterProvider !== null) fail('--openrouter-provider is only valid with --evaluate-existing');
   return {
-    help, fetchOnly, limit, ricoRoot, downloadRico, confirmation, existing, localExisting, localResults, localModel,
+    help, fetchOnly, limit, ricoRoot, downloadRico, confirmation, existing, localExisting, localResults, localModel, openRouterProvider,
     cacheDirectory: optionValue(args, '--cache-dir') ?? DEFAULT_CACHE,
     outputDirectory: optionValue(args, '--output-dir') ?? DEFAULT_OUTPUT,
   };
@@ -421,39 +423,53 @@ function localFixedPrompt(dimension, maximum) {
   return `${fixedPrompt(dimension, maximum)} Respond exactly as JSON: {"score": <integer>}.`;
 }
 
-/** Pure seam for tests: scores one local image for every UICrit rating dimension. */
+/** Shared OpenRouter seam: scores one local image for every UICrit dimension. */
 export async function evaluateUICritRecords(localExamples, options = {}) {
   const expectedProvider = options.expectedProvider;
   const expectedModel = options.expectedModel;
   if (expectedProvider !== undefined && (typeof expectedProvider !== 'string' || !expectedProvider.trim())) fail('UICrit provider configuration must be a non-empty string before evaluation');
   if (expectedModel !== undefined && (typeof expectedModel !== 'string' || !expectedModel.trim())) fail('UICrit model configuration must be a non-empty string before evaluation');
-  const validate = options.validate ?? (await moduleImport('judge.js')).validateScreenshot;
+  if (typeof options.providerSlug !== 'string' || !options.providerSlug.trim()) fail('UICrit OpenRouter provider slug must be a non-empty string before evaluation');
+  const sharedEvaluator = await moduleImport('openrouter-vision-evaluator.js');
+  const evaluate = options.evaluate ?? sharedEvaluator.evaluateOpenRouterVision;
+  const aggregateUsage = options.aggregateUsage ?? sharedEvaluator.aggregateOpenRouterUsage;
+  if (typeof evaluate !== 'function') fail('shared OpenRouter vision evaluator was unavailable');
+  if (typeof aggregateUsage !== 'function') fail('shared OpenRouter usage aggregator was unavailable');
   const results = [];
   const identities = new Set();
+  const usageRecords = [];
+  let requestConfig;
+  let requestConfigIdentity;
   for (const local of localExamples) {
     const scores = {};
     for (const [dimension, maximum] of DIMENSIONS) {
-      const outcome = await validate(local.path, fixedPrompt(dimension, maximum), {
-        testType: `uicrit-${dimension}`,
-        ...(expectedProvider === undefined ? {} : { provider: expectedProvider.trim() }),
-        ...(expectedModel === undefined ? {} : { model: expectedModel.trim() }),
-      });
-      if (!outcome || outcome.enabled === false || typeof outcome.provider !== 'string' || !outcome.provider.trim() || typeof outcome.model !== 'string' || !outcome.model.trim()) {
-        fail(`UICrit ${dimension} outcome lacked a successful provider/model identity`);
-      }
-      if (expectedProvider !== undefined && outcome.provider.trim() !== expectedProvider) fail('UICrit provider outcome did not match the operator upload confirmation');
-      if (expectedModel !== undefined && outcome.model.trim() !== expectedModel) fail('UICrit model outcome did not match the operator upload confirmation');
+      const response = await evaluate({ imagePaths: [local.path], prompt: localFixedPrompt(dimension, maximum), model: expectedModel?.trim(), providerSlug: options.providerSlug.trim(), responseKind: 'scalar', integerScore: true, minimumScore: 1, maximumScore: maximum });
+      const outcome = response?.outcome;
+      if (!response || outcome?.kind !== 'scalar' || typeof response.model !== 'string' || !response.model.trim() || !response.usage || !response.requestConfig || typeof response.requestConfig !== 'object' || Array.isArray(response.requestConfig)) fail(`UICrit ${dimension} outcome lacked a successful provider/model identity or request configuration`);
+      if (expectedModel !== undefined && response.model.trim() !== expectedModel) fail('UICrit model outcome did not match the operator upload confirmation');
       if (!Number.isFinite(outcome.score) || !Number.isInteger(outcome.score) || outcome.score < 1 || outcome.score > maximum) {
         fail(`UICrit ${dimension} score must be a finite integer from 1 through ${maximum}`);
       }
-      identities.add(JSON.stringify({ provider: outcome.provider.trim(), model: outcome.model.trim() }));
+      const reportedProvider = typeof response.provider === 'string' && response.provider.trim() ? response.provider.trim() : expectedProvider?.trim();
+      identities.add(JSON.stringify({ provider: reportedProvider, model: response.model.trim(), ...(typeof response.nativeModel === 'string' && response.nativeModel.trim() ? { nativeModel: response.nativeModel.trim() } : {}) }));
+      const serializedConfig = JSON.stringify(response.requestConfig);
+      if (!serializedConfig || serializedConfig === '{}') fail(`UICrit ${dimension} outcome lacked a storage-safe request configuration`);
+      const routing = response.requestConfig.providerRouting;
+      if (!routing || !Array.isArray(routing.only) || routing.only.length !== 1 || routing.only[0] !== options.providerSlug.trim() || routing.allow_fallbacks !== false || routing.require_parameters !== true || routing.data_collection !== 'deny' || response.requestConfig.integerScore !== true) {
+        fail(`UICrit ${dimension} outcome did not retain the requested discrete OpenRouter configuration`);
+      }
+      if (requestConfigIdentity === undefined) { requestConfigIdentity = serializedConfig; requestConfig = response.requestConfig; }
+      else if (requestConfigIdentity !== serializedConfig) fail('UICrit evaluation produced mixed OpenRouter request configurations');
+      usageRecords.push(response.usage);
       scores[dimension] = outcome.score;
     }
     results.push({ id: local.record.id, scores });
   }
   if (results.length === 0) fail('UICrit evaluation requires at least one local screenshot');
   if (identities.size !== 1) fail('UICrit evaluation produced mixed provider/model identities');
-  return { results, provider: JSON.parse([...identities][0]), promptVersion: 'uicrit-dimension-scales-v1' };
+  let usage;
+  try { usage = aggregateUsage(usageRecords); } catch { fail('UICrit outcomes contained invalid OpenRouter usage'); }
+  return { results, provider: JSON.parse([...identities][0]), usage, requestConfig, promptVersion: 'uicrit-openrouter-scalar-v1' };
 }
 
 function selectedRecords(records, limit) {
@@ -539,18 +555,29 @@ function existingEvaluation(options, cache) {
 
 function safeError(error) { return error instanceof UICritEvaluationError ? error.message : 'UICrit evaluation failed safely; inspect local setup and try again.'; }
 
+function assertUICritUploadConfirmation(confirmation) {
+  if (!confirmation || confirmation.dataset !== 'uicrit' || confirmation.purpose !== 'research-evaluation') {
+    fail('UICrit upload confirmation must name dataset uicrit and purpose research-evaluation');
+  }
+  const expected = ['local-pixel-rights-manifest-reviewed', 'provider-upload-permitted'];
+  if (!Array.isArray(confirmation.acknowledgements) || confirmation.acknowledgements.length !== expected.length || expected.some((value, index) => confirmation.acknowledgements[index] !== value)) {
+    fail('UICrit upload confirmation acknowledgements must exactly match the required ordered policy');
+  }
+}
+
 /** Evaluate a prior pixel-bearing receipt; deliberately does not acquire data. */
-export async function evaluateExistingUICritRun({ existingOutputDirectory, cacheDirectory, outputParentDirectory, confirmation, validate }) {
+export async function evaluateExistingUICritRun({ existingOutputDirectory, cacheDirectory, outputParentDirectory, confirmation, providerSlug, validate }) {
   const cache = privateDirectory(cacheDirectory);
   const outputDirectory = createPrivateRunDirectory({ parentDirectory: privateDirectory(outputParentDirectory), prefix: 'uicrit-evaluate' });
   const { acquisition, examples, local } = existingEvaluation({ existing: existingOutputDirectory }, cache);
   if (typeof confirmation?.provider !== 'string' || !confirmation.provider.trim() || typeof confirmation.model !== 'string' || !confirmation.model.trim()) fail('upload confirmation.provider and upload confirmation.model must be non-empty strings');
+  assertUICritUploadConfirmation(confirmation);
   const uploadDecision = preflightDatasetProviderUpload('uicrit', { provider: confirmation.provider.trim(), model: confirmation.model.trim(), confirmation });
-  const evaluated = await evaluateUICritRecords(local, { expectedProvider: uploadDecision.provider, expectedModel: uploadDecision.model, ...(validate === undefined ? {} : { validate }) });
+  const evaluated = await evaluateUICritRecords(local, { expectedProvider: uploadDecision.provider, expectedModel: uploadDecision.model, providerSlug, ...(validate === undefined ? {} : { evaluate: validate }) });
   const metrics = computeCritiqueMetrics(examples.splits[0].examples, evaluated.results);
   if (metrics.coverage.rate === null || metrics.coverage.rate === 0) fail('UICrit evaluation produced zero score coverage');
   const run = {
-    evaluator: 'validateScreenshot', promptVersion: evaluated.promptVersion, provider: evaluated.provider, uploadDecision,
+    evaluator: 'openrouter-vision-evaluator', promptVersion: evaluated.promptVersion, provider: evaluated.provider, usage: evaluated.usage, requestConfig: evaluated.requestConfig, uploadDecision,
     selectionSeed: examples.selection.seed, acquisitionSha256: examples.selection.acquisitionSha256,
     normalizedRowsSha256: examples.selection.normalizedRowsSha256, examplesSha256: sha256(jsonText(examples)),
     localPixelArtifacts: local.map(value => value.artifact),
@@ -608,7 +635,7 @@ export async function evaluateLocalModelUICritRun({ existingOutputDirectory, cac
   for (const localExample of local) {
     const scores = {};
     for (const [dimension, maximum] of DIMENSIONS) {
-      const outcome = await localEvaluate({ imagePaths: [localExample.path], prompt: localFixedPrompt(dimension, maximum), model: model.trim(), responseKind: 'scalar', minimumScore: 1, maximumScore: maximum });
+      const outcome = await localEvaluate({ imagePaths: [localExample.path], prompt: localFixedPrompt(dimension, maximum), model: model.trim(), responseKind: 'scalar', integerScore: true, minimumScore: 1, maximumScore: maximum });
       if (!outcome || outcome.kind !== 'scalar' || !Number.isInteger(outcome.score) || outcome.score < 1 || outcome.score > maximum) {
         fail(`local UICrit ${dimension} score must be an integer from 1 through ${maximum}`);
       }
@@ -702,7 +729,7 @@ export async function main(args = process.argv.slice(2)) {
   }
   if (process.env.AI_VISUAL_TEST_LIVE !== '1') fail('normal UICrit evaluation requires AI_VISUAL_TEST_LIVE=1; use --fetch-only to acquire without provider calls');
   const confirmation = confirmationFromFile(options.confirmation);
-  const evaluated = await evaluateExistingUICritRun({ existingOutputDirectory: options.existing, cacheDirectory: options.cacheDirectory, outputParentDirectory: options.outputDirectory, confirmation });
+  const evaluated = await evaluateExistingUICritRun({ existingOutputDirectory: options.existing, cacheDirectory: options.cacheDirectory, outputParentDirectory: options.outputDirectory, confirmation, providerSlug: options.openRouterProvider });
   process.stdout.write(`${JSON.stringify({ version: 2, mode: 'evaluated', ...evaluated }, null, 2)}\n`);
 }
 

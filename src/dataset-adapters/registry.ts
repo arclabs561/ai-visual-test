@@ -18,21 +18,30 @@ export type ProviderUploadPolicy =
   | 'allowed'
   | 'requires-local-pixel-manifest'
   | 'requires-gated-terms-confirmation'
-  | 'denied-noncommercial-external-only'
-  | 'denied-license-unknown';
+  | 'requires-dataset-terms-confirmation';
 
 export type ProviderUploadAcknowledgement =
   | 'local-pixel-rights-manifest-reviewed'
   | 'gated-dataset-terms-accepted'
+  | 'dataset-terms-reviewed'
+  | 'noncommercial-research-purpose-confirmed'
   | 'provider-upload-permitted';
+
+/** The limited purpose an operator has confirmed for an external pixel upload. */
+export type ProviderUploadPurpose =
+  | 'research-evaluation'
+  | 'noncommercial-research-evaluation';
 
 /**
  * An operator-supplied record for an upload decision. It is evidence of an
  * operator's confirmation, not a licence grant or legal determination.
  */
 export interface ProviderUploadConfirmation {
+  /** Dataset registry key. This binds the receipt to one corpus. */
+  dataset: DatasetKey;
   provider: string;
   model: string;
+  purpose: ProviderUploadPurpose;
   confirmedBy: string;
   confirmedAt: string;
   acknowledgements: readonly ProviderUploadAcknowledgement[];
@@ -143,7 +152,7 @@ export const DATASET_REGISTRY: Readonly<Record<DatasetKey, DatasetDescriptor>> =
     redistribution: 'external-only',
     access: 'public',
     pixelPolicy: 'external-only',
-    providerUploadPolicy: 'denied-noncommercial-external-only',
+    providerUploadPolicy: 'requires-dataset-terms-confirmation',
     track: 'preference',
     note: 'Keep outside distributable and commercial fixture bundles; no adapted material may be shared.',
   }),
@@ -155,7 +164,7 @@ export const DATASET_REGISTRY: Readonly<Record<DatasetKey, DatasetDescriptor>> =
     redistribution: 'unknown',
     access: 'public',
     pixelPolicy: 'unknown',
-    providerUploadPolicy: 'denied-license-unknown',
+    providerUploadPolicy: 'requires-dataset-terms-confirmation',
     track: 'preference',
     note: 'Do not redistribute or use as a release gate until the publisher states dataset terms.',
   }),
@@ -267,8 +276,35 @@ type UnknownRecord = Record<string, unknown>;
 const PROVIDER_UPLOAD_ACKNOWLEDGEMENTS = new Set<ProviderUploadAcknowledgement>([
   'local-pixel-rights-manifest-reviewed',
   'gated-dataset-terms-accepted',
+  'dataset-terms-reviewed',
+  'noncommercial-research-purpose-confirmed',
   'provider-upload-permitted',
 ]);
+
+const PROVIDER_UPLOAD_PURPOSES = new Set<ProviderUploadPurpose>([
+  'research-evaluation',
+  'noncommercial-research-evaluation',
+]);
+
+interface DatasetTermsUploadRequirements {
+  acknowledgements: readonly ProviderUploadAcknowledgement[];
+  purpose: ProviderUploadPurpose;
+}
+
+const DATASET_TERMS_UPLOAD_REQUIREMENTS: Readonly<Partial<Record<DatasetKey, DatasetTermsUploadRequirements>>> = Object.freeze({
+  'apple-rldf': Object.freeze({
+    acknowledgements: Object.freeze([
+      'dataset-terms-reviewed',
+      'noncommercial-research-purpose-confirmed',
+      'provider-upload-permitted',
+    ] as const),
+    purpose: 'noncommercial-research-evaluation',
+  }),
+  'uiclip-betterapp': Object.freeze({
+    acknowledgements: Object.freeze(['dataset-terms-reviewed', 'provider-upload-permitted'] as const),
+    purpose: 'research-evaluation',
+  }),
+});
 
 const KNOWN_PROVIDER_NAMES = new Set<string>(PROVIDER_NAMES);
 
@@ -335,6 +371,22 @@ function localPixelManifest(value: unknown): string {
   return manifest;
 }
 
+function datasetKey(value: unknown): DatasetKey {
+  const key = requiredText(value, 'dataset');
+  if (!Object.hasOwn(DATASET_REGISTRY, key)) {
+    throw new DatasetRegistryError('provider upload confirmation.dataset must name a registered dataset key');
+  }
+  return key as DatasetKey;
+}
+
+function uploadPurpose(value: unknown): ProviderUploadPurpose {
+  const purpose = requiredText(value, 'purpose');
+  if (!PROVIDER_UPLOAD_PURPOSES.has(purpose as ProviderUploadPurpose)) {
+    throw new DatasetRegistryError('provider upload confirmation.purpose is not supported');
+  }
+  return purpose as ProviderUploadPurpose;
+}
+
 function parseProviderUploadRequest(value: unknown): ProviderUploadRequest {
   const candidate = record(value, 'request');
   exactFields(candidate, 'request', ['provider', 'model', 'confirmation']);
@@ -344,11 +396,13 @@ function parseProviderUploadRequest(value: unknown): ProviderUploadRequest {
 
   const confirmation = record(candidate.confirmation, 'confirmation');
   exactFields(confirmation, 'confirmation', [
-    'provider', 'model', 'confirmedBy', 'confirmedAt', 'acknowledgements', 'localPixelManifest',
+    'dataset', 'provider', 'model', 'purpose', 'confirmedBy', 'confirmedAt', 'acknowledgements', 'localPixelManifest',
   ]);
   const parsed: ProviderUploadConfirmation = {
+    dataset: datasetKey(confirmation.dataset),
     provider: requiredText(confirmation.provider, 'provider'),
     model: requiredText(confirmation.model, 'model'),
+    purpose: uploadPurpose(confirmation.purpose),
     confirmedBy: requiredText(confirmation.confirmedBy, 'confirmedBy'),
     confirmedAt: utcTimestamp(confirmation.confirmedAt),
     acknowledgements: acknowledgements(confirmation.acknowledgements),
@@ -363,6 +417,7 @@ function validateProviderUploadConfirmation(
   confirmation: ProviderUploadConfirmation,
   requiredAcknowledgements: readonly ProviderUploadAcknowledgement[],
   requiresLocalManifest: boolean,
+  requiredPurpose: ProviderUploadPurpose | undefined,
 ): void {
   const acknowledgements = new Set(confirmation.acknowledgements);
   for (const acknowledgement of requiredAcknowledgements) {
@@ -371,6 +426,14 @@ function validateProviderUploadConfirmation(
         `provider upload confirmation must acknowledge ${acknowledgement}`,
       );
     }
+  }
+  if (acknowledgements.size !== requiredAcknowledgements.length) {
+    throw new DatasetRegistryError('provider upload confirmation.acknowledgements must exactly match the dataset policy');
+  }
+  if (requiredPurpose !== undefined && confirmation.purpose !== requiredPurpose) {
+    throw new DatasetRegistryError(
+      `provider upload confirmation.purpose must be ${requiredPurpose}`,
+    );
   }
   if (requiresLocalManifest) {
     if (confirmation.localPixelManifest === undefined || confirmation.localPixelManifest.trim().length === 0) {
@@ -392,72 +455,95 @@ export function assertDatasetProviderUpload(
 ): ProviderUploadDecision {
   const descriptor = getDatasetDescriptor(key);
   const parsedRequest = parseProviderUploadRequest(request);
+  const canonicalProvider = canonicalizeProviderName(parsedRequest.provider);
+  if (typeof canonicalProvider !== 'string') {
+    throw new DatasetRegistryError('provider upload request.provider is not supported');
+  }
+  const normalizedRequest: ProviderUploadRequest = {
+    ...parsedRequest,
+    provider: canonicalProvider,
+  };
 
   switch (descriptor.providerUploadPolicy) {
     case 'allowed':
       break;
     case 'requires-local-pixel-manifest':
-      if (parsedRequest.confirmation === undefined) {
+      if (normalizedRequest.confirmation === undefined) {
         throw new DatasetRegistryError(
           `${descriptor.dataset} provider upload requires an operator confirmation and separately authorized local pixel manifest`,
         );
       }
       validateProviderUploadConfirmation(
-        parsedRequest.confirmation,
+        normalizedRequest.confirmation,
         ['local-pixel-rights-manifest-reviewed', 'provider-upload-permitted'],
         true,
+        undefined,
       );
       break;
     case 'requires-gated-terms-confirmation':
-      if (parsedRequest.confirmation === undefined) {
+      if (normalizedRequest.confirmation === undefined) {
         throw new DatasetRegistryError(
           `${descriptor.dataset} provider upload requires an operator confirmation of gated terms and provider upload permission`,
         );
       }
       validateProviderUploadConfirmation(
-        parsedRequest.confirmation,
+        normalizedRequest.confirmation,
         ['gated-dataset-terms-accepted', 'provider-upload-permitted'],
         false,
+        undefined,
       );
       break;
-    case 'denied-noncommercial-external-only':
-      throw new DatasetRegistryError(
-        `${descriptor.dataset} provider upload is denied: the corpus is noncommercial and external-only`,
+    case 'requires-dataset-terms-confirmation': {
+      if (normalizedRequest.confirmation === undefined) {
+        throw new DatasetRegistryError(
+          `${descriptor.dataset} provider upload requires an operator confirmation of dataset terms and provider upload permission`,
+        );
+      }
+      const requirements = DATASET_TERMS_UPLOAD_REQUIREMENTS[key];
+      if (requirements === undefined) {
+        throw new DatasetRegistryError(
+          `${descriptor.dataset} provider upload policy has no fail-closed confirmation requirements`,
+        );
+      }
+      validateProviderUploadConfirmation(
+        normalizedRequest.confirmation,
+        requirements.acknowledgements,
+        false,
+        requirements.purpose,
       );
-    case 'denied-license-unknown':
-      throw new DatasetRegistryError(
-        `${descriptor.dataset} provider upload is denied while its licence remains unknown`,
-      );
+      break;
+    }
   }
 
   if (
-    parsedRequest.confirmation !== undefined
+    normalizedRequest.confirmation !== undefined
     && (
-      parsedRequest.confirmation.provider !== parsedRequest.provider
-      || parsedRequest.confirmation.model !== parsedRequest.model
+      normalizedRequest.confirmation.provider !== normalizedRequest.provider
+      || normalizedRequest.confirmation.model !== normalizedRequest.model
+      || normalizedRequest.confirmation.dataset !== key
     )
   ) {
     throw new DatasetRegistryError(
-      'provider upload confirmation provider and model must match the request',
+      'provider upload confirmation dataset, provider, and model must match the request',
     );
   }
 
-  return parsedRequest.confirmation === undefined
+  return normalizedRequest.confirmation === undefined
     ? {
       key,
       dataset: descriptor.dataset,
-      provider: parsedRequest.provider,
-      model: parsedRequest.model,
+      provider: normalizedRequest.provider,
+      model: normalizedRequest.model,
       policy: descriptor.providerUploadPolicy,
       rightsGrant: false,
     }
     : {
       key,
       dataset: descriptor.dataset,
-      provider: parsedRequest.provider,
-      model: parsedRequest.model,
+      provider: normalizedRequest.provider,
+      model: normalizedRequest.model,
       policy: descriptor.providerUploadPolicy,
-      confirmation: parsedRequest.confirmation,
+      confirmation: normalizedRequest.confirmation,
       rightsGrant: false,
     };
 }

@@ -52,6 +52,15 @@ test('uses the exact low/medium/high class and rating manifest schema', () => {
   assert.throws(() => parseGuiAestheticsLabels({ ...labels(), revision: 'latest' }), /version 1/);
 });
 
+test('requires an explicit OpenRouter provider route and rejects it for local characterization', async () => {
+  const missingRoute = await run(['--characterize-existing', '/missing', '--openrouter-model', 'openai/gpt-4o-mini']);
+  assert.equal(missingRoute.status, 1); assert.match(missingRoute.stderr, /openrouter-provider/);
+  const localRoute = await run(['--characterize-existing', '/missing', '--local-model', 'fixture-local', '--openrouter-provider', 'fixture-route']);
+  assert.equal(localRoute.status, 1); assert.match(localRoute.stderr, /requires --local-model, or --openrouter-model/);
+  const genericOpenRouter = await run(['--evaluate-existing', '/missing', '--labels', '/missing-labels', '--provider', 'openrouter', '--model', 'model-id']);
+  assert.equal(genericOpenRouter.status, 1); assert.match(genericOpenRouter.stderr, /does not permit OpenRouter/);
+});
+
 test('fetch-only anonymously acquires bounded hashed public pixels and injected evaluation stays offline', async () => {
   const directory = mkdtempSync(join(tmpdir(), 'gui-aesthetics-'));
   const server = createServer((request, response) => {
@@ -80,12 +89,18 @@ test('fetch-only anonymously acquires bounded hashed public pixels and injected 
 
     const labelPath = join(directory, 'labels.json'); writeFileSync(labelPath, JSON.stringify(labels())); chmodSync(labelPath, 0o600);
     const evaluated = await evaluateExistingGuiAestheticsRun({
-      existingOutputDirectory: receipt.outputDirectory, cacheDirectory: cache, outputParentDirectory: join(directory, 'evaluated'), labels: parseGuiAestheticsLabels(labels()), provider: 'openrouter', model: 'fixture-model',
+      existingOutputDirectory: receipt.outputDirectory, cacheDirectory: cache, outputParentDirectory: join(directory, 'evaluated'), labels: parseGuiAestheticsLabels(labels()), provider: 'gemini', model: 'fixture-model',
       validate: async (_path, _prompt, context) => ({ enabled: true, provider: context.provider, model: context.model, score: 1 }),
     });
     assert.equal(evaluated.selected, 2); assert.equal(evaluated.metrics.total, 2); assert.equal(evaluated.metrics.correct, 2);
     const results = JSON.parse(readFileSync(join(evaluated.outputDirectory, 'gui-aesthetics-results-v1.json'), 'utf8'));
-    assert.equal(results.run.uploadDecision.provider, 'openrouter');
+    assert.equal(results.run.uploadDecision.provider, 'gemini');
+    let genericOpenRouterCalls = 0;
+    await assert.rejects(evaluateExistingGuiAestheticsRun({
+      existingOutputDirectory: receipt.outputDirectory, cacheDirectory: cache, outputParentDirectory: join(directory, 'generic-openrouter'), labels: parseGuiAestheticsLabels(labels()), provider: 'openrouter', model: 'fixture-model',
+      validate: async () => { genericOpenRouterCalls += 1; return { enabled: true, provider: 'openrouter', model: 'fixture-model', score: 1 }; },
+    }), /does not permit OpenRouter/);
+    assert.equal(genericOpenRouterCalls, 0);
     const characterized = await characterizeExistingGuiAestheticsRun({
       existingOutputDirectory: receipt.outputDirectory, cacheDirectory: cache, outputParentDirectory: join(directory, 'characterized'), localModel: 'fixture-local', limit: 2,
       localEvaluate: async () => ({ kind: 'scalar', score: 2 }),
@@ -93,14 +108,37 @@ test('fetch-only anonymously acquires bounded hashed public pixels and injected 
     assert.deepEqual(characterized.distribution, { low: 0, medium: 2, high: 0 });
     const characterization = JSON.parse(readFileSync(join(characterized.outputDirectory, 'gui-aesthetics-characterization-v1.json'), 'utf8'));
     assert.deepEqual(characterization.claims, { labelsUsed: false, evaluation: false, releaseGate: false, accuracy: 'not-computed' });
+    let remoteCalls = 0;
+    const hosted = await characterizeExistingGuiAestheticsRun({
+      existingOutputDirectory: receipt.outputDirectory, cacheDirectory: cache, outputParentDirectory: join(directory, 'hosted-characterized'), openRouterModel: 'openai/gpt-4o-mini', openRouterProvider: 'fixture-route', limit: 2,
+      preflight: (key, request) => { assert.equal(key, 'dataset-interfaces-gui'); assert.deepEqual(request, { provider: 'openrouter', model: 'openai/gpt-4o-mini' }); return { provider: 'openrouter', model: 'openai/gpt-4o-mini', policy: 'allowed' }; },
+      remoteEvaluate: async (_path, context) => { remoteCalls += 1; assert.deepEqual(context, { model: 'openai/gpt-4o-mini', providerSlug: 'fixture-route' }); return { outcome: { kind: 'scalar', score: 3 }, model: 'openai/gpt-4o-mini', nativeModel: 'gpt-4o-mini', requestConfig: { maximumOutputTokens: 1024, reasoning: { effort: 'minimal', exclude: true }, providerRouting: { only: ['fixture-route'], allow_fallbacks: false, require_parameters: true, data_collection: 'deny' } }, usage: { promptTokens: 11, completionTokens: 2, totalTokens: 13, cost: 0.001 } }; },
+    });
+    assert.equal(remoteCalls, 2); assert.equal(hosted.provider, 'openrouter');
+    const hostedDocument = JSON.parse(readFileSync(join(hosted.outputDirectory, 'gui-aesthetics-characterization-v1.json'), 'utf8'));
+    assert.deepEqual(hostedDocument.accounting, { calls: 2, tokens: { prompt: 22, completion: 4, total: 26 }, cost: { usd: 0.002, reportedCalls: 2 } });
+    assert.equal(hostedDocument.run.nativeModel, 'gpt-4o-mini'); assert.deepEqual(hostedDocument.run.requestConfig, { maximumOutputTokens: 1024, reasoning: { effort: 'minimal', exclude: true }, providerRouting: { only: ['fixture-route'], allow_fallbacks: false, require_parameters: true, data_collection: 'deny' } }); assert.ok(/^[a-f0-9]{64}$/.test(hostedDocument.digests.predictionsSha256));
+    let configCalls = 0;
+    await assert.rejects(characterizeExistingGuiAestheticsRun({
+      existingOutputDirectory: receipt.outputDirectory, cacheDirectory: cache, outputParentDirectory: join(directory, 'mixed-request-config'), openRouterModel: 'openai/gpt-4o-mini', openRouterProvider: 'fixture-route', limit: 2,
+      preflight: () => ({ provider: 'openrouter', model: 'openai/gpt-4o-mini', policy: 'allowed' }),
+      remoteEvaluate: async () => { configCalls += 1; return { outcome: { kind: 'scalar', score: 3 }, model: 'openai/gpt-4o-mini', requestConfig: { maximumOutputTokens: configCalls === 1 ? 1024 : 1025, reasoning: { effort: 'minimal', exclude: true }, providerRouting: { only: ['fixture-route'], allow_fallbacks: false, require_parameters: true, data_collection: 'deny' } }, usage: { promptTokens: 1, completionTokens: 1, totalTokens: 2 } }; },
+    }), /mixed requestConfig/);
+    assert.equal(configCalls, 2);
+    let preventedCalls = 0;
+    await assert.rejects(characterizeExistingGuiAestheticsRun({
+      existingOutputDirectory: receipt.outputDirectory, cacheDirectory: cache, outputParentDirectory: join(directory, 'preflight-denied'), openRouterModel: 'openai/gpt-4o-mini', openRouterProvider: 'fixture-route', limit: 2,
+      preflight: () => { throw new Error('preflight denied'); }, remoteEvaluate: async () => { preventedCalls += 1; return {}; },
+    }), /preflight denied/);
+    assert.equal(preventedCalls, 0);
 
     const tampered = JSON.parse(readFileSync(join(receipt.outputDirectory, 'gui-aesthetics-images-v1.json'), 'utf8'));
     tampered.images[0].artifact = tampered.images[1].artifact;
     writeFileSync(join(receipt.outputDirectory, 'gui-aesthetics-images-v1.json'), JSON.stringify(tampered), { mode: 0o600 });
     let scoredCalls = 0;
     await assert.rejects(evaluateExistingGuiAestheticsRun({
-      existingOutputDirectory: receipt.outputDirectory, cacheDirectory: cache, outputParentDirectory: join(directory, 'tampered-evaluated'), labels: parseGuiAestheticsLabels(labels()), provider: 'openrouter', model: 'fixture-model',
-      validate: async () => { scoredCalls += 1; return { enabled: true, provider: 'openrouter', model: 'fixture-model', score: 1 }; },
+      existingOutputDirectory: receipt.outputDirectory, cacheDirectory: cache, outputParentDirectory: join(directory, 'tampered-evaluated'), labels: parseGuiAestheticsLabels(labels()), provider: 'gemini', model: 'fixture-model',
+      validate: async () => { scoredCalls += 1; return { enabled: true, provider: 'gemini', model: 'fixture-model', score: 1 }; },
     }), /filename, file id, or artifact did not match/);
     assert.equal(scoredCalls, 0);
     let characterizationCalls = 0;
@@ -123,7 +161,7 @@ test('injectable evaluators reject invalid tiers without contacting a provider',
     localModel: 'fixture-local', localEvaluate: async () => ({ kind: 'scalar', score: 2 }),
   });
   assert.deepEqual(local.metrics, { total: 1, correct: 1, accuracy: 1 });
-  const characterization = await characterizeGuiAestheticsRecords([{ id: 'x', filename: '01.png', path: '/private/x.png' }], {
+  const characterization = await characterizeGuiAestheticsRecords([{ id: 'x', filename: '01.png', path: '/private/x.png', artifact: { sha256: 'a'.repeat(64) } }], {
     localModel: 'fixture-local', localEvaluate: async () => ({ kind: 'scalar', score: 3 }),
   });
   assert.deepEqual(characterization.distribution, { low: 0, medium: 0, high: 1 });

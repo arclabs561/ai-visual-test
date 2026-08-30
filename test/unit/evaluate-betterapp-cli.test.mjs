@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { createServer } from 'node:http';
-import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { spawn } from 'node:child_process';
@@ -43,13 +43,17 @@ function acquisitionDirectory(parent) {
 test('prints BetterApp help and rejects hosted-evaluation-shaped input', async () => {
   const help = await run(['--help']);
   assert.equal(help.status, 0, help.stderr);
-  assert.match(help.stdout, /never uploads pixels/);
+  assert.match(help.stdout, /dataset-terms confirmation/);
   const badLimit = await run(['--fetch-only', '--limit', '21']);
   assert.equal(badLimit.status, 1); assert.match(badLimit.stderr, /1 to 20/);
   const missingResults = await run(['--evaluate-existing', '/private/input']);
-  assert.equal(missingResults.status, 1); assert.match(missingResults.stderr, /requires exactly one of --results or --local-model/);
+  assert.equal(missingResults.status, 1); assert.match(missingResults.stderr, /requires exactly one of --results, --local-model, or --openrouter-model/);
   const upload = await run(['--fetch-only', '--upload-confirmation', 'nope']);
-  assert.equal(upload.status, 1); assert.match(upload.stderr, /unknown option/);
+  assert.equal(upload.status, 1); assert.match(upload.stderr, /valid only with --evaluate-existing/);
+  const remoteMissingReceipt = await run(['--evaluate-existing', '/private/input', '--openrouter-model', 'model/a']);
+  assert.equal(remoteMissingReceipt.status, 1); assert.match(remoteMissingReceipt.stderr, /requires --openrouter-provider/);
+  const remoteProviderOutsideHosted = await run(['--fetch-only', '--openrouter-provider', 'endpoint-slug']);
+  assert.equal(remoteProviderOutsideHosted.status, 1); assert.match(remoteProviderOutsideHosted.stderr, /evaluation options are valid only/);
 });
 
 test('anonymously fetches pinned BetterApp rows, verifies image bytes, and scores local AB/BA results', async () => {
@@ -70,8 +74,8 @@ test('anonymously fetches pinned BetterApp rows, verifies image bytes, and score
     const fetched = await run(['--fetch-only', '--limit', '2', '--cache-dir', cache, '--output-dir', output], { AI_VISUAL_TEST_BETTERAPP_ROWS_URL: `http://127.0.0.1:${server.address().port}/rows` });
     assert.equal(fetched.status, 0, fetched.stderr);
     const receipt = JSON.parse(fetched.stdout);
-    assert.deepEqual({ version: receipt.version, mode: receipt.mode, dataset: receipt.dataset, selected: receipt.selected, artifacts: receipt.artifacts, revision: receipt.revision, providerUpload: receipt.providerUpload }, {
-      version: 2, mode: 'fetch-only', dataset: 'uiclip-betterapp', selected: 2, artifacts: 5, revision, providerUpload: 'denied-license-unknown',
+    assert.deepEqual({ version: receipt.version, mode: receipt.mode, dataset: receipt.dataset, selected: receipt.selected, artifacts: receipt.artifacts, revision: receipt.revision, providerUploadPolicy: receipt.providerUploadPolicy }, {
+      version: 2, mode: 'fetch-only', dataset: 'uiclip-betterapp', selected: 2, artifacts: 5, revision, providerUploadPolicy: 'requires-dataset-terms-confirmation',
     });
     const acquisitionOutput = acquisitionDirectory(output);
     const acquisition = JSON.parse(readFileSync(join(acquisitionOutput, 'betterapp-acquisition-v1.json'), 'utf8'));
@@ -88,7 +92,36 @@ test('anonymously fetches pinned BetterApp rows, verifies image bytes, and score
     const report = JSON.parse(evaluated.stdout);
     assert.equal(report.metrics.majorityExactAgreement.rate, 1);
     assert.deepEqual(report.metrics.orderReconciliation, { single: 0, agree: 2, conflict: 0, incomplete: 0 });
-    assert.equal(report.providerUpload, 'denied-license-unknown');
+    assert.equal(report.providerUploadPolicy, 'requires-dataset-terms-confirmation');
+    const { evaluateExistingBetterAppRun, evaluateExistingBetterAppOpenRouterRun } = await import('../../scripts/evaluate-betterapp.mjs');
+    const validConfirmation = {
+      dataset: 'uiclip-betterapp', provider: 'openrouter', model: 'fixture-vision', purpose: 'research-evaluation',
+      confirmedBy: 'test operator', confirmedAt: '2026-08-30T00:00:00Z', acknowledgements: ['dataset-terms-reviewed', 'provider-upload-permitted'],
+    };
+    let policyCalls = 0;
+    await assert.rejects(evaluateExistingBetterAppOpenRouterRun({
+      inputDirectory: acquisitionOutput, cacheDirectory: cache, outputDirectory: join(directory, 'policy-output'), model: 'fixture-vision', providerSlug: 'fixture-endpoint',
+      confirmation: { ...validConfirmation, acknowledgements: ['provider-upload-permitted'] },
+      evaluator: async () => { policyCalls += 1; return {}; },
+    }), /must acknowledge dataset-terms-reviewed/);
+    assert.equal(policyCalls, 0, 'policy rejection must happen before remote evaluator calls');
+    let remoteCalls = 0;
+    mkdirSync(join(directory, 'hosted-output'), { mode: 0o700 });
+    const hosted = await evaluateExistingBetterAppOpenRouterRun({
+      inputDirectory: acquisitionOutput, cacheDirectory: cache, outputDirectory: join(directory, 'hosted-output'), model: 'fixture-vision', providerSlug: 'fixture-endpoint', confirmation: validConfirmation,
+      evaluator: async (_paths, _prompt, context) => {
+        remoteCalls += 1;
+        return { outcome: { kind: 'pairwise', winner: context.order === 'AB' ? 'A' : 'B' }, model: 'fixture-vision', provider: 'fixture-provider', nativeModel: 'fixture-native', requestConfig: { maximumOutputTokens: 64, reasoning: { effort: 'minimal', exclude: true }, providerRouting: { only: ['fixture-endpoint'], allow_fallbacks: false, require_parameters: true, data_collection: 'deny' } }, usage: { promptTokens: 10, completionTokens: 2, totalTokens: 12, cost: 0.001 } };
+      },
+    });
+    assert.equal(remoteCalls, 4);
+    assert.deepEqual(hosted.run.remote, { provider: 'openrouter', model: 'fixture-vision', nativeModel: 'fixture-native', routedProvider: 'fixture-provider', requestConfig: { maximumOutputTokens: 64, reasoning: { effort: 'minimal', exclude: true }, providerRouting: { only: ['fixture-endpoint'], allow_fallbacks: false, require_parameters: true, data_collection: 'deny' } }, usage: { calls: 4, promptTokens: 40, completionTokens: 8, totalTokens: 48, cost: { status: 'complete', reportedCalls: 4, missingCalls: 0, reportedCost: 0.004 } } });
+    assert.equal(hosted.metrics.orderReconciliation.agree, 2);
+    mkdirSync(join(directory, 'inconsistent-output'), { mode: 0o700 });
+    await assert.rejects(evaluateExistingBetterAppOpenRouterRun({
+      inputDirectory: acquisitionOutput, cacheDirectory: cache, outputDirectory: join(directory, 'inconsistent-output'), model: 'fixture-vision', providerSlug: 'fixture-endpoint', confirmation: validConfirmation,
+      evaluator: async (_paths, _prompt, context) => ({ outcome: { kind: 'pairwise', winner: context.order === 'AB' ? 'A' : 'B' }, model: 'fixture-vision', requestConfig: { maximumOutputTokens: context.order === 'AB' ? 64 : 65, reasoning: { effort: 'minimal', exclude: true }, providerRouting: { only: ['fixture-endpoint'], allow_fallbacks: false, require_parameters: true, data_collection: 'deny' } }, usage: { promptTokens: 1, completionTokens: 1, totalTokens: 2 } }),
+    }), /mixed OpenRouter request configurations/);
     const mapPath = join(acquisitionOutput, 'betterapp-artifact-map-v1.json');
     const originalMap = JSON.parse(readFileSync(mapPath, 'utf8'));
     const originalDocument = JSON.parse(readFileSync(join(acquisitionOutput, 'betterapp-examples-v2.json'), 'utf8'));
@@ -98,13 +131,12 @@ test('anonymously fetches pinned BetterApp rows, verifies image bytes, and score
     swappedDocument.selection.artifactMapSha256 = sha256(`${JSON.stringify(swappedMap, null, 2)}\n`);
     writeFileSync(mapPath, `${JSON.stringify(swappedMap, null, 2)}\n`, { mode: 0o600 });
     writeFileSync(join(acquisitionOutput, 'betterapp-examples-v2.json'), `${JSON.stringify(swappedDocument, null, 2)}\n`, { mode: 0o600 });
-    const { evaluateExistingBetterAppRun } = await import('../../scripts/evaluate-betterapp.mjs');
     let semanticCalls = 0;
-    await assert.rejects(evaluateExistingBetterAppRun({
-      inputDirectory: acquisitionOutput, cacheDirectory: cache, outputDirectory: join(directory, 'swapped-output'),
-      evaluator: async () => { semanticCalls += 1; return { id: 'unreachable', prediction: 'A' }; },
+    await assert.rejects(evaluateExistingBetterAppOpenRouterRun({
+      inputDirectory: acquisitionOutput, cacheDirectory: cache, outputDirectory: join(directory, 'swapped-output'), model: 'fixture-vision', providerSlug: 'fixture-endpoint', confirmation: validConfirmation,
+      evaluator: async () => { semanticCalls += 1; return {}; },
     }), /image A\/B semantic identity/);
-    assert.equal(semanticCalls, 0, 'swapped valid artifacts must be rejected before a local evaluator sees pixels');
+    assert.equal(semanticCalls, 0, 'swapped valid artifacts must be rejected before a remote evaluator sees pixels');
     writeFileSync(mapPath, `${JSON.stringify(originalMap, null, 2)}\n`, { mode: 0o600 });
     writeFileSync(join(acquisitionOutput, 'betterapp-examples-v2.json'), `${JSON.stringify(originalDocument, null, 2)}\n`, { mode: 0o600 });
     const tamperedPath = join(acquisitionOutput, 'betterapp-examples-v2.json');

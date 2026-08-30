@@ -13,6 +13,13 @@ review-trigger: before publishing benchmark, calibration, or alignment claims
 Keep evaluation questions separate. None of these corpora alone establishes
 product quality, accessibility, or general preference alignment.
 
+The direct-call runs are a fixed-model baseline: the same pinned model is asked
+to answer from each hash-bound example without extra prompt, evidence, or graph
+machinery. That measures the model-and-dataset capability first. Later variants
+must replay the identical examples and report their incremental effect, so a
+better result is not accidentally attributed to a changed sample, model, or
+evidence path.
+
 | Track | Question | Public source | Boundary |
 | --- | --- | --- | --- |
 | Regression | Did the rendered UI visibly change? | DiffSpot | Bounded external smoke sample |
@@ -37,14 +44,17 @@ Every acquisition records the dataset URL, immutable revision, retrieval time,
 license and redistribution policy, selection/normalizer version, and byte
 length plus SHA-256 for every downloaded artifact. Every evaluation additionally
 records its acquisition and normalized-row digests, evaluator/prompt version,
-model, split, and sampling seed. Unavailable, gated, or malformed data is an
+model, split, and sampling seed. The selected examples are hash-bound too, so
+the same receipt can be replayed exactly by the direct baseline and by any
+prompt/evidence/graph variant. Unavailable, gated, or malformed data is an
 explicit failure, never an empty successful run.
 
-Pixel-bearing public datasets are still not sent to hosted providers by these
-runners. The local paths use only literal-loopback Ollama. Apple ML-RLDF is
-non-commercial local research only; BetterApp has an unknown license and is
-also local-only. RICO use is local research only unless the operator separately
-establishes broader rights.
+Pixel-bearing runners default to literal-loopback Ollama. Hosted evaluation is
+available only after explicit live opt-in, exact model and endpoint selection,
+and a private dataset-bound upload confirmation; the receipt never represents
+that confirmation as a rights grant. Apple ML-RLDF additionally requires a
+non-commercial research confirmation. BetterApp's license remains unknown, and
+RICO use remains the operator's responsibility.
 
 ## Labels and splits
 
@@ -70,9 +80,9 @@ with the receipt directory printed by the preceding command.
 
 ```bash
 npm run evaluate:diffspot -- --fetch-only --limit 4
-AI_VISUAL_TEST_LIVE=1 VLM_PROVIDER=openrouter \
-  VLM_MODEL=google/gemini-2.5-flash-lite \
-  npm run evaluate:diffspot -- --limit 4
+AI_VISUAL_TEST_LIVE=1 npm run evaluate:diffspot -- \
+  --openrouter-model google/gemini-3.6-flash \
+  --openrouter-provider google-ai-studio --limit 4
 ```
 
 The runner accepts at most 20 rows and fetches both changed and no-change
@@ -181,38 +191,36 @@ acquires data nor calls a provider.
 
 ## Current evidence
 
-The current receipts are deliberately tiny smoke checks, not benchmark claims.
-They prove that acquisition, provenance binding, local inference, and scoring
-run end to end:
+This fixed-model direct-call baseline used `google/gemini-3.6-flash` through a
+pinned Google AI Studio route with no fallback. It accepted 276 calls for a
+receipt cost of `$0.328296`. Each result used the receipt's hash-bound examples;
+later prompt, evidence, or graph variants must replay those same examples.
 
-- DiffSpot: four hosted comparison rows; 0 true positives, 2 false negatives,
-  0 false positives, and 2 true negatives.
-- UICrit/RICO: two locally evaluated screens with all 10 requested dimension
-  scores present. Mean absolute errors were 0.667 aesthetics, 1.0 learnability,
-  1.167 efficiency, 0.167 usability, and 0.167 design quality.
-- BetterApp: two local counterbalanced pairs; both presentation orders
-  conflicted, so both were correctly abstained rather than scored.
-- Apple ML-RLDF: two local counterbalanced pairs, 1/2 agreement, and no order
-  conflicts.
-- UI-Vision and ScreenSpot-Pro: two local grounding examples each, with 0/2
-  points inside the target boxes in both corpora.
-- Dataset-interfaces-GUI: three images characterized as high quality, without
-  labels or an accuracy claim.
+| Track | Fixed-baseline result |
+| --- | --- |
+| DiffSpot | `n=20`; accuracy 0.60, recall 0.20, specificity 1.00 |
+| BetterApp | `n=20`; 17 reconciled, 3 order conflicts, agreement 0.7059 |
+| Apple ML-RLDF | `n=20`; 16 reconciled, 4 order conflicts, agreement 0.625 |
+| UI-Vision grounding | `n=20`; point-in-box accuracy 0.75 |
+| ScreenSpot-Pro grounding | `n=20`; point-in-box accuracy 0.55 |
+| UICrit/RICO | `n=20` screens / 100 dimensions, full coverage; MAE: aesthetics 1.8833, learnability 1.5833, efficiency 1.2167, usability 1.3167, design quality 1.7333 |
+| Dataset-interfaces-GUI | `n=36`; characterization only: low 5, medium 10, high 21; no labels or accuracy |
 
-All pixels, receipts, and results are ignored local evidence. Rerun the commands
-above to regenerate them before citing a result.
+These ignored local receipts prove a replayable evaluation path, not benchmark
+quality, broad model ranking, or a release-quality claim. Corpus sizes, route,
+cost, conflicts, exclusions, and limitations must accompany any citation.
 
 ## Adapter status
 
 | Source | Revision | Status |
 | --- | --- | --- |
-| DiffSpot | `c6dd79d5e1c0cbb4e7ca234c9f53c418a75e30ce` | Public regression smoke runner |
-| UICrit | `adc92136cdaecf6a5c8bb85af08594dd9271eb00` | Public annotations plus selective local RICO extraction/evaluation |
-| Dataset-interfaces-GUI | Mendeley version `1` | Public image acquisition and local characterization; no published machine-readable labels |
-| UI-Vision | `766c66aeffef16608d4916525902d9fb2598d7ce` | Public local-only grounding runner |
-| ScreenSpot-Pro | `210e78d3844251110bff86c95835ebd37a6930fa` | Public local-only grounding runner |
-| UIClip BetterApp | `5e087dedcd48c74fffb0802e8035006995b57e36` | Anonymous-public, license-unknown, local-only exploratory runner |
-| Apple ML-RLDF | `be0d7f816ded6fa5111035f34f69b077072ba9a3` plus pinned archive SHA-256 | Non-commercial local-only preference runner |
+| DiffSpot | `c6dd79d5e1c0cbb4e7ca234c9f53c418a75e30ce` | Public regression runner; explicit hosted route supported |
+| UICrit | `adc92136cdaecf6a5c8bb85af08594dd9271eb00` | Public annotations plus selective RICO extraction; local or explicitly confirmed hosted evaluation |
+| Dataset-interfaces-GUI | Mendeley version `1` | Public image acquisition and local or hosted characterization; no published machine-readable labels |
+| UI-Vision | `766c66aeffef16608d4916525902d9fb2598d7ce` | Public grounding runner; local or explicitly confirmed hosted evaluation |
+| ScreenSpot-Pro | `210e78d3844251110bff86c95835ebd37a6930fa` | Public grounding runner; local or explicitly confirmed hosted evaluation |
+| UIClip BetterApp | `5e087dedcd48c74fffb0802e8035006995b57e36` | Anonymous-public, license-unknown exploratory runner; hosted use requires a dataset-bound confirmation |
+| Apple ML-RLDF | `be0d7f816ded6fa5111035f34f69b077072ba9a3` plus pinned archive SHA-256 | Non-commercial preference runner; hosted use requires a dataset-bound non-commercial confirmation |
 
 ## Claim gates
 

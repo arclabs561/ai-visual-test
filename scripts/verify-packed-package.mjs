@@ -73,6 +73,11 @@ try {
     cwd: consumer,
     stdio: 'inherit',
   });
+  const improvementProgram = `const improvement = await import(${JSON.stringify(`${installedManifest.name}/improvement`)}); for (const name of ['runImprovementReview', 'canonicalJsonSha256', 'createReplayIdentity']) { if (typeof improvement[name] !== 'function') throw new Error('Missing packed improvement export: ' + name); } if (improvement.canonicalJsonSha256({ packed: true }).length !== 64) throw new Error('Packed improvement digest contract failed');`;
+  execFileSync(process.execPath, ['--input-type=module', '--eval', improvementProgram], {
+    cwd: consumer,
+    stdio: 'inherit',
+  });
   const utilsProgram = `const utils = await import(${JSON.stringify(`${installedManifest.name}/utils`)}); const expected = ${JSON.stringify(UTILS_EXPORTS)}; const actual = Object.keys(utils).sort(); if (JSON.stringify(actual) !== JSON.stringify(expected.slice().sort())) throw new Error('Unexpected packed utils exports: ' + actual.join(','));`;
   execFileSync(process.execPath, ['--input-type=module', '--eval', utilsProgram], {
     cwd: consumer,
@@ -166,6 +171,14 @@ try {
   const rootConsumerPath = join(consumer, 'root-consumer.ts');
   writeFileSync(rootConsumerPath, rootTypeConsumer);
   execFileSync(process.execPath, [join(ROOT, 'node_modules', 'typescript', 'bin', 'tsc'), '--noEmit', '--strict', '--target', 'ES2022', '--module', 'NodeNext', '--moduleResolution', 'NodeNext', '--skipLibCheck', 'false', rootConsumerPath], {
+    cwd: consumer,
+    stdio: 'inherit',
+  });
+
+  const improvementTypeConsumer = `import { canonicalJsonSha256, runImprovementReview, type ImprovementAdapter, type ImprovementReviewInput } from ${JSON.stringify(`${installedManifest.name}/improvement`)}; type Candidate = { css: string }; type Handle = { css: string }; const adapter: ImprovementAdapter<Candidate, Handle> = { async prepare(candidate) { return { handle: { css: candidate.payload.css }, candidateSha256: canonicalJsonSha256(candidate.payload) }; }, async apply() {}, async verify() { return [{ id: 'packed-gate', passed: true }]; }, async rollback() {} }; const input: ImprovementReviewInput<{ screenshot: string }, Candidate, Handle> = { objective: { id: 'packed-objective', description: 'Keep the action visible.' }, candidate: { id: 'packed-candidate', payload: { css: 'color: blue' } }, adapter, observer: { async capture() { return { payload: { screenshot: 'packed' } }; } }, projector: { id: 'packed-projector', configSha256: canonicalJsonSha256({ version: 1 }), async project(value) { return value.payload; } }, evaluator: { async compare() { return { winner: 'tie', execution: { id: crypto.randomUUID() } }; } }, evaluation: { id: 'packed-evaluator', configSha256: canonicalJsonSha256({ version: 1 }), variant: { kind: 'direct', promptVersion: 'packed-v1', promptSha256: canonicalJsonSha256('packed prompt') } } }; const result = runImprovementReview(input); void result;`;
+  const improvementTypeConsumerPath = join(consumer, 'improvement-consumer.ts');
+  writeFileSync(improvementTypeConsumerPath, improvementTypeConsumer);
+  execFileSync(process.execPath, [join(ROOT, 'node_modules', 'typescript', 'bin', 'tsc'), '--noEmit', '--strict', '--target', 'ES2022', '--module', 'NodeNext', '--moduleResolution', 'NodeNext', '--skipLibCheck', 'false', improvementTypeConsumerPath], {
     cwd: consumer,
     stdio: 'inherit',
   });

@@ -1,4 +1,4 @@
-/** Internal, review-only orchestration for one reversible visual improvement. */
+/** Provider-neutral, review-only orchestration for one reversible visual improvement. */
 
 import { createHash } from 'node:crypto';
 import {
@@ -68,6 +68,7 @@ export interface ImprovementAdapter<CandidatePayload, Handle> {
 
 export interface PreparedImprovement<Handle> {
   readonly handle: Handle;
+  /** Adapter attestation over the candidate bound into the sealed handle. */
   readonly candidateSha256: string;
 }
 
@@ -106,14 +107,31 @@ export interface ImprovementEvaluationExecution {
  */
 export interface ImprovementEvidenceProjector<ObservationPayload, EvaluationPayload> {
   readonly id: string;
+  /** Consumer attestation over the projector configuration. */
   readonly configSha256: string;
   project(observation: ImprovementBlindEvidence<ObservationPayload>): Promise<EvaluationPayload>;
 }
 
 export interface ImprovementEvaluation {
   readonly id: string;
+  /** Consumer attestation over evaluator configuration. */
   readonly configSha256: string;
   readonly variant: ReplayVariantInput;
+}
+
+export interface ImprovementReviewInput<
+  ObservationPayload extends JsonEvidence,
+  CandidatePayload,
+  Handle,
+  EvaluationPayload extends JsonEvidence = JsonEvidence,
+> {
+  readonly objective: ImprovementObjective;
+  readonly candidate: ImprovementCandidate<CandidatePayload>;
+  readonly adapter: ImprovementAdapter<CandidatePayload, Handle>;
+  readonly observer: ImprovementObserver<ObservationPayload>;
+  readonly projector: ImprovementEvidenceProjector<ObservationPayload, EvaluationPayload>;
+  readonly evaluator: ImprovementEvaluator<EvaluationPayload>;
+  readonly evaluation: ImprovementEvaluation;
 }
 
 type ReceiptObservation = Readonly<{ digest: string; metadata?: ImprovementMetadata }>;
@@ -337,18 +355,20 @@ function snapshotEvidenceValue(
     state.ancestors.delete(value);
   }
 }
-function parseObservation<Payload>(
+function parseObservation<Payload extends JsonEvidence>(
   value: ImprovementObservation<Payload>,
   label: 'baseline observation' | 'candidate observation' | 'rollback observation',
-): ImprovementObservation<JsonEvidence> & Readonly<{ digest: string }> {
+): ImprovementObservation<Payload> & Readonly<{ digest: string }> {
   const metadata = parseMetadata(value.metadata, label);
-  const payload = snapshotEvidence(value.payload);
+  const payload = snapshotEvidence(value.payload) as Payload;
   const digest = evidenceDigest(payload);
   return (metadata === undefined
     ? Object.freeze({ digest, payload })
-    : Object.freeze({ digest, metadata, payload })) as ImprovementObservation<JsonEvidence> & Readonly<{ digest: string }>;
+    : Object.freeze({ digest, metadata, payload })) as ImprovementObservation<Payload> & Readonly<{ digest: string }>;
 }
-function blindEvidence(observation: ImprovementObservation<JsonEvidence>): ImprovementBlindEvidence<JsonEvidence> {
+function blindEvidence<Payload extends JsonEvidence>(
+  observation: ImprovementObservation<Payload>,
+): ImprovementBlindEvidence<Payload> {
   return Object.freeze({ payload: observation.payload });
 }
 function parseGates(value: unknown): readonly ImprovementGateResult[] {
@@ -515,7 +535,7 @@ function failureFrom(cause: unknown): TransactionFailure {
   }
   return Object.freeze({ phase: 'evaluate', cause });
 }
-async function verifyRollback<ObservationPayload, CandidatePayload, Handle>(
+async function verifyRollback<ObservationPayload extends JsonEvidence, CandidatePayload, Handle>(
   adapter: ImprovementAdapter<CandidatePayload, Handle>,
   observer: ImprovementObserver<ObservationPayload>,
   handle: Handle,
@@ -533,20 +553,19 @@ async function verifyRollback<ObservationPayload, CandidatePayload, Handle>(
 }
 
 /** Runs one review-only transaction. It never commits a downstream mutation. */
-export async function runImprovementReview<ObservationPayload, CandidatePayload, Handle>(input: {
-  readonly objective: ImprovementObjective;
-  readonly candidate: ImprovementCandidate<CandidatePayload>;
-  readonly adapter: ImprovementAdapter<CandidatePayload, Handle>;
-  readonly observer: ImprovementObserver<ObservationPayload>;
-  readonly projector: ImprovementEvidenceProjector<JsonEvidence, unknown>;
-  readonly evaluator: ImprovementEvaluator<JsonEvidence>;
-  readonly evaluation: ImprovementEvaluation;
-}): Promise<ImprovementReceipt> {
+export async function runImprovementReview<
+  ObservationPayload extends JsonEvidence,
+  CandidatePayload,
+  Handle,
+  EvaluationPayload extends JsonEvidence = JsonEvidence,
+>(
+  input: ImprovementReviewInput<ObservationPayload, CandidatePayload, Handle, EvaluationPayload>,
+): Promise<ImprovementReceipt> {
   const objective = parseObjective(input.objective);
   const candidateInput = parseCandidate(input.candidate);
   const evaluation = parseEvaluation(input.evaluation);
   const projector = parseProjector(input.projector);
-  let baseline: ImprovementObservation<JsonEvidence>;
+  let baseline: ImprovementObservation<ObservationPayload>;
   try {
     baseline = parseObservation(await input.observer.capture('baseline'), 'baseline observation');
   } catch (cause) {
@@ -578,7 +597,7 @@ export async function runImprovementReview<ObservationPayload, CandidatePayload,
       base = receiptBase(objective, baseline, receiptEvaluationConfig(evaluation, projector), gates, candidateInput, prepared.candidateSha256);
       decision = { status: 'rejected', reason: 'constraint-failed' };
     } else {
-      let after: ImprovementObservation<JsonEvidence>;
+      let after: ImprovementObservation<ObservationPayload>;
       try {
         after = parseObservation(await input.observer.capture('candidate'), 'candidate observation');
       } catch (cause) {
@@ -589,11 +608,15 @@ export async function runImprovementReview<ObservationPayload, CandidatePayload,
         base = receiptBase(objective, baseline, receiptEvaluationConfig(evaluation, projector), gates, candidateInput, prepared.candidateSha256);
         decision = { status: 'rejected', reason: 'no-observable-change', candidateObservation };
       } else {
-        let projectedBaseline: JsonEvidence;
-        let projectedCandidate: JsonEvidence;
+        let projectedBaseline: EvaluationPayload;
+        let projectedCandidate: EvaluationPayload;
         try {
-          projectedBaseline = snapshotEvidence(await input.projector.project(blindEvidence(baseline)));
-          projectedCandidate = snapshotEvidence(await input.projector.project(blindEvidence(after)));
+          projectedBaseline = snapshotEvidence(
+            await input.projector.project(blindEvidence(baseline)),
+          ) as EvaluationPayload;
+          projectedCandidate = snapshotEvidence(
+            await input.projector.project(blindEvidence(after)),
+          ) as EvaluationPayload;
         } catch (cause) {
           throw asTransactionError('project-evidence', cause);
         }

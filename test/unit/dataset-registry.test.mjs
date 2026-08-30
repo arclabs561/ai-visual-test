@@ -73,7 +73,7 @@ describe('external dataset registry', () => {
     assert.doesNotThrow(() => assertDatasetUsage('apple-rldf', 'evaluate-externally'));
   });
 
-  it('allows provider upload only where the recorded source policy allows it', () => {
+  it('permits provider upload without an acknowledgement only where source policy allows it', () => {
     assert.deepEqual(assertDatasetProviderUpload('diffspot', { provider: 'example-provider', model: 'example-model' }), {
       key: 'diffspot',
       dataset: 'tencent/DiffSpot',
@@ -84,11 +84,11 @@ describe('external dataset registry', () => {
     });
     assert.throws(
       () => assertDatasetProviderUpload('apple-rldf', { provider: 'example-provider', model: 'example-model' }),
-      /noncommercial and external-only/,
+      /operator confirmation of dataset terms/,
     );
     assert.throws(
       () => assertDatasetProviderUpload('uiclip-betterapp', { provider: 'example-provider', model: 'example-model' }),
-      /licence remains unknown/,
+      /operator confirmation of dataset terms/,
     );
   });
 
@@ -111,8 +111,10 @@ describe('external dataset registry', () => {
 
   it('requires and retains operator confirmations without treating them as rights grants', () => {
     const uicritConfirmation = {
+      dataset: 'uicrit',
       provider: 'example-provider',
       model: 'example-model',
+      purpose: 'research-evaluation',
       confirmedBy: 'evaluation operator',
       confirmedAt: '2026-08-30T12:00:00.000Z',
       acknowledgements: ['local-pixel-rights-manifest-reviewed', 'provider-upload-permitted'],
@@ -150,8 +152,10 @@ describe('external dataset registry', () => {
     );
 
     const vibeConfirmation = {
+      dataset: 'vibe-design-arena',
       provider: 'example-provider',
       model: 'example-model',
+      purpose: 'research-evaluation',
       confirmedBy: 'evaluation operator',
       confirmedAt: '2026-08-30T12:00:00.000Z',
       acknowledgements: ['gated-dataset-terms-accepted', 'provider-upload-permitted'],
@@ -168,7 +172,7 @@ describe('external dataset registry', () => {
       () => assertDatasetProviderUpload('vibe-landing-page-arena', {
         provider: 'example-provider',
         model: 'example-model',
-        confirmation: { ...vibeConfirmation, acknowledgements: ['gated-dataset-terms-accepted'] },
+        confirmation: { ...vibeConfirmation, dataset: 'vibe-landing-page-arena', acknowledgements: ['gated-dataset-terms-accepted'] },
       }),
       /provider-upload-permitted/,
     );
@@ -178,7 +182,7 @@ describe('external dataset registry', () => {
         model: 'example-model',
         confirmation: vibeConfirmation,
       }),
-      /provider and model must match the request/,
+      /dataset, provider, and model must match the request/,
     );
     assert.throws(
       () => assertDatasetProviderUpload('vibe-design-arena', {
@@ -186,14 +190,69 @@ describe('external dataset registry', () => {
         model: 'different-model',
         confirmation: vibeConfirmation,
       }),
-      /provider and model must match the request/,
+      /dataset, provider, and model must match the request/,
     );
+  });
+
+  it('requires exact, dataset-bound terms confirmations before Apple and BetterApp uploads', () => {
+    const appleConfirmation = {
+      dataset: 'apple-rldf',
+      provider: 'openrouter',
+      model: 'anthropic/claude-sonnet-4-5',
+      purpose: 'noncommercial-research-evaluation',
+      confirmedBy: 'evaluation operator',
+      confirmedAt: '2026-08-30T12:00:00.000Z',
+      acknowledgements: [
+        'dataset-terms-reviewed',
+        'noncommercial-research-purpose-confirmed',
+        'provider-upload-permitted',
+      ],
+    };
+    const apple = preflightDatasetProviderUpload('apple-rldf', {
+      provider: 'openrouter', model: 'anthropic/claude-sonnet-4-5', confirmation: appleConfirmation,
+    });
+    assert.equal(apple.policy, 'requires-dataset-terms-confirmation');
+    assert.equal(apple.rightsGrant, false);
+    assert.deepEqual(apple.confirmation, appleConfirmation);
+
+    const betterAppConfirmation = {
+      dataset: 'uiclip-betterapp',
+      provider: 'openrouter',
+      model: 'anthropic/claude-sonnet-4-5',
+      purpose: 'research-evaluation',
+      confirmedBy: 'evaluation operator',
+      confirmedAt: '2026-08-30T12:00:00.000Z',
+      acknowledgements: ['dataset-terms-reviewed', 'provider-upload-permitted'],
+    };
+    assert.equal(
+      preflightDatasetProviderUpload('uiclip-betterapp', {
+        provider: 'openrouter', model: 'anthropic/claude-sonnet-4-5', confirmation: betterAppConfirmation,
+      }).policy,
+      'requires-dataset-terms-confirmation',
+    );
+
+    for (const confirmation of [
+      { ...appleConfirmation, dataset: 'uiclip-betterapp' },
+      { ...appleConfirmation, model: 'anthropic/claude-opus-4-6' },
+      { ...appleConfirmation, purpose: 'research-evaluation' },
+      { ...appleConfirmation, acknowledgements: ['dataset-terms-reviewed', 'provider-upload-permitted'] },
+      { ...betterAppConfirmation, acknowledgements: ['dataset-terms-reviewed', 'provider-upload-permitted', 'gated-dataset-terms-accepted'] },
+    ]) {
+      assert.throws(
+        () => preflightDatasetProviderUpload('apple-rldf', {
+          provider: 'openrouter', model: 'anthropic/claude-sonnet-4-5', confirmation,
+        }),
+        DatasetRegistryError,
+      );
+    }
   });
 
   it('rejects malformed runtime JSON confirmation shapes with DatasetRegistryError', () => {
     const validVibeConfirmation = {
+      dataset: 'vibe-design-arena',
       provider: 'example-provider',
       model: 'example-model',
+      purpose: 'research-evaluation',
       confirmedBy: 'evaluation operator',
       confirmedAt: '2026-08-30T12:00:00.000Z',
       acknowledgements: ['gated-dataset-terms-accepted', 'provider-upload-permitted'],
@@ -225,6 +284,8 @@ describe('external dataset registry', () => {
         confirmation: {
           provider: 'example-provider',
           model: 'example-model',
+          dataset: 'uicrit',
+          purpose: 'research-evaluation',
           confirmedBy: 'evaluation operator',
           confirmedAt: '2026-08-30T12:00:00Z',
           acknowledgements: ['local-pixel-rights-manifest-reviewed', 'provider-upload-permitted'],
@@ -252,8 +313,10 @@ describe('external dataset registry', () => {
       /not supported/,
     );
     const confirmation = {
+      dataset: 'vibe-design-arena',
       provider: 'anthropic',
       model: 'claude-sonnet-4-5',
+      purpose: 'research-evaluation',
       confirmedBy: 'evaluation operator',
       confirmedAt: '2026-08-30T12:00:00.000Z',
       acknowledgements: ['gated-dataset-terms-accepted', 'provider-upload-permitted'],

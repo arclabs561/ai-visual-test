@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 /**
- * Acquire the public Apple ML-RLDF archive without ever sending its pixels to
- * a hosted provider.  Evaluation is deliberately a local-model/injected seam:
- * the archive contains Arrow IPC files and is retained privately as source
- * material, while a local decoder supplies normalized preference records.
+ * Acquire the public Apple ML-RLDF archive with a private provenance chain.
+ * Local evaluation is always available; hosted OpenRouter evaluation is only
+ * available after an operator confirms the dataset terms and narrow
+ * noncommercial-research purpose. Such a confirmation remains rightsGrant:false.
  */
 
 import { createHash } from 'node:crypto';
@@ -49,9 +49,9 @@ const contained = (parent, candidate) => candidate === parent || candidate.start
 function usage() {
   return [
     'Usage: node scripts/evaluate-apple-rldf.mjs --fetch-only [--cache-dir <directory>] [--output-dir <directory>]',
-    '       node scripts/evaluate-apple-rldf.mjs --evaluate-existing <acquisition-dir> --records <private-normalized-records.json> --normalization <private-normalization.json> --local-model <name> [--limit <1..100>] [--output-dir <directory>]',
+    '       node scripts/evaluate-apple-rldf.mjs --evaluate-existing <acquisition-dir> --records <private-normalized-records.json> --normalization <private-normalization.json> (--local-model <name> | --openrouter-model <name> --openrouter-provider <endpoint-slug> --upload-confirmation <private.json>) [--limit <1..100>] [--output-dir <directory>]',
     '',
-    'Apple ML-RLDF pixels are acquired from Apple only and stay in ignored evaluation/. Evaluation uses a local model only; hosted provider upload is denied by policy.',
+    'Apple ML-RLDF pixels stay in ignored evaluation/. Local evaluation needs no upload acknowledgement; hosted OpenRouter evaluation is opt-in only with a private exact-model, noncommercial-research confirmation (rightsGrant:false).',
     'Prepare records first: uv run scripts/normalize-apple-rldf.py --acquisition <acquisition-dir>/apple-rldf-acquisition-v1.json --cache-dir <cache-dir> --output-dir <private-output-dir> --limit <1..20>.',
   ].join('\n');
 }
@@ -66,7 +66,7 @@ function optionValue(args, name) {
 }
 
 function parseArguments(args) {
-  const known = new Set(['--help', '--fetch-only', '--evaluate-existing', '--records', '--normalization', '--local-model', '--limit', '--cache-dir', '--output-dir']);
+  const known = new Set(['--help', '--fetch-only', '--evaluate-existing', '--records', '--normalization', '--local-model', '--openrouter-model', '--openrouter-provider', '--upload-confirmation', '--limit', '--cache-dir', '--output-dir']);
   for (const arg of args) if (arg.startsWith('--') && !known.has(arg)) fail(`unknown option: ${arg}`);
   const help = args.includes('--help');
   const fetchOnly = args.includes('--fetch-only');
@@ -74,10 +74,10 @@ function parseArguments(args) {
   if (!help && fetchOnly === (existing !== null)) fail('choose exactly one of --fetch-only or --evaluate-existing');
   const limitText = optionValue(args, '--limit'); const limit = limitText === null ? 20 : Number(limitText);
   if (!Number.isSafeInteger(limit) || limit < 1 || limit > MAX_LIMIT) fail(`--limit must be a whole number from 1 to ${MAX_LIMIT}`);
-  const records = optionValue(args, '--records'); const normalization = optionValue(args, '--normalization'); const localModel = optionValue(args, '--local-model');
-  if (!help && fetchOnly && (records !== null || normalization !== null || localModel !== null)) fail('--fetch-only does not accept evaluation options');
-  if (!help && !fetchOnly && (records === null || normalization === null || localModel === null)) fail('--evaluate-existing requires --records, --normalization, and --local-model');
-  return { help, fetchOnly, existing, records, normalization, localModel, limit,
+  const records = optionValue(args, '--records'); const normalization = optionValue(args, '--normalization'); const localModel = optionValue(args, '--local-model'); const openrouterModel = optionValue(args, '--openrouter-model'); const openrouterProvider = optionValue(args, '--openrouter-provider'); const uploadConfirmation = optionValue(args, '--upload-confirmation');
+  if (!help && fetchOnly && (records !== null || normalization !== null || localModel !== null || openrouterModel !== null || openrouterProvider !== null || uploadConfirmation !== null)) fail('--fetch-only does not accept evaluation options');
+  if (!help && !fetchOnly && (records === null || normalization === null || (localModel === null) === (openrouterModel === null) || (localModel !== null && openrouterProvider !== null) || (openrouterModel !== null && (uploadConfirmation === null || openrouterProvider === null)))) fail('--evaluate-existing requires records/normalization and exactly one model; OpenRouter also requires --openrouter-provider and --upload-confirmation');
+  return { help, fetchOnly, existing, records, normalization, localModel, openrouterModel, openrouterProvider, uploadConfirmation, limit,
     cacheDirectory: optionValue(args, '--cache-dir') ?? DEFAULT_CACHE,
     outputDirectory: optionValue(args, '--output-dir') ?? DEFAULT_OUTPUT };
 }
@@ -256,8 +256,8 @@ export async function evaluateAppleRldfExamples(examples, evaluator) {
 }
 
 async function localEvaluator(model) {
-  // This preflight is intentionally expected to throw: Apple dataset policy
-  // denies every hosted provider path before an evaluator is imported.
+  // Local mode never has an upload confirmation, so this preflight must keep
+  // the hosted path closed before a local evaluator is imported.
   try { preflightDatasetProviderUpload('apple-rldf', { provider: 'openrouter', model }); } catch { /* denial is the required boundary */ }
   let local;
   try { local = await moduleImport('local-vision-evaluator.js'); } catch { fail('local Apple RLDF evaluation requires build/src/local-vision-evaluator.js'); }
@@ -280,6 +280,43 @@ async function localEvaluator(model) {
   };
 }
 
+async function openRouterEvaluator(model, providerSlug, confirmationPath) {
+  const confirmation = privateJson(confirmationPath, 'Apple RLDF upload confirmation', 64 * 1024).value;
+  // This exact preflight validates dataset, canonical provider, model, purpose,
+  // and all three Apple acknowledgements before the OpenRouter module/key is read.
+  try { preflightDatasetProviderUpload('apple-rldf', { provider: 'openrouter', model, confirmation }); }
+  catch (error) { fail(error instanceof Error ? error.message : 'Apple RLDF OpenRouter upload was not authorized'); }
+  let remote;
+  try { remote = await moduleImport('openrouter-vision-evaluator.js'); } catch { fail('OpenRouter vision evaluator is unavailable'); }
+  return createOpenRouterEvaluator(model, providerSlug, confirmation, remote);
+}
+
+/** Injection seam: the policy preflight happens before a remote evaluator is callable. */
+export function createOpenRouterEvaluator(model, providerSlug, confirmation, remote) {
+  try { preflightDatasetProviderUpload('apple-rldf', { provider: 'openrouter', model, confirmation }); }
+  catch (error) { fail(error instanceof Error ? error.message : 'Apple RLDF OpenRouter upload was not authorized'); }
+  if (typeof remote.evaluateOpenRouterVision !== 'function') fail('OpenRouter vision evaluator is unavailable');
+  const calls = []; let requestConfig = null; let responseIdentity = null; const evaluator = async (a, b, description, context) => {
+    const imagePaths = [a, b].map(image => typeof image === 'string' ? image : image?.path);
+    if (imagePaths.some(path => typeof path !== 'string')) fail('Apple RLDF OpenRouter images must be verified local paths');
+    const response = await remote.evaluateOpenRouterVision({ imagePaths, prompt: `Choose the better designed UI for this description: ${description}. Return only A or B.`, model, providerSlug, responseKind: 'pairwise' });
+    const routing = response?.requestConfig?.providerRouting;
+    const usage = response?.usage;
+    if (response?.outcome?.kind !== 'pairwise' || response.model !== model || typeof response.provider !== 'string' || !response.provider || !usage || !Number.isSafeInteger(usage.promptTokens) || usage.promptTokens < 0 || !Number.isSafeInteger(usage.completionTokens) || usage.completionTokens < 0 || !Number.isSafeInteger(usage.totalTokens) || usage.totalTokens !== usage.promptTokens + usage.completionTokens || (usage.cost !== undefined && (typeof usage.cost !== 'number' || !Number.isFinite(usage.cost) || usage.cost < 0)) || !routing || !Array.isArray(routing.only) || routing.only.length !== 1 || routing.only[0] !== providerSlug || routing.allow_fallbacks !== false || routing.require_parameters !== true || routing.data_collection !== 'deny') {
+      fail('OpenRouter pairwise receipt did not preserve the exact requested provider routing');
+    }
+    const identity = JSON.stringify({ provider: response.provider, model: response.model, nativeModel: response.nativeModel ?? null });
+    if (responseIdentity === null) responseIdentity = identity;
+    else if (responseIdentity !== identity) fail('OpenRouter AB/BA calls returned inconsistent provider/model identity');
+    const encodedConfig = JSON.stringify(response.requestConfig);
+    if (requestConfig === null) requestConfig = { encoded: encodedConfig, value: response.requestConfig };
+    else if (requestConfig.encoded !== encodedConfig) fail('OpenRouter AB/BA calls used inconsistent request configuration');
+    calls.push({ order: context.order, provider: 'openrouter', model, nativeModel: response.nativeModel ?? null, routedModel: response.model, usage: response.usage });
+    return { prediction: response.outcome.winner };
+  };
+  return { evaluator, calls, confirmation, aggregateUsage: () => remote.aggregateOpenRouterUsage(calls.map(call => call.usage)), requestConfig: () => { if (requestConfig === null) fail('OpenRouter evaluation made no calls'); return requestConfig.value; } };
+}
+
 async function main() {
   const options = parseArguments(process.argv.slice(2)); if (options.help) return process.stdout.write(`${usage()}\n`);
   if (options.fetchOnly) {
@@ -300,13 +337,18 @@ async function main() {
   const acquisitionPath = resolve(options.existing, 'apple-rldf-acquisition-v1.json'); const acquisition = JSON.parse(readFileSync(acquisitionPath, 'utf8'));
   if (acquisition?.status !== 'available' || acquisition?.key !== 'apple-rldf') fail('--evaluate-existing must name an available Apple RLDF acquisition');
   const verifiedRecords = verifyAppleRldfPreparedRecords({ acquisitionPath, recordsPath: options.records, normalizationPath: options.normalization, cacheDirectory: options.cacheDirectory });
-  const examples = normalizedExamples(verifiedRecords, options.limit); const evaluator = await localEvaluator(options.localModel); const results = await evaluateAppleRldfExamples(examples, evaluator);
+  const examples = normalizedExamples(verifiedRecords, options.limit);
+  const remote = options.openrouterModel === null ? null : await openRouterEvaluator(options.openrouterModel, options.openrouterProvider, options.uploadConfirmation);
+  const evaluator = remote === null ? await localEvaluator(options.localModel) : remote.evaluator;
+  const results = await evaluateAppleRldfExamples(examples, evaluator);
   const output = createPrivateRunDirectory({ parentDirectory: privateDirectory(options.outputDirectory), prefix: 'apple-rldf-evaluation' });
   const selection = { seed: `apple-rldf-${APPLE_RLDF_REVISION}`, examplesSha256: sha256(Buffer.from(jsonText(examples))) };
   const examplesDoc = { version: 2, track: 'preference', acquisition, selection, splits: [{ name: 'external-eval', examples }] };
-  const run = { evaluator: 'local-vision-evaluator', localModel: options.localModel, counterbalanced: true, selectionSeed: selection.seed };
+  const run = remote === null
+    ? { evaluator: 'local-vision-evaluator', localModel: options.localModel, counterbalanced: true, selectionSeed: selection.seed }
+    : { evaluator: 'openrouter-vision-evaluator', provider: 'openrouter', model: options.openrouterModel, counterbalanced: true, selectionSeed: selection.seed, uploadConfirmation: remote.confirmation, requestConfig: remote.requestConfig(), calls: remote.calls, usage: remote.aggregateUsage() };
   writeJson(output, 'apple-rldf-examples-v2.json', examplesDoc); writeJson(output, 'apple-rldf-results-v2.json', { version: 2, track: 'preference', acquisition, split: 'external-eval', run, results });
-  process.stdout.write(`${JSON.stringify({ version: 2, mode: 'evaluated-local', selected: examples.length, revision: APPLE_RLDF_REVISION, metrics: computePreferenceMetrics(examples, results) }, null, 2)}\n`);
+  process.stdout.write(`${JSON.stringify({ version: 2, mode: remote === null ? 'evaluated-local' : 'evaluated-openrouter', selected: examples.length, revision: APPLE_RLDF_REVISION, metrics: computePreferenceMetrics(examples, results) }, null, 2)}\n`);
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main().catch(error => { process.stderr.write(`${error instanceof AppleRldfEvaluationError ? error.message : 'Apple RLDF evaluation failed safely'}\n`); process.exitCode = 1; });

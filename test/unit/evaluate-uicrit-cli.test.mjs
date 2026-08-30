@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { spawn, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { createServer } from 'node:http';
-import { chmodSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import test from 'node:test';
@@ -14,6 +14,7 @@ import { assertOfficialRicoArchivePin, evaluateExistingUICritRun, evaluateLocalM
 const record = Object.freeze({ id: 'uicrit:123', screenshotRef: { id: '123' } });
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const evaluator = resolve(repositoryRoot, 'scripts/evaluate-uicrit.mjs');
+const openRouterRequestConfig = Object.freeze({ maximumOutputTokens: 1024, integerScore: true, providerRouting: { only: ['fixture-route'], allow_fallbacks: false, require_parameters: true, data_collection: 'deny' }, reasoning: { effort: 'minimal', exclude: true } });
 
 function tarEntry(name, bytes, type = '0') {
   const header = Buffer.alloc(512);
@@ -47,9 +48,16 @@ test('requires explicit local pixels and upload confirmation outside fetch-only 
   const help = spawnSync(process.execPath, [evaluator, '--help'], { cwd: repositoryRoot, encoding: 'utf8' });
   assert.equal(help.status, 0, help.stderr);
   assert.match(help.stdout, /--fetch-only/);
+  assert.match(help.stdout, /--openrouter-provider/);
   const result = spawnSync(process.execPath, [evaluator], { cwd: repositoryRoot, encoding: 'utf8' });
   assert.equal(result.status, 1);
   assert.match(result.stderr, /choose exactly one/);
+  const missingRoute = spawnSync(process.execPath, [evaluator, '--evaluate-existing', '/private/receipt', '--upload-confirmation', '/private/confirmation.json'], { cwd: repositoryRoot, encoding: 'utf8' });
+  assert.equal(missingRoute.status, 1);
+  assert.match(missingRoute.stderr, /--openrouter-provider/);
+  const localRoute = spawnSync(process.execPath, [evaluator, '--fetch-only', '--openrouter-provider', 'fixture-route'], { cwd: repositoryRoot, encoding: 'utf8' });
+  assert.equal(localRoute.status, 1);
+  assert.match(localRoute.stderr, /only valid with --evaluate-existing/);
 });
 
 test('parses quoted UICrit CSV fields without evaluating annotation content', () => {
@@ -105,11 +113,11 @@ test('fetch-only accepts only the test loopback CSV and records annotation-only 
     assert.deepEqual(pixels.pixels, []);
     const confirmation = join(directory, 'confirmation.json');
     writeFileSync(confirmation, JSON.stringify({
-      provider: 'openrouter', model: 'fixture-model', confirmedBy: 'test operator', confirmedAt: '2026-08-30T00:00:00Z',
+      dataset: 'uicrit', provider: 'openrouter', model: 'fixture-model', purpose: 'research-evaluation', confirmedBy: 'test operator', confirmedAt: '2026-08-30T00:00:00Z',
       acknowledgements: ['local-pixel-rights-manifest-reviewed', 'provider-upload-permitted'], localPixelManifest: 'private/rights.json',
     }));
     chmodSync(confirmation, 0o600);
-    const refused = await run(['--evaluate-existing', receipt.outputDirectory, '--cache-dir', join(directory, 'cache'), '--output-dir', join(directory, 'live'), '--upload-confirmation', confirmation], {
+    const refused = await run(['--evaluate-existing', receipt.outputDirectory, '--openrouter-provider', 'fixture-route', '--cache-dir', join(directory, 'cache'), '--output-dir', join(directory, 'live'), '--upload-confirmation', confirmation], {
       AI_VISUAL_TEST_LIVE: '1',
     });
     assert.equal(refused.status, 1);
@@ -130,24 +138,39 @@ test('fetch-only accepts only the test loopback CSV and records annotation-only 
       existingOutputDirectory: pixelAcquisition.outputDirectory,
       cacheDirectory: join(directory, 'pixel-cache'),
       outputParentDirectory: join(directory, 'evaluated'),
+      providerSlug: 'fixture-route',
       confirmation: JSON.parse(readFileSync(confirmation, 'utf8')),
-      validate: async (_path, prompt) => ({
-        enabled: true, provider: 'openrouter', model: 'fixture-model', score: /1 through 5/.test(prompt) ? 5 : 10,
+      validate: async request => ({
+        outcome: { kind: 'scalar', score: /1 through 5/.test(request.prompt) ? 5 : 10 }, model: 'fixture-model', provider: 'openrouter', nativeModel: 'fixture-native',
+        usage: { promptTokens: 3, completionTokens: 2, totalTokens: 5, cost: 0.01 }, requestConfig: openRouterRequestConfig,
       }),
     });
     assert.equal(completedEvaluation.selected, 1);
     const results = JSON.parse(readFileSync(join(completedEvaluation.outputDirectory, 'uicrit-results-v2.json'), 'utf8'));
     assert.equal(results.results[0].scores.efficiency, 5);
     assert.equal(results.run.provider.model, 'fixture-model');
+    assert.deepEqual(results.run.usage, { calls: 5, promptTokens: 15, completionTokens: 10, totalTokens: 25, cost: { status: 'complete', reportedCalls: 5, missingCalls: 0, reportedCost: 0.05 } });
+    assert.deepEqual(results.run.requestConfig, openRouterRequestConfig);
     let preflightCalls = 0;
     await assert.rejects(evaluateExistingUICritRun({
       existingOutputDirectory: pixelAcquisition.outputDirectory,
       cacheDirectory: join(directory, 'pixel-cache'),
       outputParentDirectory: join(directory, 'alias-provider'),
+      providerSlug: 'fixture-route',
       confirmation: { ...JSON.parse(readFileSync(confirmation, 'utf8')), provider: 'anthropic' },
       validate: async () => { preflightCalls += 1; return { enabled: true, provider: 'claude', model: 'fixture-model', score: 10 }; },
     }), /canonical selected provider name/);
     assert.equal(preflightCalls, 0);
+    let invalidConfirmationCalls = 0;
+    await assert.rejects(evaluateExistingUICritRun({
+      existingOutputDirectory: pixelAcquisition.outputDirectory,
+      cacheDirectory: join(directory, 'pixel-cache'),
+      outputParentDirectory: join(directory, 'invalid-confirmation'),
+      providerSlug: 'fixture-route',
+      confirmation: { ...JSON.parse(readFileSync(confirmation, 'utf8')), purpose: 'unsupported-purpose' },
+      validate: async () => { invalidConfirmationCalls += 1; return {}; },
+    }), /purpose research-evaluation/);
+    assert.equal(invalidConfirmationCalls, 0);
     const tamperedExamplesPath = join(pixelAcquisition.outputDirectory, 'uicrit-examples-v2.json');
     const tamperedExamples = JSON.parse(readFileSync(tamperedExamplesPath, 'utf8'));
     tamperedExamples.selection.normalizedRows[0].ratings.aesthetics = 1;
@@ -157,6 +180,7 @@ test('fetch-only accepts only the test loopback CSV and records annotation-only 
       existingOutputDirectory: pixelAcquisition.outputDirectory,
       cacheDirectory: join(directory, 'pixel-cache'),
       outputParentDirectory: join(directory, 'tampered'),
+      providerSlug: 'fixture-route',
       confirmation: JSON.parse(readFileSync(confirmation, 'utf8')),
       validate: async () => { tamperedCalls += 1; return { enabled: true, provider: 'openrouter', model: 'fixture-model', score: 10 }; },
     }), /normalized selection was altered/);
@@ -167,6 +191,7 @@ test('fetch-only accepts only the test loopback CSV and records annotation-only 
       AI_VISUAL_TEST_UICRIT_CSV_URL: `http://127.0.0.1:${server.address().port}/uicrit_public.csv`,
     });
     assert.equal(missingPixels.status, 1);
+    assert.ok(existsSync(missingPixelsOutput), missingPixels.stderr);
     const [blockedRun] = readdirSync(missingPixelsOutput);
     const blocked = JSON.parse(readFileSync(join(missingPixelsOutput, blockedRun, 'uicrit-acquisition-v1.json'), 'utf8'));
     assert.deepEqual({ status: blocked.status, artifacts: blocked.artifacts, blockedReason: blocked.blockedReason }, {
@@ -211,7 +236,7 @@ test('fetch-only accepts only the test loopback CSV and records annotation-only 
     });
     assert.equal(localModelEvaluation.selected, 1);
     assert.equal(localCalls.length, 5);
-    assert.ok(localCalls.every(call => call.imagePaths.length === 1 && call.responseKind === 'scalar' && call.model === 'fixture-local-model'));
+    assert.ok(localCalls.every(call => call.imagePaths.length === 1 && call.responseKind === 'scalar' && call.integerScore === true && call.model === 'fixture-local-model'));
     assert.ok(localCalls.every(call => call.prompt.includes('Respond exactly as JSON')));
 
     // A coordinated receipt edit must not be able to replace the human scores:
@@ -226,6 +251,7 @@ test('fetch-only accepts only the test loopback CSV and records annotation-only 
     let coordinatedRatingCalls = 0;
     await assert.rejects(evaluateExistingUICritRun({
       existingOutputDirectory: downloadedReceipt.outputDirectory, cacheDirectory: join(directory, 'download-cache'), outputParentDirectory: join(directory, 'coordinated-ratings'), confirmation: JSON.parse(readFileSync(confirmation, 'utf8')),
+      providerSlug: 'fixture-route',
       validate: async () => { coordinatedRatingCalls += 1; return { enabled: true, provider: 'openrouter', model: 'fixture-model', score: 10 }; },
     }), /does not match the verified source CSV/);
     assert.equal(coordinatedRatingCalls, 0);
@@ -251,6 +277,7 @@ test('fetch-only accepts only the test loopback CSV and records annotation-only 
     let swappedPixelCalls = 0;
     await assert.rejects(evaluateExistingUICritRun({
       existingOutputDirectory: downloadedReceipt.outputDirectory, cacheDirectory: join(directory, 'download-cache'), outputParentDirectory: join(directory, 'swapped-pixel'), confirmation: JSON.parse(readFileSync(confirmation, 'utf8')),
+      providerSlug: 'fixture-route',
       validate: async () => { swappedPixelCalls += 1; return { enabled: true, provider: 'openrouter', model: 'fixture-model', score: 10 }; },
     }), /did not bind the record RICO ID/);
     assert.equal(swappedPixelCalls, 0);
@@ -265,10 +292,11 @@ test('scores every fixed UICrit dimension and never passes comments to the provi
   const outcome = await evaluateUICritRecords([{ record, path: '/private/rico/123.png' }], {
     expectedProvider: 'fixture-provider',
     expectedModel: 'fixture-model',
-    validate: async (image, prompt, context) => {
-      calls.push({ image, prompt, context });
-      const maximum = /1 through 5/.test(prompt) ? 5 : 10;
-      return { enabled: true, provider: 'fixture-provider', model: 'fixture-model', score: maximum };
+    providerSlug: 'fixture-route',
+    evaluate: async request => {
+      calls.push(request);
+      const maximum = /1 through 5/.test(request.prompt) ? 5 : 10;
+      return { outcome: { kind: 'scalar', score: maximum }, provider: 'fixture-provider', model: 'fixture-model', nativeModel: 'fixture-native', usage: { promptTokens: 1, completionTokens: 2, totalTokens: 3, cost: 0.01 }, requestConfig: openRouterRequestConfig };
     },
   });
   assert.deepEqual(outcome.results, [{
@@ -276,33 +304,49 @@ test('scores every fixed UICrit dimension and never passes comments to the provi
     scores: { aesthetics: 10, learnability: 5, efficiency: 5, usability: 10, 'design-quality': 10 },
   }]);
   assert.equal(calls.length, 5);
-  assert.ok(calls.every(call => call.image === '/private/rico/123.png'));
-  assert.ok(calls.every(call => call.context.testType.startsWith('uicrit-')));
-  assert.ok(calls.every(call => call.context.provider === 'fixture-provider' && call.context.model === 'fixture-model'));
+  assert.ok(calls.every(call => call.imagePaths[0] === '/private/rico/123.png'));
+  assert.ok(calls.every(call => call.responseKind === 'scalar' && call.model === 'fixture-model'));
+  assert.ok(calls.every(call => call.integerScore === true));
   assert.ok(calls.every(call => !call.prompt.includes('human text')));
+  let configurationCalls = 0;
+  await assert.rejects(evaluateUICritRecords([{ record, path: '/private/rico/123.png' }], {
+    expectedProvider: 'fixture-provider', expectedModel: 'fixture-model',
+    providerSlug: 'fixture-route',
+    evaluate: async () => {
+      configurationCalls += 1;
+      return {
+        outcome: { kind: 'scalar', score: 5 }, provider: 'fixture-provider', model: 'fixture-model', usage: { promptTokens: 1, completionTokens: 1, totalTokens: 2 },
+        requestConfig: configurationCalls === 1 ? openRouterRequestConfig : { maximumOutputTokens: 72, integerScore: true, providerRouting: { only: ['fixture-route'], allow_fallbacks: false, require_parameters: true, data_collection: 'deny' }, reasoning: { effort: 'minimal', exclude: true } },
+      };
+    },
+  }), /mixed OpenRouter request configurations/);
+  assert.equal(configurationCalls, 2);
 });
 
 test('rejects absent, non-finite, or scale-invalid UICrit provider scores', async () => {
   for (const score of [null, Number.NaN, Infinity, 0, 6.5, 11]) {
     await assert.rejects(
       evaluateUICritRecords([{ record, path: '/private/rico/123.png' }], {
-        expectedProvider: 'fixture-provider',
-        validate: async () => ({ enabled: true, provider: 'fixture-provider', model: 'fixture-model', score }),
+        expectedProvider: 'fixture-provider', expectedModel: 'fixture-model',
+        providerSlug: 'fixture-route',
+        evaluate: async () => ({ outcome: { kind: 'scalar', score }, provider: 'fixture-provider', model: 'fixture-model', usage: { promptTokens: 1, completionTokens: 1, totalTokens: 2 }, requestConfig: openRouterRequestConfig }),
       }),
       /score must be a finite integer/,
     );
   }
   await assert.rejects(
     evaluateUICritRecords([{ record, path: '/private/rico/123.png' }], {
-      expectedProvider: 'fixture-provider',
-      validate: async () => ({ enabled: true, provider: 'other-provider', model: 'fixture-model', score: 5 }),
+      expectedProvider: 'fixture-provider', expectedModel: 'fixture-model',
+      providerSlug: 'fixture-route',
+      evaluate: async () => ({ outcome: { kind: 'scalar', score: 5 }, provider: 'other-provider', model: 'other-model', usage: { promptTokens: 1, completionTokens: 1, totalTokens: 2 }, requestConfig: openRouterRequestConfig }),
     }),
     /did not match the operator upload confirmation/,
   );
   let calls = 0;
   await assert.rejects(
     evaluateUICritRecords([{ record, path: '/private/rico/123.png' }], {
-      expectedProvider: 'fixture-provider', expectedModel: ' ', validate: async () => { calls += 1; return {}; },
+      expectedProvider: 'fixture-provider', expectedModel: ' ', evaluate: async () => { calls += 1; return {}; },
+      providerSlug: 'fixture-route',
     }),
     /model configuration must be a non-empty string/,
   );

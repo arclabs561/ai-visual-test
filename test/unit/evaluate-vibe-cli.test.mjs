@@ -114,7 +114,7 @@ test('fetch-only uses the test-only loopback source, pins revision, and stores o
     assert.equal(requests, acquiredRequests, 'evaluate-existing must not refetch rows or pixels');
     const { evaluateExistingRun } = await import('../../scripts/evaluate-vibe.mjs');
     const injectedOutput = join(directory, 'injected-output'); mkdirSync(injectedOutput, { mode: 0o700 });
-    const uploadConfirmation = { provider: 'openrouter', model: 'fixture-model', confirmedBy: 'test', confirmedAt: '2026-01-01T00:00:00Z', acknowledgements: ['gated-dataset-terms-accepted', 'provider-upload-permitted'] };
+    const uploadConfirmation = { dataset: 'vibe-design-arena', purpose: 'research-evaluation', provider: 'openrouter', model: 'fixture-model', confirmedBy: 'test', confirmedAt: '2026-01-01T00:00:00Z', acknowledgements: ['gated-dataset-terms-accepted', 'provider-upload-permitted'] };
     const injected = await evaluateExistingRun({
       dataset: { key: 'vibe-design-arena' }, inputDirectory: acquisitionOutput, cacheDirectory: cache, outputDirectory: injectedOutput, uploadConfirmation,
       evaluator: async (_a, _b, _prompt, context) => {

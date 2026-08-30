@@ -86,21 +86,72 @@ test('submits fixed scalar requests to loopback with bounded JSON format and par
   }
 });
 
+test('requests and enforces integer scalar scores only when requested', async () => {
+  const { directory, png } = imageDirectory();
+  try {
+    let requestBody;
+    const outcome = await evaluateLocalVision({
+      imagePaths: [png], prompt: 'Return a whole rubric score.', model: 'llava:latest', responseKind: 'scalar', integerScore: true,
+      fetchImplementation: async (_url, init) => {
+        requestBody = JSON.parse(init.body);
+        return ollamaResponse('{"score":4}');
+      },
+    });
+    assert.deepEqual(outcome, { kind: 'scalar', score: 4 });
+    assert.equal(requestBody.format.properties.score.type, 'integer');
+    assert.deepEqual(parseLocalVisionResponse('scalar', { response: '{"score":4.5}' }), { kind: 'scalar', score: 4.5 });
+    assert.throws(() => parseLocalVisionResponse('scalar', { response: '{"score":4.5}' }, true), /finite-integer/);
+    await assert.rejects(
+      evaluateLocalVision({ imagePaths: [png], prompt: 'Return a whole rubric score.', model: 'llava:latest', responseKind: 'scalar', integerScore: true, fetchImplementation: async () => ollamaResponse('{"score":4.5}') }),
+      /finite-integer/,
+    );
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
 test('requires two images for pairwise AB/BA judgments and reconciles winner points', async () => {
   const { directory, png } = imageDirectory();
   try {
     const second = join(directory, 'comparison.jpg');
     writeFileSync(second, Buffer.from('ffd8ffc00008080001000101', 'hex'));
+    let requestBody;
     const outcome = await evaluateLocalVision({
       imagePaths: [png, second], prompt: 'Choose the better image. Return A or B.', model: 'qwen-vl', responseKind: 'pairwise',
-      fetchImplementation: async () => ollamaResponse('```json\n{"winner":"B","point":0}\n```'),
+      fetchImplementation: async (_url, init) => {
+        requestBody = JSON.parse(init.body);
+        return ollamaResponse('```json\n{"winner":"B"}\n```');
+      },
     });
     assert.deepEqual(outcome, { kind: 'pairwise', winner: 'B', point: 0 });
+    assert.deepEqual(requestBody.format.properties, { winner: { type: 'string', enum: ['A', 'B'] } });
+    assert.deepEqual(requestBody.format.required, ['winner']);
     await assert.rejects(
       evaluateLocalVision({ imagePaths: [png], prompt: 'Choose.', model: 'qwen-vl', responseKind: 'pairwise', fetchImplementation: async () => ollamaResponse('{"winner":"A"}') }),
       /exactly two images/,
     );
-    assert.throws(() => parseLocalVisionResponse('pairwise', { response: '{"winner":"A","point":0}' }), /must agree/);
+    assert.throws(() => parseLocalVisionResponse('pairwise', { response: '{"winner":"A","point":1}' }), /exactly/);
+    assert.throws(() => parseLocalVisionResponse('pairwise', { response: '{"winner":"A","unexpected":true}' }), /exactly/);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test('uses the shared two-image binary response contract for local regression replay', async () => {
+  const { directory, png } = imageDirectory();
+  try {
+    const second = join(directory, 'after.jpg');
+    writeFileSync(second, Buffer.from('ffd8ffc00008080001000101', 'hex'));
+    const outcome = await evaluateLocalVision({
+      imagePaths: [png, second], prompt: 'Report whether any visible difference exists.', model: 'qwen-vl', responseKind: 'binary',
+      fetchImplementation: async () => ollamaResponse('{"value":true}'),
+    });
+    assert.deepEqual(outcome, { kind: 'binary', value: true });
+    await assert.rejects(
+      evaluateLocalVision({ imagePaths: [png], prompt: 'Report differences.', model: 'qwen-vl', responseKind: 'binary', fetchImplementation: async () => ollamaResponse('{"value":false}') }),
+      /binary evaluation requires exactly two images/,
+    );
+    assert.throws(() => parseLocalVisionResponse('binary', { response: '{"value":"true"}' }), /exactly/);
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }
@@ -124,15 +175,16 @@ test('rejects malformed and tiny compressed image headers with oversized raster 
   }
 });
 
-test('parses finite, non-negative original-image pixel grounding coordinates', async () => {
+test('parses finite normalized 0 through 1000 grounding coordinates', async () => {
   const { directory, png } = imageDirectory();
   try {
     const outcome = await evaluateLocalVision({
-      imagePaths: [png], prompt: 'Locate the button and return its original-image pixel coordinates.', model: 'moondream', responseKind: 'grounding',
+      imagePaths: [png], prompt: 'Locate the button and return normalized coordinates.', model: 'moondream', responseKind: 'grounding',
       fetchImplementation: async () => ollamaResponse('{"x":23.5,"y":0}'),
     });
     assert.deepEqual(outcome, { kind: 'grounding', x: 23.5, y: 0 });
-    assert.throws(() => parseLocalVisionResponse('grounding', { response: '{"x":-1,"y":2}' }), /non-negative/);
+    assert.throws(() => parseLocalVisionResponse('grounding', { response: '{"x":-1,"y":2}' }), /0 through 1000/);
+    assert.throws(() => parseLocalVisionResponse('grounding', { response: '{"x":1000.1,"y":2}' }), /0 through 1000/);
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }

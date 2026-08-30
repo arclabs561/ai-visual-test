@@ -26,10 +26,22 @@ node --test build/test/integration/judge.test.mjs
 Dataset pixels, normalized rows, results, and confirmations are intentionally
 not committed: `evaluation/` is ignored. Acquisition never imports provider
 code, and evaluation consumes a prior local receipt. The public dataset command
-surface is deliberately local-first: pixel-bearing UICrit/RICO, UI-Vision,
-ScreenSpot-Pro, BetterApp, and Apple ML-RLDF runs use loopback Ollama where a
-model is required. BetterApp is license-unknown and Apple ML-RLDF is
+surface is local-first. Pixel-bearing runners can use loopback Ollama, or an
+explicit OpenRouter model and endpoint after live opt-in and dataset-bound
+upload confirmation. BetterApp is license-unknown and Apple ML-RLDF is
 non-commercial, so neither is a release-gate corpus.
+
+Each local receipt binds its selected examples and source artifacts by hash.
+Use a fixed-model direct call as the baseline, then replay that exact receipt
+when testing prompt, evidence, or graph variants. This keeps a model-capability
+measurement separate from gains caused by added context or orchestration.
+Treat bounded runs as smoke checks; report corpus size and cost alongside any
+result, and do not present them as benchmark metrics.
+
+The recorded fixed baseline used `google/gemini-3.6-flash` on a pinned Google
+AI Studio route with no fallback: 276 accepted calls, `$0.328296` receipt cost,
+and hash-bound inputs. Its `n=20` results are documented in the protocol; the
+`n=36` Dataset-interfaces-GUI run is characterization only, not accuracy.
 
 ```bash
 # regression
@@ -38,14 +50,14 @@ npm run evaluate:diffspot -- --fetch-only --limit 4
 # public critique annotations; add --download-rico for selected local images
 npm run evaluate:uicrit -- --fetch-only --limit 5
 
-# public images with label-free local characterization
+# public images with label-free characterization
 npm run evaluate:gui-aesthetics -- --fetch-only --limit 36
 
 # anonymous public grounding data
 npm run evaluate:grounding -- --dataset ui-vision --fetch-only --limit 20
 npm run evaluate:grounding -- --dataset screenspot-pro --fetch-only --limit 20
 
-# local-only exploratory preference data
+# exploratory preference data; hosted use requires explicit confirmation
 npm run evaluate:betterapp -- --fetch-only --limit 20
 npm run evaluate:apple-rldf -- --fetch-only
 ```

@@ -4,6 +4,15 @@
  * other than a literal loopback Ollama `/api/generate` URL.
  */
 import { lstatSync, readFileSync } from 'node:fs';
+import type {
+  VisionBinaryOutcome,
+  VisionEvaluationOutcome,
+  VisionEvaluationRequest,
+  VisionEvaluationResponseKind,
+  VisionGroundingOutcome,
+  VisionPairwiseOutcome,
+  VisionScalarOutcome,
+} from './vision-evaluation-contract.js';
 
 export const DEFAULT_LOCAL_OLLAMA_ENDPOINT = 'http://127.0.0.1:11434/api/generate';
 
@@ -16,22 +25,13 @@ const MAX_IMAGES = 2;
 const MAX_PROMPT_CHARACTERS = 16_000;
 const MAX_MODEL_CHARACTERS = 256;
 
-export type LocalVisionResponseKind = 'scalar' | 'pairwise' | 'grounding';
+/** @deprecated Use VisionEvaluationResponseKind from vision-evaluation-contract. */
+export type LocalVisionResponseKind = VisionEvaluationResponseKind;
 
-export interface LocalVisionEvaluationRequest {
-  /** One image for scalar scoring, or the A/B images for a pairwise judgment. */
-  imagePaths: readonly string[];
-  /** A caller-owned, fixed evaluation prompt. Image bytes are never interpolated into it. */
-  prompt: string;
-  model: string;
-  responseKind: LocalVisionResponseKind;
+/** @deprecated Use VisionEvaluationRequest plus local transport options. */
+export interface LocalVisionEvaluationRequest extends VisionEvaluationRequest {
   /** Must remain a literal loopback `/api/generate` endpoint. */
   endpoint?: URL | string;
-  timeoutMs?: number;
-  maximumImageBytes?: number;
-  maximumResponseBytes?: number;
-  minimumScore?: number;
-  maximumScore?: number;
   /** Test seam; production callers should leave this unset. */
   fetchImplementation?: typeof fetch;
 }
@@ -46,28 +46,16 @@ export interface LocalVisionImage {
   base64: string;
 }
 
-export interface LocalVisionScalarOutcome {
-  kind: 'scalar';
-  score: number;
-}
-
-export interface LocalVisionPairwiseOutcome {
-  kind: 'pairwise';
-  /** The winning image position in the submitted request. */
-  winner: 'A' | 'B';
-  /** A conventional point for A (1) or B (0), useful for AB/BA reconciliation. */
-  point: 0 | 1;
-}
-
-export interface LocalVisionGroundingOutcome {
-  kind: 'grounding';
-  /** Pixel coordinates relative to the original, unscaled submitted image. */
-  x: number;
-  /** Pixel coordinates relative to the original, unscaled submitted image. */
-  y: number;
-}
-
-export type LocalVisionOutcome = LocalVisionScalarOutcome | LocalVisionPairwiseOutcome | LocalVisionGroundingOutcome;
+/** @deprecated Use VisionScalarOutcome from vision-evaluation-contract. */
+export type LocalVisionScalarOutcome = VisionScalarOutcome;
+/** @deprecated Use VisionPairwiseOutcome from vision-evaluation-contract. */
+export type LocalVisionPairwiseOutcome = VisionPairwiseOutcome;
+/** @deprecated Use VisionGroundingOutcome from vision-evaluation-contract. */
+export type LocalVisionGroundingOutcome = VisionGroundingOutcome;
+/** @deprecated Use VisionBinaryOutcome from vision-evaluation-contract. */
+export type LocalVisionBinaryOutcome = VisionBinaryOutcome;
+/** @deprecated Use VisionEvaluationOutcome from vision-evaluation-contract. */
+export type LocalVisionOutcome = VisionEvaluationOutcome;
 
 export class LocalVisionEvaluatorError extends Error {
   constructor(message: string) {
@@ -267,53 +255,60 @@ function jsonFromModelContent(value: unknown): unknown {
 }
 
 /** Parse the narrow response envelopes used by local scalar and AB/BA evaluation. */
-export function parseLocalVisionResponse(kind: LocalVisionResponseKind, value: unknown): LocalVisionOutcome {
+export function parseLocalVisionResponse(kind: LocalVisionResponseKind, value: unknown, integerScore = false): LocalVisionOutcome {
   const parsed = jsonFromModelContent(value);
   const result = plainObject(parsed);
+  if (kind === 'binary') {
+    if (Object.keys(result).length !== 1 || typeof result.value !== 'boolean') {
+      fail('local binary response must be exactly { "value": boolean }');
+    }
+    return { kind, value: result.value };
+  }
   if (kind === 'scalar') {
-    if (Object.keys(result).length !== 1 || typeof result.score !== 'number' || !Number.isFinite(result.score)) {
-      fail('local scalar response must be exactly { "score": finite-number }');
+    if (Object.keys(result).length !== 1 || typeof result.score !== 'number' || !Number.isFinite(result.score) || (integerScore && !Number.isInteger(result.score))) {
+      fail(`local scalar response must be exactly { "score": finite-${integerScore ? 'integer' : 'number'} }`);
     }
     return { kind, score: result.score };
   }
   if (kind === 'grounding') {
     if (
       Object.keys(result).length !== 2
-      || typeof result.x !== 'number' || !Number.isFinite(result.x) || result.x < 0
-      || typeof result.y !== 'number' || !Number.isFinite(result.y) || result.y < 0
+      || typeof result.x !== 'number' || !Number.isFinite(result.x) || result.x < 0 || result.x > 1000
+      || typeof result.y !== 'number' || !Number.isFinite(result.y) || result.y < 0 || result.y > 1000
     ) {
-      fail('local grounding response must be exactly { "x": non-negative-finite-number, "y": non-negative-finite-number } in original-image pixels');
+      fail('local grounding response must be exactly { "x": finite-number 0 through 1000, "y": finite-number 0 through 1000 } in normalized coordinates');
     }
     return { kind, x: result.x, y: result.y };
   }
   if (
-    (Object.keys(result).length !== 1 && Object.keys(result).length !== 2)
+    Object.keys(result).length !== 1
     || (result.winner !== 'A' && result.winner !== 'B')
-    || (result.point !== undefined && result.point !== 0 && result.point !== 1)
   ) {
-    fail('local pairwise response must be { "winner": "A" | "B", optional "point": 0 | 1 }');
+    fail('local pairwise response must be exactly { "winner": "A" | "B" }');
   }
   const point: 0 | 1 = result.winner === 'A' ? 1 : 0;
-  if (result.point !== undefined && result.point !== point) {
-    fail('local pairwise response point must agree with winner');
-  }
   return { kind, winner: result.winner, point };
 }
 
-function responseFormat(kind: LocalVisionResponseKind): Record<string, unknown> {
+function responseFormat(kind: LocalVisionResponseKind, integerScore: boolean): Record<string, unknown> {
+  if (kind === 'binary') {
+    return {
+      type: 'object', properties: { value: { type: 'boolean' } }, required: ['value'], additionalProperties: false,
+    };
+  }
   if (kind === 'scalar') {
     return {
-      type: 'object', properties: { score: { type: 'number' } }, required: ['score'], additionalProperties: false,
+      type: 'object', properties: { score: { type: integerScore ? 'integer' : 'number' } }, required: ['score'], additionalProperties: false,
     };
   }
   if (kind === 'grounding') {
     return {
-      type: 'object', properties: { x: { type: 'number', minimum: 0 }, y: { type: 'number', minimum: 0 } },
+      type: 'object', properties: { x: { type: 'number', minimum: 0, maximum: 1000 }, y: { type: 'number', minimum: 0, maximum: 1000 } },
       required: ['x', 'y'], additionalProperties: false,
     };
   }
   return {
-    type: 'object', properties: { winner: { type: 'string', enum: ['A', 'B'] }, point: { type: 'integer', enum: [0, 1] } },
+    type: 'object', properties: { winner: { type: 'string', enum: ['A', 'B'] } },
     required: ['winner'], additionalProperties: false,
   };
 }
@@ -359,13 +354,18 @@ async function readBoundedResponse(response: Response, maximumBytes: number): Pr
 export async function evaluateLocalVision(request: LocalVisionEvaluationRequest): Promise<LocalVisionOutcome> {
   boundedText(request.prompt, 'local vision prompt', MAX_PROMPT_CHARACTERS);
   boundedText(request.model, 'local vision model', MAX_MODEL_CHARACTERS);
-  if (request.responseKind !== 'scalar' && request.responseKind !== 'pairwise' && request.responseKind !== 'grounding') {
-    fail('local vision responseKind must be scalar, pairwise, or grounding');
+  if (request.responseKind !== 'scalar' && request.responseKind !== 'pairwise' && request.responseKind !== 'grounding' && request.responseKind !== 'binary') {
+    fail('local vision responseKind must be scalar, pairwise, grounding, or binary');
   }
   if (!Array.isArray(request.imagePaths) || request.imagePaths.length < 1 || request.imagePaths.length > MAX_IMAGES) {
     fail(`local vision evaluation requires from 1 through ${MAX_IMAGES} images`);
   }
-  if (request.responseKind === 'pairwise' && request.imagePaths.length !== 2) fail('local pairwise evaluation requires exactly two images');
+  if ((request.responseKind === 'pairwise' || request.responseKind === 'binary') && request.imagePaths.length !== 2) {
+    fail(`local ${request.responseKind} evaluation requires exactly two images`);
+  }
+  if (request.integerScore !== undefined && typeof request.integerScore !== 'boolean') fail('local integerScore must be a boolean');
+  if (request.integerScore === true && request.responseKind !== 'scalar') fail('local integerScore is valid only for scalar responses');
+  const integerScore = request.integerScore === true;
   const timeoutMs = request.timeoutMs ?? DEFAULT_TIMEOUT_MS;
   const maximumImageBytes = request.maximumImageBytes ?? DEFAULT_MAXIMUM_IMAGE_BYTES;
   const maximumResponseBytes = request.maximumResponseBytes ?? DEFAULT_MAXIMUM_RESPONSE_BYTES;
@@ -388,14 +388,14 @@ export async function evaluateLocalVision(request: LocalVisionEvaluationRequest)
     response = await executeFetch(endpoint, {
       method: 'POST',
       headers: { 'content-type': 'application/json', accept: 'application/json' },
-      body: JSON.stringify({ model: request.model, prompt: request.prompt, images: images.map(image => image.base64), stream: false, format: responseFormat(request.responseKind) }),
+      body: JSON.stringify({ model: request.model, prompt: request.prompt, images: images.map(image => image.base64), stream: false, format: responseFormat(request.responseKind, integerScore) }),
       signal: AbortSignal.timeout(timeoutMs),
     });
   } catch {
     return fail('local Ollama request failed before a response was received');
   }
   if (!response.ok) fail(`local Ollama request failed with HTTP ${response.status}`);
-  const outcome = parseLocalVisionResponse(request.responseKind, await readBoundedResponse(response, maximumResponseBytes));
+  const outcome = parseLocalVisionResponse(request.responseKind, await readBoundedResponse(response, maximumResponseBytes), integerScore);
   if (outcome.kind === 'scalar') {
     if (request.minimumScore !== undefined && outcome.score < request.minimumScore) fail('local scalar score was below the requested minimum');
     if (request.maximumScore !== undefined && outcome.score > request.maximumScore) fail('local scalar score was above the requested maximum');

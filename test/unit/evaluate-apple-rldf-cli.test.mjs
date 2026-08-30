@@ -101,3 +101,26 @@ test('Apple ML-RLDF rejects tampered normalized records before any local evaluat
     assert.throws(() => verifyAppleRldfPreparedRecords({ acquisitionPath: acquisition, recordsPath: records, normalizationPath: normalization, cacheDirectory: cache }), /exact normalizer output/);
   } finally { rmSync(directory, { recursive: true, force: true }); }
 });
+
+test('Apple ML-RLDF OpenRouter policy failures make no remote call and successful AB/BA calls retain usage', async () => {
+  const { createOpenRouterEvaluator, evaluateAppleRldfExamples } = await import('../../scripts/evaluate-apple-rldf.mjs');
+  const confirmation = { dataset: 'apple-rldf', provider: 'openrouter', model: 'fixture/vision', purpose: 'noncommercial-research-evaluation', confirmedBy: 'test', confirmedAt: '2026-01-01T00:00:00Z', acknowledgements: ['dataset-terms-reviewed', 'noncommercial-research-purpose-confirmed', 'provider-upload-permitted'] };
+  let calls = 0;
+  const remote = { evaluateOpenRouterVision: async request => { calls += 1; assert.equal(request.providerSlug, 'provider/vision'); return { outcome: { kind: 'pairwise', winner: 'A' }, model: 'fixture/vision', provider: 'openrouter', nativeModel: 'native-fixture', usage: { promptTokens: 3, completionTokens: 2, totalTokens: 5, cost: 0.01 }, requestConfig: { maximumOutputTokens: 16, reasoning: { effort: 'minimal', exclude: true }, providerRouting: { only: ['provider/vision'], allow_fallbacks: false, require_parameters: true, data_collection: 'deny' } } }; }, aggregateOpenRouterUsage: usages => ({ calls: usages.length }) };
+  assert.throws(() => createOpenRouterEvaluator('fixture/vision', 'provider/vision', { ...confirmation, provider: 'OpenRouter' }, remote), /canonical|provider/);
+  assert.throws(() => createOpenRouterEvaluator('fixture/vision', 'provider/vision', { ...confirmation, model: 'other/vision' }, remote), /model/);
+  assert.equal(calls, 0, 'policy rejection must happen before remote evaluator invocation');
+  const prepared = createOpenRouterEvaluator('fixture/vision', 'provider/vision', confirmation, remote);
+  const results = await evaluateAppleRldfExamples([
+    { id: 'one', imageA: 'a.png', imageB: 'b.png', description: 'one', votes: { A: 1, B: 0 } },
+    { id: 'two', imageA: 'c.png', imageB: 'd.png', description: 'two', votes: { A: 1, B: 0 } },
+  ], prepared.evaluator);
+  assert.equal(calls, 4, 'counterbalancing calls remote evaluation twice per pair');
+  assert.equal(prepared.calls.length, 4);
+  assert.deepEqual(prepared.requestConfig(), { maximumOutputTokens: 16, reasoning: { effort: 'minimal', exclude: true }, providerRouting: { only: ['provider/vision'], allow_fallbacks: false, require_parameters: true, data_collection: 'deny' } });
+  assert.deepEqual(prepared.calls.reduce((total, call) => ({ calls: total.calls + 1, tokens: total.tokens + call.usage.totalTokens, cost: total.cost + call.usage.cost }), { calls: 0, tokens: 0, cost: 0 }), { calls: 4, tokens: 20, cost: 0.04 });
+  assert.equal(results.length, 2);
+
+  const mismatched = createOpenRouterEvaluator('fixture/vision', 'provider/vision', confirmation, { ...remote, evaluateOpenRouterVision: async () => ({ outcome: { kind: 'pairwise', winner: 'A' }, model: 'other/vision', provider: 'openrouter', nativeModel: 'native-fixture', usage: { promptTokens: 1, completionTokens: 1, totalTokens: 2 }, requestConfig: { maximumOutputTokens: 16, reasoning: { effort: 'minimal', exclude: true }, providerRouting: { only: ['provider/vision'], allow_fallbacks: false, require_parameters: true, data_collection: 'deny' } } }) });
+  await assert.rejects(() => evaluateAppleRldfExamples([{ id: 'bad', imageA: 'a.png', imageB: 'b.png', description: 'bad', votes: { A: 1, B: 0 } }], mismatched.evaluator), /pairwise receipt/);
+});

@@ -33,6 +33,11 @@ const UTILS_EXPORTS = [
   'setCalibrationProfile', 'setConfig', 'spearmanCorrelation', 'validateStartup',
   'validateStartupSoft', 'warn',
 ];
+const INTERNAL_IMPROVEMENT_SUBPATHS = [
+  'improvement-transaction',
+  'improvement-replay',
+  'web-improvement-observation',
+];
 
 try {
   const tarballName = execFileSync('npm', ['pack', '--silent', '--pack-destination', scratch], {
@@ -60,6 +65,11 @@ try {
       : `${installedManifest.name}/${subpath.slice(2)}`);
   const importProgram = `for (const specifier of ${JSON.stringify(specifiers)}) { const loaded = await import(specifier); if (Object.keys(loaded).length === 0) throw new Error(specifier + ' has no exports'); }`;
   execFileSync(process.execPath, ['--input-type=module', '--eval', importProgram], {
+    cwd: consumer,
+    stdio: 'inherit',
+  });
+  const internalImprovementProgram = `const packageName = ${JSON.stringify(installedManifest.name)}; for (const subpath of ${JSON.stringify(INTERNAL_IMPROVEMENT_SUBPATHS)}) { const specifier = packageName + '/' + subpath; try { await import(specifier); } catch (error) { if (error && error.code === 'ERR_PACKAGE_PATH_NOT_EXPORTED') continue; throw new Error('Internal packed subpath failed with the wrong error: ' + specifier + ': ' + String(error)); } throw new Error('Internal packed subpath is exported: ' + specifier); }`;
+  execFileSync(process.execPath, ['--input-type=module', '--eval', internalImprovementProgram], {
     cwd: consumer,
     stdio: 'inherit',
   });

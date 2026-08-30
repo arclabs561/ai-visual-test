@@ -4,6 +4,11 @@ All notable changes to ai-visual-test will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- Internal-only reversible visual-improvement transaction primitives for an
+  adapter-owned downstream pilot. They are deliberately not exported from the
+  package or documented as a supported public API.
+
 ## [0.13.0] - 2026-08-29
 
 ### Added

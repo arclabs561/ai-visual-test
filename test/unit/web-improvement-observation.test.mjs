@@ -32,11 +32,13 @@ test('captures a stable screenshot at the caller path and hashes its returned by
     createHash('sha256').update('stable screenshot').digest('hex'),
   );
   assert.equal(observation.metadata.renderedCodeSha256, null);
-  assert.equal(observation.digest, canonicalJsonSha256({
-    screenshotSha256: observation.metadata.screenshotSha256,
-    renderedCodeSha256: null,
-  }));
-  assert.equal(observation.payload.screenshotBase64, Buffer.from('stable screenshot').toString('base64'));
+  assert.equal(observation.digest, canonicalJsonSha256(observation.payload));
+  assert.deepEqual(observation.payload.screenshot, {
+    kind: 'sha256-artifact',
+    sha256: observation.metadata.screenshotSha256,
+    byteLength: Buffer.byteLength('stable screenshot'),
+    mediaType: 'image/png',
+  });
   assert.equal(observation.payload.renderedCode, null);
   assert.equal(observation.metadata.captureStable, true);
   assert.equal(observation.metadata.captureUrl, 'https://example.test');
@@ -58,10 +60,7 @@ test('supports screenshot-only pages when rendered-code capture is disabled', as
   assert.equal(observation.payload.renderedCode, null);
   assert.equal(observation.metadata.captureAttempts, 1);
   assert.equal(observation.metadata.screenshotSha256, createHash('sha256').update('screenshot only').digest('hex'));
-  assert.equal(observation.digest, canonicalJsonSha256({
-    screenshotSha256: observation.metadata.screenshotSha256,
-    renderedCodeSha256: null,
-  }));
+  assert.equal(observation.digest, canonicalJsonSha256(observation.payload));
 });
 
 test('rejects missing rendered-code capabilities before attempting a screenshot', async () => {
@@ -103,12 +102,13 @@ test('returns fresh payload and metadata snapshots for each capture', async () =
     stability: { enabled: false },
   });
 
-  assert.equal(second.payload.screenshotBase64, Buffer.from([1, ...Buffer.from('resh snapshot')]).toString('base64'));
+  assert.equal(second.payload.screenshot.sha256, createHash('sha256').update(sourceBytes).digest('hex'));
+  assert.equal(second.payload.screenshot.byteLength, sourceBytes.byteLength);
   assert.equal(second.metadata.captureViewportWidth, 1440);
   assert.equal(second.metadata.captureFullPage, false);
 });
 
-test('detaches evaluator bytes from the original capture buffer and path lifecycle', async () => {
+test('keeps caller-owned screenshot bytes and paths outside the evaluator payload', async () => {
   const sourceBytes = Buffer.from('source snapshot');
   const page = {
     async screenshot() { return sourceBytes; },
@@ -123,11 +123,54 @@ test('detaches evaluator bytes from the original capture buffer and path lifecyc
 
   sourceBytes.fill(0);
 
-  assert.equal(observation.payload.screenshotBase64, Buffer.from('source snapshot').toString('base64'));
+  assert.deepEqual(observation.payload.screenshot, {
+    kind: 'sha256-artifact',
+    sha256: screenshotSha256,
+    byteLength: Buffer.byteLength('source snapshot'),
+    mediaType: 'image/png',
+  });
   assert.equal(observation.metadata.screenshotSha256, screenshotSha256);
   assert.equal(observation.digest, digest);
   assert.equal('screenshotPath' in observation.payload, false);
   assert.equal('screenshotBytes' in observation.payload, false);
+  assert.equal(JSON.stringify(observation.payload).includes('caller-owned'), false);
+  assert.equal(JSON.stringify(observation.payload).includes('source snapshot'), false);
+});
+
+test('represents ordinary full-page images above the JSON evidence string limit without embedding pixels', async () => {
+  const image = Buffer.alloc(800 * 1024, 0x5a);
+  const observation = await captureWebImprovementObservation({
+    async screenshot() { return image; },
+  }, {
+    screenshotPath: '/caller-owned/full-page.png',
+    captureCode: false,
+    fullPage: true,
+    stability: { enabled: false },
+  });
+
+  assert.equal(image.byteLength > 750 * 1024, true);
+  assert.equal(observation.payload.screenshot.byteLength, image.byteLength);
+  assert.equal(observation.payload.screenshot.sha256, createHash('sha256').update(image).digest('hex'));
+  assert.equal(observation.payload.screenshot.mediaType, 'image/png');
+  assert.equal(JSON.stringify(observation.payload).length < 1_000_000, true);
+  assert.equal(JSON.stringify(observation.payload).includes(image.toString('base64').slice(0, 64)), false);
+});
+
+test('returns a frozen, tamper-safe artifact descriptor and rendered evidence snapshot', async () => {
+  const observation = await captureWebImprovementObservation(renderedCodePage('<main>Frozen</main>'), {
+    screenshotPath: '/caller-owned/frozen.png',
+    stability: { enabled: false, waitForFonts: false },
+  });
+  const digest = observation.digest;
+  const descriptor = observation.payload.screenshot;
+
+  assert.equal(Object.isFrozen(observation.payload), true);
+  assert.equal(Object.isFrozen(descriptor), true);
+  assert.equal(Object.isFrozen(observation.payload.renderedCode), true);
+  assert.throws(() => { descriptor.sha256 = '0'.repeat(64); }, TypeError);
+  assert.throws(() => { observation.payload.renderedCode.body.tagName = 'TAMPERED'; }, TypeError);
+  assert.equal(observation.payload.screenshot.sha256, observation.metadata.screenshotSha256);
+  assert.equal(observation.digest, digest);
 });
 
 function renderedCodePage(html) {

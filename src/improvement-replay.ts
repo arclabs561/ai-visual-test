@@ -18,8 +18,16 @@ export type Sha256 = string & { readonly __sha256: unique symbol };
 
 export interface ReplayBindingInput {
   objectiveSha256: string;
+  /** Adapter-owned fingerprint of the opaque candidate under evaluation. */
+  candidateSha256: string;
   baselineObservationSha256: string;
   candidateObservationSha256: string;
+  /** Identifier and digest for the consumer-owned evaluator evidence projection. */
+  projectionId: string;
+  projectionConfigSha256: string;
+  /** Hashes of the frozen, projected payloads actually presented to the evaluator. */
+  projectedBaselineSha256: string;
+  projectedCandidateSha256: string;
   evaluatorId: string;
   evaluatorConfigSha256: string;
   responseKind: ReplayResponseKind;
@@ -29,8 +37,13 @@ export interface ReplayBindingInput {
 export interface ReplayBinding {
   readonly version: 1;
   readonly objectiveSha256: Sha256;
+  readonly candidateSha256: Sha256;
   readonly baselineObservationSha256: Sha256;
   readonly candidateObservationSha256: Sha256;
+  readonly projectionId: string;
+  readonly projectionConfigSha256: Sha256;
+  readonly projectedBaselineSha256: Sha256;
+  readonly projectedCandidateSha256: Sha256;
   readonly evaluatorId: string;
   readonly evaluatorConfigSha256: Sha256;
   readonly responseKind: ReplayResponseKind;
@@ -218,14 +231,21 @@ export function canonicalJsonSha256(value: unknown): Sha256 {
 export function createReplayBinding(input: unknown): ReplayBinding {
   const value = objectFrom(input, 'invalid_replay_binding', 'binding');
   exactKeys(value, [
-    'objectiveSha256', 'baselineObservationSha256', 'candidateObservationSha256',
+    'objectiveSha256', 'candidateSha256', 'baselineObservationSha256',
+    'candidateObservationSha256', 'projectionId', 'projectionConfigSha256',
+    'projectedBaselineSha256', 'projectedCandidateSha256',
     'evaluatorId', 'evaluatorConfigSha256', 'responseKind',
   ], 'invalid_replay_binding', 'binding');
   const binding = {
     version: 1 as const,
     objectiveSha256: sha256(value.objectiveSha256, 'objectiveSha256', 'invalid_replay_binding'),
+    candidateSha256: sha256(value.candidateSha256, 'candidateSha256', 'invalid_replay_binding'),
     baselineObservationSha256: sha256(value.baselineObservationSha256, 'baselineObservationSha256', 'invalid_replay_binding'),
     candidateObservationSha256: sha256(value.candidateObservationSha256, 'candidateObservationSha256', 'invalid_replay_binding'),
+    projectionId: boundedString(value.projectionId, 'projectionId', MAX_IDENTIFIER_LENGTH, 'invalid_replay_binding'),
+    projectionConfigSha256: sha256(value.projectionConfigSha256, 'projectionConfigSha256', 'invalid_replay_binding'),
+    projectedBaselineSha256: sha256(value.projectedBaselineSha256, 'projectedBaselineSha256', 'invalid_replay_binding'),
+    projectedCandidateSha256: sha256(value.projectedCandidateSha256, 'projectedCandidateSha256', 'invalid_replay_binding'),
     evaluatorId: boundedString(value.evaluatorId, 'evaluatorId', MAX_IDENTIFIER_LENGTH, 'invalid_replay_binding'),
     evaluatorConfigSha256: sha256(value.evaluatorConfigSha256, 'evaluatorConfigSha256', 'invalid_replay_binding'),
     responseKind: responseKind(value.responseKind),
@@ -300,8 +320,13 @@ export function assertReplayCompatible(expected: ReplayIdentity | ReplayBinding,
   const right = bindingOf(actual);
   const fields: (keyof ReplayBindingInput)[] = [
     'objectiveSha256',
+    'candidateSha256',
     'baselineObservationSha256',
     'candidateObservationSha256',
+    'projectionId',
+    'projectionConfigSha256',
+    'projectedBaselineSha256',
+    'projectedCandidateSha256',
     'evaluatorId',
     'evaluatorConfigSha256',
     'responseKind',

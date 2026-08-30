@@ -13,6 +13,7 @@ import * as playwright from '@arclabs561/ai-visual-test/playwright';
 import * as vitest from '@arclabs561/ai-visual-test/vitest';
 import * as jest from '@arclabs561/ai-visual-test/jest';
 import * as perception from '@arclabs561/ai-visual-test/perception';
+import * as improvement from '@arclabs561/ai-visual-test/improvement';
 import { VideoJudge, judgeVideo, type VideoContext, type VideoInput, type VideoJudgeOptions } from '@arclabs561/ai-visual-test/video';
 
 const rootVideoContext: root.VideoContext = { maxTokens: 256 };
@@ -49,7 +50,62 @@ export function consumeTypedError(error: unknown): string {
 export const publicModules = {
   root, validators, temporal, multiModal, ensemble, video, extractors,
   persona, utils, game, errors, playwright, vitest, jest, perception,
+  improvement,
 };
+
+type ImprovementCandidatePayload = { readonly css: string };
+type ImprovementHandle = { readonly previousCss: string; readonly nextCss: string };
+
+const improvementAdapter: improvement.ImprovementAdapter<ImprovementCandidatePayload, ImprovementHandle> = {
+  async prepare(candidate) {
+    return {
+      handle: { previousCss: '', nextCss: candidate.payload.css },
+      candidateSha256: improvement.canonicalJsonSha256(candidate.payload),
+    };
+  },
+  async apply() {},
+  async verify() { return [{ id: 'layout-stable', passed: true }]; },
+  async rollback() {},
+};
+const improvementObserver: improvement.ImprovementObserver<{ readonly screenshot: string }> = {
+  async capture() { return { payload: { screenshot: 'sha256-bound-artifact' } }; },
+};
+type ImprovementEvidence = { readonly screenshot: string };
+const improvementProjector: improvement.ImprovementEvidenceProjector<
+  ImprovementEvidence,
+  ImprovementEvidence
+> = {
+  id: 'typed-projector',
+  configSha256: improvement.canonicalJsonSha256({ version: 1 }),
+  async project(observation) { return observation.payload; },
+};
+const improvementEvaluator: improvement.ImprovementEvaluator<ImprovementEvidence> = {
+  async compare() { return { winner: 'tie', execution: { id: crypto.randomUUID() } }; },
+};
+const improvementInput: improvement.ImprovementReviewInput<
+  { readonly screenshot: string },
+  ImprovementCandidatePayload,
+  ImprovementHandle,
+  ImprovementEvidence
+> = {
+  objective: { id: 'typed-objective', description: 'Keep the primary action visible.' },
+  candidate: { id: 'typed-candidate', payload: { css: '--accent: blue' } },
+  adapter: improvementAdapter,
+  observer: improvementObserver,
+  projector: improvementProjector,
+  evaluator: improvementEvaluator,
+  evaluation: {
+    id: 'typed-evaluator',
+    configSha256: improvement.canonicalJsonSha256({ model: 'typed' }),
+    variant: {
+      kind: 'direct',
+      promptVersion: 'typed-v1',
+      promptSha256: improvement.canonicalJsonSha256('typed prompt'),
+    },
+  },
+};
+export const typedImprovementReview: Promise<improvement.ImprovementReceipt> =
+  improvement.runImprovementReview(improvementInput);
 
 export function consumeTypedUtils(value: unknown): string {
   if (utils.isString(value)) return value.toUpperCase();

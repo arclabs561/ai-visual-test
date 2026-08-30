@@ -18,17 +18,18 @@ export type Sha256 = string & { readonly __sha256: unique symbol };
 
 export interface ReplayBindingInput {
   objectiveSha256: string;
-  /** Adapter-owned fingerprint of the opaque candidate under evaluation. */
+  /** Adapter attestation over the opaque candidate sealed for evaluation. */
   candidateSha256: string;
   baselineObservationSha256: string;
   candidateObservationSha256: string;
-  /** Identifier and digest for the consumer-owned evaluator evidence projection. */
+  /** Identifier and consumer-attested digest for the evaluator evidence projection. */
   projectionId: string;
   projectionConfigSha256: string;
   /** Hashes of the frozen, projected payloads actually presented to the evaluator. */
   projectedBaselineSha256: string;
   projectedCandidateSha256: string;
   evaluatorId: string;
+  /** Consumer attestation over evaluator configuration. */
   evaluatorConfigSha256: string;
   responseKind: ReplayResponseKind;
 }

@@ -17,6 +17,7 @@ GEMINI_API_KEY=your-key
 | Add Playwright matchers | `playwright-setup.mjs` or `use-case-3-playwright-integration.mjs` |
 | Add Vitest/Jest matchers | `vitest-matchers.mjs` |
 | Review a video | `video-critique.mjs path/to/video.webm` |
+| Wire a reversible improvement review | `improvement-review.mjs` |
 
 Run the examples other than the two optimization examples with Node:
 

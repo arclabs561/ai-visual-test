@@ -68,6 +68,34 @@ For Playwright, call `createMatchers(expect)` once in test setup, then use
 screenshot options through `screenshot`, or set `keepScreenshot: true` when
 you need to inspect it.
 
+## Improve a downstream UI
+
+`@arclabs561/ai-visual-test/improvement` reviews one caller-owned candidate
+against a captured baseline. Your project supplies the reversible adapter,
+deterministic gates, evidence projection, and evaluator:
+
+```js
+import { runImprovementReview } from '@arclabs561/ai-visual-test/improvement';
+
+const receipt = await runImprovementReview({
+  objective, candidate, adapter, observer, projector, evaluator, evaluation,
+});
+```
+
+After an apply attempt, the transaction invokes rollback and requires a fresh
+observation matching the baseline. A rollback failure throws and may require
+project-owned recovery. A preferred candidate returns `review-required`; the
+kernel never accepts or reapplies it.
+
+The adapter, observer, projector, and evaluator are trusted in-process
+callbacks; this API does not sandbox them or choose a model provider. Replay
+identities combine kernel-derived evidence hashes with caller-attested
+candidate, projector, prompt-variant, and evaluator-configuration hashes. They
+support controlled comparisons only when those attestations are trustworthy.
+See the
+[complete example](https://github.com/arclabs561/ai-visual-test/blob/main/examples/improvement-review.mjs)
+for the full contract.
+
 ## CLI
 
 ```bash

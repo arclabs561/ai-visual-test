@@ -73,7 +73,7 @@ copyTestAssets(join(ROOT, 'test'), join(STAGE, 'test'));
 
 const packageJson = JSON.parse(readFileSync(join(STAGE, 'package.json'), 'utf8'));
 packageJson.private = true;
-for (const subpath of ['.', './validators', './temporal', './multi-modal', './ensemble', './game', './perception', './video', './extractors', './errors', './persona', './utils', './playwright', './vitest', './jest']) {
+for (const subpath of ['.', './validators', './temporal', './multi-modal', './ensemble', './game', './perception', './video', './extractors', './errors', './persona', './utils', './playwright', './vitest', './jest', './improvement']) {
   const route = packageJson.exports?.[subpath];
   if (!route || typeof route !== 'object') {
     throw new Error(`Missing staged package route: ${subpath}`);
@@ -116,6 +116,9 @@ for (const subpath of ['.', './validators', './temporal', './multi-modal', './en
   } else if (subpath === './utils') {
     route.import = './src/utils/index.js';
     route.types = './src/utils/index.d.ts';
+  } else if (subpath === './improvement') {
+    route.import = './src/improvement/index.js';
+    route.types = './src/improvement/index.d.ts';
   } else {
     const integration = subpath === './playwright' ? 'playwright' : 'vitest-jest';
     route.import = `./src/integrations/${integration}.js`;

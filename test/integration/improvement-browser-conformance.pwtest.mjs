@@ -242,9 +242,9 @@ test('browser reference adapter is reversible and control-sensitive', async ({ p
       evaluation,
     });
     expect(noop.status).toBe('rejected');
-    expect(noop.reason).toBe('tie');
-    expect(noopCalls).toHaveLength(2);
-    expect(noopProjectionCalls).toHaveLength(2);
+    expect(noop.reason).toBe('no-observable-change');
+    expect(noopCalls).toHaveLength(0);
+    expect(noopProjectionCalls).toHaveLength(0);
     expect(noop.rollback.digest).toBe(noop.baseline.digest);
     expect(await page.evaluate(() => window.__primaryActionInvocations)).toBe(0);
 

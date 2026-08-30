@@ -151,6 +151,11 @@ type ReceiptDecision =
   | { readonly status: 'rejected'; readonly reason: 'constraint-failed' }
   | {
     readonly status: 'rejected';
+    readonly reason: 'no-observable-change';
+    readonly candidateObservation: ReceiptObservation;
+  }
+  | {
+    readonly status: 'rejected';
     readonly reason: 'baseline-preferred' | 'tie';
     readonly candidateObservation: ReceiptObservation;
     readonly comparison: ReceiptComparison;
@@ -579,52 +584,61 @@ export async function runImprovementReview<ObservationPayload, CandidatePayload,
       } catch (cause) {
         throw asTransactionError('capture-candidate', cause);
       }
-      let projectedBaseline: JsonEvidence;
-      let projectedCandidate: JsonEvidence;
-      try {
-        projectedBaseline = snapshotEvidence(await input.projector.project(blindEvidence(baseline)));
-        projectedCandidate = snapshotEvidence(await input.projector.project(blindEvidence(after)));
-      } catch (cause) {
-        throw asTransactionError('project-evidence', cause);
-      }
-      const projectedBaselineSha256 = evidenceDigest(projectedBaseline);
-      const projectedCandidateSha256 = evidenceDigest(projectedCandidate);
-      const evaluationReceipt = receiptEvaluation(
-        evaluation, projector, objective, prepared.candidateSha256, baseline, after,
-        projectedBaselineSha256, projectedCandidateSha256,
-      );
-      base = receiptBase(objective, baseline, evaluationReceipt, gates, candidateInput, prepared.candidateSha256);
-      let comparison: ReceiptComparison;
-      try {
-        const original = parseBlindComparison(await input.evaluator.compare({
-          objective,
-          a: Object.freeze({ payload: projectedBaseline }),
-          b: Object.freeze({ payload: projectedCandidate }),
-        }));
-        const reversed = parseBlindComparison(await input.evaluator.compare({
-          objective,
-          a: Object.freeze({ payload: projectedCandidate }),
-          b: Object.freeze({ payload: projectedBaseline }),
-        }));
-        if (original.execution.id === reversed.execution.id) {
-          throw new Error('counterbalanced comparisons require distinct execution ids');
-        }
-        comparison = comparisonFromBlindResults(original, reversed);
-      } catch (cause) {
-        throw asTransactionError('evaluate', cause);
-      }
       const candidateObservation = receiptObservation(after);
-      if (comparison.winner === 'candidate') {
-        decision = { status: 'review-required', reason: 'candidate-preferred', candidateObservation, comparison };
-      } else if (comparison.winner === 'conflict') {
-        decision = { status: 'indeterminate', reason: 'comparison-conflict', candidateObservation, comparison };
+      if (after.digest === baseline.digest) {
+        base = receiptBase(objective, baseline, receiptEvaluationConfig(evaluation, projector), gates, candidateInput, prepared.candidateSha256);
+        decision = { status: 'rejected', reason: 'no-observable-change', candidateObservation };
       } else {
-        decision = {
-          status: 'rejected',
-          reason: comparison.winner === 'baseline' ? 'baseline-preferred' : 'tie',
-          candidateObservation,
-          comparison,
-        };
+        let projectedBaseline: JsonEvidence;
+        let projectedCandidate: JsonEvidence;
+        try {
+          projectedBaseline = snapshotEvidence(await input.projector.project(blindEvidence(baseline)));
+          projectedCandidate = snapshotEvidence(await input.projector.project(blindEvidence(after)));
+        } catch (cause) {
+          throw asTransactionError('project-evidence', cause);
+        }
+        const projectedBaselineSha256 = evidenceDigest(projectedBaseline);
+        const projectedCandidateSha256 = evidenceDigest(projectedCandidate);
+        const evaluationReceipt = receiptEvaluation(
+          evaluation, projector, objective, prepared.candidateSha256, baseline, after,
+          projectedBaselineSha256, projectedCandidateSha256,
+        );
+        base = receiptBase(objective, baseline, evaluationReceipt, gates, candidateInput, prepared.candidateSha256);
+        if (projectedBaselineSha256 === projectedCandidateSha256) {
+          decision = { status: 'rejected', reason: 'no-observable-change', candidateObservation };
+        } else {
+          let comparison: ReceiptComparison;
+          try {
+            const original = parseBlindComparison(await input.evaluator.compare({
+              objective,
+              a: Object.freeze({ payload: projectedBaseline }),
+              b: Object.freeze({ payload: projectedCandidate }),
+            }));
+            const reversed = parseBlindComparison(await input.evaluator.compare({
+              objective,
+              a: Object.freeze({ payload: projectedCandidate }),
+              b: Object.freeze({ payload: projectedBaseline }),
+            }));
+            if (original.execution.id === reversed.execution.id) {
+              throw new Error('counterbalanced comparisons require distinct execution ids');
+            }
+            comparison = comparisonFromBlindResults(original, reversed);
+          } catch (cause) {
+            throw asTransactionError('evaluate', cause);
+          }
+          if (comparison.winner === 'candidate') {
+            decision = { status: 'review-required', reason: 'candidate-preferred', candidateObservation, comparison };
+          } else if (comparison.winner === 'conflict') {
+            decision = { status: 'indeterminate', reason: 'comparison-conflict', candidateObservation, comparison };
+          } else {
+            decision = {
+              status: 'rejected',
+              reason: comparison.winner === 'baseline' ? 'baseline-preferred' : 'tie',
+              candidateObservation,
+              comparison,
+            };
+          }
+        }
       }
     }
   } catch (cause) {

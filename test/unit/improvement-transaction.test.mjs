@@ -20,7 +20,7 @@ function createHarness(options = {}) {
   };
   const after = {
     digest: options.candidateDigest ?? hash('3'), metadata: options.candidateMetadata ?? { viewport: '1280x720' },
-    payload: { pixels: 'candidate-private' },
+    payload: options.candidatePayload ?? { pixels: 'candidate-private' },
   };
   const handle = { revertToken: 'private-handle' };
   const observer = {
@@ -211,6 +211,26 @@ describe('runImprovementReview', () => {
     assert.deepEqual(harness.events.filter(event => event.startsWith('project:')), [
       'project:baseline-private', 'project:candidate-private',
     ]);
+  });
+
+  it('rejects unchanged observation or projected evidence without evaluator access', async () => {
+    const unchangedObservation = createHarness({
+      candidatePayload: { pixels: 'baseline-private' },
+    });
+    const observationReceipt = await runImprovementReview({ objective, candidate, ...unchangedObservation });
+    assert.equal(observationReceipt.status, 'rejected');
+    assert.equal(observationReceipt.reason, 'no-observable-change');
+    assert.equal(unchangedObservation.events.some(event => event.startsWith('project:')), false);
+    assert.equal(unchangedObservation.events.some(event => event.startsWith('evaluate:')), false);
+
+    const unchangedProjection = createHarness({
+      project() { return { same: true }; },
+    });
+    const projectionReceipt = await runImprovementReview({ objective, candidate, ...unchangedProjection });
+    assert.equal(projectionReceipt.status, 'rejected');
+    assert.equal(projectionReceipt.reason, 'no-observable-change');
+    assert.equal(unchangedProjection.events.filter(event => event.startsWith('project:')).length, 2);
+    assert.equal(unchangedProjection.events.some(event => event.startsWith('evaluate:')), false);
   });
 
   it('seals candidate identity during prepare so apply has no caller-payload channel', async () => {

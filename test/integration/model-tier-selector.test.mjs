@@ -147,7 +147,7 @@ describe('Model Tier Selector', () => {
     it('should preserve the supplied environment for provider selection', () => {
       const result = selectModelTierAndProvider({
         requirements: {
-          env: { OPENAI_API_KEY: 'synthetic-openai-key' }
+          env: { OPENAI_API_KEY: 'test-key' }
         }
       });
 

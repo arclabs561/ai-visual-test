@@ -9,7 +9,11 @@
 import { createHash } from 'node:crypto';
 import { ValidationError } from './errors.js';
 import { canonicalJsonSha256 } from './improvement-replay.js';
-import type { ImprovementMetadata, ImprovementObservation } from './improvement-transaction.js';
+import type {
+  ImprovementArtifactReference,
+  ImprovementMetadata,
+  ImprovementObservation,
+} from './improvement-transaction.js';
 import { extractRenderedCode, type RenderedCode } from './multi-modal.js';
 import { captureStableScreenshot } from './stable-capture.mjs';
 
@@ -69,9 +73,14 @@ export interface WebObservationCaptureMetadata {
 export type NormalizedRenderedCode = Omit<RenderedCode, 'timestamp' | 'url'>;
 
 export interface WebImprovementObservationPayload {
-  /** Immutable image snapshot whose content is bound by metadata.screenshotSha256. */
-  readonly screenshotBase64: string;
-  renderedCode: NormalizedRenderedCode | null;
+  /**
+   * Content-addressed image held by the caller's evidence store.
+   *
+   * The transaction/evaluator receives this descriptor only. Resolving the
+   * digest to pixels is a separate, explicitly-authorized egress decision.
+   */
+  readonly screenshot: ImprovementArtifactReference;
+  readonly renderedCode: NormalizedRenderedCode | null;
 }
 
 export interface WebImprovementObservation extends ImprovementObservation<WebImprovementObservationPayload> {
@@ -164,7 +173,33 @@ function receiptMetadata(
 function normalizeRenderedCode(renderedCode: RenderedCode): NormalizedRenderedCode {
   const snapshot = structuredClone(renderedCode);
   const { timestamp: _timestamp, url: _url, ...normalized } = snapshot;
-  return normalized;
+  return freezeNested(normalized);
+}
+
+/** Freeze a detached rendered-code snapshot without retaining page-owned data. */
+function freezeNested<T>(value: T): T {
+  const seen = new WeakSet<object>();
+  const visit = (node: unknown): void => {
+    if (node === null || typeof node !== 'object' || seen.has(node)) return;
+    seen.add(node);
+    for (const child of Object.values(node)) visit(child);
+    Object.freeze(node);
+  };
+  visit(value);
+  return value;
+}
+
+function screenshotMediaType(options: WebImprovementObservationOptions): string {
+  const requestedType = options.screenshot?.type;
+  if (requestedType === undefined) {
+    const extension = options.screenshotPath.match(/\.([A-Za-z0-9]+)$/)?.[1]?.toLowerCase();
+    return extension === 'jpg' || extension === 'jpeg' ? 'image/jpeg' : 'image/png';
+  }
+  if (requestedType === 'png') return 'image/png';
+  if (requestedType === 'jpeg') return 'image/jpeg';
+  throw new ValidationError('captureWebImprovementObservation only supports png or jpeg screenshot artifacts', {
+    screenshotType: typeof requestedType === 'string' ? requestedType : typeof requestedType,
+  });
 }
 
 function assertPageCapabilities(page: unknown, captureCode: boolean): asserts page is RenderedCodePage {
@@ -215,14 +250,20 @@ export async function captureWebImprovementObservation(
     : null;
   const captureMetadata = snapshotMetadata(capture.metadata);
   const screenshotSha256 = createHash('sha256').update(capture.buffer).digest('hex');
+  const screenshot = Object.freeze({
+    kind: 'sha256-artifact' as const,
+    sha256: screenshotSha256,
+    byteLength: capture.buffer.byteLength,
+    mediaType: screenshotMediaType(options),
+  }) satisfies ImprovementArtifactReference;
   const renderedCodeSha256 = renderedCode === null ? null : canonicalJsonSha256(renderedCode);
+  const payload = Object.freeze({ screenshot, renderedCode });
 
   return {
-    digest: canonicalJsonSha256({ screenshotSha256, renderedCodeSha256 }),
+    // Match the transaction's canonical frozen-payload identity. The separate
+    // code hash remains receipt metadata for concise diagnostics.
+    digest: canonicalJsonSha256(payload),
     metadata: receiptMetadata(captureMetadata, screenshotSha256, renderedCodeSha256),
-    payload: {
-      screenshotBase64: Buffer.from(capture.buffer).toString('base64'),
-      renderedCode,
-    },
+    payload,
   };
 }

@@ -386,7 +386,10 @@ function writeAll(descriptor: number, bytes: Uint8Array): void {
   }
 }
 
-/** Atomically create a new mode-0600 cache artifact. Existing artifacts are never replaced. */
+/**
+ * Atomically create a mode-0600 cache artifact. An existing byte-identical
+ * artifact is reused; a conflicting artifact is never replaced.
+ */
 export function writeVerifiedCacheArtifact(
   cacheDirectory: string,
   relativePath: string,
@@ -406,7 +409,12 @@ export function writeVerifiedCacheArtifact(
     linkSync(temporary, destination);
   } catch (error) {
     const nodeError = error as NodeJS.ErrnoException;
-    if (nodeError.code === 'EEXIST') fail(`refusing to overwrite existing cache artifact: ${relativePath}`);
+    if (nodeError.code === 'EEXIST') {
+      const existing = verifyCachedArtifact(root, relativePath);
+      const expectedSha256 = createHash('sha256').update(bytes).digest('hex');
+      if (existing.bytes === bytes.byteLength && existing.sha256 === expectedSha256) return existing;
+      fail(`refusing to overwrite existing cache artifact: ${relativePath}`);
+    }
     if (error instanceof DatasetAcquisitionBoundaryError) throw error;
     fail('could not atomically write cache artifact');
   } finally {

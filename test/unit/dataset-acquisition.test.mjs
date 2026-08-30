@@ -130,7 +130,7 @@ test('rejects traversal and platform-specific artifact paths', () => {
   assert.equal(safeCacheRelativePath('images/row-01/before.png'), 'images/row-01/before.png');
 });
 
-test('uses a private ignored-evaluation cache and atomically refuses overwrite', () => {
+test('uses a private ignored-evaluation cache and reuses only identical artifacts', () => {
   const root = mkdtempSync(join(tmpdir(), 'dataset-boundary-'));
   try {
     const cache = createOperatorCacheDirectory({ cacheDirectory: join(root, 'evaluation', 'cache', 'uicrit'), repositoryRoot: root });
@@ -138,6 +138,7 @@ test('uses a private ignored-evaluation cache and atomically refuses overwrite',
     const receipt = writeVerifiedCacheArtifact(cache, 'rows/pinned.json', Buffer.from('pinned'));
     assert.equal(lstatSync(join(cache, 'rows', 'pinned.json')).mode & 0o777, 0o600);
     assert.equal(verifyCachedArtifact(cache, 'rows/pinned.json').sha256, receipt.sha256);
+    assert.deepEqual(writeVerifiedCacheArtifact(cache, 'rows/pinned.json', Buffer.from('pinned')), receipt);
     assert.throws(() => writeVerifiedCacheArtifact(cache, 'rows/pinned.json', Buffer.from('changed')), /refusing to overwrite/);
     assert.throws(
       () => createOperatorCacheDirectory({ cacheDirectory: join(root, 'fixtures', 'uicrit'), repositoryRoot: root }),

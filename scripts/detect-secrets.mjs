@@ -270,6 +270,15 @@ const TRACKED_SCAN_EXCLUDE_PATTERNS = [
   /LICENSE$/,
 ];
 
+// Narrow repository-known false positives for whole-tree release scans. Keep
+// these exact enough that nearby credential-shaped values are still detected.
+const TRACKED_SCAN_ALLOWED_PATTERNS = [
+  /dataset-interfaces-gui/,
+  /process\.env\.HF_TOKEN/,
+  /acceptsSourceToken/,
+  /https:\/\/user:pass@openrouter\.ai\/api\/v1\/chat\/completions/,
+];
+
 // Patterns that are allowed (false positives)
 const ALLOWED_PATTERNS = [
   /['"]test[_-]?key['"]/,  // Test keys
@@ -446,6 +455,15 @@ function isAllowedMatch(match, line, filepath, secretsIgnore) {
   }
   
   return false;
+}
+
+function isConfiguredAllowedLine(line, secretsIgnore) {
+  return secretsIgnore.patterns.some(pattern => pattern.test(line));
+}
+
+function isTrackedAllowedLine(line, secretsIgnore) {
+  return isConfiguredAllowedLine(line, secretsIgnore)
+    || TRACKED_SCAN_ALLOWED_PATTERNS.some(pattern => pattern.test(line));
 }
 
 function isTrackedPlaceholder(value) {
@@ -730,7 +748,10 @@ function detectSecretsInFileContent(
         const matches = [...line.matchAll(globalPattern)];
         
         matches.forEach(match => {
-          if (applyAllowlist && isAllowedMatch(match, line, filepath, secretsIgnore)) {
+          const isAllowed = applyAllowlist
+            ? isAllowedMatch(match, line, filepath, secretsIgnore)
+            : isTrackedAllowedLine(line, secretsIgnore);
+          if (isAllowed) {
             return;
           }
           

@@ -85,3 +85,33 @@ test('tracked release scan ignores ordinary templates and rejects credential JSO
     rmSync(fixture, { recursive: true, force: true });
   }
 });
+
+test('tracked release scan honors configured line exclusions without broad allowlists', () => {
+  const fixture = mkdtempSync(join(tmpdir(), 'ai-visual-secrets-ignore-'));
+
+  try {
+    execFileSync('git', ['init', '--quiet'], { cwd: fixture });
+    writeFileSync(join(fixture, '.secretsignore'), 'pattern: process\\.env\\.HF_TOKEN\n');
+    writeFileSync(join(fixture, 'allowed.mjs'), 'const token = process.env.HF_TOKEN;\n');
+    execFileSync('git', ['add', '--all'], { cwd: fixture });
+
+    const allowed = spawnSync(process.execPath, [scanner, '--tracked'], {
+      cwd: fixture,
+      encoding: 'utf8',
+    });
+    assert.equal(allowed.status, 0, allowed.stderr);
+
+    const credential = `ghp_${'a'.repeat(36)}`;
+    writeFileSync(join(fixture, 'exposed.mjs'), `const value = ${JSON.stringify(credential)};\n`);
+    execFileSync('git', ['add', 'exposed.mjs'], { cwd: fixture });
+
+    const exposed = spawnSync(process.execPath, [scanner, '--tracked'], {
+      cwd: fixture,
+      encoding: 'utf8',
+    });
+    assert.notEqual(exposed.status, 0);
+    assert.match(exposed.stderr, /GitHub Personal Access Token/);
+  } finally {
+    rmSync(fixture, { recursive: true, force: true });
+  }
+});

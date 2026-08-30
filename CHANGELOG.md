@@ -4,6 +4,8 @@ All notable changes to ai-visual-test will be documented in this file.
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-08-30
+
 ### Added
 - Review-only reversible visual-improvement transactions and replay identities
   through `./improvement`.

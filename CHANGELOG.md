@@ -9,6 +9,10 @@ All notable changes to ai-visual-test will be documented in this file.
   adapter-owned downstream pilot. They are deliberately not exported from the
   package or documented as a supported public API.
 
+### Fixed
+- Unchanged observations and equivalent projected evidence are rejected before
+  model evaluation instead of allowing a judge to invent a preference.
+
 ## [0.13.0] - 2026-08-29
 
 ### Added

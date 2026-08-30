@@ -21,6 +21,9 @@ describe('external dataset registry', () => {
         'vibe-landing-page-arena': 'preference',
         'apple-rldf': 'preference',
         'uiclip-betterapp': 'preference',
+        'dataset-interfaces-gui': 'critique',
+        'ui-vision': 'grounding',
+        'screenspot-pro': 'grounding',
       },
     );
   });
@@ -50,6 +53,17 @@ describe('external dataset registry', () => {
       createDatasetProvenance('vibe-design-arena', 'f3a759c5f5b38f3ddfa12c5d8765432101234567').revision,
       'f3a759c5f5b38f3ddfa12c5d8765432101234567',
     );
+    assert.equal(createDatasetProvenance('dataset-interfaces-gui', '1').revision, '1');
+    for (const revision of ['0', '01', '2', 'main', 'v1', '1.0']) {
+      assert.throws(() => createDatasetProvenance('dataset-interfaces-gui', revision), DatasetRegistryError);
+    }
+    for (const key of ['ui-vision', 'screenspot-pro']) {
+      assert.equal(
+        createDatasetProvenance(key, 'f3a759c5f5b38f3ddfa12c5d8765432101234567').revision,
+        'f3a759c5f5b38f3ddfa12c5d8765432101234567',
+      );
+      assert.throws(() => createDatasetProvenance(key, 'main'), DatasetRegistryError);
+    }
   });
 
   it('fails closed when pixel redistribution is unresolved or restricted', () => {
@@ -76,6 +90,23 @@ describe('external dataset registry', () => {
       () => assertDatasetProviderUpload('uiclip-betterapp', { provider: 'example-provider', model: 'example-model' }),
       /licence remains unknown/,
     );
+  });
+
+  it('permits pixel bundling and provider preflight for the public permissive corpora', () => {
+    for (const key of ['dataset-interfaces-gui', 'ui-vision', 'screenspot-pro']) {
+      assert.equal(assertDatasetUsage(key, 'bundle-pixels').pixelPolicy, 'allowed');
+      assert.deepEqual(
+        preflightDatasetProviderUpload(key, { provider: ' Anthropic ', model: 'claude-sonnet-4-5' }),
+        {
+          key,
+          dataset: DATASET_REGISTRY[key].dataset,
+          provider: 'claude',
+          model: 'claude-sonnet-4-5',
+          policy: 'allowed',
+          rightsGrant: false,
+        },
+      );
+    }
   });
 
   it('requires and retains operator confirmations without treating them as rights grants', () => {

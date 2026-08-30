@@ -1,17 +1,36 @@
 import assert from 'node:assert/strict';
 import { spawn, spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { createServer } from 'node:http';
 import { chmodSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { gzipSync } from 'node:zlib';
 
-import { evaluateExistingUICritRun, evaluateUICritRecords, parseBoundedCsv, UICritEvaluationError } from '../../scripts/evaluate-uicrit.mjs';
+import { assertOfficialRicoArchivePin, evaluateExistingUICritRun, evaluateLocalModelUICritRun, evaluateUICritRecords, parseBoundedCsv, UICritEvaluationError } from '../../scripts/evaluate-uicrit.mjs';
 
 const record = Object.freeze({ id: 'uicrit:123', screenshotRef: { id: '123' } });
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const evaluator = resolve(repositoryRoot, 'scripts/evaluate-uicrit.mjs');
+
+function tarEntry(name, bytes, type = '0') {
+  const header = Buffer.alloc(512);
+  header.write(name, 0, 'utf8');
+  header.write('0000644\0', 100, 'ascii');
+  header.write('0000000\0', 108, 'ascii'); header.write('0000000\0', 116, 'ascii');
+  header.write(`${bytes.length.toString(8).padStart(11, '0')}\0`, 124, 'ascii');
+  header.write('00000000000\0', 136, 'ascii'); header.fill(32, 148, 156); header[156] = type.charCodeAt(0);
+  header.write('ustar\0', 257, 'ascii'); header.write('00', 263, 'ascii');
+  const checksum = header.reduce((sum, value) => sum + value, 0);
+  header.write(`${checksum.toString(8).padStart(6, '0')}\0 `, 148, 'ascii');
+  const padding = Buffer.alloc((512 - (bytes.length % 512)) % 512);
+  return Buffer.concat([header, bytes, padding]);
+}
+
+function ricoArchive(entries) { return gzipSync(Buffer.concat([...entries, Buffer.alloc(1024)])); }
+function jsonHash(value) { return createHash('sha256').update(`${JSON.stringify(value, null, 2)}\n`).digest('hex'); }
 
 function run(argumentsList, environment = {}) {
   return new Promise((resolveRun, reject) => {
@@ -42,15 +61,28 @@ test('parses quoted UICrit CSV fields without evaluating annotation content', ()
   assert.throws(() => parseBoundedCsv(Buffer.from('a,b\n1,"unterminated')), UICritEvaluationError);
 });
 
+test('rejects a RICO archive whose locally observed acquisition pin does not match', () => {
+  assert.throws(
+    () => assertOfficialRicoArchivePin({ path: 'source/rico-unique_uis.tar.gz', bytes: 1, sha256: '0'.repeat(64) }),
+    /independently observed acquisition pin/,
+  );
+});
+
 test('fetch-only accepts only the test loopback CSV and records annotation-only evidence', async () => {
   const directory = mkdtempSync(join(tmpdir(), 'uicrit-cli-'));
   const rows = [
     'rico_id,task,aesthetics_rating,learnability,efficency,usability_rating,design_quality_rating,comments_source,comments',
     ...[1, 2, 3].map(index => `123,Checkout,6,3,3,6,6,"['human']","[""comment ${index}""]"`),
   ].join('\r\n');
+  // Mirrors the real RICO layout: a trailing-slash directory plus JPEGs below it.
+  const archive = ricoArchive([
+    tarEntry('combined/', Buffer.alloc(0), '5'),
+    tarEntry('combined/123.jpg', Buffer.from('ffd8ff', 'hex')),
+  ]);
   const server = createServer((request, response) => {
-    assert.equal(request.url, '/uicrit_public.csv');
-    response.setHeader('content-type', 'text/csv'); response.end(rows);
+    if (request.url === '/uicrit_public.csv') { response.setHeader('content-type', 'text/csv'); response.end(rows); return; }
+    assert.equal(request.url, '/unique_uis.tar.gz');
+    response.setHeader('content-type', 'application/gzip'); response.setHeader('content-length', archive.length); response.end(archive);
   });
   await new Promise(resolveListen => server.listen(0, '127.0.0.1', resolveListen));
   try {
@@ -152,6 +184,76 @@ test('fetch-only accepts only the test loopback CSV and records annotation-only 
     const invalidBlocked = JSON.parse(readFileSync(join(invalidPixelsOutput, invalidRun, 'uicrit-acquisition-v1.json'), 'utf8'));
     assert.equal(invalidBlocked.status, 'blocked');
     assert.equal(invalidBlocked.blockedReason, 'unavailable: UICrit local RICO pixels could not be acquired');
+
+    const downloaded = await run(['--fetch-only', '--limit', '1', '--download-rico', '--cache-dir', join(directory, 'download-cache'), '--output-dir', join(directory, 'download-out')], {
+      AI_VISUAL_TEST_UICRIT_CSV_URL: `http://127.0.0.1:${server.address().port}/uicrit_public.csv`,
+      AI_VISUAL_TEST_RICO_ARCHIVE_URL: `http://127.0.0.1:${server.address().port}/unique_uis.tar.gz`,
+    });
+    assert.equal(downloaded.status, 0, downloaded.stderr);
+    const downloadedReceipt = JSON.parse(downloaded.stdout);
+    assert.equal(downloadedReceipt.pixels, 'cached');
+    const downloadedAcquisition = JSON.parse(readFileSync(join(downloadedReceipt.outputDirectory, 'uicrit-acquisition-v1.json'), 'utf8'));
+    assert.equal(downloadedAcquisition.ricoArchive.sourceUrl, `http://127.0.0.1:${server.address().port}/unique_uis.tar.gz`);
+    assert.equal(downloadedAcquisition.ricoArchive.cacheArtifact.bytes, archive.length);
+    assert.ok(readFileSync(join(directory, 'download-cache', 'rico', '123.jpg')).subarray(0, 3).equals(Buffer.from('ffd8ff', 'hex')));
+    const localResults = join(directory, 'local-results.json');
+    writeFileSync(localResults, JSON.stringify({ results: [{ id: 'uicrit:123', scores: { aesthetics: 10, learnability: 5, efficiency: 5, usability: 10, 'design-quality': 10 } }] }), { mode: 0o600 });
+    const localEvaluation = await run(['--evaluate-local', downloadedReceipt.outputDirectory, '--local-results', localResults, '--cache-dir', join(directory, 'download-cache'), '--output-dir', join(directory, 'local-eval')]);
+    assert.equal(localEvaluation.status, 0, localEvaluation.stderr);
+    assert.equal(JSON.parse(localEvaluation.stdout).mode, 'local-evaluated');
+    const localCalls = [];
+    const localModelEvaluation = await evaluateLocalModelUICritRun({
+      existingOutputDirectory: downloadedReceipt.outputDirectory, cacheDirectory: join(directory, 'download-cache'), outputParentDirectory: join(directory, 'local-model-eval'), model: 'fixture-local-model',
+      evaluate: async request => {
+        localCalls.push(request);
+        return { kind: 'scalar', score: /1 through 5/.test(request.prompt) ? 5 : 10 };
+      },
+    });
+    assert.equal(localModelEvaluation.selected, 1);
+    assert.equal(localCalls.length, 5);
+    assert.ok(localCalls.every(call => call.imagePaths.length === 1 && call.responseKind === 'scalar' && call.model === 'fixture-local-model'));
+    assert.ok(localCalls.every(call => call.prompt.includes('Respond exactly as JSON')));
+
+    // A coordinated receipt edit must not be able to replace the human scores:
+    // restore all self-hashes, then prove the cached source CSV still wins.
+    const examplesPath = join(downloadedReceipt.outputDirectory, 'uicrit-examples-v2.json');
+    const baselineExamples = JSON.parse(readFileSync(examplesPath, 'utf8'));
+    const changedRatings = structuredClone(baselineExamples);
+    changedRatings.selection.normalizedRows[0].ratings.aesthetics = 1;
+    changedRatings.splits[0].examples[0].ratings.aesthetics = 1;
+    changedRatings.selection.normalizedRowsSha256 = jsonHash(changedRatings.selection.normalizedRows);
+    writeFileSync(examplesPath, `${JSON.stringify(changedRatings)}\n`, { mode: 0o600 });
+    let coordinatedRatingCalls = 0;
+    await assert.rejects(evaluateExistingUICritRun({
+      existingOutputDirectory: downloadedReceipt.outputDirectory, cacheDirectory: join(directory, 'download-cache'), outputParentDirectory: join(directory, 'coordinated-ratings'), confirmation: JSON.parse(readFileSync(confirmation, 'utf8')),
+      validate: async () => { coordinatedRatingCalls += 1; return { enabled: true, provider: 'openrouter', model: 'fixture-model', score: 10 }; },
+    }), /does not match the verified source CSV/);
+    assert.equal(coordinatedRatingCalls, 0);
+    writeFileSync(examplesPath, `${JSON.stringify(baselineExamples)}\n`, { mode: 0o600 });
+
+    // Valid but wrong cached pixels must not be swappable between numeric RICO IDs.
+    const acquisitionPath = join(downloadedReceipt.outputDirectory, 'uicrit-acquisition-v1.json');
+    const pixelsPath = join(downloadedReceipt.outputDirectory, 'uicrit-pixels-v1.json');
+    const alteredAcquisition = JSON.parse(readFileSync(acquisitionPath, 'utf8'));
+    const alteredExamples = JSON.parse(readFileSync(examplesPath, 'utf8'));
+    const alteredPixels = JSON.parse(readFileSync(pixelsPath, 'utf8'));
+    const wrongPixel = Buffer.from('ffd8ff', 'hex');
+    writeFileSync(join(directory, 'download-cache', 'rico', '999.jpg'), wrongPixel, { mode: 0o600 });
+    const wrongArtifact = { path: 'rico/999.jpg', bytes: wrongPixel.length, sha256: createHash('sha256').update(wrongPixel).digest('hex') };
+    alteredAcquisition.artifacts = alteredAcquisition.artifacts.map(artifact => artifact.path === 'rico/123.jpg' ? wrongArtifact : artifact);
+    alteredExamples.acquisition = alteredAcquisition;
+    alteredExamples.selection.acquisitionSha256 = jsonHash(alteredAcquisition);
+    alteredPixels.acquisitionSha256 = alteredExamples.selection.acquisitionSha256;
+    alteredPixels.pixels[0].artifact = wrongArtifact;
+    writeFileSync(acquisitionPath, `${JSON.stringify(alteredAcquisition)}\n`, { mode: 0o600 });
+    writeFileSync(examplesPath, `${JSON.stringify(alteredExamples)}\n`, { mode: 0o600 });
+    writeFileSync(pixelsPath, `${JSON.stringify(alteredPixels)}\n`, { mode: 0o600 });
+    let swappedPixelCalls = 0;
+    await assert.rejects(evaluateExistingUICritRun({
+      existingOutputDirectory: downloadedReceipt.outputDirectory, cacheDirectory: join(directory, 'download-cache'), outputParentDirectory: join(directory, 'swapped-pixel'), confirmation: JSON.parse(readFileSync(confirmation, 'utf8')),
+      validate: async () => { swappedPixelCalls += 1; return { enabled: true, provider: 'openrouter', model: 'fixture-model', score: 10 }; },
+    }), /did not bind the record RICO ID/);
+    assert.equal(swappedPixelCalls, 0);
   } finally {
     await new Promise(resolveClose => server.close(resolveClose));
     rmSync(directory, { recursive: true, force: true });

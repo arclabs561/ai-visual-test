@@ -6,7 +6,10 @@ export type DatasetKey =
   | 'vibe-design-arena'
   | 'vibe-landing-page-arena'
   | 'apple-rldf'
-  | 'uiclip-betterapp';
+  | 'uiclip-betterapp'
+  | 'dataset-interfaces-gui'
+  | 'ui-vision'
+  | 'screenspot-pro';
 
 export type RedistributionPolicy = 'allowed' | 'external-only' | 'unknown';
 
@@ -72,7 +75,7 @@ export interface DatasetDescriptor {
   access: 'public' | 'gated';
   pixelPolicy: RedistributionPolicy;
   providerUploadPolicy: ProviderUploadPolicy;
-  track: 'preference' | 'regression' | 'critique';
+  track: 'preference' | 'regression' | 'critique' | 'grounding';
   note: string;
 }
 
@@ -156,20 +159,60 @@ export const DATASET_REGISTRY: Readonly<Record<DatasetKey, DatasetDescriptor>> =
     track: 'preference',
     note: 'Do not redistribute or use as a release gate until the publisher states dataset terms.',
   }),
+  'dataset-interfaces-gui': Object.freeze({
+    key: 'dataset-interfaces-gui',
+    dataset: 'Mendeley Data/Dataset-interfaces-GUI',
+    sourceUrl: 'https://data.mendeley.com/datasets/t9m2z2by4c/1',
+    license: 'CC-BY-4.0',
+    redistribution: 'allowed',
+    access: 'public',
+    pixelPolicy: 'allowed',
+    providerUploadPolicy: 'allowed',
+    track: 'critique',
+    note: 'Expert UI/UX ratings for full-page interface screenshots.',
+  }),
+  'ui-vision': Object.freeze({
+    key: 'ui-vision',
+    dataset: 'ServiceNow/ui-vision',
+    sourceUrl: 'https://huggingface.co/datasets/ServiceNow/ui-vision',
+    license: 'MIT',
+    redistribution: 'allowed',
+    access: 'public',
+    pixelPolicy: 'allowed',
+    providerUploadPolicy: 'allowed',
+    track: 'grounding',
+    note: 'Annotated interface screenshots for visual grounding and layout evaluation.',
+  }),
+  'screenspot-pro': Object.freeze({
+    key: 'screenspot-pro',
+    dataset: 'likaixin/ScreenSpot-Pro',
+    sourceUrl: 'https://huggingface.co/datasets/likaixin/ScreenSpot-Pro',
+    license: 'MIT',
+    redistribution: 'allowed',
+    access: 'public',
+    pixelPolicy: 'allowed',
+    providerUploadPolicy: 'allowed',
+    track: 'grounding',
+    note: 'Professional-application screenshots with grounding annotations.',
+  }),
 });
 
 /**
- * The registry deliberately accepts only commit object IDs, never a ref name.
- * GitHub and the Hugging Face dataset repositories used here are Git-backed;
- * a full 40-hex SHA pins both source families to an immutable tree commit.
+ * GitHub and Hugging Face dataset repositories are Git-backed, so a full
+ * 40-hex SHA pins them to an immutable tree commit. Mendeley Data publishes
+ * immutable numbered dataset versions; a bare positive version is accepted
+ * only for that source family, never as a mutable label or ref.
  */
-const IMMUTABLE_REVISION_RULES: Readonly<Record<DatasetKey, { source: 'GitHub' | 'Hugging Face'; pattern: RegExp }>> = {
+const IMMUTABLE_REVISION_RULES: Readonly<Record<DatasetKey, { source: 'GitHub' | 'Hugging Face' | 'Mendeley Data'; pattern: RegExp }>> = {
   diffspot: { source: 'Hugging Face', pattern: /^[0-9a-f]{40}$/i },
   uicrit: { source: 'GitHub', pattern: /^[0-9a-f]{40}$/i },
   'vibe-design-arena': { source: 'Hugging Face', pattern: /^[0-9a-f]{40}$/i },
   'vibe-landing-page-arena': { source: 'Hugging Face', pattern: /^[0-9a-f]{40}$/i },
   'apple-rldf': { source: 'GitHub', pattern: /^[0-9a-f]{40}$/i },
   'uiclip-betterapp': { source: 'Hugging Face', pattern: /^[0-9a-f]{40}$/i },
+  'dataset-interfaces-gui': { source: 'Mendeley Data', pattern: /^1$/ },
+  'ui-vision': { source: 'Hugging Face', pattern: /^[0-9a-f]{40}$/i },
+  'screenspot-pro': { source: 'Hugging Face', pattern: /^[0-9a-f]{40}$/i },
 };
 
 export function getDatasetDescriptor(key: DatasetKey): DatasetDescriptor {
@@ -183,8 +226,11 @@ export function createDatasetProvenance(
   const revision = revisionValue.trim();
   const rule = IMMUTABLE_REVISION_RULES[key];
   if (!rule.pattern.test(revision)) {
+    const requirement = rule.source === 'Mendeley Data'
+      ? 'the immutable published Mendeley Data version 1'
+      : `a 40-character hexadecimal ${rule.source} commit SHA`;
     throw new DatasetRegistryError(
-      `dataset revision for ${key} must be a 40-character hexadecimal ${rule.source} commit SHA; mutable refs and labels are not accepted`,
+      `dataset revision for ${key} must be ${requirement}; mutable refs and labels are not accepted`,
     );
   }
   const descriptor = getDatasetDescriptor(key);

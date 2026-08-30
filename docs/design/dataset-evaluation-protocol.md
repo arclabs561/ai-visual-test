@@ -1,5 +1,5 @@
 ---
-status: proposal
+status: active
 scope: screenshot-review evaluation data
 grounded-in:
   - test/fixtures/pairwise/README.md
@@ -112,7 +112,9 @@ AI_VISUAL_TEST_LIVE=1 npm run evaluate:vibe -- --dataset design \
 ```
 
 `evaluate:dataset` independently scores compatible examples/results documents
-supplied by the operator.
+supplied by the operator. `evaluate:pairwise-fixtures` validates and scores an
+operator-supplied counterbalanced fixture manifest and result set; it does not
+acquire data or call a provider.
 
 ## Current evidence
 
@@ -121,6 +123,11 @@ On 2026-08-29, the tracked runner fetched four examples from DiffSpot revision
 no-change controls. Eight image artifacts were downloaded and hashed outside
 Git. The production counterbalanced comparison path ran with OpenRouter and
 `google/gemini-2.5-flash-lite`.
+
+The UICrit runner also fetched and normalized four annotation-only examples at
+its pinned revision. No RICO pixels were acquired and no provider call was
+made. Both Vibe sources produced explicit blocked receipts because gated
+authentication was unavailable; the tool did not accept terms or fetch data.
 
 This smoke run found both no-change controls and missed both changed examples:
 

@@ -4,8 +4,8 @@
  * This module intentionally accepts only already-downloaded records. The
  * publisher has not stated a dataset license or redistribution terms, so
  * BetterApp material remains external-only operationally and is never valid
- * release-gate evidence. Its one good/bad designation is a single
- * expert-derived label, not a human-vote distribution.
+ * release-gate evidence. Its one good/bad designation is a label from one
+ * human designer, not a human-vote distribution.
  */
 
 import {
@@ -54,7 +54,7 @@ export interface BetterAppPreferenceExample {
   votes: { A: 0 | 1; B: 0 | 1 };
   winner: BetterAppPosition;
   evidence: {
-    strength: 'single-expert-derived-label';
+    strength: 'one-human-designer-label';
     voteDistribution: 'unavailable';
     releaseGateEligible: false;
   };
@@ -170,7 +170,7 @@ export function normalizeBetterAppRow(
     votes: goodAtA ? { A: 1, B: 0 } : { A: 0, B: 1 },
     winner: position,
     evidence: {
-      strength: 'single-expert-derived-label',
+      strength: 'one-human-designer-label',
       voteDistribution: 'unavailable',
       releaseGateEligible: false,
     },

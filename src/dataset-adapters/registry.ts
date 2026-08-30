@@ -1,3 +1,5 @@
+import { PROVIDER_NAMES, canonicalizeProviderName } from '../provider-data.mjs';
+
 export type DatasetKey =
   | 'diffspot'
   | 'uicrit'
@@ -7,6 +9,51 @@ export type DatasetKey =
   | 'uiclip-betterapp';
 
 export type RedistributionPolicy = 'allowed' | 'external-only' | 'unknown';
+
+/** Whether source pixels may be sent to a third-party model provider. */
+export type ProviderUploadPolicy =
+  | 'allowed'
+  | 'requires-local-pixel-manifest'
+  | 'requires-gated-terms-confirmation'
+  | 'denied-noncommercial-external-only'
+  | 'denied-license-unknown';
+
+export type ProviderUploadAcknowledgement =
+  | 'local-pixel-rights-manifest-reviewed'
+  | 'gated-dataset-terms-accepted'
+  | 'provider-upload-permitted';
+
+/**
+ * An operator-supplied record for an upload decision. It is evidence of an
+ * operator's confirmation, not a licence grant or legal determination.
+ */
+export interface ProviderUploadConfirmation {
+  provider: string;
+  model: string;
+  confirmedBy: string;
+  confirmedAt: string;
+  acknowledgements: readonly ProviderUploadAcknowledgement[];
+  /** A local, non-Git reference to the separately obtained pixel-rights record. */
+  localPixelManifest?: string;
+}
+
+export interface ProviderUploadRequest {
+  provider: string;
+  model: string;
+  confirmation?: ProviderUploadConfirmation;
+}
+
+/** A validated record a runner can store with its ignored evaluation receipt. */
+export interface ProviderUploadDecision {
+  key: DatasetKey;
+  dataset: string;
+  provider: string;
+  model: string;
+  policy: ProviderUploadPolicy;
+  confirmation?: ProviderUploadConfirmation;
+  /** Confirmation records an operator statement; it does not itself grant rights. */
+  rightsGrant: false;
+}
 
 export interface ExternalDatasetProvenance {
   dataset: string;
@@ -24,6 +71,7 @@ export interface DatasetDescriptor {
   redistribution: RedistributionPolicy;
   access: 'public' | 'gated';
   pixelPolicy: RedistributionPolicy;
+  providerUploadPolicy: ProviderUploadPolicy;
   track: 'preference' | 'regression' | 'critique';
   note: string;
 }
@@ -44,6 +92,7 @@ export const DATASET_REGISTRY: Readonly<Record<DatasetKey, DatasetDescriptor>> =
     redistribution: 'allowed',
     access: 'public',
     pixelPolicy: 'allowed',
+    providerUploadPolicy: 'allowed',
     track: 'regression',
     note: 'Synthetic CSS mutations and no-difference controls; not a human preference label.',
   }),
@@ -55,6 +104,7 @@ export const DATASET_REGISTRY: Readonly<Record<DatasetKey, DatasetDescriptor>> =
     redistribution: 'allowed',
     access: 'public',
     pixelPolicy: 'unknown',
+    providerUploadPolicy: 'requires-local-pixel-manifest',
     track: 'critique',
     note: 'The public CSV references RICO IDs; its annotation license does not establish pixel redistribution rights.',
   }),
@@ -66,6 +116,7 @@ export const DATASET_REGISTRY: Readonly<Record<DatasetKey, DatasetDescriptor>> =
     redistribution: 'allowed',
     access: 'gated',
     pixelPolicy: 'allowed',
+    providerUploadPolicy: 'requires-gated-terms-confirmation',
     track: 'preference',
     note: 'Access requires accepting the dataset host conditions; the library never accepts them for the operator.',
   }),
@@ -77,6 +128,7 @@ export const DATASET_REGISTRY: Readonly<Record<DatasetKey, DatasetDescriptor>> =
     redistribution: 'allowed',
     access: 'gated',
     pixelPolicy: 'allowed',
+    providerUploadPolicy: 'requires-gated-terms-confirmation',
     track: 'preference',
     note: 'Access requires accepting the dataset host conditions; the library never accepts them for the operator.',
   }),
@@ -88,6 +140,7 @@ export const DATASET_REGISTRY: Readonly<Record<DatasetKey, DatasetDescriptor>> =
     redistribution: 'external-only',
     access: 'public',
     pixelPolicy: 'external-only',
+    providerUploadPolicy: 'denied-noncommercial-external-only',
     track: 'preference',
     note: 'Keep outside distributable and commercial fixture bundles; no adapted material may be shared.',
   }),
@@ -99,6 +152,7 @@ export const DATASET_REGISTRY: Readonly<Record<DatasetKey, DatasetDescriptor>> =
     redistribution: 'unknown',
     access: 'public',
     pixelPolicy: 'unknown',
+    providerUploadPolicy: 'denied-license-unknown',
     track: 'preference',
     note: 'Do not redistribute or use as a release gate until the publisher states dataset terms.',
   }),
@@ -154,4 +208,239 @@ export function assertDatasetUsage(
     );
   }
   return descriptor;
+}
+
+function nonEmptyConfirmationText(value: string, field: string): void {
+  if (value.trim().length === 0) {
+    throw new DatasetRegistryError(`provider upload confirmation.${field} must be non-empty`);
+  }
+}
+
+type UnknownRecord = Record<string, unknown>;
+
+const PROVIDER_UPLOAD_ACKNOWLEDGEMENTS = new Set<ProviderUploadAcknowledgement>([
+  'local-pixel-rights-manifest-reviewed',
+  'gated-dataset-terms-accepted',
+  'provider-upload-permitted',
+]);
+
+const KNOWN_PROVIDER_NAMES = new Set<string>(PROVIDER_NAMES);
+
+const RFC3339_UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/;
+
+function record(value: unknown, field: string): UnknownRecord {
+  if (value === null || typeof value !== 'object' || Array.isArray(value)) {
+    throw new DatasetRegistryError(`provider upload ${field} must be an object`);
+  }
+  return value as UnknownRecord;
+}
+
+function exactFields(value: UnknownRecord, field: string, fields: readonly string[]): void {
+  const allowed = new Set(fields);
+  const unknown = Object.keys(value).filter(key => !allowed.has(key));
+  if (unknown.length > 0) {
+    throw new DatasetRegistryError(`provider upload ${field} has unknown fields: ${unknown.join(', ')}`);
+  }
+}
+
+function requiredText(value: unknown, field: string): string {
+  if (typeof value !== 'string') {
+    throw new DatasetRegistryError(`provider upload confirmation.${field} must be a string`);
+  }
+  nonEmptyConfirmationText(value, field);
+  return value.trim();
+}
+
+function utcTimestamp(value: unknown): string {
+  const timestamp = requiredText(value, 'confirmedAt');
+  if (!RFC3339_UTC.test(timestamp) || Number.isNaN(Date.parse(timestamp))) {
+    throw new DatasetRegistryError('provider upload confirmation.confirmedAt must be an RFC3339 UTC timestamp');
+  }
+  const parsed = new Date(timestamp).toISOString();
+  if (parsed.slice(0, 19) !== timestamp.slice(0, 19)) {
+    throw new DatasetRegistryError('provider upload confirmation.confirmedAt must be an RFC3339 UTC timestamp');
+  }
+  return timestamp;
+}
+
+function acknowledgements(value: unknown): readonly ProviderUploadAcknowledgement[] {
+  if (!Array.isArray(value)) {
+    throw new DatasetRegistryError('provider upload confirmation.acknowledgements must be an array');
+  }
+  const seen = new Set<ProviderUploadAcknowledgement>();
+  for (const acknowledgement of value) {
+    if (!PROVIDER_UPLOAD_ACKNOWLEDGEMENTS.has(acknowledgement as ProviderUploadAcknowledgement)) {
+      throw new DatasetRegistryError('provider upload confirmation.acknowledgements contains an unknown value');
+    }
+    const typedAcknowledgement = acknowledgement as ProviderUploadAcknowledgement;
+    if (seen.has(typedAcknowledgement)) {
+      throw new DatasetRegistryError('provider upload confirmation.acknowledgements must not contain duplicates');
+    }
+    seen.add(typedAcknowledgement);
+  }
+  return [...seen];
+}
+
+function localPixelManifest(value: unknown): string {
+  const manifest = requiredText(value, 'localPixelManifest');
+  if (/^[a-z][a-z0-9+.-]*:\/\//i.test(manifest)) {
+    throw new DatasetRegistryError('provider upload confirmation.localPixelManifest must be a local reference');
+  }
+  return manifest;
+}
+
+function parseProviderUploadRequest(value: unknown): ProviderUploadRequest {
+  const candidate = record(value, 'request');
+  exactFields(candidate, 'request', ['provider', 'model', 'confirmation']);
+  const provider = requiredText(candidate.provider, 'request.provider');
+  const model = requiredText(candidate.model, 'request.model');
+  if (candidate.confirmation === undefined) return { provider, model };
+
+  const confirmation = record(candidate.confirmation, 'confirmation');
+  exactFields(confirmation, 'confirmation', [
+    'provider', 'model', 'confirmedBy', 'confirmedAt', 'acknowledgements', 'localPixelManifest',
+  ]);
+  const parsed: ProviderUploadConfirmation = {
+    provider: requiredText(confirmation.provider, 'provider'),
+    model: requiredText(confirmation.model, 'model'),
+    confirmedBy: requiredText(confirmation.confirmedBy, 'confirmedBy'),
+    confirmedAt: utcTimestamp(confirmation.confirmedAt),
+    acknowledgements: acknowledgements(confirmation.acknowledgements),
+  };
+  if (confirmation.localPixelManifest !== undefined) {
+    parsed.localPixelManifest = localPixelManifest(confirmation.localPixelManifest);
+  }
+  return { provider, model, confirmation: parsed };
+}
+
+function validateProviderUploadConfirmation(
+  confirmation: ProviderUploadConfirmation,
+  requiredAcknowledgements: readonly ProviderUploadAcknowledgement[],
+  requiresLocalManifest: boolean,
+): void {
+  const acknowledgements = new Set(confirmation.acknowledgements);
+  for (const acknowledgement of requiredAcknowledgements) {
+    if (!acknowledgements.has(acknowledgement)) {
+      throw new DatasetRegistryError(
+        `provider upload confirmation must acknowledge ${acknowledgement}`,
+      );
+    }
+  }
+  if (requiresLocalManifest) {
+    if (confirmation.localPixelManifest === undefined || confirmation.localPixelManifest.trim().length === 0) {
+      throw new DatasetRegistryError(
+        'provider upload confirmation must record a non-empty localPixelManifest',
+      );
+    }
+  }
+}
+
+/**
+ * Fail closed before a runner transmits dataset pixels to a model provider.
+ * A supplied confirmation is only retained as an operator-provided receipt;
+ * callers remain responsible for obtaining any needed rights or terms.
+ */
+export function assertDatasetProviderUpload(
+  key: DatasetKey,
+  request: unknown,
+): ProviderUploadDecision {
+  const descriptor = getDatasetDescriptor(key);
+  const parsedRequest = parseProviderUploadRequest(request);
+
+  switch (descriptor.providerUploadPolicy) {
+    case 'allowed':
+      break;
+    case 'requires-local-pixel-manifest':
+      if (parsedRequest.confirmation === undefined) {
+        throw new DatasetRegistryError(
+          `${descriptor.dataset} provider upload requires an operator confirmation and separately authorized local pixel manifest`,
+        );
+      }
+      validateProviderUploadConfirmation(
+        parsedRequest.confirmation,
+        ['local-pixel-rights-manifest-reviewed', 'provider-upload-permitted'],
+        true,
+      );
+      break;
+    case 'requires-gated-terms-confirmation':
+      if (parsedRequest.confirmation === undefined) {
+        throw new DatasetRegistryError(
+          `${descriptor.dataset} provider upload requires an operator confirmation of gated terms and provider upload permission`,
+        );
+      }
+      validateProviderUploadConfirmation(
+        parsedRequest.confirmation,
+        ['gated-dataset-terms-accepted', 'provider-upload-permitted'],
+        false,
+      );
+      break;
+    case 'denied-noncommercial-external-only':
+      throw new DatasetRegistryError(
+        `${descriptor.dataset} provider upload is denied: the corpus is noncommercial and external-only`,
+      );
+    case 'denied-license-unknown':
+      throw new DatasetRegistryError(
+        `${descriptor.dataset} provider upload is denied while its licence remains unknown`,
+      );
+  }
+
+  if (
+    parsedRequest.confirmation !== undefined
+    && (
+      parsedRequest.confirmation.provider !== parsedRequest.provider
+      || parsedRequest.confirmation.model !== parsedRequest.model
+    )
+  ) {
+    throw new DatasetRegistryError(
+      'provider upload confirmation provider and model must match the request',
+    );
+  }
+
+  return parsedRequest.confirmation === undefined
+    ? {
+      key,
+      dataset: descriptor.dataset,
+      provider: parsedRequest.provider,
+      model: parsedRequest.model,
+      policy: descriptor.providerUploadPolicy,
+      rightsGrant: false,
+    }
+    : {
+      key,
+      dataset: descriptor.dataset,
+      provider: parsedRequest.provider,
+      model: parsedRequest.model,
+      policy: descriptor.providerUploadPolicy,
+      confirmation: parsedRequest.confirmation,
+      rightsGrant: false,
+    };
+}
+
+/**
+ * No-network gate for runners to invoke immediately before an evaluator call.
+ * It canonicalizes the selected provider, rejects unknown providers, and
+ * requires any recorded confirmation to name that exact canonical provider.
+ * Neither this function nor its return value reads or exposes credentials.
+ */
+export function preflightDatasetProviderUpload(
+  key: DatasetKey,
+  request: unknown,
+): ProviderUploadDecision {
+  const parsedRequest = parseProviderUploadRequest(request);
+  const canonicalProvider = canonicalizeProviderName(parsedRequest.provider);
+  if (typeof canonicalProvider !== 'string' || !KNOWN_PROVIDER_NAMES.has(canonicalProvider)) {
+    throw new DatasetRegistryError(`provider upload request.provider is not supported: ${parsedRequest.provider}`);
+  }
+  if (
+    parsedRequest.confirmation !== undefined
+    && parsedRequest.confirmation.provider !== canonicalProvider
+  ) {
+    throw new DatasetRegistryError(
+      'provider upload confirmation.provider must use the canonical selected provider name',
+    );
+  }
+  return assertDatasetProviderUpload(key, {
+    ...parsedRequest,
+    provider: canonicalProvider,
+  });
 }

@@ -23,7 +23,22 @@ npm run build:stage
 node --test build/test/integration/judge.test.mjs
 ```
 
-Dataset and pairwise evaluation inputs are intentionally not committed. See
-[`fixtures/pairwise/README.md`](fixtures/pairwise/README.md) for the offline
-pairwise protocol. `npm run evaluate:diffspot -- --fetch-only --limit 4`
-downloads a bounded, revision-pinned sample into ignored storage.
+Dataset pixels, normalized rows, results, and upload confirmations are
+intentionally not committed; `evaluation/` is ignored. Acquisition never
+imports provider code, and live evaluation consumes a prior local receipt.
+See [`fixtures/pairwise/README.md`](fixtures/pairwise/README.md) for the
+offline pairwise protocol.
+
+```bash
+npm run evaluate:diffspot -- --fetch-only --limit 4
+npm run evaluate:uicrit -- --fetch-only --limit 5
+# requires HF_TOKEN in the environment
+npm run evaluate:vibe -- --dataset design --fetch-only --limit 5
+```
+
+UICrit's public annotations alone do not authorize RICO pixel upload: live
+evaluation needs separately authorized local pixels and a private confirmation
+of the exact provider/model. Both Vibe datasets are gated; current local access
+is unavailable (401), and the runner never accepts terms automatically. See
+[`../docs/design/dataset-evaluation-protocol.md`](../docs/design/dataset-evaluation-protocol.md)
+for the split acquisition/evaluation commands and dataset restrictions.

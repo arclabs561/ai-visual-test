@@ -23,22 +23,37 @@ npm run build:stage
 node --test build/test/integration/judge.test.mjs
 ```
 
-Dataset pixels, normalized rows, results, and upload confirmations are
-intentionally not committed; `evaluation/` is ignored. Acquisition never
-imports provider code, and live evaluation consumes a prior local receipt.
-See [`fixtures/pairwise/README.md`](fixtures/pairwise/README.md) for the
-offline pairwise protocol.
+Dataset pixels, normalized rows, results, and confirmations are intentionally
+not committed: `evaluation/` is ignored. Acquisition never imports provider
+code, and evaluation consumes a prior local receipt. The public dataset command
+surface is deliberately local-first: pixel-bearing UICrit/RICO, UI-Vision,
+ScreenSpot-Pro, BetterApp, and Apple ML-RLDF runs use loopback Ollama where a
+model is required. BetterApp is license-unknown and Apple ML-RLDF is
+non-commercial, so neither is a release-gate corpus.
 
 ```bash
+# regression
 npm run evaluate:diffspot -- --fetch-only --limit 4
+
+# public critique annotations; add --download-rico for selected local images
 npm run evaluate:uicrit -- --fetch-only --limit 5
-# requires HF_TOKEN in the environment
-npm run evaluate:vibe -- --dataset design --fetch-only --limit 5
+
+# public images with label-free local characterization
+npm run evaluate:gui-aesthetics -- --fetch-only --limit 36
+
+# anonymous public grounding data
+npm run evaluate:grounding -- --dataset ui-vision --fetch-only --limit 20
+npm run evaluate:grounding -- --dataset screenspot-pro --fetch-only --limit 20
+
+# local-only exploratory preference data
+npm run evaluate:betterapp -- --fetch-only --limit 20
+npm run evaluate:apple-rldf -- --fetch-only
 ```
 
-UICrit's public annotations alone do not authorize RICO pixel upload: live
-evaluation needs separately authorized local pixels and a private confirmation
-of the exact provider/model. Both Vibe datasets are gated; current local access
-is unavailable (401), and the runner never accepts terms automatically. See
+Dataset-interfaces-GUI has no publisher-provided machine-readable
+high/medium/low mapping, so it can be characterized locally but cannot produce
+an accuracy claim without an operator-owned private label manifest. Gated Vibe
+datasets are intentionally not exposed as runnable commands. See
 [`../docs/design/dataset-evaluation-protocol.md`](../docs/design/dataset-evaluation-protocol.md)
-for the split acquisition/evaluation commands and dataset restrictions.
+for the complete acquire, normalize, and local-evaluation flows. Current local
+runs are small smoke checks, not benchmark claims.

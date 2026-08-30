@@ -6,7 +6,7 @@ import {
   lstatSync,
   mkdirSync,
   openSync,
-  readFileSync,
+  readSync,
   realpathSync,
   statSync,
   unlinkSync,
@@ -434,10 +434,23 @@ export function verifyCachedArtifact(cacheDirectory: string, relativePath: strin
   if (entry.isSymbolicLink() || !entry.isFile()) fail('cache artifact must be a regular non-symlink file');
   const realArtifact = realpathSync(destination);
   if (!contained(root, realArtifact)) fail('cache artifact resolved outside the operator cache directory');
-  const bytes = readFileSync(destination);
+  const hash = createHash('sha256');
+  const buffer = Buffer.allocUnsafe(1024 * 1024);
+  const descriptor = openSync(destination, 'r');
+  let bytes = 0;
+  try {
+    while (true) {
+      const count = readSync(descriptor, buffer, 0, buffer.byteLength, null);
+      if (count === 0) break;
+      bytes += count;
+      hash.update(buffer.subarray(0, count));
+    }
+  } finally {
+    closeSync(descriptor);
+  }
   return {
     path: safeCacheRelativePath(relativePath),
-    bytes: bytes.byteLength,
-    sha256: createHash('sha256').update(bytes).digest('hex'),
+    bytes,
+    sha256: hash.digest('hex'),
   };
 }

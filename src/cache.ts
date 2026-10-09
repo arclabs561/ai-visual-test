@@ -305,6 +305,30 @@ function loadCache(): CacheMap {
 }
 
 /**
+ * Keep the entries that fit in `maxBytes`. `entries` is sorted least recently
+ * accessed first; the result keeps that order.
+ */
+export function selectEntriesToPersist<T>(
+  entries: T[],
+  maxBytes: number,
+  sizeOf: (entry: T) => number,
+): T[] {
+  // Fill the budget from the most recently accessed end, so the size cap
+  // evicts the least recently used entries like the count cap does.
+  const kept: T[] = [];
+  let totalSize = 0;
+  for (let i = entries.length - 1; i >= 0; i--) {
+    const size = sizeOf(entries[i]!);
+    if (totalSize + size > maxBytes) {
+      break; // Stop adding entries if we exceed size limit
+    }
+    kept.push(entries[i]!);
+    totalSize += size;
+  }
+  return kept.reverse();
+}
+
+/**
  * Save cache to file with size limits and race condition protection
  *
  * Uses async mutex to prevent concurrent writes and atomic file operations
@@ -320,7 +344,6 @@ async function saveCache(cache: CacheMap): Promise<void> {
   try {
     const cacheData: Record<string, SerializedCacheEntry> = {};
     const now = Date.now();
-    let totalSize = 0;
 
     // BUG FIX (2025-01): Don't reset timestamps on save!
     //
@@ -384,20 +407,17 @@ async function saveCache(cache: CacheMap): Promise<void> {
         });
     }
 
-    for (const { key, value, timestamp } of entriesToKeep) {
-      const entry = {
-        data: value,
-        timestamp // Original timestamp preserved for expiration
-      };
-      const entrySize = JSON.stringify(entry).length;
-
-      // Check total size limit
-      if (totalSize + entrySize > MAX_CACHE_SIZE_BYTES) {
-        break; // Stop adding entries if we exceed size limit
-      }
-
+    const serialized = entriesToKeep.map(({ key, value, timestamp }) => ({
+      key,
+      // Original timestamp preserved for expiration
+      entry: { data: value, timestamp },
+    }));
+    for (const { key, entry } of selectEntriesToPersist(
+      serialized,
+      MAX_CACHE_SIZE_BYTES,
+      ({ entry }) => JSON.stringify(entry).length,
+    )) {
       cacheData[key] = entry;
-      totalSize += entrySize;
     }
 
     // Update in-memory cache to match saved entries

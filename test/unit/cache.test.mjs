@@ -519,3 +519,15 @@ test('cache - text and vision caches share same file but different keys', async 
   assert.notStrictEqual(visionCached.score, textCached, 
     'Vision and text should have different values (different cache entries)');
 });
+
+test('size cap evicts least recently accessed entries, not the newest', async () => {
+  const { selectEntriesToPersist } = await import('../../src/cache.js');
+  // Sorted least recently accessed first, as saveCache passes them.
+  const entries = [
+    { key: 'oldest', size: 10 },
+    { key: 'middle', size: 10 },
+    { key: 'newest', size: 10 },
+  ];
+  const kept = selectEntriesToPersist(entries, 25, e => e.size);
+  assert.deepStrictEqual(kept.map(e => e.key), ['middle', 'newest']);
+});

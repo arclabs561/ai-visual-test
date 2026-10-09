@@ -132,6 +132,15 @@ describe('Uncertainty Reducer', () => {
       assert.ok(result.consistency < 1.0); // Should detect inconsistency
     });
 
+    it('returns the majority score, not the mean (Wang et al. 2022)', async () => {
+      // Two of three samples agree on 8; the mean (6.3) is a score no sample gave.
+      const scores = [8, 3, 8];
+      let index = 0;
+      const result = await selfConsistencyCheck(async () => ({ score: scores[index++], issues: [] }), 3);
+
+      assert.strictEqual(result.score, 8);
+    });
+
     it('should respect maxCalls option', async () => {
       let callCount = 0;
       const judgeFn = async () => {

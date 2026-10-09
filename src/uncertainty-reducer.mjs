@@ -8,7 +8,7 @@
  * - Confidence calibration
  * 
  * Research: Self-consistency improves accuracy by 5-15% (arXiv:2203.11171)
- * Research: Ensemble methods reduce uncertainty (arXiv:2305.10429)
+ * Research: Deep ensembles for predictive uncertainty (Lakshminarayanan et al., arXiv:1612.01474)
  */
 
 import { detectHallucination } from './hallucination-detector.mjs';
@@ -99,10 +99,27 @@ function extractNumericValues(obj, maxDepth = 3, depth = 0) {
   return values;
 }
 
+/** Most frequent score; among tied scores, the one closest to the mean. */
+function majorityScore(scores, meanScore) {
+  const counts = new Map();
+  for (const s of scores) counts.set(s, (counts.get(s) || 0) + 1);
+  let best = scores[0];
+  for (const [s, c] of counts) {
+    const bestCount = counts.get(best);
+    if (c > bestCount || (c === bestCount && Math.abs(s - meanScore) < Math.abs(best - meanScore))) {
+      best = s;
+    }
+  }
+  return best;
+}
+
 /**
  * Self-consistency check: Multiple API calls with same prompt
- * 
- * Research: Self-consistency improves accuracy by 5-15% (arXiv:2203.11171)
+ *
+ * Returns the majority (most frequent) score across the calls, as in Wang et
+ * al.'s self-consistency (arXiv:2203.11171), with ties broken toward the
+ * mean. The judge's low default temperature and response cache can make the
+ * calls agree trivially; pass `useCache: false` in the judge for real samples.
  * 
  * @param {Function} judgeFn - Function to call judge API
  * @param {number} [n=3] - Number of calls to make
@@ -202,7 +219,8 @@ export async function selfConsistencyCheck(judgeFn, n = 3, options = {}) {
   }
 
   return {
-    score: Math.round(meanScore * 10) / 10, // Round to 1 decimal
+    score: majorityScore(scores, meanScore),
+    meanScore: Math.round(meanScore * 10) / 10, // Round to 1 decimal
     uncertainty: Math.max(0, Math.min(1, uncertainty)),
     confidence: Math.max(0, Math.min(1, confidence)),
     consistency: Math.max(0, Math.min(1, consistency)),

@@ -2,7 +2,7 @@
  * Hallucination Detection for VLLM Outputs
  * 
  * Minimal implementation for detecting when VLLM generates unfaithful outputs.
- * Research: arXiv:2506.19513, 2507.19024, 2509.10345
+ * Research: arXiv:2506.19513, 2507.19024
  * 
  * Kept minimal for npm package - focuses on core faithfulness checking.
  */

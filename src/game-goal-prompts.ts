@@ -10,7 +10,7 @@
  *   - Fast RL benchmarks, flexible tasks, multiple goals
  * - "OGBench: Benchmarking Offline Goal-Conditioned RL" (arXiv:2410.20092)
  *   - Benchmark with dynamic goal-based evaluation
- * - "Test-Time Graph Search for Goal-Conditioned Control" (arXiv:2510.07257)
+ * - "Test-Time Graph Search for Goal-Conditioned Reinforcement Learning" (arXiv:2510.07257)
  *   - Adaptive, context-aware goal fulfillment
  * 
  * This implementation provides flexible goal specification for game evaluation, supporting

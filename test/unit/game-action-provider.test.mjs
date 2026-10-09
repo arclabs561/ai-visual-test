@@ -137,3 +137,29 @@ test('transport authentication failures and timeouts are not output-contract rep
     error => error instanceof TimeoutError && error.details.failureKind !== 'output_contract',
   );
 });
+
+test('a timed-out attempt is retried with a fresh deadline', async t => {
+  const originalFetch = globalThis.fetch;
+  t.after(() => { globalThis.fetch = originalFetch; });
+  let calls = 0;
+  globalThis.fetch = (_url, init) => {
+    calls++;
+    const abortError = () => Object.assign(new Error('This operation was aborted'), { name: 'AbortError' });
+    if (init.signal?.aborted) return Promise.reject(abortError());
+    if (calls === 1) {
+      // First attempt hangs until its deadline fires, like a stalled provider.
+      return new Promise((_, reject) => {
+        init.signal.addEventListener('abort', () => reject(abortError()), { once: true });
+      });
+    }
+    return Promise.resolve(actionEnvelope({ type: 'wait', duration: 10 }));
+  };
+
+  const result = await judgeGameAction(fixtureImage(), 'Choose the next move.', actionContext({
+    enableRateLimit: false, timeout: 50, maxRetries: 1, retryBaseDelay: 0, retryMaxDelay: 0,
+  }));
+
+  assert.equal(calls, 2);
+  assert.equal(result.attempts, 2);
+  assert.equal(result.action.type, 'wait');
+});

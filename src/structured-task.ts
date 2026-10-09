@@ -42,6 +42,10 @@ export interface ExecuteStructuredTaskInput<T> {
   maxDelay: number;
   onAttempt?: (attempt: number) => void;
   onRetry?: (error: Error, attempt: number, delay: number) => void;
+  /** Deadline for each attempt, including reading the response body. A
+   * timed-out attempt is retried with a fresh deadline; `call.signal` still
+   * cancels everything. */
+  attemptTimeoutMs?: number;
 }
 
 export interface StructuredTaskExecution<T> extends ParsedProviderResponse, StructuredTaskParseResult<T> {
@@ -61,6 +65,26 @@ function diagnosticsFrom(error: unknown): string[] {
     : ['invalid_output'];
 }
 
+/** A signal that aborts after `timeoutMs` or when `outer` aborts. */
+function attemptDeadline(
+  outer: AbortSignal,
+  timeoutMs: number | undefined,
+): { signal: AbortSignal; clear: () => void } {
+  if (timeoutMs === undefined) return { signal: outer, clear: () => {} };
+  const controller = new AbortController();
+  const abort = () => controller.abort();
+  const timer = setTimeout(abort, timeoutMs);
+  if (outer.aborted) abort();
+  else outer.addEventListener('abort', abort, { once: true });
+  return {
+    signal: controller.signal,
+    clear: () => {
+      clearTimeout(timer);
+      outer.removeEventListener('abort', abort);
+    },
+  };
+}
+
 /**
  * Execute a private structured task. The caller owns prompt composition,
  * caching, deadlines, rate limits, and interpretation of the typed outcome.
@@ -76,6 +100,7 @@ export async function executeStructuredTask<T>({
   maxDelay,
   onAttempt,
   onRetry,
+  attemptTimeoutMs,
 }: ExecuteStructuredTaskInput<T>): Promise<StructuredTaskExecution<T>> {
   if (structuredOutput.name !== task.name || structuredOutput.schema !== task.schema) {
     throw new TypeError('Structured output specification does not match the task contract');
@@ -85,8 +110,16 @@ export async function executeStructuredTask<T>({
   const result = await retryWithBackoff(async () => {
     attempts++;
     onAttempt?.(attempts);
-    const response = await adapter.call({ ...call, prompt: effectivePrompt, structuredOutput });
-    const parsedResponse = await adapter.parseResponse(response);
+    const deadline = attemptDeadline(call.signal, attemptTimeoutMs);
+    let parsedResponse;
+    try {
+      const response = await adapter.call({
+        ...call, signal: deadline.signal, prompt: effectivePrompt, structuredOutput,
+      });
+      parsedResponse = await adapter.parseResponse(response);
+    } finally {
+      deadline.clear();
+    }
     try {
       const parsedTask = task.parse(parsedResponse.judgment);
       return { ...parsedResponse, ...parsedTask };

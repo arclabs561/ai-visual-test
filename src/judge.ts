@@ -331,7 +331,6 @@ export class VLLMJudge {
     const startTime = Date.now();
     const timeout = context.timeout || this.config.performance.timeout;
     const abortController = new AbortController();
-    const timeoutId = setTimeout(() => abortController.abort(), timeout);
     
     let response;
     let data;
@@ -394,7 +393,6 @@ export class VLLMJudge {
         const cached = getCached(cacheKey, fullPrompt, cacheContext);
         this._logCacheResult(cached ? 'hit' : 'miss', context, cacheKey);
         if (cached) {
-          clearTimeout(timeoutId);
           return normalizeValidationResult({ ...cached, cached: true }, 'judgeScreenshot-cache');
         }
       }
@@ -407,11 +405,10 @@ export class VLLMJudge {
         structuredOutput,
         context,
         signal: abortController.signal,
+        attemptTimeoutMs: timeout,
         onAttempt: attempt => { attempts = attempt; },
       });
       attempts = apiResult.attempts;
-
-      clearTimeout(timeoutId);
 
       judgment = apiResult.judgment;
       data = apiResult.data;
@@ -435,7 +432,6 @@ export class VLLMJudge {
 
       return normalizedResult;
     } catch (err: any) {
-      clearTimeout(timeoutId);
       error = err;
       responseTime = Date.now() - startTime;
       
@@ -1135,7 +1131,7 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
 
 /** Execute the common provider call for an image-backed structured task. */
 async function executeStructuredImageTask({
-  judge, images, prompt, task, structuredOutput, context, signal, onAttempt,
+  judge, images, prompt, task, structuredOutput, context, signal, attemptTimeoutMs, onAttempt,
 }: {
   judge: VLLMJudge;
   images: ProviderInput[];
@@ -1144,6 +1140,7 @@ async function executeStructuredImageTask({
   structuredOutput: StructuredOutputSpec;
   context: JudgeContext;
   signal: AbortSignal;
+  attemptTimeoutMs: number;
   onAttempt?: (attempt: number) => void;
 }) {
   const maxRetries = context.maxRetries ?? 3;
@@ -1159,6 +1156,7 @@ async function executeStructuredImageTask({
     task,
     structuredOutput,
     maxRetries,
+    attemptTimeoutMs,
     baseDelay: context.retryBaseDelay ?? RETRY_CONSTANTS.DEFAULT_BASE_DELAY_MS,
     maxDelay: context.retryMaxDelay ?? RETRY_CONSTANTS.DEFAULT_MAX_DELAY_MS,
     ...(onAttempt ? { onAttempt } : {}),
@@ -1203,7 +1201,6 @@ async function runGameAction(judge: VLLMJudge, imagePath: string, prompt: string
   });
   const fullPrompt = `${prompt}\n\nOUTPUT CONTRACT\nReturn only JSON matching this schema:\n${JSON.stringify(structuredOutput.schema)}`;
   const abortController = new AbortController();
-  const timeoutId = setTimeout(() => abortController.abort(), timeout);
 
   try {
     checkImageTaskRateLimit(judge, context);
@@ -1215,6 +1212,7 @@ async function runGameAction(judge: VLLMJudge, imagePath: string, prompt: string
       structuredOutput,
       context,
       signal: abortController.signal,
+      attemptTimeoutMs: timeout,
       onAttempt: attempt => { attempts = attempt; },
     });
     attempts = result.attempts;
@@ -1246,8 +1244,6 @@ async function runGameAction(judge: VLLMJudge, imagePath: string, prompt: string
     throw new ProviderError(`VLLM API call failed: ${enhancedMessage}`, judge.provider, {
       imagePath: basename(imagePath), prompt: prompt.substring(0, 100), attempts: attempts || 1, originalError: error.message,
     });
-  } finally {
-    clearTimeout(timeoutId);
   }
 }
 

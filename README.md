@@ -3,6 +3,11 @@
 Review screenshots against a natural-language expectation with a vision model.
 It returns a score, issues, recommendations, and the provider/model used.
 
+To catch any pixel change against an approved baseline, use Playwright's
+`toHaveScreenshot` or a hosted service such as Percy or Applitools; use this
+package when there is no baseline and the question is whether a page meets a
+written expectation.
+
 ## Install
 
 ```bash

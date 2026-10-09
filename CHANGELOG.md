@@ -4,6 +4,20 @@ All notable changes to ai-visual-test will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+- The published package is no longer obfuscated. `npm run build` now copies the
+  staged sources to `dist/` unchanged (`scripts/build-dist.mjs`). Earlier
+  entries below say the README documented the obfuscation; it never did.
+- `timeout` now applies to each provider attempt. One timer used to span all
+  retries, so an attempt that timed out left every retry already aborted. A
+  call can now take up to `(maxRetries + 1) * timeout` plus backoff.
+- `selfConsistencyCheck` returns the majority score (ties go to the score
+  nearest the mean) instead of the mean; the mean is in `meanScore`.
+
+### Fixed
+- The cache's byte-size cap evicted the most recently used entries; it now
+  evicts the least recently used, like the entry-count cap.
+
 ## [0.14.0] - 2026-08-30
 
 ### Added
@@ -439,7 +453,7 @@ All notable changes to ai-visual-test will be documented in this file.
 
 ### Research Alignment
 - ✅ Position counter-balancing implemented (arXiv:2508.02020)
-- ✅ Dynamic few-shot examples with semantic matching (arXiv:2503.04779)
+- ✅ Dynamic few-shot examples with semantic matching
 - ✅ Spearman correlation for rank-based metrics (arXiv:2506.02945)
 
 ## [0.3.0] - 2025-11-11

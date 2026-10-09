@@ -56,7 +56,7 @@ jobs:
       - name: Check for secrets
         run: node scripts/detect-secrets.mjs --tracked
       
-      - name: Build obfuscated package
+      - name: Build package
         run: npm run build
 
       - name: Verify publish artifact
@@ -65,7 +65,7 @@ jobs:
       - name: Publish to npm
         # OIDC trusted publishing: no NODE_AUTH_TOKEN needed if configured on npmjs.com
         # Provenance is automatically generated with OIDC (no --provenance flag needed)
-        # Publishing from dist/ directory with obfuscated code
+        # Publishing from the dist/ directory assembled by scripts/build-dist.mjs
         working-directory: dist
         run: |
           if [ "${{ github.event_name }}" = "push" ]; then

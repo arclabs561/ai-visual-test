@@ -15,7 +15,7 @@
  * - Red team tested against common bypass techniques
  */
 
-import { execSync } from 'child_process';
+import { execFileSync, execSync } from 'child_process';
 import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 
@@ -686,20 +686,20 @@ function detectSecretsInFile(filepath, secretsIgnore) {
 function scanGitHistory(secretsIgnore) {
   try {
     // Only scan last 10 commits to avoid being too slow
-    const output = execSync('git log --all --pretty=format:"%H" -10', { encoding: 'utf-8' });
+    const output = execFileSync('git', ['log', '--all', '--pretty=format:%H', '-10'], { encoding: 'utf-8' });
     const commits = output.trim().split('\n').filter(Boolean);
     
     const issues = [];
     for (const commit of commits) {
       try {
-        const diff = execSync(`git show ${commit} --name-only --pretty=format:`, { encoding: 'utf-8' });
-        const files = diff.trim().split('\n').filter(Boolean);
+        const diff = execFileSync('git', ['show', '--name-only', '--pretty=format:', '-z', commit, '--'], { encoding: 'utf-8' });
+        const files = diff.split('\0').filter(Boolean);
         
         for (const file of files) {
           if (shouldExcludeFile(file, secretsIgnore)) continue;
           
           try {
-            const content = execSync(`git show ${commit}:${file}`, { encoding: 'utf-8' });
+            const content = execFileSync('git', ['show', `${commit}:${file}`], { encoding: 'utf-8' });
             const fileIssues = detectSecretsInFileContent(content, file, secretsIgnore);
             if (fileIssues.length > 0) {
               issues.push(...fileIssues.map(issue => ({

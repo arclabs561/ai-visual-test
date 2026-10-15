@@ -2,6 +2,13 @@
 
 All notable changes to ai-visual-test will be documented in this file.
 
+## Source history (unversioned)
+
+These entries identify source changes without assigning a package release.
+
+- Preserve literal filenames when scanning Git history for secrets.
+  ([5d7f0e6](https://github.com/arclabs561/ai-visual-test/commit/5d7f0e62c77acc16393165286a7329d73bdfc350))
+
 ## [Unreleased]
 
 ### Changed

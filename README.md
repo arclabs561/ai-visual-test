@@ -3,10 +3,8 @@
 Review screenshots against a natural-language expectation with a vision model.
 It returns a score, issues, recommendations, and the provider/model used.
 
-To catch any pixel change against an approved baseline, use Playwright's
-`toHaveScreenshot` or a hosted service such as Percy or Applitools; use this
-package when there is no baseline and the question is whether a page meets a
-written expectation.
+It does not diff pixels against an approved baseline; Playwright's
+`toHaveScreenshot` covers that case.
 
 ## Install
 
@@ -75,31 +73,15 @@ you need to inspect it.
 
 ## Improve a downstream UI
 
-`@arclabs561/ai-visual-test/improvement` reviews one caller-owned candidate
-against a captured baseline. Your project supplies the reversible adapter,
-deterministic gates, evidence projection, and evaluator:
-
-```js
-import { runImprovementReview } from '@arclabs561/ai-visual-test/improvement';
-
-const receipt = await runImprovementReview({
-  objective, candidate, adapter, observer, projector, evaluator, evaluation,
-});
-```
-
-After an apply attempt, the transaction invokes rollback and requires a fresh
-observation matching the baseline. A rollback failure throws and may require
-project-owned recovery. A preferred candidate returns `review-required`; the
-kernel never accepts or reapplies it.
-
-The adapter, observer, projector, and evaluator are trusted in-process
-callbacks; this API does not sandbox them or choose a model provider. Replay
-identities combine kernel-derived evidence hashes with caller-attested
-candidate, projector, prompt-variant, and evaluator-configuration hashes. They
-support controlled comparisons only when those attestations are trustworthy.
-See the
-[complete example](https://github.com/arclabs561/ai-visual-test/blob/main/examples/improvement-review.mjs)
-for the full contract.
+`@arclabs561/ai-visual-test/improvement` exports `runImprovementReview`, which
+reviews one caller-owned candidate against a captured baseline. Your project
+supplies the reversible adapter, observer, evidence projector, and evaluator.
+After an apply attempt the candidate is rolled back and a fresh observation
+must match the baseline; a failed rollback throws. A preferred candidate
+returns `review-required` and is never reapplied. The callbacks run in-process
+and are not sandboxed. See
+[examples/improvement-review.mjs](examples/improvement-review.mjs) for the full
+contract.
 
 ## CLI
 

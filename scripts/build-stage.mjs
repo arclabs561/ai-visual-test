@@ -49,7 +49,7 @@ for (const file of ['package.json', 'package-lock.json', 'README.md', 'CHANGELOG
   cpSync(source, join(STAGE, file));
 }
 
-for (const directory of ['docs/adr', 'docs/api']) {
+for (const directory of ['docs/decisions', 'docs/api']) {
   const source = join(ROOT, directory);
   if (existsSync(source)) cpSync(source, join(STAGE, directory), { recursive: true });
 }

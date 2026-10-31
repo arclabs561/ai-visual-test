@@ -5,7 +5,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '../..');
-const ADR_DIR = join(ROOT, 'docs/adr');
+const ADR_DIR = join(ROOT, 'docs/decisions');
 
 function listValues(frontmatter, field) {
   const lines = frontmatter.split('\n');

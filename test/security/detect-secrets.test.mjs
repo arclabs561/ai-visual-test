@@ -115,3 +115,42 @@ test('tracked release scan honors configured line exclusions without broad allow
     rmSync(fixture, { recursive: true, force: true });
   }
 });
+
+test('history scan reads literal filenames through real Git history', () => {
+  const fixture = mkdtempSync(join(tmpdir(), 'ai-visual-secrets-history-'));
+  const filenames = ['ordinary.txt', 'report$draft.txt', 'space name.txt', 'line\nbreak.txt', '-leading.txt'];
+  const env = { ...process.env, GIT_CONFIG_NOSYSTEM: '1', GIT_CONFIG_GLOBAL: '/dev/null', draft: '' };
+  const git = args => execFileSync('git', args, { cwd: fixture, env, encoding: 'utf8' });
+  const commit = () => git([
+    '-c', 'user.name=fixture', '-c', 'user.email=fixture@example.invalid',
+    '-c', 'commit.gpgsign=false', 'commit', '--quiet', '-m', 'history fixture',
+  ]);
+
+  try {
+    git(['init', '--quiet']);
+    const token = `ghp_${'a'.repeat(36)}`;
+    for (const name of filenames) writeFileSync(join(fixture, name), `${token}\n`);
+    git(['add', '--all']);
+    commit();
+    const original = git(['rev-parse', 'HEAD']).trim();
+    for (const name of filenames) {
+      assert.equal(git(['show', `${original}:${name}`]), `${token}\n`);
+      rmSync(join(fixture, name));
+    }
+    writeFileSync(join(fixture, 'README.md'), 'Current tree is clean.\n');
+    git(['add', '--all']);
+    commit();
+
+    const current = spawnSync(process.execPath, [scanner, '--tracked'], { cwd: fixture, env, encoding: 'utf8' });
+    assert.equal(current.status, 0, current.stderr);
+    const history = spawnSync(process.execPath, [scanner, '--tracked', '--scan-history'], {
+      cwd: fixture, env, encoding: 'utf8',
+    });
+    assert.notEqual(history.status, 0, 'historical credential fixtures must be found');
+    for (const name of filenames) {
+      assert.ok(history.stderr.includes(name), `history omitted literal filename ${JSON.stringify(name)}`);
+    }
+  } finally {
+    rmSync(fixture, { recursive: true, force: true });
+  }
+});

@@ -66,6 +66,6 @@ Dataset-interfaces-GUI has no publisher-provided machine-readable
 high/medium/low mapping, so it can be characterized locally but cannot produce
 an accuracy claim without an operator-owned private label manifest. Gated Vibe
 datasets are intentionally not exposed as runnable commands. See
-[`../docs/design/dataset-evaluation-protocol.md`](../docs/design/dataset-evaluation-protocol.md)
+[`../docs/dataset-evaluation-protocol.md`](../docs/dataset-evaluation-protocol.md)
 for the complete acquire, normalize, and local-evaluation flows. Current local
 runs are small smoke checks, not benchmark claims.

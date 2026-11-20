@@ -20,6 +20,7 @@
  */
 
 import { createHash } from 'crypto';
+import { statSync } from 'fs';
 
 /**
  * Batch Optimizer Class
@@ -94,6 +95,40 @@ export interface BatchPerformanceMetrics {
 
 function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
+}
+
+/**
+ * JSON with object keys sorted at every level.
+ *
+ * `JSON.stringify(value, Object.keys(value).sort())` is not a substitute: an
+ * array replacer is an allow-list applied at every depth, so nested properties
+ * whose names are not also top-level keys are dropped from the output.
+ */
+function stableStringify(value: unknown): string {
+  if (value === null || typeof value !== 'object') {
+    return JSON.stringify(value) ?? 'undefined';
+  }
+  if (Array.isArray(value)) {
+    return '[' + value.map(stableStringify).join(',') + ']';
+  }
+  const record = value as Record<string, unknown>;
+  return '{' + Object.keys(record).sort()
+    .map(key => JSON.stringify(key) + ':' + stableStringify(record[key]))
+    .join(',') + '}';
+}
+
+/**
+ * Size and mtime of the image, so a screenshot rewritten at the same path does
+ * not return the result cached for the previous file. Empty when the path
+ * cannot be read; the key then depends on the path alone.
+ */
+function fileFingerprint(imagePath: string): string {
+  try {
+    const stats = statSync(imagePath);
+    return `${stats.size}:${stats.mtimeMs}`;
+  } catch {
+    return '';
+  }
 }
 
 export class BatchOptimizer {
@@ -175,8 +210,9 @@ export class BatchOptimizer {
   _getCacheKey(imagePath: string, prompt: string, context: ValidationContext | null | undefined): string {
     const keyData = {
       imagePath,
+      fingerprint: typeof imagePath === 'string' ? fileFingerprint(imagePath) : '',
       prompt: prompt || '',
-      context: context ? JSON.stringify(context, Object.keys(context).sort()) : ''
+      context: context ? stableStringify(context) : ''
     };
     const keyString = JSON.stringify(keyData);
     return createHash('sha256').update(keyString).digest('hex');
@@ -443,15 +479,19 @@ export class BatchOptimizer {
     context: ValidationContext,
     validateFn: BatchValidateFunction | null = null,
   ): Promise<ValidationResult> {
-    if (!validateFn) {
-      // Import validateScreenshot if not provided
-      const { validateScreenshot } = await import('#judge');
-      validateFn = validateScreenshot as BatchValidateFunction;
-    }
-    
+    // Take the slot before the first await. _queueRequest admits a request
+    // when activeRequests < maxConcurrency; if the count only rose after the
+    // dynamic import below, every request issued in the same tick would see 0
+    // and be admitted.
     this.activeRequests++;
     
     try {
+      if (!validateFn) {
+        // Import validateScreenshot if not provided
+        const { validateScreenshot } = await import('#judge');
+        validateFn = validateScreenshot as BatchValidateFunction;
+      }
+      
       const result = await validateFn(imagePath, prompt, context);
       
       // Cache result if enabled
@@ -479,7 +519,10 @@ export class BatchOptimizer {
     
     try {
       while (this.queue.length > 0 && this.activeRequests < this.maxConcurrency) {
-        const batch = this.queue.splice(0, this.batchSize);
+        // A batch may not be larger than the free slots, otherwise
+        // batchSize > 1 runs past maxConcurrency.
+        const freeSlots = this.maxConcurrency - this.activeRequests;
+        const batch = this.queue.splice(0, Math.min(this.batchSize, freeSlots));
         
         // Process batch in parallel
         const promises = batch.map(async ({ imagePath, prompt, context, validateFn, resolve, reject }) => {

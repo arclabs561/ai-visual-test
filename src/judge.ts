@@ -721,57 +721,65 @@ Use "indeterminate" when the evidence is insufficient to choose or declare a tie
   extractScore(judgment: unknown): number | null {
     if (!judgment || typeof judgment !== 'string') return null;
     
+    // A score is an integer or a decimal ("7", "7.5"). `(?<![\d.])` keeps a
+    // pattern from starting inside a number: without it "9.5/10" matched as
+    // "5/10" and scored 5. `(?!\d)` stops "100" from being read as 10.
+    const NUM = String.raw`(?<![\d.])(\d{1,2}(?:\.\d+)?)(?!\d)`;
+    const re = (source: string, flags = 'i') => new RegExp(source, flags);
     const patterns = [
       // JSON format: "score": 7
-      /"score"\s*:\s*(\d+)/i,
+      re(String.raw`"score"\s*:\s*${NUM}`),
       // Text format: Score: 7 or Score 7
-      /score[:\s]*(\d+)/i,
+      re(String.raw`score[:\s]*${NUM}`),
       // Fraction format: score: 7/10 or 7/10
-      /score[:\s]*(\d+)\s*\/\s*10/i,
-      /(\d+)\s*\/\s*10/i,
+      re(String.raw`score[:\s]*${NUM}\s*\/\s*10`),
+      re(String.raw`${NUM}\s*\/\s*10`),
       // Rating format: Rating: 7, Rated 7
-      /rating[:\s]*(\d+)/i,
-      /rated[:\s]*(\d+)/i,
+      re(String.raw`rating[:\s]*${NUM}`),
+      re(String.raw`rated[:\s]*${NUM}`),
       // Verdict format: Verdict: PASS (7/10) or Verdict: FAIL (3/10)
-      /verdict[:\s]*(?:pass|fail)[:\s]*\((\d+)\s*\/\s*10\)/i,
+      re(String.raw`verdict[:\s]*(?:pass|fail)[:\s]*\(${NUM}\s*\/\s*10\)`),
       // Markdown format: **Score**: 7 or ## Score: 7
-      /\*\*score\*\*[:\s]*(\d+)/i,
-      /##\s*score[:\s]*(\d+)/i,
+      re(String.raw`\*\*score\*\*[:\s]*${NUM}`),
+      re(String.raw`##\s*score[:\s]*${NUM}`),
       // Structured text: "Overall Score: 7 out of 10"
-      /overall\s*score[:\s]*(\d+)\s*(?:out\s*of|\/)\s*10/i,
+      re(String.raw`overall\s*score[:\s]*${NUM}\s*(?:out\s*of|\/)\s*10`),
       // Standalone number at start (common when API returns just "10" or "9" as reasoning)
-      // Match: "10", "10.", "10 ", "10\n", etc.
-      /^\s*(\d{1,2})(?:\s|\.|$)/,
+      // Match: "10", "10.", "10 ", "10\n", "7.5 ...", etc.
+      re(String.raw`^\s*${NUM}(?:\s|\.|$)`, ''),
       // Number followed by common words (e.g., "10 out of 10", "9/10")
-      /^(\d{1,2})\s*(?:out\s*of|\/)\s*10/i,
+      re(String.raw`^${NUM}\s*(?:out\s*of|\/)\s*10`),
       // "Rate from 1-10" response patterns
-      /rate[:\s]*(\d{1,2})\s*(?:out\s*of|\/)?\s*10/i,
+      re(String.raw`rate[:\s]*${NUM}\s*(?:out\s*of|\/)?\s*10`),
       // Very simple: just a number 0-10 at the start (for cases like "10" with nothing else)
-      /^(\d{1,2})$/
+      re(String.raw`^${NUM}$`, '')
     ];
     
     for (const pattern of patterns) {
       const match = judgment.match(pattern);
       if (match) {
-        const score = parseInt(match[1]!, 10);
+        const score = Number.parseFloat(match[1]!);
         if (score >= 0 && score <= 10) {
           return score;
         }
       }
     }
     
-    // Try to infer from verdict language
+    // Try to infer from verdict language. A word counts only when it is not
+    // negated ("not good", "isn't great"), otherwise "This is not good" scored 7.
     const lower = judgment.toLowerCase();
-    if (lower.includes('excellent') || lower.includes('outstanding')) {
+    const says = (phrase: string) =>
+      new RegExp(String.raw`(?<!\b(?:not|never|no|isn't|wasn't|aren't|hardly)\s+(?:\w+\s+)?)\b${phrase}`).test(lower);
+    if (says('excellent') || says('outstanding')) {
       return 9;
     }
-    if (lower.includes('very good') || lower.includes('great')) {
+    if (says('very good') || says('great')) {
       return 8;
     }
-    if (lower.includes('good') || lower.includes('satisfactory')) {
+    if (says('good') || says('satisfactory')) {
       return 7;
     }
-    if (lower.includes('fair') || lower.includes('adequate')) {
+    if (says('fair') || says('adequate')) {
       return 6;
     }
     if (lower.includes('poor') || lower.includes('needs improvement')) {

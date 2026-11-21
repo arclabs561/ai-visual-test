@@ -457,6 +457,19 @@ export class EnsembleJudge {
     const avg = this.weightedAverage(results);
 
     if (avg.type === 'no_effective_weight') return avg;
+
+    // One surviving judge cannot agree with anyone. calculateAgreement scores
+    // that case 1.0, so without this check an ensemble of three in which two
+    // judges failed reported consensus on the third's opinion alone.
+    const responded = this.validResults(results).length;
+    if (this.judges.length > 1 && responded < 2) {
+      return {
+        ...avg,
+        assessment: 'no-consensus',
+        confidence: 0,
+        reasoning: `No consensus possible: ${responded} of ${this.judges.length} judges returned a score. ${avg.reasoning}`
+      };
+    }
     
     if (agreement.score < this.minAgreement) {
       // No consensus - return weighted average with low confidence

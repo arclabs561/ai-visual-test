@@ -159,6 +159,31 @@ test('consensusVote without consensus returns no-consensus assessment', () => {
   assert.ok(out.reasoning.includes('No consensus'));
 });
 
+test('consensusVote with one surviving judge of three is no-consensus', () => {
+  const ej = createJudge({ judgeCount: 3, votingMethod: 'consensus', minAgreement: 0.7 });
+  // The other two judges failed and were filtered out before the vote.
+  const out = ej.consensusVote([mockResult({ score: 9, assessment: 'pass', judgeIndex: 0 })]);
+  assert.strictEqual(out.assessment, 'no-consensus');
+  assert.strictEqual(out.confidence, 0);
+  assert.match(out.reasoning, /1 of 3 judges/);
+  assert.strictEqual(out.score, 9);
+});
+
+test('consensusVote with two of three judges agreeing still reaches consensus', () => {
+  const ej = createJudge({ judgeCount: 3, votingMethod: 'consensus', minAgreement: 0.7 });
+  const out = ej.consensusVote([
+    mockResult({ score: 8, assessment: 'pass', judgeIndex: 0 }),
+    mockResult({ score: 8, assessment: 'pass', judgeIndex: 2 })
+  ]);
+  assert.strictEqual(out.assessment, 'pass');
+});
+
+test('consensusVote in a one-judge ensemble returns that judge\'s result', () => {
+  const ej = createJudge({ judgeCount: 1, votingMethod: 'consensus' });
+  const out = ej.consensusVote([mockResult({ score: 7, assessment: 'pass', judgeIndex: 0 })]);
+  assert.strictEqual(out.assessment, 'pass');
+});
+
 // --- calculateAgreement ---
 
 test('calculateAgreement with identical scores returns high agreement', () => {

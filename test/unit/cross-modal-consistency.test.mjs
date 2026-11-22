@@ -16,7 +16,7 @@ test('checkCrossModalConsistency returns expected result shape', () => {
   assert.ok('score' in result, 'missing score');
   assert.ok(Array.isArray(result.issues), 'issues should be an array');
   assert.ok(Array.isArray(result.warnings), 'warnings should be an array');
-  assert.strictEqual(typeof result.score, 'number');
+  assert.strictEqual(result.status, 'unverified');
   assert.strictEqual(typeof result.isConsistent, 'boolean');
   assert.strictEqual(typeof result.checks, 'object');
 });
@@ -26,7 +26,7 @@ test('checkCrossModalConsistency returns expected result shape', () => {
 test('empty options returns score 0 and an issue about missing modalities', () => {
   const result = checkCrossModalConsistency({});
   assert.strictEqual(result.isConsistent, false);
-  assert.strictEqual(result.score, 0);
+  assert.strictEqual(result.score, null);
   assert.ok(result.issues.length > 0, 'should have at least one issue');
   assert.ok(result.issues[0].includes('Missing both'), `unexpected issue: ${result.issues[0]}`);
 });
@@ -34,13 +34,13 @@ test('empty options returns score 0 and an issue about missing modalities', () =
 test('no arguments at all is equivalent to empty options', () => {
   const result = checkCrossModalConsistency();
   assert.strictEqual(result.isConsistent, false);
-  assert.strictEqual(result.score, 0);
+  assert.strictEqual(result.score, null);
   assert.ok(result.issues.some(i => i.includes('Missing both')));
 });
 
 // --- Consistent inputs (all modalities align) ---
 
-test('consistent inputs produce high score, no issues, no warnings', () => {
+test('metadata alone cannot verify a visual match', () => {
   const result = checkCrossModalConsistency({
     screenshot: '/tmp/shot.png',
     renderedCode: {
@@ -55,18 +55,18 @@ test('consistent inputs produce high score, no issues, no warnings', () => {
     gameState: { gameActive: true, score: 10 },
     pageState: { title: 'My Game' }
   });
-  assert.strictEqual(result.isConsistent, true);
+  assert.strictEqual(result.isConsistent, false);
   assert.strictEqual(result.issues.length, 0);
   assert.strictEqual(result.warnings.length, 0);
-  assert.strictEqual(result.score, 1);
-  assert.strictEqual(result.summary, 'All consistency checks passed');
+  assert.strictEqual(result.score, null);
+  assert.strictEqual(result.summary, 'Visual consistency unverified');
 });
 
 // --- Screenshot only ---
 
-test('screenshot only returns consistent with no issues', () => {
+test('screenshot only is unverified', () => {
   const result = checkCrossModalConsistency({ screenshot: '/tmp/shot.png' });
-  assert.strictEqual(result.isConsistent, true);
+  assert.strictEqual(result.isConsistent, false);
   assert.strictEqual(result.issues.length, 0);
   assert.ok(result.checks.hasScreenshot);
   assert.ok(!result.checks.hasRenderedCode);
@@ -74,14 +74,14 @@ test('screenshot only returns consistent with no issues', () => {
 
 // --- renderedCode only (no screenshot) ---
 
-test('renderedCode only is still consistent when no issues found', () => {
+test('rendered code alone is unverified', () => {
   const result = checkCrossModalConsistency({
     renderedCode: {
       html: '<div>hello</div>',
       domStructure: { main: { exists: true } }
     }
   });
-  assert.strictEqual(result.isConsistent, true);
+  assert.strictEqual(result.isConsistent, false);
   assert.strictEqual(result.issues.length, 0);
   assert.ok(!result.checks.hasScreenshot);
   assert.ok(result.checks.hasRenderedCode);
@@ -176,7 +176,7 @@ test('page title not found in HTML produces warning', () => {
 
 // --- Strict mode ---
 
-test('strict mode marks result inconsistent when warnings exist', () => {
+test('strict mode preserves structural warnings without a visual verdict', () => {
   const opts = {
     screenshot: '/tmp/shot.png',
     renderedCode: {
@@ -189,8 +189,8 @@ test('strict mode marks result inconsistent when warnings exist', () => {
 
   // Both should have the same warnings
   assert.strictEqual(normal.warnings.length, strict.warnings.length);
-  // Normal is consistent (warnings only), strict is not
-  assert.strictEqual(normal.isConsistent, true);
+  // Neither mode has a visual comparison.
+  assert.strictEqual(normal.isConsistent, false);
   assert.strictEqual(strict.isConsistent, false);
 });
 
@@ -221,7 +221,7 @@ test('score decreases as warnings accumulate', () => {
       }
     }
   });
-  assert.ok(dirty.score < clean.score,
+  assert.ok(dirty.structuralScore < clean.structuralScore,
     `dirty score ${dirty.score} should be less than clean score ${clean.score}`);
 });
 
@@ -240,7 +240,7 @@ test('validateExperienceConsistency extracts fields from experience object', () 
     }
   };
   const result = validateExperienceConsistency(experience);
-  assert.strictEqual(result.isConsistent, true);
+  assert.strictEqual(result.isConsistent, false);
   assert.ok(result.checks.hasScreenshot);
   assert.ok(result.checks.hasRenderedCode);
   assert.ok(result.checks.hasPageState);
@@ -269,6 +269,24 @@ test('validateExperienceConsistency forwards strict option', () => {
   };
   const normal = validateExperienceConsistency(experience);
   const strict = validateExperienceConsistency(experience, { strict: true });
-  assert.strictEqual(normal.isConsistent, true);
+  assert.strictEqual(normal.isConsistent, false);
   assert.strictEqual(strict.isConsistent, false);
+});
+
+test('visual verdict depends on both observations', async (t) => {
+  const { mkdtemp, writeFile, rm } = await import('node:fs/promises');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const dir = await mkdtemp(join(tmpdir(), 'visual-check-'));
+  t.after(() => rm(dir, { recursive: true, force: true }));
+  const screenshot = join(dir, 'pixel.pgm');
+  const renderedCode = { html: '<body style="background:white"/>' };
+  const compareVisual = (image, code) =>
+    image.toString() === 'P2\n1 1\n255\n255\n' && code.html.includes('white');
+  const opts = { screenshot, renderedCode, compareVisual, strict: true };
+  assert.equal(checkCrossModalConsistency(opts).status, 'unverified');
+  await writeFile(screenshot, 'P2\n1 1\n255\n255\n');
+  assert.equal(checkCrossModalConsistency(opts).isConsistent, true);
+  await writeFile(screenshot, 'P2\n1 1\n255\n0\n');
+  assert.equal(checkCrossModalConsistency(opts).status, 'inconsistent');
 });

@@ -15,7 +15,7 @@ describe('Cross-Modal Consistency', () => {
 
       assert.strictEqual(result.isConsistent, false, 'Should be inconsistent');
       assert.ok(result.issues.length > 0, 'Should have issues');
-      assert.strictEqual(result.score, 0, 'Should have zero score');
+      assert.strictEqual(result.score, null, 'Should have zero score');
     });
 
     it('should check consistency with screenshot only', () => {

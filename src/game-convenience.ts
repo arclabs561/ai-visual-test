@@ -67,7 +67,7 @@ export interface GameplayOptions {
   duration?: number;
   captureCode?: boolean;
   checkConsistency?: boolean;
-  compareVisual?: (image: Buffer, code: object) => boolean;
+  compareVisual?: (image: Uint8Array, code: object) => boolean;
   gameActivationKey?: string | null;
   gameSelector?: string | null;
   play?: boolean;

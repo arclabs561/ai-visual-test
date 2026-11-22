@@ -10,7 +10,7 @@ import { warn, log } from './logger.js';
  * @param {Object} [options.gameState] - Game state
  * @param {Object} [options.pageState] - Page state
  * @param {boolean} [options.strict=false] - Strict mode (warn on all inconsistencies)
- * @param {(image: Buffer, renderedCode: Object) => boolean} [options.compareVisual] Synchronous image/DOM comparison.
+ * @param {(image: Uint8Array, renderedCode: Object) => boolean} [options.compareVisual] Synchronous image/DOM comparison.
  * @returns {Object} Consistency check result
  */
 export function checkCrossModalConsistency(options = {}) {
@@ -146,7 +146,7 @@ export function checkCrossModalConsistency(options = {}) {
  * 
  * @param {Object} experience - Experience object from experiencePageAsPersona
  * @param {Object} [options={}] - Validation options
- * @param {(image: Buffer, renderedCode: Object) => boolean} [options.compareVisual] Synchronous image/DOM comparison.
+ * @param {(image: Uint8Array, renderedCode: Object) => boolean} [options.compareVisual] Synchronous image/DOM comparison.
  * @returns {Object} Consistency check result
  */
 export function validateExperienceConsistency(experience, options = {}) {

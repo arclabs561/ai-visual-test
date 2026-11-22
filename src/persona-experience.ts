@@ -16,7 +16,7 @@ export interface PersonaPage {
   locator(selector: string): object;
 }
 export interface PersonaExperienceTrace { addEvent(name: string, data: Record<string, unknown>): void; addScreenshot(path: string, description: string): void; addStateSnapshot(state: Record<string, unknown>, name: string): void; getSummary(): PropagationSummary | Record<string, unknown>; }
-export interface PersonaExperienceOptions { compareVisual?: (image: Buffer, code: object) => boolean; viewport?: Viewport; device?: string; darkMode?: boolean; timeScale?: 'human' | 'mechanical'; captureScreenshots?: boolean; captureState?: boolean; captureCode?: boolean; notes?: PersonaNote[]; trace?: PersonaExperienceTrace | null; url?: string; baseURL?: string; [key: string]: unknown; }
+export interface PersonaExperienceOptions { compareVisual?: (image: Uint8Array, code: object) => boolean; viewport?: Viewport; device?: string; darkMode?: boolean; timeScale?: 'human' | 'mechanical'; captureScreenshots?: boolean; captureState?: boolean; captureCode?: boolean; notes?: PersonaNote[]; trace?: PersonaExperienceTrace | null; url?: string; baseURL?: string; [key: string]: unknown; }
 export interface PersonaNote { step?: string; persona?: string; goal?: string; observation?: string; pageState?: Record<string, unknown> | null; renderedCode?: { html?: string; criticalCSS?: unknown; domStructure?: unknown } | null; timestamp?: number; elapsed?: number; [key: string]: unknown; }
 export interface PersonaScreenshot { path: string; timestamp: number; elapsed: number; step: string; description?: string; }
 export interface CrossModalConsistency { isConsistent: boolean; issues: string[]; [key: string]: unknown; }

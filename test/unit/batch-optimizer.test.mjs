@@ -266,3 +266,29 @@ test('BatchOptimizer: _getCacheKey changes when the image file is rewritten', as
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test('BatchOptimizer: a replacement screenshot gets its own verdict', async () => {
+  const { mkdtempSync, readFileSync, writeFileSync, rmSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const dir = mkdtempSync(join(tmpdir(), 'batch-verdict-'));
+  try {
+    const file = join(dir, 'shot.png');
+    const opt = new BatchOptimizer();
+    writeFileSync(file, 'first');
+    let calls = 0;
+    const judge = async () => {
+      calls++;
+      const observed = readFileSync(file, 'utf8');
+      if (calls === 1) writeFileSync(file, 'replacement');
+      return { observed };
+    };
+    const validate = () => opt._queueRequest(file, 'p', {}, judge);
+    assert.deepEqual(await validate(), { observed: 'first' });
+    assert.deepEqual(await validate(), { observed: 'replacement' });
+    assert.deepEqual(await validate(), { observed: 'replacement' });
+    assert.equal(calls, 2);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});

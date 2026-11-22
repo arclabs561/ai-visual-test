@@ -492,11 +492,11 @@ export class BatchOptimizer {
         validateFn = validateScreenshot as BatchValidateFunction;
       }
       
+      const cacheKey = this.cache ? this._getCacheKey(imagePath, prompt, context) : null;
       const result = await validateFn(imagePath, prompt, context);
       
-      // Cache result if enabled
-      if (this.cache) {
-        const cacheKey = this._getCacheKey(imagePath, prompt, context);
+      // A producer can replace the screenshot while the judge is running.
+      if (this.cache && cacheKey === this._getCacheKey(imagePath, prompt, context)) {
         this.cache.set(cacheKey, result);
       }
       

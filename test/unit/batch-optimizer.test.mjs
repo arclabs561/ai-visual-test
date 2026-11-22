@@ -292,3 +292,39 @@ test('BatchOptimizer: a replacement screenshot gets its own verdict', async () =
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test('BatchOptimizer: equal-size images with a preserved mtime have separate verdicts', async () => {
+  const { mkdtempSync, readFileSync, writeFileSync, utimesSync, rmSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { join, relative } = await import('node:path');
+  const dir = mkdtempSync(join(tmpdir(), 'batch-preserved-'));
+  try {
+    const file = relative(process.cwd(), join(dir, 'shot.png'));
+    const write = (bytes) => {
+      writeFileSync(file, bytes);
+      utimesSync(file, 1700000000, 1700000000);
+    };
+    const opt = new BatchOptimizer();
+    const validate = (judge) => opt._queueRequest(file, 'p', {}, judge);
+    const judge = (path) => {
+      assert.equal(path, file);
+      return { observed: readFileSync(path, 'utf8') };
+    };
+    write('AAA');
+    assert.deepEqual(await validate(judge), { observed: 'AAA' });
+    write('BBB');
+    assert.deepEqual(await validate(judge), { observed: 'BBB' });
+
+    write('CCC');
+    await validate(async (path) => {
+      write('DDD');
+      const result = judge(path);
+      await new Promise(resolve => setTimeout(resolve, 15));
+      write('CCC');
+      return result;
+    });
+    assert.deepEqual(await validate(judge), { observed: 'CCC' });
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});

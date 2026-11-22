@@ -20,7 +20,7 @@
  */
 
 import { createHash } from 'crypto';
-import { statSync } from 'fs';
+import { readFileSync, statSync } from 'fs';
 
 /**
  * Batch Optimizer Class
@@ -29,7 +29,7 @@ import { statSync } from 'fs';
  * 
  * @class BatchOptimizer
  */
-import { API_CONSTANTS, BATCH_OPTIMIZER_CONSTANTS } from './constants.js';
+import { API_CONSTANTS, API_ENDPOINT_CONSTANTS, BATCH_OPTIMIZER_CONSTANTS } from './constants.js';
 import { TimeoutError, ValidationError } from '#errors';
 import { warn } from './logger.js';
 import type { BatchValidationResult, ValidationContext, ValidationResult } from '#public-contract';
@@ -117,15 +117,16 @@ function stableStringify(value: unknown): string {
     .join(',') + '}';
 }
 
-/**
- * Size and mtime of the image, so a screenshot rewritten at the same path does
- * not return the result cached for the previous file. Empty when the path
- * cannot be read; the key then depends on the path alone.
+/** Include the bytes even when a producer preserves the file size and mtime.
+ * Device, inode, and change time also detect a rewrite that restores the
+ * original bytes while a path-based validator is still reading the image.
  */
-function fileFingerprint(imagePath: string): string {
+function fileFingerprint(imagePath: string): string | null {
   try {
-    const stats = statSync(imagePath);
-    return `${stats.size}:${stats.mtimeMs}`;
+    const stats = statSync(imagePath, { bigint: true });
+    if (!stats.isFile() || stats.size > API_ENDPOINT_CONSTANTS.MAX_IMAGE_SIZE) return null;
+    const digest = createHash('sha256').update(readFileSync(imagePath)).digest('hex');
+    return `${stats.dev}:${stats.ino}:${stats.ctimeNs}:${digest}`;
   } catch {
     return '';
   }
@@ -208,9 +209,11 @@ export class BatchOptimizer {
    * - Consistent with VLLM cache approach
    */
   _getCacheKey(imagePath: string, prompt: string, context: ValidationContext | null | undefined): string {
+    const fingerprint = typeof imagePath === 'string' ? fileFingerprint(imagePath) : '';
+    if (fingerprint === null) return '';
     const keyData = {
       imagePath,
-      fingerprint: typeof imagePath === 'string' ? fileFingerprint(imagePath) : '',
+      fingerprint,
       prompt: prompt || '',
       context: context ? stableStringify(context) : ''
     };
@@ -496,7 +499,7 @@ export class BatchOptimizer {
       const result = await validateFn(imagePath, prompt, context);
       
       // A producer can replace the screenshot while the judge is running.
-      if (this.cache && cacheKey === this._getCacheKey(imagePath, prompt, context)) {
+      if (this.cache && cacheKey && cacheKey === this._getCacheKey(imagePath, prompt, context)) {
         this.cache.set(cacheKey, result);
       }
       

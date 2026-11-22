@@ -16,7 +16,7 @@ export interface PersonaPage {
   locator(selector: string): object;
 }
 export interface PersonaExperienceTrace { addEvent(name: string, data: Record<string, unknown>): void; addScreenshot(path: string, description: string): void; addStateSnapshot(state: Record<string, unknown>, name: string): void; getSummary(): PropagationSummary | Record<string, unknown>; }
-export interface PersonaExperienceOptions { viewport?: Viewport; device?: string; darkMode?: boolean; timeScale?: 'human' | 'mechanical'; captureScreenshots?: boolean; captureState?: boolean; captureCode?: boolean; notes?: PersonaNote[]; trace?: PersonaExperienceTrace | null; url?: string; baseURL?: string; [key: string]: unknown; }
+export interface PersonaExperienceOptions { compareVisual?: (image: Buffer, code: object) => boolean; viewport?: Viewport; device?: string; darkMode?: boolean; timeScale?: 'human' | 'mechanical'; captureScreenshots?: boolean; captureState?: boolean; captureCode?: boolean; notes?: PersonaNote[]; trace?: PersonaExperienceTrace | null; url?: string; baseURL?: string; [key: string]: unknown; }
 export interface PersonaNote { step?: string; persona?: string; goal?: string; observation?: string; pageState?: Record<string, unknown> | null; renderedCode?: { html?: string; criticalCSS?: unknown; domStructure?: unknown } | null; timestamp?: number; elapsed?: number; [key: string]: unknown; }
 export interface PersonaScreenshot { path: string; timestamp: number; elapsed: number; step: string; description?: string; }
 export interface CrossModalConsistency { isConsistent: boolean; issues: string[]; [key: string]: unknown; }
@@ -60,7 +60,7 @@ export async function experiencePageAsPersona(page: PersonaPage, persona: Person
   trackPropagation('notes', { renderedCode: initial.renderedCode ?? undefined, pageState }, 'Added HTML/CSS to experience notes');
   let consistency: CrossModalConsistency | null = null;
   const checkConsistency = (await import('./cross-modal-consistency.mjs') as unknown as { checkCrossModalConsistency(input: Record<string, unknown>): CrossModalConsistency }).checkCrossModalConsistency;
-  if (captureScreenshots && renderedCode) { consistency = checkConsistency({ screenshot: pageLoadScreenshot, renderedCode, pageState }); if (!consistency.isConsistent && consistency.issues.length > 0) warn(`[Experience] Cross-modal consistency issues: ${consistency.issues.join(', ')}`); }
+  if (captureScreenshots && renderedCode) { consistency = checkConsistency({ compareVisual: options.compareVisual, screenshot: pageLoadScreenshot, renderedCode, pageState }); if (!consistency.isConsistent && consistency.issues.length > 0) warn(`[Experience] Cross-modal consistency issues: ${consistency.issues.join(', ')}`); }
   trace?.addEvent('observation', { step: 'initial_experience', observation: initial.observation ?? '', pageState: initial.pageState, renderedCode: initial.renderedCode });
   if (pageState) trace?.addStateSnapshot(pageState, 'initial_experience');
   trace?.addEvent('observation', { step: 'before-reading', observation: 'About to read/scan page content' });
@@ -87,7 +87,7 @@ export async function experiencePageAsPersona(page: PersonaPage, persona: Person
   await capture('final-state', 'Final state');
   trace?.addEvent('experience-end', { duration: Date.now() - start, noteCount: notes.length, screenshotCount: screenshots.length });
   trackPropagation('experience-complete', { renderedCode: renderedCode ?? undefined, pageState, screenshot: screenshots[0]?.path ?? null }, 'Experience complete');
-  if (captureScreenshots && renderedCode && screenshots.length > 0) consistency = checkConsistency({ screenshot: screenshots.at(-1)?.path ?? null, renderedCode, pageState });
+  if (captureScreenshots && renderedCode && screenshots.length > 0) consistency = checkConsistency({ compareVisual: options.compareVisual, screenshot: screenshots.at(-1)?.path ?? null, renderedCode, pageState });
   let aggregated: AggregatedTemporalNotes | null = null;
   let aggregatedMultiScale: PersonaExperienceResult['aggregatedMultiScale'] = null;
   if (notes.length > 0) {

@@ -67,6 +67,7 @@ export interface GameplayOptions {
   duration?: number;
   captureCode?: boolean;
   checkConsistency?: boolean;
+  compareVisual?: (image: Buffer, code: object) => boolean;
   gameActivationKey?: string | null;
   gameSelector?: string | null;
   play?: boolean;
@@ -499,9 +500,10 @@ export async function testGameplay(page: GameConveniencePage, options: GameplayO
       const screenshotPath = screenshots.at(-1)?.path;
       if (screenshotPath) {
         const consistency = checkCrossModalConsistency({
-        screenshot: screenshotPath,
-        renderedCode,
-        pageState: gameState
+          screenshot: screenshotPath,
+          renderedCode,
+          ...(options.compareVisual && { compareVisual: options.compareVisual }),
+          pageState: gameState
         }) as { isConsistent?: boolean };
         result.consistency = consistency;
         trackPropagation('consistency', { isConsistent: consistency.isConsistent }, 'Checked cross-modal consistency');

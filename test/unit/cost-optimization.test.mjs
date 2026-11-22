@@ -35,7 +35,7 @@ describe('Cost Optimization', () => {
       const comparison = calculateCostComparison(context, currentResult);
 
       assert.ok(comparison, 'Should return comparison even without cost');
-      assert.strictEqual(comparison.current.cost, 0);
+      assert.strictEqual(comparison.current.cost, null);
     });
 
     it('should calculate savings for different tiers', () => {
@@ -48,8 +48,9 @@ describe('Cost Optimization', () => {
       const comparison = calculateCostComparison(context, currentResult);
 
       assert.ok(comparison.savings, 'Should calculate savings');
-      assert.ok(comparison.savings.fast, 'Should have fast tier savings');
-      assert.ok(comparison.savings.balanced, 'Should have balanced tier savings');
+      assert.strictEqual(comparison.tiers.fast, null);
+      assert.strictEqual(comparison.savings.balanced, undefined);
+      assert.strictEqual(comparison.savings.best.absolute, 0);
     });
 
     it('should provide recommendation based on context', () => {
@@ -121,3 +122,13 @@ describe('Cost Optimization', () => {
   });
 });
 
+
+it('prices the same workload and preserves actual cost for model aliases', () => {
+  const result = calculateCostComparison({ modelTier: 'balanced', modelPrices: {
+    'gemini-3-pro-preview': { input: 5, output: 20 }
+  } }, { provider: 'gemini', estimatedCost: { totalCost: 0.04, inputTokens: 2000, outputTokens: 500 } });
+  assert.equal(result.savings.fast.absolute, 0);
+  assert.equal(result.savings.balanced.absolute, 0);
+  assert.equal(result.tiers.best, 0.02);
+  assert.equal(optimizeCost({ budget: 0 }).withinBudget, false);
+});

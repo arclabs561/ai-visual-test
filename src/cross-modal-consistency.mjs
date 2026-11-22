@@ -1,21 +1,4 @@
-/**
- * Cross-Modal Consistency Checker
- * 
- * Validates consistency between screenshot (visual) and HTML/CSS (structural).
- * Detects mismatches between what's shown visually and what the code structure indicates.
- * 
- * Research:
- * - "Cross-Modal Consistency in Multimodal Large Language Models" - Consistency issues in GPT-4V
- * - "Verifying Cross-modal Entity Consistency in News using Vision-language Models" (LVLM4CEC)
- * - "Hallucination Detection in Vision-Language Models" - Multiple papers on detecting unfaithful outputs
- * 
- * Key findings: Consistency is a major challenge. Entity verification is critical.
- * Hallucination detection is needed. Modality gap contributes to issues.
- * 
- * Note: This implementation uses heuristic-based checking. Full research implementation
- * would use VLLM-based verification and entity-level consistency checking as in LVLM4CEC.
- */
-
+import { readFileSync } from 'node:fs';
 import { warn, log } from './logger.js';
 
 /**
@@ -27,6 +10,7 @@ import { warn, log } from './logger.js';
  * @param {Object} [options.gameState] - Game state
  * @param {Object} [options.pageState] - Page state
  * @param {boolean} [options.strict=false] - Strict mode (warn on all inconsistencies)
+ * @param {(image: Buffer, renderedCode: Object) => boolean} [options.compareVisual] Synchronous image/DOM comparison.
  * @returns {Object} Consistency check result
  */
 export function checkCrossModalConsistency(options = {}) {
@@ -50,16 +34,21 @@ export function checkCrossModalConsistency(options = {}) {
     hasPageState: !!pageState
   };
 
-  // Check 1: Basic presence
+  let verified = false;
   if (!screenshot && !renderedCode) {
-    issues.push('Missing both screenshot and rendered code - cannot check consistency');
-    return {
-      isConsistent: false,
-      issues,
-      warnings,
-      checks,
-      score: 0
-    };
+    issues.push('Missing both screenshot and rendered code');
+  }
+  if (screenshot && renderedCode?.html && typeof options.compareVisual === 'function') {
+    try {
+      const image = readFileSync(screenshot);
+      if (image.length === 0) throw new Error('empty screenshot');
+      const match = options.compareVisual(image, renderedCode);
+      if (typeof match !== 'boolean') throw new Error('comparison must return a boolean');
+      verified = true;
+      if (!match) issues.push('Screenshot disagrees with rendered code');
+    } catch {
+      issues.push('Could not complete the screenshot comparison');
+    }
   }
 
   // Check 2: HTML structure vs visual expectations
@@ -122,13 +111,13 @@ export function checkCrossModalConsistency(options = {}) {
   }
 
   // Calculate consistency score
-  const totalChecks = Object.values(checks).filter(Boolean).length;
   const issueCount = issues.length;
   const warningCount = warnings.length;
   const maxIssues = 5; // Normalize to 0-1 scale
   const consistencyScore = Math.max(0, 1 - (issueCount / maxIssues) - (warningCount / (maxIssues * 2)));
 
-  const isConsistent = issueCount === 0 && (strict ? warningCount === 0 : true);
+  const structuralPass = warningCount === 0 || !strict;
+  const isConsistent = verified && issueCount === 0 && structuralPass;
 
   // Log warnings if any
   if (warnings.length > 0) {
@@ -144,10 +133,11 @@ export function checkCrossModalConsistency(options = {}) {
     issues,
     warnings,
     checks,
-    score: consistencyScore,
-    summary: issueCount === 0 && warningCount === 0
-      ? 'All consistency checks passed'
-      : `${issueCount} issue(s), ${warningCount} warning(s)`
+    status: verified ? (isConsistent ? 'consistent' : 'inconsistent') : 'unverified',
+    score: verified ? (isConsistent ? consistencyScore : 0) : null,
+    structuralScore: Math.max(0, 1 - warningCount / (maxIssues * 2)),
+    summary: !verified ? 'Visual consistency unverified'
+      : isConsistent ? 'Screenshot comparison passed' : 'Screenshot comparison failed'
   };
 }
 
@@ -156,6 +146,7 @@ export function checkCrossModalConsistency(options = {}) {
  * 
  * @param {Object} experience - Experience object from experiencePageAsPersona
  * @param {Object} [options={}] - Validation options
+ * @param {(image: Buffer, renderedCode: Object) => boolean} [options.compareVisual] Synchronous image/DOM comparison.
  * @returns {Object} Consistency check result
  */
 export function validateExperienceConsistency(experience, options = {}) {

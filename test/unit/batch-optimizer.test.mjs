@@ -266,3 +266,87 @@ test('BatchOptimizer: _getCacheKey changes when the image file is rewritten', as
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test('BatchOptimizer: a replacement screenshot gets its own verdict', async () => {
+  const { mkdtempSync, readFileSync, writeFileSync, rmSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const dir = mkdtempSync(join(tmpdir(), 'batch-verdict-'));
+  try {
+    const file = join(dir, 'shot.png');
+    const opt = new BatchOptimizer();
+    writeFileSync(file, 'first');
+    let calls = 0;
+    const judge = async () => {
+      calls++;
+      const observed = readFileSync(file, 'utf8');
+      if (calls === 1) writeFileSync(file, 'replacement');
+      return { observed };
+    };
+    const validate = () => opt._queueRequest(file, 'p', {}, judge);
+    assert.deepEqual(await validate(), { observed: 'first' });
+    assert.deepEqual(await validate(), { observed: 'replacement' });
+    assert.deepEqual(await validate(), { observed: 'replacement' });
+    assert.equal(calls, 3);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('BatchOptimizer: equal-size images with a preserved mtime have separate verdicts', async () => {
+  const { mkdtempSync, readFileSync, writeFileSync, utimesSync, rmSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { join, relative } = await import('node:path');
+  const dir = mkdtempSync(join(tmpdir(), 'batch-preserved-'));
+  try {
+    const file = relative(process.cwd(), join(dir, 'shot.png'));
+    const write = (bytes) => {
+      writeFileSync(file, bytes);
+      utimesSync(file, 1700000000, 1700000000);
+    };
+    const opt = new BatchOptimizer();
+    const validate = (judge) => opt._queueRequest(file, 'p', {}, judge);
+    const judge = (path) => {
+      assert.equal(path, file);
+      return { observed: readFileSync(path, 'utf8') };
+    };
+    write('AAA');
+    assert.deepEqual(await validate(judge), { observed: 'AAA' });
+    write('BBB');
+    assert.deepEqual(await validate(judge), { observed: 'BBB' });
+
+    write('CCC');
+    await validate(async (path) => {
+      write('DDD');
+      const result = judge(path);
+      await new Promise(resolve => setTimeout(resolve, 15));
+      write('CCC');
+      return result;
+    });
+    assert.deepEqual(await validate(judge), { observed: 'CCC' });
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('BatchOptimizer: a callback opening a transient symlink target cannot cache its verdict', async t => {
+  const { mkdtempSync, readFileSync, writeFileSync, symlinkSync, unlinkSync, rmSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const dir = mkdtempSync(join(tmpdir(), 'batch-link-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const file = join(dir, 'current.png');
+  for (const name of ['first', 'second']) writeFileSync(join(dir, name), name);
+  symlinkSync('first', file);
+  const switchTo = name => { unlinkSync(file); symlinkSync(name, file); };
+  const opt = new BatchOptimizer();
+  const result = await opt._queueRequest(file, 'p', {}, path => {
+    switchTo('second');
+    const observed = readFileSync(path, 'utf8');
+    switchTo('first');
+    return { observed };
+  });
+  assert.equal(result.observed, 'second');
+  const next = await opt._queueRequest(file, 'p', {}, path => ({ observed: readFileSync(path, 'utf8') }));
+  assert.equal(next.observed, 'first');
+});

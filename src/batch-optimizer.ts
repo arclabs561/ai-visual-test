@@ -20,7 +20,7 @@
  */
 
 import { createHash } from 'crypto';
-import { statSync } from 'fs';
+import { readFileSync, statSync } from 'fs';
 
 /**
  * Batch Optimizer Class
@@ -29,7 +29,7 @@ import { statSync } from 'fs';
  * 
  * @class BatchOptimizer
  */
-import { API_CONSTANTS, BATCH_OPTIMIZER_CONSTANTS } from './constants.js';
+import { API_CONSTANTS, API_ENDPOINT_CONSTANTS, BATCH_OPTIMIZER_CONSTANTS } from './constants.js';
 import { TimeoutError, ValidationError } from '#errors';
 import { warn } from './logger.js';
 import type { BatchValidationResult, ValidationContext, ValidationResult } from '#public-contract';
@@ -117,15 +117,12 @@ function stableStringify(value: unknown): string {
     .join(',') + '}';
 }
 
-/**
- * Size and mtime of the image, so a screenshot rewritten at the same path does
- * not return the result cached for the previous file. Empty when the path
- * cannot be read; the key then depends on the path alone.
- */
-function fileFingerprint(imagePath: string): string {
+function fileFingerprint(imagePath: string): string | null {
   try {
     const stats = statSync(imagePath);
-    return `${stats.size}:${stats.mtimeMs}`;
+    if (!stats.isFile() || stats.size > API_ENDPOINT_CONSTANTS.MAX_IMAGE_SIZE) return null;
+    const digest = createHash('sha256').update(readFileSync(imagePath)).digest('hex');
+    return digest;
   } catch {
     return '';
   }
@@ -207,10 +204,12 @@ export class BatchOptimizer {
    * - Cryptographically secure (collisions are extremely unlikely)
    * - Consistent with VLLM cache approach
    */
-  _getCacheKey(imagePath: string, prompt: string, context: ValidationContext | null | undefined): string {
+  _getCacheKey(imagePath: string, prompt: string, context: ValidationContext | null | undefined, observedDigest?: string): string {
+    const fingerprint = observedDigest ?? (typeof imagePath === 'string' ? fileFingerprint(imagePath) : '');
+    if (fingerprint === null) return '';
     const keyData = {
       imagePath,
-      fingerprint: typeof imagePath === 'string' ? fileFingerprint(imagePath) : '',
+      fingerprint,
       prompt: prompt || '',
       context: context ? stableStringify(context) : ''
     };
@@ -262,7 +261,7 @@ export class BatchOptimizer {
     validateFn: BatchValidateFunction | null = null,
   ): Promise<ValidationResult> {
     // Check cache first
-    if (this.cache) {
+    if (this.cache && !validateFn) {
       const cacheKey = this._getCacheKey(imagePath, prompt, context);
       const cached = this.cache.get(cacheKey);
       if (cached !== undefined) {
@@ -486,20 +485,15 @@ export class BatchOptimizer {
     this.activeRequests++;
     
     try {
-      if (!validateFn) {
-        // Import validateScreenshot if not provided
-        const { validateScreenshot } = await import('#judge');
-        validateFn = validateScreenshot as BatchValidateFunction;
+      // Only the built-in judge can identify the bytes it sent to the provider.
+      // An arbitrary callback may reopen the original path at any point.
+      if (validateFn) return await validateFn(imagePath, prompt, context);
+      const { validateScreenshot, judgedImageDigest } = await import('#judge');
+      const result = await validateScreenshot(imagePath, prompt, context);
+      const digest = judgedImageDigest(result);
+      if (this.cache && digest) {
+        this.cache.set(this._getCacheKey(imagePath, prompt, context, digest), result);
       }
-      
-      const result = await validateFn(imagePath, prompt, context);
-      
-      // Cache result if enabled
-      if (this.cache) {
-        const cacheKey = this._getCacheKey(imagePath, prompt, context);
-        this.cache.set(cacheKey, result);
-      }
-      
       return result;
     } finally {
       this.activeRequests--;
@@ -528,7 +522,7 @@ export class BatchOptimizer {
         const promises = batch.map(async ({ imagePath, prompt, context, validateFn, resolve, reject }) => {
           try {
             // Check cache again (might have been added by another request)
-            if (this.cache) {
+            if (this.cache && !validateFn) {
               const cacheKey = this._getCacheKey(imagePath, prompt, context);
               const cached = this.cache.get(cacheKey);
               if (cached !== undefined) {

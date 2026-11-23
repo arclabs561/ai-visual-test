@@ -147,33 +147,13 @@ export function generateCacheKey(
   imagePath: string | null | undefined,
   prompt: string | null | undefined,
   context: CacheContext = {},
+  observedDigest?: string,
 ): string {
-  // Content-addressed: hash image bytes, not the file path.
-  // This ensures cache invalidation when a screenshot is regenerated
-  // to the same path (e.g. /tmp/vlm_magic.png).
-  //
-  // For multi-image keys, imagePath may be a pipe-delimited string
-  // like "path1|path2" from judge.mjs.
-  const pathStr = imagePath || '';
-  const paths: string[] = pathStr.includes('|') ? pathStr.split('|') : [pathStr];
-  const imageHashes = paths.map(p => {
-    try {
-      const bytes = readFileSync(p);
-      return createHash('sha256').update(bytes).digest('hex');
-    } catch (error) {
-      // File unreadable (deleted, permissions) -- fall back to path hash
-      // so the key is still deterministic for error cases.
-      warn(`Cannot read image for cache key, falling back to path hash: ${p}`);
-      return createHash('sha256').update(p).digest('hex');
-    }
-  });
-  const imageDigest = imageHashes.length === 1
-    ? imageHashes[0]
-    : createHash('sha256').update(imageHashes.join(':')).digest('hex');
+  const imageDigest = observedDigest ?? hashImagePaths(imagePath);
 
   // Build key data with deterministic structure
   const keyData = {
-    version: 2,
+    version: 3,
     type: 'vision', // Distinguish from text-only calls
     imageDigest, // SHA-256 of image bytes (content-addressed)
     prompt, // Full prompt, not truncated
@@ -195,6 +175,31 @@ export function generateCacheKey(
   // even if object property order varies
   const keyString = deterministicStringify(keyData);
   return createHash('sha256').update(keyString).digest('hex');
+}
+
+function hashImagePaths(imagePath: string | null | undefined): string {
+  // Content-addressed: hash image bytes, not the file path.
+  // This ensures cache invalidation when a screenshot is regenerated
+  // to the same path (e.g. /tmp/vlm_magic.png).
+  //
+  // For multi-image keys, imagePath may be a pipe-delimited string
+  // like "path1|path2" from judge.mjs.
+  const pathStr = imagePath || '';
+  const paths: string[] = pathStr.includes('|') ? pathStr.split('|') : [pathStr];
+  const imageHashes = paths.map(p => {
+    try {
+      const bytes = readFileSync(p);
+      return createHash('sha256').update(bytes).digest('hex');
+    } catch (error) {
+      // File unreadable (deleted, permissions) -- fall back to path hash
+      // so the key is still deterministic for error cases.
+      warn(`Cannot read image for cache key, falling back to path hash: ${p}`);
+      return createHash('sha256').update(p).digest('hex');
+    }
+  });
+  return imageHashes.length === 1
+    ? imageHashes[0]!
+    : createHash('sha256').update(imageHashes.join(':')).digest('hex');
 }
 
 /**
@@ -529,9 +534,10 @@ export function getCached(
   imagePath: string | null | undefined,
   prompt: string | null | undefined,
   context: CacheContext = {},
+  observedDigest?: string,
 ): CachedResult | null {
   const cache = getCache();
-  const key = generateCacheKey(imagePath, prompt, context);
+  const key = generateCacheKey(imagePath, prompt, context, observedDigest);
   const cached = cache.get(key);
 
   if (cached) {
@@ -593,9 +599,10 @@ export function setCached(
   prompt: string | null | undefined,
   context: CacheContext,
   result: Record<string, unknown>,
+  observedDigest?: string,
 ): void {
   const cache = getCache();
-  const key = generateCacheKey(imagePath, prompt, context);
+  const key = generateCacheKey(imagePath, prompt, context, observedDigest);
   const now = Date.now();
 
   // Check if this is a new entry or updating existing

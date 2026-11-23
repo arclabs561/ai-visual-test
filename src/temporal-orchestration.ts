@@ -1189,7 +1189,7 @@ export class TemporalBatchOptimizer extends BatchOptimizerBase {
 
         const promises = batch.map(async ({ imagePath, prompt, context, validateFn, resolve, reject, temporalRequestId }: QueueRequest) => {
           try {
-            if (this.cache) {
+            if (this.cache && !validateFn) {
               const cacheKey = this._getCacheKey(imagePath, prompt, context);
               if (this.cache.has(cacheKey)) {
                 this._markTemporalRequestCompleted(imagePath, temporalRequestId);

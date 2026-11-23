@@ -203,7 +203,7 @@ export class LatencyAwareBatchOptimizer extends BatchOptimizer {
 
         const promises = batch.map(async ({ imagePath, prompt, context, validateFn, resolve, reject }) => {
           try {
-            if (this.cache) {
+            if (this.cache && !validateFn) {
               const cacheKey = this._getCacheKey(imagePath, prompt, context);
               const cached = this.cache.get(cacheKey);
               if (cached !== undefined) {

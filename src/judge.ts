@@ -57,6 +57,13 @@ type ReviewBuildInput = {
   structuredOutput?: StructuredOutputSpec | null;
 };
 
+// Associate a verdict with the exact target payload supplied to the provider.
+const judgedImages = new WeakMap<ValidationResult, string>();
+
+export function judgedImageDigest(result: ValidationResult): string | undefined {
+  return judgedImages.get(result);
+}
+
 export interface GameActionResult {
   action: GameAction;
   outputFormat: string;
@@ -387,13 +394,17 @@ export class VLLMJudge {
         structuredOutputMode: structuredOutput.mode,
         anchorDigest
       };
+      const hashes = targetImages.map(image => createHash('sha256').update(image.data, 'base64').digest('hex'));
+      const targetDigest = hashes.length === 1 ? hashes[0]! : createHash('sha256').update(hashes.join(':')).digest('hex');
       const cacheKey = isMultiImage ? imagePaths.join('|') : imagePaths[0]!;
 
       if (useCache) {
-        const cached = getCached(cacheKey, fullPrompt, cacheContext);
+        const cached = getCached(cacheKey, fullPrompt, cacheContext, targetDigest);
         this._logCacheResult(cached ? 'hit' : 'miss', context, cacheKey);
         if (cached) {
-          return normalizeValidationResult({ ...cached, cached: true }, 'judgeScreenshot-cache');
+          const result = normalizeValidationResult({ ...cached, cached: true }, 'judgeScreenshot-cache');
+          judgedImages.set(result, targetDigest);
+          return result;
         }
       }
 
@@ -426,8 +437,9 @@ export class VLLMJudge {
 
       const normalizedResult = normalizeValidationResult(validationResult, 'judgeScreenshot');
 
+      judgedImages.set(normalizedResult, targetDigest);
       if (useCache) {
-        setCached(cacheKey, fullPrompt, cacheContext, normalizedResult);
+        setCached(cacheKey, fullPrompt, cacheContext, normalizedResult, targetDigest);
       }
 
       return normalizedResult;

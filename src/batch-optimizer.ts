@@ -117,16 +117,12 @@ function stableStringify(value: unknown): string {
     .join(',') + '}';
 }
 
-/** Include the bytes even when a producer preserves the file size and mtime.
- * Device, inode, and change time also detect a rewrite that restores the
- * original bytes while a path-based validator is still reading the image.
- */
 function fileFingerprint(imagePath: string): string | null {
   try {
-    const stats = statSync(imagePath, { bigint: true });
+    const stats = statSync(imagePath);
     if (!stats.isFile() || stats.size > API_ENDPOINT_CONSTANTS.MAX_IMAGE_SIZE) return null;
     const digest = createHash('sha256').update(readFileSync(imagePath)).digest('hex');
-    return `${stats.dev}:${stats.ino}:${stats.ctimeNs}:${digest}`;
+    return digest;
   } catch {
     return '';
   }
@@ -208,8 +204,8 @@ export class BatchOptimizer {
    * - Cryptographically secure (collisions are extremely unlikely)
    * - Consistent with VLLM cache approach
    */
-  _getCacheKey(imagePath: string, prompt: string, context: ValidationContext | null | undefined): string {
-    const fingerprint = typeof imagePath === 'string' ? fileFingerprint(imagePath) : '';
+  _getCacheKey(imagePath: string, prompt: string, context: ValidationContext | null | undefined, observedDigest?: string): string {
+    const fingerprint = observedDigest ?? (typeof imagePath === 'string' ? fileFingerprint(imagePath) : '');
     if (fingerprint === null) return '';
     const keyData = {
       imagePath,
@@ -265,7 +261,7 @@ export class BatchOptimizer {
     validateFn: BatchValidateFunction | null = null,
   ): Promise<ValidationResult> {
     // Check cache first
-    if (this.cache) {
+    if (this.cache && !validateFn) {
       const cacheKey = this._getCacheKey(imagePath, prompt, context);
       const cached = this.cache.get(cacheKey);
       if (cached !== undefined) {
@@ -489,20 +485,15 @@ export class BatchOptimizer {
     this.activeRequests++;
     
     try {
-      if (!validateFn) {
-        // Import validateScreenshot if not provided
-        const { validateScreenshot } = await import('#judge');
-        validateFn = validateScreenshot as BatchValidateFunction;
+      // Only the built-in judge can identify the bytes it sent to the provider.
+      // An arbitrary callback may reopen the original path at any point.
+      if (validateFn) return await validateFn(imagePath, prompt, context);
+      const { validateScreenshot, judgedImageDigest } = await import('#judge');
+      const result = await validateScreenshot(imagePath, prompt, context);
+      const digest = judgedImageDigest(result);
+      if (this.cache && digest) {
+        this.cache.set(this._getCacheKey(imagePath, prompt, context, digest), result);
       }
-      
-      const cacheKey = this.cache ? this._getCacheKey(imagePath, prompt, context) : null;
-      const result = await validateFn(imagePath, prompt, context);
-      
-      // A producer can replace the screenshot while the judge is running.
-      if (this.cache && cacheKey && cacheKey === this._getCacheKey(imagePath, prompt, context)) {
-        this.cache.set(cacheKey, result);
-      }
-      
       return result;
     } finally {
       this.activeRequests--;
@@ -531,7 +522,7 @@ export class BatchOptimizer {
         const promises = batch.map(async ({ imagePath, prompt, context, validateFn, resolve, reject }) => {
           try {
             // Check cache again (might have been added by another request)
-            if (this.cache) {
+            if (this.cache && !validateFn) {
               const cacheKey = this._getCacheKey(imagePath, prompt, context);
               const cached = this.cache.get(cacheKey);
               if (cached !== undefined) {

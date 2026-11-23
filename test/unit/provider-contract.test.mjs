@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { VLLMJudge } from '#judge';
+import { BatchOptimizer } from '../../src/batch-optimizer.js';
 import { generateCacheKey } from '../../src/cache.js';
 import { ProviderError } from '../../src/errors.js';
 
@@ -316,4 +317,32 @@ test('cache hits return the same normalized public result as cold calls', async 
   assert.equal(typeof hit.issues[0], 'string');
   assert.equal(hit.score, cold.score);
   assert.equal(hit.kind, cold.kind);
+});
+
+test('batch and persistent caches use the image payload sent to the provider', async t => {
+  const image = fixtureImage();
+  const second = Buffer.concat([PNG_1X1, Buffer.from([1])]);
+  const cacheDir = mkdtempSync(join(tmpdir(), 'ai-visual-payload-'));
+  const context = { provider: 'openai', model: 'gpt-4o', apiKey: 'test-key', cacheEnabled: true,
+    cacheDir, env: {}, enableUncertaintyReduction: false };
+  const batch = new BatchOptimizer();
+  let calls = 0;
+  t.mock.method(globalThis, 'fetch', async (_url, init) => {
+    calls++;
+    const first = init.body.includes(PNG_1X1.toString('base64'));
+    if (calls === 1) writeFileSync(image, second);
+    return new Response(JSON.stringify(scalarEnvelope(first ? 9 : 4)), {
+      headers: { 'content-type': 'application/json' }
+    });
+  });
+
+  const validate = async () => (await batch.batchValidate(image, 'Review this interface', context))[0].score;
+  assert.equal(await validate(), 9);
+  assert.equal(await validate(), 4);
+  assert.equal(await validate(), 4);
+  assert.equal(calls, 2);
+  writeFileSync(image, PNG_1X1);
+  batch.clearCache();
+  assert.equal(await validate(), 9);
+  assert.equal(calls, 2);
 });
